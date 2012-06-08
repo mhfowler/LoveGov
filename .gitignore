@@ -1,0 +1,3 @@
+*.pyc
+lovegov/db/local.db
+.idea
