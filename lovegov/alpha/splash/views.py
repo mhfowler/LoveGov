@@ -239,16 +239,16 @@ def requiresLogin(view):
                 print request.path
                 return HttpResponseRedirect('/login' + request.path)
             else:
-            # SET DEFAULT DICTIONARY VALUES
+                # SET DEFAULT DICTIONARY VALUES
                 user = betabackend.getUserProfile(request)
             if UPDATE and not user.developer and not LOCAL:
                 return shortcuts.redirect("/login/web/")
             else:
                 dict = {'user':user, 'google':betaconstants.GOOGLE_LOVEGOV}
                 rightSideBar(None, dict)
-                # SAVE PAGE ACCESS
+            # SAVE PAGE ACCESS
             if request.method == 'GET':
-                    log = request.GET.get('log')
+                log = request.GET.get('log')
             else:
                 log = request.POST.get('log')
             if not log or (log == False):
