@@ -532,9 +532,9 @@ a, a:link, a:visited, a:active
 
 #comparison-hover-pointer-down
 {
-    position:relative;
+    position:absolute;
     left:133px;
-    top:6px;
+    top:370px;
     z-index:0;
 }
 

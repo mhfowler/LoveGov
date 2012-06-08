@@ -234,28 +234,31 @@ def loginPOST(request, to_page='web',message="",dict={}, confirm_link=None):
 def requiresLogin(view):
     """Wrapper for all views which require login."""
     def new_view(request, *args, **kwargs):
-		try:
-        	if not request.user.is_authenticated():
-           		print request.path
-            	return HttpResponseRedirect('/login' + request.path)
-        	else:
-            	# SET DEFAULT DICTIONARY VALUES
-            	user = betabackend.getUserProfile(request)
-            	if UPDATE and not user.developer and not LOCAL:
-                	return shortcuts.redirect("/login/web/")
-            	else:
-                	dict = {'user':user, 'google':betaconstants.GOOGLE_LOVEGOV}
-                	rightSideBar(None, dict)
-                	# SAVE PAGE ACCESS
-                	if request.method == 'GET':
-                    	log = request.GET.get('log')
-                	else:
-                    	log = request.POST.get('log')
-                	if not log or (log == False):
-                    	page = betamodels.PageAccess()
-                    	page.autoSave(request)
-		except ImproperlyConfigured:
-			
+        try:
+            if not request.user.is_authenticated():
+                print request.path
+                return HttpResponseRedirect('/login' + request.path)
+            else:
+            # SET DEFAULT DICTIONARY VALUES
+                user = betabackend.getUserProfile(request)
+            if UPDATE and not user.developer and not LOCAL:
+                return shortcuts.redirect("/login/web/")
+            else:
+                dict = {'user':user, 'google':betaconstants.GOOGLE_LOVEGOV}
+                rightSideBar(None, dict)
+                # SAVE PAGE ACCESS
+            if request.method == 'GET':
+                    log = request.GET.get('log')
+            else:
+                log = request.POST.get('log')
+            if not log or (log == False):
+                page = betamodels.PageAccess()
+                page.autoSave(request)
+        except ImproperlyConfigured:
+            response = shortcuts.redirect('/login' + request.path)
+            response.delete_cookie('sessionid')
+            logger.debug('deleted cookie')
+            return response
         return view(request, dict=dict, *args, **kwargs)
     return new_view
 
@@ -970,7 +973,7 @@ def facebookAction(request, to_page="/web/", dict={}):
 
     if not fb_action:
         dict['success'] = False
-        dict['fb_error'] = 'NoFBAction'
+        dict['fb_error'] = '200'
 
     if fb_action == 'share': #Attempt a wall share!  Share destination (fb_share_to) and message specified in GET
         dict['success'] = facebook.fbWallShare(request, dict) #Wall Share Success Boolean (puts errors in dict[fb_error])

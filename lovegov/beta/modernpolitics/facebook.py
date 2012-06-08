@@ -163,8 +163,8 @@ def fbWallShare(request, dict={}):
         return False
     if 'error' in me:
         error = me['error']
-        if 'type' in error:
-            dict['fb_error'] = error['type']
+        if 'code' in error:
+            dict['fb_error'] = error['code']
         return False
     # Get Request Data
     fb_share_to = request.GET.get('fb_share_to')
@@ -195,8 +195,8 @@ def fbWallShare(request, dict={}):
     if 'error' in post_response:
         error = post_response['error']
         pprint.pprint(error)
-        if 'type' in error:
-            dict['fb_error'] = error['type']
+        if 'code' in error:
+            dict['fb_error'] = error['code']
         return False
     return True
 
