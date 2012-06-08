@@ -857,6 +857,15 @@ def getUserProfile(request=None, control_id=None):
     else:
         return None
 
+def getPrivacy(request):
+    """"Returns value of privacy cookie, or in the case of no cookie returns 'public'."""
+    try:
+        to_return = request.COOKIES['privacy']
+    except KeyError:
+        logger.error("no privacy cookie")
+        to_return = 'PUB'
+    return to_return
+
 
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
