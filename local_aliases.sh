@@ -1,54 +1,34 @@
 # absolute path to the directory of this script
-PROJECT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DEV=$PROJECT/dev
-LIVE=$PROJECT/live
+LG="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # aliases
-alias cmdcreate='vi $PROJECT/local_aliases.sh'
+alias cmdcreate='vi $LG/local_aliases.sh'
 alias sshserver='ssh -p 7822 75.98.168.114 -l '
 alias applerun='/scripts/applerun.sh'
 
-# local development
-alias projectdir='cd $PROJECT'
-alias projectupdate="sudo svn update $PROJECT"
-alias projectcommit="$PROJECT/autocommit.sh "
-alias svnignore="sudo svn propset svn:ignore"
-alias svnrm="sudo svn rm --keep-local" 
+# git
+alias lgdir='cd $LG'
+alias lgpull="cd $LG && git pull && cd -"
+alias lgcommit="cd $LG && git commit -a && cd -"
+alias lgpush="cd $LG && git push && cd -"
 
-# dev
-alias devdir="cd $DEV"
-alias devcommit="$PROJECT/autocommit.sh dev"
-alias devupdate="sudo svn update $DEV"
-alias devbetascript='python $DEV/lovegov/beta/modernpolitics/scripts.py'
-alias devcleardb='rm $DEV/lovegov/db/local.db'
-alias devresyncdb='python $DEV/lovegov/local_manage.py syncdb'
-alias devinitdb='python $DEV/lovegov/local_manage.py loaddata $DEV/lovegov/db/migrate.json && python $DEV/lovegov/beta/modernpolitics/scripts.py initialize testdata'
-alias devresetdb='$DEV/local_reset.sh'
-alias devserver="$DEV/local_server.sh"
-alias devsync="sudo svn merge -r0:HEAD $LIVE $DEV"
-alias devchop="svn rm $DEV && sudo rm -r $DEV"
-alias devbranch="svn copy $LIVE $DEV"
-
-#live
-alias livedir="cd $LIVE"
-alias livecommit="$PROJECT/autocommit.sh live"
-alias liveupdate="sudo svn update $LIVE"
-alias livebetascript='python $LIVE/lovegov/beta/modernpolitics/scripts.py'
-alias livecleardb='rm $LIVE/lovegov/db/localdb'
-alias liveresyncdb='python $LIVE/lovegov/local_manage.py syncdb'
-alias liveinitdb='python $LIVE/lovegov/local_manage.py loaddata ~/Desktop/cs/lovegov/backup/migrate.json && python ~/Desktop/cs/lovegov/lovegov/beta/modernpolitics/scripts.py initialize testdata'
-alias liveresetdb='$LIVE/local_reset.sh'
-alias liveserver="$LIVE/local_server.sh"
-alias livereintegrate="sudo svn -r0:HEAD merge $DEV $LIVE"
+# functionality
+alias lgbetascript='python $LG/lovegov/beta/modernpolitics/scripts.py'
+alias lgcleardb='rm $LG/lovegov/db/local.db'
+alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
+alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/beta/modernpolitics/scripts.py initialize testdata'
+alias lgresetdb='$LG/local_reset.sh'
+alias lgserver="$LG/local_server.sh"
+alias lgsync="sudo svn merge -r0:HEAD $LIVE $DEV"
 
 # permission
 alias projectpermission="sudo chmod -R 770 $PROJECT"
 alias jpermission="sudo chown jvkoh -R $PROJECT && sudo chmod -R 770 $PROJECT"
 
 # python environment
-export PYTHONSTARTUP=$DEV/autopython.py
-export PYTHONPATH=${PYTHONPATH}:$DEV/lovegov
-export PYTHONPATH=${PYTHONPATH}:$DEV
+export PYTHONSTARTUP=$LG/autopython.py
+export PYTHONPATH=${PYTHONPATH}:$LG/lovegov
+export PYTHONPATH=${PYTHONPATH}:$LG
 export DJANGO_SETTINGS_MODULE=lovegov.local_settings
 
 
