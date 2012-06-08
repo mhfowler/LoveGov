@@ -1,0 +1,14 @@
+<h3> PETITION </h3>
+
+<div>
+    <a class="field"> {{ object.full_text }} </a>
+    {% if iamcreator %}
+        <a class="actions edit"> edit </a>
+        <textarea  rows="5" cols="30" class="edit_field"></textarea>
+        <input class="hidden" type="text" value="full_text"/>
+        <a class="actions save"> save </a>
+    {% endif %}
+</div>
+
+
+

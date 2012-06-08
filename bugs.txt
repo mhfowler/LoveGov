@@ -1,0 +1,7 @@
+LOG FOR STORING BUGS, mark and delete when fixed
+
+- District lines, map loading top left.
+
+- Response, foreign key to answer? (instead of answer_val)
+
+- Topic icons on live site.

@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<script>
+
+//first make sure you have defined with var the variables you need.     
+        var start_mouse_y = 0;
+        var mouse_y = 0;
+        var scroll_offset = 0;
+        function SET_SCROLL(e) {
+            document.getElementById("online_list_scroll").draggable = true;
+            start_mouse_y = e.clientY;
+// you need mouse_y to be initialized with start_mouse_y
+            mouse_y = start_mouse_y;
+        }
+
+        function ADJUST_SCROLL(e) {
+            var set_scroll_height = 0;
+            var dont_pass = (412 - set_scroll_height);
+
+// here you set the last mouse_y to be start_mouse_y or else it would be 
+// a the first position of the mouse ( eg. 8 ) subtracted from the current ( eg. 50 )
+// now remembering the last already added position (eg. 49) which is subtracted from
+// the current (eg. 50 ) it works just fine
+
+            start_mouse_y = mouse_y;
+            mouse_y = e.clientY;
+            var scroll_top = parseInt(document.getElementById("online_list_scroll").style.top);
+            scroll_offset = (scroll_top- mouse_y ) + 46;
+
+            var new_top = scroll_top + (mouse_y- start_mouse_y);
+
+            console.log("my: " + mouse_y + "<br>new_top: " + new_top + "<br>scroll_offset: " + scroll_offset + "<br>scroll_top: " + scroll_top);
+            if(new_top <= 0) {
+                document.getElementById("online_list_scroll").style.top = 0 + "px";
+            } else if(new_top >= dont_pass) {
+                document.getElementById("online_list_scroll").style.top = dont_pass + "px";
+            } else {
+                document.getElementById("online_list_scroll").style.top = new_top + "px";
+            }
+            var scroll_bottom = set_scroll_height + new_top;
+            var scroll_percent = scroll_bottom / 412;
+            var online_show = (document.getElementById("online_list").scrollHeight - 412) * scroll_percent;
+            online_show = Math.round(online_show);
+            document.getElementById("online_list").scrollTop = online_show;
+        }
+
+        var SCROLL_ON = 0;
+        document.onmouseup = function() {
+            SCROLL_ON = 0;
+        };
+        document.onmousemove = function(event) {
+            if(SCROLL_ON == 1) {ADJUST_SCROLL(event);
+            }
+        };
+
+
+
+</script>
+
+
+<body>
+<div style="float: left; width: 13px; position: relative; height: 412px;">
+      <div id="online_list_scroll" style="width: 30px; position: absolute; top: 0px; left: 4px; border-radius: 4px; background-color: #3f3f3f; height: 30px;" onmousedown="if(SCROLL_ON == 0){ SET_SCROLL(event); SCROLL_ON = 1; }"></div>
+    </div>
+</body>
+</html>

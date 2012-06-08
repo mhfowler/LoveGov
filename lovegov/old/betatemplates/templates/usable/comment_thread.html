@@ -1,0 +1,16 @@
+<div id="comment_thread">
+
+    <h2> COMMENTS </h2>
+
+    <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
+        <input id="comment_text" type="text" name="comment" value="...add comment" />
+        <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
+        <input type="submit" value="New Comment" />
+    </form>
+
+    <!-- created by makeThreadHTML -->
+    {{ thread|safe }}
+
+</div>
+
+

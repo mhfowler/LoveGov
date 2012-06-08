@@ -1,0 +1,145 @@
+@charset "UTF-8";
+/* CSS Document */
+
+@font-face
+{
+  font-family: "Gill Sans Std Light";
+  src: url(GillSansSTD-Light.otf);
+}
+
+@font-face
+{
+  font-family: "Gill Sans Std";
+  src: url(GillSansSTD.otf);
+}
+
+body
+{
+	font-family:Helvetica, Verdana, sans-serif;
+	font-size:11pt;
+	color:#959595;
+}
+
+.highlight
+{
+	color:#f0503b;
+}
+
+.answer
+{
+	color:#959595;
+}
+
+/* Dialogue Box */
+
+#dialogue-wrapper
+{
+	position:relative;
+	width:400px;
+}
+
+#dialogue-pointer
+{
+	position:relative;
+	top:-3px;
+	left: 53%;
+}
+
+#dialogue-main
+{
+	-moz-border-radius: 20px;
+	-webkit-border-radius:20px;
+	-khtml-border-radius:20px;
+	border-radius:20px;
+	padding:25px;
+	border: 3px solid #529FC6;
+	background-color:#fff;
+	width:400px;
+}
+
+/* Question */
+
+#question
+{
+	font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+	font-size:14pt;
+	color:#005468;
+}
+
+/* Answers */
+
+#answers
+{
+	position:relative;
+	margin-bottom:20px;
+	font-size:11pt;
+	color:#959595;
+}
+
+#answers img
+{
+	position:relative;
+	top:5px;
+}
+
+#answers ul
+{
+	line-height:200%;
+	list-style-type:none;
+	margin-left:-15px;
+}
+
+/* Analysis */
+
+#analysis
+{
+	position:relative;
+	top:-100px;
+	left:160px;
+	width:200px;
+}
+
+/* Graph */
+
+#graph
+{
+	position:relative;
+	width:100px;
+	padding:20px;
+}
+
+/* Buttons */
+
+#buttons
+{
+	position:relative;
+
+	text-align:right;
+}
+
+.dialogue-buttons
+{
+	-moz-border-radius: 10px;
+	-webkit-border-radius:10px;
+	-khtml-border-radius:10px;
+	border-radius:10px;
+	padding:10px;
+	padding-bottom:7px;
+	font-size:14pt;
+	color:#fff;
+	font-family:"Gill Sans Std Light", Verdana, sans-serif;
+	margin-left:5px;
+	background-color:#529FC6;
+	text-decoration:none;
+}
+
+.dialogue-buttons:a, .dialogue-buttons:visited, .dialogue-buttons:active, .dialogue-buttons:link 
+{
+	text-decoration:none;
+}
+
+.dialogue-buttons:hover 
+{
+	text-decoration:none;
+	background-color:#A4CCD8;
+}

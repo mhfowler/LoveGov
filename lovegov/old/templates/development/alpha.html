@@ -1,0 +1,29 @@
+{% extends 'development/base.html' %}
+
+
+{% block page %}
+
+    {% if user.id != to_compare.id %}
+        <h4> You and {{ to_compare.get_name }} </h4>
+    {% else %}
+        <h4 style="position:relative;left:50px"> You </h4>
+    {% endif %}
+
+        <div id="comparison">
+            <div id="match-hover"></div>
+            <div id="qaweb" class='help'> </div>
+        </div>
+
+    <br><br><br><br>
+
+    <!-- hidden json data -->
+    <div id="comparison-json" style="display:none">
+        {{ json }}
+    </div>
+
+    <script type="text/javascript" src="/static/catherine/home/kinetic-v3.8.2.min.js"></script>
+    <script type="text/javascript" src="/static/catherine/home/tab-wrapper.js"></script>
+    <script type="text/javascript" src="/static/js/alpha.js"></script>
+
+{% endblock %}
+

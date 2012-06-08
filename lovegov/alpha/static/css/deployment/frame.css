@@ -1,0 +1,559 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/**********************************************************************************************************************/
+/*                                                        FONTS                                                       */
+/**********************************************************************************************************************/
+
+@font-face
+{
+    font-family: "Gill Sans Std Light";
+    src: url(/static/css/GillSansStd-Light.otf);
+}
+
+@font-face
+{
+    font-family: "Gill Sans Std";
+    src: url(/static/css/GillSansStd.otf);
+}
+
+/**********************************************************************************************************************/
+/*                                                        DOCUMENT                                                    */
+/**********************************************************************************************************************/
+
+body
+{
+    font-family:Helvetica, Verdana, sans-serif;
+    font-size:11pt;
+    margin:0;
+    word-wrap:break-word;
+}
+
+body p
+{
+    word-wrap:break-word;
+}
+
+input:focus
+{
+    outline: none;
+}
+
+a, a:link, a:visited, a:active
+{
+    color:#ccc;
+}
+
+/* -- BUTTON & TAB CLASSES -- */
+.button
+{
+    -moz-border-radius: 10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+    border-radius:10px;
+    padding:10px;
+    padding-bottom:3px;
+    font-size:14pt;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+}
+
+.dialogue-buttons
+{
+    -moz-border-radius: 10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+    border-radius:10px;
+    background-color:#ccc;
+    padding:8px;
+    padding-bottom:0px;
+    font-size:16pt;
+    color:#fff;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    margin-left:5px;
+    text-decoration:none;
+}
+
+.dialogue-buttons:visited, .dialogue-buttons:active, .dialogue-buttons:link
+{
+    color:#FFFFFF;
+    text-decoration:none;
+}
+
+.dialogue-buttons:hover
+{
+    text-decoration:none;
+    text-decoration:none;
+    background-color:#f0503b;
+    cursor:pointer;
+}
+
+.left-sidebar-button
+{
+    -moz-border-radius: 10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+    border-radius:10px;
+    padding:10px;
+    padding-bottom:7px;
+    font-size:14pt;
+    font-family:"Merge", Verdana, sans-serif;
+}
+
+.left-sidebar-button:link, .left-sidebar-button:visited, .left-sidebar-button:active
+{
+    color:#FFFFFF;
+    background-color:#f0503b;
+    text-decoration:none;
+    float:right;
+}
+
+.left-sidebar-button:hover
+{
+    color:#f0503b;
+    background-color:#fff;
+}
+
+
+/**********************************************************************************************************************/
+/*                                                        HEADER                                                      */
+/**********************************************************************************************************************/
+
+
+
+
+/**********************************************************************************************************************/
+/*                                                    END HEADER                                                      */
+/**********************************************************************************************************************/
+
+
+.logout, .logout:active, .logout:visited
+{
+    color:#f0503b;
+    text-decoration:none;
+    position:relative;
+    padding:5px;
+}
+
+.logout:hover
+{
+    color:#ccc;
+    cursor:pointer;
+}
+
+#right-block
+{
+    position:relative;
+    top:-10px;
+    left:800px;
+    border:1px solid #ccc;
+    border-top:0px;
+    border-right:0px;
+    width:300px;
+}
+
+
+
+/* LEFT MODULE */
+#middle-left
+{
+    position:relative;
+    float:left;
+    width:630px;
+    padding-right:20px;
+}
+
+#left-titles
+{
+    color:#ccc;
+    font-size:14pt;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+}
+
+#tab-wrapper
+{
+    padding-bottom:75px;
+    position:relative;
+    left:80px;
+}
+
+#profile-tab-wrapper
+{
+    padding-bottom:75px;
+    position:relative;
+    left:20px;
+}
+
+.tab-selected a
+{
+    position:relative;
+    float:left;
+    padding:8px;
+    top:4px;
+    font-size:14pt;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    color:#0f5569;
+    border:1px solid #ccc;
+    border-bottom:0px;
+    cursor:pointer;
+}
+
+.tab-selected a, a:visited, a:link, a:active
+{
+    text-decoration:none;
+}
+
+.tab-selected a:hover
+{
+    text-decoration:none;
+    color:#ccc;
+}
+
+.tab-unselected a
+{
+    position:relative;
+    float:left;
+    padding:10px;
+    font-size:14pt;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    color:#0f5569;
+    border-bottom:1px solid #ccc;
+    cursor:pointer;
+}
+
+.tab-unselected a, a:visited, a:link, a:active
+{
+    text-decoration:none;
+}
+
+.tab-unselected a:hover
+{
+    text-decoration:none;
+    color:#ccc;
+}
+
+.tab-border
+{
+    position:relative;
+    float:left;
+    width:100px;
+    font-size:14pt;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    float:left;
+    padding:10px;
+    border-bottom:1px solid #ccc;
+    text-decoration:none;
+}
+
+/* -- FEED ITEMS --*/
+
+
+#profile
+{
+    position:relative;
+    margin-top:15px;
+    margin-bottom:5px;
+    margin-left:30px;
+    height:235px;
+}
+
+.profile-username
+{
+    position:relative;
+    padding-bottom:5px;
+    font-size:20pt;
+    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    color:#0f5569;;
+}
+
+#profile-img
+{
+    float:left;
+    margin-right:20px;
+    padding: 6px;
+    border: 1px solid #F0503B;
+    height:175px;
+}
+
+#profile-summary
+{
+    position:relative;
+    width:380px;
+    margin-left:220px;
+    margin-bottom:12px;
+}
+
+#profile-info-stats
+{
+    position:relative;
+    left:10px;
+}
+
+#profile-info
+{
+    position:relative;
+    float:left;
+    width:200px;
+    margin-bottom:15px;
+}
+
+.profile-header
+{
+    font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif;
+    color:#959595;
+    font-size:14pt;
+    margin-bottom:3px;
+}
+
+#profile-stats
+{
+    position:relative;
+    left:65px;
+    margin-bottom:15px;
+    float:left;
+    width:150px;
+}
+
+#profile-stats ul
+{
+    margin-top:0;
+    list-style-type:circle;
+    margin-left:-15px;
+}
+
+.profile-stats-numbers
+{
+    color:#f0503b;
+}
+
+.feed-item-text-expanded
+{
+    width:510px;
+    margin-left:100px;
+}
+
+.feed-avatar
+{
+    float:left;
+    padding-right:20px;
+}
+
+.feed-item-username
+{
+    padding-bottom:5px;
+    font-size:14pt;
+    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    color:#0f5569;
+}
+
+
+
+
+
+
+.feed-item-expanded img
+{
+    width:500px;
+}
+
+
+
+
+#qaweb
+{
+    z-index:0;
+    position:relative;
+    width:300px;
+    height:300px;
+    text-align:left;
+}
+
+
+/* matching */
+
+
+#myviews
+{
+    position:relative;
+    padding-bottom:10px;
+}
+
+#match-hover
+{
+    position:absolute;
+    z-index:10;
+    visibility:hidden;
+    width:50px;
+    height:30px;
+    padding-top:10px;
+}
+
+.middle-right-padding
+{
+    margin-top:35px;
+    padding-bottom:10px;
+}
+
+#matchme
+{
+    position:relative;
+    background-color:#ff886c;
+}
+
+#matchme:link,#matchme:visited,#matchme:active
+{
+    text-decoration:none;
+    color:#fff;
+}
+
+#matchme:hover
+{
+    background-color:#fff;
+    color:#f0503b;
+}
+
+
+
+
+
+#help-hover
+{
+    position:absolute;
+    background-color: #ffffff;
+    height:120px;
+    width:200px;
+    border:1px solid #000000;
+    visibility:hidden;
+    z-index:130;
+}
+
+
+#dragger
+{
+    cursor:url(/static/images/cursors/grabcursor.gif),auto;
+}
+
+#welcome-message
+{
+    position:relative;
+    top:5px;
+    font-size:15pt;
+    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    color:#0f5569;
+}
+
+#welcome-alpha
+{
+    font-family:"Gill Sans Std Light", Helvetica, Verdana;
+    font-size:15pt;
+    color:#f0503b;
+    position:relative;
+    top:5px;
+}
+
+#user-list-wrapper
+{
+    z-index:100;
+    position:fixed;
+    right:0px;
+    top:0px;
+    background:#fff;
+    width:225px;
+}
+
+
+
+#main-content
+{
+    position:relative;
+}
+
+
+#loading
+{
+    position:absolute;
+    top:40%;
+    left:46%;
+    width:250px;
+    display:none;
+    z-index:100;
+}
+
+#loading img
+{
+    margin-top:20px;
+}
+
+#loading-txt
+{
+    position:relative;
+    float:right;
+    z-index:101;
+    margin-top:50px;
+    margin-left:20px;
+    font-size:200%;
+    color:red;
+}
+
+/**********************************************************************************************************************/
+/*  ~Comparison Hover                                                                                                 */
+/**********************************************************************************************************************/
+#comparison-hover-div
+{
+    width:300px;
+    height:370px;
+    position:absolute;
+    background-color:#FFFFFF;
+    -moz-border-radius: 20px;
+    -webkit-border-radius:20px;
+    -khtml-border-radius:20px;
+    border-radius:20px;
+    /*box-shadow: 8px 8px 20px #888888;*/
+    border: 1px solid #F0503B;
+    z-index:85;
+}
+
+#comparison-hover-div p
+{
+    margin-top:30px;
+    margin-bottom:0;
+    text-align:center;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    font-size:18pt;
+    color:#0F5569
+}
+
+#comparison-hover-pointer-up
+{
+    position:absolute;
+    left:133px;
+    top:-29px;
+    z-index:0;
+}
+
+#comparison-hover-pointer-down
+{
+    position:relative;
+    left:133px;
+    top:6px;
+    z-index:0;
+}
+
+#comparison-hover
+{
+    width:300px;
+    height:300px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius:20px;
+    -khtml-border-radius:20px;
+    border-radius:20px;
+    background-color:#FFFFFF;
+}
+
+#comparison-hover-loading-img
+{
+    display:none;
+    position:absolute;
+    top:49%;
+    left:39%;
+}
+

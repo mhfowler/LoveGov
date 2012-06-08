@@ -1,0 +1,23 @@
+
+<h3> QUESTION-RESPONSE by {{ object.responder }}{{ object.content.title }} </h3>
+
+
+    <!-- QUESTION -->
+    {{ object.question.question_text }}
+
+    <!-- ANSWERS  -->
+    {% for a in object.question.answers.all %}
+        <p  {% if a.value == object.answer_val %}
+                style="color:blue"
+            {% else %}
+                style="color:black"
+            {% endif %}
+                >
+            {{ a.value }}- {{ a.answer_text }}
+        </p>
+    {% endfor %}
+
+    <p>
+        Explanation: {{ object.explanation }}
+    </p>
+

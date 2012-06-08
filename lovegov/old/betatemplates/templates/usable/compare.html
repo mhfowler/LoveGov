@@ -1,0 +1,25 @@
+<table width=700>
+
+
+    <td>
+
+        {% for object in user_responses.all %}
+
+            {% include 'usable/display_response.html' %}
+
+        {% endfor %}
+
+    </td>
+
+
+    <td align="right">
+
+        {% for object in person_responses.all %}
+
+            {% include 'usable/display_response.html' %}
+
+        {% endfor %}
+
+    </td>
+
+</table>

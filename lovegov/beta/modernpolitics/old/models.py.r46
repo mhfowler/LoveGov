@@ -1,0 +1,43 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.auth.models import UserManager
+
+# UserProfile extends the Django model "User".
+class UserProfile(User):
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    dob = models.DateField(null=True)
+    # gives UserProfile access to User methods
+    objects = UserManager()
+    def __unicode__(self):
+        return self.first_name
+
+class Topic(models.Model):
+    topic_text = models.CharField(max_length=50)
+    parent_topic = models.ManyToManyField("self")
+
+    def __unicode__(self):
+        return self.topic_text
+
+class Question(models.Model):
+    QUESTION_TYPE = (
+        ('MC', 'Multiple Choice'),
+        ('CB', 'Check Box'),
+        ('SL', "Sliding Scale")
+    )
+    question_text = models.CharField(max_length=500)
+    question_type = models.CharField(max_length=2, choices=QUESTION_TYPE)
+    topic = models.ManyToManyField(Topic)
+
+class Answer(models.Model):
+    answer_text = models.CharField(max_length=500)
+    question_owner = models.ForeignKey(Question, related_name='+')
+    question_next = models.ManyToManyField(Question, through='NextQuestions')
+
+class NextQuestions(models.Model):
+    answer = models.ForeignKey(Answer)
+    question = models.ForeignKey(Question)
+    relevancy = models.IntegerField()

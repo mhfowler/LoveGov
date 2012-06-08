@@ -1,0 +1,26 @@
+<!-- Right Block -->
+<div id="right-block">
+    <div id="random-questions">
+        <h3> Random Questions </h3>
+        <!--
+        <a class="links see-all" href="/alpha/thequestions/"> all </a>
+        <a class="links see-more" href=""> new </a>
+        -->
+        {% for q in random_questions %}
+            <div class="question">
+                <a class="q-title" href="/alpha/question/{{ q.id }}">{{ q.get_name }}</a>
+            </div>
+            <br>
+        {% empty %}
+            Congratulations, you have answered every question!
+        {% endfor %}
+
+
+        <!-- hidden dialogs
+            {% for q in random_questions %}
+                <div id="q{{ q.id }}" class="q-dialog dialog">
+                    {% include 'development/q.html' with question=q %}
+                </div>
+            {% endfor %}   -->
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div id="editformdialog" align="center" style="display:none">
+    <h3> Edit: </h3>
+
+    <div id="form">
+        <form id=edit_form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            {% include 'forms/contentform.html' with form=editform %}
+            <input type="hidden" name="c_id" value="{{ content.id }}"/>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+</div>
+
+<style>
+    .topicSelection > img input
+    {
+        float: left;
+    }
+    .topicSelection
+    {
+        width:400px;
+        height:245px;
+    }
+        /* css for timepicker */
+    .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+    .ui-timepicker-div dl { text-align: left; }
+    .ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+    .ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+    .ui-timepicker-div td { font-size: 90%; }
+    .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+    .create_icons:hover
+    {
+        background-color:#f1eaea;
+    }
+
+    .ui-effects-transfer { border: 2px dotted gray; }
+
+    .create_icons
+    {
+        height:85px;
+        width:85px;
+    }
+
+</style>
+
+

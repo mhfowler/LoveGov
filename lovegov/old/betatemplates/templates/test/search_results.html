@@ -1,0 +1,16 @@
+{% extends "test/homepage.html" %}
+
+{% block content %}
+    <p>You searched for: <strong>{{ q }}</strong></p>
+
+    {% if tests %}
+        <p>Found {{ tests|length }} book{{ tests|pluralize }}.</p>
+        <ul>
+            {% for test in tests %}
+                <li>{{ test.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No books matched your search criteria.</p>
+    {% endif %}
+{% endblock %}

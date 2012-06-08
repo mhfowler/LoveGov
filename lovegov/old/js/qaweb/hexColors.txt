@@ -1,0 +1,24 @@
+HEX COLORS
+last updated 3/10
+
+MAIN COLORS:
+orange:#f0503b
+blue:#005468
+gray: #959595
+light gray: #ccc
+
+TOPICS:
+economy: #7BB742
+education: #90D5E0
+energy: #FCB415
+environment: #A299CE
+foreign policy: #E05882
+social: #529FC6
+
+BUTTON HOVER COLORS FOR TOPICS:
+economy: #CCDDC0
+education: #D3EBED
+energy: #F9D293
+environment: #D4D3EF
+foreign policy: #EFACC8
+social: #A4CCD8

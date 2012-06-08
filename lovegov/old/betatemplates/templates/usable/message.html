@@ -1,0 +1,13 @@
+{% extends 'usable/default.html' %}
+
+{% block content_block %}
+
+    <h4> {{ message }} </h4>
+
+    {% for c in content %}
+
+        {% include 'usable/content_sum.html' with object=c%}
+
+    {% endfor %}
+
+{% endblock %}

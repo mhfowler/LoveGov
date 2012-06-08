@@ -1,0 +1,12 @@
+{% extends 'deployment/templates/frame.html' %}
+
+{% block content %}
+
+    <!-- to allow being easily replaced by another question via ajax -->
+    {% include 'deployment/center/question_detail.html' %}
+
+    <script>
+        rebind="question";
+    </script>
+
+{% endblock %}

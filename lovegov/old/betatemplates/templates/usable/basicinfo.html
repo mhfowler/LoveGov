@@ -1,0 +1,26 @@
+<div>
+
+    <h2> Basic Info {% if myprofile %} <a href="/editinfo/"> edit </a> {% endif %} </h2>
+    <table width=200>
+        <td>
+            <div>   gender:                 </div>
+            <div>   dob:                    </div>
+            <div>   location:               </div>
+            <div>   religion:               </div>
+            <div>   ethnicity:              </div>
+            <div>   party:                  </div>
+            <div>   political role:         </div>
+        </td>
+        <td alight="right">
+            <div> {{ basicinfo.gender}}     </div>
+            <div>{{ basicinfo.dob}}         </div>
+            <div>{{ basicinfo.location}}    </div>
+            <div>{{ basicinfo.religion}}    </div>
+            <div>{{ basicinfo.ethnicity}}   </div>
+            <div>{{ basicinfo.party}}       </div>
+            <div>{{ basicinfo.political_role}}</div>
+        </td>
+    </table>
+
+
+</div>

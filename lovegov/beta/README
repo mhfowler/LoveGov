@@ -1,0 +1,20 @@
+Summary of Useful Knowledge:
+
+The views.py file contains functions that generates dynamic content
+
+The urls.py attaches dynamically generated pages from views.py to corresponding urls on the site.
+    Example: (r'^zero/$', iterate_num)
+             r: iterates regular expression
+             ': starts/ends string
+             ^: require regular expression matches the start of the string
+             $: require regular expression matches the end of the the string
+             Note: there is no "/" before "zero" because it is assumed one will be present in the regular expression matching
+             iterate_num : function called from views.py to generate page sent to user upon going to
+
+The views.py is where functions are defined that generate the page with the dynamic content.
+
+The templates folder contains .html files.
+
+You will not be able to access attribute fields of forms in the templates (i.e. {{ login_form.username }} unless in
+the view method generating the page the form object is instantiated at least once without ".as_p()" or ".as_table()".
+This doesn't make any sense and is completed nonsensical.

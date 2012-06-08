@@ -1,0 +1,71 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/content_detail.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/cath_comment.css" />
+
+<div id="content">
+    <div id="content-left">
+    {% if content.active %}
+        <div style="margin-bottom:25px;">
+            {% with topic=content.getMainTopic %}
+                <a href="{{topic.get_url}}">
+                    <div id="content-topic-img">
+                        <img src="{{ topic.getImageRef }}"/>
+                    </div>
+                </a>
+            {% endwith %}
+
+            <div id="content-div">
+                {% block content_detail %}
+                    <!-- content detail -->
+                {% endblock %}
+            </div>
+        </div>
+
+        <div id="comment-thread">
+
+            <h2> DISCUSS </h2>
+
+            <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
+                <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment">what's your opinion?</textarea>
+                <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
+                <br>
+                <input class="submit-comment" type="submit" value="Submit Comment" />
+            </form>
+
+            <!-- comment thread -->
+            <div id="thread">
+                {{ thread_html|safe }}
+            </div>
+
+        </div>
+
+    {% else %}
+        <h3> This content has been deleted. </h3>
+    {% endif %}
+    </div>
+</div>
+
+{% include "deployment/snippets/comparison_hover.html" %}
+
+<!-- Right Block -->
+{% include 'deployment/pieces/right_sidebar.html' %}
+
+<!-- created by makeThreadHTML -->
+<!-- <div id="threadHTML" style="margin-top:30px">             </div> -->
+
+<!-- For script variables -->
+<style>
+    .answer-container-selected
+    {
+        background-color:#EBEBEB;
+    }
+
+    .answer-container-hover
+    {
+        background-color:#EBEBEB;
+    }
+</style>
+<script>
+    var c_id = '{{ content.id }}';
+    var right_sidebar_topic = '{{ content.getMainTopic.alias }}';
+    var threadJSON = '{{ thread|escapejs }}';
+</script>

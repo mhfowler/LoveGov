@@ -1,0 +1,14 @@
+{% load thumbnail %}
+
+{% for q in random_questions %}
+
+    <p class="lovegov-question">
+        {% thumbnail q.getMainImage.image "50x50" crop="center" format="PNG" as im %}
+            <img src="{{ widget_domain }}{{ im.url }}"/>
+        {% empty %}
+            <p> no pic </p>
+        {% endthumbnail %}
+        {{ q.question_text }}
+    </p>
+
+{% endfor %}

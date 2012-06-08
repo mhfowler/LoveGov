@@ -1,0 +1,119 @@
+{% extends 'usable/default.html' %}
+
+{% block javascript %}
+    <script type='text/javascript' src="/static/js/display_content.js"></script>
+    <script type='text/javascript' src="/static/js/actions.js"></script>
+    <script type='text/javascript' src="/static/js/thread.js"></script>
+    <script type='text/javascript' src="/static/js/debate.js"></script>
+{% endblock %}
+
+{% block content_block %}
+
+    <!-- hidden variables we need for javascript -->
+    <div id="display_variables">
+        <input id="c_id" type="hidden" value="{{content.id}}" />
+    </div>
+
+    {% if content.active %}
+        <!-- CONTENT -->
+        <table width="700px">
+            <!-- LEFT COLUMN -->
+            <td>
+                <!-- TITLE -->
+                <h2>
+                    {{ content.title }} [{{ content.privacy }}]
+                    <!-- STATUS -->
+                    <a class="votes">
+                        {% if status > 0 %}
+                            +{{ status }}
+                        {% endif %}
+                        {% if status == 0 %}
+                            0
+                        {% endif %}
+                        {% if status < 0 %}
+                            {{ status }}
+                        {% endif %}
+                    </a>
+                </h2>
+
+                <!-- edit form -->
+                {% if iamcreator %}
+                    {% include 'create_content/edit_content.html' %}
+                {% endif %}
+
+                <!-- TOPICS -->
+                <p>
+                    topic{{ content.topics.all|pluralize }}:
+                    {% for t in content.topics.all %}
+                        <a> {{ t }} </a>
+                    {% endfor %}
+                </p>
+            
+            <!-- calculate view -->
+           {% if content.calculated_view_id != -1 %}
+            <p>
+                <a href='/worldview/{{ content.calculated_view_id}}'> calcView </a>
+            </p>
+            {% endif %}
+
+                <!-- CONTENT SPECIFIC INFO -->
+                {% include content_template %}
+
+                <!-- CREATED BY -->
+                {% if not has_permission %}
+                    <p> created by Anonymous at {{ created }}</p>
+                {% else %}
+                    <p> created by {{ creator }} at {{ created }}</p>
+                {% endif %}
+
+            </td>
+
+            <!-- RIGHT COLUMN -->
+            <td align="right">
+                <!-- PICTURE -->
+                {% load thumbnail %}
+                {% thumbnail content.getMainImage.image "250x250" as im %}
+                    <img src="{{ im.url }}">
+                {% empty %}
+                    no pic
+                {% endthumbnail %}
+                <!-- ACTIONS-->
+                {% include 'usable/actions.html' %}
+                <!-- END COLUMN -->
+            </td>
+            <!-- END TABLE-->
+        </table>
+
+
+        <br>
+
+
+        <!-- COMMENTS -->
+        {% include 'usable/comment_thread.html' %}
+
+
+
+    {% else %}
+
+        <h2> This content has been deleted. </h2>
+
+    {% endif %}
+
+{% endblock %}
+
+
+<!-- ZE LINKED CONTENT -->
+{% block right_block %}
+
+    <h4> LINKED </h4>
+
+    {% for c in content.getLinks %}
+
+        <p>
+            <a href="{{c.to_content.get_url}}"> {{ c.to_content.title }} (+{{ c.link_strength }})</a>
+        </p>
+
+    {% endfor %}
+
+
+{% endblock %}

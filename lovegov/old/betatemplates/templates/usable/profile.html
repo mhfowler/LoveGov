@@ -1,0 +1,126 @@
+{% extends 'usable/default.html' %}
+
+{% block javascript %}
+    <script type='text/javascript' src="/static/js/profile.js"></script>
+{% endblock %}
+
+{% block content_block %}
+
+    <!-- hidden variables we need for javascript -->
+    <div id="profile_variables">
+        <input id="person_id" type="hidden" value="{{person.id}}" />
+        <input id="user_id" type="hidden" value="{{user.id}}" />
+    </div>
+
+    <table width=700>
+
+        <td>
+
+            <h3>{{ person.username }} </h3>
+
+
+            <p>
+                {% if myprofile %}
+                       This is my profile.
+                {% else %}
+                    {% if youarefollowing.confirmed %}
+                        <p>
+                            You are following. <a id=stopfollowing class=action> stop. </a>
+                        </p>
+                    {% else %}
+                        {% if youarefollowing.requested %}
+                            <p>
+                                You have requested to follow this person.
+                            </p>
+                         {% else %}
+                            <p>
+                                <a id=follow class=action> follow </a>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+
+                    <a id="invite_to_debate"> invite to debate: </a>
+                    <div class="resolution">
+                        <form class="resolutionform" name="resolutionform" action="/action/" method="post">  {% csrf_token %}
+                            <textarea id="resolution" name="test"> </textarea>
+                            <input type="submit" value="resolution" />
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                 <a id="compare" class="action"> compare </a>
+        
+
+            </p>
+
+            <div>           
+                CONNECTED:
+                {% for c in connected %}
+                        <a href="{{c.to_user.get_url}}"> {{ c.to_user.username }} </a>
+                {% empty %} 
+                    <a> forever alone. </a>
+                {% endfor %}   
+            </div>
+            <div>
+                FOLLOWING:
+                {% for f in following %}
+                    <a href="{{f.to_user.get_url}}"> {{ f.to_user.username }} </a>
+                {% empty %}
+                    <a> forever alone. </a>
+                {% endfor %}
+            </div>
+        </td>
+
+        
+        <td aligh="right">
+
+            {% include 'usable/basicinfo.html' with basicinfo=person.basicinfo %}
+
+        </td>
+
+
+    </table>
+
+    <!-- LISTS/BOXES OF SHIT ON PROFILE -->
+    <table width=700>
+
+        <!-- my wall -->
+        <td>
+            <h3> My Wall </h3>
+            {% for action in person.getActivity %}
+                <p>
+                    {{ action.getVerbose }}
+                </p>
+            {% empty %}
+                no recent activity
+            {% endfor %}
+        </td>
+        <!-- my content -->
+        <td>
+            <h3> My Content </h3>
+            {% for x in page.my_content.all %}
+                {% include 'usable/content_sum.html' with object=x.content %}
+            {% empty %}
+                no content
+            {% endfor %}
+        </td>
+        <!-- my politicians -->
+        <td>
+            <h3> My Politicians </h3>
+            {% for x in page.my_politicians.all %}
+                <a href="{{x.politician.get_url}}"> {{ x.politician.username }} </a>
+            {% empty %}
+                no politicians
+            {% endfor %}
+        </td>
+
+
+
+    </table>
+
+    <h2> SIDE BY SIDE COMPARISON </h2>
+    {% include 'usable/compare.html' %}
+
+
+{% endblock %}

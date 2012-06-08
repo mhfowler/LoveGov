@@ -1,0 +1,975 @@
+########################################################################################################################
+###### VIEWS ###########################################################################################################
+#
+#       Main Control Room
+#           each page is associated with one of these views, which handles retrieval and presentation
+#
+#
+########################################################################################################################
+################################################# TAGS #################################################################
+#
+# FINISHED:     The code is more or less in its final state and should not be edited without conversing
+#
+# USABLE:       The code handles the task that it is designed to perform. The specifics of where it will redirect
+#               the user are not sorted out and details may be added, but it's usable in it's current state.
+#
+# BROKEN:       The code does not work and should not be used without fixing.
+#
+# TEST:         The code is for testing purposes and not part of the project proper yet (should go in tests.py)
+#
+# <NAME>_HELPME: If either you or I are unable to complete a method use this tag to request help. <NAME> should be your
+#                name so we know who is requesting help.  This will be useful if we have more coders working with us in
+#                the future. So if I were to be asking you for help, I'd write "CLAY_HELPME"
+#
+# <NAME>_MINE:   If you don't want somebody else to touch your code, use this tag and put your name in <NAME>
+#
+########################################################################################################################
+################################################## IMPORT ##############################################################
+
+
+### INTERNAL ###
+from modernpolitics.forms import *
+from modernpolitics import backend
+from models import *
+
+### DJANGO LIBRARIES ###
+from django.http import *
+from django.forms import *
+from django.forms.models import model_to_dict
+
+from django.template import loader
+from django.template import Context
+from django.template import RequestContext
+from django.template.loader import get_template
+
+from django import shortcuts
+from django.shortcuts import render_to_response
+
+from django.core.urlresolvers import reverse
+from django.core.files.base import ContentFile
+
+from django.contrib import messages
+from django.contrib import auth
+
+from django.utils import simplejson
+from django.utils.datastructures import MultiValueDictKeyError
+
+from django.core.exceptions import ObjectDoesNotExist
+
+### EXTERNAL LIBRARIES ###
+from PIL import Image
+
+
+########################################################################################################################
+########################################################################################################################
+# Login page, from which you can also register.
+# args: request, to_page (the page they were trying to access before being redirected to login screen)
+# tags: USABLE
+########################################################################################################################
+def universal_login(request, to_page='home/'):
+    """Login page., from which you can also register."""
+    # checks if user requested to POST information
+    if request.method == 'POST':
+        # if registering
+        if request.POST['submit_type'] != 'Login':
+            return register(request)
+        # check to see if the entered username and password is valid
+        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None and user.is_active:
+            auth.login(request, user)
+            # check if user confirmed
+            user_prof = UserProfile.objects.get(id=user.id)
+            if user_prof.confirmed:
+                redirect_response = shortcuts.redirect('/' + to_page)
+                redirect_response.set_cookie('privacy', value='PUB')
+                return redirect_response
+            else:
+                auth.logout(request)
+                dict = {'user':user_prof}
+                return render_to_response_csrf('usable/need_confirmation.html',dict,request)
+        # else invalid, render login form with errors
+        else:
+            login_form = LoginForm(request.POST)
+    # else get request, render blank login form
+    else:
+        login_form = LoginForm()
+    # reload page
+    register_form = RegisterForm()
+    dict = {'login_form': login_form, 'register_form': register_form}
+    return render_to_response_csrf('usable/login.html',dict,request)
+
+
+########################################################################################################################
+# Action of registering a user.
+# post:
+# args: request
+# tags: USABLE
+########################################################################################################################
+def register(request):
+    """Action of registering a user."""
+    if request.method == 'POST':
+        register_form = RegisterForm(request.POST)
+        if register_form.is_valid():
+            dict = {}
+            # checks if entered username is already in use
+            if UserProfile.objects.filter(username=request.POST['email']):
+                # TODO: change to actual error message
+                return render_to_response_csrf('test/account_exists.html', dict, request)
+            # else save new user
+            else:
+                register_form.save(request.POST)
+                # TODO: change to something else
+                return render_to_response_csrf('usable/register_success.html', dict, request)
+        else:
+            login_form = LoginForm()
+            dict = {'login_form': login_form, 'register_form': register_form}
+            return render_to_response_csrf('usable/login.html',dict,request)
+    # else get request, render blank register form
+    else:
+        return shortcuts.redirect('/home/')
+
+
+########################################################################################################################
+# Page from which you can confirm your account.
+# args: request
+# tags: USABLE
+########################################################################################################################
+def confirm(request, link, dict={}):
+    """Page from which you can confirm your account."""
+    if request.method == 'POST':
+        # check if username and password match
+        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None and user.is_active:
+            auth.login(request, user)
+            user_prof = UserProfile.objects.get(id=user.id)
+            # check if correct confirmation number
+            if user_prof.confirmation_link == link:
+                user_prof.confirmed = True
+                user_prof.save()
+                redirect_response = shortcuts.redirect('/home')
+                redirect_response.set_cookie('privacy', value='PUB')
+                return redirect_response
+            else:
+                dict['error'] = "You are not at your own confirmation page."
+        # else invalid, render login form with errors
+        else:
+            dict['login_form'] = LoginForm(request.POST)
+    # else get request, render blank login form
+    else:
+        dict['login_form'] = LoginForm()
+    # return
+    return render_to_response_csrf('usable/confirm.html',dict,request)
+
+
+
+########################################################################################################################
+# Logout page.
+# post: empty
+# args: request
+# tags: USABLE
+########################################################################################################################
+def logout(request, dict={}):
+    """Logout page."""
+    if request.method == 'POST':
+        auth.logout(request)
+        return render_to_response_csrf('usable/logout.html',{},request=request)
+    else:
+        auth.logout(request)
+        return render_to_response_csrf('usable/logout.html',{},request=request)
+
+
+########################################################################################################################
+# User profile page.
+# post:
+# args: request
+# tags: USABLE
+########################################################################################################################
+def display_profile(request,profile_name, profile_uid,dict={}):
+    """User profile page."""
+    person = UserProfile.objects.get(id=profile_uid)
+    # check if name in url matches id in url
+    if profile_name == (person.first_name + person.last_name):
+        user = dict['user']
+        dict['person'] = person
+        # get comparison data
+        dict['user_responses'] = Response.objects.filter(responder=user)
+        dict['person_responses'] = Response.objects.filter(responder=person)
+        # get friends
+        relationships = UserUserRelationship.objects.filter(from_user=person)
+        dict['connected'] = relationships.filter(connection='C').all()
+        dict['following'] = relationships.filter(connection='F').all()
+        ######## get all people who are not friends (for testing) ###############
+        us = []                                                                 #
+        for r in relationships.all():                                           #
+            us.append(r.to_user.id)                                             #
+        us.append(person.id)                                                    #
+        them = UserProfile.objects.exclude(id__in=us).all()                     #
+        dict['others'] = them                                                   #
+        ################ end testing ############################################
+        # check if you are them
+        if request.user.username==person.username:
+            dict['myprofile'] = True
+        # check if you are friends with them
+        else:
+            youarefollowing = UserUserRelationship.objects.filter(from_user=user,to_user=person, connection='F')
+            youareconnected = UserUserRelationship.objects.filter(from_user=user,to_user=person, connection='C')
+            if youarefollowing:
+                dict['youarefollowing'] = youarefollowing[0]
+            if youareconnected:
+                dict['youareconnected'] = youareconnected[0]
+        # render
+        getForms(dict)
+        return render_to_response_csrf('usable/profile.html',dict,request)
+    # else invalid profile url
+    else:
+        message = profile_name + " does not match " + profile_uid
+        dict['message'] = message
+        return render_to_response_csrf('usable/message.html',dict,request)
+
+
+########################################################################################################################
+# Page to displays a detail of a single piece of content.
+# explanation:
+#  - switch statement based on type of content, downcasts content and chooses correct template.
+#  - then updates dictionary with information relevant to all content with helper method getContentFrame()
+#  - then renders
+# args: request
+# tags: USABLE
+########################################################################################################################
+def display_content(request, c_id, dict={}):
+    """Displays a detail of a single piece of content."""
+    content = Content.objects.get(id=c_id)
+    user = dict['user']
+    # add to viewed history
+    user.myhistory.add(content)
+    # switch statement to select template and downcast
+    object = content.downcast()
+    dict['object'] = object
+    dict['content_template'] = content.get_template()
+    # special case for groups
+    if content.type == 'G':
+        ingroup = object.members.filter(id=request.user.id)
+        dict['ingroup'] = ingroup
+        dict['groupview'] = ContentResponse.objects.filter(content=object)
+    # special case for content response (calculates aggregate in real time **bad**)
+    elif content.type == 'Z':
+        aggregate = backend.Aggregate(object.question)
+        aggregate.calculate(object.content.group.members.all())
+        dict['aggregate'] = aggregate.answers
+        dict['response'] = object
+    elif content.type == 'D':
+        dict['left_debater'] = Debaters.objects.get(side="L",content__id=c_id).user.id
+        dict['right_debater'] = Debaters.objects.get(side="R", content__id=c_id).user.id
+        dict['user'] = request.user.id
+        dict['debateID'] = c_id
+        return render_to_response_csrf('debates/debates.html', dict, request)
+    # update dictionary with info relevant to all content
+    dict = getFrame(request=request,dict=dict,object=object)
+    # special case for groups
+    if content.type == 'G':
+        return render_to_response_csrf('usable/display_group.html',dict,request)
+    # else render
+    else:
+        return render_to_response_csrf('usable/display_content.html',dict,request)
+
+
+########################################################################################################################
+# Helper method for display content, which deals with stuff universal to all content.
+# explanation:
+#  - switch statement based on type of content, downcasts content and chooses correct template.
+#  - then renders frame (which is not specific to content)
+# args: request
+# return: updated dictionary
+# tags: USABLE
+########################################################################################################################
+def getFrame(request, dict, object):
+    # get user
+    user = dict['user']
+    # update values
+    dict['content'] = object
+    if object.main_img:
+        dict['imageurl'] = object.main_img.url
+        # creator
+    try:
+        creator = UserContentRelationship.objects.get(content=object,relationship='C')
+        dict['creator'] = creator.user.first_name
+        dict['created'] = creator.when
+        dict['is_private'] = getPrivacyBoolean(creator.privacy)
+        if creator.user.id == request.user.id:
+            dict['iamcreator'] = True
+    except ObjectDoesNotExist:
+        print "error"
+    # comments
+    dict['thread'] = make_thread(request,object,0,user)
+    # voting history
+    ilike = UserContentRelationship.objects.filter(user=user, content=object, relationship='L')
+    i_vote=0
+    if (ilike):
+        i_vote=1
+    else: #check if i dislike
+        idislike = UserContentRelationship.objects.filter(user=user, content=object, relationship='D')
+        if (idislike): i_vote=-1
+    dict['i_vote'] = i_vote
+    dict['status'] = object.status
+    # linked content
+    dict['linked'] = ContentContentRelationship.objects.filter(from_content=object).order_by('-link_strength')
+    getForms(dict)
+    from modernpolitics.actions import action   # workaround for mutual import in model (has to be in method)
+    # return
+    return dict
+
+
+########################################################################################################################
+# Creates the html for a comment thread.
+# explanation:
+#  - recursive, <ul> within <ul>
+# args: request, object (which comment thread is for), depth (have many level it has recurred)
+# return: html string
+# tags: USABLE
+########################################################################################################################
+def make_thread(request, object, depth, user):
+    """Creates the html for a comment thread."""
+    comments = Comment.objects.filter(on_content=object).order_by('-status')
+    ## if not empty
+    if (comments):
+        # initial queries
+        my_likes = UserContentRelationship.objects.filter(user=user,relationship='L')
+        my_dislikes = UserContentRelationship.objects.filter(user=user,relationship='D')
+        my_comments = UserContentRelationship.objects.filter(user=user, relationship='C')
+        # open list
+        to_return = "<ul>"
+        for c in comments:
+            to_return += "<br>"
+            to_return += "<li>"
+            # check if i like
+            my_vote=0
+            ilike = my_likes.filter(content=c)
+            if (ilike):
+                my_vote=1
+            else: #check if i dislike
+                idislike = my_dislikes.filter(content=c)
+                if (idislike): my_vote=-1
+                # calculate vote total (THIS SHOULD BE DEPRECATED)
+            iown = my_comments.filter(content=c)
+            if (iown):
+                own = True
+            else:
+                own = False
+            # render comment html
+            dict = model_to_dict(c)
+            dict['status'] = c.status
+            dict['my_vote'] = my_vote
+            dict['owner'] = own
+            context = RequestContext(request,dict)
+            template = loader.get_template('usable/comment.html')
+            comment_string = template.render(context)
+            to_return += comment_string
+            # look at children
+            to_return += make_thread(request,c,depth+1, user)
+            # close list
+        to_return += "</ul>"
+        return to_return
+    else:
+        return ''
+
+
+########################################################################################################################
+# Simple interface for creating content (to be deprecated).
+# args: request
+# tags: USABLE, DEPRECATE
+########################################################################################################################
+def create_simple(request,  dict={}):
+    """Simple interface for creating content (to be deprecated)"""
+    from modernpolitics.actions import action   # workaround for mutual import in model (has to be in method)
+    petition = PetitionForm_simple()
+    event = EventForm_simple()
+    news = NewsForm_simple()
+    group = GroupForm()
+    # IF post
+    if request.method == 'POST':
+        request.POST['action'] = 'create'
+        return action(request)
+    # IF get
+    else:
+        dict['petition'] = petition
+        dict['event'] = event
+        dict['news'] = news
+        dict['group'] = group
+        return render_to_response_csrf('usable/create_content_simple.html',dict,request)
+
+
+########################################################################################################################
+# Lists all questions on the site.
+# args: template (to render), dict (of all values needed for rendering), request
+# return: HttpResponse
+# tags: USABLE, DEPRECATE
+########################################################################################################################
+def listQuestions(request, dict={}):
+    """Lists all questions on the site."""
+    user = dict['user']
+    questions = Question.objects.all()
+    responses = Response.objects.filter(responder=user)
+    qr = []
+    for q in questions:
+        r = responses.filter(question=q)
+        if r:
+            qr.append((q,r[0]))
+        else: qr.append((q,0))
+    return render_to_response_csrf('usable/list_questions.html', {'qr':qr},request)
+
+
+########################################################################################################################
+# Does stuff that we need to happen on every single template render (such as context processing).
+# args: template (to render), dict (of all values needed for rendering), request
+# return: HttpResponse
+# tags: USABLE
+########################################################################################################################
+def render_to_response_csrf(template, dict, request):
+    """Does stuff that we need to happen on every single template render (such as context processing)."""
+    # get privacy mode
+    try:
+        dict['privacy'] = request.COOKIES['privacy']
+    except KeyError:
+        dict['privacy'] = 'PUB'
+    # get link from value
+    try:
+        dict['linkfrom'] = request.COOKIES['linkfrom']
+    except KeyError:
+        dict['linkfrom'] = 0
+        # pass request
+    dict['request'] = request
+    # render
+    return render_to_response(template, dict, context_instance=RequestContext(request))
+
+
+########################################################################################################################
+# Wrapper for all views which require login.
+# args: view (which is being wrapped)
+# return: HttpResponse
+# tags: USABLE
+########################################################################################################################
+def requires_login(view):
+    """Wrapper for all views which require login."""
+    def new_view(request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect(request.path + 'login')
+        else:
+            user = UserProfile.objects.get(id=request.user.id)
+            dict = {'user':user}
+            page = request.path
+            when = datetime.datetime.now()
+            # create PageAcess from dictionary of local variables
+            access = PageAccess(user=user, page=page, when=when)
+            access.save()
+        return view(request, dict=dict, *args, **kwargs)
+    return new_view
+
+
+########################################################################################################################
+# Page for displaying result of comparison between two users.
+# args: request
+# tags: USABLE, DEPRECATE
+########################################################################################################################
+def display_comparison(request, id, dict={}):
+    comp = UserComparison.objects.get(id=id)
+    dict['comp'] = comp
+    dict['a_profile'] = comp.userA.get_url()
+    dict['b_profile'] = comp.userB.get_url()
+    return render_to_response_csrf('usable/display_comparison.html',dict,request)
+
+
+########################################################################################################################
+# Page for editing user's basic info.
+# args: request
+# tags: USABLE, DEPRECATE
+########################################################################################################################
+def edit_info(request, dict={}):
+    user = dict['user']
+    if request.method == 'POST':
+        form = BasicInfoForm(request.POST)
+        if form.is_valid():
+            basicInfo = form.save(user.basicinfo)
+            user.basicinfo = basicInfo
+            user.save()
+            return shortcuts.redirect(user.get_url())
+        else:
+            dict['form'] = form
+            return render_to_response_csrf('usable/edit_info.html',dict,request)
+    else:
+        previous_info = model_to_dict(user.basicinfo)
+        form = BasicInfoForm(previous_info)
+        dict['form'] = form
+        return render_to_response_csrf('usable/edit_info.html',dict,request)
+
+
+########################################################################################################################
+# Returns value of privacy cookie, or in the case of no cookie returns 'public'.
+# args: request
+# return: string
+# tags: USABLE
+########################################################################################################################
+def getPrivacy2(request):
+    """"Returns value of privacy cookie, or in the case of no cookie returns 'public'."""
+    try:
+        to_return = request.COOKIES['privacy']
+    except KeyError:
+        print "no privacy cookie"                       ## TODO: change this to save error to db (we need bug tracking system)
+        to_return = 'PUB'
+    return to_return
+
+
+########################################################################################################################
+# Info about the site and our mission.
+# args: request
+# return: updated dictionary
+# tags: USABLE
+########################################################################################################################
+def aboutNovavote(request,  dict={}):
+    """Info about the site and our mission."""
+    dict['message'] = "Novavote will change the world."
+    content = Content.objects.all()
+    dict['content'] = content
+    getForms(dict)
+    return render_to_response_csrf('usable/message.html',dict,request)
+
+
+########################################################################################################################
+# My profile.
+# args: request
+# return: updated dictionary
+# tags: USABLE
+########################################################################################################################
+def myProfile(request, dict={}):
+    """My profile."""
+    user = dict['user']
+    getForms(dict)
+    return shortcuts.redirect('/profile/' + user.first_name + user.last_name + '/' + str(user.id))
+
+
+########################################################################################################################
+# Displays links to all content I have a relationship with.
+# args: request
+# return: updated dictionary
+# tags: USABLE
+########################################################################################################################
+def myInvolvement(request, dict={}):
+    """ Displays links to all content I have a relationship with."""
+    user = dict['user']
+    list = user.myinvolvement.all().order_by('-involvement')
+    print list
+    dict['relationship_list'] = list
+    getForms(dict)
+    return render_to_response_csrf('usable/myinvolvement.html',dict,request)
+
+########################################################################################################################
+# Blackbox
+# args: request
+# return: updated dictionary
+# tags: USABLE
+########################################################################################################################
+def myGovernment(request, dict={}):
+    message = "This is my government."
+    dict['message'] = message
+    getForms(dict)
+    return render_to_response_csrf('usable/message.html',dict,request)
+
+
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+########################################  BACKEND OPERATIONS ###########################################################
+
+# initialize db
+def initialize(request, dict={}):
+    backend.initializeDB()
+    return HttpResponse("initialized")
+
+# run all update methods
+def update(request, dict={}):
+    backend.update()
+    return HttpResponse("updated")
+
+
+########################################################################################################################
+############################################### DEBUGGING CODE #########################################################
+########################################################################################################################
+
+# page that prints out all cookies
+def viewCookies(request, dict={}):
+    return render_to_response('test/cookies.html', {'request':request})
+
+# prints all content content relationship
+def debugLinked(request, dict={}):
+    relationships = ContentContentRelationship.objects.all()
+    return render_to_response("test/debug.html", {'r':relationships})
+
+# prints all content content relationship
+def debugRelationships(request, dict={}):
+    relationships = UserContentRelationship.objects.all()
+    return render_to_response("test/debug.html", {'u':relationships})
+
+# prints all user user relationship
+def debugFriends(request, dict={}):
+    relationships = UserUserRelationship.objects.all()
+    return render_to_response("test/debug.html", {'f':relationships})
+
+# page that shows all users in database
+def debugUsers(request, dict={}):
+    users = UserProfile.objects.all()
+    tostring = 'users: '
+    for user in users:
+        tostring += str(user.id) + '-'
+        tostring += user.username + ' '
+    return HttpResponse(tostring)
+
+# page that shows all page accesses in db
+def viewAccess(request, dict={}):
+    user = UserProfile.objects.get(id=request.user.id)
+    access = PageAccess.objects.filter(user=user)
+    print access
+    return render_to_response_csrf('usable/access.html', locals(),request)
+
+# should display user information in content section of page
+def test_home(request, dict={}):
+    user = dict['user']
+    uploadform = UploadFileForm()
+    c = Context({'user': user, 'uploadform': uploadform})
+    if request.method == 'POST' and 'submitpic' in request.POST:
+        try:
+            file_content = ContentFile(request.FILES['image'].read())
+            Image.open(file_content)
+            user.profilepage.profile_image.save(request.FILES['image'].name, file_content)
+            dict = {'user': user, 'uploadform': uploadform}
+            return render_to_response_csrf('test/test_home.html', dict, request)
+        except IOError:
+            return HttpResponse("img is invalid")
+    else:
+        return render_to_response_csrf('test/test_home.html', c, request)
+
+def test_img(request, dict={}):
+    user = UserProfile.objects.get(id=request.user.id)
+    form = UploadImageForm()
+    if request.method == 'POST':
+        uploaded = request.FILES['image']
+        file_content = ContentFile(uploaded.read())
+        user.profilepage.profile_image.save(request.FILES['image'].name, file_content)
+        dict = {'user':user, 'form':form}
+        return render_to_response_csrf('test/test_image.html', dict, request)
+    else:
+        dict = {'user':user, 'form':form}
+        return render_to_response_csrf('test/test_image.html', dict, request)
+
+
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+################################################## TEST CODE ###########################################################
+########################################################################################################################
+########################################################################################################################
+
+def qaweb(request, dict={}):
+    t_economy = get_template('qaweb/topicQuestions/economy.html')
+    html_economy = t_economy.render(Context())
+    dict['economy'] = html_economy
+
+    t_education = get_template('qaweb/topicQuestions/education.html')
+    html_education = t_education.render(Context())
+    dict['education'] = html_education
+
+    t_environment = get_template('qaweb/topicQuestions/environment.html')
+    html_environment = t_environment.render(Context())
+    dict['environment'] = html_environment
+
+    t_energy = get_template('qaweb/topicQuestions/energy.html')
+    html_energy = t_energy.render(Context())
+    dict['energy'] = html_energy
+
+    t_foreign_policy = get_template('qaweb/topicQuestions/foreign_policy.html')
+    html_foreign_policy = t_foreign_policy.render(Context())
+    dict['foreign_policy'] = html_foreign_policy
+
+    t_reform = get_template('qaweb/topicQuestions/reform.html')
+    html_reform = t_reform.render(Context())
+    dict['reform'] = html_reform
+
+    t_health_care = get_template('qaweb/topicQuestions/health_care.html')
+    html_health_care = t_health_care.render(Context())
+    dict['health_care'] = html_health_care
+
+    t_social_issues = get_template('qaweb/topicQuestions/social_issues.html')
+    html_social_issues = t_social_issues.render(Context())
+    dict['social_issues'] = html_social_issues
+
+    t_myviews = get_template('qaweb/topicQuestions/myviews.html')
+    html_myviews = t_myviews.render(Context())
+    dict['myviews'] = html_myviews
+    getForms(dict)
+
+    return render_to_response_csrf('qaweb/qaweb.html', dict, request)
+
+def debates(request, c_id, dict={}):
+    dict['left_debater'] = Debaters.objects.get(side="L",content__id=c_id).user.id
+    dict['right_debater'] = Debaters.objects.get(side="R", content__id=c_id).user.id
+    dict['user'] = request.user.id
+    return render_to_response_csrf('debates/debates.html', dict, request)
+
+
+def feed(request, dict={}):
+    return render_to_response('feed/feed.html')
+
+def testfeed(request, dict={}):
+    user = UserProfile.objects.get(id=request.user.id)
+    feed = backend.Feed(user)
+    feed.calculateScores()
+    topic = str(feed.getTopicTypeMatches())
+    return HttpResponse(topic)
+
+def getForms(dict):
+    petition = PetitionForm()
+    event = EventForm()
+    news = NewsForm()
+    group = GroupForm()
+    debate = DebateForm()
+    dict['petition'] = petition
+    dict['event'] = event
+    dict['news'] = news
+    dict['group'] = group
+    dict['debate'] = debate
+    return dict
+
+
+
+
+def testmainpage(request, dict={}):
+    return render_to_response('test/mainpage.html')
+
+def scrollbar(request, dict={}):
+    return render_to_response('test/scrollbar.html')
+
+### USABLE ###
+# views for creating each piece of content
+def createContent(request,  dict={}):
+    from modernpolitics.actions import action   # workaround for mutual import in model (has to be in method)
+    petition = PetitionForm()
+    event = EventForm()
+    news = NewsForm()
+    group = GroupForm()
+    debate = DebateForm()
+    # IF post
+    if request.method == 'POST':
+        request.POST['action'] = 'create'
+        return action(request)
+    # IF get
+    else:
+        dict['petition'] = petition
+        dict['event'] = event
+        dict['news'] = news
+        dict['group'] = group
+        dict['debate'] = debate
+        return render_to_response_csrf('usable/create_content.html',dict,request)
+
+### USABLE ###
+# This view is the login and registration homepage.
+def frontPage(request, dict={}):
+    # checks if user requested to POST information
+    if request.method == 'POST':
+        if 'loginbutton' in request.POST:
+            return universal_login(request, 'test_home')
+        elif 'submitregistration' in request.POST:
+            return registerUser(request)
+    # else the user is coming to our page for the first time
+    else:
+        # generate blank Forms to display on the page
+        login_form = LoginForm()
+        register_form = RegisterForm()
+        # sets dictionary values
+        dict = {'login_form': login_form, 'register_form': register_form}
+        return render_to_response_csrf('usable/login.html', dict, request)
+
+### USABLE ###
+# takes in a piece of content, and returns a list of all comments and comments of comments
+# recursive... i is depth of comment (0 is base, 1 is comment on comment.. etc)
+# four tuple: comment, depth, totalvotes, myvote
+def get_thread(user, object, i):
+    comments = Comment.objects.filter(on_content=object)
+    to_return = []
+    if (comments):
+        my_likes = UserContentRelationship.objects.filter(user=user,relationship='L')
+        my_dislikes = UserContentRelationship.objects.filter(user=user,relationship='D')
+        for c in comments:
+            # check if i like
+            my_vote=0
+            ilike = my_likes.filter(content=c)
+            if (ilike):
+                my_vote=1
+            else: #check if i dislike
+                idislike = my_dislikes.filter(content=c)
+                if (idislike): my_vote=-1
+                # calculate vote total (THIS SHOULD BE DEPRECATED)
+            status = c.status
+            # create tuple
+            to_return.append((c,i,status,my_vote))
+            # look at children
+            children = get_thread(user, c, i+1)
+            to_return.extend(children)
+    return to_return
+
+### USABLE ###
+# working on making more beautiful comment thread
+def displayThread(request, content_id, dict={}):
+    content = Content.objects.get(id=content_id)
+    dict['thread']=make_thread(request,content,0,dict['user'])
+    return render_to_response_csrf('usable/thread.html',dict,request)
+
+# for testing ajax
+def test_ajax(request, dict={}):
+    # this if statement is how we differentiate between ajax request and normal request
+    if request.is_ajax():
+        print "ajax!"
+        return HttpResponse("ajax banana")
+    else:
+        return render_to_response('test/test_ajax.html')
+
+from django import shortcuts
+# logout user
+def test_logout(request):
+    auth.logout(request)
+    return shortcuts.redirect('/login_old/')
+
+from django.contrib.auth.forms import UserCreationForm
+### USABLE ###
+# Hey Clay, I couldn't find documentation on RegistrationForm...so I copied your code and put it at the bottom
+# and used UserCreationForm which I had documentation on (so that I could experiment with users, and whether or not
+# my database was working)
+def createUser(request,  dict={}):
+    # checks if user requested to POST information
+    if request.method == 'POST':
+        # creates a RegisterForm object with the data the user inputted
+        creation_form = UserCreationForm(request.POST)
+        # checks if what the user entered into the RegisterForm is valid input
+        if creation_form.is_valid():
+            # checks to see if 'username' field exists in the database (ie posted username already exists)
+            if UserProfile.objects.filter(username=request.POST['username']).exists():
+                # if 'username' exists in database
+                return render_to_response('test/account_exists.html')
+            else:
+                # if 'username' didn't exist in database, create a new user (with validated input)
+                user = form.save()
+                return render_to_response('usable/register_success.html')
+    else:
+        # generates a blank RegisterForm
+        creation_form = UserCreationForm().as_p()
+        # sends to user a page
+    return render_to_response('test/create_account.html', {'register_form': creation_form})
+
+
+from modernpolitics.models import Topic
+
+# test database
+def testSaveData(request, dict={}):
+    topic = Topic(topic_text='gayrights')
+    topic.save()
+    user = UserProfile(first_name='testDude', id=99)
+    user.save()
+    topics = Topic.objects.all()
+    stringRep = "list: "
+    for x in topics:
+        stringRep += x.topic_text + ' '
+    return HttpResponse(stringRep)
+
+# This view logs a user into the site.  After a user is logged in, use request.user to access information about the user.
+def loginUser_old(request, dict={}):
+    # checks if user requested to POST information
+    if request.method == 'POST':
+        # references to what the user entered in the login form
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        # check to see if the entered username and password is valid, assigns output to 'user'
+        user = auth.authenticate(username=username, password=password)
+        if user is not None and user.is_active:
+            # Correct password, and the user is marked "active"
+            auth.login(request, user)
+            # login success
+            return test_home(request)
+        else:
+        # return render_to_response('check.html', {'username': username , 'password': password})
+            # Show an error page.  TODO: do something cooler
+            return render_to_response('test/fail_login.html')
+    else:
+        # generate a blank LoginForm
+        login_form = LoginForm()
+        # sends to user a page
+        print "check"
+        return render_to_response('test/login_old.html', {'login_form': login_form})
+
+def test(request, dict={}):
+    messages.success( request, 'Test successful' )
+    return HttpResponseRedirect( reverse('main_page'))
+
+def main_page(request, template_name , dict={}):
+    # create dictionary of items to be passed to the template
+    c = { messages: messages.get_messages( request ) }
+
+    # render page
+    return render_to_response( template_name, c)
+
+    # TEST
+# Returns the current date and time
+def current_datetime(request, dict={}):
+        current_date = datetime.datetime.now()
+        user = TestModel(name='clay')
+        user.save()
+        # loads the html template (without variables inserted)
+        t = loader.get_template('test/current_datetime.html')
+        # renders the final html to send to client with variables defined in Context
+        html = t.render(Context(locals()))
+        return HttpResponse(html)
+
+# TEST
+def loginuser(request, dict={}):
+    user = User(username='rioisk3',first_name='clay',last_name='dunwell',email='rioisk@gmail.com',password='texers',is_staff=0,is_active=1,is_superuser=1)
+    user.save()
+    t = loader.get_template('test/newuser.html')
+    html = t.render(Context(locals()))
+    return HttpResponse(html)
+
+# TEST
+# Iterates over numbers 0 through 10 and returns them.  <br> is an HTML tag to go to the next line
+def iterate_num(request, dict={}):
+    j = "0<br>"
+    for i in range(1,10):
+        j = j + str(i) + "<br>"
+    return render_to_response('test/zero_ten.html', {'zero_ten': j})
+
+# TEST
+def homepage(request, dict={}):
+    return render_to_response('test/homepage.html')
+
+# TEST
+def form(request, dict={}):
+    t = loader.get_template('create_content/create_content.html')
+    html = t.render(Context())
+    return HttpResponse(html)
+
+# TEST
+def searchret(request, dict={}):
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+        search_result = 'You searched for: %r' % request.GET['q']
+        tests = TestModel.objects.filter(name__icontains=q)
+    else:
+        search_result = 'You submitted an empty form.'
+    t = loader.get_template('test/search_results.html')
+    html = t.render(Context(locals()))
+    return HttpResponse(html)
+
+# test inherit
+def test_inherit(request, dict={}):
+    word = "banana"
+    return render_to_response('home_inherit.html', locals())
+
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################

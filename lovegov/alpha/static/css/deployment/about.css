@@ -1,0 +1,229 @@
+.bold-text
+{
+    font-weight:bold;
+}
+
+#about-content
+{
+    width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:40px;
+    font-family: "Helvetica";
+}
+
+.about-div
+{
+    width:1000px;
+    float:left;
+    margin-bottom:35px;
+}
+
+.about-div p
+{
+    float:left;
+}
+
+
+.about-div h2
+{
+    font-family:"Gill Sans Std", Gill Sans, sans-serif;
+    font-size:40px;
+    color:#f0503b;
+    font-weight: normal;
+    text-transform:uppercase;
+    letter-spacing: .08em;
+    margin-bottom:25px;
+}
+
+.about-div h4
+{
+    font-family: "Gill Sans Std", Gill Sans, sans-serif;
+    color:#959595;
+    font-size:24px;
+    margin:0px;
+    padding: 0px;
+    margin-bottom: 5px;
+}
+
+.about-div h3
+{
+    font-family: "Gill Sans Std Light", Gill Sans, sans-serif;
+    color:#0f5569;
+    font-weight: normal;
+    font-size: 50px;
+    margin-bottom:10px;
+}
+
+.about-div ul
+{
+    list-style-type:disc;
+    line-height:150%;
+}
+
+.about-div hr
+{
+    position:relative;
+    top:25px;
+    border:1px solid #ccc;
+}
+
+#about-web
+{
+    width:1000px;
+    height:500px;
+    background-image:url("/static/images/about/aboutweb.png");
+    overflow:hidden;
+
+}
+
+.about-web-points
+{
+    position:relative;
+    z-index:50;
+    width:200px;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+}
+
+.about-web-points p
+{
+    margin-top:0;
+}
+
+#what-is
+{
+    margin-top:40px;
+}
+
+#what-is p
+{
+    width: 565px;
+    font-size: 24px;
+    color: #959595;
+    line-height: 150%;
+    float: right;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+}
+
+#what-is h3
+{
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+    color:#0f5569;
+    font-weight: normal;
+    font-size: 50px;
+    float:left;
+    width: 400px;
+    text-align: left;
+}
+
+.big-num
+{
+    /*tribute to cs17 project bignum. rest in peace. */
+    width:80px;
+    margin-top:60px;
+    height:100px;
+    float:left;
+    font-family:"Helvetica", Verdana, sans-serif;
+    font-weight:bold;
+    font-size:150px;
+    margin-right:15px;
+    margin-left:15px;
+    color:#f0503b;
+}
+
+.tagline
+{
+    color: #0f5569;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+    font-weight: normal;
+    font-size:56px;
+    text-align:center;
+    margin-bottom:50px;
+}
+
+
+#development-tagline
+{
+    text-align:center;
+    margin-top:100px;
+    margin-bottom:50px;
+
+}
+
+.about-element
+{
+    position:relative;
+    float:left;
+    width:28%;
+    padding-left:25px;
+    padding-right:25px;
+    line-height:160%;
+    font-size:10pt;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+}
+
+.about-hover-element
+{
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    cursor:pointer;
+}
+
+.about-element h1
+{
+    color: #0f5569;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+    font-weight: normal;
+}
+
+.get-started-container
+{
+    padding-top:15px;
+    width:320px;
+    float:left;
+}
+
+.get-started-container-left
+{
+    padding-right:10px;
+}
+
+.get-started-container-right
+{
+    padding-left:10px;
+}
+
+.get-started-container-center
+{
+    padding-left:10px;
+    padding-right:10px;
+}
+
+.get-started-left
+{
+    /*tribute to cs17 project bignum. rest in peace. */
+    font-family:"Helvetica", Verdana, sans-serif;
+    font-weight:bold;
+    font-size:170px;
+    color:#f0503b;
+    float:left;
+    margin-right:15px;
+    margin-top:-30px;
+}
+
+.get-started-right
+{
+    float:left;
+    text-align:center;
+}
+
+.get-started-paragraph
+{
+    font-family:"Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+    font-size:17px;
+    line-height:150%;
+    margin-top:10px;
+    margin-right:15px;
+    margin-left:15px;
+}

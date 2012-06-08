@@ -1,0 +1,3 @@
+{% for x in feed %}
+    {% include 'deployment/pieces/feed_item.html' with item=x.0 my_vote=x.1 %}
+{% endfor %}

@@ -1,0 +1,25 @@
+{% extends 'emails/frame.html' %}
+
+{% block content %}
+
+    <h2 style="color:#005468;font-weight:normal;">Hello {{ firstname }},</h2>
+
+    <p>
+        Thank you for your support during our Alpha testing stage. We've received excellent input and feedback in the past
+        few weeks and will be incorporating your suggestions in our Beta launch to Brown/RISD in the coming weeks.
+    <p>
+    <p>
+        In preparation for our Beta launch we've updated our security measures. Unfortunately as part of this update we
+        had to reset our user's password. We apologize for the inconvenience.  Below you will find your new password.
+    </p>
+
+    <p>
+        <a style="color:#005468;">password:</a>{{ password }}
+    </p>
+
+    <p>
+        As a reminder, you may login at <a href="http://www.lovegov.com/alpha/login" style="text-decoration:none;color:#959595;">
+        www.lovegov.com/alpha/login</a>.
+    </p>
+
+{% endblock %}

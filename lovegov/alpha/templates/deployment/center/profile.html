@@ -1,0 +1,67 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/profile.css" />
+<script>
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+</script>
+
+<div id="profile-main-div">
+    <!-- Left Block -->
+    <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
+    <div id="middle-left">
+        <div id="profile">
+
+            <div id="profile-img">
+                {% load thumbnail %}
+                {% thumbnail to_compare.getProfileImage.image "175x175" crop="center" as im %}
+                    <img src="{{ im.url }}"/>
+                {% empty %}
+                    <p> no pic </p>
+                {% endthumbnail %}
+            </div>
+
+            <div class="profile-username">
+                {{ to_compare.get_name }}
+            </div>
+
+            <div id="profile-summary">
+
+            </div>
+            <div id="profile-info-stats">
+                <div id="profile-info">
+                    <div class="profile-header">Info</div>
+                    political views: <br />
+                    political role:  <br />
+                    {% with network=to_compare.getNetwork %}
+                        network: <a class="do-ajax-link" href="{{ network.get_url }}">{{ network.name }}</a>
+                    {% endwith %}
+                    <br />
+                    district: <br />
+                </div>
+
+                <div id="profile-stats">
+                    <div class="profile-header">Activity</div>
+                    <ul>
+                        <li><span class="profile-stats-numbers">{{ responses }}</span> question{% if responses > 1 %}s{% endif %}</li>
+                        <li><span class="profile-stats-numbers">0</span> petitions</li>
+                        <li><span class="profile-stats-numbers">0</span> debates</li>
+                        <li><span class="profile-stats-numbers">0</span> articles</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Block -->
+    <div id="middle-right">
+        <div id="matching">
+            <div id="myviews" class="middle-right-head-font">
+                {% if user.id != to_compare.id %}
+                    You & {{ to_compare.get_name }}
+                {% else %}
+                    You
+                {% endif %}
+            </div>
+            <div id="qaweb"></div>
+        </div>
+    </div>
+
+</div>

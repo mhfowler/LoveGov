@@ -1,0 +1,60 @@
+<!-- center -->
+<img id="myviews" class="Economy" style="height:100px; width:100px; position:absolute; left:250px; top:110px;" src="/static/icons/purple.gif"/>
+<!-- top -->
+<img id="q1" class="Questions" style="height:50px; width:50px; position:absolute; left:275px; top:50px;" src="/static/icons/question.png"/>
+<!-- bottom -->
+<img id="q2" class="Questions" style="height:50px; width:50px; position:absolute; left:210px; top:10px;" src="/static/icons/question.png"/>
+<!-- right -->
+<img id="q3" class="Questions" style="height:50px; width:50px; position:absolute; left:340px; top:10px;" src="/static/icons/question.png"/>
+<!-- left -->
+<img id="q4" class="Questions" style="height:50px; width:50px; position:absolute; left:420px; top:50px;" src="/static/icons/question.png"/>
+
+<script>
+    $(document).ready(function()
+    {
+        $("#hoverQuestion").hide();
+        $('.Questions').bind('mouseenter',function()
+        {
+            $(this).attr("src", '/static/question_mouseover.png');
+            var position = $(this).position();
+            $('#hoverQuestion').css('left',position.left+150);
+            $('#hoverQuestion').css('top',position.top);
+            $('#hoverQuestion').show('slide',200);
+            $('#hoverQuestionText').html("Do you believe in abortion?<br><br>");
+            $('#hoverYourName').html("Your Answer: ");$('#hoverYourAnswer').html("Yes<br>");
+            $('#hoverTheirName').html("Clay's Answer: ");$('#hoverTheirAnswer').html("No<br><br>");
+            $('#hoverStatistics').html("No: 30% | Yes: 50% | May be: 20%");
+        });
+        $('.Questions').bind('mouseleave',function()
+        {
+            $(this).attr("src", '/static/question.png');
+            $('#hoverQuestion').hide();
+        });
+    });
+
+</script>
+
+<style>
+    #hoverQuestion
+    {
+        background-color:white;
+        position:absolute;
+        width:300px;
+        height:90px;
+        border-style:solid;
+        border-width:1px;
+        border-radius:10px;
+        z-index: 100000;
+        font: Verdana;
+        font-size:12px;
+        padding: 5px;
+    }
+    #hoverYourAnswer
+    {
+        color:green;
+    }
+    #hoverTheirAnswer
+    {
+        color:red;
+    }
+</style>

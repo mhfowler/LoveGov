@@ -1,0 +1,363 @@
+# IMPORT STATEMENTS
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.auth.models import UserManager
+########################################################################################################################
+#
+#   Models are now very much based on 'through' relationships.
+#
+#   ... also I want to look into how to store descriptions which are rendered as HTML,
+#   aka have links, formatting etc... and use this for the many models which have text descriptions.
+#
+################################################# TOPIC ###############################################################
+
+# ze topics
+class Topic(models.Model):
+    TOPIC_CHOICES = (
+        ('E','Economy'),
+        ('T','Taxes'),
+        ('R','Reform'),
+        )
+    topic_text = models.CharField(max_length=50)
+    parent_topic = models.ForeignKey("self", null=True)
+    def __unicode__(self):
+        return self.topic_text
+
+# well have methods which analyze locations in terms of containment
+class Location(models.Model):
+    state = models.CharField(max_length=25)
+    address = models.TextField(max_length=200)                      # we can change this later
+
+
+################################################# CONTENT ##############################################################
+
+# Abstract type.  All content is linkable.
+class Content(models.Model):
+    # ENUMS
+    TYPE_CHOICES = (
+        ('E','event'),
+        ('P','petition'),
+        ('N','news'),
+        ('L','legislation'),
+        ('Q','question'),
+        ('R','response'),
+        ('G','group'),
+        ('C','comment'),
+        ('I','image'),
+        ('A','album'),
+        ('Z','content-response')
+        )
+    # RELATIONS there is also a backwards relation to users, need to figure out name of this... involved_set
+    linked = models.ManyToManyRel('self', through="ContentContentRelationship", symmetrical=False)
+    # FIELDS
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    topics = models.ManyToManyField(Topic)
+    title = models.CharField(max_length=500)
+    summary = models.TextField(max_length=500, blank=True, null=True)
+    img = models.ImageField(upload_to='contentImage/', blank=True, null=True)
+    # OPTIMIZATION # can be found through backwards relationship + filter
+    status = models.IntegerField(default=0)
+
+
+################################################# USER MODELS #########################################################
+
+
+# just for convenience of visual independence from UserProfile
+class BasicInfo(models.Model):
+    # ENUMS
+    GENDER_CHOICES = ( ('M', 'Male'), ('F', 'Female'), ('N', 'None') )
+    # FIELDS
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    dob = models.DateField(null=True)
+    #location = models.OneToOneField(Location)
+    religion = models.CharField(max_length = 30, blank=True)
+    ethnicity = models.CharField(max_length = 30, blank=True)
+    party = models.CharField(max_length=30, blank=True)
+    political_role = models.CharField(max_length=50, blank=True)         # we can make this different later?
+
+# the data that describes what in particular is chosen by a user to be on their profile page
+class ProfilePage(models.Model):
+    bio = models.TextField(max_length=5000, blank=True)
+    view = models.TextField(max_length=10000, blank=True)
+    my_content = models.ManyToManyRel(Content, through='OnPage', related_name='onpage')
+    profile_image = models.ImageField(upload_to="profileImage/")
+
+# This model stores additional information about the user's personal information
+class UserProfile(User):
+    # INFO
+    basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
+    profilepage = models.ForeignKey(ProfilePage, blank=True, null=True)
+    # RELATIONSHIPS
+    users = models.ManyToManyRel('self', through='UserUserRelationship', symmetrical=False, related_name = 'relationship')
+    contents = models.ManyToManyRel(Content, through='UserContentRelationship', related_name = 'involved')
+    # to get petitions signed: petitions_set
+    # to get events attending: not sure, events_set (not sure about this though, need to confirm)
+    objects = UserManager()
+    def __unicode__(self):
+        return self.first_name
+    def get_url(self):
+        return '/profile/' + self.first_name + self.last_name + '/' + str(self.id)
+
+
+
+################################################# BASIC CONTENT ########################################################
+
+# petition
+class Petition(Content):
+    full_text = models.TextField(max_length=10000)
+    signers = models.ManyToManyRel(UserProfile, related_name = 'petitions')
+
+# event
+class Event(Content):
+    # we can get attendees by user relationship, yes_set, maybe_set, no_set
+    full_text = models.TextField(max_length=10000)
+    date_of_event = models.DateTimeField()
+    attendees = models.ManyToManyRel(UserProfile, through='AttendEvent')
+
+# user-event (symmetrical, for events)
+class AttendEvent(models.Model):
+    CONFIRMATION_CHOICE = (
+        ('Y','yes'),
+        ('N','no'),
+        ('M','maybe')
+        )
+    user = models.ForeignKey(UserProfile)
+    event = models.ForeignKey(Event)
+    confirmation = models.CharField(max_length=1, choices=CONFIRMATION_CHOICE)
+    private = models.BooleanField()
+
+# news
+class News(Content):
+    link = models.URLField()
+
+# free space to write
+class UserPost(Content):
+    full_text = models.TextField(max_length=10000)
+
+# for uploading an image
+class UserImage(Content):
+    image = models.ImageField(upload_to='userImage/')
+
+# collection of images
+class PhotoAlbum(Content):
+    photos = models.ManyToManyField(UserImage)
+
+# legislation
+class Legislation(Content):
+    full_text = models.TextField(max_length=10000)
+    legID = models.CharField(max_length=50)
+    intro_date = models.DateField()
+    last_major_action = models.CharField(max_length=1000, blank=True)
+    # relationships, kind of breaks the new mold, but so does elected official
+    # sponsor = models.OneToOneField(Elected_Official)
+    # cosponsors = models.ManyToManyField(Elected_Official, related_name='cosponsor')
+
+# comment (you can comment on comments.. like reddit)
+class Comment(Content):
+    on_content = models.ForeignKey(Content, related_name='comments')                 # comments_set
+    text = models.TextField(max_length = 1000)
+    creator_name = models.CharField(max_length=50)
+    # to get creator profile, backwards relation
+
+
+
+################################################# QA CONTENT ###########################################################
+
+# what I was thinking here:
+#   Question is a piece of content (can be liked, disliked, too_complicated, commented on etc)
+#   Users can create questions... but we decide what is official.
+#   For any one question there can be as many or as few NextQuestion relations as desired, next_question associates
+#   other questions more or less strongly based on the particular answer that the user selected. answer
+#   should also have the possible value 'SKIP', which can be taken into account for next_question and for
+#   our data about the user and the question.
+
+class Answer(models.Model):
+    answer_text = models.CharField(max_length=500)
+    # because each answer must be put on a calibrated scale
+    value = models.IntegerField()
+    class Admin:
+        pass
+
+class Question(Content):
+    QUESTION_TYPE = (
+        ('MC', 'Multiple Choice'),
+        ('CB', 'Check Box'),
+        ('SS', 'Sliding Scale')
+        )
+    question_text = models.TextField(max_length=500)
+    question_type = models.CharField(max_length=2, choices=QUESTION_TYPE)
+    relevant_info = models.TextField(max_length=1000, blank=True, null=True)
+    official = models.BooleanField()
+    answers = models.ManyToManyField(Answer)
+    # to calculate appropriate next questions, filter next_questions list by particular answer then sort by relevancy
+    next_questions = models.ManyToManyField('self', through='NextQuestion', symmetrical=False, blank=True, null=True)
+    class Admin:
+        pass
+
+class NextQuestion(models.Model):
+    from_question = models.ForeignKey(Question, related_name='fquestion')        # fquestion_set
+    to_question = models.ForeignKey(Question, related_name='tquestion')          # tquestion_set
+    answer = models.ForeignKey(Answer)
+    relevancy = models.IntegerField()
+
+class Response(Content):
+    # to get more details on creation, do backwards relationship, filter by created
+    responder = models.ForeignKey(UserProfile)
+    question = models.ForeignKey(Question)
+    answer_val = models.IntegerField()
+    explanation = models.TextField(max_length=1000, blank=True)
+
+class ContentResponse(Content):
+    # stored by aggregating or doing calculations on normal response
+    content = models.ForeignKey(Content, related_name = 'view')     # view_set
+    question = models.ForeignKey(Question, related_name = 'q')      # q_set
+    answer_val = models.IntegerField()
+    answer_avg = models.DecimalField(default=0, max_digits=3, decimal_places=2)
+    explanation = models.TextField(max_length=1000, blank=True)
+
+
+################################################# GROUP (TYPE OF CONTENT) ##############################################
+
+# group
+class Group(Content):
+    # people
+    admins = models.ManyToManyField(UserProfile, related_name='admin')    # admin_set
+    members = models.ManyToManyField(UserProfile, related_name='member')  # member_set
+    # info
+    full_text = models.TextField(max_length=1000)
+    group_content = models.ManyToManyField(Content, related_name='ongroup')
+    # group type
+    GROUP_CHOICES = (
+        ('O','open'),
+        ('P','private'),
+        ('S','secret'),
+        ('D','democratic'),         # to implement later, voting system..not strict admin..like Jolitics
+        )
+    group_type = models.CharField(max_length=1,choices=GROUP_CHOICES)
+
+
+
+################################################# SPY #################################################################
+
+# for keeping track of how site is used
+class PageAccess(models.Model):
+    page = models.CharField(max_length=50)
+    user = models.ForeignKey(UserProfile)
+    when = models.DateTimeField()
+
+################################################# RELATIONSHIPS ########################################################
+
+# user-user (assymetrical)
+class UserUserRelationship(models.Model):
+    # TYPES
+    CONNECTION_CHOICES = (
+        ('C','connected'),
+        ('F','following'),
+        )
+    # FIELDS
+    from_user = models.ForeignKey(UserProfile, related_name='fuser')        # fuser_set
+    to_user = models.ForeignKey(UserProfile, related_name='tuser')          # tuser_set
+    when = models.DateTimeField()
+    connection = models.CharField(max_length=1,choices=CONNECTION_CHOICES)
+    private = models.BooleanField()
+
+# user-content (symmetrical)
+class UserContentRelationship(models.Model):
+    # TYPES
+    RELATIONSHIP_CHOICES = (
+        ('L','likes'),
+        ('D','dislikes'),
+        ('?', 'complicated'),
+        ('C','created'),
+        ('F','following'),
+        )
+    # FIELDS
+    user = models.ForeignKey(UserProfile, related_name='frel')               # frel_set
+    content = models.ForeignKey(Content, related_name='trel')               # trel_set
+    when = models.DateTimeField()
+    relationship = models.CharField(max_length=1,choices=RELATIONSHIP_CHOICES)
+    private = models.BooleanField()
+
+# content-content (assymetrical)
+class ContentContentRelationship(models.Model):
+    from_content = models.ForeignKey(Content, related_name='fcontent')          # fcontent_set
+    to_content = models.ForeignKey(Content, related_name='tcontent')            # tcontent_set
+    link_strength = models.IntegerField()
+    when = models.DateTimeField()
+    private = models.BooleanField()
+
+# for organizing profile page
+class OnPage(models.Model):
+    user = models.ForeignKey(UserProfile)
+    content = models.ForeignKey(Content)
+    importance = models.IntegerField()   # for organizing page
+
+
+
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+################################################# GEOGRAPHICAL DATA ####################################################
+
+class US_State(models.Model):
+    name = models.CharField(max_length=50)
+
+class US_Counties(models.Model):
+    name = models.CharField(max_length=50)
+    state = models.OneToOneField(US_State)
+
+class US_ConDistr(models.Model):
+    number = models.IntegerField()
+    state = models.OneToOneField(US_State)
+
+############ POLITICAL_ROLE ############################################################################################
+
+class Elected_Official(UserProfile):
+    in_office_since = models.DateField()
+    next_election = models.DateField()
+    party = models.CharField(max_length=100)
+
+class Politician(UserProfile):
+    party = models.CharField(max_length=100)
+    office_seeking = models.CharField(max_length=100)
+
+########################################################################################################################
+################################################# Representatives ######################################################
+
+class US_SelectMen(Elected_Official):
+    represents = models.CharField(max_length=500)
+
+class US_Senator(Elected_Official):
+    represents = models.OneToOneField(US_State)
+
+class US_Representative(Elected_Official):
+    represents = models.OneToOneField(US_ConDistr)
+
+class US_President(Elected_Official):
+    pass
+
+class Committees(models.Model):
+    name = models.CharField(max_length=200)
+
+class Senate_Committees(Committees):
+    members = models.ManyToManyField(US_Senator)
+
+class Senate_SubCommittees(Senate_Committees):
+    sub_members = models.ManyToManyField(US_Senator)
+
+class House_Committees(Committees):
+    members = models.ManyToManyField(US_Representative)
+
+class House_SubCommittees(Senate_Committees):
+    sub_members = models.ManyToManyField(US_Senator)
+
+
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+
+
+
+
+
