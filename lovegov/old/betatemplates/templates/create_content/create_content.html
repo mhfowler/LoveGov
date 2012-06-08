@@ -1,0 +1,120 @@
+    <button id="create">Create Content</button>
+
+    <div id="formdialog" align="center" style="display:none">
+        <h3> Create: </h3>
+
+            <table id="formtable">
+                <tr>
+                    <td>
+                        <img class="create_icons" id="petition_form_img" src="/static/icons/petitionsicon.png"/>
+                    </td>
+                    <td>
+                        <img class="create_icons" id="news_form_img" src="/static/icons/billsicon.png"/>
+                    </td>
+                    <td>
+                        <img class="create_icons" id="group_form_img" src="/static/icons/groupsicon.png"/>
+                    </td>
+                    <td>
+                        <img class="create_icons" id="debate_form_img" src="/static/icons/debatesicon.png"/>
+                    </td>
+                </tr>
+                <tr class="choices">
+                    <td>
+                        <a id="make_petition_text"> Petition </a>
+                    </td>
+                    <td>
+                        <a id="make_news_text"> News </a>
+                    </td>
+                    <td>
+                        <a id="make_group_text"> Group </a>
+                    </td>
+                    <td>
+                        <a id="make_debate_text"> Debate </a>
+                    </td>
+                </tr>
+            </table>
+
+        <br>
+
+        <div id="form">
+
+        <form id="petition_form" action="/create_content/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW PETITION:<br><br>
+
+            {% include 'forms/contentform.html' with form=petition %}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id="event_form" action="/create_content/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW EVENT:<br><br>
+            {% include 'forms/contentform.html' with form=event %}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id="news_form" action="/create_content/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW LINK:<br><br>
+            {% include 'forms/contentform.html' with form=news %}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id="group_form" action="/create_content/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW GROUP:<br><br>
+            <div id="tester"></div>
+            {% include 'forms/contentform.html' with form=group %}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id="debate_form" action="/create_content/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW DEBATE:<br><br>
+            {% include 'forms/contentform.html' with form=debate %}
+            <input type="submit" value="Submit" />
+        </form>
+        </div>
+    </div>
+
+    <style>
+        .topicSelection > img input
+        {
+            float: left;
+        }
+        .topicSelection
+        {
+            width:400px;
+            height:245px;
+        }
+            /* css for timepicker */
+        .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+        .ui-timepicker-div dl { text-align: left; }
+        .ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+        .ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+        .ui-timepicker-div td { font-size: 90%; }
+        .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+    
+        .create_icons:hover
+        {
+            background-color:#f1eaea;
+        }
+
+        .ui-effects-transfer { border: 2px dotted gray; }
+
+        .choices
+        {
+            text-align: center;
+        }
+
+        table#formtable td
+        {
+            padding-top: 3px;
+            padding-left:15px;
+            padding-right:15px;
+        }
+
+        .create_icons
+        {
+            height:85px;
+            width:85px;
+        }
+
+    </style>
+
+

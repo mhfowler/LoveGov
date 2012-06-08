@@ -1,0 +1,12 @@
+{% for field in form %}
+    {% if not field.is_hidden %}
+        {% if field.name == "link" %}
+            {{ field.label }} {{ field.errors|striptags }}: <br> {{ field }} <br>
+            <div id="linkData"></div>
+        {% else %}
+            {{ field.label }} {{ field.errors|striptags }}: <br> {{ field }} <br><br>
+        {% endif %}
+    {% else %}
+        {{ field }}
+    {%  endif %}
+{% endfor %}

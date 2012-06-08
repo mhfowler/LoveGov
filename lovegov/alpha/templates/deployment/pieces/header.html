@@ -1,0 +1,75 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/header.css" />
+
+<div id="header">
+    <!-- Header -->
+    <div id="top">
+        <div id="top-logo">
+            <a href="/home/" id="home-link" class="do-ajax-link"> <img id="logo-img" src="/static/images/top-logo-default.png"/> </a>
+        </div>
+        <div id="link-wrapper">
+            <div class="top-links">
+                <a href="/about/" id="about-link" class="do-ajax-link">about</a>
+            </div>
+            <div class="top-links">
+                <a href="/match/" id="match-link" class="do-ajax-link">match</a>
+            </div>
+            <div class="top-links">
+                <a href="/web/" id="web-link" class="do-ajax-link">web</a>
+            </div>
+        </div>
+        <div class="top-search">
+            <input type="text" id="searchbar" value="Search Users">
+            <img id="searchglass" src="/static/images/searchglass.png"/>
+            <div id="search-dropdown" style="display:none">
+                
+            </div>
+        </div>
+
+        {% include 'deployment/snippets/user_menu.html' %}
+
+    <!--
+
+        <div id="user-dashboard">
+            <div id="user-avatar">
+                {% load thumbnail %}
+                {% thumbnail user.getProfileImage.image "40x40" crop="center" as im %}
+                    <img src="{{ im.url }}"/>
+                {% empty %}
+                    <p> no pic </p>
+                {% endthumbnail %}
+            </div>
+            <div id="user-info">
+                <div id="user-name-div">
+                    <span id="user-name-span">{{ user.get_nameShort }}</span>
+                    <a class="account-logout" href="/logout/">logout</a>
+                    <a id="account" href="/alpha/account" class="account-logout">account</a>
+                </div>
+                <div id="security-setting">
+                    security mode:
+                    <a id="public" class="
+                                {% if privacy == 'PUB' %}
+                                    security-selected
+                                {% else %}
+                                    security-unselected
+                                {% endif %}
+                            " >public</a>
+                    <a id="private" class="
+                                {% if privacy == 'PRI' %}
+                                    security-selected
+                                {% else %}
+                                    security-unselected
+                                {% endif %}
+                            " >private</a>
+                    <a id="custom" class="
+                                {% if privacy == 'FOL' %}
+                                    security-selected
+                                {% else %}
+                                    security-unselected
+                                {% endif %}
+                            " >custom</a>
+                </div>
+            </div>
+        </div>
+        -->
+    </div>
+</div>

@@ -1,0 +1,174 @@
+<h3> Resolution: {{ object.resolution }}</h3>
+
+{% if user.id == object.affirmative.id and not object.affirmative_confirmed %}
+    <p> You have been invited to participate in this debate: </p>
+    <li>
+        <a class="accept"> ACCEPT </a>
+        <a class="reject"> REJECT </a>
+    </li>
+{% endif %}
+{% if user.id == object.negative.id and not object.negative_confirmed %}
+    <p> You have been invited to participate in this debate: </p>
+    <li>
+        <a class="accept"> ACCEPT </a>
+        <a class="reject"> REJECT </a>
+    </li>
+{% endif %}
+
+{% if object.affirmative and object.negative %}
+
+    <table width=700>
+
+            <td width=350>
+
+                <h4> Affirmative: {{ object.affirmative.username }}
+                    {% if object.turn %}
+                        [TURN]
+                    {% endif %}
+                </h4>
+
+                {% for m in object.statements.all %}
+
+                    <p>
+                        {% if m.debater  %}
+
+                            {{ m.when }}: {{ m.text }}
+
+                        {% endif %}
+                    </p>
+
+                {% endfor %}
+
+
+                <p>
+                    VOTES  {{ object.votesA }}
+                </p>
+                <a id="vote_affirmative"> vote </a>
+
+                {% if user.id == object.affirmative.id and object.turn %}
+
+                    <form class="messageform" name="message" action="/comment/" method="post">
+                        <input class="message" type="text"  name="test" />
+                        <input type="submit" value="send" />
+                    </form>
+
+
+                {% endif %}
+
+            </td>
+
+            <td align="right">
+
+                <h4> Negative: {{ object.negative.username }}
+                    {% if not object.turn %}
+                        [TURN]
+                    {% endif %}
+                </h4>
+
+                {% for m in object.statements.all %}
+
+                    <p>
+                        {% if not m.debater %}
+                               no
+                            {{ m.when }}: {{ m.text }}
+
+                        {% endif %}
+                    </p>
+
+                {% endfor %}
+
+                <p>
+                    VOTES  {{ object.votesN }}
+                </p>
+                <a id="vote_negative"> vote </a>
+
+                {% if user.id == object.negative.id and not object.turn %}
+
+                        <form class="messageform" name="message" action="/comment/" method="post">
+                            <input class="message" type="text"  name="test" />
+                            <input type="submit" value="send" />
+                        </form>
+
+                {% endif %}
+
+            </td>
+
+    </table>
+
+{% else %}
+
+    <h3> Awaiting confirmation by debaters. </h3>
+
+{% endif %}
+
+<script>
+
+    var debate_id = {{ object.id }};
+    // vote affirmative
+    $("#vote_affirmative").click(function(){
+        $.ajax({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'persistent_vote','d_id': debate_id, 'vote':1},
+            success: function(data){
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('.errors_div').html(jqXHR.responseText);
+            }
+        });
+    });
+    // vote negative
+    $("#vote_negative").click(function(){
+        $.post('/action/', {'action':'persistent_vote','d_id':debate_id, 'vote':0},
+                // call back function
+                function(data) {
+                    location.reload();
+                });
+    });
+    // accept invitation
+    $(".accept").click(function(){
+        $.ajax({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'invitation_reply','d_id': debate_id, 'reply':1},
+            success: function(data){
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('.errors_div').html(jqXHR.responseText);
+            }
+        });
+    });
+    // reject invitation
+    $(".reject").click(function(){
+        $.ajax({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'invitation_reply','d_id': debate_id, 'reply':0},
+            success: function(data){
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('.errors_div').html(jqXHR.responseText);
+            }
+        });
+    });
+    // message
+    $(".messageform").submit(function(event){
+        event.preventDefault();
+        var message= $(this).children(".message").val();
+        $.ajax({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'persistent_message','d_id': debate_id, 'text':message},
+            success: function(data){
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('.errors_div').html(jqXHR.responseText);
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,128 @@
+<!-- hidden variables we need for javascript -->
+<div id="debate_variables">
+    <input id="d_id" type="hidden" value="{{object.id}}" />
+</div>
+
+<h2>
+    Resolution: {{ object.resolution }}
+</h2>
+<p>
+    {% if object.debate_finished %}
+        {% if not object.voting_finished %}
+            {{ timeremaining }} second{{ timeremaining|pluralize }} until winner is decided.
+        {% else %}
+            {% if object.winner %}
+                {% if affirmativewins %}
+                    <h3> Affirmative Wins </h3>
+                {% endif %}
+                {% if negativewins %}
+                    <h3> Negative Wins </h3>
+                {% endif %}
+            {% else %}
+                <h3> TIE </h3>
+            {% endif %}
+         {% endif %}
+    {% endif %}
+    <a id="persistent_update" class="action"> update </a>
+</p>
+<table width=700>
+
+    <!-- AFFIRMATIVE USER -->
+    <td width=150>
+        <h3> Affirmative </h3>
+        {% if object.affirmative %}
+            {% include 'usable/profile_sum.html' with person=object.affirmative record=object.affirmative.getDebateRecord %}
+            <!-- IF DEBATE NOT FINISHED, display whose turn -->
+            {% if not object.debate_finished %}
+                {% if object.turn_current %}
+                    <h4> CURRENT TURN </h4>
+                {% endif %}
+            {% endif %}
+            <!-- IF DEBATE NOT EXPIRED display voting -->
+            {% if not object.voting_finished %}
+                <p>
+                    VOTES:  {{ object.votes_affirmative }}
+                </p>
+                <a id="vote_affirmative" class="action"
+                        {% if ivotepos %}
+                            style="color:green"
+                        {% endif %}
+                        > vote </a>
+              <!-- else display winner -->
+             {% else %}
+                    {% if affirmativewins %}
+                        <h1> WINNER </h1>
+                    {% endif %}
+             {% endif %}
+        {% else %}
+            <h4> Awaiting Confirmation. </h4>
+            {% if youareinvited %}
+                <p>
+                    <a id="accept_affirmative" class="action"> accept </a>
+                </p>
+                <p>
+                    <a class="reject action"> reject </a>
+                </p>
+            {% endif %}
+        {% endif  %}
+    </td>
+
+    <!-- DEBATE -->
+    <td width=400>
+        {% for m in object.statements.all %}
+            {% include 'usable/message_sum.html' with message=m %}
+        {% endfor %}
+        {% if not object.debate_finished %}
+            {% if yourturn %}
+                <h4> Respond: </h4>
+                <form id="message_form" name="message" action="/action/" method="post">  {% csrf_token %}
+                    <textarea class="message" name="test"> </textarea>
+                    <input type="submit" value="send" />
+                </form>
+            {% endif %}
+        {% else %}
+            <h3> DEBATE FINISHED </h3>
+        {% endif %}
+    </td>
+
+    <!-- NEGATIVE USER -->
+    <td width=150>
+        <h3> Negative </h3>
+        {% if object.negative %}
+            {% include 'usable/profile_sum.html' with person=object.negative record=object.negative.getDebateRecord %}
+            <!-- IF DEBATE NOT FINISHED, display whose turn -->
+            {% if not object.debate_finished %}
+                {% if not object.turn_current %}
+                    <h4> CURRENT TURN </h4>
+                {% endif %}
+            {% endif %}
+            <!-- IF DEBATE NOT EXPIRED display voting -->
+            {% if not object.voting_finished %}
+                <p>
+                    VOTES:  {{ object.votes_negative }}
+                </p>
+                <a id="vote_negative" class="action"
+                        {% if ivoteneg %}
+                            style="color:green"
+                        {% endif %}
+                        > vote </a>
+                <!-- else display winner -->
+            {% else %}
+                {% if negativewins %}
+                    <h1> WINNER </h1>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <h4> Awaiting Confirmation. </h4>
+            {% if youareinvited %}
+                <p>
+                    <a id="accept_negative" class="action"> accept </a>
+                </p>
+                <p>
+                    <a class="reject action"> reject </a>
+                </p>
+            {% endif %}
+        {% endif  %}
+    </td>
+
+</table>

@@ -1,0 +1,7 @@
+{% for c in user.my_feed.all %}
+    <div>
+        <a href="{{ c.content.get_url }}"> {{c.content.title }}</a>
+    </div>
+    <br>
+{% endfor %}
+

@@ -1,0 +1,59 @@
+<button id='back'>Back</button>
+<h3> QUESTION </h3>
+
+<!-- QUESTION -->
+<div>
+    <a class="field">{{ object.question_text }} </a>
+    {% if iamcreator %}
+        <a class="actions edit"> edit </a>
+        <textarea  rows="5" cols="30" class="edit_field"></textarea>
+        <input class="hidden" type="text" value="question_text"/>
+        <a class="actions save"> save </a>
+    {% endif %}
+</div>
+
+<!-- ANSWERS  -->
+<form id="answerform" action="/answer/{{object.id}}/" method="post"> {% csrf_token %}
+    {% for a in object.answers.all %}
+    <p>
+        <input type=radio name="choice" value="{{ a.value }}" />
+         {{ a.answer_text }}
+    </p>
+    {% endfor %}
+    <input type="submit" value="Answer" />
+    <p>
+        <label> My Explanation [optional] </label>
+        <input id ="explanation" type="text" name="explanation" />
+    </p>
+</form>
+
+<script>
+
+    $('#back').click(function()
+    {
+        $('#base').html(window['{{ back }}']);
+    });
+
+    $("#answerform").submit(function(event){
+        event.preventDefault();
+        var choice = $('input:radio[name=choice]:checked').val();
+        var q_id = {{ object.id }};
+        var back = '{{ back }}';
+        var exp = $("#explanation").val();
+        $.ajax({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'answerWeb','q_id': q_id,'choice':choice,'explanation':exp, 'back':back},
+            success: function(data)
+            {
+                $('#base').html(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('.errors_div').html(jqXHR.responseText);
+            }
+        });
+    });
+
+</script>
+

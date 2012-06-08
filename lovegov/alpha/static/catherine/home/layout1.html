@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="css.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="kinetic-v3.8.2.min.js"></script>
+    <script type="text/javascript" src="tab-wrapper.js"></script>
+    <script type="text/javascript" src="canvasQAWeb.js"></script>
+</head>
+
+<body>
+
+	<div id="main">
+		
+		<!-- Header -->
+		<div id="top">
+			<table>
+				<tr>
+					<td class="toptd" width="140px">
+						<img src="logo.png" width="140px" height="45px">
+					</td>
+					<td class="toptd" width="300px">
+
+					</td>
+					<td class="toptd">
+						<a href="home.html">home</a>
+					</td>
+					<td class="toptd">
+						<a href="home.html">profile</a>
+					</td>
+					<td class="toptd">
+						<a href="home.html">gov</a>
+					</td>
+					<td class="toptd-search">
+                        <input type="text" id="searchbar">
+					</td>
+                    <td>
+                        <div id="searchicon"><img src="searchglass.png" width="35px" height="24px"/></div>
+                    </td>
+				</tr>
+			</table>
+		</div>
+		
+		<!-- Sub-Head -->
+		<div id="sub-head">
+			
+			<div id="public-private">
+				security mode: <a class="security-unselected">public</a> <a class="security-unselected">private</a> <a class="security-unselected">friend</a>
+			</div>
+			
+		</div>
+        
+		<!-- Middle Container -->
+        <div id="middle">
+	
+            <!-- Left Block -->
+            <div id="middle-left">
+
+                <div id="tab-wrapper">
+                    <div class="tab-border">&nbsp;</div>
+                    <div class="tab-selected">
+                        <a>everyone</a>
+                    </div>
+                    <div class="tab-unselected">
+                        <a>following</a>
+                    </div>
+                    <div class="tab-unselected">
+                        <a>top voted</a>
+                    </div>
+                    <div class="tab-border">&nbsp;</div>
+                </div>
+
+                <!-- Feed -->
+
+                <div class="feed-item">
+                    <div class="feed-avatar"><img src="beyonce.png"></div>
+                        <div class="feed-item-username">Beyonc&eacute; Knowles</div>
+						<div class="feed-item-text">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris
+<div class="seemore">
+    see more
+						</div>
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                </div>
+                <div class="feed-item">
+					<div class="feed-avatar-hover">
+						wqe
+					</div>
+                    <div class="feed-avatar"><img src="beyonce.png"></div>
+                    <div class="feed-item-username">Beyonc&eacute; Knowles</div>
+											<div class="feed-item-text-expanded">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris	ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris	ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris	ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris	ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris	ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris	ipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris							    <div class="seemore">
+							                        see less
+											    </div>
+											</div>
+
+                    <div class="metadata">
+                        metadata
+                    </div>
+				    <div class="metadata">
+                        metadata
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-avatar"><img class='help' src="beyonce.png"></div>
+                    <p>
+                    <div class="feed-item-username">Beyonc&eacute; Knowles</div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vulputate mauris id justo pretium aliquet. Fusce non mauris metus. Aliquam sed justo in diam consequat tempor  non mauris non mauris
+                    <div class="seemore">
+                        see more
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                    <div class="metadata">
+                        metadata
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Block -->
+            <div id="middle-right">
+                <div id="matching">
+                    <div id="myviews" class="middle-right-head-font">my views web</div>
+                    <div id="match-hover"></div>
+                    <div id="qaweb" class='help'></div>
+                    <div class="middle-right-padding"><a id="matchme" class="button" href="match.html">match me</a></div>
+                </div>
+
+                <div id="toolbox">
+                    <p class="middle-right-head-font">toolbox</p>
+                    <table style="position:relative;top:10px;">
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li><a href="toolbox.html" class="toolbox-button button">create</a></li>
+                                    <li><a href="toolbox.html" class="button toolbox-button">follow</a></li>
+                                    <li><a href="toolbox.html" class="button toolbox-button">share</a></li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li><a id="helpbutton" class="toolbox-button button">help</a></li>
+                                    <li><a href="toolbox.html" class="button toolbox-button">feedback</a></li>
+                                    <li><a href="toolbox.html" class="button toolbox-button">? ? ? ?</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div id="myreps">
+                    <p class="middle-right-head-font">my reps</p>
+                    <a href="reps.html" class="toolbox-button button">go to reps</a>
+                </div>
+            </div>
+
+        </div>
+
+	</div>
+
+    <div id="help-hover" class='help'>
+
+    </div>
+
+
+
+</body>
+
+</html>

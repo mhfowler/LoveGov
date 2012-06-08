@@ -1,0 +1,2561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+ 
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.png" /> 
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" type="image/png" href="favicon.ico" />
+
+
+<title>Novavote 2012</title>
+
+<!--Script Includes -->
+<script type='text/javascript' src="jquery-1.7.1.js"></script>
+<script type="text/javascript" src="development-bundle/ui/jquery-ui-1.8.16.custom.js"></script>
+<script type='text/javascript' src="flexcroll.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.core.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.widget.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.mouse.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.draggable.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.position.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.resizable.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ui.dialog.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.effects.core.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.effects.blind.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.effects.explode.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.ba-outside-events.js"></script>
+<script type='text/javascript' src="development-bundle/ui/jquery.bgiframe-2.1.2.js"></script>
+<script type="text/javascript" src="curveycorners.js"></script>
+<script type="text/javascript" src="jquery.simpletip-1.3.1.js"></script>
+<script type="text/javascript" src="development-bundle/ui/jquery-ui-1.8.16.custom.js"></script>
+<link href="flexcrollstyles.css" rel="stylesheet" type="text/css" />
+
+<!-- End Script Includes -->
+
+
+
+
+
+
+
+
+<!--Functions to site. You shouldn't need to modify all of this. -->
+
+
+
+
+<script>
+
+$(window).load(function() {    
+
+        var theWindow        = $(window),
+            $bg              = $("#bg"),
+            aspectRatio      = $bg.width() / $bg.height();
+
+        function resizeBg() {
+
+                if ( (theWindow.width() / theWindow.height()) < aspectRatio ) {
+                    $bg
+                        .removeClass()
+                        .addClass('bgheight');
+                } else {
+                    $bg
+                        .removeClass()
+                        .addClass('bgwidth');
+                }
+
+        }
+
+        theWindow.resize(function() {
+                resizeBg();
+        }).trigger("resize");
+
+});
+
+</script>
+
+
+<script>
+
+<!--highlights onmouseover and keeps it highlighted -->
+var topclicked;
+var topclickcheck=false;
+
+
+function tophighlighted(id)
+{
+document.getElementById(id).style.backgroundColor = "#A9BAB9";
+topclicked=document.getElementById(id);
+topclickcheck=true;
+
+if (topclicked!=document.getElementById("help")) {
+	document.getElementById("help").style.backgroundColor = "#F9F9F9";
+}
+if (topclicked!=document.getElementById("settings")) {
+	document.getElementById("settings").style.backgroundColor = "#F9F9F9";
+}
+if (topclicked!=document.getElementById("browseanon")) {
+	document.getElementById("browseanon").style.backgroundColor = "#F9F9F9";
+}
+
+
+
+}
+
+function tophilite(id) {
+	
+if (topclicked!=document.getElementById("help")) {
+	document.getElementById("help").style.backgroundColor = "#F9F9F9";
+}
+if (topclicked!=document.getElementById("settings")) {
+	document.getElementById("settings").style.backgroundColor = "#F9F9F9";
+}
+
+if (topclicked!=document.getElementById("browseanon")) {
+	document.getElementById("browseanon").style.backgroundColor = "#F9F9F9"; }
+
+if (topclicked==document.getElementById(id)) {
+
+	document.getElementById(id).style.backgroundColor = "#A9BAB9";
+
+}
+
+
+document.getElementById(id).style.backgroundColor = "#A9BAB9";
+
+
+}
+
+
+function topmouseoff(id) {
+	if (topclickcheck==false) {
+		document.getElementById(id).style.backgroundColor = "#BBAD93";
+		}
+		
+
+		
+if (topclicked!=document.getElementById("help")) {
+	document.getElementById("help").style.backgroundColor = "#F9F9F9";
+}
+
+if (topclicked!=document.getElementById("settings")) {
+	document.getElementById("settings").style.backgroundColor = "#F9F9F9";
+}	
+if (topclicked!=document.getElementById("browseanon")) {
+	document.getElementById("browseanon").style.backgroundColor = "#F9F9F9"; 
+	
+	}
+}
+
+
+
+<!--END highlights onmouseover stuff -->
+
+
+
+
+<!--Involvement Links -->
+
+
+var clicked;
+var clickcheck=false;
+// after clicking icon
+function highlighted(id)
+{
+	
+document.getElementById(id).style.backgroundColor = "#FCFCFE";
+document.getElementById(id).style.borderColor = "#E5E5E5";
+document.getElementById(id).style.borderRight = "none";
+
+
+clicked=document.getElementById(id);
+clickcheck=true;
+
+if (clicked!=document.getElementById("friendslink")) {
+	document.getElementById("friendslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("friendslink").style.borderColor = "#E5E5E5";
+	document.getElementById("friendslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("groupslink")) {
+	document.getElementById("groupslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("groupslink").style.borderColor = "#E5E5E5";
+	document.getElementById("groupslink").style.borderRight = "none";
+	
+}	
+if (clicked!=document.getElementById("petitionslink")) {
+	document.getElementById("petitionslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("petitionslink").style.borderColor = "#E5E5E5";
+	document.getElementById("petitionslink").style.borderRight = "none";
+
+}
+if (clicked!=document.getElementById("billslink")) {
+	document.getElementById("billslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("billslink").style.borderColor = "#E5E5E5";
+	document.getElementById("billslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("politicianslink")) {
+	document.getElementById("politicianslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("politicianslink").style.borderColor = "#E5E5E5";
+	document.getElementById("politicianslink").style.borderRight = "none";
+}
+}
+// resets colors and highlights mouseover, happens on mouseover
+function hilite(id) {
+
+if (clicked!=document.getElementById("friendslink")) {
+	document.getElementById("friendslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("friendslink").style.borderColor = "#E5E5E5";
+	document.getElementById("friendslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("groupslink")) {
+	document.getElementById("groupslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("groupslink").style.borderColor = "#E5E5E5";
+	document.getElementById("groupslink").style.borderRight = "none";
+}	
+if (clicked!=document.getElementById("petitionslink")) {
+	document.getElementById("petitionslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("petitionslink").style.borderColor = "#E5E5E5";
+	document.getElementById("petitionslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("billslink")) {
+	document.getElementById("billslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("billslink").style.borderColor = "#E5E5E5";
+	document.getElementById("billslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("politicianslink")) {
+	document.getElementById("politicianslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("politicianslink").style.borderColor = "#E5E5E5";
+	document.getElementById("politicianslink").style.borderRight = "none";
+}
+
+
+document.getElementById(id).style.backgroundColor = "#FCFCFE";
+	document.getElementById(id).style.borderColor = "#E5E5E5";
+	document.getElementById(id).style.borderRight = "none";
+	
+	if (clicked==document.getElementById(id)) {
+
+	document.getElementById(id).style.backgroundColor = "#FCFCFE";
+	document.getElementById(id).style.borderColor = "#E5E5E5";
+	document.getElementById(id).style.borderRight = "none";
+	}
+
+}
+
+
+
+
+function mouseoff(id) {
+	if (clickcheck==false) {
+		document.getElementById(id).style.backgroundColor = "#A9BAB9";
+		}
+if (clicked!=document.getElementById("friendslink")) {
+	document.getElementById("friendslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("friendslink").style.borderRight = "none";
+	
+}
+if (clicked!=document.getElementById("groupslink")) {
+	document.getElementById("groupslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("groupslink").style.borderRight = "none";
+}	
+if (clicked!=document.getElementById("petitionslink")) {
+	document.getElementById("petitionslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("petitionslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("billslink")) {
+	document.getElementById("billslink").style.backgroundColor = "#A9BAB9";
+	document.getElementById("billslink").style.borderRight = "none";
+}
+if (clicked!=document.getElementById("politicianslink")) {
+	document.getElementById("politicianslink").style.background = "#A9BAB9";
+	document.getElementById("politicianslink").style.borderRight = "none";
+}	
+	
+}
+
+
+<!--END involvement sidebar mouseovers -->
+
+
+
+
+
+
+
+<!--Controls top bar functions -->
+
+var mouse;
+function mouseStatus(n) {
+     mouse = n;
+}
+
+function hide(id) {
+elm = document.getElementById(id)
+ 
+elm.style.display == "none" ? elm.style.display = "block" : elm.style.display = "none"
+}
+ 
+document.onmousedown = function() {
+if(mouse==false) {
+setStyle("apDiv24", "left", "-4000px");
+setStyle("apDiv25", "left", "-4000px");
+setStyle("help" , "backgroundColor" , "#F9F9F9");
+setStyle("settings" , "backgroundColor" , "#F9F9F9");
+setStyle("browseanon" , "backgroundColor" , "#F9F9F9");
+setStyle("anonymous" , "height" , "0px");
+}
+
+topclicked=false;
+
+
+}
+
+
+function highlightgroup() {
+setStyle("grouped" , "background-color" , "#CCCCCC");	
+}
+function groupoff() {
+setStyle("grouped" , "background-color" , "#CCCCCC");
+}
+
+</script>
+
+
+
+<script type="text/javascript">
+
+
+
+
+
+if(!document.getElementById) {
+document.getElementById = function() {return null;};
+}
+
+function setStyle(element, property, value) {
+element = document.getElementById(element);
+if(element.style) {element.style[property] = value;}
+}
+
+function hideDivimage() {
+setStyle("imagegallery", "left", "-2000px");
+}
+
+function showDivimage() {
+setStyle("imagegallery", "left", "9px");
+}
+
+function showDivfriends() {
+	document.getElementById('friendslabel').className = 'involvementdescriptions';
+	setStyle("friendslabel", "display", "");
+	setStyle("apDiv15" , "width" , "140px");
+
+	
+	}
+	
+function hideDivfriends() {
+setStyle("friendslabel" , "display" , "none");
+setStyle("apDiv15" , "width" , "40px");
+}
+
+function showDivgroups() {
+	document.getElementById('groupslabel').className = 'involvementdescriptions';
+	setStyle("groupslabel", "display", "");
+	setStyle("apDiv15" , "width" , "140px");
+	}
+	
+function hideDivgroups() {
+setStyle("groupslabel", "display", "none");
+setStyle("apDiv15" , "width" , "40px");
+}
+
+function showDivpetitions() {
+	document.getElementById('petitionslabel').className = 'involvementdescriptions';
+	setStyle("petitionslabel", "display", "");
+	setStyle("apDiv15" , "width" , "140px");
+	}
+function photogalleryover() {
+	setStyle("photogallerylink" ,"backgroundColor"	, "#D2CAB7");
+	
+}
+function photogalleryoff() {
+	setStyle("photogallerylink" ,"backgroundColor"	, "#BBAD93");
+	
+}
+function hideDivpetitions() {
+setStyle("petitionslabel", "display", "none");
+setStyle("apDiv15" , "width" , "40px");
+}
+
+function showDivbills() {
+		document.getElementById('billslabel').className = 'involvementdescriptions';
+	setStyle("billslabel", "display", "");
+	setStyle("apDiv15" , "width" , "140px");
+	}
+	
+function hideDivbills() {
+setStyle("billslabel", "display", "none");
+setStyle("apDiv15" , "width" , "40px");
+}
+
+function showDivpoliticians() {
+		document.getElementById('politicianslabel').className = 'involvementdescriptions';
+	setStyle("politicianslabel", "display", "");
+	setStyle("apDiv15" , "width" , "140px");
+	}
+	
+function hideDivpoliticians() {
+setStyle("politicianslabel", "display", "none");
+setStyle("apDiv15" , "width" , "40px");
+}
+
+
+	
+
+function involvementhover() {
+	
+setStyle("friendslink", "background-color", "#42495E");	
+	
+}
+
+function showanonsettings() {
+	setStyle("anonymous" , "height" , "100px");
+	setStyle("apDiv24" , "left" , "-2000px");
+	setStyle("apDiv25" , "left" , "-2000px");
+}
+
+function helpbarhover() {
+	
+setStyle("help", "background-color", "#BBAD93");	
+	
+}
+function helpbaroff() {
+	
+setStyle("help", "background-color", "#F9F9F9");	
+	
+}
+function settingsbarhover() {
+	
+setStyle("settings", "background-color", "#BBAD93");	
+	
+}
+function settingsbaroff() {
+	
+setStyle("settings", "background-color", "#F9F9F9");	
+	
+}
+
+
+function petitionimagehover() {
+	
+setStyle("petitiontitle2", "backgroundColor", "#EEEBE3");	
+	
+}
+function petitionimageoff() {
+	setStyle("petitiontitle2", "backgroundColor", "#F9F9F9");	
+	
+}
+function petitionimagehover1() {
+	
+setStyle("petitiontitle3", "backgroundColor", "#EEEBE3");	
+	
+}
+function petitionimageoff1() {
+	setStyle("petitiontitle3", "backgroundColor", "#F9F9F9");	
+	
+}
+
+
+
+
+
+
+function openhelpsection() {	
+setStyle("apDiv24", "left" , "645px");
+setStyle("apDiv25" , "left" , "-2000px");
+}
+
+function opensettingssection() {	
+setStyle("apDiv25", "left" , "683px");
+setStyle("apDiv24" , "left" , "-2000px");
+}
+
+
+function showfriendspage() {
+setStyle("apDiv19", "left", "-3000px");
+setStyle("apDiv13", "left", "50px");
+setStyle("apDiv20", "left", "-3000px");
+setStyle("apDiv21", "left", "-3000px");
+setStyle("apDiv22", "left", "-3000px");
+
+return false;
+}
+
+function showgroupspage() {
+setStyle("apDiv19", "left", "-3000px");
+setStyle("apDiv13", "left", "-3000px");
+setStyle("apDiv20", "left", "-794px");
+setStyle("apDiv21", "left", "-3000px");
+setStyle("apDiv22", "left", "-3000px");
+
+return false;
+}
+
+
+function showpetitionspage() {
+setStyle("apDiv19", "left", "-372px");
+setStyle("apDiv13", "left", "-3000px");
+setStyle("apDiv20", "left", "-3000px");
+setStyle("apDiv21", "left", "-3000px");
+setStyle("apDiv22", "left", "-3000px");
+
+return false;
+}
+
+function showbillspage() {
+setStyle("apDiv19", "left", "-3000px");
+setStyle("apDiv13", "left", "-3000px");
+setStyle("apDiv20", "left", "-3000px");
+setStyle("apDiv21", "left", "-1216px");	
+setStyle("apDiv22", "left", "-3000px");
+
+return false;
+}
+	
+function showpoliticianspage() {
+setStyle("apDiv19", "left", "-3000px");
+setStyle("apDiv13", "left", "-3000px");
+setStyle("apDiv20", "left", "-3000px");
+setStyle("apDiv21", "left", "-3000px");	
+setStyle("apDiv22", "left", "-1638px");
+
+
+return false;
+}	
+	
+	
+	
+	
+	
+	function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+	
+	
+	
+	
+	
+	
+</script>
+
+<style type="text/css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body,td,th {
+	
+
+	
+	
+}
+
+html {
+    min-height:100%;
+	
+	
+	
+	
+}
+body {
+	background-color: #FCFCFE;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	height: 100%;	
+
+	
+
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#D2DDDD', endColorstr='#FCFCFE');
+
+/* IE10 */ 
+background-image: -ms-linear-gradient(top, #D2DDDD 0%, #FCFCFE 70%);
+
+/* Mozilla Firefox */ 
+background-image: -moz-linear-gradient(top, #D2DDDD 0%, #FCFCFE 70%);
+
+/* Opera */ 
+background-image: -o-linear-gradient(top, #D2DDDD 0%, #FCFCFE 70%);
+
+/* Webkit (Safari/Chrome 10) */ 
+background-image: -webkit-gradient(linear, left top, left bottom, color-stop(, #D2DDDD), color-stop(.7, #FCFCFE));
+
+/* Webkit (Chrome 11+) */ 
+background-image: -webkit-linear-gradient(top, #D2DDDD 0%, #FCFCFE 60%);
+
+/* Proposed W3C Markup */ 
+background-image: linear-gradient(top, #D2DDDD 0%, #FCFCFE 70%);
+
+
+
+
+
+
+
+}
+
+
+
+
+
+A:link {text-decoration: none; color:#426464;}
+A:visited {text-decoration: none; color:#426464;}
+A:active {text-decoration: none; color:#426464;}
+A:hover {text-decoration: none; color:#426464;}
+
+
+	
+
+.trigger{
+
+			border:1px solid #ccc;
+
+			color:green;
+
+			width:15em;
+
+			padding-right:1em;
+
+			background:url(arrow.gif) top right no-repeat #fff;
+
+			display:block;
+
+		}
+
+.activetrigger{
+
+			border:1px solid #ccc;
+
+			color:green;
+
+			width:15em;
+
+			padding-right:1em;
+
+			display:block;
+
+			background:#ccc;
+
+		}
+
+		/* style of the UL */
+
+.dropcontainer ul{
+
+			background:#fff;
+
+			border:1px solid #999;
+
+			border-bottom:none;
+
+			list-style-type:none;
+
+			padding:0;
+
+			margin:0;
+
+			width:16em;
+
+			position:absolute;
+
+		}
+
+.dropdownhidden{
+
+			top:0;
+
+			left:-999em;
+
+		}
+
+.dropdownvisible{
+
+			top:0;
+
+			left:0;
+
+		}
+
+.dropcontainer ul a{
+
+			padding:0 .5em;
+
+			display:block;
+
+			width:15em;
+
+			text-decoration:none;
+
+			color:#666;
+
+			border-bottom:1px solid #999;
+
+		}
+
+.dropcontainer ul a:hover{
+
+			background:#ccc;
+
+		}
+
+.dropcontainer{
+
+			position:relative;
+
+		}
+
+
+
+            
+
+
+td.normal{ 
+
+background-color: #F9F9F9; 
+
+
+}
+
+.styled-select select {
+   background: transparent;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   border: 1px solid #ccc;
+   height: 34px;
+   -webkit-appearance: none;
+}
+
+.styled-select {
+   width: 240px;
+   height: 34px;
+   overflow: hidden;
+   background: url(down_arrow_select.jpg) no-repeat right #ddd;
+  -webkit-appearance: none;
+}
+
+
+
+
+
+td.normalon {
+	background-color: #EEEBE3 !important;
+	border: 1px solid !important;
+	border-color: #DADADA !important;
+	color: #464D64 !important;
+}
+
+td.involvementdescriptionon {
+	display:block !important;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	padding-left:10px;
+	line-height:10px;
+	color:#FCFCFE;
+	filter: alpha(opacity=90);
+	-moz-opacity:0.90;
+	opacity: .90;
+	
+
+	
+}
+
+
+
+
+
+td.involvementdescriptionoff {
+	display:none;
+}
+.headerborder1 {
+	color: #000000;
+	background-color: #4D4D4D;
+}
+.headerborder2 {
+	color: #000000;
+	background-color: #BBAD93;
+}
+.header {
+	background-color: #BBAD93;
+	text-align: right;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 10px;
+	height: 20px;
+	padding-top: 2px;
+	padding-right: 20px;
+	font-weight: bold;
+	color: #FCFCFE;
+}
+#apDiv1 {
+	position:relative;
+	width:200px;
+	height:257px;
+	z-index:1;
+	top: 4px;
+	left: 6px;
+}
+
+
+.fadeindescription {
+		  -webkit-transition-duration: 200ms;
+  -moz-transition-duration:  200ms;
+  -o-transition-duration:  200ms;
+  transition-duration:  200ms;
+}
+
+
+.mainphoto {
+	color: #999999;
+	background-color: #CCCCCC;
+	text-align: center;
+	z-index: 1;
+	border: 1;
+	border-color: #000000;
+}
+#apDiv2 {
+	position:absolute;
+	width:269px;
+	height:70px;
+	z-index:-1;
+	left: 9px;
+	top: 242px;
+	background-color: #F4F4F4;
+}
+.clear {
+clear:both;	
+}
+.submainphoto {
+	border-color: #999999;
+}
+#apDiv3 {
+	position:relative;
+	width:670px;
+	height:25px;
+	z-index:100;
+	left: 160px;
+	top: -250px;
+}
+#apDiv4 {
+	position:relative;
+	width:30px;
+	height:30px;
+	z-index:101;
+	left: 535px;
+	top: -279px;
+	border: 2px solid;
+	border-color: #383123;
+}
+#apDiv3 table tr td {
+	color: #426464;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+}
+#apDiv5 {
+	position:relative;
+	width:31px;
+	height:30px;
+	z-index:4;
+	left: 340px;
+	top: -450px;
+	border: 1px solid;
+	border-color: #E4E4E4;
+	background-color: #FFFFFF;
+}
+.clearcontainer {
+	clear:both;
+}
+.mygovernment {
+	background-color: #000000;
+	border: 1px solid;
+	border-color: #E5E5E5;
+	height: 50px;
+	padding-top: 5px;
+	padding-left: 40px;
+	font-size: 18px;
+	font-family: Verdana, Geneva, sans-serif;
+	color: #616A8B;
+	font-weight: bold;
+}
+.questionbody {
+	font-family: Verdana, Geneva, sans-serif;
+	background-color: #F9F9F9;
+	height: 500px;
+}
+.involvementsection {
+	font-family: Verdana, Geneva, sans-serif;
+	padding-left: 30px;
+	color: #616A8B;
+}
+#apDiv6 {
+	position:absolute;
+	width:113px;
+	height:20px;
+	z-index:5;
+	left: 359px;
+	top: 54px;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	background-color: #FFFFFF;
+	border: 1px solid;
+	border-color: #E8E8E8;
+	padding-top: 4px;
+	padding-left: 8px;
+	color: #616A8B;
+}
+#apDiv7 {
+	position:absolute;
+	width:261px;
+	height:115px;
+	z-index:6;
+	top: 340px;
+}
+#apDiv8 {
+	position:absolute;
+	width:916px;
+	height:410px;
+	z-index:5;
+	left: 310px;
+	top: 46px;
+}
+#apDiv9 {
+	position:relative;
+	width:580px;
+	height:300px;
+	z-index:5;
+	left: 230px;
+	top: -300px;
+	background-color: #FCFCFE;
+	border-color: #9E8A65;
+	box-shadow:  0 0 5px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0 5px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0 5px rgba(0,0,0,.2);
+	overflow: auto;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 12px;
+	color: #426464;
+	overflow-x: none;
+}
+#apDiv10 {
+		behavior: url(/css/border-radius.htc);
+		border-radius: 10px;
+	position:relative;
+	width:190px;
+	height:129px;
+	z-index:-1;
+	left: 13px;
+	top: -440px;
+	background-color: #F9F9F9;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 11px;
+	text-align: center;
+	line-height: 12px;
+	color: #426464;
+	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3);	
+	
+			-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+
+
+	
+}
+#apDiv11 {
+	position:relative;
+	width:800px;
+	height:3px;
+	z-index:6;
+	left: 150px;
+	top: -450px;
+	border-bottom: #FCFCFE;
+}
+#apDiv12 {
+	behavior: url(/css/border-radius.htc);
+	position:relative;
+	width:320px;
+	height:241px;
+	z-index:7;
+	left: 490px;
+	top: -417px;
+	background-color: #F9F9F9;
+	line-height: 20px;
+	border: 1px solid;
+	border-color: #FCFCFE;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: bottom;
+	overflow: auto;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-radius: 10px;
+}
+#apDiv13 {
+	behavior: url(/css/border-radius.htc);
+	position:relative;
+	width:400px;
+	height:241px;
+	z-index:10;
+	left: 50px;
+	top: -950px;
+	background-color: #F9F9F9;
+	line-height: 20px;
+	border: 1px solid;
+	border-color: #FCFCFE;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: bottom;
+	overflow: auto;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-radius: 10px;
+}
+#apDiv14 {
+	width:1110px;
+	height:647px;
+	z-index:10;
+	top: 0px;
+	margin: 0 auto;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
+#apDiv15 {
+	position:relative;
+	width:140px;
+	height:200px;
+	z-index:20;
+	left: 14px;
+	top: -635px;
+	overflow: visible;
+	-webkit-transition-duration: 200ms;
+	-moz-transition-duration:  200ms;
+	-o-transition-duration:  200ms;
+	transition-duration:  200ms;
+}
+.involvementsidebar {
+	background-color: #A9BAB9;
+	text-align: left;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: bold;
+	color: #FCFCFE;
+	width: 35px;
+	height: 34px;
+	border: 1px solid;
+	border-right: none;
+	border-color: #F9F9F9;
+}
+td.involvementsidebarover {
+	background-color: #42495E;
+	text-align: center;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: bold;
+	color: #FCFCFE;
+
+}
+td.involvementsidebaroff {
+	background-color: #BBAD93;
+	text-align: center;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: bold;
+	color: #FCFCFE;
+
+}
+.petitionssub {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	text-align: center;
+	color: #426464;
+}
+.petitiondescription {
+	font-family: Verdana, Geneva, sans-serif;
+	padding-left: 10px;
+}
+.topbartoolbar {
+	font-family: Verdana, Geneva, sans-serif;
+	margin-bottom: 3px;
+}
+#apDiv16 {
+	position:relative;
+	width:200px;
+	height:40px;
+	z-index:10;
+	left: 9px;
+	top: -1038px;
+	background-color: #8FABAA;
+	filter: alpha(opacity=75);
+	-moz-opacity:0.75;
+	opacity: .75;
+	font-family: Verdana, Geneva, sans-serif;
+	text-align: center;
+	line-height: 12px;
+	font-weight: bold;
+	color: #FCFCFE;
+}
+#apDiv17 {
+	position:relative;
+	width:200px;
+	height:40px;
+	z-index:1;
+}
+#apDiv18 {
+	position:relative;
+	width:205px;
+	height:40px;
+	z-index:11;
+	top: -1080px;
+	left: 6px;
+	text-align: center;
+	line-height: 15px;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: bold;
+	color: #FCFCFE;
+	font-size: 16px;
+}
+#imagegallery {
+	position:relative;
+	width:200px;
+	height:20px;
+	z-index:12;
+	left: -1000px;
+	top: -2515px;
+	background-color: #BBAD93;
+	z-index:10;
+	filter: alpha(opacity=75);
+	-moz-opacity:0.75;
+	opacity: .75;
+	text-align: center;
+	padding-top: 6px;
+	color: #FCFCFE;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.involvementdescriptions {
+	border: 1px solid;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	border-color: #E5E5E5;
+	color: #426464;
+	text-align: center;
+	background-color: #FCFCFE;
+	border-left: none;
+	pointer-events:none;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	background:transparent;
+	/* Fallback for web browsers that doesn't support RGBa */
+	background: rgb(252, 252, 300);
+	/* RGBa with 0.6 opacity */
+	background: rgba(252, 252, 254, 0.95);
+	/* For IE 5.5 - 7*/
+
+	width: 110px;
+}
+
+	
+
+#apDiv19 {
+	behavior: url(/css/border-radius.htc);
+	left: -2000px;
+	top: -950px;
+	position:relative;
+	width:400px;
+	height:241px;
+	z-index:16;
+	background-color: #F9F9F9;
+	line-height: 20px;
+	border: 1px solid;
+	border-color: #FCFCFE;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: bottom;
+	overflow: auto;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-radius: 10px;
+}
+
+#apDiv20 {
+	behavior: url(/css/border-radius.htc);
+	left: -2000px;
+	top: -950px;
+	position:relative;
+	width:400px;
+	height:241px;
+	z-index:8;
+	background-color: #F9F9F9;
+	line-height: 20px;
+	border: 1px solid;
+	border-color: #FCFCFE;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: bottom;
+	overflow: auto;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);	
+	
+	
+	
+	-moz-border-radius-topleft: 10px;
+-moz-border-radius-topright: 10px;
+-moz-border-radius-bottomright: 10px;
+-moz-border-radius-bottomleft: 10px;
+
+-webkit-border-top-left-radius: 10px;
+-webkit-border-top-right-radius: 10px;
+-webkit-border-bottom-right-radius: 10px;
+-webkit-border-bottom-left-radius: 10px;
+border-radius: 10px;
+	
+	
+	
+}
+#apDiv21 {
+	behavior: url(/css/border-radius.htc);
+	left: -3000px;
+	top: -950px;
+	position:relative;
+	width:400px;
+	height:241px;
+	z-index:7;
+	background-color: #F9F9F9;
+	line-height: 20px;
+	border: 1px solid;
+	border-color: #FCFCFE;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: bottom;
+	overflow: auto;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;	
+	border-radius: 10px;
+	
+}
+#apDiv22 {
+	behavior: url(/css/border-radius.htc);
+	left: -3000px;
+	top: -950px;
+	position:relative;
+	width:400px;
+	height:241px;
+	z-index:6;
+	background-color: #F9F9F9;
+	line-height: 20px;
+	border: 1px solid;
+	border-color: #FCFCFE;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: bottom;
+	overflow: auto;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-radius: 10px;	
+	
+}
+#apDiv23 {
+	position:relative;
+	width:250px;
+	height:610px;
+	z-index:11;
+	top: -1560px;
+	left: 845px;
+	background-color: #BBAD93;
+	box-shadow:  0 0 3px rgba(0,0,0,.5);
+	-moz-box-shadow:  0 0 3px rgba(0,0,0,.5);
+	-webkit-box-shadow:  0 0 3px rgba(0,0,0,.5);
+	overflow: auto;
+	/* IE10 */ 
+background-image: -ms-linear-gradient(top, #C7B89C 0%, #BBAD93 90%);
+	/* Mozilla Firefox */ 
+background-image: -moz-linear-gradient(top, #C7B89C 0%, #BBAD93 90%);
+	/* Opera */ 
+background-image: -o-linear-gradient(top, #C7B89C 0%, #BBAD93 90%);
+	/* Webkit (Safari/Chrome 10) */ 
+background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #C7B89C), color-stop(.9, #BBAD93));
+	/* Webkit (Chrome 11+) */ 
+background-image: -webkit-linear-gradient(top, #C7B89C 0%, #BBAD93 90%);
+	/* Proposed W3C Markup */ 
+background-image: linear-gradient(top, #C7B89C 0%, #BBAD93 90%);
+	line-height: 15px;
+}
+#anonDropdown
+{
+    position:absolute;
+    width:150px;
+    height:50px;
+    z-index:10;
+    top: 34px;
+    left: 602px;
+    background-color: #FFFFFF;
+    border: 1px solid;
+    border-color: #A9BAB9;
+    font-family: Verdana, Geneva, sans-serif;
+    text-align: center;
+    padding-top: 5px;
+    font-size: 12px;
+    color: #42495E;
+    line-height: 22px;
+}
+#helpDropdown
+{
+	position:absolute;
+	width:150px;
+	height:105px;
+	z-index:10;
+    top: 34px;
+    left: 640px;
+	background-color: #FFFFFF;
+	border: 1px solid;
+	border-color: #A9BAB9;
+	font-family: Verdana, Geneva, sans-serif;
+	text-align: center;
+	padding-top: 5px;
+	font-size: 12px;
+	color: #42495E;
+	line-height: 22px;
+}
+#settingsDropdown
+{
+	position:absolute;
+	width:150px;
+	height:105px;
+	z-index:12;
+	top: 34px;
+	left: 678px;
+	background-color: #FFFFFF;
+	border: 1px solid;
+	border-color: #A9BAB9;
+	font-family: Verdana, Geneva, sans-serif;
+	text-align: center;
+	padding-top: 5px;
+	font-size: 12px;
+	color: #42495E;
+	line-height: 22px;
+}
+#apDiv26 {
+	position:relative;
+	width:260px;
+	height:70px;
+	z-index:11;
+	left: 840px;
+	top: -2220px;
+	background-color: #FBFBFB;
+	border: 1px solid;
+	border-color: #9D9D9D;
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	font-family: Verdana, Geneva, sans-serif;
+	color: #42495E;
+	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3);
+}
+#apDiv27 {
+	position:relative;
+	width:570px;
+	height:20px;
+	z-index:11;
+	top: -2180px;
+	left: 220px;
+	padding: 5px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #42495E;
+	padding-left: 30px;
+	background-color: #FbFbFb;
+	border: 1px double;
+	border-color: #B9BECE;
+	padding-top: 7px;
+	filter: alpha(opacity=97);
+	-moz-opacity:0.97;
+	opacity: .97;
+}
+.searchbar {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 11px;
+	width: 240px;
+	height: 23px;
+	background-color: #FFFFFF;
+	padding-left: 10px;
+	border: 1px solid;
+	border-color: #E6E6E6;
+	border-right: none;
+	color: #42495E;
+	
+	
+	
+}
+.frienddescription {	font-family: Verdana, Geneva, sans-serif;
+	font-size: 10px;
+	padding-left: 10px;
+}
+.friendheader {	font-family: Verdana, Geneva, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #426464;
+	padding-top: 10px;
+}
+.friendlistphoto {
+	font-family: Verdana, Geneva, sans-serif;
+}
+.grouphighlight {
+	background-color: #CCCCCC;
+}
+.groupout {
+	background-color: #FFFFFF;
+}
+#apDiv28 {
+	position:absolute;
+	width:200px;
+	height:115px;
+	z-index:11;
+	top: 65px;
+	left: 336px;
+}
+
+
+
+#bg { position: fixed; top: 30%; left: 0; z-index:-4;}
+.bgwidth { width: 100%; }
+.bgheight { height: 400px; }
+
+
+
+
+#friends {
+
+}
+#friendslabel {
+
+}
+.menuselection {
+	
+
+
+
+}
+.friendslink {
+	
+
+
+
+
+}
+
+#searchicon
+{
+    border-top:none;
+    border-bottom:none;
+    border-right: none;
+    background-color:#F9F9F9;
+    border: 1px solid;
+    border-color: #E6E6E6;
+}
+
+#searchicon:hover
+{
+    background-color: #A9BAB9;
+}
+
+.topMenuButton:hover
+{
+    background-color: #A9BAB9
+}
+
+#apDiv29 {
+	position:absolute;
+	width:200px;
+	height:115px;
+	z-index:11;
+}
+#apDiv24
+{
+	behavior: url(/css/border-radius.htc);
+	position:relative;
+	width:55px;
+	height:24px;
+	z-index:20;
+	left: 15px;
+	top:-1916px;
+	background-color:#FFFFFF;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	vertical-align: central;
+	box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-moz-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	-webkit-box-shadow:  0 0px 3px rgba(0,0,0,.2);
+	padding-top: 8px;
+	border-radius: 5px;
+}
+#apDiv24:hover
+{
+    background-color:#EFEFEF;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body onload="highlighted('friendslink');">
+
+
+
+<table width="100%" cellspacing="0" cellpadding="0" style="box-shadow:  0 0px 6px rgba(0,0,0,.7);
+	-moz-box-shadow:  0 0px 6px rgba(0,0,0,.7);
+	-webkit-box-shadow:  0 0px 6px rgba(0,0,0,.7);">
+    <tr>
+      <td valign="middle" class="header"></td>
+    </tr>
+    <tr class="headerborder2">
+      <td height="1" class="headerborder2"></td>
+    </tr>
+</table>
+<div id="apDiv14" style="margin:0 auto; width: 1120px; height: 640px; overflow: hidden; position:relative; top:-20px; z-index: 10;"> 
+ <link href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" type"text/css" />
+
+<script>
+    // increase the default animation speed to exaggerate the effect
+    $.fx.speeds._default = 1000;
+    $(document).ready(function()
+    {
+        $("#photos").dialog({
+            autoOpen: false,
+            resizable:false,
+            draggable:false,
+            height:500,
+            width:950,
+            modal:true,
+            position:["center",50],
+        });
+
+        $("#photos").bind( "clickoutside", function(event)
+        {
+            $(this).dialog("close");
+        });
+
+        $(".ui-dialog-titlebar").hide();
+
+        $("#photogallerylink").click(function()
+        {
+	        $( "#photos" ).dialog( "open");
+	        $('body').css('overflow','hidden');
+            return false;
+        });
+    });
+</script>
+<script>
+
+    var MENU_ANIMATION_SPEED = 150;
+    var TOP_MENUBUTTON_CLASS = '.topMenuButton';
+    var TOP_MENUDROPDOWN_CLASS = '.topMenuDropdown';
+
+    function clearMenuData()
+    {
+        $(TOP_MENUBUTTON_CLASS).css('background-color','#F9F9F9');
+        $(TOP_MENUBUTTON_CLASS).removeClass("selected");
+        $(TOP_MENUDROPDOWN_CLASS).removeClass("visible");
+        $(TOP_MENUDROPDOWN_CLASS).hide();
+    }
+
+    // This script handles the the hover and click effects of the top menu buttons (search, anon, help, tools)
+    $(document).ready(function()
+    {
+        $(TOP_MENUDROPDOWN_CLASS).hide();
+
+        $(TOP_MENUBUTTON_CLASS).bind('click', function()
+        {
+            resetPopOutClass(TOP_MENUBUTTON_CLASS);
+            var $MenuID = '#' + ($(this).attr('id')).replace("Button","Dropdown");
+            if ($(this).hasClass("selected"))
+            {
+                // set selected background color
+                $(this).css('background-color','#F9F9F9');
+                // remove selected class value
+                $(this).removeClass("selected");
+                // hide menu
+                $($MenuID).removeClass("visible");
+                $($MenuID).hide('slide',{direction: 'up'},MENU_ANIMATION_SPEED);
+                return false;
+            }
+            else
+            {
+                clearMenuData();
+                // set selected background color
+                $(this).css('background-color','#A9BAB9');
+                // add new class value
+                $(this).addClass("selected");
+                // show menu
+                $($MenuID).addClass("visible");
+                $($MenuID).show('slide',{direction: 'up'},MENU_ANIMATION_SPEED);
+                return false;
+            }
+        });
+
+        $(TOP_MENUDROPDOWN_CLASS).bind('clickoutside', function()
+        {
+            if ($(this).hasClass("visible"))
+            {
+                var $ButtonID = TOP_MENUDROPDOWN_CLASS.replace("Dropdown","Button");
+                $($ButtonID).removeClass("selected");
+                $($ButtonID).css('background-color','#F9F9F9');
+                $(this).removeClass("visible");
+                $(this).hide('slide',{direction: 'up'},MENU_ANIMATION_SPEED);
+                return false;
+            }
+        });
+
+
+        /**
+         * These two functions handle hover functionality for top menu buttons
+         */
+
+        $(TOP_MENUBUTTON_CLASS).bind('mouseenter', function()
+        {
+            $(this).css('background-color','#A9BAB9');
+            return false;
+        });
+
+        $(TOP_MENUBUTTON_CLASS).bind('mouseleave',function()
+        {
+            if (!$(this).hasClass("selected"))
+            {
+                $(this).css('background-color','#F9F9F9');
+                return false;
+            }
+        });
+    });
+</script>
+
+  <div id="apDiv1">
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td id="profilepic" height="246" style="border:3px; border-style: solid; border-color:#A9BAB9; 	box-shadow:  0 0 8px rgba(0,0,0,.8);
+	-moz-box-shadow:  0 4px 8px rgba(0,0,0,.8);
+	-webkit-box-shadow:  0 4px 8px rgba(0,0,0,.8);	" class="mainphoto"><img src="profilepic.png" width="200" height="246" /></td>
+        </tr>
+    </table>
+  </div>
+  
+<div id="apDiv3">
+  <table width="100%" height="25" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="230"  style="border-top:none; border-bottom:none; border-right: none; padding-left:70px;"><form id="form1" name="form1" method="post" action="">
+        <input type="text" name="searchbar" id="searchbar" class="searchbar" value="Search" onfocus="if
+(this.value==this.defaultValue) this.value='';" onblur="if(this.value!='Search') {} if(this.value=='') {this.value='Search'}">
+      </form></td>
+      <td width="37" id="searchicon"><img src="searchglass.png" width="35" height="25" alt="searchglass" /></td>
+      <td width="50" style=" border-top:none; border-bottom:none; border-right:none; border-left: none;">&nbsp;</td>
+      
+      
+      
+      
+      <td width="163"  style="border:1px solid; border-color:#F9F9F9; border-left:none; border-bottom:none; border-right:none; padding-left:26px; background-color: #FBFBFB;"><font style="font-size:11px; line-height:25px;">Nicholas Dunwell</font></td>
+      <td width="35" style="background-color:#FBFBFB; border: 1px solid; border-left:none; border-bottom:none; border-right:none; border-top-color: #F9F9F9;">
+
+
+
+      
+
+      <td width="150" id="help" align="center" valign="middle" class="topbartoolbar" style="background-color:#F9F9F9; border:1px solid; border-top-color:#E6E6E6; border-left-color:#B9BECE; border-right-color:#E6E6E6; border-bottom-color:#E6E6E6;"><table width="100%" height="25" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="34%" class="topMenuButton popout" id="anonButton" name="anomymous" align="center" style="border-right: 1px solid; border-right-color:#E6E6E6;"><div id="anon" style="font-size:18px;vertical-aign:top;height:25px;">+</div></td>
+    <td width="33%" class="topMenuButton popout" id="helpButton" name="help" align="center" style="border-right: 1px solid; border-right-color:#E6E6E6;"><div id="help"><img src="helptopbar.png" alt="d" name="Image1" width="20" height="20" id="Image1" /></div></td>
+    <td width="33%" class="topMenuButton popout" id="settingsButton"  name="settings" align="center"><div id="settings"><img src="accountsettings.png" alt="s" width="20" height="20" /></div></td>
+  </tr>
+</table>
+
+    </tr>
+  </table>
+</div>
+<div id="apDiv4" style="background-color:#FFFFFF; padding: 0;"><img src="https://fbcdn-sphotos-a.akamaihd.net/hphotos-ak-ash4/399595_674952792291_26003212_34937044_1222861486_n.jpg" alt="" width="30" height="30"/></div>
+<div id="apDiv5"></div>
+<div id="apDiv9" style="padding:10px;">
+<div style="width:560px;">
+<div style="float:left; width:380px; height:40px; padding-left:20px;"><font style="color:#42495E; font-size:14px;"><b>Nicholas</b> is part of 43 Groups, signed 32 Petitions, follows 21 bills, and participates in 32 Debates.</font></div>
+
+<div style="width:110px; float:right; margin-right:15px;">
+
+
+
+<div style="float:right; width:50px; height:40px; background-color:#F5F5F5;"><img src="returngame.png" /></div><div style="width:10px; height:40px; float:right;"></div><div style="float:right; width:50px; height:40px; background-color:#F5F5F5;"><img src="connectbutton.png" width="50" height="40" /></div><div class="clear"></div></div>
+
+
+
+
+<br />
+<div style="width:580;"><br />
+<div style="float:left; width:240px; font-size:14px; padding-right:10px; line-height:20px; padding-left:10px;"><br />
+<div style="width:240px; height:230px; background-color:#CCCCCC;"></div>
+</div>
+
+
+
+
+<div style="float:right; width:270px; border:2px solid; border-right:none; border-bottom:none; border-top:none; border-left-color:#F2F2F2; padding-left:15px; margin-top:20px; padding-right:8px; font-size:11px; padding-top:5px; min-height:500px;">
+<font style="color:#42495E; font-weight:bold;">September 19th, 2012</font><br /><div style="width:200px;height:2px; background-color:#F2F2F2; margin-top:5px;"></div><br />
+<img src="petitionsicon.png" width="18" height="18" alt="pet" />&nbsp;&nbsp;Signed the Petition <b>End Government Takeover of Health Care!</b><br /><br />
+  <img src="billsicon.png" width="18" height="18" alt="bill" />&nbsp;&nbsp;Followed the Bill <b>HR92381</b>.<br /><br />
+  <img src="groupsicon.png" width="18" height="18" />&nbsp;&nbsp;Joined the group <b>Tea Party Movement</b>.<br /><br />
+  <img src="friendsicon.png" width="18" height="18" />&nbsp;&nbsp;Connected with Politician <b>Ron Paul</b>.<br /><br /><br />
+  <font style="color:#42495E; font-weight:bold;">September 18th, 2012</font><br /><div style="width:200px;height:2px; background-color:#F2F2F2; margin-top:5px;"></div><br />
+  <img src="petitionsicon.png" width="18" height="18" alt="pet" />&nbsp;&nbsp;Signed the Petition <b>End Government Takeover of Health Care!</b><br /><br />
+  <img src="billsicon.png" width="18" height="18" alt="bill" />&nbsp;&nbsp;Followed the Bill <b>HR92381</b>.<br /><br />
+  <img src="groupsicon.png" width="18" height="18" />&nbsp;&nbsp;Joined the group <b>Tea Party Movement</b>.<br /><br />
+  <img src="friendsicon.png" width="18" height="18" />&nbsp;&nbsp;Connected with Politician <b>Ron Paul</b>.<br /><br />
+  <img src="petitionsicon.png" width="18" height="18" alt="pet" />&nbsp;&nbsp;Signed the Petition <b>End Government Takeover of Health Care!</b><br /><br />
+  <img src="billsicon.png" width="18" height="18" alt="bill" />&nbsp;&nbsp;Followed the Bill <b>HR92381</b>.<br /><br />
+  <img src="groupsicon.png" width="18" height="18" />&nbsp;&nbsp;Joined the group <b>Tea Party Movement</b>.<br /><br />
+  <img src="friendsicon.png" width="18" height="18" />&nbsp;&nbsp;Connected with Politician <b>Ron Paul</b>.<br /><br />
+  <img src="petitionsicon.png" width="18" height="18" alt="pet" />&nbsp;&nbsp;Signed the Petition <b>End Government Takeover of Health Care!</b><br /><br />
+  <img src="billsicon.png" width="18" height="18" alt="bill" />&nbsp;&nbsp;Followed the Bill <b>HR92381</b>.<br /><br /><br />
+  <font style="color:#42495E; font-weight:bold;">September 17th, 2012</font><br /><div style="width:200px;height:2px; background-color:#F2F2F2; margin-top:5px;"></div><br />
+  <img src="groupsicon.png" width="18" height="18" />&nbsp;&nbsp;Joined the group <b>Tea Party Movement</b>.<br /><br />
+  <img src="friendsicon.png" width="18" height="18" />&nbsp;&nbsp;Connected with Politician <b>Ron Paul</b>.<br /><br />
+  <img src="petitionsicon.png" width="18" height="18" alt="pet" />&nbsp;&nbsp;Signed the Petition <b>End Government Takeover of Health Care!</b><br /><br />
+  <img src="billsicon.png" width="18" height="18" alt="bill" />&nbsp;&nbsp;Followed the Bill <b>HR92381</b>.<br /><br />
+  <img src="groupsicon.png" width="18" height="18" />&nbsp;&nbsp;Joined the group <b>Tea Party Movement</b>.<br /><br />
+  <img src="friendsicon.png" width="18" height="18" />&nbsp;&nbsp;Connected with Politician <b>Ron Paul</b>.<br /><br />
+  
+</div>
+  
+  <div class="clear"></div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div id="apDiv10" style="border:1px solid; border-color: #9E8A65;">
+  <table width="190" height="129" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td height="60" id="photogallerylink" onmouseover="javascript:photogalleryover();" onmouseout="javascript:photogalleryoff();" style="background-color: #BBAD93; font-size: 12px; font-weight: bold; color: #F9F8F7; line-height: 10px;"><br /><br /><br /><center>Photo Gallery</center></td>
+    </tr>
+    <tr>
+      <td height="1" style="background-color:#828282;"></td>
+    </tr>
+    <tr>
+      <td height="1" style="background-color:#CCCCCC;"></td>
+    </tr>
+    <tr>
+      <td><center>
+        <p><b>Answered</b> 45 Questions
+          <br />
+          <br />
+          <b>Contributed to</b> 23 Debates<br />
+        </p>
+      </center></p></td>
+    </tr>
+  </table>
+</div>
+<div id="apDiv12">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</div>
+<div id="apDiv15">
+<div class="menuselection" id="friends"><table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td height="34" class="involvementsidebar" id="friendslink" onClick="javascript:showfriendspage(); highlighted('friendslink');" onmouseover="hilite('friendslink'); javascript:showDivfriends();"  onmouseout="javascript:hideDivfriends(); mouseoff('friendslink');"><img src="friendsicon.png" width="31" height="31" alt="friendsicon" /></td>
+     <td style="display:none;" height="30" bgcolor="#BBAD93" class="involvementdescriptions" id="friendslabel">Connections</td>
+    </tr>
+    <tr>
+      <td height="6"></td>
+      <td></td>
+    </tr> </table></div>
+    
+
+
+
+
+
+<div class="menuselection" id="groups"><table border="0" cellspacing="0" cellpadding="0" style=""><tr>
+      <td height="34" class="involvementsidebar" id="groupslink" onclick="javascript:showgroupspage(); highlighted('groupslink');" onmouseover="hilite('groupslink'); javascript:showDivgroups();" onmouseout="mouseoff('groupslink'); javascript:hideDivgroups(); "><img src="groupsicon.png" width="31" height="31" alt="groupsicon" /></td>
+      <td height="30" valign="middle" bgcolor="#BBAD93" class="involvementdescriptions" id="groupslabel" style="display:none;">Groups</td>
+    </tr>
+    <tr>
+      <td height="6"></td>
+      <td></td>
+    </tr></table>
+
+</div>
+
+
+
+
+
+
+
+
+<div class="menuselection" id="petitions"><table border="0" cellspacing="0" cellpadding="0" style=""><tr>
+      <td height="34" class="involvementsidebar" id="petitionslink" onclick="javascript:showpetitionspage(); highlighted('petitionslink');" onmouseover="hilite('petitionslink'); javascript:showDivpetitions();" onmouseout="mouseoff('petitionslink'); javascript:hideDivpetitions(); "><img src="petitionsicon.png" width="31" height="31" alt="petitionsicon" /></td>
+      <td style="display:none;" height="30" bgcolor="#BBAD93" class="involvementdescriptions" id="petitionslabel" >Petitions</td>
+    </tr>
+    <tr>
+      <td height="6"></td>
+      <td></td>
+    </tr></table></div>
+    
+    
+    
+    
+ <div class="menuselection" id="bills"><table border="0" cellspacing="0" cellpadding="0"><tr>
+      <td height="34" class="involvementsidebar" id="billslink" onclick="javascript:showbillspage(); highlighted('billslink');" onmouseover="hilite('billslink'); javascript:showDivbills();" onmouseout="mouseoff('billslink'); javascript:hideDivbills();"><img src="billsicon.png" width="31" height="31" alt="billsicon" /></td>
+      <td style="display:none;" height="30" class="involvementdescriptions" id="billslabel" >Bills</td>
+    </tr>
+    <tr>
+      <td height="6"></td>
+      <td></td>
+    </tr></table></div>
+    
+    
+    
+<div class="menuselection" id="politicians"><table border="0" cellspacing="0" cellpadding="0"> <tr>
+      <td height="34" class="involvementsidebar" id="politicianslink" onmouseover="hilite('politicianslink'); javascript:showDivpoliticians();" onmouseout="mouseoff('politicianslink'); javascript:hideDivpoliticians();" onclick="javascript:showpoliticianspage(); highlighted('politicianslink');"><img src="politiciansicon.png" width="31" height="31" alt="politiciansicon" /></td>
+      <td style="display:none;" height="30" class="involvementdescriptions" id="politicianslabel" >Debates</td>
+    </tr>
+   
+  </table></div></div>
+<div id="apDiv16">
+  <br />
+</div>
+<div id="apDiv18"><br />
+  Nicholas Dunwell</div>
+
+
+
+
+
+
+
+
+<table width="4000" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    
+    
+    <td width="422" height="241"><div id="apDiv13" class="flexcroll">
+      <div style="padding-left:15px; padding-right:20px">
+      
+      <form id="form2" >
+      
+      <input type="text" name="friendsearch" value="Search Connections" id="friendsearch" style="width:250px; height:30px; border:1px solid; border-color:#E5E5E5; color:#426464; background-color:#FBFBFB; font-weight:bold; text-align:center; float:left; font-family:verdana; font-size:13px;" onfocus="if(this.value==this.defaultValue) this.value='';" onblur="if(this.value!='Search Friends') {} if(this.value=='') {this.value='Search Friends'}" method="post" action="" class="frienddescription" onclick="value=''"/>
+        
+      </form> </div><div style="width:80px; height:32px; float:right; line-height:15px; padding-top:2px; background-color:#F5F5F5; font-size:9px; color:#426464; margin-right:32px; font-family: Verdana, Geneva, sans-serif; font-weight: bold;"><center>Find<br> Connections</center></div><div class="clear"></div>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="100" height="100 width="100" class="friendlistphoto"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td width="10"></td>
+          <td width="290" valign="top" style="padding-top:30px;" class="friendheader">Nicholas Dunwell
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div></p> <br /> <div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div>
+            </td>
+        </tr>
+        <tr>
+          <td height="8"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="100 width="100"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td></td>
+          <td class="friendheader">Clayton Dunwell
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div><br /><div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div></td>
+        </tr>
+        <tr>
+          <td height="8"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="100 width="100"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td width="10"></td>
+          <td class="friendheader">Yoshi Tryba
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div><br /><div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div></td>
+        </tr>
+        <tr>
+          <td height="8"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="100 width="100"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td></td>
+          <td class="friendheader">Maximus Fuller
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div><br /><div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div></td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+    </table>
+      <br />
+      <br />
+    </div></td>
+    
+    
+    
+    <td width="422" height="241">
+    
+    
+    
+<div id="apDiv19" class="flexcroll">
+      <table width="100%" border="0" cellspacing="0" height="100" cellpadding="0">
+        <tr>
+          <td><table width="100" height="100" cellspacing="0" cellpadding="0" style="border: 2px solid; border-color:#CCCCCC;">
+            <tr>
+              <td onmouseover="javascript:petitionimagehover();" onmouseout="javascript:petitionimageoff();"><img src="http://impulsemagazine.net/wp-content/uploads/2010/07/anti-war-protest.jpg" alt="a" width="100" height="100" onmouseover="javascript:petitionimageover();"/></td>
+            </tr>
+          </table></td>
+          <td id="petitiontitle2" valign="top" style="padding-top:13px; border:1px solid; border-color: #F9F9F9; font-family: Verdana, Geneva, sans-serif; color: #426464; line-height: 20px; padding-left: 10px;" onmouseover="this.className='normalon'" onmouseout="this.className='normal'"><b><font size="3">Title of Petition</font></b><br />
+            <div class="petitiondescription"><font size="2">Description of main petition Description of main petition Description of main petition Description of main Continue...</font></div></td>
+        </tr>
+      </table>
+      <br />
+      <table width="100%" border="0" cellspacing="0" height="50" cellpadding="0" style="padding-top:5;">
+        <tr>
+          <td style="width:30px;">&nbsp;</td>
+          <td border="1" style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50" /></td>
+          <td style="font-size:12px;">&nbsp;</td>
+          <td style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50"/></td>
+          <td style="font-size:12px;">&nbsp;</td>
+          <td style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50"/></td>
+          <td style="font-size:12px;">&nbsp;</td>
+          <td style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50"/></td>
+          <td style="font-size:12px; width:30px;">&nbsp;</td>
+        </tr>
+      </table>
+      <table height="20" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>&nbsp;</td>
+          <td id="petitionsub5" class="petitionssub"><center>title of petition</center></td>
+          <td id="petitionsub6" class="petitionssub"><center>title of petition</center></td>
+          <td id="petitionsub7" class="petitionssub"><center>title of petition</center></td>
+          <td id="petitionsub8" class="petitionssub"><center>title of petition</center></td>
+          <td style="font-size:12px;">&nbsp;</td>
+        </tr>
+      </table>
+      <br />
+      <table width="100%" height="20" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td valign="top" style="text-align:center; padding-top:5px; font-family:Verdana, Geneva, sans-serif; font-weight:lighter; font-size:11px; color: #616A8B; background-color: #EFEFEF;">View all Bills</td>
+        </tr>
+      </table>
+    </div>
+
+
+
+</td>
+
+
+
+
+    <td width="422" height="241"> <div id="apDiv20" class="flexcroll">
+  <center>
+  <div style="width:300px; height:25px; font-family: Verdana, Geneva, sans-serif; font-size: 14px; font-weight: bold; color: #426464; padding-top: 3px; padding-bottom:10px; text-align: right;">+ Create Group
+  </div>
+  <div id="grouped" style="background-color:#000000;" onmouseover="javascript:highlightgroup();" onmouseout="javascript:groupoff();"><div style="width:391px; height:15px; background-color:#D5E1E0; border:2px solid; border-color:#6C8D91; border-bottom:none;">
+  </div>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:2px solid; border-top:none; border-bottom:none; border-color:#6C8D91;">
+    <tr style="background-color:#D5E1E0;">
+      <td width="241" valign="top" id="groupanddescription" style="padding-left: 30px; padding-top: 3px;  width:200px; line-height: 25px;" ><b><font style="color:#304949;">Group Name</font></b>
+      <br />
+      <div style="padding-left: 10px; line-height: 20px; width:200px; color:#426464;"><font style="font-size:13px;"><b>Members</b> 54<br />
+        <b>Active Discussions</b> 10<br />
+        <b>Cause</b> Global Warming
+      </font></div></td>
+      <td width="10" style="width:10px;"></td>
+      <td width="104" style="width:100px; height:100px; border: 2px solid; border-color:#999999;"><img src="file:///C|/Users/Owner/Documents/novavote/end/groupimg.jpg" alt="" width="100" height="100" /></td>
+      <td width="43" style="width:45px;"></td>
+    </tr>
+  </table><table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:2px solid; border-top:none; border-color:#6C8D91;">
+  <tr>
+    <td align="center" style="font-size:14px; padding-top:10px; color:#426464; font-weight: bold; background-color:#D5E1E0; padding-bottom: 4px;">&quot;We believe Global Warming Exists!&quot;</td>
+  </tr>
+</table></div>
+
+  <br />
+  <div style="border:1px solid; border-top:none; border-left:none; border-right:none; border-bottom-color:#BBAD93; width:200px; margin:0 auto;"></div>
+
+  <br />
+<div style="width:391px; height:15px; background-color:#D5E1E0; border:2px solid; border-color:#6C8D91; border-bottom:none;">
+  </div>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:2px solid; border-top:none; border-bottom:none; border-color:#6C8D91;">
+    <tr style="background-color:#D5E1E0">
+      <td width="241" valign="top" id="groupanddescription" style="padding-left: 30px; padding-top:3px; width:200px; line-height: 25px;" ><b><font style="color:#304949;">Group Name</font></b>
+      <br />
+      <div style="padding-left: 10px; line-height: 20px; width:200px; color:#426464;"><font style="font-size:13px;"><b>Members</b> 54<br />
+        <b>Active Discussions</b> 10<br />
+        <b>Cause</b> Global Warming
+      </font></div></td>
+      <td width="10" style="width:10px;"></td>
+      <td width="104" style="width:100px; height:100px; border: 2px solid; border-color:#999999;"><img src="file:///C|/Users/Owner/Documents/novavote/end/groupimg.jpg" alt="" width="100" height="100" /></td>
+      <td width="43" style="width:45px;"></td>
+    </tr>
+  </table><table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:2px solid; border-top:none; border-color:#6C8D91;">
+  <tr>
+    <td align="center" style="font-size:14px; padding-top:10px; background-color:#D5E1E0; font-weight: bold; color:#426464; padding-bottom: 4px;">&quot;We believe Global Warming Exists!&quot;</td>
+  </tr>
+</table>
+
+  <br />
+  <div style="border:1px solid; border-top:none; border-left:none; border-right:none; border-bottom-color:#BBAD93; width:200px; margin:0 auto;"></div>
+
+  <br />
+</div>
+
+
+</td>
+
+
+    <td width="422" height="241">
+    
+    
+    
+    
+    <div id="apDiv21" class="flexcroll">
+      <table width="100%" border="0" cellspacing="0" height="100" cellpadding="0">
+        <tr>
+          <td><table width="100" height="100" cellspacing="0" cellpadding="0" style="border: 2px solid; border-color:#CCCCCC;">
+            <tr>
+              <td onmouseover="javascript:petitionimagehover1();" onmouseout="javascript:petitionimageoff1();"><img src="http://impulsemagazine.net/wp-content/uploads/2010/07/anti-war-protest.jpg" alt="a" width="100" height="100" onmouseover="javascript:petitionimagehover1();" onmouseout="javascript:petitionimageoff1();" /></td>
+            </tr>
+          </table></td>
+          <td id="petitiontitle3" valign="top" style="padding-top:13px; border:1px solid; border-color: #F9F9F9; font-family: Verdana, Geneva, sans-serif; color: #426464; line-height: 20px; padding-left: 10px;" onmouseover="this.className='normalon'" onmouseout="this.className='normal'"><b><font size="3">Bills</font></b><br />
+            <div class="petitiondescription"><font size="2">Description of main petition Description of main petition Description of main petition Description of main Continue...</font></div></td>
+        </tr>
+      </table>
+      <br />
+      <table width="100%" border="0" cellspacing="0" height="50" cellpadding="0" style="padding-top:5;">
+        <tr>
+          <td style="width:30px;">&nbsp;</td>
+          <td border="1" style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50" /></td>
+          <td style="font-size:12px;">&nbsp;</td>
+          <td style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50"/></td>
+          <td style="font-size:12px;">&nbsp;</td>
+          <td style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50"/></td>
+          <td style="font-size:12px;">&nbsp;</td>
+          <td style="border:1px solid; border-color:#666; background-color:#F4F4F4; width:50px; height:50px;"><img src="http://opinionessoftheworld.files.wordpress.com/2011/01/egyptian-protesters-image-via-facebook.jpg" alt="a" width="50" height="50"/></td>
+          <td style="font-size:12px; width:30px;">&nbsp;</td>
+        </tr>
+      </table>
+      <table height="20" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>&nbsp;</td>
+          <td id="petitionsub5" class="petitionssub"><center>title of bill</center></td>
+          <td id="petitionsub6" class="petitionssub"><center>title of bill</center></td>
+          <td id="petitionsub7" class="petitionssub"><center>title of bill</center></td>
+          <td id="petitionsub8" class="petitionssub"><center>title of bill</center></td>
+          <td style="font-size:12px;">&nbsp;</td>
+        </tr>
+      </table>
+      <br />
+      <table width="100%" height="20" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td valign="top" style="text-align:center; padding-top:5px; font-family:Verdana, Geneva, sans-serif; font-weight:lighter; font-size:11px; color: #616A8B; background-color: #EFEFEF;">View all Bills</td>
+        </tr>
+      </table>
+    </div>
+    
+    
+    
+    
+    
+    </td>
+    <td width="422">
+    
+    
+    
+    
+    
+    
+    <div id="apDiv22" class="flexcroll">
+      <div style="padding-left:27px;">
+      
+      <form id="form2">
+      
+      <input type="text" name="friendsearch" value="Search Debates" id="friendsearch" style="width:300px; height:30px; border:1px solid; border-color:#E5E5E5; color:#426464; background-color:#F9F9F9; font-weight:bold; text-align:center; font-family:verdana; font-size:13px;" onfocus="if(this.value==this.defaultValue) this.value='';" onblur="if(this.value!='Search Politicians') {} if(this.value=='') {this.value='Search Politicians'}" method="post" action="" class="frienddescription" onclick="value=''"/>
+        
+      </form></div><div style="height:0px;"></div>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="100" height="100 width="100" class="friendlistphoto"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td width="10"></td>
+          <td width="290" valign="top" style="padding-top:30px;" class="friendheader">Nicholas Dunwell
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div></p> <br /> <div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div>
+            </td>
+        </tr>
+        <tr>
+          <td height="8"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="100 width="100"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td></td>
+          <td class="friendheader">Clayton Dunwell
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div><br /><div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div></td>
+        </tr>
+        <tr>
+          <td height="8"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="100 width="100"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td width="10"></td>
+          <td class="friendheader">Yoshi Tryba
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div><br /><div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div></td>
+        </tr>
+        <tr>
+          <td height="8"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td height="100 width="100"><img src="http://www.nationnews.com/images/cached/inc/uploads/articles/Christopher_Lee_US_politician-450x350.jpg" alt="" width="100" height="100"/></td>
+          <td></td>
+          <td class="friendheader">Maximus Fuller
+            <div id="frienddescription" class="frienddescription">Description of friend Description of Friend Description of friend Description of Friend Description of friend Description of Friend </div><br /><div style="width:100%; border-bottom:none; border-left:none; border-right:none; border:1px solid; border-color:#E4E4E4;"></div></td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+    </table>
+      <br />
+      <br />
+    </div>
+    
+    
+    
+    
+    </td>
+    <td width="1890">&nbsp;</td>
+  </tr>
+</table>
+
+
+
+
+<style>
+
+     div#feedPopout
+     {
+         behavior: url(/css/border-radius.htc);
+		 height:220px;
+         width:320px;
+         z-index:120;
+         position:absolute;
+         background-color:#FCFCFE;
+         border: 1px solid;
+         border-color: #B9BECE;
+         padding:10px;
+         top:0px;
+         right:260px;
+        -webkit-border-top-left-radius: 10px;
+        -webkit-border-top-right-radius: 10px;
+        -webkit-border-bottom-right-radius: 10px;
+        -webkit-border-bottom-left-radius: 10px;
+        -moz-border-radius-topleft: 10px;
+        -moz-border-radius-topright: 10px;
+        -moz-border-radius-bottomright: 10px;
+        -moz-border-radius-bottomleft: 10px;
+		border-radius: 10px;
+     }
+
+ </style>
+ <script>
+     /**
+      * This script handles the popout feature of the feed.
+      */
+
+     // Animation speed for popout feed
+     var FEED_ANIMATION_SPEED = 200;
+
+     // ID for feed popout.  Note - this variable must match the CSS variable.
+     var FEED_POPOUT_ID = '#feedPopout';
+
+     // Class name for feed items
+     var FEED_ITEM_CLASS = '.feeditem';
+
+     $(document).ready(function()
+     {
+         $(FEED_POPOUT_ID).hide();
+     });
+
+     function resetPopOutClass(clicked)
+     {
+         switch(clicked)
+         {
+             case TOP_MENUBUTTON_CLASS:
+                 $(FEED_POPOUT_ID).removeClass('visible');
+                 $(FEED_POPOUT_ID).hide();
+                 $(FEED_ITEM_CLASS).removeClass('currentFeedItem');
+                 $(FEED_ITEM_CLASS).css('background-color', '#FCFCFE');
+                 break;
+             case FEED_ITEM_CLASS:
+                 $(TOP_MENUDROPDOWN_CLASS).removeClass('visible');
+                 $(TOP_MENUDROPDOWN_CLASS).hide();
+                 $(TOP_MENUBUTTON_CLASS).css('background-color','#F9F9F9');
+                 $(TOP_MENUBUTTON_CLASS).removeClass("selected");
+                 break;
+         }
+     }
+
+     // This function removes the popout feed
+     function hidePopoutFeed()
+     {
+         if ($(FEED_POPOUT_ID).length)
+         {
+            $(FEED_ITEM_CLASS).removeClass('currentFeedItem');
+            $(FEED_ITEM_CLASS).css('background-color', '#FCFCFE');
+            $(FEED_POPOUT_ID).hide('slide',{direction: 'right'},FEED_ANIMATION_SPEED);
+            $(FEED_POPOUT_ID).css('z-index','-100');
+            $(FEED_POPOUT_ID).removeClass('visible');
+         }
+     }
+
+     // This function sets the CSS of the popout feed and displays it
+     function setPopoutFeedCSS(position)
+     {
+         $(FEED_POPOUT_ID).hide();
+        // $(FEED_POPOUT_ID).css('left',position.left);
+         $(FEED_POPOUT_ID).css('top',position.top-60);
+         $(FEED_POPOUT_ID).css('z-index','120');
+         $(FEED_POPOUT_ID).show('slide',{direction: 'right'},FEED_ANIMATION_SPEED);
+         $(FEED_POPOUT_ID).addClass("visible");
+     }
+
+     $(document).ready(function()
+     {
+         $(FEED_POPOUT_ID).bind("clickoutside",function(target)
+         {
+             if ($(FEED_POPOUT_ID).hasClass("visible"))
+             {
+                 hidePopoutFeed();
+             }
+         });
+
+         // assigns onClick function to class='feeditem'
+         $(FEED_ITEM_CLASS).click(function()
+         {
+             resetPopOutClass(FEED_ITEM_CLASS);
+             if ($(this).hasClass("currentFeedItem"))
+             {
+                 hidePopoutFeed();
+                 return false;
+             }
+             else
+             {
+                // removes currentFeedItem from all feeditems
+                $(FEED_ITEM_CLASS).removeClass('currentFeedItem');
+                // resets background color for each feed item
+                $(FEED_ITEM_CLASS).css('background-color', '#FCFCFE');
+                // sets new highlighting background color for newly selected feed item
+                $(this).css('background-color', '#EFEFEF');
+                // adds 'currentFeedItem' class to newly clicked feed item
+                $(this).addClass("currentFeedItem");
+                // get position of newly clicked feed item
+                var position = $(this).offset();
+                setPopoutFeedCSS(position);
+                return false;
+             }
+         });
+
+
+        // assigns a mouseover/mouseout function to class='feeditem'
+         $(FEED_ITEM_CLASS).hover(
+                 // mouseover function
+                 function ()
+                 {
+                     $(this).css('background-color', '#EFEFEF');
+                 },
+                 // mouseout function
+                 function ()
+                 {
+                     if (!$(this).hasClass("currentFeedItem"))
+                     {
+                        $(this).css('background-color', '#FCFCFE');
+                     }
+                 }
+         );
+
+
+     })
+ </script>
+
+
+
+<div id="apDiv23" class="flexcroll"><br><br />
+
+
+
+
+
+
+<div style="width:20px; height:10px;"></div>
+
+<div class="feeditem" id="tester" style="width:200px; height:10px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:5px; padding-bottom:10px; border:1px solid; border-color:#E4E4E4;"><center><font style="font-size:11px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">4 Notifications</font> </center>
+    
+    
+    </div><br />
+
+
+
+
+    <div class="feeditem popout" id="tester" style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img class='feedspace' src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/>
+    <div  style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div  style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">1Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div  style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br />
+    
+    
+ <div class="feeditem" style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img class='feedspace' src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/>
+    <div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div class="feeditem" style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img class='feedspace' src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/>
+    <div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br /><div style="width:200px; height:80px; background-color:#FCFCFE; margin: 0 auto; 	box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-moz-box-shadow:  0 0 10px rgba(0,0,0,.3);
+	-webkit-box-shadow:  0 0 10px rgba(0,0,0,.3); padding:10px; border:1px solid; border-color:#E4E4E4;"><img src="billsicon.png" width="20" height="20" alt="billsicon" style="float:left;"/><div style="float:right; width:170px; font-size:14px; padding-top:1px; height:24px; padding-left:5px; font-family:Verdana, Geneva, sans-serif; font-weight:bold; color:#42495E;">Title of Bill</div>
+    <div style="width:100%; height:60px; font-size:11px; color:#426464; font-family:Verdana, Geneva, sans-serif">Description of the bill along with summary information. It extends to this length, which is pretty far.</div>
+    <div style="width:100%; height:20px; padding-top:12px; text-align:center; font-family:Verdana, Geneva, sans-serif; font-size:10px; color:#42495E; vertical-align:bottom;">Participate</div>
+    
+    
+    </div><br />
+    
+    
+  </div>
+<div id="apDiv26"><br />
+  Novavote 2012</div>
+
+
+
+<div id="anonDropdown" class="topMenuDropdown"><b>You are: Anonymous</b><br />
+     <div style="height:5px; width:100%;"></div>
+     <div style="font-size:11px;">Go Public</div>
+</div>
+<div id="helpDropdown" class="topMenuDropdown"><b>Help!</b><br />
+    <div style="height:5px; width:100%;"></div>
+    <div style="font-size:11px;">Play Tutorial Video<br />
+        Report Bug<br />
+        Submit Help Ticket</div>
+</div>
+ <div id="settingsDropdown" class="topMenuDropdown"><b>Account Settings</b><br />
+     <div style="height:5px; width:100%;"></div>
+     <div style="font-size:11px;">Privacy Settings<br />
+         Change Information<br />
+         Change Password</div>
+ </div>
+<div id="feedPopout"></div>
+
+
+<div id="imagegallery">Photo Gallery</div>
+<div id="photos"> hello world</div>
+<div id="apDiv24"><font style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#426464;"><b><center>+ Add</center></b></font></div>
+<img src="cloudstest.png" id="bg" alt="">
+</div>
+
+
+
+</body>
+</html>

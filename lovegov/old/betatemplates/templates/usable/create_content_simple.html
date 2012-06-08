@@ -1,0 +1,57 @@
+{% extends 'usable/default.html' %}
+
+{% block javascript %}
+    <script type='text/javascript' src="/static/js/create_simple.js"></script>
+{% endblock %}
+
+{% block content_block %}
+
+    <h3> Create: </h3>
+
+    <div id="choice">
+        <a id="make_petition" class="action"> Petition </a>
+        <a id="make_event" class="action"> Event </a>
+        <a id="make_news" class="action"> News </a>
+        <a id="make_group" class="action"> Group </a>
+        <a id="make_album" class="action"> Album </a>
+    </div>
+
+    <br>
+
+    <div id=form>
+
+        <form id=petition_form action="/create/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW PETITION:
+            {{ petition.as_p }}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id=event_form action="/create/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW EVENT:
+            {{ event.as_p }}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id=news_form action="/create/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW LINK:
+            {{ news.as_p }}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id=group_form action="/create/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW GROUP:
+            {{ group.as_p }}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form id=album_form action="/create/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            NEW ALBUM:
+            {{ album.as_p }}
+            <input type="submit" value="Submit" />
+        </form>
+
+    </div>
+
+
+{% endblock %}
+

@@ -1,0 +1,35 @@
+{% extends 'usable/default.html' %}
+
+{% block javascript %}
+    <script type='text/javascript' src="/static/js/display_comparison.js"></script>
+{% endblock %}
+
+{% block content_block %}
+
+    <!-- hidden variables we need for javascript -->
+    <div id="comparison_variables">
+        <input id="comparison_id" type="hidden" value="{{comp.id}}" />
+    </div>
+    
+    <h3> Comparison between <a href="{{ A.get_url }}"> {{ A.get_name }} </a> and <a href="{{ B.get_url }}"> {{ B.get_name }} </a> </h3>
+    
+    <a id="updateCompare" class="action"> update </a>
+    
+    <p>
+        worldview similarity: {% if comp.num_q != '0'%} {{ comp.result }}% {% endif %} based on {{ comp.num_q }} questions.
+    </p>
+
+    <ul>
+    {% for topic in comp.bytopic.all %}
+        {% ifnotequal topic.num_questions 0 %}
+            <li>
+                {{ topic.topic }}: {{ topic.result }}% based on {{ topic.num_q }} question{{ topic.num_q|pluralize }}.
+            </li>
+        {% endifnotequal %}
+    {% endfor %}
+    </ul>
+    
+    <p> compared at {{ comp.when }}</p>
+
+
+{% endblock %}

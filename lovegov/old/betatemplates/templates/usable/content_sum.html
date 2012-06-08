@@ -1,0 +1,20 @@
+<p>
+
+    <h3> <a href="/display/{{ object.id }}/"> {{ object.title }} </a> </h3>
+
+    {% load thumbnail %}
+    {% thumbnail object.getMainImage.image "100x100" as im %}
+        <img src="{{ im.url }}">
+    {% empty %}
+    {% endthumbnail %}
+
+    {{ object.summary }}
+
+    <form name="postcomment" action="/action/" method="post">
+        <input type="text" name="comment" />
+        <input type="hidden" name="c_id" value="{{ object.id }}">
+        <input type="hidden" name="action" value='postcomment'>
+        <input type="submit" value="Comment" />
+    </form>
+
+</p>

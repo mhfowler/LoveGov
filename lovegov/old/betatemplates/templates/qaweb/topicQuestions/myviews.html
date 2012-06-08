@@ -1,0 +1,52 @@
+<!-- center -->
+<img id="myviews" style="height:100px; width:100px; position:absolute; left:250px; top:110px; z-index: 1" src="/static/icons/black.gif"/>
+<!-- top -->
+<img id="Economy" class="topic" style="height:80px; width:80px; position:absolute; left:260px; top:110px;" src="/static/icons/purple.gif"/>
+<!-- bottom -->
+<img id="Social_Issues" class="topic" style="height:80px; width:80px; position:absolute; right:260px; bottom:110px;" src="/static/icons/yellow.gif"/>
+<!-- right -->
+<img id="Environment" class="topic" style="height:80px; width:80px; position:absolute; right:260px; top:110px;" src="/static/icons/red.gif"/>
+<!-- left -->
+<img id="Health_Care" class="topic" style="height:80px; width:80px; position:absolute; left:260px; bottom:110px;" src="/static/icons/blue.gif"/>
+<!-- top-left -->
+<img id="Education" class="topic" style="height:80px; width:80px; position:absolute; left:260px; top:110px;" src="/static/icons/orange.gif"/>
+<!--bottom-left -->
+<img id="Foreign_Policy" class="topic" style="height:80px; width:80px; position:absolute; left:260px; bottom:110px;" src="/static/icons/green.gif"/>
+<!--bottom-right -->
+<img id="Energy" class="topic" style="height:80px; width:80px; position:absolute; right:260px; bottom:110px;" src="/static/icons/cyan.gif"/>
+<!-- top-right-->
+<img id="Reform" class="topic" style="height:80px; width:80px; position:absolute; right:260px; top:110px;" src="/static/icons/pink.gif"/>
+
+<script>
+    // final positions
+    var MYVIEWS_POS = {left:"250px", top:"110px"};
+    var ECONOMY_POS = {left:"260px",top:"0px"};
+    var SOCIAL_ISSUES_POS = {right:"260px",bottom:"0px"};
+    var ENVIRONMENT_POS = {right:"130px",top:"120px"};
+    var HEALTH_CARE_POS = {left:"130px", bottom:"120px"};
+    var EDUCATION_POS = {left:"170px",top:"34px"};
+    var FOREIGN_POLICY_POS = {left:"170px",bottom:"34px"};
+    var ENERGY_POS = {right:"170px",bottom:"34px"};
+    var REFORM_POS = {right:"170px",top:"34px"};
+
+    $(document).ready(function()
+    {
+        // initialize web to the first view
+       // $(".topic").hide();
+       // $(".topic").show("scale", 1000);
+        $("#Economy").animate({left: ECONOMY_POS.left, top:ECONOMY_POS.top}, TOPIC_ANIMATION_SPEED);
+        $("#Social_Issues").animate({right: SOCIAL_ISSUES_POS.right, bottom:SOCIAL_ISSUES_POS.bottom}, TOPIC_ANIMATION_SPEED);
+        $("#Environment").animate({right: ENVIRONMENT_POS.right, top:ENVIRONMENT_POS.top}, TOPIC_ANIMATION_SPEED);
+        $("#Health_Care").animate({left: HEALTH_CARE_POS.left, bottom:HEALTH_CARE_POS.bottom}, TOPIC_ANIMATION_SPEED);
+        $("#Education").animate({left: EDUCATION_POS.left, top:EDUCATION_POS.top}, TOPIC_ANIMATION_SPEED);
+        $("#Foreign_Policy").animate({left: FOREIGN_POLICY_POS.left, bottom:FOREIGN_POLICY_POS.bottom}, TOPIC_ANIMATION_SPEED);
+        $("#Energy").animate({right: ENERGY_POS.right, bottom:ENERGY_POS.bottom}, TOPIC_ANIMATION_SPEED);
+        $("#Reform").animate({right: REFORM_POS.right, top:REFORM_POS.top}, TOPIC_ANIMATION_SPEED);
+
+    });
+
+</script>
+
+<style>
+
+</style>

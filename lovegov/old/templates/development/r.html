@@ -1,0 +1,53 @@
+<div class="everything">
+    <div id="dialogue-wrapper">
+
+        <div id="dialogue-main">
+
+            <div id="question">
+
+                {{ question.question_text }}
+
+            </div>
+
+            <div id="answers">
+
+                <ul>
+                    {% for a in question.answers.all %}
+                        <p>
+
+                            <a
+                                    {% if a.value == response.answer_val %}
+                                        style="color:blue"
+                                    {% endif %}
+                                    />
+                            {{ a.answer_text }}
+                        </a>
+
+                        </p>
+                    {% endfor %}
+                </ul>
+                <p> {{ response.explanation }} </p>
+
+            </div>
+
+            <div id="buttons">
+
+
+            </div>
+
+        </div>
+
+        <div id="dialogue-pointer">
+
+            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+
+</script>

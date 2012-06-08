@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>lovegov: coming soon</title>
+    <link rel="icon" type="image/icon" href="/static/images/favicon.ico">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="Lovegov, lovegov, lovegov.com, Government, Politics, Simplified, One Stop Shop, Participate, Informed, Connected, Involved, Social, Social Network, Political Network, Legislation, Democracy, Democracy 2.0, Vote, Advocacy Groups, Coalitions, Change" />
+    <meta name="description" content="We're no-nonsense realists with an itch to fix politics. We believe participating in democracy doesn't need to be difficult — we believe it should be simple and engaging, even a little fun. Lovegov will inform you on the issues, keep you current with legislation that you care about, and connect you with your representatives. We're making it easy to get involved." />
+    <link rel=StyleSheet href="/static/css/deployment/comingsoon.css" type="text/css" media=screen>
+</head>
+<body>
+    <!-- for facebook like button -->
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=184966154940334";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <!-- hidden variables we need for javascript -->
+    <div id="default_variables">
+        <input id="csrftoken" type="hidden" value="{{ csrf_token }}" />
+    </div>
+
+    <div id="main">
+    {% block content %}
+    {%  endblock %}
+    <div class="footer">
+
+        <table width="700px" height="20px">
+            <tr>
+                <td width="600px">
+                    <div id="mailingList" class="dark" style="margin-left:0px;">Join our mailing list:&nbsp;&nbsp;
+                        <form id='emailForm' style="display:inline" action='' method='post'>  {% csrf_token %}
+                        <input id="emailInput" name="email" type="text" value="" maxlength="200px" />&nbsp;&nbsp;
+                        <a id="emailSubmit"><noscript><input id="submitButton" style="width:75px; height:25px" type="submit" value="Submit" name="submitemail"/></noscript></a>
+                        </form>
+                    </div>
+                </td>
+                <td width="50px" align="center" valign="middle"><a href="http://www.facebook.com/pages/Lovegov/368496463180373" target="_blank"><img src="/static/images/facebook.png" /></a></td>
+                <td width="50px" align="center" valign="middle"><a href="http://twitter.com/welovegov" target="_blank" border=0><img src="/static/images/twitter.png" /></a>
+                </td>
+            </tr>
+        </table>
+
+        <div class="smallish" id="dev">development team</div>
+        <br />
+        <table width=720 style="position: relative;left:-15px;top:-40px;">
+            <tr id="devtable">
+                <td width="165px">
+                    <div class="dark" style="margin-left: 15px;">Joschka Tryba<br /></div>
+                    <div class="light" style="margin-left: 15px;">Chief Executive Officer<br />
+                    <a href="mailto:joschka@lovegov.com">joschka@lovegov.com</a></div>
+                </td>
+                <td>
+                    <div class="dark footerclaymaxcat">Clayton Dunwell<br /></div>
+                    <div class="light footerclaymaxcat">Product Development<br />
+                    <a href="mailto:clay@lovegov.com">clay@lovegov.com</a></div>
+                </td>
+                <td>
+                    <div class="dark footerclaymaxcat">Maximus Fowler<br /></div>
+                    <div class="light footerclaymaxcat">Software Engineering<br />
+                    <a href="mailto:max@lovegov.com">max@lovegov.com</a></div>
+                </td>
+                <td>
+                    <div class="dark footerclaymaxcat">Catherine Schmidt<br /></div>
+                    <div class="light footerclaymaxcat">Lead Designer<br />
+                    <a href="mailto:cat@lovegov.com">cat@lovegov.com</a></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    </div>
+    <!-- jquery -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <!-- import other javascript -->
+    <script type="text/javascript" src="/static/js/deployment/submit_mail.js"></script>
+</body>
+</html>
+

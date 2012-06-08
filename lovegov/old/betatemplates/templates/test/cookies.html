@@ -1,0 +1,11 @@
+{% extends 'usable/default.html' %}
+
+{% block content_block %}
+
+    <h4> cookies </h4>
+
+    {% for key,value in request.COOKIES.items %}
+        <p> {{ key }} : {{ value }} </p>
+    {% endfor %}
+
+{% endblock %}

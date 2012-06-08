@@ -1,0 +1,5 @@
+want to add a command? "cmdhelp"
+-----------------------------------------------------------------------------------
+ cmd           | what does it do?                    | explanation
+-----------------------------------------------------------------------------------
+ cmdcreate     | sudo vi ~~/server/shared.bashrc     | edit shared alias file

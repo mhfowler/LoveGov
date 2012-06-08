@@ -1,0 +1,7 @@
+<ul>
+    {% for u in users %}
+        <li>
+            <a href="{{ u.get_url }}"> {{ u.get_name }} </a>
+        </li>
+    {% endfor %}
+</ul>

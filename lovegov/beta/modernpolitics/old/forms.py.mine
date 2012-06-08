@@ -1,0 +1,126 @@
+__author__ = 'CLAY'
+
+from models import *
+from django import forms
+from django.forms.widgets import CheckboxSelectMultiple
+from datetime import datetime
+from django.forms.extras.widgets import SelectDateWidget
+from django.forms.fields import DateField, ChoiceField, MultipleChoiceField
+
+
+class RegisterForm(forms.Form):
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('N', 'Other'),
+        )
+
+    BIRTH_DAY_CHOICES = (('1','1'), ('2','2'), ('3','3'))
+
+    name = forms.CharField(max_length=50, required=True, widget=forms.TextInput(attrs={'class':'bodyinputboxes'}))
+    email = forms.CharField(max_length=125, required=True, widget=forms.TextInput(attrs={'class':'bodyinputboxes'}))
+    email2 = forms.CharField(max_length=125, required=True, widget=forms.TextInput(attrs={'class':'bodyinputboxes'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'bodyinputboxes'}), required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'bodyinputboxes'}), required=True)
+    security_q = forms.CharField(max_length=125, required=True, widget=forms.TextInput(attrs={'class':'bodyinputboxes'}))
+    security_a = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'bodyinputboxes'}), required=True)
+
+    def save(self, new_data):
+        print "check"
+        u = UserProfile.objects.create_user(new_data['email'],'email', new_data['password'])
+        print new_data['name']
+        names = new_data['name'].split(None,1)   # split name into first and last
+        u.first_name = names[0]
+        if (len(names)==2):
+            u.last_name = names[1]
+        u.is_active = True
+        u.save()
+        return u
+
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=20, required=True,widget=forms.TextInput(attrs={'class':'logintextfield'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'logintextfield'}), required=True)
+
+
+# django once again making things easy
+# https://docs.djangoproject.com/en/dev/topics/forms/modelforms/
+
+
+class PetitionForm(forms.ModelForm):
+    class Meta:
+        model = Petition
+        fields = ('title', 'summary', 'full_text')
+    def complete(self):
+        p = self.save(commit=False)
+        p.type = 'P'
+        p.likes=0
+        p.dislikes=0
+        return p
+    topics = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'style':'visibility:hidden; width:0px;height:0px;'}), choices=Topic.objects.values_list('id','topic_text'), label="");
+    type = forms.CharField(widget=forms.HiddenInput(), initial='P', )
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ('title', 'summary', 'full_text', 'date_of_event')
+    def complete(self):
+        e = self.save(commit=False)
+        e.type = 'E'
+        e.likes=0
+        e.dislikes=0
+        return e
+    topics = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'style':'visibility:hidden; width:0px;height:0px;'}), choices=Topic.objects.values_list('id','topic_text'), label="");
+    type = forms.CharField(widget=forms.HiddenInput(), initial='E', )
+
+class NewsForm(forms.ModelForm):
+    class Meta:
+        model = News
+        fields = ('title', 'summary', 'link')
+    def complete(self):
+        n = self.save(commit=False)
+        n.type = 'N'
+        n.likes=0
+        n.dislikes=0
+        return n
+    topics = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'style':'visibility:hidden; width:0px;height:0px;'}), choices=Topic.objects.values_list('id','topic_text'), label="");
+    type = forms.CharField(widget=forms.HiddenInput(), initial='N', )
+
+
+
+
+
+
+
+
+    """
+class QuestionForm(forms.Form):
+    # fields
+    title = forms.CharField(widget=forms.TextInput(), required=True)
+    summary = forms.CharField(widget=forms.TextArea(),required=True)
+    question_text = forms.CharField(widget=forms.TextArea(),required=True)
+    answer1 = forms.CharField(widget=forms.TextArea(),required=True)
+    answer2 = forms.CharField(widget=forms.TextArea(),required=True)
+    answer3 = forms.CharField(widget=forms.TextArea(),required=True)
+    answer4 = forms.CharField(widget=forms.TextArea(),required=True)
+    TOPIC_CHOICS = {
+        ('E', 'Economy'),
+        ('T', 'Taxes'),
+        ('P', 'Pornography'),
+        ('I', 'Immigration'),
+    }
+    topics = forms.MultipleChoiceField(widget=CheckboxSelectMultiple, choices=TOPIC_CHOICES)
+    # save
+    def save(self):
+        answera = Answer(answer_text=self.answer1, value=1)
+        answerb = Answer(answer_text=self.answer2, value=2)
+        answerc = Answer(answer_text=self.answer3, value=3)
+        answerd = Answer(answer_text=self.answer4, value=4)
+        answera.save()
+        answerb.save()
+        answerc.save()
+        answerd.save()
+"""
+
+

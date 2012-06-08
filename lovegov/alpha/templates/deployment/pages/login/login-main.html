@@ -1,0 +1,92 @@
+{% extends 'deployment/pages/login/login.html' %}
+
+{% block middle %}
+
+    <div>
+
+        <div id="middle-left">
+            <a id="what-is-lovegov">what is<br> lovegov?</a>
+        </div>
+
+        <div id="middle-right">
+            <h1>To get the most out of LoveGov</h1>
+
+            <div style="float:left">
+                <a href="{{ fb_link }}" id="">
+                    <input type="image" id="facebook-button" src="/static/images/login/login_FB.png" />
+                    <input type="hidden" value="{{ request.path }}" name="next" />
+                </a>
+            </div>
+
+            <p>
+                I don’t have a Facebook account - Why we ask for Facebook
+            </p>
+            <p style="margin:0">
+                By logging in with Facebook you agree to our <a href="">Privacy Policy</a>
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="about-div" style="display:none">
+        <h2>Get Started</h2>
+
+        <div class="get-started-container get-started-container-left about-hover-element">
+            <div class="get-started-left">
+                1
+            </div>
+            <div class="get-started-right">
+                <h4>answer questions</h4>
+                <img src="/static/images/about/question.png"/>
+            </div>
+            <div class="get-started-bottom">
+                <p class="get-started-paragraph">
+                    Define your political beliefs by answering questions about political issues. Questions
+                    are based off legislation that has appeared in congress over the past few years.
+                </p>
+            </div>
+        </div>
+
+        <div class="get-started-container get-started-container-center about-hover-element">
+            <div class="get-started-left">
+                2
+            </div>
+            <div class="get-started-right">
+                <h4>find &amp; compare</h4>
+                <img src="/static/images/about/findandcompare.png"/>
+            </div>
+            <div class="get-started-bottom">
+                <p class="get-started-paragraph">
+                    See where you stand politically in your social world. Compare yourself with presidential candidates,
+                    congress, as well as your friends.
+                </p>
+            </div>
+        </div>
+
+        <div class="get-started-container get-started-container-right about-hover-element">
+            <div class="get-started-left">
+                3
+            </div>
+            <div class="get-started-right">
+                <h4>create &amp; discuss</h4>
+                <img src="/static/images/about/creatediscuss.png"/>
+            </div>
+            <div class="get-started-bottom">
+                <p class="get-started-paragraph">
+                    Make petitions, share news, and debate the issues with others.  As our site grows you will have more
+                    ways to express yourself and participate in your democracy.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $('#what-is-lovegov').click(function()
+        {
+            $('.about-div').fadeToggle(300);
+        });
+    </script>
+
+{% endblock %}

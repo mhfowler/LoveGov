@@ -1,0 +1,16 @@
+<script type='text/javascript' src="/static/js/actions.js"></script>
+
+<p>
+    {% load thumbnail %}
+    {% thumbnail action.content.main_image "10x10" as im %}
+        <img src="{{ staticpath }}{{ im.url }}">
+    {% empty %}
+    {% endthumbnail %}
+    <p>
+        {{ action.user.username }} {{ action.getVerbose }}
+        <a href="{{ action.content.get_url }}">{{ action.content.title }}</a>
+    </p>
+    <p>
+        at {{ action.when }}
+    </p>
+</p>

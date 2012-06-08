@@ -1,0 +1,251 @@
+{% extends 'usable/default.html' %}
+
+{% block content_block %}
+
+    <table width="700px">
+
+
+
+        <td>
+        <!-- TITLE & STATUS -->
+            <h2> {{ title }}
+                <a class="votes">
+                    {% if status > 0 %}
+                        +{{ status }}
+                    {% endif %}
+                    {% if status == 0 %}
+                        0
+                    {% endif %}
+                    {% if status < 0 %}
+                        {{ status }}
+                    {% endif %}
+                </a>
+            </h2>
+
+
+            <! PETITION >
+            {% if type == "P" %}
+
+                 <h3> petition </h3>
+
+                <p>
+                    topic{{ topics|pluralize }}:
+                    {% for t in topics %}
+                        <a> {{ t }} </a>
+                    {% endfor %}
+                </p>
+
+                <p> {{ full_text }}</p>
+
+                <p> created by {{ creator }} at {{ created }}</p>
+
+            {% endif %}
+
+            <! EVENT >
+            {% if type == "E" %}
+
+                <h3> event </h3>
+
+                <p>
+                    topic{{ topics|pluralize }}:
+                    {% for t in topics %}
+                        <a> {{ t }} </a>
+                    {% endfor %}
+                </p>
+
+                <p> {{ full_text }}</p>
+
+                <p> {{ date_of_event }}</p>
+
+                <p> created by {{ creator }} at {{ created }}</p>
+
+            {% endif %}
+
+            <! NEWS >
+            {% if type == "N" %}
+
+                <h3> news </h3>
+
+                <p>
+                    topic{{ topics|pluralize }}:
+                    {% for t in topics %}
+                        <a> {{ t }} </a>
+                    {% endfor %}
+                </p>
+
+                <p> {{ summary }}</p>
+
+                <p> {{ link }}</p>
+
+                <p> created by {{ creator }} at {{ created }}</p>
+
+            {% endif %}
+
+            <! COMMENT >
+            {% if type == "C" %}
+
+                <h2> <a href="/display/{{on_content}}"> {{ title }} </a> </h2>
+
+                <p> text: {{ text }}</p>
+
+                <p> created by {{ creator }} at {{ created }}</p>
+
+            {% endif %}
+        
+            <! QUESTION >
+            {% if type == "Q"  %}
+        
+                <h3>QUESTION</h3>
+                
+                <p> {{ question_text }} </p>
+
+                {{ answer_form }}
+
+            {% endif %}
+        </td>
+
+        <!-- PICTURE -->
+        <td align="right">
+            <img src="{{ STATIC_URL }}{{ imageurl }}" width="120" height="180">
+            <!-- VOTE -->
+            <div class="actions">
+                <a id="contentlike"
+                        {% if i_vote == 1 %}
+                   style="color:green"
+                        {% else %}
+                   style="color:black"
+                        {% endif %}
+                        >
+                    like
+                </a>
+                <a id="contentdislike"
+                        {% if i_vote == -1 %}
+                   style="color:red"
+                        {% else %}
+                   style="color:black"
+                        {% endif %}
+                        > dislike </a>
+            </div>
+        </td>
+
+    </table>
+
+
+     <br>
+
+
+
+    <div id="comment_thread">
+
+        <h2> COMMENTS </h2>
+
+        <!-- COMMENT THREAD -->
+        {{ thread|safe }}
+
+    </div>
+
+    <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
+        <input id="comment_text" type="text" name="comment" value="...add comment" />
+        <input id="content_id" type="hidden" name="c_id" value="{{ id }}">
+        <input type="submit" value="Comment" />
+    </form>
+
+
+    <script type="text/javascript" src="/static/jQuery.js"> </script>
+
+    <script>
+        $(document).ready(function(){
+            // AJAX
+            $.ajaxSetup({
+                data: {csrfmiddlewaretoken: '{{ csrf_token }}' }});
+        });
+        // hide all reply forms
+        $(".replyform").toggle();
+        // make it so actions get underlined on mouseover
+        $(".actions").children().hover(function (){
+                    $(this).css("text-decoration", "underline");
+                },function(){
+                    $(this).css("text-decoration", "none");
+                }
+        );
+        // make it so clicking reply unhides reply form
+        $(".reply").click(function(){
+            $(this).parent().next().toggle()
+        });
+        // content like and dislike
+        $("#contentlike").click(function(){
+            var content_id = $("#content_id").val();
+            $.post('/like/', {'c_id':content_id},
+                    // call back function
+                    function(data) {
+                        location.reload();
+                    });
+        });
+        // dislike
+        $("#contentdislike").click(function(){
+            var content_id = $("#content_id").val();
+            $.post('/dislike/', {'c_id':content_id},
+                    // call back function
+                    function(data) {
+                        location.reload();
+                    });
+        });
+        // comment like and dislike
+        // like
+        $(".commentlike").click(function(event){
+            event.preventDefault();
+            var content_id = $(this).parent().next().children(".hidden_id").val();
+            $.post('/like/', {'c_id':content_id},
+                    // call back function
+                    function(data) {
+                        location.reload();
+                    });
+        });
+        // dislike
+        $(".commentdislike").click(function(event){
+            event.preventDefault();
+            var content_id = $(this).parent().next().children(".hidden_id").val();
+            $.post('/dislike/', {'c_id':content_id},
+                    // call back function
+                    function(data) {
+                        location.reload();
+                    });
+        });
+        $(".replyform").submit(function(event) {
+            // stop form from submitting normally
+            event.preventDefault();
+            // get comment text and content id
+            var comment_text = $(this).children(".comment_text").val();
+            var content_id = $(this).children(".hidden_id").val();
+            // Send the data using post
+            $.post('/comment/', {comment : comment_text, c_id : content_id },
+                    // call back function
+                    function(data) {
+                        location.reload();
+                    });
+        });
+
+
+    </script>
+
+    <script>
+        /* for creating new comment */
+        $("#commentform").submit(function(event) {
+            // stop form from submitting normally
+            event.preventDefault();
+            // get comment text and content id
+            var comment_text = $("#comment_text").val();
+            var content_id = $("#content_id").val()
+            // Send the data using post
+            $.post('/comment/', {comment : comment_text, c_id : content_id },
+                    // call back function
+                    function(data) {
+                        location.reload();
+                    });
+        });
+    </script>
+
+
+    <p id="log"> log </p>
+
+{% endblock %}

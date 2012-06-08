@@ -1,0 +1,37 @@
+{% extends 'usable/default.html' %}
+
+{% block content_block %}
+
+        {% for r in relationship_list %}
+
+            {% include 'usable/content_sum.html' with object=r.content %}
+
+            {{ r.get_relationship_display }}
+
+            {{ r.when }}
+
+            <div>
+                <a class="deinvolve"> remove </a>
+                <input class="hidden" type="hidden" value="{{r.content.id}}" />
+            </div>
+
+        {% endfor %}
+
+<script>
+    $(".deinvolve").click(function() {
+            var c_id =  $(this).siblings(".hidden").val();
+            $.ajax({
+                url:'/action/',
+                type: 'POST',
+                data: {'action':'deinvolve','c_id': c_id},
+                success: function(data){
+                    location.reload();
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    $('.errors_div').html(jqXHR.responseText);
+                }
+            });
+        });
+
+</script>
+{% endblock %}

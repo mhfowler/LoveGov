@@ -1,0 +1,19 @@
+{% extends 'usable/default.html' %}
+
+{% block content_block %}
+
+    <h4> linked </h4>
+
+    {% for k in r %}
+        <p> {{ k.from_content.title }}({{ k.from_content.id }}) : {{ k.to_content.title }}({{ k.to_content.id }})
+            [{{ k.link_strength }}]</p>
+    {% endfor %}
+
+    <h4> friends </h4>
+
+    {% for k in f %}
+        <p> {{ k.from_user.username}} : {{ k.to_user.username }}
+            [{{ k.get_connection_display }}]</p>
+    {% endfor %}
+
+{% endblock %}

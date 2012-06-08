@@ -1,0 +1,24 @@
+{% extends 'usable/default.html' %}
+
+{% block content_block %}
+
+
+    <p>
+        username: {{ user.username }}
+    </p>
+    <p>
+        full name: {{ user.get_full_name }}
+    </p>
+    <p>
+        <img src="{{ STATIC_URL }}{{ user.profilepage.profile_image.url }}">
+    <form  action="" method="post" enctype="multipart/form-data">
+        {{ form.as_p }}
+        <input type="submit" value="Upload Picture"/>
+    </form>
+    </p>
+    <p>
+        <a href="/logout"> Logout </a>
+    </p>
+
+
+{% endblock %}

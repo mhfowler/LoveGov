@@ -1,0 +1,174 @@
+{% extends 'usable/default.html' %}
+
+{% block javascript %}
+    <script type='text/javascript' src="/static/js/group.js"></script>
+    <script type='text/javascript' src="/static/js/actions.js"></script>
+    <script type='text/javascript' src="/static/js/thread.js"></script>
+{% endblock %}
+
+{% block content_block %}
+
+    <!-- hidden variables we need for javascript -->
+    <div id="group_variables">
+        <input id="g_id" type="hidden" value="{{object.id}}" />
+    </div>
+
+    <!-- IF NOT SECRET -->
+    {% if object.group_type != 'S' or ingroup %}
+        <!-- CONTENT -->
+        <table width="700px">
+            <!-- LEFT COLUMN -->
+            <td>
+                <!-- TITLE -->
+                <h2>
+                    {{ object.title }}  [{{object.group_type}}] [{{object.privacy}}]
+                    <!-- STATUS -->
+                    <a class="votes">
+                        {% if status > 0 %}
+                            +{{ status }}
+                        {% endif %}
+                        {% if status == 0 %}
+                            0
+                        {% endif %}
+                        {% if status < 0 %}
+                            {{ status }}
+                        {% endif %}
+                    </a>
+                </h2>
+                <!-- Membership Status -->
+                <p>
+                    <!-- OPEN -->
+                    {% if object.group_type == 'O' %}
+                        {% if ingroup %}
+                            You are a member of this group.
+                            <a class="leave"> leave </a>
+                        {% else %}
+                            You are not a member of this group.
+                            <a class="join"> join </a>
+                        {% endif %}
+                    {% endif %}
+                    <!-- PRIVATE -->
+                    {% if object.group_type == 'P' %}
+                        {% if ingroup %}
+                            You are a member of this group.
+                            <a class="leave"> leave </a>
+                        {% else %}
+                            You are not a member of this group.
+                            <a class="join"> request to join </a>
+                        {% endif %}
+                    {% endif %}
+                </p>
+                <!-- TOPICS -->
+                <p>
+                    topic{{ object.topics.all|pluralize }}:
+                    {% for t in object.topics.all %}
+                        <a> {{ t }} </a>
+                    {% endfor %}
+                </p>
+                <!-- Full Text -->
+                <div>
+                    <a class="field">{{ object.full_text }}</a>
+                </div>
+
+                {% if object.group_type == 'O' or ingroup %}
+
+                    <!-- GROUP CONTENT -->
+                    <a style="font-size:150%"> Group Feed </a>
+                    <a id="postto"> post </a>
+                    <!--
+                    <div class="actions">
+                        <a id="linkfrom"> LinkFrom </a>
+                        <a id="linkto"> LinkTo </a>
+                    </div>
+                    -->
+
+                    <!-- DISPLAY ALL CONTENT IN GROUP FEED -->
+                    <p>
+                        {% for f in object.getFeed %}
+                            {% include 'usable/content_sum.html' with object=f.content%}
+                        {% empty %}
+                            <a> Feed not updated yet. </a>
+                        {% endfor %}
+                    </p>
+
+                    <!-- COMMENTS -->
+                    {% include 'usable/comment_thread.html' %}
+
+                {% endif %}
+            </td>
+            <td>
+                <h4> Group View </h4>
+                <a name="updateGroupView" class="updateGroupView"> update view </a>
+                {% for agg in object.group_view.responses.all %}
+                
+                    <p>
+                        <a href="/display/{{agg.id}}"> {{agg.question.title}}</a>
+                    </p>
+                    
+                {% endfor %}               
+            </td>
+            <td>
+                <h4> Motions </h4>
+                {% if ingroup %}
+                    Create your own motion:
+                    <form class="motionform" name="motionform" action="/action/" method="post">  {% csrf_token %}
+                        <textarea id="motion" name="motion_text"> </textarea>
+                        <input type="submit" value="submit" />
+                    </form>
+                {% endif %}
+                {% for m in object.getMotions %}
+                    <p>
+                        <a href="{{ m.get_url }}"> {{ m.full_text }} </a>
+                    </p>
+                {% endfor %}
+            </td>
+        
+            <!-- RIGHT COLUMN -->
+            <td align="right">
+                    <!-- PICTURE -->
+                    {% if object.img %}
+                        <img src="{{ STATIC_URL }}{{ object.img.url }}" width="120" height="180" />
+                    {% endif %}
+                    <!-- ACTIONS -->
+                    {% include 'usable/actions.html' %}
+                    <!-- MEMBERS-->
+                    <h3> Members </h3>
+                    {% for p in object.members.all %}
+                        <p>
+                            {{ p.username }}
+                        </p>
+                    {% endfor %}
+            </td>
+        </table>
+    {% else %}
+
+        <h2> This is a secret group. </h2>
+
+    {% endif %}
+
+    <!-- SCRIPTS -->
+    <script>
+
+    </script>
+
+{% endblock %}
+
+
+<!-- ZE FEED -->
+{% block right_block %}
+
+    <h4> FEED </h4>
+
+    <p>
+
+    </p>
+
+    {% for c in linked %}
+
+        <p>
+            <a href='/display/{{c.to_content.id}}'> {{ c.to_content.title }}</a>
+        </p>
+
+    {% endfor %}
+
+{% endblock %}

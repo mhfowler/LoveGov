@@ -1,0 +1,558 @@
+#match-main
+{
+    width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+}
+
+#match-mid-header h1
+{
+    color: #0F5569;
+    font-weight: normal;
+    font-size: 18px;
+    float:left;
+}
+
+#match-mid-header h2
+{
+    float:right;
+    color:#CCCCCC;
+    margin-top:10px;
+}
+
+#match-featured-election-center
+{
+    float:left;
+    width:278px;
+    margin-left:23px;
+    margin-right:23px;
+    text-align:center;
+    margin-top:50px;
+}
+
+.match-h1
+{
+    color:#f0503b;
+    font-size:43px;
+    margin-bottom:5px;
+    margin-top:0px;
+    line-height:120%;
+}
+
+.match-p
+{
+    color:#959595;
+    font-size:25px;
+    margin-top:0px;
+    margin-bottom:15px;
+}
+
+.match-social-network-entity-container
+{
+    width:155px;
+    float:left;
+}
+
+.match-social-network-entity-container-left
+{
+    margin-right:14px;
+}
+
+.match-social-network-entity-container-center
+{
+    padding-right:14px;
+    padding-left:14px;
+}
+
+.match-social-networking-entity-container-border
+{
+    width:1px;
+    height:90px;
+    margin-top:30px;
+    border-right:1px solid #f0503b;
+    float:left;
+}
+
+.match-social-network-entity-container-right
+{
+    margin-left:14px;
+}
+
+.match-social-network-entity
+{
+    width:45px;
+    height:45px;
+    background-color:#528CE0;
+    border-radius:5px;
+    float:left;
+    margin-top:5px;
+}
+
+.match-social-network-entity-left
+{
+    margin-right:5px;
+}
+
+.match-social-network-entity-center
+{
+    margin-right:5px;
+    margin-left:5px;
+}
+
+.match-social-network-entity-right
+{
+    margin-left:5px;
+}
+
+.match-social-network-entity-button
+{
+    width:155px;
+    height:35px;
+    font-size:22px;
+    background-color:#F0F0F0;
+    float:left;
+    margin-top:10px;
+    color:#777777;
+    border-radius:10px;
+}
+
+.match-social-network-entity-button:hover
+{
+    cursor:pointer;
+    background-color:#f0503b;
+    color:white;
+}
+
+.match-social-network-entity-button p
+{
+    margin-top:8px;
+    margin-left:10px;
+}
+
+.match-social-network-entity-button img
+{
+    float:right;
+    margin-right:10px;
+    margin-top:3px;
+}
+
+#match-featured-election-center-explore a, #match-featured-election-center-explore a:link, #match-featured-election-center-explore a:visited, #match-featured-election-center-explore a:active
+{
+    background-color: #f0f0f0;
+    font-size:30px;
+    padding:20px;
+    padding-bottom:0px;
+    color: #777777;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+    border-radius:15px;
+}
+
+#match-featured-election-center-explore a:hover
+{
+    background-color:#f0503b;
+    color:white;
+    cursor:pointer;
+}
+
+.match-box-div
+{
+    float:left;
+    width:300px;
+    padding:0px;
+    border-radius:15px;
+    -moz-border-radius:15px;
+    -webkit-border-radius:15px;
+    -khtml-border-radius:15px;
+    border:1px solid #DBDBDB;
+}
+
+#match-mid-content
+{
+    float:left;
+}
+
+#match-mid
+{
+    float:left;
+}
+
+.match-user-info-span
+{
+    font-family: "Gill Sans Std", Gill Sans, Verdana, sans-serif;
+    color: #f0503b;
+    font-size:17px;
+}
+
+.match-user-info
+{
+    color:#F0503B;
+    margin-left: 10px;
+    margin-top:10px;
+    margin-left:10px;
+    font-size: 16px;
+    float:left;
+}
+
+.match-user-img
+{
+    width:75px;
+    height:75px;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+    float:left;
+    margin-right:10px;
+}
+
+.match-user-info ul
+{
+    list-style: none;
+    padding-left:0px;
+    margin:0;
+    font-size:13px;
+}
+
+.match-bottom-button
+{
+    margin-top: 10px;
+    color:#777777;
+    background-color: #f0f0f0;
+    border-radius: 0 0 10px 10px;
+    text-align: center;
+    font-size: 22px;
+    height: 22px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.match-bottom-button:hover
+{
+    background-color:#f0503b;
+    color:white;
+    cursor:pointer;
+}
+
+#match-selection-line-break
+{
+    float:left;
+    width:1000px;
+    margin-top:15px;
+    margin-bottom:15px;
+}
+
+.match-selection-line-break
+{
+    width:461px;
+    float:left;
+    height:7px;
+    border-bottom:1px solid #CCC;
+}
+
+#match-selection
+{
+    float:left;
+}
+
+.match-selection-box
+{
+    float:left;
+    width:300px;
+    border:1px solid #DBDBDB;
+    border-radius:15px;
+}
+
+.match-selection-box-selected
+{
+    background-color:#F0F0F0;
+}
+
+.match-selection-box:hover
+{
+    cursor:pointer;
+    background-color:#F0F0F0;
+}
+
+.match-selection-box-inner
+{
+    padding:20px;
+}
+
+.match-selection-box-inner-content p
+{
+    float:left;
+    width:135px;
+    margin-right:15px;
+    margin-top:0px;
+    font-size:19px
+}
+
+.circle-div
+{
+    width: 14px;
+    height: 14px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    float:left;
+}
+
+.circle-div-gray
+{
+    background: #CCC;
+}
+
+.circle-div-red
+{
+    background: #f0503b;
+}
+
+.circle-div-left
+{
+    margin-right:3px;
+    margin-left:12px;
+
+}
+
+.circle-div-center
+{
+    margin-left:3px;
+    margin-right:3px;
+
+}
+
+.circle-div-right
+{
+    margin-left:3px;
+    margin-right:12px;
+
+}
+
+.match-selection-box h2
+{
+    font-family: "Gill Sans Std", Gill Sans, sans-serif;
+    font-size: 23px;
+    color: #F0503B;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 0px;
+}
+
+.match-selection-box-center
+{
+    margin-left:24px;
+    margin-right:24px;
+}
+
+.match-selection-box-left
+{
+    margin-right:23px;
+}
+
+
+.match-selection-box-right
+{
+    margin-left:23px;
+}
+
+#match-featured-social-network
+{
+    float:left;
+    width:550px;
+    margin-left:55px;
+    margin-right:20px;
+    margin-top:15px;
+}
+
+
+
+.match-arrow
+{
+    width:36px;
+    height:435px;
+    float:left;
+}
+
+
+.match-arrow:hover
+{
+
+}
+
+.match-arrow img
+{
+    margin-top:180px;
+    padding:8px;
+    cursor:pointer;
+}
+
+#match-arrow-left img
+{
+    border-radius:10px 0 0 10px;
+}
+
+#match-arrow-right img
+{
+    border-radius:0 10px 10px 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.user-list-item
+{
+    margin-bottom:10px;
+}
+
+.user-list-item-name-big
+{
+    text-align:left;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    font-size:18pt;
+    color:#959595;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+    border-radius:10px;
+}
+
+
+.user-list-item a, .user-list-item a:link, .user-list-item a:visited, .user-list-item a:active
+{
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    font-size:18pt;
+    color:#959595;
+}
+
+.user-list-item-hover
+{
+    background-color: #fafafa;
+}
+
+.user-list-item-name
+{
+    position:relative;
+    bottom:8px;
+    padding-left:5px;
+}
+
+.user-list-div
+{
+    width:300px;
+    float:left;
+}
+
+.user-list-div-left
+{
+    margin-right:25px;
+}
+
+.user-list-div-right
+{
+    margin-left:25px;
+}
+
+.user-list-div-center
+{
+    margin-left:25px;
+    margin-right:25px;
+}
+
+
+.match-header-div
+{
+    width:1000px;
+    float:left;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+}
+
+.match-header-div h1
+{
+    color: #0F5569;
+    font-weight: normal;
+    font-size: 2em;
+}
+
+.find-header-paragraph
+{
+    margin-top:0px;
+    margin-bottom:25px;
+}
+
+.find-header-div
+{
+    width:1000px;
+    margin-top:10px;
+    float:left;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+}
+
+.find-header-span
+{
+    color: #f0503b;
+    font-weight: normal;
+    font-size: 21px;
+    margin-right:15px;
+}
+
+.find-header-span-input
+{
+    font-size: 15px;
+    margin-left:20px;
+    margin-right:5px;
+}
+
+.find-rep-input
+{
+    height:24px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    -khtml-border-radius:5px;
+    border-radius:5px;
+    margin-left:5px;
+    padding:5px;
+    font-size:15px;
+}
+
+#findCongress-address
+{
+    width:370px;
+}
+
+#findCongress-zip
+{
+    width:50px;
+}
+
+.match-rank
+{
+    color:#f0503b;
+    font-size:33px;
+}
+
+
+
+
+
+
+
+#see-congressional-map
+{
+    font-size:14px;
+    cursor:pointer;
+    color:#f0503b;
+}

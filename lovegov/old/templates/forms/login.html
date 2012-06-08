@@ -1,0 +1,31 @@
+{% extends 'deployment/templates/default.html' %}
+
+{% block content %}
+
+<table>
+    <tr height="5px"></tr>
+    <tr>
+        <td>username:</td>
+        <td></td>
+        <td><input type="text" class="inputs" name="username" value="{{ username }}"/></td>
+    <tr height="4px"></tr>
+    <tr>
+        <td>password:</td>
+        <td></td>
+        <td><input type="password" class="inputs" name="password"/></td>
+    </tr>
+</table>
+
+<p><a class="button" id="submit" align="right">log in</a></p>
+
+<input type="hidden" name="to_page" value="{{ to_page }}" />
+
+<script>
+    $("#submit").click(function(event)
+    {
+        event.preventDefault();
+        $("#loginform").submit()
+    });
+</script>
+
+{% endblock %}

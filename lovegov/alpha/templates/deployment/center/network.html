@@ -1,0 +1,45 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/profile.css" />
+
+<script>
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+</script>
+
+<!-- Middle Container -->
+<div id="profile-main-div">
+    <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
+    <!-- Left Block -->
+    <div id="middle-left">
+        <h1> {{ network.title }} </h1>
+
+        <p>
+            {{ network.summary }}
+        </p>
+
+        <div id="members-list">
+            <h3> Members </h3>
+            <input id="network-displaynum" type="hidden" value="{% if network.members.all.count < 20 %}{{ network.members.all.count }}{% else %}20{% endif %}"/>
+            <input id="network-id" type="hidden" value="{{ network.id }}"/>
+            {% for x in network.members.all|slice:":20" %}
+                {% include 'deployment/snippets/network-member.div.html' with member=x %}
+            {% endfor %}
+        </div>
+        <div style="clear:both">
+            <a id="network-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
+        </div>
+
+    </div>
+
+    <!-- Right Block -->
+    <div id="middle-right">
+        <div id="matching">
+            <div id="myviews" class="middle-right-head-font">
+                You & {{ network.title }}
+            </div>
+            <div id="qaweb"></div>
+        </div>
+    </div>
+
+</div>
+
+
+</div>
