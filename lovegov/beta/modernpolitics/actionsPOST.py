@@ -16,7 +16,7 @@
 
 ### INTERNAL ###
 from lovegov.beta.modernpolitics import backend
-from lovegov.beta.modernpolitics.backend import getUserProfile
+from lovegov.beta.modernpolitics.backend import getUserProfile, getPrivacy
 from lovegov.beta.modernpolitics.forms import *
 from lovegov.beta.modernpolitics.models import *
 

@@ -19,11 +19,11 @@ alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
 alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/beta/modernpolitics/scripts.py initialize testdata'
 alias lgresetdb='$LG/local_reset.sh'
 alias lgserver="$LG/local_server.sh"
-alias lgsync="sudo svn merge -r0:HEAD $LIVE $DEV"
 
 # permission
-alias projectpermission="sudo chmod -R 770 $PROJECT"
-alias jpermission="sudo chown jvkoh -R $PROJECT && sudo chmod -R 770 $PROJECT"
+alias projectpermission="sudo chmod -R 770 $LG"
+alias jpermission="sudo chown jvkoh -R $LG && sudo chmod -R 770 $LG"
+alias mpermission="sudo chown -R maxfowler $LG && sudo chmod -R 770 $LG"
 
 # python environment
 export PYTHONSTARTUP=$LG/autopython.py
