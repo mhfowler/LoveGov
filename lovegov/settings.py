@@ -95,7 +95,6 @@ TEMPLATE_LOADERS = (
 # template dirs
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'alpha/templates').replace('\\','/'),
-    os.path.join(PROJECT_PATH, 'beta/templates').replace('\\','/'),
     )
 
 ########################################################################################################################
