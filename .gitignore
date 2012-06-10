@@ -1,7 +1,5 @@
 *.pyc
 lovegov/db/local.db
 .idea
-<<<<<<< HEAD
-=======
 lovegov/.idea
->>>>>>> dev
+lovegov/beta/modernpolitics/migrations

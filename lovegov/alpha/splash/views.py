@@ -171,40 +171,33 @@ def logout(request, dict={}):
     response.delete_cookie('fb_token')
     return response
 
-def confirm(request, to_page='home', message="", dict={}, confirm_link=None):
+def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
+    print "confirm: " + confirm_link
     user = betamodels.UserProfile.lg.get_or_none(confirmation_link=confirm_link)
     if user:
         user.confirmed = True
         user.save()
+        dict['user']=user
+        print "user:" + user.get_name()
     if request.method == 'GET':
         return renderToResponseCSRF('deployment/pages/login-register-confirmation.html', dict=dict, request=request)
     else:
-        return loginPOST(request,to_page,message,dict, confirm_link=confirm_link)
+        return loginPOST(request,to_page,message,dict)
 
-def loginPOST(request, to_page='web',message="",dict={}, confirm_link=None):
+def loginPOST(request, to_page='web',message="",dict={}):
     registerform = RegisterForm()
     dict['registerform'] = registerform
     if request.POST['button'] == 'login':
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
-            confirmed = False
             user_prof = betabackend.getUserProfile(control_id=user.id)
             if user_prof.confirmed:
-                confirmed = True
-            elif confirm_link:
-                if user_prof.confirmation_link == confirm_link:
-                    user_prof.confirmed = True
-                    user_prof.save()
-                    confirmed = True
-                else:
-                    error = "This is not the confirmation page for the inputted email. Please check your confirmation email again."
-            else:
-                error = 'Your account has not been validated yet. Check your email for a confirmation link.'
-            if confirmed:
                 auth.login(request, user)
                 redirect_response = shortcuts.redirect('/' + to_page)
                 redirect_response.set_cookie('privacy', value='PUB')
                 return redirect_response
+            else:
+                error = 'Your account has not been validated yet. Check your email for a confirmation link.'
         else:
             error = 'Invalid Login/Password. Did you <a class="light" href="" id="recover">forget your password?</a>'
         dict['username'] = request.POST['username']
@@ -219,10 +212,11 @@ def loginPOST(request, to_page='web',message="",dict={}, confirm_link=None):
             dict['email'] = registerform.cleaned_data.get('email')
             return renderToResponseCSRF(template='deployment/pages/login-register-success.html', dict=dict, request=request)
         else:
+            print "error!"
             dict['registerform'] = registerform
             return renderToResponseCSRF(template='deployment/pages/login-main.html', dict=dict, request=request)
     elif request.POST['button'] == 'recover':
-        user = m.ControllingUser.lg.get_or_none(username=request.POST['username'])
+        user = betamodels.ControllingUser.lg.get_or_none(username=request.POST['username'])
         if user:
             betabackend.resetPassword(user)
         message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
@@ -235,25 +229,27 @@ def requiresLogin(view):
     """Wrapper for all views which require login."""
     def new_view(request, *args, **kwargs):
         try:
-            if not request.user.is_authenticated():
-                print request.path
-                return HttpResponseRedirect('/login' + request.path)
-            else:
-                # SET DEFAULT DICTIONARY VALUES
-                user = betabackend.getUserProfile(request)
+            user = betabackend.getUserProfile(request)
+            # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
             if UPDATE and not user.developer and not LOCAL:
                 return shortcuts.redirect("/login/web/")
+            # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
+            elif not request.user.is_authenticated():
+                print request.path
+                return HttpResponseRedirect('/login' + request.path)
+            # ELSE AUTHENTICATED
             else:
                 dict = {'user':user, 'google':betaconstants.GOOGLE_LOVEGOV}
                 rightSideBar(None, dict)
             # SAVE PAGE ACCESS
             if request.method == 'GET':
-                log = request.GET.get('log')
+                ignore = request.GET.get('log-ignore')
             else:
-                log = request.POST.get('log')
-            if not log or (log == False):
+                ignore = request.POST.get('log-ignore')
+            if not ignore:
                 page = betamodels.PageAccess()
                 page.autoSave(request)
+        # exception if user has old cookie
         except ImproperlyConfigured:
             response = shortcuts.redirect('/login' + request.path)
             response.delete_cookie('sessionid')
