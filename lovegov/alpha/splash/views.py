@@ -525,16 +525,41 @@ def profile(request, alias=None, dict={}):
             frame(request, dict)
             getUserResponses(request,dict)
             # get comparison of person you are looking at
-            to_compare = UserProfile.objects.get(alias=alias)
-            comparison = betabackend.getUserUserComparison(user, to_compare)
-            dict['to_compare'] = to_compare
+            user_prof = UserProfile.objects.get(alias=alias)
+            comparison = betabackend.getUserUserComparison(user, user_prof)
+            dict['user_prof'] = user_prof
             dict['comparison'] = comparison
             jsonData = comparison.toJSON()
             dict['json'] = jsonData
             logger.debug("json- " + jsonData)       # debug
-            setPageTitle("lovegov: " + to_compare.get_name(),dict)
+            setPageTitle("lovegov: " + user_prof.get_name(),dict)
+
+            # Get user's top 5 similar friends
+            prof_follow_me = list(user_prof.getFollowMe())
+            for follow_me in prof_follow_me:
+                comparison = betabackend.getUserUserComparison(user_prof, follow_me)
+                follow_me.compare = comparison.toJSON()
+                follow_me.result = comparison.result
+            prof_follow_me.sort(key=lambda x:x.result,reverse=True)
+            dict['prof_follow_me'] = prof_follow_me[0:5]
+
+            # Get user's random 5 friends
+            #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+
+            # Get user's top 5 similar groups
+            prof_groups = list(user_prof.getGroups())
+            for group in prof_groups:
+                comparison = betabackend.getUserGroupComparison(user_prof, group)
+                group.compare = comparison.toJSON()
+                group.result = comparison.result
+            prof_groups.sort(key=lambda x:x.result,reverse=True)
+            dict['prof_groups'] = prof_groups[0:5]
+
+            # Get user's random 5 groups
+            #dict['prof_groups'] = user_prof.getGroups(5)
+
             # get responses
-            dict['responses'] = to_compare.getView().responses.count()
+            dict['responses'] = user_prof.getView().responses.count()
             if request.is_ajax():
                 html = ajaxRender('deployment/center/profile.html', dict, request)
                 url = '/profile/' + alias

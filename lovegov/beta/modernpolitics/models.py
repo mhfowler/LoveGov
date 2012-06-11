@@ -1190,17 +1190,48 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.my_feed.all().delete()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Returns query set of all Groups this user has joined and been accepted to.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getGroups(self, num=-1):
+        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
+        groups = []
+        if num == -1:
+            for g in group_joins:
+                groups.append(g.group)
+        else:
+            i = 0
+            while i < len(follows) and i < num:
+                groups.append(group_joins[i].group)
+        return groups
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns query set of all UserFollow who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
-    def getFollowMe(self):
-        followers = UserFollow.objects.filter(to_user=self, confirmed=True)
+    def getFollowMe(self, num=-1):
+        follows = UserFollow.objects.filter( to_user=self, confirmed=True )
+        followers = []
+        if num == -1:
+            for f in follows:
+                followers.append(f.user)
+        else:
+            i = 0
+            while i < len(follows) and i < num:
+                followers.append(follows[i].user)
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns query set of all UserFollow who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
-    def getIFollow(self):
-        following = UserFollow.objects.filter(user=self, confirmed=True)
+    def getIFollow(self, num=-1):
+        follows = UserFollow.objects.filter( user=self, confirmed=True )
+        following = []
+        if num == -1:
+            for f in follows:
+                following.append(f.to_user)
+        else:
+            i = 0
+            while i < len(follows) and i < num:
+                following.append(f.to_user)
         return following
 
     #-------------------------------------------------------------------------------------------------------------------
