@@ -8,9 +8,6 @@ var frame=false;
 
 function rebindFunction()
 {
-    if (frame==true) {
-        rebindUniversalFrame();
-    }
     $(window).unbind('scroll');                                 // to unbind fix feed loading and qaweb scroll binding
     loadTopicSelect();                                          // topic select image functionality
     loadHoverComparison();                                      // hover comparison functionality
@@ -261,6 +258,11 @@ $(document).ready(function()
     if (pageTitle != "")
     {
         document.title = pageTitle;
+    }
+
+    // universal bindings
+    if (frame==true) {
+        rebindUniversalFrame();
     }
 
     // page specific bindings
