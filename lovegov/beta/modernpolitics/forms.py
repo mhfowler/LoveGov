@@ -366,12 +366,30 @@ class CommentForm(forms.Form):
         return comment
 
 #=======================================================================================================================
-# Comment Form
+# Other forms
 #=======================================================================================================================
 class UploadFileForm(forms.Form):
     image = forms.FileField()
+class UploadImageForm(forms.Form):
+    image = forms.ImageField()
 
 
+class UserImageForm(forms.Form):
+    # PRIVATE CLASSES
+    class Meta:
+        model = UserImage
+        fields = ('title', 'summary','topics')
+        # METHODS
+    def complete(self,request):
+        to_return = self.save(commit=False)
+        file_content = ContentFile(request.FILES['image'].read())
+        to_return.createImage(file_content)
+        return to_return
+        # FIELDS
+    action = forms.CharField(widget=forms.HiddenInput(), initial='create')
+    topics = SelectTopicsField(content_type=TYPE_DICT['image'])
+    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['image'])
+    image = forms.FileField()
 
 
 
