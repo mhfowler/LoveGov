@@ -892,6 +892,7 @@ def getNextQuestion(request, dict={}):
 def account(request, dict={}):
     user = dict['user']
     dict['userProfile'] = user
+    dict['uploadform'] = betaforms.UploadFileForm()
     if request.method == 'GET':
         dict['password_form'] = betaforms.PasswordForm()
         dict['uploadform'] = betaforms.UploadFileForm()
@@ -926,7 +927,7 @@ def account(request, dict={}):
                 dict['uploadform'] = betaforms.UploadFileForm(request.POST)
         else:
             pass
-        return shortcuts.redirect('/account/') # necessary to redirect to clear form data
+        return renderToResponseCSRF('deployment/pages/account.html', dict, request)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

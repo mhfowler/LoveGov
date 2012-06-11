@@ -365,6 +365,11 @@ class CommentForm(forms.Form):
         comment.autoSave(creator=creator, privacy=privacy)
         return comment
 
+#=======================================================================================================================
+# Comment Form
+#=======================================================================================================================
+class UploadFileForm(forms.Form):
+    image = forms.FileField()
 
 
 
