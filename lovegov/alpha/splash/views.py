@@ -538,7 +538,7 @@ def profile(request, alias=None, dict={}):
             # Get user's top 5 similar friends
             prof_follow_me = list(user_prof.getFollowMe())
             for follow_me in prof_follow_me:
-                comparison = betabackend.getUserUserComparison(prof_user, follow_me)
+                comparison = betabackend.getUserUserComparison(user_prof, follow_me)
                 follow_me.compare = comparison.toJSON()
                 follow_me.result = comparison.result
             prof_follow_me.sort(key=lambda x:x.result,reverse=True)
@@ -550,7 +550,7 @@ def profile(request, alias=None, dict={}):
             # Get user's top 5 similar groups
             prof_groups = list(user_prof.getGroups())
             for group in prof_groups:
-                comparison = betabackend.getUserGroupComparison(prof_user, group)
+                comparison = betabackend.getUserGroupComparison(user_prof, group)
                 group.compare = comparison.toJSON()
                 group.result = comparison.result
             prof_groups.sort(key=lambda x:x.result,reverse=True)
