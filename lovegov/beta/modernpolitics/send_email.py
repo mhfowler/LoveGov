@@ -31,6 +31,7 @@ def sendTemplateEmail(subject, template, dictionary, email_sender, email_recipie
     msg = EmailMessage(subject, email_html, email_sender, [email_recipient])
     msg.content_subtype = "html"
     try:
+        print "email: " + subject + " " + email_recipient
         msg.send()
     except:
         print "Invalid e-mail for user " + email_recipient

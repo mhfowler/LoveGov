@@ -18,14 +18,11 @@
 from lovegov.beta.modernpolitics import backend
 from lovegov.beta.modernpolitics.backend import getUserProfile, getPrivacy
 from lovegov.beta.modernpolitics.forms import *
-from lovegov.beta.modernpolitics.models import *
 
 ### DJANGO LIBRARIES ###
-from django.http import *
 from django.forms import *
 from django import shortcuts
-from django.core.files.base import ContentFile
-from django.utils import simplejson
+from django.template import RequestContext, loader
 from django.utils.datastructures import MultiValueDictKeyError
 
 #-----------------------------------------------------------------------------------------------------------------------

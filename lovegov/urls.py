@@ -49,8 +49,8 @@ urlpatterns += patterns('',
 
     ### outside of login ###
     (r'^register/$',alphaviews.register),                                       # register page
-    (r'^login/(?P<to_page>\S*)$',alphaviews.login),                             # login
-    (r'^confirm/(?P<confirm_link>\S+)$', alphaviews.confirm),                   # confirm
+    (r'^login/(?P<to_page>\S*)/$',alphaviews.login),                             # login
+    (r'^confirm/(?P<confirm_link>\S+)/$', alphaviews.confirm),                   # confirm
     (r'^privacypolicy/$', alphaviews.privacyPolicy),                            # privacy
     (r'^fb/action/$', requiresLogin(alphaviews.facebookAction) ),
     (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
@@ -101,6 +101,7 @@ urlpatterns += patterns('',
 
 
     ## REDIRECT
-    (r'.*', alphaviews.redirect))
+    (r'.*/$', alphaviews.redirect),
+    (r'^$', alphaviews.redirect))
 
 

@@ -537,6 +537,7 @@ textarea:focus
 {
     float:right;
     height:50px;
+    width:430px;
 }
 
 #feedback-response

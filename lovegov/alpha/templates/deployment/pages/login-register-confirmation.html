@@ -3,7 +3,9 @@
 {% block middle %}
 
     <p style="padding:125px">
-        Log in with your email and password to confirm your account.
+    {% if user %}
+        Hello {{ user.get_name }}, your account has been confirmed. Login to lovegov above ^
+    {% endif %}
     </p>
 
 {% endblock %}
