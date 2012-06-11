@@ -559,6 +559,9 @@ def profile(request, alias=None, dict={}):
             # Get user's random 5 groups
             #dict['prof_groups'] = user_prof.getGroups(5)
 
+            # Get Notifications
+            dict['prof_requests'] = list(user_prof.getFollowRequests())
+
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
             if request.is_ajax():
@@ -570,7 +573,7 @@ def profile(request, alias=None, dict={}):
             else:
                 return renderToResponseCSRF(template='deployment/pages/profile.html', dict=dict, request=request)
         else:
-            return shortcuts.redirect('/alpha/' + user.alias)
+            return shortcuts.redirect('/profile/' + user.alias)
     else:
         if request.POST['action']:
             return betaactions.answer(request, dict)

@@ -624,10 +624,25 @@ class Content(Privacy, LocationLevel):
             self.saveCreated(creator=creator, privacy=privacy)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns query set of all users following this content.
+    # Returns query set of all UsersFollows following this content.
     #-------------------------------------------------------------------------------------------------------------------
-    def getFollowMe(self):
+    def getUserFollowMe(self):
         return Followed.objects.filter(content=self)
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a list of all Users who are (confirmed) following this user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getFollowMe(self, num=-1):
+        follows = Followed.objects.filter(content=self)
+        followers = []
+        if num == -1:
+            for f in follows:
+                followers.append(f.user)
+        else:
+            i = 0
+            while i < len(follows) and i < num:
+                followers.append(follows[i].user)
+        return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns the total number of comments on this content, including replies.
@@ -1021,13 +1036,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
     def makeFriends( self , friend , fb=False ):
-        relationship_a = models.UserFollow.lg.get_or_none( user=self, to_user=friend )
+        relationship_a = UserFollow.lg.get_or_none( user=self, to_user=friend )
         self.getMyConnections().members.add(friend)
-        relationship_b = models.UserFollow.lg.get_or_none( user=friend, to_user=self )
+        relationship_b = UserFollow.lg.get_or_none( user=friend, to_user=self )
         friend.getMyConnections().members.add(self)
         #Check and Make Relationship A
         if not relationship_a:
-            relationship_a = models.UserFollow( user=self , to_user=friend , confirmed=True, fb=fb )
+            relationship_a = UserFollow( user=self , to_user=friend , confirmed=True, fb=fb )
             relationship_a.autoSave()
         else:
             relationship_a.confirmed = True
@@ -1036,7 +1051,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             relationship_a.save()
             #Check and Make Relationship B
         if not relationship_b:
-            relationship_b = models.UserFollow( user=friend, to_user=self , confirmed=True, fb=fb )
+            relationship_b = UserFollow( user=friend, to_user=self , confirmed=True, fb=fb )
             relationship_b.autoSave()
         else:
             relationship_b.confirmed = True
@@ -1190,7 +1205,40 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.my_feed.all().delete()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns query set of all Groups this user has joined and been accepted to.
+    # Returns a query set of all notifications.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNotifications(self, num=-1):
+        if num == -1:
+            notifications = Notification.objects.filter( notify_user=self ).order_by('when')
+        else:
+            notifications = Notification.objects.filter( notify_user=self ).order_by('when')[:num]
+        for n in notifications:
+            n.viewed = True
+        return notifications
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all NEW notifications.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNewNotifications(self, num=-1):
+        if num == -1:
+            notifications = Notification.objects.filter( notify_user=self, viewed=False).order_by('when')
+        else:
+            notifications = Notification.objects.filter( notify_user=self, viewed=False ).order_by('when')[:num]
+        for n in notifications:
+            n.viewed = True
+        return notifications
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getFollowRequests(self, num=-1):
+        if num == -1:
+            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')
+        else:
+            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')[:num]
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a list of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
         group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
@@ -1205,7 +1253,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         return groups
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns query set of all UserFollow who are (confirmed) following this user.
+    # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowMe(self, num=-1):
         follows = UserFollow.objects.filter( to_user=self, confirmed=True )
@@ -1220,7 +1268,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns query set of all UserFollow who this user is (confirmed) following.
+    # Returns a list of all Users who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
         follows = UserFollow.objects.filter( user=self, confirmed=True )
@@ -1243,6 +1291,20 @@ class UserProfile(FacebookProfileModel, LGModel):
         for f in follows:
             friends.append(f.to_user)
         return friends
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all UserFollow who are (confirmed) following this user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getUserFollowMe(self):
+        followers = UserFollow.objects.filter( to_user=self, confirmed=True )
+        return followers
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all UserFollow who are (confirmed) following this user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getIUserFollow(self):
+        following = UserFollow.objects.filter( user=self, confirmed=True )
+        return following
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a set of random questions that the user hasn't answered
@@ -1402,14 +1464,14 @@ class Action(Privacy):
         self.notified = [self.creator_id, -1, getLoveGovUser().id] # for keeping track of who has been notified and not duplicating
         # NOTIFY FOLLOWERS OF OBJECT
         if self.modifier == 'D' and self.type in ['JO', 'JD', 'AE', 'MV', 'DV', 'VO', 'DM', 'SI', 'SH', 'FC', 'CO', 'XX']:
-            self.notifyAll(follows=relationship.getTo().getFollowMe())
+            self.notifyAll(follows=relationship.getTo().getUserFollowMe())
             # SHARE
         if self.type == 'SH':
             shared = Shared.objects.get(id = self.relationship_id)
             self.notifyAll(users=shared.share_users)
             # share with group followers
             for g in shared.share_groups:
-                self.notifyAll(follows=g.getFollowMe())
+                self.notifyAll(follows=g.getUserFollowMe())
             # REQUESTS AND INVITATIONS
         # request to join group
         if self.type == 'JO' and self.modifier =='R':
@@ -1447,7 +1509,7 @@ class Action(Privacy):
                 user = relationship.user
             else:
                 user = self.getCreator()
-            self.notifyAll(follows=user.getFollowMe())
+            self.notifyAll(follows=user.getUserFollowMe())
 
     def notifyAll(self, users=None, follows=None):
         if users:
