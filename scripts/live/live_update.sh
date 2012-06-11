@@ -1,9 +1,10 @@
-# svn update
-sudo svn update /srv/live
+# git pull
+cd /srv/live
+sudo git pull
 # collect static
-python /srv/live/lovegov/live_manage.py collectstatic
+sudo python /srv/live/lovegov/live_manage.py collectstatic --noinput
 # reset permissions
-chmod -R 770 /static/live
-chgrp -R access /static/live
+sudo chmod -R 770 /static/live
+sudo chgrp -R access /static/live
 # rewsgi
 sudo touch /srv/live/lovegov/apache/live.wsgi

@@ -1,9 +1,10 @@
-# svn update
-sudo svn update /srv/dev
+# git pull
+cd /srv/dev
+sudo git pull
 # collect static
-python /srv/dev/lovegov/dev_manage.py collectstatic --noinput
+sudo python /srv/dev/lovegov/dev_manage.py collectstatic --noinput
 # reset permissions
-chmod -R 770 /static/dev
-chgrp -R access /static/dev
+sudo chmod -R 770 /static/dev
+sudo chgrp -R access /static/dev
 # rewsgi
 sudo touch /srv/dev/lovegov/apache/dev.wsgi
