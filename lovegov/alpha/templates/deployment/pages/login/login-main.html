@@ -3,7 +3,6 @@
 {% block middle %}
 
     <div>
-
         <div id="middle-left">
             <a id="what-is-lovegov">what is<br> lovegov?</a>
         </div>
@@ -19,73 +18,129 @@
             </div>
 
             <p>
-                I don’t have a Facebook account - Why we ask for Facebook
+                By logging in with Facebook you agree to our <a id="privacy-policy">Privacy Policy</a>
             </p>
+
             <p style="margin:0">
-                By logging in with Facebook you agree to our <a href="">Privacy Policy</a>
+                <a id="no-facebook" class="no-why-facebook">I don’t have a Facebook account</a> - <a id="why-facebook" class="no-why-facebook">Why we ask for Facebook</a>
             </p>
 
+            <div id="why-facebook-hover" style="display:none">
+                <a>X</a>
+                By logging in with Facebook we are able to better match you with friends and networks giving you a better
+                LoveGov experience.
+            </div>
         </div>
 
+        <div id="login-div" style="display:none">
+            <h1>Log in to LoveGov</h1>
+            <form action="" method="post" id="loginform"> {% csrf_token %}
+                <table id="logintable">
+                    <tr>
+                        <td>
+                            <input type="text" id="username-input" class="login-input" name="username"/>
+                            <span class="input-span" id="username-span">email</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="password" id="password-input" class="login-input" name="password"/>
+                            <span class="input-span" id="password-span">password</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <input type="hidden" name="button" value="login"/>
+                            <input class="submit-button" id="submit-login" type="submit" value="log in"/>
+                            <div style="height:25px">
+                                <a class="account-actions" id="forgot-password">forgot password?</a>
+                            </div>
+                            <div>
+                                <a class="account-actions" id="create-content">create account</a>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </form>
+            <script type="text/javascript">
+
+                $('#username-input').focusin(function()
+                {
+                    $('#username-span').css('color','#CCCCCC');
+                });
+
+                $('#username-input').focusout(function()
+                {
+                    $('#username-span').css('color','#959595');
+                    if ($(this).val()==''){ $('#username-span').show(); }
+                });
+
+                $('#username-input').keypress(function()
+                {
+                    $('#username-span').hide();
+                });
+
+
+                $('#password-input').focusin(function()
+                {
+                    $('#password-span').css('color','#CCCCCC');
+                });
+
+                $('#password-input').focusout(function()
+                {
+                    $('#password-span').css('color','#959595');
+                    if ($(this).val()==''){ $('#password-span').show(); }
+                });
+
+                $('#password-input').keypress(function()
+                {
+                    $('#password-span').hide();
+                });
+
+            </script>
+        </div>
     </div>
 
-    <div class="about-div" style="display:none">
-        <h2>Get Started</h2>
+    {% include 'deployment/pages/login/login-about.html' %}
 
-        <div class="get-started-container get-started-container-left about-hover-element">
-            <div class="get-started-left">
-                1
-            </div>
-            <div class="get-started-right">
-                <h4>answer questions</h4>
-                <img src="/static/images/about/question.png"/>
-            </div>
-            <div class="get-started-bottom">
-                <p class="get-started-paragraph">
-                    Define your political beliefs by answering questions about political issues. Questions
-                    are based off legislation that has appeared in congress over the past few years.
-                </p>
-            </div>
-        </div>
-
-        <div class="get-started-container get-started-container-center about-hover-element">
-            <div class="get-started-left">
-                2
-            </div>
-            <div class="get-started-right">
-                <h4>find &amp; compare</h4>
-                <img src="/static/images/about/findandcompare.png"/>
-            </div>
-            <div class="get-started-bottom">
-                <p class="get-started-paragraph">
-                    See where you stand politically in your social world. Compare yourself with presidential candidates,
-                    congress, as well as your friends.
-                </p>
-            </div>
-        </div>
-
-        <div class="get-started-container get-started-container-right about-hover-element">
-            <div class="get-started-left">
-                3
-            </div>
-            <div class="get-started-right">
-                <h4>create &amp; discuss</h4>
-                <img src="/static/images/about/creatediscuss.png"/>
-            </div>
-            <div class="get-started-bottom">
-                <p class="get-started-paragraph">
-                    Make petitions, share news, and debate the issues with others.  As our site grows you will have more
-                    ways to express yourself and participate in your democracy.
-                </p>
-            </div>
-        </div>
-
-    </div>
+    {% include 'deployment/pages/login/login-privacy.html' %}
 
     <script type="text/javascript">
-        $('#what-is-lovegov').click(function()
+        $(document).ready(function()
         {
-            $('.about-div').fadeToggle(300);
+            $('#what-is-lovegov').click(function()
+            {
+                $('.fade').fadeOut(300);
+                $('.about-div').fadeToggle(300);
+            });
+
+            $('#privacy-policy').click(function()
+            {
+                $('.fade').fadeOut(300);
+                $('#privacy-div').fadeToggle(300);
+            });
+
+            $('#why-facebook').click(function()
+            {
+                $('#why-facebook-hover').fadeToggle(300);
+                return false;
+            });
+
+            $('#why-facebook-hover').bind('clickoutside',function()
+            {
+                $(this).fadeOut(300);
+            });
+
+            $("#why-facebook-hover a").click(function()
+            {
+                $('#why-facebook-hover').fadeOut(300);
+            });
+
+            $('#no-facebook').click(function()
+            {
+                $('#middle-right').html($('#login-div').html());
+            });
         });
     </script>
 

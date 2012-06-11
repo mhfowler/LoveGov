@@ -20,10 +20,9 @@
 
 #main
 {
-    font-family:Helvetica, Verdana, sans-serif;
+    font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif;
     color: #343434;
     font-size: 16px;
-    line-height:150%;
     width:1000px;
     margin-left:auto;
     margin-right:auto;
@@ -69,24 +68,61 @@ input:focus
 
 #loginform
 {
-    float:right;
-    margin-top:40px;
+    float:left;
+}
+
+.input-span
+{
+    position:absolute;
+    left:10px;
+    color:#959595;
+}
+
+#username-span
+{
+    top:61px;
+}
+
+#password-span
+{
+    top:119px;
+
 }
 
 .login-input
 {
-    height:25px;
-    width:235px;
+    height:45px;
+    width:400px;
     padding:5px;
-    font-size:18px;
+    font-size:28px;
+    color:black;
+    font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif
+}
+
+.account-actions
+{
+    margin-right:15px;
+    margin-top: 21px;
+    font-size: 15px
+}
+
+.account-actions:hover
+{
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+#forgot-password
+{
+
 }
 
 table td
 {
     text-align:right;
-    padding-right:5px;
-    font-size:20px;
+    font-size:28px;
 }
+
 
 
 /* MIDDLE */
@@ -109,16 +145,17 @@ table td
 
 #middle-left a, #middle-left a:link, #middle-left a:active, #middle-left a:visited
 {
-    padding-top:5px;
-    padding-bottom:5px;
+    padding-top:10px;
+    padding-bottom:10px;
     padding-left:30px;
     padding-right:30px;
     text-transform:uppercase;
     position:absolute;
-    left:150px;
+    left:128px;
     top:110px;
     background-color:#f0503b;
     color:white;
+    font-weight:bold;
     text-align:center;
     font-size:17px;
     border-radius:10px;
@@ -126,12 +163,12 @@ table td
 
 #middle-left a:hover
 {
-    left:145px;
+    left:123px;
     top:105px;
     cursor:pointer;
     padding-left:35px;
-    padding-top:10px;
-    padding-bottom:10px;
+    padding-top:15px;
+    padding-bottom:15px;
     padding-right:35px;
 
 }
@@ -141,7 +178,7 @@ table td
     position:relative;
     float:right;
     margin-right:25px;
-    margin-top:50px;
+    margin-top:25px;
     width:425px;
 }
 
@@ -154,16 +191,56 @@ table td
     font-size:17px;
 }
 
-#middle-right a, #middle-right a:link, #middle-right a:visited, #middle-right a:active
+#privacy-policy, #privacy-policy:link, #privacy-policy:visited, #privacy-policy:active
 {
     color:#0F5569;
     text-decoration:none;
 }
 
-#middle-right a:hover
+#privacy-policy:hover
 {
     color: #127c9a;
+    cursor:pointer;
 }
+
+
+.no-why-facebook, .no-why-facebook:link, .no-why-facebook:visited, .no-why-facebook:active
+{
+    color:#959595;
+}
+
+.no-why-facebook:hover
+{
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+#why-facebook-hover
+{
+    position:absolute;
+    width:250px;
+    height:125px;
+    border-radius:5px;
+    padding:25px;
+    opacity:0.95;
+    background-color:#f0503b;
+    color:white;
+    font-weight:bold;
+    text-align:center;
+    top:-10px;
+    left:60px;
+    font-size:19px;
+}
+
+#why-facebook-hover a
+{
+    position:absolute;
+    top:5px;
+    right:5px;
+    cursor:pointer;
+}
+
+
 
 table tr
 {
@@ -188,8 +265,7 @@ table tr
 {
     width:1000px;
     float:left;
-    margin-bottom:25px;
-    margin-top:55px;
+    margin-bottom:20px;
 }
 
 .about-element h1
@@ -242,8 +318,8 @@ table tr
 
 .about-div h4
 {
-    font-family: "Gill Sans Std", Gill Sans, sans-serif;
-    color:#959595;
+    font-family: "Gill Sans Std Light", Gill Sans, sans-serif;
+    color:#0F5569;
     font-size:24px;
     margin:0px;
     padding: 0px;
@@ -256,7 +332,7 @@ table tr
     color:#0f5569;
     font-weight: normal;
     font-size: 50px;
-    margin-bottom:10px;
+    margin-top:20px;
 }
 
 
@@ -266,7 +342,6 @@ table tr
     font-size:32px;
     font-weight:normal;
     margin-bottom:5px;
-    line-height:120%;
     font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif;
 }
 
@@ -319,6 +394,28 @@ table tr
     margin-top:10px;
     margin-bottom:10px;
 }
+
+#privacy-div
+{
+    float:left;
+    margin-top:50px;
+}
+
+#privacy-div div
+{
+    width:475px;
+    float:left;
+}
+
+#privacy-div h3
+{
+    font-family: "Gill Sans Std Light", Gill Sans, sans-serif;
+    color:#0f5569;
+    font-weight: normal;
+    font-size: 50px;
+}
+
+
 
 .team
 {
@@ -448,9 +545,9 @@ table tr
     -webkit-border-radius:10px;
     -khtml-border-radius:10px;
     border-radius:10px;
-    padding:10px;
+    padding:15px;
     padding-bottom:3px;
-    font-size:14pt;
+    font-size:21px;
     font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
     background-color:#f0503b;
     color:#ffffff;
@@ -544,25 +641,6 @@ table tr
     margin-bottom:25px;
 }
 
-.about-div h4
-{
-    font-family: "Gill Sans Std", Gill Sans, sans-serif;
-    color:#959595;
-    font-size:24px;
-    margin:0px;
-    padding: 0px;
-    margin-bottom: 5px;
-}
-
-.about-div h3
-{
-    font-family: "Gill Sans Std Light", Gill Sans, sans-serif;
-    color:#0f5569;
-    font-weight: normal;
-    font-size: 50px;
-    margin-bottom:10px;
-}
-
 .about-div ul
 {
     list-style-type:disc;
@@ -598,12 +676,7 @@ table tr
     margin-top:0;
 }
 
-#what-is
-{
-    margin-top:40px;
-}
-
-#what-is p
+#what-is-p
 {
     width: 565px;
     font-size: 24px;
@@ -717,7 +790,6 @@ table tr
     color:#f0503b;
     float:left;
     margin-right:15px;
-    margin-top:45px;
 }
 
 .get-started-right
