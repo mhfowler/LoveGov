@@ -524,7 +524,6 @@ def profile(request, alias=None, dict={}):
         if alias:
             frame(request, dict)
             getUserResponses(request,dict)
-
             # get comparison of person you are looking at
             to_compare = UserProfile.objects.get(alias=alias)
             comparison = betabackend.getUserUserComparison(user, to_compare)
@@ -567,6 +566,9 @@ def network(request, name=None, dict={}):
     jsonData = comparison.toJSON()
     dict['json'] = jsonData
     dict['defaultImage'] = betabackend.getDefaultImage().image
+    dict['histogram'] = network.getComparisonHistogram(user)
+    dict['histogram_resolution'] = betaconstants.HISTOGRAM_RESOLUTION
+    dict['network_members'] = network.getMembersDisplay()
     setPageTitle("lovegov: " + network.title,dict)
     if request.is_ajax():
         html = ajaxRender('deployment/center/network.html', dict, request)

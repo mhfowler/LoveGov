@@ -260,14 +260,26 @@ def searchAutoComplete(request,dict={}):
     html = ajaxRender('deployment/pieces/autocomplete.html', dict, request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+#
+# Loads members.
+#
+#-----------------------------------------------------------------------------------------------------------------------
 def loadNetworkUsers(request,dict={}):
     num = int(request.GET['num'])
-    idnum = int(request.GET['id'])
-    next_num = num + 25
-    moreMembers = Network.objects.get(id=idnum).members.all().order_by('id')[num:next_num]
+    id_start = int(request.GET['id_start'])
+    histogram_topic = request.GET['histogram_topic']
+    histogram_lower = request.GET['histogram_lower']
+    histogram_upper = request.GET['histogram_upper']
+    histogram_resolution = request.GET['histogram_resolution']
+    print 'topic: ' + histogram_topic
+    print 'lower: ' + histogram_lower
+    print 'upper: ' + histogram_upper
+    next_num = num + 1
+    more_members = Network.objects.members.filter(id__gt=id_start).order_by('id')[0:next_num]
     html = ""
     dict['defaultImage'] = backend.getDefaultImage().image
-    for member in moreMembers:
+    for member in more_members:
         dict['member'] = member
         html += ajaxRender('deployment/snippets/network-member.div.html',dict,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))

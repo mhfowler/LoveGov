@@ -17,9 +17,13 @@
 
         <div id="members-list">
             <h3> Members </h3>
-            <input id="network-displaynum" type="hidden" value="{% if network.members.all.count < 20 %}{{ network.members.all.count }}{% else %}20{% endif %}"/>
             <input id="network-id" type="hidden" value="{{ network.id }}"/>
-            {% for x in network.members.all|slice:":20" %}
+            <input id="histogram-topic" type="hidden" value="general"/>
+            <input id="histogram-lower" type="hidden" value="0"/>
+            <input id="histogram-upper" type="hidden" value="{{ histogram_resolution }}"/>
+            <input id="histogram-resolution" type="hidden" value="{{ histogram_resolution }}"/>
+            <input id="histogram-displayed" type="hidden" value="{{ network_members.count}} "/>
+            {% for x in network_members %}
                 {% include 'deployment/snippets/network-member.div.html' with member=x %}
             {% endfor %}
         </div>
@@ -41,5 +45,13 @@
 
 </div>
 
+<div style="margin-left:200px;">
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{% for k,v in histogram.items %}
+    <p>
+    key: {{ k }} value: {{ v }}
+    </p>
+{% endfor %}
+</div>
 
 </div>

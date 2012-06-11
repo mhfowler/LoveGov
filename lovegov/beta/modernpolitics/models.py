@@ -2973,6 +2973,28 @@ class Group(Content):
     system = models.BooleanField(default=False)     # means you can't leave
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Returns json of histogram data.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparisonHistogram(self, user, topic=None, resolution=10):
+        from lovegov.beta.modernpolitics.backend import getUserUserComparison
+        histogram = {}                  # initialize empty histogram
+        for i in range(0, resolution+1):
+            histogram[i]=0
+        for x in self.members.all():
+            comparison = getUserUserComparison(user, x)
+            if topic:
+               block = comparison.bytopic.get(topic=topic).result / resolution
+            else:
+                block = comparison.result / resolution
+            if block in histogram:
+                histogram[block] += 1
+            if block == resolution:           # special case for identical
+                histogram[resolution-1] += 1
+        for k in histogram:
+            print "key: " + str(k) + " value: " + str(histogram[k])
+        return histogram
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
     #-------------------------------------------------------------------------------------------------------------------
     def edit(self,field,value):

@@ -1779,6 +1779,7 @@ function loadAccount()
 }
 
 
+
 function loadNetwork()
 {
     var loadingLockout = false;
@@ -1786,7 +1787,11 @@ function loadNetwork()
     function loadMoreUsers(event)
     {
         event.preventDefault();
-        var num = $('#network-displaynum').val();
+        var num = $('#histogram-displayed').val();
+        var histogram_topic = $('#histogram-topic').val();
+        var histogram_lower = $('#histogram-lower').val();
+        var histogram_upper = $('#histogram-upper').val();
+        var histogram_resolution = $('#histogram-resolution').val();
         var id = $('#network-id').val();
         if (!loadingLockout)
         {
@@ -1795,11 +1800,13 @@ function loadNetwork()
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadNetworkUsers','num':num,'id':id},
+                    data: {'action':'loadNetworkUsers','num':num,'id':id,
+                        'histogram_topic':histogram_topic,'histogram_lower':histogram_lower,'histogram_upper':histogram_upper,
+                    'histogram_resolution':histogram_resolution},
                     success: function(data)
                     {
                         var returned = eval('(' + data + ')');
-                        $('#members-list').append(returned.html);
+                        $('#members-list').replace(returned.html);
                         $('#network-displaynum').val(returned.num);
                         loadHoverComparison();
                         loadAjaxifyAnchors();
@@ -1825,10 +1832,12 @@ function loadNetwork()
     }
 
 
+    /*
     $(window).scroll(function(event)
     {
         if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
     });
+    */
 
     $('#network-see-more-users').click(function(event)
     {
