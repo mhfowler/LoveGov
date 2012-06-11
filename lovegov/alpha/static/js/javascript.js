@@ -188,8 +188,10 @@ function loadAjaxifyAnchors()
 {
     // Jquery's '.one' binds the handler to each link once
     // This prevents the function from being called multiple times
-    $('.do-ajax-link').one('click',  function(event))
+    $('.do-ajax-link').one('click',  function(event)
     {
+        var elem = event.target;
+        var href = $(elem).attr('href');
         if (
             href != undefined &&
             href != "" &&
@@ -203,7 +205,7 @@ function loadAjaxifyAnchors()
             ajaxLink($(elem), true);
             return false;
         }
-    }
+    });
 
 }
 /***********************************************************************************************************************
