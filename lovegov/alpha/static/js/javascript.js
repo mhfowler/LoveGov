@@ -47,6 +47,7 @@ function rebindFunction()
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfileComparison();
+            loadProfile();
             break;
         case 'network':
             loadProfileComparison();
@@ -1648,6 +1649,39 @@ function loadAbout()
             function(){ $(this).css("background-color","#FFFFFF") }
         );
 }
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Profile
+ *
+ ***********************************************************************************************************************/
+function loadProfile()
+{
+    $("#user_follow").click( function(event) {
+        event.preventDefault();
+        $.ajax
+            ({
+                url:'/action/',
+                type:'POST',
+                data: {'action':'userfollow',
+                    'p_id': p_id,
+                     },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+    })
+}
+
+
+
+
 
 
 /***********************************************************************************************************************
