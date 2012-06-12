@@ -622,6 +622,32 @@ def network(request, name=None, dict={}):
         return renderToResponseCSRF(template='deployment/pages/network.html', dict=dict, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Group page
+#-----------------------------------------------------------------------------------------------------------------------
+def group(request, g_id=None, dict={}):
+    user = dict['user']
+    if not g_id:
+        return HttpResponse('nope, haha')
+    group = betamodels.Group.lg.get_or_none(id=g_id)
+    if not group:
+        return HttpResponse('still not, shiiit')
+    dict['network'] = group
+    comparison = betabackend.getUserGroupComparison(user, group, force=True)
+    dict['comparison'] = comparison
+    jsonData = comparison.toJSON()
+    dict['json'] = jsonData
+    dict['defaultImage'] = betabackend.getDefaultImage().image
+    setPageTitle("lovegov: " + group.title,dict)
+    if request.is_ajax():
+        html = ajaxRender('deployment/center/network.html', dict, request)
+        url = group.get_url()
+        rebind = 'group'
+        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
+        return HttpResponse(json.dumps(to_return))
+    else:
+        return renderToResponseCSRF(template='deployment/pages/network.html', dict=dict, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # About Link
 #-----------------------------------------------------------------------------------------------------------------------
 def about(request, dict={}):
