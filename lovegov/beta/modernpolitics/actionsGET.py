@@ -260,10 +260,10 @@ def getCongressmen(request, dict={}):
 # Returns json of list of results which match inputted 'term'. For jquery autocomplete.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def searchAutoComplete(request,dict={}):
+def searchAutoComplete(request,dict={},limit=5):
     string = request.GET['string'].lstrip().rstrip()
     userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=string)
-    dict['userProfiles'] = [userProfile.object for userProfile in userProfiles]
+    dict['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
     html = ajaxRender('deployment/pieces/autocomplete.html', dict, request)
     return HttpResponse(json.dumps({'html':html}))
 

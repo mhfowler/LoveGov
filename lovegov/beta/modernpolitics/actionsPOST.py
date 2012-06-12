@@ -134,11 +134,6 @@ def actionPOST(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
-    petition = CreatePetitionForm()
-    event = CreateEventForm()
-    news = CreateNewsForm
-    group = CreateGroupForm()
-    album = UserImageForm()
     formtype = request.POST['type']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
@@ -159,13 +154,7 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        # save image
-        try:
-            uploaded = request.FILES['main_img']
-            file_content = ContentFile(uploaded.read())
-            c.setMainImage(file_content)
-        except MultiValueDictKeyError:
-            print("nope")
+        # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
                 from lovegov.alpha.splash.views import petitionDetail

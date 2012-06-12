@@ -97,7 +97,12 @@ class Privacy(LGModel):
     # Returns user who created this.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreator(self):
-        return self.creator
+        try:
+            creator = self.creator
+        except UserProfile.DoesNotExist:
+            from lovegov.beta.modernpolitics.backend import getLoveGovUser
+            return getLoveGovUser() 
+        return creator
         # if self.creator_id != -1:
         #     creator = UserProfile.objects.filter(id=self.creator_id)
         #     if creator:

@@ -69,14 +69,21 @@ function rebindFunction()
  *      ~General
  *
  ***********************************************************************************************************************/
-
 function loadHoverComparison()
 {
+
+    var hoverTimer;
+
+    $('#comparison-hover-div').hoverIntent(
+        function() { clearTimeout(hoverTimer); },
+        function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
+
     $('.feed-username').hoverIntent
         (
             // hover over
             function(event)
             {
+
                 var self = $(this);
                 var a = $(this).find('a');
                 if (a.attr('href') != undefined)
@@ -119,8 +126,11 @@ function loadHoverComparison()
             // hover out
             function(event)
             {
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div').fadeOut(100);
+                hoverTimer = setTimeout(function()
+                {
+                    $('#comparison-hover').empty();
+                    $('#comparison-hover-div').fadeOut(100);
+                },500)
             }
         );
 }
