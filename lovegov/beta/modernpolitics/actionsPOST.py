@@ -453,10 +453,14 @@ def joinGroupRequest(request, dict={}):
 def userFollowRequest(request, dict={}):
     user = dict['user']
     person = UserProfile.objects.get(id=request.POST['p_id'])
+    if person.id == user.id:
+        return HttpResponse("you cannot follow yourself")
     already = UserFollow.objects.filter(user=user, to_user=person)
     if already:
         follow = already[0]
-        if follow.confirmed or follow.requested:
+        if follow.confirmed:
+            return HttpResponse("you are already following this person")
+        elif follow.requested:
             return HttpResponse("you have already requested to follow this person")
     else:
         follow = UserFollow(user=user, to_user=person)
@@ -483,6 +487,8 @@ def userFollowResponse(request, dict={}):
             elif response == 'N':
                 follow.reject()
                 return HttpResponse("you have rejected their follow request")
+        if follow.confirmed:
+            return HttpResponse("This person is already following you")
     return HttpResponse("this person has not requested to follow you")
 
 #-----------------------------------------------------------------------------------------------------------------------

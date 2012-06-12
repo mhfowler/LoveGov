@@ -3449,14 +3449,14 @@ class Invite(LGModel):
     def confirm(self):
         self.confirmed = True
         self.save()
-        self.autoNotify(child=self)
+        #self.autoNotify(child=self)
     def request(self):
         self.requested = True
         if self.invited:
             self.confirm()
         else:
             self.save()
-            self.autoNotify(child=self, modifier='R', must_notify=True)
+            #self.autoNotify(child=self, modifier='R', must_notify=True)
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
@@ -3464,7 +3464,7 @@ class Invite(LGModel):
             self.confirm()
         else:
             self.save()
-            self.autoNotify(child=self, modifier='I', must_notify=True)
+            #self.autoNotify(child=self, modifier='I', must_notify=True)
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -3482,12 +3482,12 @@ class Invite(LGModel):
         if self.requested:
             self.rejected = True
             self.save()
-            self.autoNotify(child=self, modifier='X', must_notify=True)
+            #self.autoNotify(child=self, modifier='X', must_notify=True)
     def decline(self):
         if self.invited:
             self.declined = True
             self.save()
-            self.autoNotify(child=self, modifier='N', must_notify=True)
+            #self.autoNotify(child=self, modifier='N', must_notify=True)
     def accept(self):
         if self.invited:
             self.confirm()
@@ -3499,7 +3499,7 @@ class Invite(LGModel):
             self.confirmed = False
             self.rejected = True
             self.save()
-            self.autoNotify(child=self, modifier='X', must_notify=True)
+            #self.autoNotify(child=self, modifier='X', must_notify=True)
 
 
 #=======================================================================================================================

@@ -558,8 +558,13 @@ def profile(request, alias=None, dict={}):
             # Get user's random 5 groups
             #dict['prof_groups'] = user_prof.getGroups(5)
 
-            # Get Notifications
+            # Get Follow Requests
             dict['prof_requests'] = list(user_prof.getFollowRequests())
+
+            # Is the current user already following this profile?
+            dict['is_user_follow'] = False
+            if betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof):
+                dict['is_user_follow'] = True
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()

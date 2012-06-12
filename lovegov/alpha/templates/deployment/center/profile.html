@@ -81,22 +81,24 @@
     </ul>
 
     {% if user.id == user_prof.id %}
-    <ul id="follow-requests">
-        {% for req in prof_requests %}
-            <li>{{ req.getFrom.get_name }} has requested to follow you:
-                <a href="" class="follow-response-y"> I accept! </a> ||
-                <a href="" class="follow-response-n"> I decline! </a>
-                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-            </li>
-        {% empty %}
-            <li>No follow requests! =( </li>
-        {% endfor %}
-    </ul>
+        <ul id="follow-requests">
+            {% for req in prof_requests %}
+                <li>{{ req.getFrom.get_name }} has requested to follow you:
+                    <a href="" class="follow-response-y"> I accept! </a> ||
+                    <a href="" class="follow-response-n"> I decline! </a>
+                    <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+                </li>
+            {% empty %}
+                <li>No follow requests! =( </li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
-    <a href="" id="user-follow">
-        follow me!
-    </a>
+    {%if user.id != user_prof.id and not is_user_follow %}
+        <a href="" id="user-follow">
+            follow me!
+        </a>
+    {% endif %}
 
     <script>
         var p_id = "{{ user_prof.id }}";
