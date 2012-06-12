@@ -59,6 +59,8 @@ def actionGET(request, dict={}):
             return searchAutoComplete(request,dict)
         elif action=='loadNetworkUsers':
             return loadNetworkUsers(request,dict)
+        elif action=='loadHistogram':
+            return loadHistogram(request,dict)
         else:
             dict['message'] = "There is no such action."
             return renderToResponseCSRF('usable/message.html',dict,request)
@@ -279,7 +281,7 @@ def loadNetworkUsers(request,dict={}):
     print 'topic: ' + histogram_topic
     print 'block: ' + str(histogram_block)
     next_num = num + 1
-    all_members = network.getMembers(user, block=histogram_block, topic=histogram_topic)
+    all_members = network.getMembers(user, block=histogram_block, topic_alias=histogram_topic)
     if len(all_members) >= next_num:
         more_members = all_members[num:next_num]
     else:
@@ -291,8 +293,18 @@ def loadNetworkUsers(request,dict={}):
         html += ajaxRender('deployment/snippets/network-member.div.html',dict,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
-
-
-
+#-----------------------------------------------------------------------------------------------------------------------
+#
+# Loads histogram data.
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def loadHistogram(request, dict={}):
+    user = dict['user']
+    network = Network.objects.get(id=request.GET['network_id'])
+    histogram_topic = request.GET['histogram_topic']
+    dict['histogram'] = network.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=constants.HISTOGRAM_RESOLUTION)
+    html = ajaxRender('deployment/pieces/histogram.html', dict, request)
+    to_return = {'html':html}
+    return HttpResponse(json.dumps(to_return))
 
 

@@ -3078,23 +3078,20 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
-    def getComparisonHistogram(self, user, topic=None, resolution=10):
+    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
         from lovegov.beta.modernpolitics.backend import getUserUserComparison
         histogram = {}                  # initialize empty histogram
+        topic = Topic.lg.get_or_none(alias=topic_alias)
         for i in range(0, resolution+1):
             histogram[i]=0
         for x in self.members.all():
             comparison = getUserUserComparison(user, x)
-            if topic:
+            if topic and topic_alias != 'general':
                block = comparison.bytopic.get(topic=topic).result / resolution
             else:
                 block = comparison.result / resolution
             if block in histogram:
                 histogram[block] += 1
-            if block == resolution:           # special case for identical
-                histogram[resolution-1] += 1
-        for k in histogram:
-            print "key: " + str(k) + " value: " + str(histogram[k])
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3161,21 +3158,23 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic=None):
+    def getMembers(self, user, block=-1, topic_alias=None):
         from lovegov.beta.modernpolitics.backend import getUserUserComparison
         if block == -1:
             return self.members.order_by('id')
         else:
+            topic = Topic.lg.get_or_none(alias=topic_alias)
             ids = []
             for x in self.members.order_by('id'):
                 comparison = getUserUserComparison(user, x)
-                if not topic or topic == 'general':
+                if topic and topic_alias!='general':
+                    x_block = comparison.bytopic.get(topic=topic).result / constants.HISTOGRAM_RESOLUTION
+                else:
                     x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
                     print x.get_name() + ": " + str(x_block)
-                else:
-                    x_block = comparison.bytopic.get(topic=topic).result
                 if x_block == block:
                     ids.append(x.id)
+                print (x.get_name() + ": " + str(x_block))
             return self.members.filter(id__in=ids).order_by('id')
 
 

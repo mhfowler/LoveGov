@@ -73,56 +73,56 @@ function rebindFunction()
 function loadHoverComparison()
 {
     $('.feed-username').hoverIntent
-    (
-        // hover over
-        function(event)
-        {
-            var self = $(this);
-            var a = $(this).find('a');
-            if (a.attr('href') != undefined)
+        (
+            // hover over
+            function(event)
             {
-                var alias = a.attr('href').split('/')[2].toString();
-                var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
-                if (top <= $(document).scrollTop())
+                var self = $(this);
+                var a = $(this).find('a');
+                if (a.attr('href') != undefined)
                 {
-                    top = self.offset().top + 70;
-                    $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+                    var alias = a.attr('href').split('/')[2].toString();
+                    var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
+                    if (top <= $(document).scrollTop())
+                    {
+                        top = self.offset().top + 70;
+                        $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+                    }
+                    else
+                    {
+                        $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+                    }
+                    var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
+                    var offset = {top:top,left:left};
+                    $('#comparison-hover-div p').text('You & ' + a.text());
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    $.ajax
+                        ({
+                            url:'/action/',
+                            type:'POST',
+                            data: {'action':'hoverComparison','alias':alias},
+                            success: function(data)
+                            {
+                                var obj = eval('(' + data + ')');
+                                $('#comparison-hover-loading-img').hide();
+                                new VisualComparison('comparison-hover',obj).draw();
+                            },
+                            error: function(jqXHR, textStatus, errorThrown)
+                            {
+                                $('#comparison-hover-div p').text('Sorry there was an error');
+                            }
+                        });
                 }
-                else
-                {
-                    $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-                }
-                var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
-                var offset = {top:top,left:left};
-                $('#comparison-hover-div p').text('You & ' + a.text());
-                $('#comparison-hover-loading-img').show();
-                $('#comparison-hover-div').fadeIn(100);
-                $('#comparison-hover-div').offset(offset);
-                $.ajax
-                    ({
-                        url:'/action/',
-                        type:'POST',
-                        data: {'action':'hoverComparison','alias':alias},
-                        success: function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
-                        },
-                        error: function(jqXHR, textStatus, errorThrown)
-                        {
-                            $('#comparison-hover-div p').text('Sorry there was an error');
-                        }
-                    });
+            },
+            // hover out
+            function(event)
+            {
+                $('#comparison-hover').empty();
+                $('#comparison-hover-div').fadeOut(100);
             }
-        },
-        // hover out
-        function(event)
-        {
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(100);
-        }
-    );
+        );
 }
 
 
@@ -134,22 +134,22 @@ function loadTopicSelect()
 
     // hover
     $(".topic-img").hover
-    (
-        function(event)
-        {
-            $(this).parent().children(".normal").hide();
-            $(this).parent().children(".selected").show();
-        },
-        function(event)
-        {
-            var selected = $(this).parent().children(".selected");
-            if (!(selected.hasClass("chosen")))
+        (
+            function(event)
             {
-                $(this).parent().children(".selected").hide();
-                $(this).parent().children(".normal").show();
+                $(this).parent().children(".normal").hide();
+                $(this).parent().children(".selected").show();
+            },
+            function(event)
+            {
+                var selected = $(this).parent().children(".selected");
+                if (!(selected.hasClass("chosen")))
+                {
+                    $(this).parent().children(".selected").hide();
+                    $(this).parent().children(".normal").show();
+                }
             }
-        }
-    );
+        );
 }
 
 // adjusts icons appropriately for topic selection, only one topic can be chosen at a time
@@ -159,13 +159,21 @@ function selectTopicSingle(div)
     // unselect all others
     wrapper.find(".selected").hide();
     wrapper.find(".normal").show();
-    // select this
-    div.parent().children(".normal").hide();
-    div.parent().children(".selected").show();
-    // class chosen
-    wrapper.find(".selected").removeClass("chosen");
-    div.parent().children(".selected").addClass("chosen");
+    // if selected, remove class chosen
+    if (div.hasClass('chosen')) {
+        div.removeClass("chosen");
+    }
+    // else select
+    else {
+        div.parent().children(".normal").hide();
+        div.parent().children(".selected").show();
+        // class chosen
+        wrapper.find(".selected").removeClass("chosen");
+        div.parent().children(".selected").addClass("chosen");
+    }
 }
+
+
 
 // adjusts icons appropriately for topic selection, multiple can be selected
 function selectTopicMultiple(div)
@@ -195,9 +203,9 @@ function loadAjaxifyAnchors()
         var href = $(elem).attr('href');
         if (
             href != undefined &&
-            href != "" &&
-            href.indexOf("http://") == -1 &&
-            href != "#")
+                href != "" &&
+                href.indexOf("http://") == -1 &&
+                href != "#")
         {
             event.preventDefault();
             if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
@@ -281,23 +289,23 @@ function ajaxReload(theurl, loadimg)
     $('#main-content').hide();
     if (loadimg) { $("#loading").show(); }
     $.ajax
-    ({
-        url:theurl,
-        type: 'GET',
-        data: {},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            History.pushState( {k:1}, returned.title, returned.url);
-            rebind = returned.rebind;
-            if (loadimg) { $("#loading").hide(); }
-            replaceCenter(returned.html);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
-        }
-    });
+        ({
+            url:theurl,
+            type: 'GET',
+            data: {},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                History.pushState( {k:1}, returned.title, returned.url);
+                rebind = returned.rebind;
+                if (loadimg) { $("#loading").hide(); }
+                replaceCenter(returned.html);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
 }
 
 // for ajax loading of pages - this function only changes content in center of page
@@ -334,24 +342,24 @@ function loadHeader()
                 isLoading = true;
                 $("#autocomplete-loading-gif").show();
                 $.ajax
-                ({
-                    type: 'GET',
-                    url:'/actionGET/',
-                    data: {'action':'searchAutoComplete','string':text},
-                    success: function(data)
-                    {
-                        var obj = eval('(' + data + ')');
-                        $("#autocomplete-loading-gif").hide();
-                        $('#search-dropdown').html(obj.html);
-                        $('#search-dropdown').fadeIn('fast');
-                    },
-                    error: function(jqXHR, textStatus, errorThrown)
-                    {
-                        $("#autocomplete-loading-gif").hide();
-                        $('#search-dropdown').empty();
-                        $('#search-dropdown').hide();
-                    }
-                });
+                    ({
+                        type: 'GET',
+                        url:'/actionGET/',
+                        data: {'action':'searchAutoComplete','string':text},
+                        success: function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $("#autocomplete-loading-gif").hide();
+                            $('#search-dropdown').html(obj.html);
+                            $('#search-dropdown').fadeIn('fast');
+                        },
+                        error: function(jqXHR, textStatus, errorThrown)
+                        {
+                            $("#autocomplete-loading-gif").hide();
+                            $('#search-dropdown').empty();
+                            $('#search-dropdown').hide();
+                        }
+                    });
                 // Simulate a real ajax call
                 setTimeout(function() { isLoading = false; }, delay);
             }, delay);
@@ -387,10 +395,10 @@ function loadHeader()
     });
 
     $('#logo-img').hover
-    (
-        function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
-        function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
-    );
+        (
+            function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
+            function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
+        );
 
     function toggleUserMenu()
     {
@@ -445,24 +453,24 @@ function loadHeader()
     }
 
     $('.user-menu-dropdown-div').hover
-    (
-        function()
-        {
-            if (!$(this).hasClass("user-menu-dropdown-div-selected"))
+        (
+            function()
             {
-                $(this).addClass('user-menu-dropdown-div-hover');
-                userMenuDropDownColors($(this),'white');
-            }
-        },
-        function()
-        {
-            if (!$(this).hasClass("user-menu-dropdown-div-selected"))
+                if (!$(this).hasClass("user-menu-dropdown-div-selected"))
+                {
+                    $(this).addClass('user-menu-dropdown-div-hover');
+                    userMenuDropDownColors($(this),'white');
+                }
+            },
+            function()
             {
-                $(this).removeClass('user-menu-dropdown-div-hover');
-                userMenuDropDownColors($(this),'gray');
+                if (!$(this).hasClass("user-menu-dropdown-div-selected"))
+                {
+                    $(this).removeClass('user-menu-dropdown-div-hover');
+                    userMenuDropDownColors($(this),'gray');
+                }
             }
-        }
-    );
+        );
     /**
      * Handles style change for selecting a security mode.
      *
@@ -642,37 +650,37 @@ function loadLeftSidebar()
                     $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
                     $.ajax
-                    ({
-                        type: 'GET',
-                        url:'/actionGET/',
-                        data: {'action':'getLinkInfo','url':text},
-                        success: function(data)
-                        {
-                            returned = eval('(' + data + ')');
-                            $('#news-link-generation').html(returned.html);
-                            $('#cycle-img-left').bind('click',function()
+                        ({
+                            type: 'GET',
+                            url:'/actionGET/',
+                            data: {'action':'getLinkInfo','url':text},
+                            success: function(data)
                             {
+                                returned = eval('(' + data + ')');
+                                $('#news-link-generation').html(returned.html);
+                                $('#cycle-img-left').bind('click',function()
+                                {
 
-                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
-                                else { currentLink--; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                            });
-                            $('#cycle-img-right').bind('click',function()
+                                    if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
+                                    else { currentLink--; }
+                                    $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                    $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                });
+                                $('#cycle-img-right').bind('click',function()
+                                {
+                                    if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
+                                    else { currentLink++; }
+                                    $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                    $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                });
+                                currentURL = text;
+                            },
+                            error: function(jqXHR, textStatus, errorThrown)
                             {
-                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
-                                else { currentLink++; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                            });
-                            currentURL = text;
-                        },
-                        error: function(jqXHR, textStatus, errorThrown)
-                        {
-                            $('#news-link-generation').hide();
-                            $('#news-summary').hide();
-                        }
-                    });
+                                $('#news-link-generation').hide();
+                                $('#news-summary').hide();
+                            }
+                        });
                 }
                 else
                 {
@@ -726,37 +734,37 @@ function loadLeftSidebar()
         var link = $('#input-link').val();
         var topic = $('input:radio[name=topics]:checked').val();
         $.ajax
-        ({
-            type:'POST',
-            url:'/action/',
-            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
+                success: function(data)
                 {
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-summary").html(returned.errors.summary);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
+                    var returned = eval('(' + data + ')');
+                    if (returned.success == false)
+                    {
+                        $("#errors-title").html(returned.errors.title);
+                        $("#errors-summary").html(returned.errors.summary);
+                        $("#errors-full_text").html(returned.errors.full_text);
+                        $("#errors-topic").html(returned.errors.topics);
+                        $("#errors-non_field").html(returned.errors.non_field_errors);
+                    }
+                    else
+                    {
+                        $('.normal').show();
+                        $('')
+                        clearPetitionErrors();
+                        History.pushState( {k:1}, returned.title, returned.url);
+                        rebind = returned.rebind;
+                        closeLeftSideWrapper($('.create-wrapper.clicked'));
+                        replaceCenter(returned.html);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
                 {
-                    $('.normal').show();
-                    $('')
-                    clearPetitionErrors();
-                    History.pushState( {k:1}, returned.title, returned.url);
-                    rebind = returned.rebind;
-                    closeLeftSideWrapper($('.create-wrapper.clicked'));
-                    replaceCenter(returned.html);
+                    $("body").html(jqXHR.responseText);
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
+            });
     });
 
     $('#share-button').click(function(event)
@@ -769,32 +777,32 @@ function loadLeftSidebar()
         var screenshot = $('#news-link-image-src').attr("src");
         var topic = $('input:radio[name=topics]:checked').val();
         $.ajax
-        ({
-            type:'POST',
-            url:'/action/',
-            data: {'action':'create','title':title,'summary':summary,'link':link,
-                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'create','title':title,'summary':summary,'link':link,
+                    'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
+                success: function(data)
                 {
-                    $("#news-errors-link").html(returned.errors.link);
-                    $("#news-errors-title").html(returned.errors.title);
-                    $("#news-errors-summary").html(returned.errors.summary);
-                    $("#news-errors-topic").html(returned.errors.topics);
-                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
+                    var returned = eval('(' + data + ')');
+                    if (returned.success == false)
+                    {
+                        $("#news-errors-link").html(returned.errors.link);
+                        $("#news-errors-title").html(returned.errors.title);
+                        $("#news-errors-summary").html(returned.errors.summary);
+                        $("#news-errors-topic").html(returned.errors.topics);
+                        $("#news-errors-non_field").html(returned.errors.non_field_errors);
+                    }
+                    else
+                    {
+                        window.location=returned.url;
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
                 {
-                    window.location=returned.url;
+                    $("body").html(jqXHR.responseText);
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
+            });
     });
 
     $('#feedback-submit').click(function(event)
@@ -803,22 +811,22 @@ function loadLeftSidebar()
         var text = $('#feedback-text').val();
         var name = $('#feedback-name').val();
         $.ajax
-        ({
-            type:'POST',
-            url:'/action/',
-            data: {'action':'feedback','text':text,'path':path,'name':name},
-            success: function(data)
-            {
-                $('#feedback-name').val("");
-                $('#feedback-text').val("");
-                $('#feedback-response').css('display','block');
-                $('#feedback-response').fadeOut(3000);
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                alert("failure");
-            }
-        });
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'feedback','text':text,'path':path,'name':name},
+                success: function(data)
+                {
+                    $('#feedback-name').val("");
+                    $('#feedback-text').val("");
+                    $('#feedback-response').css('display','block');
+                    $('#feedback-response').fadeOut(3000);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    alert("failure");
+                }
+            });
     });
 
     function sendInvitation(event)
@@ -828,21 +836,21 @@ function loadLeftSidebar()
         $("#invite-return-message").text("");
         $("#invite-return-loading-img").show();
         $.ajax
-        ({
-            type:'POST',
-            url:'/action/',
-            data: {'action':'invite','email':email},
-            success: function(data)
-            {
-                $("#invite-return-loading-img").hide();
-                $("#invite-return-message").text("Invitation Sent!");
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("#invite-return-loading-img").hide();
-                $("#invite-return-message").text("Server Error, Did Not Send.");
-            }
-        });
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'invite','email':email},
+                success: function(data)
+                {
+                    $("#invite-return-loading-img").hide();
+                    $("#invite-return-message").text("Invitation Sent!");
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $("#invite-return-loading-img").hide();
+                    $("#invite-return-message").text("Server Error, Did Not Send.");
+                }
+            });
     }
 
 
@@ -1044,10 +1052,10 @@ function bindFeedItems()
      * Adds border on hover to image
      */
     $('.link-img img').hover
-    (
-        function(event) { $(this).css("border-color","#f0503b"); }, // hover over
-        function(event) { $(this).css('border-color','#FFFFFF'); }  // hover out
-    );
+        (
+            function(event) { $(this).css("border-color","#f0503b"); }, // hover over
+            function(event) { $(this).css('border-color','#FFFFFF'); }  // hover out
+        );
 
     $('.feed-username').click(function(event)
     {
@@ -1077,23 +1085,23 @@ function heartButtons()
     container.hide();
 
     container.find(".heart").hover
-    (
-        function()
-        {
-            $(this).parent().children(".grey").hide();
-            $(this).parent().children(".blue").show();
-
-        },
-        function()
-        {
-            var blue = $(this).parent().children(".blue");
-            if (blue.hasClass("hide"))
+        (
+            function()
             {
-                blue.hide();
-                $(this).parent().children(".grey").show();
+                $(this).parent().children(".grey").hide();
+                $(this).parent().children(".blue").show();
+
+            },
+            function()
+            {
+                var blue = $(this).parent().children(".blue");
+                if (blue.hasClass("hide"))
+                {
+                    blue.hide();
+                    $(this).parent().children(".grey").show();
+                }
             }
-        }
-    );
+        );
 
     container.find(".plus").click(function()
     {
@@ -1122,27 +1130,27 @@ function heartDisplay()
 function vote(div, content_id, v)
 {
     $.ajax
-    ({
-        url:'/action/',
-        type: 'POST',
-        data: {'action':'vote','c_id':content_id, 'vote':v},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            var my_vote = parseInt(returned.my_vote);
-            var status = returned.status;
-            if (my_vote==1) { like(div); }
-            if (my_vote==0) { neutral(div); }
-            if (my_vote==-1) { dislike(div); }
-            heartDisplay();
-            // change status
-            div.parent().parent().find(".post-score").text(status);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            //location.reload()
-        }
-    });
+        ({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'vote','c_id':content_id, 'vote':v},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var my_vote = parseInt(returned.my_vote);
+                var status = returned.status;
+                if (my_vote==1) { like(div); }
+                if (my_vote==0) { neutral(div); }
+                if (my_vote==-1) { dislike(div); }
+                heartDisplay();
+                // change status
+                div.parent().parent().find(".post-score").text(status);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                //location.reload()
+            }
+        });
 }
 
 function like(div)
@@ -1211,29 +1219,29 @@ function ajaxFeed(feed_type, topics, start, how_many, force_replace)
 {
     var topics_serialized = JSON.stringify(topics);
     $.ajax
-    ({
-        url:'/ajax/feed',
-        type: 'POST',
-        data: {'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            // update position in feed
-            $("#length" + feed_type).val(returned.position);
-            // return feed html
-            var feed = returned.feed;
-            if (force_replace) { $("#" + feed_type).html(feed); }
-            else { $("#" + feed_type).append(feed); }
-            heartButtons();
-            heartDisplay();
-            bindFeedItems();
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            alert("failure");
-            $("body").html(jqXHR.responseText);
-        }
-    });
+        ({
+            url:'/ajax/feed',
+            type: 'POST',
+            data: {'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                // update position in feed
+                $("#length" + feed_type).val(returned.position);
+                // return feed html
+                var feed = returned.feed;
+                if (force_replace) { $("#" + feed_type).html(feed); }
+                else { $("#" + feed_type).append(feed); }
+                heartButtons();
+                heartDisplay();
+                bindFeedItems();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                alert("failure");
+                $("body").html(jqXHR.responseText);
+            }
+        });
 }
 
 
@@ -1317,16 +1325,16 @@ function submitAnswer()
     var weight = 5;
     // var exp = $("#explanation").val();
     $.ajax
-    ({
-        url:'/action/',
-        type: 'POST',
-        data: {'action':'answer','q_id': q_id,'choice':choice,'weight':weight,'explanation':explanation},
-        success: function(data) {
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-            $('.errors_div').html(jqXHR.responseText);
-        }
-    });
+        ({
+            url:'/action/',
+            type: 'POST',
+            data: {'action':'answer','q_id': q_id,'choice':choice,'weight':weight,'explanation':explanation},
+            success: function(data) {
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('.errors_div').html(jqXHR.responseText);
+            }
+        });
 }
 
 /***********************************************************************************************************************
@@ -1339,26 +1347,26 @@ function loadThread()
 {
 
     $('.heart').hover
-    (
-        function(event)
-        {
-            if (!$(this).hasClass('blue'))
+        (
+            function(event)
             {
-                var src = $(this).attr('src');
-                src = src.replace('Grey','Blue');
-                $(this).attr('src',src);
-            }
-        },
-        function(event)
-        {
-            if (!$(this).hasClass('blue'))
+                if (!$(this).hasClass('blue'))
+                {
+                    var src = $(this).attr('src');
+                    src = src.replace('Grey','Blue');
+                    $(this).attr('src',src);
+                }
+            },
+            function(event)
             {
-                var src = $(this).attr('src');
-                src = src.replace('Blue','Grey');
-                $(this).attr('src',src);
+                if (!$(this).hasClass('blue'))
+                {
+                    var src = $(this).attr('src');
+                    src = src.replace('Blue','Grey');
+                    $(this).attr('src',src);
+                }
             }
-        }
-    );
+        );
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)
@@ -1381,19 +1389,19 @@ function loadThread()
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
             $.ajax
-            ({
-                url:'/action/',
-                type: 'POST',
-                data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
-                success: function(data)
-                {
-                    ajaxThread();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    alert("Oops we made an error.  Try submitting again.")
-                }
-            });
+                ({
+                    url:'/action/',
+                    type: 'POST',
+                    data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                    success: function(data)
+                    {
+                        ajaxThread();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        alert("Oops we made an error.  Try submitting again.")
+                    }
+                });
         }
         else
         {
@@ -1501,22 +1509,22 @@ function loadThread()
 function ajaxThread()
 {
     $.ajax
-    ({
-        url:'/ajax/',
-        type: 'POST',
-        data: {'type':'thread', 'c_id':c_id},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            $("#thread").html(returned.html);
-            loadThread();
-            return false;
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            alert("Failed to reload thread!  Sorry!")
-        }
-    });
+        ({
+            url:'/ajax/',
+            type: 'POST',
+            data: {'type':'thread', 'c_id':c_id},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                $("#thread").html(returned.html);
+                loadThread();
+                return false;
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                alert("Failed to reload thread!  Sorry!")
+            }
+        });
 }
 
 /***********************************************************************************************************************
@@ -1621,16 +1629,16 @@ function loadGoogleMap()
 function loadAbout()
 {
     $(".about-element").hover
-    (
-        function(){ $(this).css("background-color","#F0F0F0")},
-        function(){ $(this).css("background-color","#FFFFFF")}
-    );
+        (
+            function(){ $(this).css("background-color","#F0F0F0")},
+            function(){ $(this).css("background-color","#FFFFFF")}
+        );
 
     $(".about-hover-element").hover
-    (
-        function(){ $(this).css("background-color","#F0F0F0") },
-        function(){ $(this).css("background-color","#FFFFFF") }
-    );
+        (
+            function(){ $(this).css("background-color","#F0F0F0") },
+            function(){ $(this).css("background-color","#FFFFFF") }
+        );
 }
 
 
@@ -1676,7 +1684,7 @@ function loadProfile()
                 data: {
                     'action':'userfollow',
                     'p_id': p_id
-                     },
+                },
                 success: function(data)
                 {
                     alert(data);
@@ -1768,19 +1776,19 @@ function loadPetition()
     {
         event.preventDefault();
         $.ajax
-        ({
-            type:'POST',
-            url:'/action/',
-            data: {'action':'finalize','c_id':c_id},
-            success: function(data)
-            {
-                location.reload();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'finalize','c_id':c_id},
+                success: function(data)
+                {
+                    location.reload();
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $("body").html(jqXHR.responseText);
+                }
+            });
     });
 
 }
@@ -1859,21 +1867,23 @@ function loadAccount()
  **********************************************************************************************************************/
 function loadNetwork()
 {
-    var loadingLockout = false;
+    var loadUsersLockout = false;
+    var loadHistoLockout = false;
 
+    // load more users for display
     function loadMoreUsers(event, replace)
     {
         if (replace == true) {
-            $('#histogram-displayed-num').val(0);
+            $("#histogram-displayed-num").val(0);
         }
         event.preventDefault();
         var histogram_displayed_num = $('#histogram-displayed-num').val();
         var histogram_topic = $('#histogram-topic').val();
         var histogram_block = $('#histogram-block').val();
         var network_id = $('#network-id').val();
-        if (!loadingLockout)
+        if (!loadUsersLockout)
         {
-            loadingLockout = true;
+            loadUsersLockout = true;
             $.ajax
                 ({
                     url:'/actionGET/',
@@ -1884,19 +1894,16 @@ function loadNetwork()
                     {
                         var returned = eval('(' + data + ')');
                         if (replace==true) {
-                            alert("replace!");
-                            alert(returned.html);
                             $('#members-list').html(returned.html);
                         }
                         else {
                             $('#members-list').append(returned.html);
                         }
-                        alert(returned.num);
                         $('#histogram-displayed-num').val(returned.num);
                         loadHoverComparison();
                         loadAjaxifyAnchors();
                         bindNewDivs();
-                        loadingLockout = false;
+                        loadUsersLockout = false;
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
@@ -1906,31 +1913,80 @@ function loadNetwork()
         }
     }
 
+    // load new histogram data
+    function getHistogram() {
+        var histogram_topic = $('#histogram-topic').val();
+        var network_id = $('#network-id').val();
+        if (!loadHistoLockout)
+        {
+            loadHistoLockout = true;
+            $.ajax
+                ({
+                    url:'/actionGET/',
+                    type: 'GET',
+                    data: {'action':'loadHistogram','network_id':network_id,
+                        'histogram_topic':histogram_topic},
+                    success: function(data)
+                    {
+                        var returned = eval('(' + data + ')');
+                        $(".histogram-bars").html(returned.html);
+                        loadHistoLockout = false;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('body').html(jqXHR.responseText);
+                    }
+                });
+        }
+    }
+
+
     // select histogram block
     $(".histogram-select-block").click(function(event) {
         event.preventDefault();
         var block = $(this).siblings(".block-val").val();
-        $("#histogram-block").val(block);
+        var was = $("#histogram-block").val();
+        if (block == was) {
+            $("#histogram-block").val(-1);
+        }
+        else {
+            $("#histogram-block").val(block);
+        }
         loadMoreUsers(event, true);
+    });
+
+    // change histogram topic
+    $(".h-topic-img").click(function(event) {
+        selectTopicSingle($(this));
+        var topic = $(this).siblings(".t-alias").val();
+        var was = $("#histogram-topic").val();
+        if (topic == was) {
+            $("#histogram-topic").val('general');
+        }
+        else {
+            $("#histogram-topic").val(topic);
+        }
+        loadMoreUsers(event, true);
+        getHistogram();
     });
 
     function bindNewDivs()
     {
         $('.network-member-div').hover
-        (
-            function(){ $(this).css("background-color","#EBEBEB") },
-            function(){ $(this).css("background-color","#FFFFFF") }
-        );
+            (
+                function(){ $(this).css("background-color","#EBEBEB") },
+                function(){ $(this).css("background-color","#FFFFFF") }
+            );
 
     }
 
 
     /*
-    $(window).scroll(function(event)
-    {
-        if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
-    });
-    */
+     $(window).scroll(function(event)
+     {
+     if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
+     });
+     */
 
     $('#network-see-more-users').click(function(event)
     {
