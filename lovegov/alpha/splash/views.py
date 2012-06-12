@@ -67,6 +67,12 @@ def splash(request):
 def learnmore(request):
     return splashForm(request, 'deployment/pages/splash/learnmore.html')
 
+def error500(request):
+    return render_to_response('deployment/pages/microcopy/500.html')
+
+def underConstruction(request):
+    return render_to_response('deployment/pages/microcopy/construction.html')
+
 def splashForm(request,templateURL):
     dict = {}
     if request.method=='POST':
@@ -561,10 +567,15 @@ def profile(request, alias=None, dict={}):
             # Get Follow Requests
             dict['prof_requests'] = list(user_prof.getFollowRequests())
 
-            # Is the current user already following this profile?
+            # Is the current user already (requesting to) following this profile?
             dict['is_user_follow'] = False
-            if betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof):
-                dict['is_user_follow'] = True
+            dict['is_user_confirmed'] = False
+            user_follow = betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof)
+            if user_follow:
+                if user_follow.requested:
+                    dict['is_user_follow'] = True
+                if user_follow.confirmed:
+                    dict['is_user_confirmed'] = True
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()

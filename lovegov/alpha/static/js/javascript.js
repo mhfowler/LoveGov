@@ -1689,6 +1689,28 @@ function loadProfile()
         );
     });
 
+    $("#user-unfollow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'stopfollow',
+                    'p_id': p_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
     $(".follow-response-y").click( function(event) {
         followResponse(event,"Y",$(this));
     });
