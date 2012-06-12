@@ -634,6 +634,12 @@ function loadLeftSidebar()
         $('#create-news-div').show();
     });
 
+    $('#create-group-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-group-div').show();
+    });
+
     var timeout;
     var delay = 750;
     var isLoading = false;
@@ -768,6 +774,48 @@ function loadLeftSidebar()
                         rebind = returned.rebind;
                         closeLeftSideWrapper($('.create-wrapper.clicked'));
                         replaceCenter(returned.html);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $("body").html(jqXHR.responseText);
+                }
+            });
+    });
+
+    $('#create-group').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#group-input-title').val();
+        var full_text = $('#group-input-full_text').val();
+        var privacy = $('input:radio[name=privacy]:checked').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        $.ajax
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'create',
+                        'title':title,
+                        'full_text':full_text,
+                        'topics':topic,
+                        'group_type':'U',
+                        'group_privacy':privacy,
+                        'type':'G'
+                },
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    if (returned.success == false)
+                    {
+                        alert('errors')
+                        $("#errors-title").html(returned.errors.title);
+                        $("#errors-full_text").html(returned.errors.full_text);
+                        $("#errors-topic").html(returned.errors.topics);
+                        $("#errors-non_field").html(returned.errors.non_field_errors);
+                    }
+                    else
+                    {
+                        window.location.href = returned.url;
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown)

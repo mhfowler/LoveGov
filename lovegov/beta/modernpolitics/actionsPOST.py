@@ -23,6 +23,7 @@ from lovegov.beta.modernpolitics.forms import *
 from django.forms import *
 from django import shortcuts
 from django.template import RequestContext, loader
+from lovegov.beta.modernpolitics import models as betamodels
 from django.utils.datastructures import MultiValueDictKeyError
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -135,21 +136,17 @@ def actionPOST(request, dict={}):
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
     formtype = request.POST['type']
+    user = val['user']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
-        petition = CreatePetitionForm(request.POST)
     elif formtype == 'N':
         form = CreateNewsForm(request.POST)
-        news = CreateNewsForm(request.POST)
     elif formtype =='E':
         form = CreateEventForm(request.POST)
-        event = CreateEventForm(request.POST)
     elif formtype =='G':
-        form = CreateGroupForm(request.POST)
-        group = CreateGroupForm(request.POST)
+        form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
-        album = UserImageForm(request.POST)
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
@@ -162,6 +159,11 @@ def create(request, val={}):
             elif formtype == "N":
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
+            elif formtype == "G":
+                c.admins.add(user)
+                c.members.add(user)
+                from lovegov.alpha.splash.views import group
+                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
     else:
