@@ -1386,7 +1386,7 @@ class Action(Privacy):
     def autoSave(self, relationship=None, group=None):
         self.autoVerbose(relationship=relationship)
         self.save()
-        self.autoNotify(relationship=relationship)
+        #self.autoNotify(relationship=relationship)
 
     def autoVerbose(self, relationship=None):
         if not relationship:
