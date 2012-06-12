@@ -857,7 +857,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_votes:
         user_votes = betamodels.Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = betamodels.Comment.objects.filter(creator_id=user.id)
+        user_comments = betamodels.Comment.objects.filter(creator=user)
     comments = betamodels.Comment.objects.filter(on_content=object).order_by('-status')
     if comments:
         to_return = "<div>"     # open list

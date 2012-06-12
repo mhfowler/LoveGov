@@ -70,7 +70,7 @@ def photoKey(type=".jpg"):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator_id = models.IntegerField(default=-1)   # foreign key to user profile
+    creator = models.ForeignKey("UserProfile", null=True)   # foreign key to user profile
     class Meta:
         abstract = True
         #-------------------------------------------------------------------------------------------------------------------
@@ -80,30 +80,31 @@ class Privacy(LGModel):
         if self.privacy == 'PUB':
             return True
         elif self.privacy == 'PRI':
-            if user.id == self.creator_id:
+            if user == self.creator:
                 return True
             else:
                 return False
         elif self.privacy == 'FOL':
-            if user.id == self.creator_id:
+            if user == self.creator:
                 return True
             else:
-                following_creator = user.getIFollow().filter(to_user__id=self.creator_id)
+                following_creator = user.getIFollow().filter(to_user__id=self.creator.user_id)
                 if following_creator:
                     return True
                 else:
                     return False
-        #-------------------------------------------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns user who created this.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreator(self):
-        if self.creator_id != -1:
-            creator = UserProfile.objects.filter(id=self.creator_id)
-            if creator:
-                return creator[0]
-        else:
-            from lovegov.beta.modernpolitics.backend import getLoveGovUser
-            return getLoveGovUser()
+        return self.creator
+        # if self.creator_id != -1:
+        #     creator = UserProfile.objects.filter(id=self.creator_id)
+        #     if creator:
+        #         return creator[0]
+        # else:
+        #     from lovegov.beta.modernpolitics.backend import getLoveGovUser
+        #     return getLoveGovUser()
 
 #=======================================================================================================================
 # physical address
@@ -137,7 +138,6 @@ class Topic(LGModel):
     # actual topic stuff
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
-    # foreign key to forum
     forum_id = models.IntegerField(default=-1)                          # foreign key to forum
     # fields for images
     image = models.ImageField(null=True, upload_to="defaults/")
@@ -330,7 +330,7 @@ class Content(Privacy, LocationLevel):
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveCreated(self, creator, privacy):
-        self.creator_id = creator.id
+        self.creator = creator
         self.privacy = privacy
         self.save()
         # deprecate
@@ -600,15 +600,15 @@ class Content(Privacy, LocationLevel):
         if self.privacy == 'PUB':
             return True
         elif self.privacy == 'PRI':
-            if user.id == self.creator_id:
+            if user == self.creator:
                 return True
             else:
                 return False
         elif self.privacy == 'FOL':
-            if user.id == self.creator_id:
+            if user == self.creator:
                 return True
             else:
-                following_creator = user.getIFollow().filter(to_user__id=self.creator_id)
+                following_creator = user.getIFollow().filter(to_user__id=self.creator.user_id)
                 if following_creator:
                     return True
                 else:
@@ -1461,7 +1461,7 @@ class Action(Privacy):
         from lovegov.beta.modernpolitics.backend import getLoveGovUser
         if not relationship:
             relationship = self.getRelationship()
-        self.notified = [self.creator_id, -1, getLoveGovUser().id] # for keeping track of who has been notified and not duplicating
+        self.notified = [self.creator.user_id, -1, getLoveGovUser().id] # for keeping track of who has been notified and not duplicating
         # NOTIFY FOLLOWERS OF OBJECT
         if self.modifier == 'D' and self.type in ['JO', 'JD', 'AE', 'MV', 'DV', 'VO', 'DM', 'SI', 'SH', 'FC', 'CO', 'XX']:
             self.notifyAll(follows=relationship.getTo().getUserFollowMe())
@@ -1532,7 +1532,7 @@ class Action(Privacy):
             if self.must_notify or self.getPermission(user):
                 notification = Notification(type=self.type, modifier=self.modifier,
                     action=self, notify_user=user,
-                    privacy=self.privacy, creator_id=self.creator_id,
+                    privacy=self.privacy, creator=self.creator,
                     trig_content=trig_content, trig_user=trig_user)
                 if user.notify(notification, action=self):
                     self.notified.append(user.id)
@@ -3386,7 +3386,7 @@ class Relationship(Privacy):
 
     def autoNotify(self, child, modifier='D', must_notify=False):
         action = Action(type=self.relationship_type, modifier=modifier, must_notify=must_notify,
-            relationship_id=child.id, creator_id = self.creator_id, privacy=self.privacy)
+            relationship_id=child.id, creator = self.creator, privacy=self.privacy)
         action.autoSave(relationship=child)
 
 #=======================================================================================================================
@@ -3476,7 +3476,7 @@ class DebateVoted(UCRelationship):
     value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
     def autoSave(self):
         self.relationship_type = 'DV'
-        self.creator_id=self.user_id
+        self.creator=self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3488,7 +3488,7 @@ class MotionVoted(UCRelationship):
     value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
     def autoSave(self):
         self.relationship_type = 'MV'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3500,7 +3500,7 @@ class Voted(UCRelationship):
     value = models.IntegerField(default=0)        # 1 is like, 0 neutral, -1 dislike
     def autoSave(self):
         self.relationship_type = 'VO'
-        self.creator_id=self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3522,7 +3522,7 @@ class Voted(UCRelationship):
 class Created(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CR'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3532,7 +3532,7 @@ class Created(UCRelationship):
 class Deleted(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'XX'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3544,7 +3544,7 @@ class Commented(UCRelationship):
     comment = models.ForeignKey(Comment)
     def autoSave(self):
         self.relationship_type = 'CO'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3555,7 +3555,7 @@ class Commented(UCRelationship):
 class Edited(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'ED'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3568,7 +3568,7 @@ class Shared(UCRelationship):
     share_groups = models.ManyToManyField(Group)
     def autoSave(self):
         self.relationship_type = 'SH'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self, must_notify=True)
 
@@ -3579,7 +3579,7 @@ class Shared(UCRelationship):
 class Followed(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'FC'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
         self.autoNotify(child=self)
 
@@ -3596,7 +3596,7 @@ class Attending(UCRelationship, Invite):
     choice = models.CharField(max_length=1, choices=CONFIRMATION_CHOICE)
     def autoSave(self):
         self.relationship_type = 'AE'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
 
 #=======================================================================================================================
@@ -3607,7 +3607,7 @@ class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
 
 #=======================================================================================================================
@@ -3618,7 +3618,7 @@ class DebateJoined(UCRelationship, Invite):
     debate = models.ForeignKey(Persistent)
     def autoSave(self):
         self.relationship_type = 'JD'
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.save()
 
 #=======================================================================================================================
@@ -3635,7 +3635,7 @@ class UURelationship(Relationship):
 class UserFollow(UURelationship, Invite):
     fb = models.BooleanField(default=False)
     def autoSave(self):
-        self.creator_id = self.user_id
+        self.creator = self.user
         self.relationship_type = 'FO'
         self.save()
 
