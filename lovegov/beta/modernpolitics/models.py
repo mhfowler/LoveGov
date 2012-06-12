@@ -3088,15 +3088,27 @@ class Group(Content):
         histogram = {}                  # initialize empty histogram
         topic = Topic.lg.get_or_none(alias=topic_alias)
         for i in range(0, resolution+1):
-            histogram[i]=0
-        for x in self.members.all():
+            histogram[i]= {'num':0, 'percent':0}
+        members = self.members.all()
+        for x in members:
             comparison = getUserUserComparison(user, x)
             if topic and topic_alias != 'general':
                block = comparison.bytopic.get(topic=topic).result / resolution
             else:
                 block = comparison.result / resolution
             if block in histogram:
-                histogram[block] += 1
+                histogram[block]['num'] += 1
+        # calc percents
+        people = float(len(members))
+        for k in histogram:
+            tuple = histogram[k]
+            num = tuple['num']
+            if  not num:
+                pix = 5
+            else:
+                pix = (num/people*100)*5
+            tuple['pix'] = int(pix)
+        print histogram
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------

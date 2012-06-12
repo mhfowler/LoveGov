@@ -1,8 +1,8 @@
 
 {% for k,v in histogram.items %}
-    <p>
-        key: {{ k }}  value: {{ v }}
-    </p>
+    <div style="height:{{ v.pix }}px;margin-left:5px;float:left;width:35px;border-radius:0 0 10px 10px;background-color:red;" >
+    {{ v.num }}
+    </div>
 {% endfor %}
 
 
