@@ -1,121 +1,92 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>lovegov: alpha</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/deployment/login.css" />
-    <link rel="icon" type="image/icon" href="/static/images/favicon.ico">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="keywords" content="Lovegov, lovegov, lovegov.com, Government, Politics, Simplified, One Stop Shop, Participate, Informed, Connected, Involved, Social, Social Network, Political Network, Legislation, Democracy, Democracy 2.0, Vote, Advocacy Groups, Coalitions, Change" />
-    <meta name="description" content="We're no-nonsense realists with an itch to fix politics. We believe participating in democracy doesn't need to be difficult — we believe it should be simple and engaging, even a little fun. Lovegov will inform you on the issues, keep you current with legislation that you care about, and connect you with your representatives. We're making it easy to get involved." />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/deployment/submit_mail.js"></script>
-</head>
-<body>
+{% extends 'deployment/templates/javascript.html' %}
 
-<div id="main">
 
-<!--
-    <h3> UPDATE IN PROGRESS, come back in a few hours... beta will be here soon! </h3> -->
+{% block body %}
 
-    <div id="top">
-        <img id="logo" src="/static/images/login/lovegovlogo.png">
-        <form action="" method="post" id="loginform"> {% csrf_token %}
-            <table id="logintable">
-                <tr>
-                    <td>email</td>
-                    <td><input type="text" id="username-input" class="login-input" name="username" value="{{ username }}"/></td>
-                </tr>
-                <tr>
-                    <td>password</td>
-                    <td><input type="password" id="password-input" class="login-input" name="password"/></td>
-                </tr>
-                <tr>
-                    <td colspan=2>
-                        <div class="error-message">{% autoescape off %}{{ error }}{% endautoescape %}</div>
-                        <input type="hidden" name="button" value="login"/>
-                        <input class="submit-button" id="submit-login" type="submit" value="log in"/>
-                    </td>
-                    <td></td>
-                </tr>
-            </table>
-        </form>
-    </div>
+    <div id="main">
 
-    <div id="middle">
-        {% block middle %}
+        <!--
+<h3> UPDATE IN PROGRESS, come back in a few hours... beta will be here soon! </h3> -->
 
-        {% endblock %}
-    </div>
+        <div id="top">
+            <img id="logo" src="/static/images/login/lovegovlogo.png">
+            <form action="" method="post" id="loginform"> {% csrf_token %}
+                <table id="logintable">
+                    <tr>
+                        <td>email</td>
+                        <td><input type="text" id="username-input" class="login-input" name="username" value="{{ username }}"/></td>
+                    </tr>
+                    <tr>
+                        <td>password</td>
+                        <td><input type="password" id="password-input" class="login-input" name="password"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <div class="error-message">{% autoescape off %}{{ error }}{% endautoescape %}</div>
+                            <input type="hidden" name="button" value="login"/>
+                            <input class="submit-button" id="submit-login" type="submit" value="log in"/>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
 
-    <div id="bottom">
-        <div id="footer">
-            <div style="float:left;margin-top:5px;">
-                <span id="mailingList" class="dark">Join our mailing list:</span>
-                <form id='emailForm' action="" method='post'>
-                    <input id="emailInput" name="email" type="text" value=""/>
-                    <input id="emailSubmit" type="submit" value="Submit" name="submitemail"/>
-                </form>
-                <div style="clear:both;padding-top:15px;">
-                    <a href="http://www.facebook.com/pages/Lovegov/368496463180373" target="_blank"><img src="/static/images/facebook.png" ></a>
-                    <a href="http://twitter.com/welovegov" target="_blank"><img src="/static/images/twitter.png"/></a>
-                    <span id="emailMessage" class="dark">{{ emailMessage }}</span>
+        <div id="middle">
+            {% block middle %}
+
+            {% endblock %}
+        </div>
+
+        <div id="bottom">
+            <div id="footer">
+                <div style="float:left;margin-top:5px;">
+                    <span id="mailingList" class="dark">Join our mailing list:</span>
+                    <form id='emailForm' action="" method='post'>
+                        <input id="emailInput" name="email" type="text" value=""/>
+                        <input id="emailSubmit" type="submit" value="Submit" name="submitemail"/>
+                    </form>
+                    <div style="clear:both;padding-top:15px;">
+                        <a href="http://www.facebook.com/pages/Lovegov/368496463180373" target="_blank"><img src="/static/images/facebook.png" ></a>
+                        <a href="http://twitter.com/welovegov" target="_blank"><img src="/static/images/twitter.png"/></a>
+                        <span id="emailMessage" class="dark">{{ emailMessage }}</span>
+                    </div>
                 </div>
-            </div>
-            <div style="float:right">
-                <div class="footer-title">
-                    development team
-                </div>
-                <div>
-                    <div class="team team-left">
-                        <div class="dark">Joschka Tryba</div>
-                        <div class="light">Chief Executive Officer</div>
-                        <a class="light" href="mailto:joschka@lovegov.com">joschka@lovegov.com</a>
+                <div style="float:right">
+                    <div class="footer-title">
+                        development team
                     </div>
-                    <div class="team team-center">
-                        <div class="dark">Clayton Dunwell</div>
-                        <div class="light">Product Developer</div>
-                        <a class="light" href="mailto:clay@lovegov.com">clay@lovegov.com</a>
-                    </div>
-                    <div class="team team-center">
-                        <div class="dark">Maximus Fowler</div>
-                        <div class="light">Product Developer</div>
-                        <a class="light" href="mailto:max@lovegov.com">max@lovegov.com</a>
-                    </div>
-                    <div class="team team-right">
-                        <div class="dark">Catherine Schmidt</div>
-                        <div class="light">Lead Designer</div>
-                        <a class="light" href="mailto:cat@lovegov.com">cat@lovegov.com</a>
+                    <div>
+                        <div class="team team-left">
+                            <div class="dark">Joschka Tryba</div>
+                            <div class="light">Chief Executive Officer</div>
+                            <a class="light" href="mailto:joschka@lovegov.com">joschka@lovegov.com</a>
+                        </div>
+                        <div class="team team-center">
+                            <div class="dark">Clayton Dunwell</div>
+                            <div class="light">Product Developer</div>
+                            <a class="light" href="mailto:clay@lovegov.com">clay@lovegov.com</a>
+                        </div>
+                        <div class="team team-center">
+                            <div class="dark">Maximus Fowler</div>
+                            <div class="light">Product Developer</div>
+                            <a class="light" href="mailto:max@lovegov.com">max@lovegov.com</a>
+                        </div>
+                        <div class="team team-right">
+                            <div class="dark">Catherine Schmidt</div>
+                            <div class="light">Lead Designer</div>
+                            <a class="light" href="mailto:cat@lovegov.com">cat@lovegov.com</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <link rel="stylesheet" type="text/css" href="/static/css/deployment/login.css" />
+    <script type="text/javascript" src="/static/js/deployment/submit_mail.js"></script>
+
+    <script> rebind="login"; </script>
 
 
-<script>
-    $(document).ready(function()
-    {
-        $("#recover").click(function(event)
-        {
-            event.preventDefault();
-            $.ajax
-            ({
-                type:'POST',
-                url:location.url,
-                data: {'button':'recover','username':$("#username-input").val()},
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
-                }
-            });
-        });
-    });
-</script>
-
-</body>
-</html>
+{% endblock %}

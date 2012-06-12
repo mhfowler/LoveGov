@@ -63,6 +63,8 @@ def actionPOST(request, dict={}):
             return userFollowRequest(request, dict)
         elif action == 'followresponse':
             return userFollowResponse(request, dict)
+        elif action == 'stopfollow':
+            return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
         ### actions below have not been proof checked ###
@@ -80,8 +82,6 @@ def actionPOST(request, dict={}):
             return follow(request, dict)
         elif action == 'posttogroup':
             return posttogroup(request)
-        elif action == 'stopfollow':
-            return userFollowStop(request, dict)
         elif action == 'deinvolve':
             return deinvolve(request, dict)
         elif action == 'updateCompare':
@@ -453,10 +453,14 @@ def joinGroupRequest(request, dict={}):
 def userFollowRequest(request, dict={}):
     user = dict['user']
     person = UserProfile.objects.get(id=request.POST['p_id'])
+    if person.id == user.id:
+        return HttpResponse("you cannot follow yourself")
     already = UserFollow.objects.filter(user=user, to_user=person)
     if already:
         follow = already[0]
-        if follow.confirmed or follow.requested:
+        if follow.confirmed:
+            return HttpResponse("you are already following this person")
+        elif follow.requested:
             return HttpResponse("you have already requested to follow this person")
     else:
         follow = UserFollow(user=user, to_user=person)
@@ -477,10 +481,14 @@ def userFollowResponse(request, dict={}):
         if follow.requested:
             if response == 'Y':
                 follow.confirm()
-                return HttpResponse("they are now following you")
+                # As long as friendships are two way...
+                user.makeFriends(from_user) # If follows aren't two way, comment this out!
+                return HttpResponse("they're now following you")
             elif response == 'N':
                 follow.reject()
                 return HttpResponse("you have rejected their follow request")
+        if follow.confirmed:
+            return HttpResponse("This person is already following you")
     return HttpResponse("this person has not requested to follow you")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -489,14 +497,12 @@ def userFollowResponse(request, dict={}):
 def userFollowStop(request, dict={}):
     """Removes connection between users."""
     from_user = dict['user']
-    to_user = UserProfile.objects.get(id=request.POST['p_id'])
-    relationship = UserFollow.objects.get(user=from_user,to_user=to_user)
-    relationship.clear()
-    from_user.getConnectionsGroup().members.remove(to_user)
-    return HttpResponse("removed")
-
-
-
+    to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if to_user:
+        from_user.unfollow(to_user) #For one way relationships
+        to_user.unfollow(from_user) #Removes the TWO WAY RELATIONSHIP
+        return HttpResponse("removed")
+    return HttpResponse("To User does not exist")
 
 
 
@@ -844,7 +850,7 @@ def persistent_accept(request,dict={}):
             return HttpResponse('this shouldnt happen')
         # create action, and send notification
         to_user = debate.getCreator()
-        action = Action(type='YD', creator_id=user.id, privacy=getPrivacy(request),
+        action = Action(type='YD', creator=user, privacy=getPrivacy(request),
             with_user=to_user, with_content=debate, must_notify=True)
         action.autoSave()
         return HttpResponse("you are now debating the " + side_verbose)
@@ -866,7 +872,7 @@ def persistent_reject(request,dict={}):
         debate.possible_users.remove(user)
         # alert creator that person declined invitation
         to_user = debate.getCreator()
-        action = Action(type='ND', creator_id=user.id, privacy=getPrivacy(request),
+        action = Action(type='ND', creator=user, privacy=getPrivacy(request),
             with_user=to_user, with_content=debate)
         action.autoSave()
         return HttpResponse("you rejected invitation.")

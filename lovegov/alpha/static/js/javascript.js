@@ -46,6 +46,7 @@ function rebindFunction()
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfileComparison();
+            loadProfile();
             break;
         case 'network':
             loadProfileComparison();
@@ -71,20 +72,11 @@ function rebindFunction()
 
 function loadHoverComparison()
 {
-
-    var hoverTimer;
-
-    $('#comparison-hover-div').hoverIntent(
-        function() { clearTimeout(hoverTimer); },
-        function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
-
-
     $('.feed-username').hoverIntent
     (
         // hover over
         function(event)
         {
-
             var self = $(this);
             var a = $(this).find('a');
             if (a.attr('href') != undefined)
@@ -107,31 +99,28 @@ function loadHoverComparison()
                 $('#comparison-hover-div').fadeIn(100);
                 $('#comparison-hover-div').offset(offset);
                 $.ajax
-                ({
-                    url:'/action/',
-                    type:'POST',
-                    data: {'action':'hoverComparison','alias':alias},
-                    success: function(data)
-                    {
-                        var obj = eval('(' + data + ')');
-                        $('#comparison-hover-loading-img').hide();
-                        new VisualComparison('comparison-hover',obj).draw();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown)
-                    {
-                        $('#comparison-hover-div p').text('Sorry there was an error');
-                    }
-                });
+                    ({
+                        url:'/action/',
+                        type:'POST',
+                        data: {'action':'hoverComparison','alias':alias},
+                        success: function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            new VisualComparison('comparison-hover',obj).draw();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown)
+                        {
+                            $('#comparison-hover-div p').text('Sorry there was an error');
+                        }
+                    });
             }
         },
         // hover out
         function(event)
         {
-            hoverTimer = setTimeout(function()
-            {
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div').fadeOut(100);
-            },500)
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(100);
         }
     );
 }
@@ -198,27 +187,27 @@ function selectTopicMultiple(div)
 
 function loadAjaxifyAnchors()
 {
-    $('.do-ajax-link').each(function(index, elem)
+    // Jquery's '.one' binds the handler to each link once
+    // This prevents the function from being called multiple times
+    $('.do-ajax-link').one('click',  function(event)
     {
+        var elem = event.target;
         var href = $(elem).attr('href');
-        if (!$(elem).hasClass('ajax-link') &&
+        if (
             href != undefined &&
             href != "" &&
             href.indexOf("http://") == -1 &&
             href != "#")
         {
-            $(elem).addClass("ajax-link");
-            $(elem).click(function(event)
-            {
-                event.preventDefault();
-                if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div').hide();
-                ajaxLink($(elem), true);
-                return false;
-            });
+            event.preventDefault();
+            if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').hide();
+            ajaxLink($(elem), true);
+            return false;
         }
     });
+
 }
 /***********************************************************************************************************************
  *
@@ -1642,6 +1631,94 @@ function loadAbout()
         function(){ $(this).css("background-color","#F0F0F0") },
         function(){ $(this).css("background-color","#FFFFFF") }
     );
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Profile
+ *
+ ***********************************************************************************************************************/
+function followResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
+        {
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'followresponse',
+                'p_id': follow_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function loadProfile()
+{
+    $("#user-follow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'userfollow',
+                    'p_id': p_id
+                     },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
+    $("#user-unfollow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'stopfollow',
+                    'p_id': p_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
+    $(".follow-response-y").click( function(event) {
+        followResponse(event,"Y",$(this));
+    });
+
+    $(".follow-response-n").click( function(event) {
+        var div = $(this);
+        followResponse(event,"N",$(this));
+    });
 }
 
 
