@@ -281,7 +281,7 @@ def loadNetworkUsers(request,dict={}):
     next_num = num + 1
     all_members = network.getMembers(user, block=histogram_block, topic=histogram_topic)
     if len(all_members) >= next_num:
-        more_members = network.members.order_by('id')[num:next_num]
+        more_members = all_members[num:next_num]
     else:
         more_members = []
     html = ""

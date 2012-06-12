@@ -3161,12 +3161,12 @@ class Group(Content):
                 comparison = getUserUserComparison(user, x)
                 if not topic or topic == 'general':
                     x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
-                    print x.get_name() + ": " + str(block)
+                    print x.get_name() + ": " + str(x_block)
                 else:
                     x_block = comparison.bytopic.get(topic=topic).result
                 if x_block == block:
                     ids.append(x.id)
-            return self.members.order_by('id').filter(id__in=ids)
+            return self.members.filter(id__in=ids).order_by('id')
 
 
 #=======================================================================================================================

@@ -1830,12 +1830,20 @@ function loadAccount()
 
 
 
+/***********************************************************************************************************************
+ *
+ *      ~Network
+ *
+ **********************************************************************************************************************/
 function loadNetwork()
 {
     var loadingLockout = false;
 
     function loadMoreUsers(event, replace)
     {
+        if (replace == true) {
+            $('#histogram-displayed-num').val(0);
+        }
         event.preventDefault();
         var histogram_displayed_num = $('#histogram-displayed-num').val();
         var histogram_topic = $('#histogram-topic').val();
@@ -1854,11 +1862,14 @@ function loadNetwork()
                     {
                         var returned = eval('(' + data + ')');
                         if (replace==true) {
-                            $('#members-list').replace(returned.html);
+                            alert("replace!");
+                            alert(returned.html);
+                            $('#members-list').html(returned.html);
                         }
                         else {
                             $('#members-list').append(returned.html);
                         }
+                        alert(returned.num);
                         $('#histogram-displayed-num').val(returned.num);
                         loadHoverComparison();
                         loadAjaxifyAnchors();
@@ -1872,6 +1883,14 @@ function loadNetwork()
                 });
         }
     }
+
+    // select histogram block
+    $(".histogram-select-block").click(function(event) {
+        event.preventDefault();
+        var block = $(this).siblings(".block-val").val();
+        $("#histogram-block").val(block);
+        loadMoreUsers(event, true);
+    });
 
     function bindNewDivs()
     {
@@ -1898,7 +1917,6 @@ function loadNetwork()
 
     bindNewDivs();
 
-
-
-
 }
+
+

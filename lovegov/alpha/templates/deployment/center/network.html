@@ -48,7 +48,8 @@
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 {% for k,v in histogram.items %}
     <p>
-    key: {{ k }} value: {{ v }}
+        <a class="histogram-select-block">  key: {{ k }}  value: {{ v }} </a>
+        <input class="block-val" type="hidden" value="{{k}}"/>
     </p>
 {% endfor %}
 </div>
