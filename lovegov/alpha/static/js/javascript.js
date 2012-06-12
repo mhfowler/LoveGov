@@ -202,7 +202,6 @@ function loadAjaxifyAnchors()
     $('.do-ajax-link').off('click',  ajaxClicked);
     var ajaxClicked = function(event)
     {
-        alert("oh hai");
         var elem = event.target;
         var href = $(elem).attr('href');
         if (
