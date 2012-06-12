@@ -477,7 +477,9 @@ def userFollowResponse(request, dict={}):
         if follow.requested:
             if response == 'Y':
                 follow.confirm()
-                return HttpResponse("they are now following you")
+                # As long as friendships are two way...
+                user.makeFriends(from_user) # If follows aren't two way, comment this out!
+                return HttpResponse("they're now following you")
             elif response == 'N':
                 follow.reject()
                 return HttpResponse("you have rejected their follow request")

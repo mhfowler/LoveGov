@@ -46,6 +46,7 @@ function rebindFunction()
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfileComparison();
+            loadProfile();
             break;
         case 'network':
             loadProfileComparison();
@@ -1630,6 +1631,72 @@ function loadAbout()
         function(){ $(this).css("background-color","#F0F0F0") },
         function(){ $(this).css("background-color","#FFFFFF") }
     );
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Profile
+ *
+ ***********************************************************************************************************************/
+function followResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
+        {
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'followresponse',
+                'p_id': follow_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function loadProfile()
+{
+    $("#user-follow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'userfollow',
+                    'p_id': p_id
+                     },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
+    $(".follow-response-y").click( function(event) {
+        followResponse(event,"Y",$(this));
+    });
+
+    $(".follow-response-n").click( function(event) {
+        var div = $(this);
+        followResponse(event,"N",$(this));
+    });
 }
 
 
