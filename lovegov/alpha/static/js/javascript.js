@@ -1705,7 +1705,7 @@ function loadAbout()
  *      ~Profile
  *
  ***********************************************************************************************************************/
-function followResponse(event,response,div)
+function userFollowResponse(event,response,div)
 {
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
@@ -1778,12 +1778,11 @@ function loadProfile()
     });
 
     $(".follow-response-y").click( function(event) {
-        followResponse(event,"Y",$(this));
+        userFollowResponse(event,"Y",$(this));
     });
 
     $(".follow-response-n").click( function(event) {
-        var div = $(this);
-        followResponse(event,"N",$(this));
+        userFollowResponse(event,"N",$(this));
     });
 }
 
@@ -1923,6 +1922,33 @@ function loadAccount()
  *      ~Network
  *
  **********************************************************************************************************************/
+function groupFollowResponse(event,response,div,g_id)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
+        {
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'joinresponse',
+                'p_id': follow_id,
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
 function loadNetwork()
 {
     var loadUsersLockout = false;
@@ -1998,7 +2024,58 @@ function loadNetwork()
         }
     }
 
+    $(".group-response-y").click( function(event) {
+        groupFollowResponse(event,"Y",$(this),g_id);
+    });
 
+    $(".group-response-n").click( function(event) {
+        groupFollowResponse(event,"N",$(this),g_id);
+    });
+
+    $("#user-follow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'join',
+                    'g_id': g_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+    /* Uncomment when adding unfollowing to groups
+    $("#user-unfollow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'stopfollow',
+                    'p_id': g_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+    */
     // select histogram block
     $(".histogram-select-block").click(function(event) {
         event.preventDefault();

@@ -91,7 +91,41 @@
         </div>
     </div>
 
-    {{ network.group_privacy }}
+    <div id="privacy">
+        Privacy: {{ network.group_privacy }}
+    </div>
+
+    {% if is_user_admin %}
+    <ul id="group-requests">
+        {% for req in prof_requests %}
+        <li>{{ req.getFrom.get_name }} has requested to follow you:
+            <a href="" class="group-response-y"> I accept! </a> ||
+            <a href="" class="group-response-n"> I decline! </a>
+            <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+        </li>
+        {% empty %}
+        <li>No follow requests! =( </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if not is_user_follow and not is_user_confirmed %}
+    <a href="" id="group-follow">
+        follow me!
+    </a>
+    {% else %}
+    <a href="" id="group-unfollow">
+        {% if is_user_confirmed %}
+        unfollow me!
+        {% elif is_user_follow %}
+        un-request me!
+        {% endif %}
+    </a>
+    {% endif %}
+
+    <script>
+        var g_id = "{{ network.id }}";
+    </script>
 
 </div>
 

@@ -68,9 +68,11 @@ def actionPOST(request, dict={}):
             return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
-        ### actions below have not been proof checked ###
         elif action == 'join':
             return joinGroupRequest(request, dict)
+        elif action == 'joinresponse':
+            return joinGroupResponse(request, dict)
+        ### actions below have not been proof checked ###
         elif action == 'leave':
             return leave(request, dict)
         elif action == 'linkfrom':
@@ -421,22 +423,22 @@ def joinGroupRequest(request, dict={}):
     group = Group.objects.get(id=request.POST['g_id'])
     if group.group_type == 'S' or group.system:
         return HttpResponse("cannot request to join secret group or system group")
+    already = GroupFollow.objects.filter(user=user, group=group)
+    if already:
+        follow = already[0]
+        if follow.confirmed:
+            return HttpResponse("you are already a member of group")
     else:
-        already = GroupJoined.objects.filter(user=user, group=group)
-        if already:
-            join = already[0]
-            if join.confirmed:
-                return HttpResponse("you are already a member of group")
-        else:
-            join = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
-            join.autoSave()
-        if group.group_type == 'O':
-            join.confirm()
-            group.members.add(user)
-            return HttpResponse("joined")
-        elif group.group_type == 'P':
-            join.request()
-            return HttpResponse("request to join")
+        follow = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
+        follow.autoSave()
+    if group.group_type == 'O':
+        join.confirm()
+        group.members.add(user)
+        return HttpResponse("joined")
+    elif group.group_type == 'P' and not follow.requested:
+        join.request()
+        return HttpResponse("request to join")
+    return HttpResponse("you have already requested to join this group")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -517,8 +519,6 @@ def joinGroupInvite(request, dict={}):
             join.invite(inviter=user)
     else:
         return HttpResponse("You are not admin.")
-
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------

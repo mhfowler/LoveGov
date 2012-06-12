@@ -3200,6 +3200,15 @@ class Group(Content):
                 print (x.get_name() + ": " + str(x_block))
             return self.members.filter(id__in=ids).order_by('id')
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getFollowRequests(self, num=-1):
+        if num == -1:
+            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')
+        else:
+            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')[:num]
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -3683,7 +3692,7 @@ class Attending(UCRelationship, Invite):
 # Relation between user and event, about whether or not they are attending.
 #
 #=======================================================================================================================
-class GroupJoined(UCRelationship, Invite):
+class GroupFollow(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
