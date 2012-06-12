@@ -84,9 +84,9 @@ def splashForm(request,templateURL):
 def postEmail(request):
     if request.method=='POST' and request.POST['email']:
         email = request.POST['email']
-        emails = m_other.EmailList.objects.filter(email=email)
+        emails = betamodels.EmailList.objects.filter(email=email)
         if not emails:
-            newEmail = m_other.EmailList(email=email)
+            newEmail = betamodels.EmailList(email=email)
             newEmail.save()
         if request.is_ajax():
             return HttpResponse('+')
