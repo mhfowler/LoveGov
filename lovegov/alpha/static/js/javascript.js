@@ -72,11 +72,19 @@ function rebindFunction()
 
 function loadHoverComparison()
 {
+    var hoverTimer;
+
+    $('#comparison-hover-div').hoverIntent(
+        function() { clearTimeout(hoverTimer); },
+        function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
+
+
     $('.feed-username').hoverIntent
     (
         // hover over
         function(event)
         {
+
             var self = $(this);
             var a = $(this).find('a');
             if (a.attr('href') != undefined)
@@ -99,31 +107,35 @@ function loadHoverComparison()
                 $('#comparison-hover-div').fadeIn(100);
                 $('#comparison-hover-div').offset(offset);
                 $.ajax
-                    ({
-                        url:'/action/',
-                        type:'POST',
-                        data: {'action':'hoverComparison','alias':alias},
-                        success: function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
-                        },
-                        error: function(jqXHR, textStatus, errorThrown)
-                        {
-                            $('#comparison-hover-div p').text('Sorry there was an error');
-                        }
-                    });
+                ({
+                    url:'/action/',
+                    type:'POST',
+                    data: {'action':'hoverComparison','alias':alias},
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $('#comparison-hover-loading-img').hide();
+                        new VisualComparison('comparison-hover',obj).draw();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('#comparison-hover-div p').text('Sorry there was an error');
+                    }
+                });
             }
         },
         // hover out
         function(event)
         {
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(100);
+            hoverTimer = setTimeout(function()
+            {
+                $('#comparison-hover').empty();
+                $('#comparison-hover-div').fadeOut(100);
+            },500)
         }
     );
 }
+
 
 
 // loads topic bar select functionality
