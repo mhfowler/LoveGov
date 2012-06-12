@@ -67,6 +67,12 @@ def splash(request):
 def learnmore(request):
     return splashForm(request, 'deployment/pages/splash/learnmore.html')
 
+def error500(request):
+    return render_to_response('deployment/pages/microcopy/500.html')
+
+def underConstruction(request):
+    return render_to_response('deployment/pages/microcopy/construction.html')
+
 def splashForm(request,templateURL):
     dict = {}
     if request.method=='POST':
