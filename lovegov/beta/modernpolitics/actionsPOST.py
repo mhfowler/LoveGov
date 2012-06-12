@@ -63,6 +63,8 @@ def actionPOST(request, dict={}):
             return userFollowRequest(request, dict)
         elif action == 'followresponse':
             return userFollowResponse(request, dict)
+        elif action == 'stopfollow':
+            return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
         ### actions below have not been proof checked ###
@@ -80,8 +82,6 @@ def actionPOST(request, dict={}):
             return follow(request, dict)
         elif action == 'posttogroup':
             return posttogroup(request)
-        elif action == 'stopfollow':
-            return userFollowStop(request, dict)
         elif action == 'deinvolve':
             return deinvolve(request, dict)
         elif action == 'updateCompare':
@@ -134,11 +134,6 @@ def actionPOST(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
-    petition = CreatePetitionForm()
-    event = CreateEventForm()
-    news = CreateNewsForm
-    group = CreateGroupForm()
-    album = UserImageForm()
     formtype = request.POST['type']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
@@ -159,13 +154,7 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        # save image
-        try:
-            uploaded = request.FILES['main_img']
-            file_content = ContentFile(uploaded.read())
-            c.setMainImage(file_content)
-        except MultiValueDictKeyError:
-            print("nope")
+        # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
                 from lovegov.alpha.splash.views import petitionDetail
@@ -497,14 +486,12 @@ def userFollowResponse(request, dict={}):
 def userFollowStop(request, dict={}):
     """Removes connection between users."""
     from_user = dict['user']
-    to_user = UserProfile.objects.get(id=request.POST['p_id'])
-    relationship = UserFollow.objects.get(user=from_user,to_user=to_user)
-    relationship.clear()
-    from_user.getConnectionsGroup().members.remove(to_user)
-    return HttpResponse("removed")
-
-
-
+    to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if to_user:
+        from_user.unfollow(to_user) #For one way relationships
+        to_user.unfollow(from_user) #Removes the TWO WAY RELATIONSHIP
+        return HttpResponse("removed")
+    return HttpResponse("To User does not exist")
 
 
 

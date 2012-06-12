@@ -94,9 +94,19 @@
         </ul>
     {% endif %}
 
-    {%if user.id != user_prof.id and not is_user_follow %}
+    {% if user.id != user_prof.id and not is_user_follow %}
         <a href="" id="user-follow">
             follow me!
+        </a>
+    {% endif %}
+
+    {% if user.id != user_prof.id and is_user_confirmed or is_user_follow %}
+        <a href="" id="user-unfollow">
+            {% if is_user_confirmed %}
+            unfollow me!
+            {% elif is_user_follow %}
+            un-request me!
+            {% endif %}
         </a>
     {% endif %}
 

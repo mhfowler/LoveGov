@@ -56,6 +56,10 @@ urlpatterns += patterns('',
     (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
     (r'^fb/handle/$', alphaviews.facebookHandle),
 
+    # Max - these are the URL to Under Construction and 500 error respectively.
+    (r'^underConstruction/$', alphaviews.underConstruction),
+    (r'^500error/$', alphaviews.error500),
+
     ### main pages ###
     (r'^home/$', requiresLogin(alphaviews.home)),                               # home page with feeds
     (r'^web/$', requiresLogin(alphaviews.web)),                                 # big look at web
