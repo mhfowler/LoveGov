@@ -918,7 +918,6 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Makes unique alias from name
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
-
         alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
         users = UserProfile.objects.filter(alias=alias)
         while users:
@@ -1012,8 +1011,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Gets facebook network for user.
     #-------------------------------------------------------------------------------------------------------------------
     def getMyConnections(self):
-        if self.network_id != -1:
-            return Network.objects.get(id=self.network_id)
+        if self.my_connections != -1:
+            return Group.objects.get(id=self.my_connections)
         else:
             return createConnectionsGroup()
 
@@ -1063,6 +1062,17 @@ class UserProfile(FacebookProfileModel, LGModel):
             if fb: #Add fb value to relationship if fb is true
                 relationship_b.fb = True
             relationship_b.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Breaks connections between this UserProfile and another UserProfile (two-way following relationship)
+    #-------------------------------------------------------------------------------------------------------------------
+    def unfollow( self , person ):
+        relationship = UserFollow.lg.get_or_none( user=self, to_user=person )
+        self.getMyConnections().members.remove(person)
+        # Clear UserFollow
+        if relationship:
+            relationship.clear()
+            relationship.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets image to inputted file.
@@ -3399,7 +3409,7 @@ class Relationship(Privacy):
 #=======================================================================================================================
 class Invite(LGModel):
     confirmed = models.BooleanField(default=False)
-    invited = models.BooleanField(default=False)
+    invited = models.BooleanField(default=False)        # unused in bi-directional relationships
     requested = models.BooleanField(default=False)
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
     ## BELOW ARE DEPRECATED ## sorrry
