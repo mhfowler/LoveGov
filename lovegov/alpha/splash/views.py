@@ -638,7 +638,7 @@ def group(request, g_id=None, dict={}):
             dict['is_user_confirmed'] = True
 
     dict['is_user_admin'] = False
-    admins = list( group.admins )
+    admins = list( group.admins.all() )
     for admin in admins:
         if admin.id == user.id:
             dict['is_user_admin'] = True
