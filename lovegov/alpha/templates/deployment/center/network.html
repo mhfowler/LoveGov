@@ -15,16 +15,68 @@
             {{ network.summary }}
         </p>
 
-        <div id="members-list">
-            <h3> Members </h3>
-            <input id="network-displaynum" type="hidden" value="{% if network.members.all.count < 20 %}{{ network.members.all.count }}{% else %}20{% endif %}"/>
-            <input id="network-id" type="hidden" value="{{ network.id }}"/>
-            {% for x in network.members.all|slice:":20" %}
-                {% include 'deployment/snippets/network-member.div.html' with member=x %}
-            {% endfor %}
-        </div>
-        <div style="clear:both">
-            <a id="network-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
+
+        <div class="histogram">
+
+            {% load thumbnail %}
+
+            <div class="histogram-wrapper" style="width:500px;float:left;">
+
+                <div class="histogram-bars">
+                    {% include 'deployment/pieces/histogram.html'%}
+                </div>
+
+                {% for k,v in histogram.items %}
+                    <div style="float:left;margin-left:10px;">
+                        <a class="histogram-select-block" style="color:red">  {{ k }} </a>
+                        <input class="block-val" type="hidden" value="{{k}}"/>
+                    </div>
+                {% endfor %}
+
+                <!-- all -->
+                <div style="float:left;margin-left:10px;">
+                    <a class="histogram-select-block" style="color:red">  * </a>
+                    <input class="block-val" type="hidden" value="-1"/>
+                </div>
+
+            </div>
+
+            <div class="topic-icons-wrapper h-topics-wrapper" style="float:left">
+                {% for t in main_topics %}
+                    <div class="topic-icon-wrapper h-topic-wrapper">
+                        {% thumbnail t.image "30x30" format="PNG" as im %}
+                            <img class="topic-img normal h-topic-img" src="{{ im.url }}"/>
+                        {% endthumbnail %}
+                        {% thumbnail t.selected "30x30" format="PNG" as im %}
+                            <img class="topic-img selected h-topic-img" src="{{ im.url }}"/>
+                        {% endthumbnail %}
+                        <input type="hidden" class="t-alias" value="{{t.alias}}">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="members-wrappers" style="width:200px;float:left;">
+                <h3> Members </h3>
+                <div id="members-list">
+                    {% for x in network_members %}
+                        {% include 'deployment/snippets/network-member.div.html' with member=x %}
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="histogram-metadata">
+                <input id="network-id" type="hidden" value="{{ network.id }}"/>
+                <input id="histogram-topic" type="hidden" value="general"/>
+                <input id="histogram-block" type="hidden" value="-1"/>
+                <input id="histogram-resolution" type="hidden" value="{{ histogram_resolution }}"/>
+                <input id="histogram-displayed-num" type="hidden" value="{{ network_members.count}} "/>
+            </div>
+
+            <div style="clear:both">
+                <a id="network-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
+            </div>
+
         </div>
 
     </div>
@@ -43,5 +95,3 @@
 
 </div>
 
-
-</div>

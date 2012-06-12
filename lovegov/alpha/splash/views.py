@@ -67,9 +67,6 @@ def splash(request):
 def learnmore(request):
     return splashForm(request, 'deployment/pages/splash/learnmore.html')
 
-def error500(request):
-    return render_to_response('deployment/pages/microcopy/500.html')
-
 def underConstruction(request):
     return render_to_response('deployment/pages/microcopy/construction.html')
 
@@ -238,7 +235,7 @@ def requiresLogin(view):
             user = betabackend.getUserProfile(request)
             # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
             if UPDATE and not user.developer and not LOCAL:
-                return shortcuts.redirect("/login/web/")
+                return shortcuts.redirect("/underconstruction/")
             # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
             elif not request.user.is_authenticated():
                 print request.path
@@ -530,7 +527,6 @@ def profile(request, alias=None, dict={}):
         if alias:
             frame(request, dict)
             getUserResponses(request,dict)
-
             # get comparison of person you are looking at
             user_prof = UserProfile.objects.get(alias=alias)
             comparison = betabackend.getUserUserComparison(user, user_prof)
@@ -611,6 +607,9 @@ def network(request, name=None, dict={}):
     jsonData = comparison.toJSON()
     dict['json'] = jsonData
     dict['defaultImage'] = betabackend.getDefaultImage().image
+    dict['histogram'] = network.getComparisonHistogram(user)
+    dict['histogram_resolution'] = betaconstants.HISTOGRAM_RESOLUTION
+    dict['network_members'] = network.members.order_by('id')[0:1]
     setPageTitle("lovegov: " + network.title,dict)
     if request.is_ajax():
         html = ajaxRender('deployment/center/network.html', dict, request)

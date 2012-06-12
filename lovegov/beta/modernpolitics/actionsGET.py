@@ -10,12 +10,16 @@
 ################################################## IMPORT ##############################################################
 
 ### INTERNAL ###
-from lovegov.old.views import *
 from BeautifulSoup import BeautifulStoneSoup
 from lovegov.alpha.splash.views import ajaxRender
 import images
 from haystack.query import SearchQuerySet
-from lovegov.beta.modernpolitics.models import UserProfile
+from lovegov.beta.modernpolitics.models import UserProfile, UserPhysicalAddress, Representative, Senator, DebateMessage, Network
+from lovegov.beta.modernpolitics.backend import getUserProfile
+from lovegov.alpha.splash.views import renderToResponseCSRF
+from lovegov.beta.modernpolitics import backend
+from django.db.models import Q
+from lovegov.beta.modernpolitics import constants
 
 ### DJANGO LIBRARIES ###
 from django.http import *
@@ -28,6 +32,7 @@ import sunlight
 import Image
 import PIL
 from googlemaps import GoogleMaps
+import json
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -54,6 +59,8 @@ def actionGET(request, dict={}):
             return searchAutoComplete(request,dict)
         elif action=='loadNetworkUsers':
             return loadNetworkUsers(request,dict)
+        elif action=='loadHistogram':
+            return loadHistogram(request,dict)
         else:
             dict['message'] = "There is no such action."
             return renderToResponseCSRF('usable/message.html',dict,request)
@@ -253,27 +260,51 @@ def getCongressmen(request, dict={}):
 # Returns json of list of results which match inputted 'term'. For jquery autocomplete.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def searchAutoComplete(request,dict={}):
+def searchAutoComplete(request,dict={},limit=5):
     string = request.GET['string'].lstrip().rstrip()
     userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=string)
-    dict['userProfiles'] = [userProfile.object for userProfile in userProfiles]
+    dict['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
     html = ajaxRender('deployment/pieces/autocomplete.html', dict, request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+#
+# Loads members.
+#
+#-----------------------------------------------------------------------------------------------------------------------
 def loadNetworkUsers(request,dict={}):
-    num = int(request.GET['num'])
-    idnum = int(request.GET['id'])
-    next_num = num + 25
-    moreMembers = Network.objects.get(id=idnum).members.all().order_by('id')[num:next_num]
+    user = dict['user']
+    num = int(request.GET['histogram_displayed_num'])
+    histogram_topic = request.GET['histogram_topic']
+    histogram_block = int(request.GET['histogram_block'])
+    network = Network.objects.get(id=request.GET['network_id'])
+    print 'topic: ' + histogram_topic
+    print 'block: ' + str(histogram_block)
+    next_num = num + 1
+    all_members = network.getMembers(user, block=histogram_block, topic_alias=histogram_topic)
+    if len(all_members) >= next_num:
+        more_members = all_members[num:next_num]
+    else:
+        more_members = []
     html = ""
     dict['defaultImage'] = backend.getDefaultImage().image
-    for member in moreMembers:
+    for member in more_members:
         dict['member'] = member
         html += ajaxRender('deployment/snippets/network-member.div.html',dict,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
-
-
-
+#-----------------------------------------------------------------------------------------------------------------------
+#
+# Loads histogram data.
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def loadHistogram(request, dict={}):
+    user = dict['user']
+    network = Network.objects.get(id=request.GET['network_id'])
+    histogram_topic = request.GET['histogram_topic']
+    dict['histogram'] = network.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=constants.HISTOGRAM_RESOLUTION)
+    html = ajaxRender('deployment/pieces/histogram.html', dict, request)
+    to_return = {'html':html}
+    return HttpResponse(json.dumps(to_return))
 
 

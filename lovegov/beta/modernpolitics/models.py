@@ -70,7 +70,8 @@ def photoKey(type=".jpg"):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)   # foreign key to user profile
+    creator_id = models.IntegerField(default=-1)   # foreign key to user profile
+    creator = models.ForeignKey("UserProfile", null=True)
     class Meta:
         abstract = True
         #-------------------------------------------------------------------------------------------------------------------
@@ -99,7 +100,7 @@ class Privacy(LGModel):
     def getCreator(self):
         try:
             creator = self.creator
-        except:
+        except UserProfile.DoesNotExist:
             from lovegov.beta.modernpolitics.backend import getLoveGovUser
             return getLoveGovUser() 
         return creator
@@ -1474,7 +1475,7 @@ class Action(Privacy):
             action_verbose = ' edited '
         elif self.type == 'XX':
             action_verbose = ' deleted '
-            # SET VERBOSE
+        # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
 
     def autoNotify(self, relationship=None):
@@ -3086,6 +3087,37 @@ class Group(Content):
     system = models.BooleanField(default=False)     # means you can't leave
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Returns json of histogram data.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
+        from lovegov.beta.modernpolitics.backend import getUserUserComparison
+        histogram = {}                  # initialize empty histogram
+        topic = Topic.lg.get_or_none(alias=topic_alias)
+        for i in range(0, resolution+1):
+            histogram[i]= {'num':0, 'percent':0}
+        members = self.members.all()
+        for x in members:
+            comparison = getUserUserComparison(user, x)
+            if topic and topic_alias != 'general':
+               block = comparison.bytopic.get(topic=topic).result / resolution
+            else:
+                block = comparison.result / resolution
+            if block in histogram:
+                histogram[block]['num'] += 1
+        # calc percents
+        people = float(len(members))
+        for k in histogram:
+            tuple = histogram[k]
+            num = tuple['num']
+            if  not num:
+                pix = 5
+            else:
+                pix = (num/people*100)*5
+            tuple['pix'] = int(pix)
+        print histogram
+        return histogram
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
     #-------------------------------------------------------------------------------------------------------------------
     def edit(self,field,value):
@@ -3145,6 +3177,29 @@ class Group(Content):
             self.group_bestfeed.all().delete()
         elif feed_type=='H':
             self.group_hotfeed.all().delete()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get members, filtered by some criteria
+    #-------------------------------------------------------------------------------------------------------------------
+    def getMembers(self, user, block=-1, topic_alias=None):
+        from lovegov.beta.modernpolitics.backend import getUserUserComparison
+        if block == -1:
+            return self.members.order_by('id')
+        else:
+            topic = Topic.lg.get_or_none(alias=topic_alias)
+            ids = []
+            for x in self.members.order_by('id'):
+                comparison = getUserUserComparison(user, x)
+                if topic and topic_alias!='general':
+                    x_block = comparison.bytopic.get(topic=topic).result / constants.HISTOGRAM_RESOLUTION
+                else:
+                    x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
+                    print x.get_name() + ": " + str(x_block)
+                if x_block == block:
+                    ids.append(x.id)
+                print (x.get_name() + ": " + str(x_block))
+            return self.members.filter(id__in=ids).order_by('id')
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.
