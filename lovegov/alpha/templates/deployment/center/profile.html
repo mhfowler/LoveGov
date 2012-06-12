@@ -94,7 +94,7 @@
         </ul>
     {% endif %}
 
-    {% if user.id != user_prof.id and not is_user_follow %}
+    {% if user.id != user_prof.id and not is_user_follow and not is_user_confirmed %}
         <a href="" id="user-follow">
             follow me!
         </a>
