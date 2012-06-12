@@ -70,7 +70,8 @@ def photoKey(type=".jpg"):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)   # foreign key to user profile
+    creator_id = models.IntegerField(default=-1)   # foreign key to user profile
+    creator = models.ForeignKey("UserProfile", null=True)
     class Meta:
         abstract = True
         #-------------------------------------------------------------------------------------------------------------------
