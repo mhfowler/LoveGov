@@ -99,7 +99,7 @@ class Privacy(LGModel):
     def getCreator(self):
         try:
             creator = self.creator
-        except:
+        except UserProfile.DoesNotExist:
             from lovegov.beta.modernpolitics.backend import getLoveGovUser
             return getLoveGovUser() 
         return creator
