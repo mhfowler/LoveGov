@@ -32,74 +32,10 @@
             </div>
         </div>
 
-        <div id="login-div" style="display:none">
-            <h1>Log in to LoveGov</h1>
-            <form action="" method="post" id="loginform"> {% csrf_token %}
-                <table id="logintable">
-                    <tr>
-                        <td>
-                            <input type="text" id="username-input" class="login-input" name="username"/>
-                            <span class="input-span" id="username-span">email</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="password" id="password-input" class="login-input" name="password"/>
-                            <span class="input-span" id="password-span">password</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan=2>
-                            <input type="hidden" name="button" value="login"/>
-                            <input class="submit-button" id="submit-login" type="submit" value="log in"/>
-                            <div style="height:25px">
-                                <a class="account-actions" id="forgot-password">forgot password?</a>
-                            </div>
-                            <div>
-                                <a class="account-actions" id="create-content">create account</a>
-                            </div>
-                        </td>
-                        <td></td>
-                    </tr>
-                </table>
-            </form>
-            <script type="text/javascript">
+        {% include 'deployment/pages/login/login-login.form.html' %}
 
-                $('#username-input').focusin(function()
-                {
-                    $('#username-span').css('color','#CCCCCC');
-                });
+        {% include 'deployment/pages/login/login-register.form.html' %}
 
-                $('#username-input').focusout(function()
-                {
-                    $('#username-span').css('color','#959595');
-                    if ($(this).val()==''){ $('#username-span').show(); }
-                });
-
-                $('#username-input').keypress(function()
-                {
-                    $('#username-span').hide();
-                });
-
-
-                $('#password-input').focusin(function()
-                {
-                    $('#password-span').css('color','#CCCCCC');
-                });
-
-                $('#password-input').focusout(function()
-                {
-                    $('#password-span').css('color','#959595');
-                    if ($(this).val()==''){ $('#password-span').show(); }
-                });
-
-                $('#password-input').keypress(function()
-                {
-                    $('#password-span').hide();
-                });
-
-            </script>
-        </div>
     </div>
 
     {% include 'deployment/pages/login/login-about.html' %}

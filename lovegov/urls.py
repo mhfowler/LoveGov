@@ -56,6 +56,8 @@ urlpatterns += patterns('',
     (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
     (r'^fb/handle/$', alphaviews.facebookHandle),
 
+    (r'^fb/handle/$', alphaviews.con),
+
     ### main pages ###
     (r'^home/$', requiresLogin(alphaviews.home)),                               # home page with feeds
     (r'^web/$', requiresLogin(alphaviews.web)),                                 # big look at web

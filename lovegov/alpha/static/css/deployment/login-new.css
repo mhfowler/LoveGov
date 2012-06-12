@@ -123,6 +123,10 @@ table td
     font-size:28px;
 }
 
+input:hover
+{
+    cursor:pointer;
+}
 
 
 /* MIDDLE */
@@ -390,7 +394,7 @@ table tr
     color: #0f5569;
     font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
     font-weight: normal;
-    font-size: 20pt;
+    font-size: 21px;
     margin-top:10px;
     margin-bottom:10px;
 }
