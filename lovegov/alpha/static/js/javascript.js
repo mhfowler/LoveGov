@@ -205,10 +205,10 @@ function selectTopicMultiple(div)
 
 function loadAjaxifyAnchors()
 {
-    // Jquery's '.one' binds the handler to each link once
-    // This prevents the function from being called multiple times
-    $('.do-ajax-link').one('click',  function(event)
+    $('.do-ajax-link').off('click',  ajaxClicked);
+    var ajaxClicked = function(event)
     {
+        alert("oh hai");
         var elem = event.target;
         var href = $(elem).attr('href');
         if (
@@ -224,7 +224,8 @@ function loadAjaxifyAnchors()
             ajaxLink($(elem), true);
             return false;
         }
-    });
+    }
+    $('.do-ajax-link').on('click',  ajaxClicked);
 
 }
 /***********************************************************************************************************************
