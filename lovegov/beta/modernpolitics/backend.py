@@ -1475,8 +1475,8 @@ def initializeTestFeedData():
 
 def initializeNormalBob():
     normal = createUser(name="Normal Bob", email="normal@gmail.com", password="normal")
-    normal.confirmed = True
-    normal.save()
+    normal.user_profile.confirmed = True
+    normal.user_profile.save()
     print "initialized: Normal Bob"
 
 def initializeTopics(using="default"):
