@@ -70,7 +70,7 @@ def photoKey(type=".jpg"):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)   # foreign key to user profile
+    creator_id = models.IntegerField(default=-1)   # foreign key to user profile
     class Meta:
         abstract = True
         #-------------------------------------------------------------------------------------------------------------------
@@ -80,36 +80,30 @@ class Privacy(LGModel):
         if self.privacy == 'PUB':
             return True
         elif self.privacy == 'PRI':
-            if user == self.creator:
+            if user.id == self.creator_id:
                 return True
             else:
                 return False
         elif self.privacy == 'FOL':
-            if user == self.creator:
+            if user.id == self.creator_id:
                 return True
             else:
-                following_creator = user.getIFollow().filter(to_user__id=self.creator.user_id)
+                following_creator = user.getIFollow().filter(to_user__id=self.creator_id)
                 if following_creator:
                     return True
                 else:
                     return False
-    #-------------------------------------------------------------------------------------------------------------------
+        #-------------------------------------------------------------------------------------------------------------------
     # Returns user who created this.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreator(self):
-        try:
-            creator = self.creator
-        except UserProfile.DoesNotExist:
+        if self.creator_id != -1:
+            creator = UserProfile.objects.filter(id=self.creator_id)
+            if creator:
+                return creator[0]
+        else:
             from lovegov.beta.modernpolitics.backend import getLoveGovUser
-            return getLoveGovUser() 
-        return creator
-        # if self.creator_id != -1:
-        #     creator = UserProfile.objects.filter(id=self.creator_id)
-        #     if creator:
-        #         return creator[0]
-        # else:
-        #     from lovegov.beta.modernpolitics.backend import getLoveGovUser
-        #     return getLoveGovUser()
+            return getLoveGovUser()
 
 #=======================================================================================================================
 # physical address
@@ -143,6 +137,7 @@ class Topic(LGModel):
     # actual topic stuff
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
+    # foreign key to forum
     forum_id = models.IntegerField(default=-1)                          # foreign key to forum
     # fields for images
     image = models.ImageField(null=True, upload_to="defaults/")
@@ -335,7 +330,7 @@ class Content(Privacy, LocationLevel):
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveCreated(self, creator, privacy):
-        self.creator = creator
+        self.creator_id = creator.id
         self.privacy = privacy
         self.save()
         # deprecate
@@ -605,15 +600,15 @@ class Content(Privacy, LocationLevel):
         if self.privacy == 'PUB':
             return True
         elif self.privacy == 'PRI':
-            if user == self.creator:
+            if user.id == self.creator_id:
                 return True
             else:
                 return False
         elif self.privacy == 'FOL':
-            if user == self.creator:
+            if user.id == self.creator_id:
                 return True
             else:
-                following_creator = user.getIFollow().filter(to_user__id=self.creator.user_id)
+                following_creator = user.getIFollow().filter(to_user__id=self.creator_id)
                 if following_creator:
                     return True
                 else:
@@ -629,25 +624,10 @@ class Content(Privacy, LocationLevel):
             self.saveCreated(creator=creator, privacy=privacy)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns query set of all UsersFollows following this content.
+    # Returns query set of all users following this content.
     #-------------------------------------------------------------------------------------------------------------------
-    def getUserFollowMe(self):
+    def getFollowMe(self):
         return Followed.objects.filter(content=self)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a list of all Users who are (confirmed) following this user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getFollowMe(self, num=-1):
-        follows = Followed.objects.filter(content=self)
-        followers = []
-        if num == -1:
-            for f in follows:
-                followers.append(f.user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                followers.append(follows[i].user)
-        return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns the total number of comments on this content, including replies.
@@ -918,6 +898,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Makes unique alias from name
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
+
         alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
         users = UserProfile.objects.filter(alias=alias)
         while users:
@@ -1011,8 +992,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Gets facebook network for user.
     #-------------------------------------------------------------------------------------------------------------------
     def getMyConnections(self):
-        if self.my_connections != -1:
-            return Group.objects.get(id=self.my_connections)
+        if self.network_id != -1:
+            return Network.objects.get(id=self.network_id)
         else:
             return createConnectionsGroup()
 
@@ -1040,13 +1021,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
     def makeFriends( self , friend , fb=False ):
-        relationship_a = UserFollow.lg.get_or_none( user=self, to_user=friend )
+        relationship_a = models.UserFollow.lg.get_or_none( user=self, to_user=friend )
         self.getMyConnections().members.add(friend)
-        relationship_b = UserFollow.lg.get_or_none( user=friend, to_user=self )
+        relationship_b = models.UserFollow.lg.get_or_none( user=friend, to_user=self )
         friend.getMyConnections().members.add(self)
         #Check and Make Relationship A
         if not relationship_a:
-            relationship_a = UserFollow( user=self , to_user=friend , confirmed=True, fb=fb )
+            relationship_a = models.UserFollow( user=self , to_user=friend , confirmed=True, fb=fb )
             relationship_a.autoSave()
         else:
             relationship_a.confirmed = True
@@ -1055,24 +1036,13 @@ class UserProfile(FacebookProfileModel, LGModel):
             relationship_a.save()
             #Check and Make Relationship B
         if not relationship_b:
-            relationship_b = UserFollow( user=friend, to_user=self , confirmed=True, fb=fb )
+            relationship_b = models.UserFollow( user=friend, to_user=self , confirmed=True, fb=fb )
             relationship_b.autoSave()
         else:
             relationship_b.confirmed = True
             if fb: #Add fb value to relationship if fb is true
                 relationship_b.fb = True
             relationship_b.save()
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Breaks connections between this UserProfile and another UserProfile (two-way following relationship)
-    #-------------------------------------------------------------------------------------------------------------------
-    def unfollow( self , person ):
-        relationship = UserFollow.lg.get_or_none( user=self, to_user=person )
-        self.getMyConnections().members.remove(person)
-        # Clear UserFollow
-        if relationship:
-            relationship.clear()
-            relationship.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets image to inputted file.
@@ -1220,40 +1190,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.my_feed.all().delete()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all notifications.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1):
-        if num == -1:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')
-        else:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')[:num]
-        for n in notifications:
-            n.viewed = True
-        return notifications
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all NEW notifications.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getNewNotifications(self, num=-1):
-        if num == -1:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False).order_by('when')
-        else:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False ).order_by('when')[:num]
-        for n in notifications:
-            n.viewed = True
-        return notifications
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all unconfirmed requests.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getFollowRequests(self, num=-1):
-        if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')
-        else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')[:num]
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a list of all Groups this user has joined and been accepted to.
+    # Returns query set of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
         group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
@@ -1268,7 +1205,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         return groups
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns a list of all Users who are (confirmed) following this user.
+    # Returns query set of all UserFollow who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowMe(self, num=-1):
         follows = UserFollow.objects.filter( to_user=self, confirmed=True )
@@ -1283,7 +1220,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns a list of all Users who this user is (confirmed) following.
+    # Returns query set of all UserFollow who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
         follows = UserFollow.objects.filter( user=self, confirmed=True )
@@ -1306,20 +1243,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         for f in follows:
             friends.append(f.to_user)
         return friends
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all UserFollow who are (confirmed) following this user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getUserFollowMe(self):
-        followers = UserFollow.objects.filter( to_user=self, confirmed=True )
-        return followers
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all UserFollow who are (confirmed) following this user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getIUserFollow(self):
-        following = UserFollow.objects.filter( user=self, confirmed=True )
-        return following
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a set of random questions that the user hasn't answered
@@ -1401,7 +1324,7 @@ class Action(Privacy):
     def autoSave(self, relationship=None, group=None):
         self.autoVerbose(relationship=relationship)
         self.save()
-        #self.autoNotify(relationship=relationship)
+        self.autoNotify(relationship=relationship)
 
     def autoVerbose(self, relationship=None):
         if not relationship:
@@ -1476,17 +1399,17 @@ class Action(Privacy):
         from lovegov.beta.modernpolitics.backend import getLoveGovUser
         if not relationship:
             relationship = self.getRelationship()
-        self.notified = [self.creator.user_id, -1, getLoveGovUser().id] # for keeping track of who has been notified and not duplicating
+        self.notified = [self.creator_id, -1, getLoveGovUser().id] # for keeping track of who has been notified and not duplicating
         # NOTIFY FOLLOWERS OF OBJECT
         if self.modifier == 'D' and self.type in ['JO', 'JD', 'AE', 'MV', 'DV', 'VO', 'DM', 'SI', 'SH', 'FC', 'CO', 'XX']:
-            self.notifyAll(follows=relationship.getTo().getUserFollowMe())
+            self.notifyAll(follows=relationship.getTo().getFollowMe())
             # SHARE
         if self.type == 'SH':
             shared = Shared.objects.get(id = self.relationship_id)
             self.notifyAll(users=shared.share_users)
             # share with group followers
             for g in shared.share_groups:
-                self.notifyAll(follows=g.getUserFollowMe())
+                self.notifyAll(follows=g.getFollowMe())
             # REQUESTS AND INVITATIONS
         # request to join group
         if self.type == 'JO' and self.modifier =='R':
@@ -1524,7 +1447,7 @@ class Action(Privacy):
                 user = relationship.user
             else:
                 user = self.getCreator()
-            self.notifyAll(follows=user.getUserFollowMe())
+            self.notifyAll(follows=user.getFollowMe())
 
     def notifyAll(self, users=None, follows=None):
         if users:
@@ -1547,7 +1470,7 @@ class Action(Privacy):
             if self.must_notify or self.getPermission(user):
                 notification = Notification(type=self.type, modifier=self.modifier,
                     action=self, notify_user=user,
-                    privacy=self.privacy, creator=self.creator,
+                    privacy=self.privacy, creator_id=self.creator_id,
                     trig_content=trig_content, trig_user=trig_user)
                 if user.notify(notification, action=self):
                     self.notified.append(user.id)
@@ -3083,20 +3006,23 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
-    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
+    def getComparisonHistogram(self, user, topic=None, resolution=10):
         from lovegov.beta.modernpolitics.backend import getUserUserComparison
         histogram = {}                  # initialize empty histogram
-        topic = Topic.lg.get_or_none(alias=topic_alias)
         for i in range(0, resolution+1):
             histogram[i]=0
         for x in self.members.all():
             comparison = getUserUserComparison(user, x)
-            if topic and topic_alias != 'general':
+            if topic:
                block = comparison.bytopic.get(topic=topic).result / resolution
             else:
                 block = comparison.result / resolution
             if block in histogram:
                 histogram[block] += 1
+            if block == resolution:           # special case for identical
+                histogram[resolution-1] += 1
+        for k in histogram:
+            print "key: " + str(k) + " value: " + str(histogram[k])
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3163,24 +3089,22 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic_alias=None):
+    def getMembers(self, user, block=-1, topic=None):
         from lovegov.beta.modernpolitics.backend import getUserUserComparison
         if block == -1:
             return self.members.order_by('id')
         else:
-            topic = Topic.lg.get_or_none(alias=topic_alias)
             ids = []
             for x in self.members.order_by('id'):
                 comparison = getUserUserComparison(user, x)
-                if topic and topic_alias!='general':
-                    x_block = comparison.bytopic.get(topic=topic).result / constants.HISTOGRAM_RESOLUTION
-                else:
+                if not topic or topic == 'general':
                     x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
-                    print x.get_name() + ": " + str(x_block)
+                    print x.get_name() + ": " + str(block)
+                else:
+                    x_block = comparison.bytopic.get(topic=topic).result
                 if x_block == block:
                     ids.append(x.id)
-                print (x.get_name() + ": " + str(x_block))
-            return self.members.filter(id__in=ids).order_by('id')
+            return self.members.order_by('id').filter(id__in=ids)
 
 
 #=======================================================================================================================
@@ -3443,7 +3367,7 @@ class Relationship(Privacy):
 
     def autoNotify(self, child, modifier='D', must_notify=False):
         action = Action(type=self.relationship_type, modifier=modifier, must_notify=must_notify,
-            relationship_id=child.id, creator = self.creator, privacy=self.privacy)
+            relationship_id=child.id, creator_id = self.creator_id, privacy=self.privacy)
         action.autoSave(relationship=child)
 
 #=======================================================================================================================
@@ -3451,7 +3375,7 @@ class Relationship(Privacy):
 #=======================================================================================================================
 class Invite(LGModel):
     confirmed = models.BooleanField(default=False)
-    invited = models.BooleanField(default=False)        # unused in bi-directional relationships
+    invited = models.BooleanField(default=False)
     requested = models.BooleanField(default=False)
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
     ## BELOW ARE DEPRECATED ## sorrry
@@ -3463,14 +3387,14 @@ class Invite(LGModel):
     def confirm(self):
         self.confirmed = True
         self.save()
-        #self.autoNotify(child=self)
+        self.autoNotify(child=self)
     def request(self):
         self.requested = True
         if self.invited:
             self.confirm()
         else:
             self.save()
-            #self.autoNotify(child=self, modifier='R', must_notify=True)
+            self.autoNotify(child=self, modifier='R', must_notify=True)
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
@@ -3478,7 +3402,7 @@ class Invite(LGModel):
             self.confirm()
         else:
             self.save()
-            #self.autoNotify(child=self, modifier='I', must_notify=True)
+            self.autoNotify(child=self, modifier='I', must_notify=True)
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -3496,12 +3420,12 @@ class Invite(LGModel):
         if self.requested:
             self.rejected = True
             self.save()
-            #self.autoNotify(child=self, modifier='X', must_notify=True)
+            self.autoNotify(child=self, modifier='X', must_notify=True)
     def decline(self):
         if self.invited:
             self.declined = True
             self.save()
-            #self.autoNotify(child=self, modifier='N', must_notify=True)
+            self.autoNotify(child=self, modifier='N', must_notify=True)
     def accept(self):
         if self.invited:
             self.confirm()
@@ -3513,7 +3437,7 @@ class Invite(LGModel):
             self.confirmed = False
             self.rejected = True
             self.save()
-            #self.autoNotify(child=self, modifier='X', must_notify=True)
+            self.autoNotify(child=self, modifier='X', must_notify=True)
 
 
 #=======================================================================================================================
@@ -3533,7 +3457,7 @@ class DebateVoted(UCRelationship):
     value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
     def autoSave(self):
         self.relationship_type = 'DV'
-        self.creator=self.user_id
+        self.creator_id=self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3545,7 +3469,7 @@ class MotionVoted(UCRelationship):
     value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
     def autoSave(self):
         self.relationship_type = 'MV'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3557,7 +3481,7 @@ class Voted(UCRelationship):
     value = models.IntegerField(default=0)        # 1 is like, 0 neutral, -1 dislike
     def autoSave(self):
         self.relationship_type = 'VO'
-        self.creator = self.user
+        self.creator_id=self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3579,7 +3503,7 @@ class Voted(UCRelationship):
 class Created(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CR'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3589,7 +3513,7 @@ class Created(UCRelationship):
 class Deleted(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'XX'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3601,7 +3525,7 @@ class Commented(UCRelationship):
     comment = models.ForeignKey(Comment)
     def autoSave(self):
         self.relationship_type = 'CO'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3612,7 +3536,7 @@ class Commented(UCRelationship):
 class Edited(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'ED'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3625,7 +3549,7 @@ class Shared(UCRelationship):
     share_groups = models.ManyToManyField(Group)
     def autoSave(self):
         self.relationship_type = 'SH'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self, must_notify=True)
 
@@ -3636,7 +3560,7 @@ class Shared(UCRelationship):
 class Followed(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'FC'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
         self.autoNotify(child=self)
 
@@ -3653,7 +3577,7 @@ class Attending(UCRelationship, Invite):
     choice = models.CharField(max_length=1, choices=CONFIRMATION_CHOICE)
     def autoSave(self):
         self.relationship_type = 'AE'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
 
 #=======================================================================================================================
@@ -3664,7 +3588,7 @@ class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
 
 #=======================================================================================================================
@@ -3675,7 +3599,7 @@ class DebateJoined(UCRelationship, Invite):
     debate = models.ForeignKey(Persistent)
     def autoSave(self):
         self.relationship_type = 'JD'
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.save()
 
 #=======================================================================================================================
@@ -3692,7 +3616,7 @@ class UURelationship(Relationship):
 class UserFollow(UURelationship, Invite):
     fb = models.BooleanField(default=False)
     def autoSave(self):
-        self.creator = self.user
+        self.creator_id = self.user_id
         self.relationship_type = 'FO'
         self.save()
 
