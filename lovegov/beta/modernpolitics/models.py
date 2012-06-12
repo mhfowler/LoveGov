@@ -1392,7 +1392,7 @@ class Action(Privacy):
             action_verbose = ' edited '
         elif self.type == 'XX':
             action_verbose = ' deleted '
-            # SET VERBOSE
+        # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
 
     def autoNotify(self, relationship=None):
@@ -3085,6 +3085,27 @@ class Group(Content):
             self.group_bestfeed.all().delete()
         elif feed_type=='H':
             self.group_hotfeed.all().delete()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get members, filtered by some criteria
+    #-------------------------------------------------------------------------------------------------------------------
+    def getMembers(self, user, block=-1, topic=None):
+        from lovegov.beta.modernpolitics.backend import getUserUserComparison
+        if block == -1:
+            return self.members.order_by('id')
+        else:
+            ids = []
+            for x in self.members.order_by('id'):
+                comparison = getUserUserComparison(user, x)
+                if not topic or topic == 'general':
+                    x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
+                    print x.get_name() + ": " + str(block)
+                else:
+                    x_block = comparison.bytopic.get(topic=topic).result
+                if x_block == block:
+                    ids.append(x.id)
+            return self.members.order_by('id').filter(id__in=ids)
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.

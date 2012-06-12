@@ -93,6 +93,8 @@ DEFAULT_EMAIL_NOTIFICATIONS = ['VO', 'DM', 'CO', 'FO', 'JO']
 ############ VISUAL SETTINGS  ################
 NUM_QUESTIONS = 5
 
+HISTOGRAM_RESOLUTION = 10
+
 #### MAIN TOPICS ####
 MAIN_TOPICS = ['Economy', 'Education', 'Energy', 'Environment', 'Health Care', 'National Security', 'Social Issues']
 

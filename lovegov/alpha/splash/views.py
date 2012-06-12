@@ -593,7 +593,7 @@ def network(request, name=None, dict={}):
     dict['defaultImage'] = betabackend.getDefaultImage().image
     dict['histogram'] = network.getComparisonHistogram(user)
     dict['histogram_resolution'] = betaconstants.HISTOGRAM_RESOLUTION
-    dict['network_members'] = network.getMembersDisplay()
+    dict['network_members'] = network.members.order_by('id')[0:1]
     setPageTitle("lovegov: " + network.title,dict)
     if request.is_ajax():
         html = ajaxRender('deployment/center/network.html', dict, request)

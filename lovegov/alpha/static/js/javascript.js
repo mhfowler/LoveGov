@@ -1797,15 +1797,13 @@ function loadNetwork()
 {
     var loadingLockout = false;
 
-    function loadMoreUsers(event)
+    function loadMoreUsers(event, replace)
     {
         event.preventDefault();
-        var num = $('#histogram-displayed').val();
+        var histogram_displayed_num = $('#histogram-displayed-num').val();
         var histogram_topic = $('#histogram-topic').val();
-        var histogram_lower = $('#histogram-lower').val();
-        var histogram_upper = $('#histogram-upper').val();
-        var histogram_resolution = $('#histogram-resolution').val();
-        var id = $('#network-id').val();
+        var histogram_block = $('#histogram-block').val();
+        var network_id = $('#network-id').val();
         if (!loadingLockout)
         {
             loadingLockout = true;
@@ -1813,14 +1811,18 @@ function loadNetwork()
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadNetworkUsers','num':num,'id':id,
-                        'histogram_topic':histogram_topic,'histogram_lower':histogram_lower,'histogram_upper':histogram_upper,
-                    'histogram_resolution':histogram_resolution},
+                    data: {'action':'loadNetworkUsers','histogram_displayed_num':histogram_displayed_num,'network_id':network_id,
+                        'histogram_topic':histogram_topic,'histogram_block':histogram_block },
                     success: function(data)
                     {
                         var returned = eval('(' + data + ')');
-                        $('#members-list').replace(returned.html);
-                        $('#network-displaynum').val(returned.num);
+                        if (replace==true) {
+                            $('#members-list').replace(returned.html);
+                        }
+                        else {
+                            $('#members-list').append(returned.html);
+                        }
+                        $('#histogram-displayed-num').val(returned.num);
                         loadHoverComparison();
                         loadAjaxifyAnchors();
                         bindNewDivs();
@@ -1828,7 +1830,7 @@ function loadNetwork()
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
-                        alert("failed to submit");
+                        $('body').html(jqXHR.responseText);
                     }
                 });
         }
@@ -1854,7 +1856,7 @@ function loadNetwork()
 
     $('#network-see-more-users').click(function(event)
     {
-        loadMoreUsers(event);
+        loadMoreUsers(event, false);
     });
 
     bindNewDivs();

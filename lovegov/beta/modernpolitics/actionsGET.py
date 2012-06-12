@@ -10,12 +10,16 @@
 ################################################## IMPORT ##############################################################
 
 ### INTERNAL ###
-from lovegov.old.views import *
 from BeautifulSoup import BeautifulStoneSoup
 from lovegov.alpha.splash.views import ajaxRender
 import images
 from haystack.query import SearchQuerySet
-from lovegov.beta.modernpolitics.models import UserProfile
+from lovegov.beta.modernpolitics.models import UserProfile, UserPhysicalAddress, Representative, Senator, DebateMessage, Network
+from lovegov.beta.modernpolitics.backend import getUserProfile
+from lovegov.alpha.splash.views import renderToResponseCSRF
+from lovegov.beta.modernpolitics import backend
+from django.db.models import Q
+from lovegov.beta.modernpolitics import constants
 
 ### DJANGO LIBRARIES ###
 from django.http import *
@@ -28,6 +32,7 @@ import sunlight
 import Image
 import PIL
 from googlemaps import GoogleMaps
+import json
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -266,17 +271,19 @@ def searchAutoComplete(request,dict={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def loadNetworkUsers(request,dict={}):
-    num = int(request.GET['num'])
-    id_start = int(request.GET['id_start'])
+    user = dict['user']
+    num = int(request.GET['histogram_displayed_num'])
     histogram_topic = request.GET['histogram_topic']
-    histogram_lower = request.GET['histogram_lower']
-    histogram_upper = request.GET['histogram_upper']
-    histogram_resolution = request.GET['histogram_resolution']
+    histogram_block = int(request.GET['histogram_block'])
+    network = Network.objects.get(id=request.GET['network_id'])
     print 'topic: ' + histogram_topic
-    print 'lower: ' + histogram_lower
-    print 'upper: ' + histogram_upper
+    print 'block: ' + str(histogram_block)
     next_num = num + 1
-    more_members = Network.objects.members.filter(id__gt=id_start).order_by('id')[0:next_num]
+    all_members = network.getMembers(user, block=histogram_block, topic=histogram_topic)
+    if len(all_members) >= next_num:
+        more_members = network.members.order_by('id')[num:next_num]
+    else:
+        more_members = []
     html = ""
     dict['defaultImage'] = backend.getDefaultImage().image
     for member in more_members:
