@@ -1,6 +1,6 @@
 *.pyc
 lovegov/db/local.db
-.idea
+.idea/
 lovegov/.idea
 lovegov/beta/modernpolitics/migrations
 lovegov/beta/modernpolitics/search_indexes
