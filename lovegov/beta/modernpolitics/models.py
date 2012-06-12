@@ -70,7 +70,6 @@ def photoKey(type=".jpg"):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator_id = models.IntegerField(default=-1)   # foreign key to user profile
     creator = models.ForeignKey("UserProfile", null=True)
     class Meta:
         abstract = True
@@ -2685,6 +2684,10 @@ class Response(Content):
             self.topics.add(t)
         return self
 
+    def getValue(self):
+        return float(self.answer_val)
+
+
 #=======================================================================================================================
 # Response by a user.
 #
@@ -3046,6 +3049,9 @@ class AggregateResponse(Response):
         self.save()
         super(AggregateResponse, self).autoSave()
 
+    def getValue(self):
+        return float(self.answer_avg)
+
     #-------------------------------------------------------------------------------------------------------------------
     # Clears m2m and deletes tuples
     #-------------------------------------------------------------------------------------------------------------------
@@ -3094,11 +3100,11 @@ class Group(Content):
         for x in members:
             comparison = getUserUserComparison(user, x)
             if topic and topic_alias != 'general':
-               block = comparison.bytopic.get(topic=topic).result / resolution
-            else:
-                block = comparison.result / resolution
-            if block in histogram:
-                histogram[block]['num'] += 1
+                comparison = comparison.bytopic.get(topic=topic)
+            if comparison.num_q:
+                block = comparison.result / 10
+                if block in histogram:
+                    histogram[block]['num'] += 1
         # calc percents
         people = float(len(members))
         for k in histogram:
@@ -3186,13 +3192,12 @@ class Group(Content):
             for x in self.members.order_by('id'):
                 comparison = getUserUserComparison(user, x)
                 if topic and topic_alias!='general':
-                    x_block = comparison.bytopic.get(topic=topic).result / constants.HISTOGRAM_RESOLUTION
-                else:
+                   comparison = comparison.bytopic.get(topic=topic)
+                if comparison.num_q:
                     x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
                     print x.get_name() + ": " + str(x_block)
-                if x_block == block:
-                    ids.append(x.id)
-                print (x.get_name() + ": " + str(x_block))
+                    if x_block == block:
+                        ids.append(x.id)
             return self.members.filter(id__in=ids).order_by('id')
 
 
