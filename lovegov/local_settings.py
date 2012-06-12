@@ -1,7 +1,7 @@
 import os
 from lovegov import settings
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.dirname(__file__)
 
