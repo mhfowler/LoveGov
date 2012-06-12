@@ -477,7 +477,9 @@ def userFollowResponse(request, dict={}):
         if follow.requested:
             if response == 'Y':
                 follow.confirm()
-                return HttpResponse("they are now following you")
+                # As long as friendships are two way...
+                user.makeFriends(from_user) # If follows aren't two way, comment this out!
+                return HttpResponse("they're now following you")
             elif response == 'N':
                 follow.reject()
                 return HttpResponse("you have rejected their follow request")
@@ -844,7 +846,7 @@ def persistent_accept(request,dict={}):
             return HttpResponse('this shouldnt happen')
         # create action, and send notification
         to_user = debate.getCreator()
-        action = Action(type='YD', creator_id=user.id, privacy=getPrivacy(request),
+        action = Action(type='YD', creator=user, privacy=getPrivacy(request),
             with_user=to_user, with_content=debate, must_notify=True)
         action.autoSave()
         return HttpResponse("you are now debating the " + side_verbose)
@@ -866,7 +868,7 @@ def persistent_reject(request,dict={}):
         debate.possible_users.remove(user)
         # alert creator that person declined invitation
         to_user = debate.getCreator()
-        action = Action(type='ND', creator_id=user.id, privacy=getPrivacy(request),
+        action = Action(type='ND', creator=user, privacy=getPrivacy(request),
             with_user=to_user, with_content=debate)
         action.autoSave()
         return HttpResponse("you rejected invitation.")

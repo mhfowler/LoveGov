@@ -1639,16 +1639,43 @@ function loadAbout()
  *      ~Profile
  *
  ***********************************************************************************************************************/
+function followResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
+        {
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'followresponse',
+                'p_id': follow_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
 function loadProfile()
 {
-    $("#user_follow").click( function(event) {
+    $("#user-follow").click( function(event) {
         event.preventDefault();
-        $.ajax
-            ({
+        $.ajax(
+            {
                 url:'/action/',
                 type:'POST',
-                data: {'action':'userfollow',
-                    'p_id': p_id,
+                data: {
+                    'action':'userfollow',
+                    'p_id': p_id
                      },
                 success: function(data)
                 {
@@ -1658,8 +1685,18 @@ function loadProfile()
                 {
                     $('body').html(jqXHR.responseText);
                 }
-            });
-    })
+            }
+        );
+    });
+
+    $(".follow-response-y").click( function(event) {
+        followResponse(event,"Y",$(this));
+    });
+
+    $(".follow-response-n").click( function(event) {
+        var div = $(this);
+        followResponse(event,"N",$(this));
+    });
 }
 
 
