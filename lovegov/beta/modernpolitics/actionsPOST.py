@@ -23,7 +23,6 @@ from lovegov.beta.modernpolitics.forms import *
 from django.forms import *
 from django import shortcuts
 from django.template import RequestContext, loader
-from lovegov.beta.modernpolitics import models as betamodels
 from django.utils.datastructures import MultiValueDictKeyError
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -162,6 +161,9 @@ def create(request, val={}):
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
             elif formtype == "G":
+                follow_request = GroupFollow(user=user, content=c, group=c, privacy=getPrivacy(request))
+                follow_request.confirm()
+                follow_request.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
                 from lovegov.alpha.splash.views import group
@@ -417,7 +419,7 @@ def answer(request, dict={}):
 # args: request
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
-def joinGroupRequest(request, dict={}, creator=False):
+def joinGroupRequest(request, dict={}):
     """Joins group if user is not already a part."""
     user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
@@ -433,11 +435,6 @@ def joinGroupRequest(request, dict={}, creator=False):
     else: #If it doesn't exist, create it
         follow_request = GroupFollow(user=user, content=group, group=group, privacy=getPrivacy(request))
         follow_request.autoSave()
-    #If this is a group creation, auto add this user
-    if creator:
-        follow_request.confirm()
-        group.members.add(user)
-        return HttpResponse("joined")
     #If the group is privacy secret...
     if group.group_privacy == 'S':
         if follow_request.invited:
