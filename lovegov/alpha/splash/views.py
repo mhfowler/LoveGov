@@ -716,6 +716,7 @@ def legislation(request, session=None, type=None, number=None, dict={}):
         dict['types'] = [x['bill_type'] for x in betamodels.Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation-session.html', dict=dict, request=request)
     if number==None:
+        dict['numbers'] = [x['bill_number'] for x in betamodels.Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation-type.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
