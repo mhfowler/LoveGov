@@ -598,6 +598,7 @@ def profile(request, alias=None, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def network(request, name=None, dict={}):
     if not name:
+        user = dict['user']
         return shortcuts.redirect(user.getNetwork().get_url())
     network = betamodels.Network.objects.get(name=name)
     return group(request,g_id=network.id,dict=dict)
@@ -622,7 +623,7 @@ def group(request, g_id=None, dict={}):
     # Histogram Things
     dict['histogram'] = group.getComparisonHistogram(user)
     dict['histogram_resolution'] = betaconstants.HISTOGRAM_RESOLUTION
-    dict['group_members'] = group.members.order_by('id')[0:1]
+    dict['group_members'] = group.members.order_by('id')[0:25]
 
     # Get Follow Requests
     dict['prof_requests'] = list(group.getFollowRequests())
