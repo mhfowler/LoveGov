@@ -1214,7 +1214,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             notifications = notifications[0:num]
         return notifications
 
-    def getAllNotification(self):
+    def getAllNotifications(self):
         return Notification.objects.filter(notify_user=self).order_by('when')
 
     #-------------------------------------------------------------------------------------------------------------------
