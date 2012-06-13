@@ -74,21 +74,29 @@ function loadHoverComparison()
 {
     var hoverTimer;
 
-    $('#comparison-hover-div').hoverIntent(
-        function() { clearTimeout(hoverTimer); },
-        function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
+    function clearHover()
+    {
+        $('#comparison-hover').empty();
+        $('#comparison-hover-div').fadeOut(100);
+    }
 
+    $('#comparison-hover-div').hoverIntent
+    (
+        function() { clearTimeout(hoverTimer); },
+        function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+    );
 
     $('.feed-username').hoverIntent
     (
         // hover over
         function(event)
         {
-
             var self = $(this);
             var a = $(this).find('a');
             if (a.attr('href') != undefined)
             {
+                clearTimeout(hoverTimer);
+                $('#comparison-hover').empty();
                 var alias = a.attr('href').split('/')[2].toString();
                 var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
                 if (top <= $(document).scrollTop())
@@ -127,11 +135,7 @@ function loadHoverComparison()
         // hover out
         function(event)
         {
-            hoverTimer = setTimeout(function()
-            {
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div').fadeOut(100);
-            },500)
+            hoverTimer = setTimeout(function(){clearHover();},500)
         }
     );
 }
