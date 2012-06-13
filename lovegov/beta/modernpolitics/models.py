@@ -1044,29 +1044,19 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
-    def makeFriends( self , friend , fb=False ):
-        relationship_a = UserFollow.lg.get_or_none( user=self, to_user=friend )
-        self.getMyConnections().members.add(friend)
-        relationship_b = UserFollow.lg.get_or_none( user=friend, to_user=self )
-        friend.getMyConnections().members.add(self)
+    def follow( self , to_user , fb=False ):
+        relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+        self.getMyConnections().members.add(to_user)
+
         #Check and Make Relationship A
-        if not relationship_a:
-            relationship_a = UserFollow( user=self , to_user=friend , confirmed=True, fb=fb )
-            relationship_a.autoSave()
+        if not relationship:
+            relationship = UserFollow( user=self , to_user=to_user , confirmed=True, fb=fb )
+            relationship.autoSave()
         else:
-            relationship_a.confirmed = True
+            relationship.confirmed = True
             if fb: #Add fb value to relationship if fb is true
-                relationship_a.fb = True
-            relationship_a.save()
-            #Check and Make Relationship B
-        if not relationship_b:
-            relationship_b = UserFollow( user=friend, to_user=self , confirmed=True, fb=fb )
-            relationship_b.autoSave()
-        else:
-            relationship_b.confirmed = True
-            if fb: #Add fb value to relationship if fb is true
-                relationship_b.fb = True
-            relationship_b.save()
+                relationship.fb = True
+            relationship.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Breaks connections between this UserProfile and another UserProfile (two-way following relationship)
@@ -1358,7 +1348,7 @@ class Action(Privacy):
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     when = models.DateTimeField(auto_now_add=True)
-    relationship = models.ForeignKey("Relationship", null=True)       # foreign key to relationship
+    relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
     # optimization
     verbose = models.TextField()
@@ -1369,13 +1359,15 @@ class Action(Privacy):
         else:
             return Relationship.objects.get(id=self.relationship_id)
 
-    def autoSave(self, relationship=None, group=None):
-        self.autoVerbose(relationship=relationship)
+    def autoSave(self):
+        relationship = self.relationship
+        self.type = relationship.relationship_type
+        self.autoVerbose(relationship)
         self.save()
 
-    def autoVerbose(self, relationship=None):
+    def autoVerbose(self,relationship=None):
         if not relationship:
-            relationship = self.getRelationship()
+            relationship = self.relationship
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':

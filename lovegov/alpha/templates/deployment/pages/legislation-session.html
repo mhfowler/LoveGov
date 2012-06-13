@@ -9,8 +9,15 @@
 
 Session: {{session}}
 
-<p>Here you would be able to select types available for the above session.
+<p>Please select a type of legislation issued for the <strong>{{session}}th Congress</strong>.
 
+<ul>
+	{% for type in types %}
+	<li><a href='/legislation/{{session}}/{{type}}'>{{type}}</a></li>
+	{% empty %}
+	<li>Congressional bill type data is unavailable for the given congressional session.</li>
+	{% endfor %}
+</ul>
 </div>
 
 {% endblock %}

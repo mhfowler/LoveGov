@@ -224,7 +224,8 @@ ACTION_MODIFIERS = (
     ('R','request'),
     ('I','invited'),
     ('X', 'rejected'),
-    ('N', 'declined')
+    ('N', 'declined'),
+    ('S', 'stop')
         )
 
 # types of action which user should be notified about
