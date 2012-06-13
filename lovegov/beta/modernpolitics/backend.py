@@ -25,6 +25,7 @@ import math
 from operator import itemgetter
 
 scheduled_logger = logging.getLogger('scheduledlogger')
+logger = logging.getLogger('filelogger')
 
 ########################################################################################################################
 ########################################################################################################################
@@ -842,7 +843,9 @@ def createUser(name, email, password, type='userProfile',active=True):
         control = ControllingUser.objects.create_user(username=email, email=email, password=password)
         control.is_active = active
         control.save()
+        logger.debug("created control: " + control.email)
         user_profile = createUserHelper(control=control, name=name, type=type, active=active)
+        logger.debug("created userpof: " + user_profile.get_name())
         control.user_profile = user_profile
         control.save()
         return control
