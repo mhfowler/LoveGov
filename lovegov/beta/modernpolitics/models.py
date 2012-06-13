@@ -1484,9 +1484,8 @@ class Notification(Privacy):
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
 
-    def autoSave(self, action=None):
-        if action:
-            self.verbose = action.verbose
+    def autoSave(self):
+        self.verbose = self.action.verbose
         self.save()
 
     def getEmail(self):
