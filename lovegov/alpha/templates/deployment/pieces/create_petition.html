@@ -1,237 +1,74 @@
-<!-- wrapper -->
-<div class="create-wrapper create-wrapper-large">
+<div id="create-petition-div" class="create-main create-main-large create-content-div">
 
-    <img id="create-img-content" class="create-img" src="/static/images/create.png"/>
+    <div>
 
-    <div id="create-buttons">
+        <div id="errors-json"></div>
 
-        <div id="create-petition-button" class="button-placeholder">
-            <img src="/static/images/create/petitionsicon.png"/>
-        </div>
+        <h2>New Petition:</h2>
 
-        <div id="create-news-button" class="button-placeholder">
-            <img src="/static/images/create/newsicon.png"/>
-        </div>
+        <div id="errors-non_field"></div>
 
-        <div id="create-group-button" class="button-placeholder">
-            <img src="/static/images/questionIcons/socialissues/soc_default.png"/>
-        </div>
+        <div class="title">
 
-    </div>
+            <div id="errors-title"></div>
 
-    <!-- form -->
-    <div id="create-petition-div" class="create-main create-main-large create-content-div">
+            <span class="sub-title">Title:</span>
 
-        <div>
-
-            <div id="errors-json"></div>
-
-            <h2>New Petition:</h2>
-
-            <div id="errors-non_field"></div>
-
-            <div class="title">
-
-                <div id="errors-title"></div>
-
-                <span class="sub-title">Title:</span>
-
-                <input id="input-title" type="text" name="title"/>
-
-            </div>
-
-
-
-            <div class="full-text">
-
-                <div id="errors-full_text"></div>
-
-                <div id="full-text-text">
-                    <span class="sub-title">Full Text: </span>  <br>
-                    write the full text here
-                </div>
-
-                <textarea id="input-full_text" name="full_text" ></textarea>
-
-            </div>
-
-            <!--
-            <div class="link">
-
-                <div id="errors-link"></div>
-
-                <div id="link-text">
-                    <span class="sub-title">Link:</span><br />
-                    url to petition (optional)
-                </div>
-
-                <input id="input-link" type="text" name="link" />
-
-            </div>
-            -->
-
-            <div class="create-topic-div">
-
-                <div id="errors-topic"></div>
-
-                <div class="create-topic-text">
-                    <span class="sub-title">Topic: </span> <br>
-                    select which topic your petition falls under
-                </div>
-
-                <div id="petition-topics" class="topic-images">
-                    {% include 'deployment/pieces/topic_images.html' %}
-                </div>
-
-            </div>
-
-            <div class="create-submit-div">
-
-                <a href="" id="create-petition" class="left-sidebar-button">create petition</a>
-
-            </div>
-
+            <input id="input-title" type="text" name="title"/>
 
         </div>
 
-    </div>
-
-    <div id="create-news-div" class="create-main create-main-large create-content-div" style="display:none">
-
-        <div>
-
-            <div id="news-errors-json"></div>
-
-            <h2>Share News:</h2>
-
-            <div id="news-errors-non_field"></div>
-
-            <div class="title">
-
-                <div id="news-errors-link"></div>
 
 
-                <span class="sub-title">Link:</span>
+        <div class="full-text">
 
+            <div id="errors-full_text"></div>
 
-                <input id="news-input-link" type="text" name="link" />
-
+            <div id="full-text-text">
+                <span class="sub-title">Full Text: </span>  <br>
+                write the full text here
             </div>
 
-            <div id="news-link-generation" style="display:none">
+            <textarea id="input-full_text" name="full_text" ></textarea>
 
+        </div>
+
+        <!--
+        <div class="link">
+
+            <div id="errors-link"></div>
+
+            <div id="link-text">
+                <span class="sub-title">Link:</span><br />
+                url to petition (optional)
             </div>
 
-            <div id="news-summary" class="summary" style="display:none">
+            <input id="input-link" type="text" name="link" />
 
-                <div id="news-errors-summary"></div>
+        </div>
+        -->
 
-                <div id="news-summary-text">
-                    <span class="sub-title">Your View:</span>
-                </div>
+        <div class="create-topic-div">
 
-                <textarea id="news-input-summary" type="text" name="summary" ></textarea>
+            <div id="errors-topic"></div>
 
+            <div class="create-topic-text">
+                <span class="sub-title">Topic: </span> <br>
+                select which topic your petition falls under
             </div>
 
-            <div class="create-topic-div">
-
-                <div id="news-errors-topic"></div>
-
-                <div class="create-topic-text">
-                    <span class="sub-title">Topic: </span> <br>
-                    select which topic your news falls under
-                </div>
-
-                <div class="topic-images news-input-topic">
-                    {% include 'deployment/pieces/topic_images.html' %}
-                </div>
-
-            </div>
-
-            <div class="create-submit-div">
-
-                <a href="" id="share-button" class="left-sidebar-button"> share </a>
-
+            <div id="petition-topics" class="topic-images">
+                {% include 'deployment/pieces/topic_images.html' %}
             </div>
 
         </div>
 
-    </div>
+        <div class="create-submit-div">
 
-    <div id="create-group-div" class="create-main create-main-large create-content-div" style="display:none">
-
-        <div>
-
-            <div id="group-errors-json"></div>
-
-            <h2>Create Group:</h2>
-
-            <div id="group-errors-non_field"></div>
-
-            <div class="title">
-
-                <div id="group-errors-link"></div>
-
-
-                <span class="sub-title">Name:</span>
-
-
-                <input id="group-input-title" type="text" name="title" />
-
-            </div>
-
-            <div id="group-full_text" class="full_text">
-
-                <div id="group-errors-full_text"></div>
-
-                <div id="group-full_text-text">
-                    <span class="sub-title">Description:</span>
-                </div>
-
-                <textarea id="group-input-full_text" type="text" name="full_text" ></textarea>
-
-            </div>
-
-            <div id="group-privacy">
-
-                <div id="group-errors-privacy"></div>
-
-                <div id="group-privacy-text">
-                    <span class="sub-title">Privacy:</span>
-                </div>
-
-                Open:
-                <input type="radio" id="group-input-type-open" value='O' name="privacy"/>
-                Private:
-                <input type="radio" id="group-input-type-private" value='P' name="privacy"/>
-                Secret:
-                <input type="radio" id="group-input-type-secret" value='S' name="privacy"/>
-
-            </div>
-
-            <div class="create-topic-div">
-
-                <div id="group-errors-topic"></div>
-
-                <div class="create-topic-text">
-                    <span class="sub-title">Topic: </span> <br>
-                    select which topics your news falls under
-                </div>
-
-                <div class="topic-images news-input-topic">
-                    {% include 'deployment/pieces/topic_images.html' %}
-                </div>
-
-            </div>
-
-            <div class="create-submit-div">
-
-                <a href="" id="create-group" class="left-sidebar-button"> share </a>
-
-            </div>
+            <a href="" id="create-petition" class="left-sidebar-button">create petition</a>
 
         </div>
+
 
     </div>
 
