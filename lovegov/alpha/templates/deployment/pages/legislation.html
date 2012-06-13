@@ -2,6 +2,21 @@
 
 {% block content %}
 
-Here you would see a list of congressional sessions and be able to select one.
+<!-- CSS stylesheet -->
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/legislation.css" />
+
+<div id="content-leg-div">
+
+Please select a congressional session.
+
+<ul>
+	{% for session in sessions %}
+	<li><a href='/legislation/{{session}}/'>{{session}}th Congress</a></li>
+	{% empty %}
+	<li>Congressional session data is unavailable.</li>
+	{% endfor %}
+</ul>
+
+</div>
 
 {% endblock %}

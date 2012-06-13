@@ -227,10 +227,8 @@ ACTION_MODIFIERS = (
     ('N', 'declined')
         )
 
-MODIFIERS_DICT = {}
-for x in ACTION_MODIFIERS:
-    MODIFIERS_DICT[x[1]]=x[0]
-
+# types of action which user should be notified about
+NOTIFY_TYPES = ['FO']
 
 # group privacy settings
 GROUP_PRIVACY_CHOICES = (

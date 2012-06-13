@@ -1205,23 +1205,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1):
+    def getNotifications(self, num=-1, ignored=False, viewed=False):
         if num == -1:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')
+            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')
         else:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')[:num]
-        for n in notifications:
-            n.viewed = True
-        return notifications
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all NEW notifications.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getNewNotifications(self, num=-1):
-        if num == -1:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False).order_by('when')
-        else:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False ).order_by('when')[:num]
+            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')[:num]
         for n in notifications:
             n.viewed = True
         return notifications
@@ -1454,7 +1442,6 @@ class Action(Privacy):
         # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
         print self.verbose
-
 
 
 #=======================================================================================================================

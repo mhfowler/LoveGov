@@ -496,6 +496,9 @@ def userFollowRequest(request, dict={}):
         follow = UserFollow(user=user, to_user=person)
         follow.autoSave()
     follow.request()
+    action = Action(relationship=follow)
+    action.autoSave()
+    follow.to_user.notify(action)
     return HttpResponse("you have requested to follow this person")
 
 #----------------------------------------------------------------------------------------------------------------------
