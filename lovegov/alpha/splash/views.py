@@ -126,6 +126,7 @@ def login(request, to_page='web/', message="", dict={}):
     # if has fb authenticated, try to facebook login
     if facebook.fbLogin(request):
         print "topage: " + to_page
+        facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
         return shortcuts.redirect('/' + to_page)
     fb_state = facebook.fbGetRedirect(request, dict)
     if request.method == 'POST' and 'button' in request.POST:
@@ -152,8 +153,9 @@ def loginNew(request, to_page='web/', message="", dict={}):
     @return:
     """
     # if has fb authenticated, try to facebook login
-    if facebook.fbLogin(request):
+    if facebook.fbLogin(request,dict):
         print "topage: " + to_page
+        facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
         return shortcuts.redirect('/' + to_page)
     fb_state = facebook.fbGetRedirect(request, dict)
     if request.method == 'POST' and 'button' in request.POST:
