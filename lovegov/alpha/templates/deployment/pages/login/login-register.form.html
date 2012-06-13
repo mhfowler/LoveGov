@@ -1,12 +1,12 @@
-<div id="register-div" style="display:none">
+<div id="register-div" class="state-div" {% if state != "register" %}style="display:none"{% endif %}>
     <div class="form-div">
         <h1>Register</h1>
-        <form action="" method="POST" id="registerform"> {% csrf_token %}
+        <form action="" method="POST" id="registerform">{% csrf_token %}
             <table>
                 <tr>
                     <td>
-                        <input type="text" id="fullname-input" class="login-input" name="firstname" value="{% if registerform.firstname.errors %}{{ registerform.firstname.errors|striptags }}{% elif registerform.firstname.value %}{{ registerform.firstname.value }}{% else %}{% endif %}"/>
-                        <span class="input-span" id="fullname-span">full name</span>
+                        <input type="text" id="fullname-input" class="login-input" name="fullname" value="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% else %}{% endif %}"/>
+                        <span class="input-span" id="fullname-span">{% if registerform.fullname.errors %}{{ registerform.fullname.errors|striptags }}{% else %}full name{% endif %}</span>
                     </td>
                 </tr>
 
@@ -14,8 +14,8 @@
 
                 <tr>
                     <td>
-                        <input type="text" id="email-input" class="login-input" name="email" value="{% if registerform.email.errors %}{{ registerform.email.errors|striptags }}{% elif registerform.email.value %}{{ registerform.email.value }}{% else %}{% endif %}"/>
-                        <span class="input-span" id="email-span">email</span>
+                        <input type="text" id="email-input" class="login-input" name="email" value="{% if not registerform.email.errors and registerform.email.value %}{{ registerform.email.value }}{% else %}{% endif %}"/>
+                        <span class="input-span" id="email-span">{% if registerform.email.errors %}{{ registerform.email.errors|striptags }}{% else %}email{% endif %}</span>
                     </td>
                 </tr>
 
@@ -23,8 +23,8 @@
 
                 <tr>
                     <td>
-                        <input type="text" id="email2-input" class="login-input" name="email2" value="{% if registerform.email2.errors %}{{ registerform.email2.errors|striptags }}{% elif registerform.email2.value %}{{ registerform.email2.value }}{% else %}{% endif %}"/>
-                        <span class="input-span" id="email2-span">email again</span>
+                        <input type="text" id="email2-input" class="login-input" name="email2" value="{% if not registerform.email2.errors and registerform.email2.value %}{{ registerform.email2.value }}{% else %}{% endif %}"/>
+                        <span class="input-span" id="email2-span">{% if registerform.email2.errors %}{{ registerform.email2.errors|striptags }}{% else %}email again{% endif %}</span>
                     </td>
                 </tr>
 
@@ -43,7 +43,7 @@
                     <td style="text-align:left;" colspan="2">
                         <p>I agree to the <a class="privacy-policy">Privacy Policy</a></p>
                         <input style="margin-top:15px;margin-left:10px;" type="checkbox" name="privacy"/>
-                        <span class="dark" style="color:#F0503B;float:left;margin-top:19px;margin-left:5px">{{ registerform.privacy.errors|striptags}}</span>
+                        <span class="dark" style="color:#F0503B;float:left;margin-top:16px;margin-left:5px">{{ registerform.privacy.errors|striptags}}</span>
                         <input type="hidden" name="button" value="register"/>
                         <input class="submit-button" type="submit" value="register"/>
                     </td>

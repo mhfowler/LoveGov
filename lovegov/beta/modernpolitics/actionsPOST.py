@@ -469,9 +469,15 @@ def joinGroupResponse(request, dict={}):
             if response == 'Y':
                 group_follow.confirm()
                 group.members.add(follow_user)
+                action = Action(relationship=group_follow,modifier="D")
+                action.autoSave()
+                follow_user.notify(action)
                 return HttpResponse("they're now following you")
             elif response == 'N':
                 group_follow.reject()
+                action = Action(relationship=group_follow,modifier="X")
+                action.autoSave()
+                follow_user.notify(action)
                 return HttpResponse("you have rejected their follow request")
         if group_follow.confirmed:
             return HttpResponse("This person is already following you")
@@ -496,7 +502,7 @@ def userFollowRequest(request, dict={}):
         follow = UserFollow(user=user, to_user=person)
         follow.autoSave()
     follow.request()
-    action = Action(relationship=follow)
+    action = Action(relationship=follow,modifier='R')
     action.autoSave()
     follow.to_user.notify(action)
     return HttpResponse("you have requested to follow this person")

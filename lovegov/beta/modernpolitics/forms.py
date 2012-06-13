@@ -109,13 +109,11 @@ class SearchUserForm(forms.Form):
 # Form for register
 #=======================================================================================================================
 class RegisterForm(forms.Form):
-    firstname = forms.CharField(required=True)
-    lastname = forms.CharField(required=True)
+    fullname = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     email2 = forms.EmailField(required=True)
     passwordregister = forms.CharField(widget=forms.PasswordInput,required=True)
-    registercode = forms.CharField(required=False)
-    privacy = forms.BooleanField(error_messages={'required': '<<<'})
+    privacy = forms.BooleanField(error_messages={'required': '< click'})
 
     #-------------------------------------------------------------------------------------------------------------------
     # Validates form data and returns cleaned data with any errors.
@@ -124,57 +122,45 @@ class RegisterForm(forms.Form):
         cleaned_data = super(RegisterForm, self).clean()
         email = cleaned_data.get("email")
         email2 = cleaned_data.get("email2")
-        register_code = cleaned_data.get("registercode")
-        firstname = cleaned_data.get("firstname")
-        lastname = cleaned_data.get('lastname')
+        fullname = cleaned_data.get('fullname')
 
-        if not firstname:
-            self._errors["firstname"] = self.error_class([u"Please Enter your First Name."])
+        # Handle fullname error checking
+        if not fullname:
+            self._errors["fullname"] = self.error_class([u"input your full name."])
         else:
-            firstname = firstname.strip()
-            if firstname.count(" ") > 1:
-                self._errors["firstname"] = self.error_class([u"First Name can only have 1 space"])
-
-        if not lastname:
-            self._errors["lastname"] = self.error_class([u"Please Enter your Last Name."])
-        else:
-            lastname = lastname.strip()
-            if lastname.count(" ") > 0:
-                self._errors["lastname"] = self.error_class([u"Last Names can't have spaces"])
-        msg = ""
-        if not (email and email2 and email == email2):
-            msg = u"You must enter an email address in both email fields and they must be the same."
-        else:
-            if not backend.checkUnique(email):
-                msg = u"Someone with this e-mail has already registered."
-            elif not backend.checkEmail(email) and not backend.checkRegisterCode(register_code):
-                msg =u"Our Beta is currently not open to emails with this extension. To register you need to enter a passcode."
-                self._errors["registercode"] = self.error_class([u"The register code you entered was not valid."])
-        if msg:
-            print "email error!"
+            spaces = fullname.count(" ")
+            if spaces > 2: self._errors["fullname"] = self.error_class([u"too many spaces in name."])
+            elif spaces < 1: self._errors['fullname'] = self.error_class([u"input a first & last name."])
+        # Handle email error checking
+        if not email:
+            self._errors["email"] = self.error_class([u"input your email"])
+        if not email2:
+            self._errors["email2"] = self.error_class([u"input your email again"])
+        if email and email2 and email != email2:
+            self._errors["email2"] = self.error_class([u"input same email as inputted above"])
+        if not backend.checkUnique(email):
+            msg = u"this e-mail is already registered."
             self._errors["email"] = self.error_class([msg])
             self._errors["email2"] = self.error_class([msg])
         return cleaned_data
 
     def save(self):
-        firstname = string.capitalize(self.cleaned_data['firstname'])
-        lastname = string.capitalize(self.cleaned_data['lastname'])
-        fullname = firstname + " " + lastname
+        fullname = self.cleaned_data['fullname'].split(" ")
+        if len(fullname) == 3:
+            firstname = string.capitalize(fullname[0]) + " " + string.capitalize(fullname[1])
+            lastname = string.capitalize(fullname[2])
+            fullname = firstname + " " + lastname
+        else:
+            firstname = string.capitalize(fullname[0])
+            lastname = string.capitalize(fullname[1])
+            fullname = firstname + " " + lastname
         email = self.cleaned_data['email']
         password = self.cleaned_data['passwordregister']
         user = backend.createUser(fullname,email,password,active=False)
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()
-        if 'registerCode' in self.cleaned_data:
-            registercode = self.cleaned_data['registercode']
-            user_profile = user.user_profile
-            user_profile.registration_code = RegisterCode.objects.get(code_text=registercode)
-            user_profile.save()
-            new_valid_email = ValidEmail(email=email,description="User registered using code: " + registercode)
-            new_valid_email.save()
         dict = {'firstname':firstname,'link':user.user_profile.confirmation_link}
         send_email.sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",dict,"info@lovegov.com",user.username)
-
 
 #=======================================================================================================================
 # Form for logging in.
