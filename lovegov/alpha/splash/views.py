@@ -672,6 +672,26 @@ def about(request, dict={}):
             return renderToResponseCSRF(template='deployment/pages/about.html', dict=dict, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Legislation-related pages
+#-----------------------------------------------------------------------------------------------------------------------
+
+def legislation(request, session=None, type=None, number=None, dict={}):
+    dict['session'], dict['type'], dict['number'] = session, type, number
+    if session==None:
+        return renderToResponseCSRF(template='deployment/pages/legislation.html', dict=dict, request=request)
+    legs = betamodels.Legislation.objects.filter(bill_session=session)
+    if type==None:
+        return renderToResponseCSRF(template='deployment/pages/legislation-session.html', dict=dict, request=request)
+    if number==None:
+        return renderToResponseCSRF(template='deployment/pages/legislation-type.html', dict=dict, request=request)
+    legs = betamodels.Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
+    if len(legs)==0:
+        dict['error'] = "No legislation found with the given parameters."
+    else:
+        dict['leg'] = legs[0]
+    return renderToResponseCSRF(template='deployment/pages/legislation-view.html', dict=dict, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # All Users Link
 #-----------------------------------------------------------------------------------------------------------------------
 def match(request,dict={}):

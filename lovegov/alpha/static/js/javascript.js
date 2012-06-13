@@ -74,65 +74,75 @@ function loadHoverComparison()
 
     var hoverTimer;
 
-    $('#comparison-hover-div').hoverIntent(
+    function clearHover()
+    {
+        $('#comparison-hover').empty();
+        $('#comparison-hover-div').fadeOut(100);
+    }
+
+    $('#comparison-hover-div').hoverIntent
+    (
         function() { clearTimeout(hoverTimer); },
-        function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
+        function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+    );
 
     $('.feed-username').hoverIntent
-        (
-            // hover over
-            function(event)
+    (
+        // hover over
+        function(event)
+        {
+            var self = $(this);
+            var a = $(this).find('a');
+            if (a.attr('href') != undefined)
             {
-
-                var self = $(this);
-                var a = $(this).find('a');
-                if (a.attr('href') != undefined)
+                clearTimeout(hoverTimer);
+                $('#comparison-hover').empty();
+                var alias = a.attr('href').split('/')[2].toString();
+                var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
+                if (top <= $(document).scrollTop())
                 {
-                    var alias = a.attr('href').split('/')[2].toString();
-                    var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
-                    if (top <= $(document).scrollTop())
-                    {
-                        top = self.offset().top + 70;
-                        $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-                    }
-                    else
-                    {
-                        $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-                    }
-                    var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
-                    var offset = {top:top,left:left};
-                    $('#comparison-hover-div p').text('You & ' + a.text());
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    $.ajax
-                        ({
-                            url:'/action/',
-                            type:'POST',
-                            data: {'action':'hoverComparison','alias':alias},
-                            success: function(data)
-                            {
-                                var obj = eval('(' + data + ')');
-                                $('#comparison-hover-loading-img').hide();
-                                new VisualComparison('comparison-hover',obj).draw();
-                            },
-                            error: function(jqXHR, textStatus, errorThrown)
-                            {
-                                $('#comparison-hover-div p').text('Sorry there was an error');
-                            }
-                        });
+                    top = self.offset().top + 70;
+                    $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
                 }
-            },
-            // hover out
-            function(event)
-            {
-                hoverTimer = setTimeout(function()
+                else
                 {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
+                    $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+                }
+                var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
+                var offset = {top:top,left:left};
+                $('#comparison-hover-div p').text('You & ' + a.text());
+                $('#comparison-hover-loading-img').show();
+                $('#comparison-hover-div').fadeIn(100);
+                $('#comparison-hover-div').offset(offset);
+                $.ajax
+                    ({
+                        url:'/action/',
+                        type:'POST',
+                        data: {'action':'hoverComparison','alias':alias},
+                        success: function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            new VisualComparison('comparison-hover',obj).draw();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown)
+                        {
+                            $('#comparison-hover-div p').text('Sorry there was an error');
+                        }
+                    });
             }
-        );
+        },
+        // hover out
+        function(event)
+        {
+            hoverTimer = setTimeout(function()
+            {
+                $('#comparison-hover').empty();
+                $('#comparison-hover-div').fadeOut(100);
+            },500)
+        }
+    );
+
 }
 
 
@@ -1933,7 +1943,7 @@ function groupFollowResponse(event,response,div,g_id)
             type:'POST',
             data: {
                 'action':'joinresponse',
-                'p_id': follow_id,
+                'follow_id': follow_id,
                 'g_id': g_id,
                 'response': response
             },
@@ -2039,7 +2049,7 @@ function loadGroup()
                 url:'/action/',
                 type:'POST',
                 data: {
-                    'action':'join',
+                    'action':'joingroup',
                     'g_id': g_id
                 },
                 success: function(data)
@@ -2053,16 +2063,15 @@ function loadGroup()
             }
         );
     });
-    /* Uncomment when adding unfollowing to groups
-    $("#user-unfollow").click( function(event) {
+    $("#group-unfollow").click( function(event) {
         event.preventDefault();
         $.ajax(
             {
                 url:'/action/',
                 type:'POST',
                 data: {
-                    'action':'stopfollow',
-                    'p_id': g_id
+                    'action':'leavegroup',
+                    'g_id': g_id
                 },
                 success: function(data)
                 {
@@ -2075,7 +2084,7 @@ function loadGroup()
             }
         );
     });
-    */
+
     // select histogram block
     $(".histogram-select-block").click(function(event) {
         event.preventDefault();

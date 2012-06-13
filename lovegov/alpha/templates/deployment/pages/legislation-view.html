@@ -1,0 +1,23 @@
+{% extends 'deployment/templates/frame.html' %}
+
+{% block content %}
+
+{% if error %}
+
+<span style="color:red">{{error}}</span>
+
+{% else %}
+
+Session: {{session}}
+<p>
+	Type: {{type}}
+</p>
+<p>
+	Number: {{number}}
+</p>
+<p>
+
+{% endif %}
+
+
+{% endblock %}

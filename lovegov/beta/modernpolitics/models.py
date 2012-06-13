@@ -1253,9 +1253,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -3211,9 +3211,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')
+            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')
         else:
-            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')[:num]
+            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')[:num]
 
 
 #=======================================================================================================================
