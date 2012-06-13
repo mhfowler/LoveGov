@@ -770,7 +770,7 @@ def getForms(dict):
     petition = CreatePetitionForm()
     event = CreateEventForm()
     news = CreateNewsForm()
-    group = CreateGroupForm()
+    group = CreateUserGroupForm()
     debate = DebateForm()
     dict['petition'] = petition
     dict['event'] = event
@@ -797,7 +797,7 @@ def createContent(request,  dict={}):
         petition = CreatePetitionForm()
         event = CreateEventForm()
         news = CreateNewsForm()
-        group = CreateGroupForm()
+        group = CreateUserGroupForm()
         debate = CreateDebateForm()
         album = UserImageForm()
         dict['petition'] = petition

@@ -67,11 +67,13 @@ def actionPOST(request, dict={}):
             return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
-        ### actions below have not been proof checked ###
-        elif action == 'join':
+        elif action == 'joingroup':
             return joinGroupRequest(request, dict)
-        elif action == 'leave':
-            return leave(request, dict)
+        elif action == 'joinresponse':
+            return joinGroupResponse(request, dict)
+        elif action == 'leavegroup':
+            return leaveGroup(request, dict)
+        ### actions below have not been proof checked ###
         elif action == 'linkfrom':
             return linkfrom(request, dict)
         elif action == 'linkto':
@@ -135,21 +137,17 @@ def actionPOST(request, dict={}):
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
     formtype = request.POST['type']
+    user = val['user']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
-        petition = CreatePetitionForm(request.POST)
     elif formtype == 'N':
         form = CreateNewsForm(request.POST)
-        news = CreateNewsForm(request.POST)
     elif formtype =='E':
         form = CreateEventForm(request.POST)
-        event = CreateEventForm(request.POST)
     elif formtype =='G':
-        form = CreateGroupForm(request.POST)
-        group = CreateGroupForm(request.POST)
+        form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
-        album = UserImageForm(request.POST)
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
@@ -162,6 +160,14 @@ def create(request, val={}):
             elif formtype == "N":
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
+            elif formtype == "G":
+                follow_request = GroupFollow(user=user, content=c, group=c, privacy=getPrivacy(request))
+                follow_request.confirm()
+                follow_request.autoSave()
+                c.admins.add(user)
+                c.members.add(user)
+                from lovegov.alpha.splash.views import group
+                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
     else:
@@ -417,24 +423,59 @@ def joinGroupRequest(request, dict={}):
     """Joins group if user is not already a part."""
     user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
-    if group.group_type == 'S' or group.system:
-        return HttpResponse("cannot request to join secret group or system group")
-    else:
-        already = GroupJoined.objects.filter(user=user, group=group)
-        if already:
-            join = already[0]
-            if join.confirmed:
-                return HttpResponse("you are already a member of group")
-        else:
-            join = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
-            join.autoSave()
-        if group.group_type == 'O':
-            join.confirm()
+    #Secret groups and System Groups cannot be join requested
+    if group.system:
+        return HttpResponse("cannot request to join system group")
+    #Get GroupFollow relationship if it exists already
+    already = GroupFollow.objects.filter(user=user, group=group)
+    if already:
+        follow_request = already[0]
+        if follow_request.confirmed:
+            return HttpResponse("you are already a member of group")
+    else: #If it doesn't exist, create it
+        follow_request = GroupFollow(user=user, content=group, group=group, privacy=getPrivacy(request))
+        follow_request.autoSave()
+    #If the group is privacy secret...
+    if group.group_privacy == 'S':
+        if follow_request.invited:
+            follow_request.confirm()
             group.members.add(user)
             return HttpResponse("joined")
-        elif group.group_type == 'P':
-            join.request()
-            return HttpResponse("request to join")
+        return HttpResponse("cannot request to join secret group")
+    #If the group type is open...
+    if group.group_privacy == 'O':
+        follow_request.confirm()
+        group.members.add(user)
+        return HttpResponse("joined")
+    #If the group type is private and not requested yet
+    elif group.group_privacy == 'P' and not follow_request.requested:
+        follow_request.request()
+        return HttpResponse("request to join")
+    return HttpResponse("you have already requested to join this group")
+
+
+#----------------------------------------------------------------------------------------------------------------------
+# Confirms or denies groupFollow, if groupFollow was requested.
+#-----------------------------------------------------------------------------------------------------------------------
+def joinGroupResponse(request, dict={}):
+    user = dict['user']
+    response = request.POST['response']
+    follow_user = UserProfile.objects.get(id=request.POST['follow_id'])
+    group = Group.objects.get(id=request.POST['g_id'])
+    already = GroupFollow.objects.filter(user=follow_user, group=group)
+    if already:
+        group_follow = already[0]
+        if group_follow.requested:
+            if response == 'Y':
+                group_follow.confirm()
+                group.members.add(follow_user)
+                return HttpResponse("they're now following you")
+            elif response == 'N':
+                group_follow.reject()
+                return HttpResponse("you have rejected their follow request")
+        if group_follow.confirmed:
+            return HttpResponse("This person is already following you")
+    return HttpResponse("this person has not requested to follow you")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -505,18 +546,16 @@ def joinGroupInvite(request, dict={}):
     group = Group.objects.get(id=request.POST['g_id'])
     admin = group.admins.filter(id=user.id)
     if admin:
-        already = GroupJoined.objects.filter(user=to_invite, group=group)
+        already = GroupFollow.objects.filter(user=to_invite, group=group)
         if already:
             join=already[0]
             if join.invited or join.confirmed:
                 return HttpResponse("already invited or already member")
         else:
-            join = GroupJoined(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
+            join = GroupFollow(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
             join.invite(inviter=user)
     else:
         return HttpResponse("You are not admin.")
-
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -525,16 +564,24 @@ def joinGroupInvite(request, dict={}):
 # args: request
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
-def leave(request, dict={}):
+def leaveGroup(request, dict={}):
     """Leaves group if user is a member (and does stuff if user would be last admin)"""
     # if not system then remove
     user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
+    group_follow = GroupFollow.objects.get(group=group, user=user)
+    if group_follow:
+        group_follow.clear()
     if not group.system:
         group.members.remove(user)
         group.admins.remove(user)
-        # success, remove from myinvolvement
-        user.myinvolvement.remove(group)
+        if not group.admins.all():
+            members = list( group.members.all() )
+            if not members:
+                group.active = False
+                group.save()
+            for member in members:
+                group.admins.add(member)
         return HttpResponse("left")
     else:
         return HttpResponse("system group")

@@ -50,7 +50,7 @@ function rebindFunction()
             break;
         case 'network':
             loadProfileComparison();
-            loadNetwork();
+            loadGroup();
             break;
         case 'account':                                         // /account
             loadAccount();
@@ -74,65 +74,75 @@ function loadHoverComparison()
 
     var hoverTimer;
 
-    $('#comparison-hover-div').hoverIntent(
+    function clearHover()
+    {
+        $('#comparison-hover').empty();
+        $('#comparison-hover-div').fadeOut(100);
+    }
+
+    $('#comparison-hover-div').hoverIntent
+    (
         function() { clearTimeout(hoverTimer); },
-        function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
+        function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+    );
 
     $('.feed-username').hoverIntent
-        (
-            // hover over
-            function(event)
+    (
+        // hover over
+        function(event)
+        {
+            var self = $(this);
+            var a = $(this).find('a');
+            if (a.attr('href') != undefined)
             {
-
-                var self = $(this);
-                var a = $(this).find('a');
-                if (a.attr('href') != undefined)
+                clearTimeout(hoverTimer);
+                $('#comparison-hover').empty();
+                var alias = a.attr('href').split('/')[2].toString();
+                var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
+                if (top <= $(document).scrollTop())
                 {
-                    var alias = a.attr('href').split('/')[2].toString();
-                    var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
-                    if (top <= $(document).scrollTop())
-                    {
-                        top = self.offset().top + 70;
-                        $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-                    }
-                    else
-                    {
-                        $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-                    }
-                    var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
-                    var offset = {top:top,left:left};
-                    $('#comparison-hover-div p').text('You & ' + a.text());
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    $.ajax
-                        ({
-                            url:'/action/',
-                            type:'POST',
-                            data: {'action':'hoverComparison','alias':alias},
-                            success: function(data)
-                            {
-                                var obj = eval('(' + data + ')');
-                                $('#comparison-hover-loading-img').hide();
-                                new VisualComparison('comparison-hover',obj).draw();
-                            },
-                            error: function(jqXHR, textStatus, errorThrown)
-                            {
-                                $('#comparison-hover-div p').text('Sorry there was an error');
-                            }
-                        });
+                    top = self.offset().top + 70;
+                    $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
                 }
-            },
-            // hover out
-            function(event)
-            {
-                hoverTimer = setTimeout(function()
+                else
                 {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
+                    $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+                }
+                var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
+                var offset = {top:top,left:left};
+                $('#comparison-hover-div p').text('You & ' + a.text());
+                $('#comparison-hover-loading-img').show();
+                $('#comparison-hover-div').fadeIn(100);
+                $('#comparison-hover-div').offset(offset);
+                $.ajax
+                    ({
+                        url:'/action/',
+                        type:'POST',
+                        data: {'action':'hoverComparison','alias':alias},
+                        success: function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            new VisualComparison('comparison-hover',obj).draw();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown)
+                        {
+                            $('#comparison-hover-div p').text('Sorry there was an error');
+                        }
+                    });
             }
-        );
+        },
+        // hover out
+        function(event)
+        {
+            hoverTimer = setTimeout(function()
+            {
+                $('#comparison-hover').empty();
+                $('#comparison-hover-div').fadeOut(100);
+            },500)
+        }
+    );
+
 }
 
 
@@ -634,6 +644,12 @@ function loadLeftSidebar()
         $('#create-news-div').show();
     });
 
+    $('#create-group-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-group-div').show();
+    });
+
     var timeout;
     var delay = 750;
     var isLoading = false;
@@ -768,6 +784,48 @@ function loadLeftSidebar()
                         rebind = returned.rebind;
                         closeLeftSideWrapper($('.create-wrapper.clicked'));
                         replaceCenter(returned.html);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $("body").html(jqXHR.responseText);
+                }
+            });
+    });
+
+    $('#create-group').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#group-input-title').val();
+        var full_text = $('#group-input-full_text').val();
+        var privacy = $('input:radio[name=privacy]:checked').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        $.ajax
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'create',
+                        'title':title,
+                        'full_text':full_text,
+                        'topics':topic,
+                        'group_type':'U',
+                        'group_privacy':privacy,
+                        'type':'G'
+                },
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    if (returned.success == false)
+                    {
+                        alert('errors')
+                        $("#errors-title").html(returned.errors.title);
+                        $("#errors-full_text").html(returned.errors.full_text);
+                        $("#errors-topic").html(returned.errors.topics);
+                        $("#errors-non_field").html(returned.errors.non_field_errors);
+                    }
+                    else
+                    {
+                        window.location.href = returned.url;
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown)
@@ -1657,7 +1715,7 @@ function loadAbout()
  *      ~Profile
  *
  ***********************************************************************************************************************/
-function followResponse(event,response,div)
+function userFollowResponse(event,response,div)
 {
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
@@ -1730,12 +1788,11 @@ function loadProfile()
     });
 
     $(".follow-response-y").click( function(event) {
-        followResponse(event,"Y",$(this));
+        userFollowResponse(event,"Y",$(this));
     });
 
     $(".follow-response-n").click( function(event) {
-        var div = $(this);
-        followResponse(event,"N",$(this));
+        userFollowResponse(event,"N",$(this));
     });
 }
 
@@ -1872,10 +1929,37 @@ function loadAccount()
 
 /***********************************************************************************************************************
  *
- *      ~Network
+ *      ~Group
  *
  **********************************************************************************************************************/
-function loadNetwork()
+function groupFollowResponse(event,response,div,g_id)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
+        {
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'joinresponse',
+                'follow_id': follow_id,
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function loadGroup()
 {
     var loadUsersLockout = false;
     var loadHistoLockout = false;
@@ -1890,7 +1974,7 @@ function loadNetwork()
         var histogram_displayed_num = $('#histogram-displayed-num').val();
         var histogram_topic = $('#histogram-topic').val();
         var histogram_block = $('#histogram-block').val();
-        var network_id = $('#network-id').val();
+        var group_id = $('#group-id').val();
         if (!loadUsersLockout)
         {
             loadUsersLockout = true;
@@ -1898,7 +1982,7 @@ function loadNetwork()
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadNetworkUsers','histogram_displayed_num':histogram_displayed_num,'network_id':network_id,
+                    data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
                         'histogram_topic':histogram_topic,'histogram_block':histogram_block },
                     success: function(data)
                     {
@@ -1926,7 +2010,7 @@ function loadNetwork()
     // load new histogram data
     function getHistogram() {
         var histogram_topic = $('#histogram-topic').val();
-        var network_id = $('#network-id').val();
+        var group_id = $('#group-id').val();
         if (!loadHistoLockout)
         {
             loadHistoLockout = true;
@@ -1934,7 +2018,7 @@ function loadNetwork()
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadHistogram','network_id':network_id,
+                    data: {'action':'loadHistogram','group_id':group_id,
                         'histogram_topic':histogram_topic},
                     success: function(data)
                     {
@@ -1950,6 +2034,56 @@ function loadNetwork()
         }
     }
 
+    $(".group-response-y").click( function(event) {
+        groupFollowResponse(event,"Y",$(this),g_id);
+    });
+
+    $(".group-response-n").click( function(event) {
+        groupFollowResponse(event,"N",$(this),g_id);
+    });
+
+    $("#group-follow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'joingroup',
+                    'g_id': g_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+    $("#group-unfollow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'leavegroup',
+                    'g_id': g_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
 
     // select histogram block
     $(".histogram-select-block").click(function(event) {
@@ -1982,7 +2116,7 @@ function loadNetwork()
 
     function bindNewDivs()
     {
-        $('.network-member-div').hover
+        $('.group-member-div').hover
             (
                 function(){ $(this).css("background-color","#EBEBEB") },
                 function(){ $(this).css("background-color","#FFFFFF") }
@@ -1998,7 +2132,7 @@ function loadNetwork()
      });
      */
 
-    $('#network-see-more-users').click(function(event)
+    $('#group-see-more-users').click(function(event)
     {
         loadMoreUsers(event, false);
     });

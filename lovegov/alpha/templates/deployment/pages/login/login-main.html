@@ -8,34 +8,10 @@
         </div>
 
         <div id="middle-right">
-            <h1>To get the most out of LoveGov</h1>
-
-            <div style="float:left">
-                <a href="{{ fb_link }}" id="">
-                    <input type="image" id="facebook-button" src="/static/images/login/login_FB.png" />
-                    <input type="hidden" value="{{ request.path }}" name="next" />
-                </a>
-            </div>
-
-            <p>
-                By logging in with Facebook you agree to our <a id="privacy-policy">Privacy Policy</a>
-            </p>
-
-            <p style="margin:0">
-                <a id="no-facebook" class="no-why-facebook">I don’t have a Facebook account</a> - <a id="why-facebook" class="no-why-facebook">Why we ask for Facebook</a>
-            </p>
-
-            <div id="why-facebook-hover" style="display:none">
-                <a>X</a>
-                By logging in with Facebook we are able to better match you with friends and networks giving you a better
-                LoveGov experience.
-            </div>
+            {% include 'deployment/pages/login/login-fb.form.html' %}
+            {% include 'deployment/pages/login/login-login.form.html' %}
+            {% include 'deployment/pages/login/login-register.form.html' %}
         </div>
-
-        {% include 'deployment/pages/login/login-login.form.html' %}
-
-        {% include 'deployment/pages/login/login-register.form.html' %}
-
     </div>
 
     {% include 'deployment/pages/login/login-about.html' %}
@@ -51,7 +27,7 @@
                 $('.about-div').fadeToggle(300);
             });
 
-            $('#privacy-policy').click(function()
+            $('.privacy-policy').click(function()
             {
                 $('.fade').fadeOut(300);
                 $('#privacy-div').fadeToggle(300);
@@ -73,10 +49,44 @@
                 $('#why-facebook-hover').fadeOut(300);
             });
 
+            $('.login-input').focusin(function()
+            {
+                var id_span = "#" + $(this).attr('id').replace("input",'span');
+                $(id_span).css("color","#CCCCCC");
+            });
+
+            $('.login-input').focusout(function()
+            {
+                var id_span = "#" + $(this).attr('id').replace("input",'span');
+                $(id_span).css('color','#959595');
+                if ($(this).val()==''){ $(id_span).show(); }
+            });
+
+            $('.login-input').keyup(function()
+            {
+                var id_span = "#" + $(this).attr('id').replace("input",'span');
+                if ($(this).val()=="") { $(id_span).show(); }
+                else {  $(id_span).hide(); }
+            });
+
+            $('.input-span').click(function()
+            {
+                var id_span = "#" + $(this).attr('id').replace("span",'input');
+                $(id_span).focus();
+            });
+
+            $('#create-account').click(function()
+            {
+                $('#login-div').hide();
+                $('#register-div').show();
+            });
+
             $('#no-facebook').click(function()
             {
-                $('#middle-right').html($('#login-div').html());
+                $('#fb-div').hide();
+                $('#login-div').show();
             });
+
         });
     </script>
 

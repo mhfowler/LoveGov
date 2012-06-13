@@ -76,6 +76,7 @@ input:focus
     position:absolute;
     left:10px;
     color:#959595;
+    cursor:text;
 }
 
 #username-span
@@ -86,13 +87,32 @@ input:focus
 #password-span
 {
     top:119px;
+}
 
+#fullname-span
+{
+    top:61px;
+}
+
+#email-span
+{
+    top:124px;
+}
+
+#email2-span
+{
+    top:187px;
+}
+
+#password-register-span
+{
+    top:250px;
 }
 
 .login-input
 {
     height:45px;
-    width:400px;
+    width:375px;
     padding:5px;
     font-size:28px;
     color:black;
@@ -123,11 +143,24 @@ table td
     font-size:28px;
 }
 
-input:hover
+input[type="submit"]
 {
     cursor:pointer;
 }
 
+.form-div
+{
+    float:left;
+    width:425px;
+}
+
+.back-img
+{
+    padding:5px;
+    border-top-left-radius:10px;
+    border-bottom-left-radius:10px;
+    margin-right:10px;
+}
 
 /* MIDDLE */
 
@@ -136,6 +169,7 @@ input:hover
 {
     width:1000px;
     float:left;
+    margin-bottom:25px;
 }
 
 #middle-left
@@ -145,6 +179,7 @@ input:hover
     width:425px;
     height:287px;
     background-image:url(/static/images/login/banner-425x287.png);
+    margin-left:20px;
 }
 
 #middle-left a, #middle-left a:link, #middle-left a:active, #middle-left a:visited
@@ -181,9 +216,9 @@ input:hover
 {
     position:relative;
     float:right;
-    margin-right:25px;
+    margin-right:20px;
     margin-top:25px;
-    width:425px;
+    width:440px;
 }
 
 #middle-right p
@@ -195,13 +230,13 @@ input:hover
     font-size:17px;
 }
 
-#privacy-policy, #privacy-policy:link, #privacy-policy:visited, #privacy-policy:active
+.privacy-policy, .privacy-policy:link, .privacy-policy:visited, .privacy-policy:active
 {
     color:#0F5569;
     text-decoration:none;
 }
 
-#privacy-policy:hover
+.privacy-policy:hover
 {
     color: #127c9a;
     cursor:pointer;
@@ -254,8 +289,7 @@ table tr
 #facebook-button
 {
     border:0;
-    width:415px;
-
+    width:425px;
 }
 
 #facebook-signup
