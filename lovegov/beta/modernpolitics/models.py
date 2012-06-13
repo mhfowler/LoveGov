@@ -1358,7 +1358,7 @@ class Action(Privacy):
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     when = models.DateTimeField(auto_now_add=True)
-    relationship = models.ForeignKey("Relationship", null=True)       # foreign key to relationship
+    relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
     # optimization
     verbose = models.TextField()
@@ -1369,13 +1369,15 @@ class Action(Privacy):
         else:
             return Relationship.objects.get(id=self.relationship_id)
 
-    def autoSave(self, relationship=None, group=None):
-        self.autoVerbose(relationship=relationship)
+    def autoSave(self):
+        relationship = self.relationship
+        self.type = relationship.relationship_type
+        self.autoVerbose(relationship)
         self.save()
 
-    def autoVerbose(self, relationship=None):
+    def autoVerbose(self,relationship=None):
         if not relationship:
-            relationship = self.getRelationship()
+            relationship = self.relationship
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':

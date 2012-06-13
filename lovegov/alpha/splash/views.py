@@ -679,7 +679,7 @@ def legislation(request, session=None, type=None, number=None, dict={}):
     dict['session'], dict['type'], dict['number'] = session, type, number
     if session==None:
         dict['sessions'] = [x['bill_sessions'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
-        logger.debug(str(dict['sessions'])
+        logger.debug(str(dict['sessions']))
         return renderToResponseCSRF(template='deployment/pages/legislation.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session)
     if type==None:
