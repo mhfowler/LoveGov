@@ -50,7 +50,7 @@ function rebindFunction()
             break;
         case 'network':
             loadProfileComparison();
-            loadNetwork();
+            loadGroup();
             break;
         case 'account':                                         // /account
             loadAccount();
@@ -1919,7 +1919,7 @@ function loadAccount()
 
 /***********************************************************************************************************************
  *
- *      ~Network
+ *      ~Group
  *
  **********************************************************************************************************************/
 function groupFollowResponse(event,response,div,g_id)
@@ -1949,7 +1949,7 @@ function groupFollowResponse(event,response,div,g_id)
     );
 }
 
-function loadNetwork()
+function loadGroup()
 {
     var loadUsersLockout = false;
     var loadHistoLockout = false;
@@ -1964,7 +1964,7 @@ function loadNetwork()
         var histogram_displayed_num = $('#histogram-displayed-num').val();
         var histogram_topic = $('#histogram-topic').val();
         var histogram_block = $('#histogram-block').val();
-        var network_id = $('#network-id').val();
+        var group_id = $('#group-id').val();
         if (!loadUsersLockout)
         {
             loadUsersLockout = true;
@@ -1972,7 +1972,7 @@ function loadNetwork()
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadNetworkUsers','histogram_displayed_num':histogram_displayed_num,'network_id':network_id,
+                    data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
                         'histogram_topic':histogram_topic,'histogram_block':histogram_block },
                     success: function(data)
                     {
@@ -2000,7 +2000,7 @@ function loadNetwork()
     // load new histogram data
     function getHistogram() {
         var histogram_topic = $('#histogram-topic').val();
-        var network_id = $('#network-id').val();
+        var group_id = $('#group-id').val();
         if (!loadHistoLockout)
         {
             loadHistoLockout = true;
@@ -2008,7 +2008,7 @@ function loadNetwork()
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadHistogram','network_id':network_id,
+                    data: {'action':'loadHistogram','group_id':group_id,
                         'histogram_topic':histogram_topic},
                     success: function(data)
                     {
@@ -2032,7 +2032,7 @@ function loadNetwork()
         groupFollowResponse(event,"N",$(this),g_id);
     });
 
-    $("#user-follow").click( function(event) {
+    $("#group-follow").click( function(event) {
         event.preventDefault();
         $.ajax(
             {
@@ -2107,7 +2107,7 @@ function loadNetwork()
 
     function bindNewDivs()
     {
-        $('.network-member-div').hover
+        $('.group-member-div').hover
             (
                 function(){ $(this).css("background-color","#EBEBEB") },
                 function(){ $(this).css("background-color","#FFFFFF") }
@@ -2123,7 +2123,7 @@ function loadNetwork()
      });
      */
 
-    $('#network-see-more-users').click(function(event)
+    $('#group-see-more-users').click(function(event)
     {
         loadMoreUsers(event, false);
     });

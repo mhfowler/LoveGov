@@ -612,7 +612,7 @@ def group(request, g_id=None, dict={}):
     group = betamodels.Group.lg.get_or_none(id=g_id)
     if not group:
         return HttpResponse('Group id not found in database')
-    dict['network'] = group
+    dict['group'] = group
     comparison = betabackend.getUserGroupComparison(user, group, force=True)
     dict['comparison'] = comparison
     jsonData = comparison.toJSON()
@@ -622,7 +622,7 @@ def group(request, g_id=None, dict={}):
     # Histogram Things
     dict['histogram'] = group.getComparisonHistogram(user)
     dict['histogram_resolution'] = betaconstants.HISTOGRAM_RESOLUTION
-    dict['network_members'] = group.members.order_by('id')[0:1]
+    dict['group_members'] = group.members.order_by('id')[0:1]
 
     # Get Follow Requests
     dict['prof_requests'] = list(group.getFollowRequests())
@@ -645,13 +645,13 @@ def group(request, g_id=None, dict={}):
 
     setPageTitle("lovegov: " + group.title,dict)
     if request.is_ajax():
-        html = ajaxRender('deployment/center/network.html', dict, request)
+        html = ajaxRender('deployment/center/group.html', dict, request)
         url = group.get_url()
-        rebind = 'network'
+        rebind = 'group'
         to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
         return HttpResponse(json.dumps(to_return))
     else:
-        return renderToResponseCSRF(template='deployment/pages/network.html', dict=dict, request=request)
+        return renderToResponseCSRF(template='deployment/pages/group.html', dict=dict, request=request)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
