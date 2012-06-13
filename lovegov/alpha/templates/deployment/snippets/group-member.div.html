@@ -1,0 +1,16 @@
+<div class="network-member-div feed-username">
+
+    <div style="float:left">
+        {% load thumbnail %}
+        {% thumbnail member.getProfileImage.image "50x50" crop="center" as im %}
+            <img class="user-image-comparison user-image-comparison-left" src="{{ im.url }}"/>
+        {% empty %}
+            {% load thumbnail %}
+            {% thumbnail defaultImage "50x50" crop="center" as im %}
+                <img class="user-image-comparison user-image-comparison-left" src="{{ im.url }}"/>
+            {% endthumbnail %}
+        {% endthumbnail %}
+    </div>
+    <a class="network-user-link do-ajax-link" href="{{ member.get_url }}">{{ member.get_name }}</a>
+
+</div>
