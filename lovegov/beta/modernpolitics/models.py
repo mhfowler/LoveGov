@@ -1554,6 +1554,8 @@ class Notification(Privacy):
     notify_user = models.ForeignKey(UserProfile, related_name = "notifywho")
     when = models.DateTimeField(auto_now_add=True)
     viewed = models.BooleanField(default=False)
+    ignored = models.BooleanField(default=False)
+    requires_action = models.BooleanField(default=True)
     action = models.ForeignKey(Action, null=True)
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
