@@ -115,21 +115,21 @@ function loadHoverComparison()
                 $('#comparison-hover-div').fadeIn(100);
                 $('#comparison-hover-div').offset(offset);
                 $.ajax
-                    ({
-                        url:'/action/',
-                        type:'POST',
-                        data: {'action':'hoverComparison','alias':alias},
-                        success: function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
-                        },
-                        error: function(jqXHR, textStatus, errorThrown)
-                        {
-                            $('#comparison-hover-div p').text('Sorry there was an error');
-                        }
-                    });
+                ({
+                    url:'/action/',
+                    type:'POST',
+                    data: {'action':'hoverComparison','alias':alias},
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $('#comparison-hover-loading-img').hide();
+                        new VisualComparison('comparison-hover',obj).draw();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('#comparison-hover-div p').text('Sorry there was an error');
+                    }
+                });
             }
         },
         // hover out

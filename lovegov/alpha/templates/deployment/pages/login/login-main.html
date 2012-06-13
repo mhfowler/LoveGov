@@ -21,6 +21,7 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
+
             $('#what-is-lovegov').click(function()
             {
                 $('.fade').fadeOut(300);
@@ -47,6 +48,15 @@
             $("#why-facebook-hover a").click(function()
             {
                 $('#why-facebook-hover').fadeOut(300);
+            });
+
+            $('.login-input').each(function()
+            {
+                if ($(this).val() != "")
+                {
+                    var id_span = "#" + $(this).attr('id').replace("input",'span');
+                    $(id_span).hide();
+                }
             });
 
             $('.login-input').focusin(function()

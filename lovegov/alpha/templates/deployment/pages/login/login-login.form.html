@@ -1,4 +1,4 @@
-<div id="login-div" style="display:none">
+<div id="login-div" class="state-div" {% if state != "login" %}style="display:none"{% endif %}>
     <div class="form-div">
         <h1>Log in to LoveGov</h1>
         <form action="" method="post" id="loginform"> {% csrf_token %}
@@ -19,6 +19,9 @@
                     <td colspan=2>
                         <input type="hidden" name="button" value="login"/>
                         <input class="submit-button" id="submit-login" type="submit" value="log in"/>
+                        <p>
+                            {{ error }}
+                        </p>
                         <div style="height:25px">
                             <a class="account-actions" id="forgot-password">forgot password?</a>
                         </div>
