@@ -66,7 +66,7 @@ urlpatterns += patterns('',
     (r'^account/$', requiresLogin(alphaviews.account)),                         # account/change password
     (r'^match/$', requiresLogin(alphaviews.match)),                             # match page
     (r'^matchNew/$', requiresLogin(alphaviews.matchNew)),
-    (r'^loginNew/$', requiresLogin(alphaviews.loginNew)),
+    (r'^loginNew/$', alphaviews.loginNew),
 
     ### content pages ####
     (r'^question/(\d+)/$', requiresLogin(alphaviews.questionDetail)),           # question detail

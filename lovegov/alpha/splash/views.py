@@ -157,16 +157,44 @@ def loginNew(request, to_page='web/', message="", dict={}):
         return shortcuts.redirect('/' + to_page)
     fb_state = facebook.fbGetRedirect(request, dict)
     if request.method == 'POST' and 'button' in request.POST:
-        response = loginPOST(request,to_page,message,dict)
+        response = loginNewPOST(request,to_page,message,dict)
     else:
-        dict['error'] = message
-        registerform = RegisterForm()
-        dict['registerform'] = registerform
-        dict['username'] = ''
-        dict['error'] = ''
+        dict.update({"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'})
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
     response.set_cookie("fb_state", fb_state)
     return response
+
+def loginNewPOST(request, to_page='web',message="",dict={}):
+    dict['registerform'] = RegisterForm()
+    if request.POST['button'] == 'login':
+        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user:
+            user_prof = betabackend.getUserProfile(control_id=user.id)
+            if user_prof.confirmed:
+                auth.login(request, user)
+                redirect_response = shortcuts.redirect('/' + to_page)
+                redirect_response.set_cookie('privacy', value='PUB')
+                return redirect_response
+            else:
+                error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
+        else:
+            error = 'Invalid Login/Password.'
+        dict.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
+        return renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
+    elif request.POST['button'] == 'register':
+        registerform = RegisterForm(request.POST)
+        if registerform.is_valid():
+            registerform.save()
+            dict.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email')})
+            return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', dict=dict, request=request)
+        else:
+            dict.update({"registerform":registerform, "state":'register'})
+            return renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
+    elif request.POST['button'] == 'recover':
+        user = betamodels.ControllingUser.lg.get_or_none(username=request.POST['username'])
+        if user: betabackend.resetPassword(user)
+        message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
+        return HttpResponse(json.dumps(message))
 
 def logout(request, dict={}):
     auth.logout(request)
@@ -180,10 +208,11 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
     if user:
         user.confirmed = True
         user.save()
-        dict['user']=user
+        dict['user'] = user
         print "user:" + user.get_name()
     if request.method == 'GET':
-        return renderToResponseCSRF('deployment/pages/login-register-confirmation.html', dict=dict, request=request)
+        # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
+        return renderToResponseCSRF('deployment/pages/login/login-register-confirmation.html', dict=dict, request=request)
     else:
         return loginPOST(request,to_page,message,dict)
 
