@@ -1933,7 +1933,7 @@ function groupFollowResponse(event,response,div,g_id)
             type:'POST',
             data: {
                 'action':'joinresponse',
-                'p_id': follow_id,
+                'follow_id': follow_id,
                 'g_id': g_id,
                 'response': response
             },
@@ -2039,7 +2039,7 @@ function loadGroup()
                 url:'/action/',
                 type:'POST',
                 data: {
-                    'action':'join',
+                    'action':'joingroup',
                     'g_id': g_id
                 },
                 success: function(data)
@@ -2053,16 +2053,15 @@ function loadGroup()
             }
         );
     });
-    /* Uncomment when adding unfollowing to groups
-    $("#user-unfollow").click( function(event) {
+    $("#group-unfollow").click( function(event) {
         event.preventDefault();
         $.ajax(
             {
                 url:'/action/',
                 type:'POST',
                 data: {
-                    'action':'stopfollow',
-                    'p_id': g_id
+                    'action':'leavegroup',
+                    'g_id': g_id
                 },
                 success: function(data)
                 {
@@ -2075,7 +2074,7 @@ function loadGroup()
             }
         );
     });
-    */
+
     // select histogram block
     $(".histogram-select-block").click(function(event) {
         event.preventDefault();

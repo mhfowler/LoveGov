@@ -4,6 +4,7 @@
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
 
+{% if group.active %}
 <!-- Middle Container -->
 <div id="profile-main-div">
     <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
@@ -129,3 +130,6 @@
 
 </div>
 
+{% else %}
+    This group has been deleted.
+{% endif %}
