@@ -1,2 +1,9 @@
 General Topic 
 
+The negative one problem...
+Topic, forum_id
+Content, main_image_id
+CustomNotificationSetting, user_id
+UserProfile, view_id network_id
+
+

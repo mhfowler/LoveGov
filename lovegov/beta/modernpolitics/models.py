@@ -143,7 +143,7 @@ class Topic(LGModel):
     # actual topic stuff
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
-    forum_id = models.IntegerField(default=-1)                          # foreign key to forum
+    forum = models.ForeignKey("Forum", null=True)                        # foreign key to forum
     # fields for images
     image = models.ImageField(null=True, upload_to="defaults/")
     hover = models.ImageField(null=True, upload_to="defaults/")
@@ -219,9 +219,9 @@ class Content(Privacy, LocationLevel):
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image_id = models.IntegerField(default=-1)             # foreign key to UserImage
+    main_image = models.ForeignKey("UserImage", null=True)           # foreign key to UserImage
     active = models.BooleanField(default=True)
-    calculated_view_id = models.IntegerField(default=-1)      # foreign key to worldview
+    calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
     status = models.IntegerField(default=20)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
@@ -739,7 +739,7 @@ class DebateResult(LGModel):
 #=======================================================================================================================
 class CustomNotificationSetting(LGModel):
     content = models.ForeignKey(Content, null=True)        # content this setting is associated with
-    user_id = models.IntegerField(default=-1)              # user this setting is associated with
+    user = models.ForeignKey("UserProfile", null=True)              # user this setting is associated with
     email = models.BooleanField(default=True)
     alerts = custom_fields.ListField()                      # list of allowed types
 
@@ -860,8 +860,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view_id = models.IntegerField(default=-1)    # foreign key to worldview
-    network_id = models.IntegerField(default=-1)    # foreign key to network group
+    view = models.ForeignKey("WorldView", null=True)        # foreign key to worldview
+    network = models.ForeignKey("Network", null=True)    # foreign key to network group
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
@@ -1392,7 +1392,7 @@ class Action(Privacy):
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     when = models.DateTimeField(auto_now_add=True)
-    relationship_id = models.IntegerField(default=-1)       # foreign key to relationship
+    relationship = models.ForeignKey("Relationship", null=True)       # foreign key to relationship
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
     # optimization
     verbose = models.TextField()
