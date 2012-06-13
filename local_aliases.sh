@@ -19,6 +19,7 @@ alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
 alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/beta/modernpolitics/scripts.py initialize testdata'
 alias lgresetdb='$LG/local_reset.sh'
 alias lgserver="$LG/local_server.sh"
+alias jserver="jpermission && lgserver"
 
 # permission
 alias projectpermission="sudo chmod -R 770 $LG"
