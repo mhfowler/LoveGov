@@ -543,7 +543,7 @@ def aggregateHelper(question, users, object, update=False):
     if total:
         mean = float(sum)/float(total)
     else:
-        mean = -1
+        mean = 5
     # calculate most chosen
     most = 0
     which = -1
@@ -983,23 +983,25 @@ class Comparison:
     # Returns result of comparing all inputted questions.
     # arg - topic
     #-------------------------------------------------------------------------------------------------------------------
-    def compareQuestions(self, questions, method='W'):
-        difference = 0
+    def compareQuestions(self, questions, method='W', aggregate=False):
+        difference = 0.0
         total = 0
-        total_weight = 0
+        total_weight = 0.0
         for q in questions:
             responseA = self.responsesA.filter(question=q)
             responseB = self.responsesB.filter(question=q)
             if responseA and responseB:
                 responseA = responseA[0]
-                responseB = responseB[0]
+                responseB = responseB[0]        # special case for aggregates
+                if responseA.type == 'Z': responseA = responseA.aggregateresponse
+                if responseB.type == 'Z': responseB = responseB.aggregateresponse
                 # default comparison method
                 if method == 'D':
-                    difference += math.fabs(responseA.answer_val - responseB.answer_val)
+                    difference += self.getDifference(responseA, responseB)
                     total += 1
                 # chunked comparison method
                 elif method == 'C':
-                    dif = math.fabs(responseA.answer_val - responseB.answer_val)
+                    dif = self.getDifference(responseA, responseB)
                     if dif < constants.COMPARISON_CHUNKSIZE:
                         difference += 0
                     elif dif < 2*constants.COMPARISON_CHUNKSIZE:
@@ -1010,11 +1012,14 @@ class Comparison:
                 # comparison based on weighted questions
                 elif method == 'W':
                     weight = responseA.weight
-                    difference += math.fabs(responseA.answer_val - responseB.answer_val) * weight/10.0
+                    difference += self.getDifference(responseA, responseB) * weight/10.0
                     total += 1
                     total_weight += weight
         return self.getSimilarityTuple(difference, total, method=method, total_weight=total_weight)
 
+
+    def getDifference(self, responseA, responseB):
+        return math.fabs(responseA.getValue() - responseB.getValue())
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns tuple where first first element represent similarity percentage (subjective algo),
@@ -1024,11 +1029,11 @@ class Comparison:
     def getSimilarityTuple(self, difference, num_questions, method='W', total_weight=0):
         if num_questions :
             if method=='D':
-                similarityPercentage = (100 - int((float(difference) / float(num_questions*10))*100))
+                similarityPercentage = (100 - int(difference / num_questions*10)*100)
             elif method=='C':
-                similarityPercentage = (100 - int((float(difference) / float(num_questions*2))*100))
+                similarityPercentage = (100 - int(difference / num_questions*2)*100)
             elif method=='W':
-                similarityPercentage = (100 - int((float(difference) / float(total_weight)*100)))
+                similarityPercentage = (100 - int(difference / total_weight*100))
             else:
                 similarityPercentage = 0
         else:
@@ -1440,7 +1445,6 @@ def initializeDB():
         scriptCreateCongressAnswers()
 
 
-
 def setTopicAlias():
     for t in Topic.objects.all():
         t.makeAlias()
@@ -1475,8 +1479,8 @@ def initializeTestFeedData():
 
 def initializeNormalBob():
     normal = createUser(name="Normal Bob", email="normal@gmail.com", password="normal")
-    normal.confirmed = True
-    normal.save()
+    normal.user_profile.confirmed = True
+    normal.user_profile.save()
     print "initialized: Normal Bob"
 
 def initializeTopics(using="default"):

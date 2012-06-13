@@ -56,9 +56,8 @@ urlpatterns += patterns('',
     (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
     (r'^fb/handle/$', alphaviews.facebookHandle),
 
-    # Max - these are the URL to Under Construction and 500 error respectively.
-    (r'^underConstruction/$', alphaviews.underConstruction),
-    (r'^500error/$', alphaviews.error500),
+    # under construction
+    (r'^underconstruction/$', alphaviews.underConstruction),
 
     ### main pages ###
     (r'^home/$', requiresLogin(alphaviews.home)),                               # home page with feeds
@@ -76,6 +75,7 @@ urlpatterns += patterns('',
     (r'^news/(\d+)/$', requiresLogin(alphaviews.newsDetail)),                   # news detail
     (r'^network/(\S+)/$', requiresLogin(alphaviews.network)),                   # network page
     (r'^network/$', requiresLogin(alphaviews.network)),                         # network page
+    (r'^group/(\d+)/$', requiresLogin(alphaviews.group)),
     (r'^profile/web/(\S+)/$', requiresLogin(alphaviews.compareWeb)),            # profile/comparison
     (r'^profile/(\S+)/$', requiresLogin(alphaviews.profile)),                   # profile/comparison
     (r'^nextquestion/$', requiresLogin(alphaviews.nextQuestion)),               # sensibly redirects to next question
@@ -107,5 +107,3 @@ urlpatterns += patterns('',
     ## REDIRECT
     (r'.*/$', alphaviews.redirect),
     (r'^$', alphaviews.redirect))
-
-

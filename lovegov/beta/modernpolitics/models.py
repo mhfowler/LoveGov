@@ -70,7 +70,7 @@ def photoKey(type=".jpg"):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)   # foreign key to user profile
+    creator = models.ForeignKey("UserProfile", null=True)
     class Meta:
         abstract = True
         #-------------------------------------------------------------------------------------------------------------------
@@ -97,7 +97,12 @@ class Privacy(LGModel):
     # Returns user who created this.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreator(self):
-        return self.creator
+        try:
+            creator = self.creator
+        except UserProfile.DoesNotExist:
+            from lovegov.beta.modernpolitics.backend import getLoveGovUser
+            return getLoveGovUser() 
+        return creator
         # if self.creator_id != -1:
         #     creator = UserProfile.objects.filter(id=self.creator_id)
         #     if creator:
@@ -138,7 +143,7 @@ class Topic(LGModel):
     # actual topic stuff
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
-    forum_id = models.IntegerField(default=-1)                          # foreign key to forum
+    forum = models.ForeignKey("Forum", null=True)                        # foreign key to forum
     # fields for images
     image = models.ImageField(null=True, upload_to="defaults/")
     hover = models.ImageField(null=True, upload_to="defaults/")
@@ -214,9 +219,9 @@ class Content(Privacy, LocationLevel):
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image_id = models.IntegerField(default=-1)             # foreign key to UserImage
+    main_image = models.ForeignKey("UserImage", null=True)           # foreign key to UserImage
     active = models.BooleanField(default=True)
-    calculated_view_id = models.IntegerField(default=-1)      # foreign key to worldview
+    calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
     status = models.IntegerField(default=20)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
@@ -236,8 +241,13 @@ class Content(Privacy, LocationLevel):
             return '/question/' + str(self.id) + '/'
         elif self.type=='F':
             return '/topic/' + self.getMainTopic().alias + '/'
+        elif self.type=='G':
+            return '/group/' + str(self.id) + '/'
         else:
             return '/display/' + str(self.id) + '/'
+
+    def getUrl(self):
+        return self.get_url()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets name of content for display.
@@ -729,7 +739,7 @@ class DebateResult(LGModel):
 #=======================================================================================================================
 class CustomNotificationSetting(LGModel):
     content = models.ForeignKey(Content, null=True)        # content this setting is associated with
-    user_id = models.IntegerField(default=-1)              # user this setting is associated with
+    user = models.ForeignKey("UserProfile", null=True)              # user this setting is associated with
     email = models.BooleanField(default=True)
     alerts = custom_fields.ListField()                      # list of allowed types
 
@@ -850,8 +860,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view_id = models.IntegerField(default=-1)    # foreign key to worldview
-    network_id = models.IntegerField(default=-1)    # foreign key to network group
+    view = models.ForeignKey("WorldView", null=True)        # foreign key to worldview
+    network = models.ForeignKey("Network", null=True)    # foreign key to network group
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
@@ -1251,7 +1261,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Returns a list of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
-        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
+        group_joins = GroupFollow.objects.filter( user=self, confirmed=True )
         groups = []
         if num == -1:
             for g in group_joins:
@@ -1382,7 +1392,7 @@ class Action(Privacy):
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     when = models.DateTimeField(auto_now_add=True)
-    relationship_id = models.IntegerField(default=-1)       # foreign key to relationship
+    relationship = models.ForeignKey("Relationship", null=True)       # foreign key to relationship
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
     # optimization
     verbose = models.TextField()
@@ -1464,7 +1474,7 @@ class Action(Privacy):
             action_verbose = ' edited '
         elif self.type == 'XX':
             action_verbose = ' deleted '
-            # SET VERBOSE
+        # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
 
     def autoNotify(self, relationship=None):
@@ -2679,6 +2689,10 @@ class Response(Content):
             self.topics.add(t)
         return self
 
+    def getValue(self):
+        return float(self.answer_val)
+
+
 #=======================================================================================================================
 # Response by a user.
 #
@@ -3040,6 +3054,9 @@ class AggregateResponse(Response):
         self.save()
         super(AggregateResponse, self).autoSave()
 
+    def getValue(self):
+        return float(self.answer_avg)
+
     #-------------------------------------------------------------------------------------------------------------------
     # Clears m2m and deletes tuples
     #-------------------------------------------------------------------------------------------------------------------
@@ -3074,6 +3091,37 @@ class Group(Content):
     group_type = models.CharField(max_length=1,choices=constants.GROUP_TYPE_CHOICES, default='U')
     democratic = models.BooleanField(default=False)
     system = models.BooleanField(default=False)     # means you can't leave
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns json of histogram data.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
+        from lovegov.beta.modernpolitics.backend import getUserUserComparison
+        histogram = {}                  # initialize empty histogram
+        topic = Topic.lg.get_or_none(alias=topic_alias)
+        for i in range(0, resolution+1):
+            histogram[i]= {'num':0, 'percent':0}
+        members = self.members.all()
+        for x in members:
+            comparison = getUserUserComparison(user, x)
+            if topic and topic_alias != 'general':
+                comparison = comparison.bytopic.get(topic=topic)
+            if comparison.num_q:
+                block = comparison.result / 10
+                if block in histogram:
+                    histogram[block]['num'] += 1
+        # calc percents
+        people = float(len(members))
+        for k in histogram:
+            tuple = histogram[k]
+            num = tuple['num']
+            if  not num:
+                pix = 5
+            else:
+                pix = (num/people*100)*5
+            tuple['pix'] = int(pix)
+        print histogram
+        return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
@@ -3136,6 +3184,37 @@ class Group(Content):
         elif feed_type=='H':
             self.group_hotfeed.all().delete()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get members, filtered by some criteria
+    #-------------------------------------------------------------------------------------------------------------------
+    def getMembers(self, user, block=-1, topic_alias=None):
+        from lovegov.beta.modernpolitics.backend import getUserUserComparison
+        if block == -1:
+            return self.members.order_by('id')
+        else:
+            topic = Topic.lg.get_or_none(alias=topic_alias)
+            ids = []
+            for x in self.members.order_by('id'):
+                comparison = getUserUserComparison(user, x)
+                if topic and topic_alias!='general':
+                   comparison = comparison.bytopic.get(topic=topic)
+                if comparison.num_q:
+                    x_block = comparison.result / constants.HISTOGRAM_RESOLUTION
+                    print x.get_name() + ": " + str(x_block)
+                    if x_block == block:
+                        ids.append(x.id)
+            return self.members.filter(id__in=ids).order_by('id')
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getFollowRequests(self, num=-1):
+        if num == -1:
+            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')
+        else:
+            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')[:num]
+
+
 #=======================================================================================================================
 # Motion, for democratic groups.
 #
@@ -3180,7 +3259,12 @@ class Network(Group):
     def get_url(self):
         return '/network/' + self.name + '/'
 
-
+#=======================================================================================================================
+# User Group
+#
+#=======================================================================================================================
+class UserGroup(Group):
+    pass
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3379,7 +3463,7 @@ class Relationship(Privacy):
         elif type == 'AE':
             object = self.ucrelationship.attending
         elif type== 'JO':
-            object = self.ucrelationship.groupjoined
+            object = self.ucrelationship.groupfollow
         elif type== 'JD':
             object = self.ucrelationship.debatejoined
         elif type == 'FO':
@@ -3613,7 +3697,7 @@ class Attending(UCRelationship, Invite):
 # Relation between user and event, about whether or not they are attending.
 #
 #=======================================================================================================================
-class GroupJoined(UCRelationship, Invite):
+class GroupFollow(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'

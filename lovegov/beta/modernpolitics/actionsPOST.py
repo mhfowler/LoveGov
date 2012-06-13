@@ -67,9 +67,11 @@ def actionPOST(request, dict={}):
             return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
-        ### actions below have not been proof checked ###
         elif action == 'join':
             return joinGroupRequest(request, dict)
+        elif action == 'joinresponse':
+            return joinGroupResponse(request, dict)
+        ### actions below have not been proof checked ###
         elif action == 'leave':
             return leave(request, dict)
         elif action == 'linkfrom':
@@ -134,38 +136,23 @@ def actionPOST(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
-    petition = CreatePetitionForm()
-    event = CreateEventForm()
-    news = CreateNewsForm
-    group = CreateGroupForm()
-    album = UserImageForm()
     formtype = request.POST['type']
+    user = val['user']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
-        petition = CreatePetitionForm(request.POST)
     elif formtype == 'N':
         form = CreateNewsForm(request.POST)
-        news = CreateNewsForm(request.POST)
     elif formtype =='E':
         form = CreateEventForm(request.POST)
-        event = CreateEventForm(request.POST)
     elif formtype =='G':
-        form = CreateGroupForm(request.POST)
-        group = CreateGroupForm(request.POST)
+        form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
-        album = UserImageForm(request.POST)
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        # save image
-        try:
-            uploaded = request.FILES['main_img']
-            file_content = ContentFile(uploaded.read())
-            c.setMainImage(file_content)
-        except MultiValueDictKeyError:
-            print("nope")
+        # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
                 from lovegov.alpha.splash.views import petitionDetail
@@ -173,6 +160,14 @@ def create(request, val={}):
             elif formtype == "N":
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
+            elif formtype == "G":
+                follow_request = GroupFollow(user=user, content=c, group=c, privacy=getPrivacy(request))
+                follow_request.confirm()
+                follow_request.autoSave()
+                c.admins.add(user)
+                c.members.add(user)
+                from lovegov.alpha.splash.views import group
+                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
     else:
@@ -428,24 +423,35 @@ def joinGroupRequest(request, dict={}):
     """Joins group if user is not already a part."""
     user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
-    if group.group_type == 'S' or group.system:
-        return HttpResponse("cannot request to join secret group or system group")
-    else:
-        already = GroupJoined.objects.filter(user=user, group=group)
-        if already:
-            join = already[0]
-            if join.confirmed:
-                return HttpResponse("you are already a member of group")
-        else:
-            join = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
-            join.autoSave()
-        if group.group_type == 'O':
-            join.confirm()
+    #Secret groups and System Groups cannot be join requested
+    if group.system:
+        return HttpResponse("cannot request to join system group")
+    #Get GroupFollow relationship if it exists already
+    already = GroupFollow.objects.filter(user=user, group=group)
+    if already:
+        follow_request = already[0]
+        if follow_request.confirmed:
+            return HttpResponse("you are already a member of group")
+    else: #If it doesn't exist, create it
+        follow_request = GroupFollow(user=user, content=group, group=group, privacy=getPrivacy(request))
+        follow_request.autoSave()
+    #If the group is privacy secret...
+    if group.group_privacy == 'S':
+        if follow_request.invited:
+            follow_request.confirm()
             group.members.add(user)
             return HttpResponse("joined")
-        elif group.group_type == 'P':
-            join.request()
-            return HttpResponse("request to join")
+        return HttpResponse("cannot request to join secret group")
+    #If the group type is open...
+    if group.group_privacy == 'O':
+        follow_request.confirm()
+        group.members.add(user)
+        return HttpResponse("joined")
+    #If the group type is private and not requested yet
+    elif group.group_privacy == 'P' and not follow_request.requested:
+        follow_request.request()
+        return HttpResponse("request to join")
+    return HttpResponse("you have already requested to join this group")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -516,18 +522,16 @@ def joinGroupInvite(request, dict={}):
     group = Group.objects.get(id=request.POST['g_id'])
     admin = group.admins.filter(id=user.id)
     if admin:
-        already = GroupJoined.objects.filter(user=to_invite, group=group)
+        already = GroupFollow.objects.filter(user=to_invite, group=group)
         if already:
             join=already[0]
             if join.invited or join.confirmed:
                 return HttpResponse("already invited or already member")
         else:
-            join = GroupJoined(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
+            join = GroupFollow(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
             join.invite(inviter=user)
     else:
         return HttpResponse("You are not admin.")
-
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------

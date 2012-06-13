@@ -1,0 +1,131 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/profile.css" />
+
+<script>
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+</script>
+
+<!-- Middle Container -->
+<div id="profile-main-div">
+    <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
+    <!-- Left Block -->
+    <div id="middle-left">
+        <h1> {{ group.title }} </h1>
+
+        <p>
+            {{ group.summary }}
+        </p>
+
+
+        <div class="histogram">
+
+            {% load thumbnail %}
+
+            <div class="histogram-wrapper" style="width:500px;float:left;">
+
+                <div class="histogram-bars">
+                    {% include 'deployment/pieces/histogram.html'%}
+                </div>
+
+                {% for k,v in histogram.items %}
+                    <div style="float:left;margin-left:10px;">
+                        <a class="histogram-select-block" style="color:red">  {{ k }} </a>
+                        <input class="block-val" type="hidden" value="{{k}}"/>
+                    </div>
+                {% endfor %}
+
+                <!-- all -->
+                <div style="float:left;margin-left:10px;">
+                    <a class="histogram-select-block" style="color:red">  * </a>
+                    <input class="block-val" type="hidden" value="-1"/>
+                </div>
+
+            </div>
+
+            <div class="topic-icons-wrapper h-topics-wrapper" style="float:left">
+                {% for t in main_topics %}
+                    <div class="topic-icon-wrapper h-topic-wrapper">
+                        {% thumbnail t.image "30x30" format="PNG" as im %}
+                            <img class="topic-img normal h-topic-img" src="{{ im.url }}"/>
+                        {% endthumbnail %}
+                        {% thumbnail t.selected "30x30" format="PNG" as im %}
+                            <img class="topic-img selected h-topic-img" src="{{ im.url }}"/>
+                        {% endthumbnail %}
+                        <input type="hidden" class="t-alias" value="{{t.alias}}">
+                    </div>
+                {% endfor %}
+            </div>
+
+        <div class="members-wrappers" style="width:200px;float:left;">
+            <h3> Members </h3>
+            <div id="members-list">
+                {% for x in group_members %}
+                    {% include 'deployment/snippets/group-member.div.html' with member=x %}
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <div class="histogram-metadata">
+            <input id="group-id" type="hidden" value="{{ group.id }}"/>
+            <input id="histogram-topic" type="hidden" value="general"/>
+            <input id="histogram-block" type="hidden" value="-1"/>
+            <input id="histogram-resolution" type="hidden" value="{{ histogram_resolution }}"/>
+            <input id="histogram-displayed-num" type="hidden" value="{{ group_members.count}} "/>
+        </div>
+
+        <div style="clear:both">
+            <a id="group-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Right Block -->
+<div id="middle-right">
+    <div id="matching">
+        <div id="myviews" class="middle-right-head-font">
+            You & {{ group.title }}
+        </div>
+        <div id="qaweb"></div>
+    </div>
+</div>
+
+    <div id="privacy">
+        Privacy: {{ group.group_privacy }}
+    </div>
+
+    {% if is_user_admin %}
+    <ul id="group-requests">
+        {% for req in prof_requests %}
+        <li>{{ req.getFrom.get_name }} has requested to follow you:
+            <a href="" class="group-response-y"> I accept! </a> ||
+            <a href="" class="group-response-n"> I decline! </a>
+            <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+        </li>
+        {% empty %}
+        <li>No follow requests! =( </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if not is_user_follow and not is_user_confirmed %}
+    <a href="" id="group-follow">
+        follow me!
+    </a>
+    {% else %}
+    <a href="" id="group-unfollow">
+        {% if is_user_confirmed %}
+        unfollow me!
+        {% elif is_user_follow %}
+        un-request me!
+        {% endif %}
+    </a>
+    {% endif %}
+
+    <script>
+        var g_id = "{{ group.id }}";
+    </script>
+
+</div>
+
