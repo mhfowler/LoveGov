@@ -849,6 +849,7 @@ def createUser(name, email, password, type='userProfile',active=True):
         control.user_profile = user_profile
         control.save()
         return control
+    logger.debug("user already exists!")
 
 def getUserProfile(request=None, control_id=None):
     if control_id:
