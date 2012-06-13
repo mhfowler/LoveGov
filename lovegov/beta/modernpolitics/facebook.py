@@ -23,7 +23,7 @@ logger = logging.getLogger('filelogger')
 #-----------------------------------------------------------------------------------------------------------------------
 # Save a users facebook friends as lg relationships.
 #-----------------------------------------------------------------------------------------------------------------------
-def fbGetFriends(request, dict={}):
+def fbMakeFriends(request, dict={}):
     user = dict['user']
     path = user.getFBAlias() + '/friends'
     print "path: " + path
@@ -33,15 +33,8 @@ def fbGetFriends(request, dict={}):
         for f in friends:
             friend = UserProfile.lg.get_or_none( facebook_id=f['id'] )
             if friend:
-                user.makeFriends( friend )
-        flist = models.UserFollow.objects.filter( user=user )
-        return_string = ""
-        for x in flist:
-            return_string += " || " + x.to_user.get_name()
-        return HttpResponse( return_string )
-    else:
-        return HttpResponse( "FAIL" )
-
+                user.follow( friend , fb=True )
+                friend.follow( user , fb=True )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.
@@ -91,7 +84,7 @@ def getRedirectURI(request, redirect):
 #-----------------------------------------------------------------------------------------------------------------------
 # Handles access token, and log in, register or deny appropriately
 #-----------------------------------------------------------------------------------------------------------------------
-def fbLogin(request):
+def fbLogin(request, dict={}):
     me = fbGet(request, 'me')
     if me:
         fb_id = me['id']
@@ -112,6 +105,7 @@ def fbLogin(request):
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
+        fbMakeFriends(request,)
         return True
     else:
         return False
