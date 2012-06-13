@@ -1142,35 +1142,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
-    def notify(self, notification, action=None):
-        # if triggered by content use follow content notification setting or per-content custom setting
-        if notification.trig_content:
-            custom = self.custom_notification_settings.filter(content=notification.trig_content)
-            if custom:
-                notify = custom[0].checkNotify(notification.type)
-            else:
-                notify = (notification.type in self.content_notification_setting)
-        # elif triggered by user use follow user notification setting or per-user custom setting
-        elif notification.trig_user:
-            custom = self.custom_notification_settings.filter(user_id=notification.trig_user.id)
-            if custom:
-                notify = custom[0].checkNotify(notification.type)
-            else:
-                notify = (notification.type in self.user_notification_setting)
+    def notify(self, action, content=None, user=None):
+        if action.type in constants.NOTIFY_TYPES:
+            notification = Notification(action=action, notify_user=self)
+            notification.autoSave()
+            return True
         else:
-            custom = False
-            notify = True
-            # if notify, save notification, adn email if also email notification setting
-        if notify:
-            notification.autoSave(action=action)
-            if custom:
-                email = custom[0].email
-            else:
-                email = (notification.type in self.email_notification_setting)
-            if email:
-                self.emailNotification(notification)
-        return notify
-
+            return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)
@@ -1374,13 +1352,13 @@ class ControllingUser(User, LGModel):
         return self.user_profile
 
 #=======================================================================================================================
-# Keeps track of user activity. And handles notification via autoNotify()
+# Keeps track of user activity.
 #=======================================================================================================================
 class Action(Privacy):
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     when = models.DateTimeField(auto_now_add=True)
-    relationship = models.ForeignKey("Relationship", null=True)       # foreign key to relationship
+    relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
     # optimization
     verbose = models.TextField()
@@ -1391,14 +1369,15 @@ class Action(Privacy):
         else:
             return Relationship.objects.get(id=self.relationship_id)
 
-    def autoSave(self, relationship=None, group=None):
-        self.autoVerbose(relationship=relationship)
+    def autoSave(self):
+        relationship = self.relationship
+        self.type = relationship.relationship_type
+        self.autoVerbose(relationship)
         self.save()
-        #self.autoNotify(relationship=relationship)
 
-    def autoVerbose(self, relationship=None):
+    def autoVerbose(self,relationship=None):
         if not relationship:
-            relationship = self.getRelationship()
+            relationship = self.relationship
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':
@@ -1412,7 +1391,7 @@ class Action(Privacy):
             if self.modifier == 'I':
                 action_verbose = ' was invited to follow '
             elif self.modifier == 'R':
-                action_verbose = ' requested to follow'
+                action_verbose = ' requested to follow '
             elif self.modifier == 'D':
                 action_verbose = ' is following '
             elif self.modifier == 'N':
@@ -1421,7 +1400,7 @@ class Action(Privacy):
             if self.modifier == 'I':
                 action_verbose = ' was invited to attend '
             elif self.modifier == 'R':
-                action_verbose = ' requested to attend'
+                action_verbose = ' requested to attend '
             elif self.modifier == 'D':
                 action_verbose = ' is attending '
             elif self.modifier == 'N':
@@ -1464,6 +1443,7 @@ class Action(Privacy):
             action_verbose = ' deleted '
         # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
+        print self.verbose
 
 
 #=======================================================================================================================
@@ -3384,11 +3364,6 @@ class Relationship(Privacy):
     def getTo(self):
         return self.downcast().getTo()
 
-    def autoNotify(self, child, modifier='D', must_notify=False):
-        action = Action(type=self.relationship_type, modifier=modifier, must_notify=must_notify,
-            relationship_id=child.id, creator = self.creator, privacy=self.privacy)
-        action.autoSave(relationship=child)
-
 #=======================================================================================================================
 # Abstract model for handling relationships with requests and invitations.
 #=======================================================================================================================
@@ -3406,14 +3381,12 @@ class Invite(LGModel):
     def confirm(self):
         self.confirmed = True
         self.save()
-        #self.autoNotify(child=self)
     def request(self):
         self.requested = True
         if self.invited:
             self.confirm()
         else:
             self.save()
-            #self.autoNotify(child=self, modifier='R', must_notify=True)
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
@@ -3421,7 +3394,6 @@ class Invite(LGModel):
             self.confirm()
         else:
             self.save()
-            #self.autoNotify(child=self, modifier='I', must_notify=True)
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -3439,12 +3411,10 @@ class Invite(LGModel):
         if self.requested:
             self.rejected = True
             self.save()
-            #self.autoNotify(child=self, modifier='X', must_notify=True)
     def decline(self):
         if self.invited:
             self.declined = True
             self.save()
-            #self.autoNotify(child=self, modifier='N', must_notify=True)
     def accept(self):
         if self.invited:
             self.confirm()
@@ -3456,8 +3426,6 @@ class Invite(LGModel):
             self.confirmed = False
             self.rejected = True
             self.save()
-            #self.autoNotify(child=self, modifier='X', must_notify=True)
-
 
 #=======================================================================================================================
 # Relationships between User and Content.
@@ -3478,7 +3446,6 @@ class DebateVoted(UCRelationship):
         self.relationship_type = 'DV'
         self.creator=self.user_id
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Exact same as vote, except for motions.
@@ -3490,7 +3457,6 @@ class MotionVoted(UCRelationship):
         self.relationship_type = 'MV'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Vote by a user on a piece of content. like or dislike.
@@ -3502,7 +3468,6 @@ class Voted(UCRelationship):
         self.relationship_type = 'VO'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
     def getValue(self, ranking='D'):
         if ranking=='D':
@@ -3524,7 +3489,6 @@ class Created(UCRelationship):
         self.relationship_type = 'CR'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # User deletes content.
@@ -3534,7 +3498,6 @@ class Deleted(UCRelationship):
         self.relationship_type = 'XX'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Stores what content a user has created.
@@ -3546,7 +3509,6 @@ class Commented(UCRelationship):
         self.relationship_type = 'CO'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Stores when a user edits a piece of content.
@@ -3557,7 +3519,6 @@ class Edited(UCRelationship):
         self.relationship_type = 'ED'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
@@ -3570,7 +3531,6 @@ class Shared(UCRelationship):
         self.relationship_type = 'SH'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self, must_notify=True)
 
 #=======================================================================================================================
 # Stores a user following a piece of content.
@@ -3581,7 +3541,6 @@ class Followed(UCRelationship):
         self.relationship_type = 'FC'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Relation between user and event, about whether or not they are attending.
