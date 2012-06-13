@@ -894,6 +894,10 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # active
     userProfile.is_active = active
     userProfile.confirmation_link = str(random.randint(1,9999999999999999999))   #TODO: crypto-safe
+    # worldview
+    world_view = WorldView()
+    world_view.save()
+    userProfile.view_id = world_view.id
     userProfile.save()
     userid = userProfile.id
     # basic info
@@ -903,10 +907,6 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # profilePage
     userProfilePage = ProfilePage(person=userProfile)
     userProfilePage.save()
-    # worldview
-    world_view = WorldView()
-    world_view.save()
-    userProfile.view_id = world_view.id
     # alias
     userProfile.makeAlias()
     # filter settings
