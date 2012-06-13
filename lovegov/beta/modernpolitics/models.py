@@ -1142,35 +1142,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
-    def notify(self, notification, action=None):
-        # if triggered by content use follow content notification setting or per-content custom setting
-        if notification.trig_content:
-            custom = self.custom_notification_settings.filter(content=notification.trig_content)
-            if custom:
-                notify = custom[0].checkNotify(notification.type)
-            else:
-                notify = (notification.type in self.content_notification_setting)
-        # elif triggered by user use follow user notification setting or per-user custom setting
-        elif notification.trig_user:
-            custom = self.custom_notification_settings.filter(user_id=notification.trig_user.id)
-            if custom:
-                notify = custom[0].checkNotify(notification.type)
-            else:
-                notify = (notification.type in self.user_notification_setting)
+    def notify(self, action, content=None, user=None):
+        if action.type in constants.NOTIFY_TYPES:
+            notification = Notification(action=action, notify_user=self)
+            notification.autoSave()
+            return True
         else:
-            custom = False
-            notify = True
-            # if notify, save notification, adn email if also email notification setting
-        if notify:
-            notification.autoSave(action=action)
-            if custom:
-                email = custom[0].email
-            else:
-                email = (notification.type in self.email_notification_setting)
-            if email:
-                self.emailNotification(notification)
-        return notify
-
+            return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)
@@ -1475,6 +1453,7 @@ class Action(Privacy):
             action_verbose = ' deleted '
         # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
+        print self.verbose
 
 
 
@@ -1489,9 +1468,6 @@ class Notification(Privacy):
     ignored = models.BooleanField(default=False)
     requires_action = models.BooleanField(default=True)
     action = models.ForeignKey(Action, null=True)
-    # optimization (these fields available in action)
-    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES, default='OT') # OT = other
-    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
@@ -1499,9 +1475,8 @@ class Notification(Privacy):
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
 
-    def autoSave(self, action=None):
-        if action:
-            self.verbose = action.verbose
+    def autoSave(self):
+        self.verbose = self.action.verbose
         self.save()
 
     def getEmail(self):
