@@ -78,6 +78,10 @@ urlpatterns += patterns('',
     (r'^profile/web/(\S+)/$', requiresLogin(alphaviews.compareWeb)),            # profile/comparison
     (r'^profile/(\S+)/$', requiresLogin(alphaviews.profile)),                   # profile/comparison
     (r'^nextquestion/$', requiresLogin(alphaviews.nextQuestion)),               # sensibly redirects to next question
+    (r'^legislation/$', requiresLogin(alphaviews.legislation)),
+    (r'^legislation/(?P<session>\d+)/$', requiresLogin(alphaviews.legislation)),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', requiresLogin(alphaviews.legislation)),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', requiresLogin(alphaviews.legislation)),
 
     # ajax pages
     (r'^logout/$', requiresLogin(alphaviews.logout)),                           # logout
