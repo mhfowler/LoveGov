@@ -14,7 +14,7 @@ from BeautifulSoup import BeautifulStoneSoup
 from lovegov.alpha.splash.views import ajaxRender
 import images
 from haystack.query import SearchQuerySet
-from lovegov.beta.modernpolitics.models import UserProfile, UserPhysicalAddress, Representative, Senator, DebateMessage, Network
+from lovegov.beta.modernpolitics.models import UserProfile, UserPhysicalAddress, Representative, Senator, DebateMessage, Network, Group
 from lovegov.beta.modernpolitics.backend import getUserProfile
 from lovegov.alpha.splash.views import renderToResponseCSRF
 from lovegov.beta.modernpolitics import backend
@@ -57,8 +57,8 @@ def actionGET(request, dict={}):
             return getCongressmen(request,dict)
         elif action=='searchAutoComplete':
             return searchAutoComplete(request,dict)
-        elif action=='loadNetworkUsers':
-            return loadNetworkUsers(request,dict)
+        elif action=='loadGroupUsers':
+            return loadGroupUsers(request,dict)
         elif action=='loadHistogram':
             return loadHistogram(request,dict)
         else:
@@ -272,16 +272,16 @@ def searchAutoComplete(request,dict={},limit=5):
 # Loads members.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def loadNetworkUsers(request,dict={}):
+def loadGroupUsers(request,dict={}):
     user = dict['user']
     num = int(request.GET['histogram_displayed_num'])
     histogram_topic = request.GET['histogram_topic']
     histogram_block = int(request.GET['histogram_block'])
-    network = Network.objects.get(id=request.GET['network_id'])
+    group = Group.objects.get(id=request.GET['group_id'])
     print 'topic: ' + histogram_topic
     print 'block: ' + str(histogram_block)
-    next_num = num + 1
-    all_members = network.getMembers(user, block=histogram_block, topic_alias=histogram_topic)
+    next_num = num + 25
+    all_members = group.getMembers(user, block=histogram_block, topic_alias=histogram_topic)
     if len(all_members) >= next_num:
         more_members = all_members[num:next_num]
     else:
@@ -290,7 +290,7 @@ def loadNetworkUsers(request,dict={}):
     dict['defaultImage'] = backend.getDefaultImage().image
     for member in more_members:
         dict['member'] = member
-        html += ajaxRender('deployment/snippets/network-member.div.html',dict,request)
+        html += ajaxRender('deployment/snippets/group-member.div.html',dict,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -300,9 +300,9 @@ def loadNetworkUsers(request,dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def loadHistogram(request, dict={}):
     user = dict['user']
-    network = Network.objects.get(id=request.GET['network_id'])
+    group = Group.objects.get(id=request.GET['group_id'])
     histogram_topic = request.GET['histogram_topic']
-    dict['histogram'] = network.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=constants.HISTOGRAM_RESOLUTION)
+    dict['histogram'] = group.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=constants.HISTOGRAM_RESOLUTION)
     html = ajaxRender('deployment/pieces/histogram.html', dict, request)
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))

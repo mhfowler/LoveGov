@@ -1261,7 +1261,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Returns a list of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
-        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
+        group_joins = GroupFollow.objects.filter( user=self, confirmed=True )
         groups = []
         if num == -1:
             for g in group_joins:
@@ -3463,7 +3463,7 @@ class Relationship(Privacy):
         elif type == 'AE':
             object = self.ucrelationship.attending
         elif type== 'JO':
-            object = self.ucrelationship.groupjoined
+            object = self.ucrelationship.groupfollow
         elif type== 'JD':
             object = self.ucrelationship.debatejoined
         elif type == 'FO':
