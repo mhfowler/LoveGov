@@ -2,14 +2,20 @@
 
 {% block content %}
 
-Session: {{session}}
-<p>
-	Type: {{type}}
-</p>
-<p>
-	Here you would see a list of bill numbers for the above session and legislation type.
-</p>
-<p>
+<!-- CSS stylesheet -->
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/legislation.css" />
 
+<div id="content-leg-div">
+
+Session: {{session}}
+<br>
+	Type: {{type}}
+</br>
+<br>
+	Here you would see a list of bill numbers for the above session and legislation type.
+</br>
+<br>
+
+</div>
 
 {% endblock %}
