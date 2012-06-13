@@ -1227,23 +1227,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1):
+    def getNotifications(self, num=-1, ignored=False, viewed=False):
         if num == -1:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')
+            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')
         else:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')[:num]
-        for n in notifications:
-            n.viewed = True
-        return notifications
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all NEW notifications.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getNewNotifications(self, num=-1):
-        if num == -1:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False).order_by('when')
-        else:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False ).order_by('when')[:num]
+            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')[:num]
         for n in notifications:
             n.viewed = True
         return notifications
@@ -1566,11 +1554,7 @@ class Notification(Privacy):
     notify_user = models.ForeignKey(UserProfile, related_name = "notifywho")
     when = models.DateTimeField(auto_now_add=True)
     viewed = models.BooleanField(default=False)
-    ignored = models.BooleanField(default=False)
     action = models.ForeignKey(Action, null=True)
-    # optimization (these fields available in action)
-    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES, default='OT') # OT = other
-    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
