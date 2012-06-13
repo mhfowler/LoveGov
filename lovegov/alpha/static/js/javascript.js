@@ -48,7 +48,7 @@ function rebindFunction()
             loadProfileComparison();
             loadProfile();
             break;
-        case 'network':
+        case 'group':
             loadProfileComparison();
             loadGroup();
             break;

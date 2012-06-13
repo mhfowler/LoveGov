@@ -286,6 +286,8 @@ def loadGroupUsers(request,dict={}):
         more_members = all_members[num:next_num]
     else:
         more_members = []
+    for x in more_members:
+        print x.get_name()
     html = ""
     dict['defaultImage'] = backend.getDefaultImage().image
     for member in more_members:

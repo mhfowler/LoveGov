@@ -1566,6 +1566,7 @@ class Notification(Privacy):
     notify_user = models.ForeignKey(UserProfile, related_name = "notifywho")
     when = models.DateTimeField(auto_now_add=True)
     viewed = models.BooleanField(default=False)
+    ignored = models.BooleanField(default=False)
     action = models.ForeignKey(Action, null=True)
     # optimization (these fields available in action)
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES, default='OT') # OT = other
