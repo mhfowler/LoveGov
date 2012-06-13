@@ -11,7 +11,7 @@
 
             <div id="profile-img">
                 {% load thumbnail %}
-                {% thumbnail to_compare.getProfileImage.image "175x175" crop="center" as im %}
+                {% thumbnail user_prof.getProfileImage.image "175x175" crop="center" as im %}
                     <img src="{{ im.url }}"/>
                 {% empty %}
                     <p> no pic </p>
@@ -19,7 +19,7 @@
             </div>
 
             <div class="profile-username">
-                {{ to_compare.get_name }}
+                {{ user_prof.get_name }}
             </div>
 
             <div id="profile-summary">
@@ -30,7 +30,7 @@
                     <div class="profile-header">Info</div>
                     political views: <br />
                     political role:  <br />
-                    {% with network=to_compare.getNetwork %}
+                    {% with network=user_prof.getNetwork %}
                         network: <a class="do-ajax-link" href="{{ network.get_url }}">{{ network.name }}</a>
                     {% endwith %}
                     <br />
@@ -54,8 +54,8 @@
     <div id="middle-right">
         <div id="matching">
             <div id="myviews" class="middle-right-head-font">
-                {% if user.id != to_compare.id %}
-                    You & {{ to_compare.get_name }}
+                {% if user.id != user_prof.id %}
+                    You & {{ user_prof.get_name }}
                 {% else %}
                     You
                 {% endif %}
@@ -63,5 +63,53 @@
             <div id="qaweb"></div>
         </div>
     </div>
+
+    <ul id="friends">
+        {% for friend in prof_follow_me %}
+            <li>{{ friend.get_name }}</li>
+        {% empty %}
+            <li>{{ user_prof.get_name }} has no friends! =( </li>
+        {% endfor %}
+    </ul>
+
+    <ul id="groups">
+        {% for group in prof_groups %}
+            <li>{{ group.title }}</li>
+        {% empty %}
+            <li>{{ user_prof.get_name }} has no groups! =( </li>
+        {% endfor %}
+    </ul>
+
+    {% if user.id == user_prof.id %}
+        <ul id="follow-requests">
+            {% for req in prof_requests %}
+                <li>{{ req.getFrom.get_name }} has requested to follow you:
+                    <a href="" class="follow-response-y"> I accept! </a> ||
+                    <a href="" class="follow-response-n"> I decline! </a>
+                    <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+                </li>
+            {% empty %}
+                <li>No follow requests! =( </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if user.id != user_prof.id and not is_user_follow and not is_user_confirmed %}
+        <a href="" id="user-follow">
+            follow me!
+        </a>
+    {% elif user.id != user_prof.id and is_user_confirmed or is_user_follow %}
+        <a href="" id="user-unfollow">
+            {% if is_user_confirmed %}
+            unfollow me!
+            {% elif is_user_follow %}
+            un-request me!
+            {% endif %}
+        </a>
+    {% endif %}
+
+    <script>
+        var p_id = "{{ user_prof.id }}";
+    </script>
 
 </div>

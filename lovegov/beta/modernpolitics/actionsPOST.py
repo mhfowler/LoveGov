@@ -23,6 +23,7 @@ from lovegov.beta.modernpolitics.forms import *
 from django.forms import *
 from django import shortcuts
 from django.template import RequestContext, loader
+from lovegov.beta.modernpolitics import models as betamodels
 from django.utils.datastructures import MultiValueDictKeyError
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -63,11 +64,15 @@ def actionPOST(request, dict={}):
             return userFollowRequest(request, dict)
         elif action == 'followresponse':
             return userFollowResponse(request, dict)
+        elif action == 'stopfollow':
+            return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
-        ### actions below have not been proof checked ###
         elif action == 'join':
             return joinGroupRequest(request, dict)
+        elif action == 'joinresponse':
+            return joinGroupResponse(request, dict)
+        ### actions below have not been proof checked ###
         elif action == 'leave':
             return leave(request, dict)
         elif action == 'linkfrom':
@@ -80,8 +85,6 @@ def actionPOST(request, dict={}):
             return follow(request, dict)
         elif action == 'posttogroup':
             return posttogroup(request)
-        elif action == 'stopfollow':
-            return userFollowStop(request, dict)
         elif action == 'deinvolve':
             return deinvolve(request, dict)
         elif action == 'updateCompare':
@@ -134,38 +137,23 @@ def actionPOST(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
-    petition = CreatePetitionForm()
-    event = CreateEventForm()
-    news = CreateNewsForm
-    group = CreateGroupForm()
-    album = UserImageForm()
     formtype = request.POST['type']
+    user = val['user']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
-        petition = CreatePetitionForm(request.POST)
     elif formtype == 'N':
         form = CreateNewsForm(request.POST)
-        news = CreateNewsForm(request.POST)
     elif formtype =='E':
         form = CreateEventForm(request.POST)
-        event = CreateEventForm(request.POST)
     elif formtype =='G':
-        form = CreateGroupForm(request.POST)
-        group = CreateGroupForm(request.POST)
+        form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
-        album = UserImageForm(request.POST)
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        # save image
-        try:
-            uploaded = request.FILES['main_img']
-            file_content = ContentFile(uploaded.read())
-            c.setMainImage(file_content)
-        except MultiValueDictKeyError:
-            print("nope")
+        # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
                 from lovegov.alpha.splash.views import petitionDetail
@@ -173,6 +161,11 @@ def create(request, val={}):
             elif formtype == "N":
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
+            elif formtype == "G":
+                c.admins.add(user)
+                c.members.add(user)
+                from lovegov.alpha.splash.views import group
+                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
     else:
@@ -428,24 +421,28 @@ def joinGroupRequest(request, dict={}):
     """Joins group if user is not already a part."""
     user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
-    if group.group_type == 'S' or group.system:
+    #Secret groups and System Groups cannot be join requested
+    if group.group_privacy == 'S' or group.system:
         return HttpResponse("cannot request to join secret group or system group")
-    else:
-        already = GroupJoined.objects.filter(user=user, group=group)
-        if already:
-            join = already[0]
-            if join.confirmed:
-                return HttpResponse("you are already a member of group")
-        else:
-            join = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
-            join.autoSave()
-        if group.group_type == 'O':
-            join.confirm()
-            group.members.add(user)
-            return HttpResponse("joined")
-        elif group.group_type == 'P':
-            join.request()
-            return HttpResponse("request to join")
+    #Get GroupFollow relationship if it exists already
+    already = GroupFollow.objects.filter(user=user, group=group)
+    if already:
+        follow_request = already[0]
+        if follow_request.confirmed:
+            return HttpResponse("you are already a member of group")
+    else: #If it doesn't exist, create it
+        follow_request = GroupFollow(user=user, content=group, group=group, privacy=getPrivacy(request))
+        follow_request.autoSave()
+    #If the group type is open...
+    if group.group_privacy == 'O':
+        follow_request.confirm()
+        group.members.add(user)
+        return HttpResponse("joined")
+    #If the group type is private and not requested yet
+    elif group.group_privacy == 'P' and not follow_request.requested:
+        follow_request.request()
+        return HttpResponse("request to join")
+    return HttpResponse("you have already requested to join this group")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -453,10 +450,14 @@ def joinGroupRequest(request, dict={}):
 def userFollowRequest(request, dict={}):
     user = dict['user']
     person = UserProfile.objects.get(id=request.POST['p_id'])
+    if person.id == user.id:
+        return HttpResponse("you cannot follow yourself")
     already = UserFollow.objects.filter(user=user, to_user=person)
     if already:
         follow = already[0]
-        if follow.confirmed or follow.requested:
+        if follow.confirmed:
+            return HttpResponse("you are already following this person")
+        elif follow.requested:
             return HttpResponse("you have already requested to follow this person")
     else:
         follow = UserFollow(user=user, to_user=person)
@@ -477,10 +478,14 @@ def userFollowResponse(request, dict={}):
         if follow.requested:
             if response == 'Y':
                 follow.confirm()
-                return HttpResponse("they are now following you")
+                # As long as friendships are two way...
+                user.makeFriends(from_user) # If follows aren't two way, comment this out!
+                return HttpResponse("they're now following you")
             elif response == 'N':
                 follow.reject()
                 return HttpResponse("you have rejected their follow request")
+        if follow.confirmed:
+            return HttpResponse("This person is already following you")
     return HttpResponse("this person has not requested to follow you")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -489,14 +494,12 @@ def userFollowResponse(request, dict={}):
 def userFollowStop(request, dict={}):
     """Removes connection between users."""
     from_user = dict['user']
-    to_user = UserProfile.objects.get(id=request.POST['p_id'])
-    relationship = UserFollow.objects.get(user=from_user,to_user=to_user)
-    relationship.clear()
-    from_user.getConnectionsGroup().members.remove(to_user)
-    return HttpResponse("removed")
-
-
-
+    to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if to_user:
+        from_user.unfollow(to_user) #For one way relationships
+        to_user.unfollow(from_user) #Removes the TWO WAY RELATIONSHIP
+        return HttpResponse("removed")
+    return HttpResponse("To User does not exist")
 
 
 
@@ -510,18 +513,16 @@ def joinGroupInvite(request, dict={}):
     group = Group.objects.get(id=request.POST['g_id'])
     admin = group.admins.filter(id=user.id)
     if admin:
-        already = GroupJoined.objects.filter(user=to_invite, group=group)
+        already = GroupFollow.objects.filter(user=to_invite, group=group)
         if already:
             join=already[0]
             if join.invited or join.confirmed:
                 return HttpResponse("already invited or already member")
         else:
-            join = GroupJoined(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
+            join = GroupFollow(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
             join.invite(inviter=user)
     else:
         return HttpResponse("You are not admin.")
-
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -844,7 +845,7 @@ def persistent_accept(request,dict={}):
             return HttpResponse('this shouldnt happen')
         # create action, and send notification
         to_user = debate.getCreator()
-        action = Action(type='YD', creator_id=user.id, privacy=getPrivacy(request),
+        action = Action(type='YD', creator=user, privacy=getPrivacy(request),
             with_user=to_user, with_content=debate, must_notify=True)
         action.autoSave()
         return HttpResponse("you are now debating the " + side_verbose)
@@ -866,7 +867,7 @@ def persistent_reject(request,dict={}):
         debate.possible_users.remove(user)
         # alert creator that person declined invitation
         to_user = debate.getCreator()
-        action = Action(type='ND', creator_id=user.id, privacy=getPrivacy(request),
+        action = Action(type='ND', creator=user, privacy=getPrivacy(request),
             with_user=to_user, with_content=debate)
         action.autoSave()
         return HttpResponse("you rejected invitation.")

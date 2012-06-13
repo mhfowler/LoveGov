@@ -4,7 +4,6 @@
  *
  ***********************************************************************************************************************/
 var rebind;
-var frame=false;
 
 function rebindFunction()
 {
@@ -47,15 +46,16 @@ function rebindFunction()
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfileComparison();
+            loadProfile();
             break;
         case 'network':
             loadProfileComparison();
-            loadNetwork();
+            loadGroup();
             break;
         case 'account':                                         // /account
             loadAccount();
             break;
-        case 'login':                                           // login
+        case 'login':
             loadLogin();
             break;
         default:
@@ -69,7 +69,6 @@ function rebindFunction()
  *      ~General
  *
  ***********************************************************************************************************************/
-
 function loadHoverComparison()
 {
 
@@ -78,7 +77,6 @@ function loadHoverComparison()
     $('#comparison-hover-div').hoverIntent(
         function() { clearTimeout(hoverTimer); },
         function() { hoverTimer = setTimeout(function() { $('#comparison-hover').empty(); $('#comparison-hover-div').fadeOut(100); },100)});
-
 
     $('.feed-username').hoverIntent
         (
@@ -171,13 +169,21 @@ function selectTopicSingle(div)
     // unselect all others
     wrapper.find(".selected").hide();
     wrapper.find(".normal").show();
-    // select this
-    div.parent().children(".normal").hide();
-    div.parent().children(".selected").show();
-    // class chosen
-    wrapper.find(".selected").removeClass("chosen");
-    div.parent().children(".selected").addClass("chosen");
+    // if selected, remove class chosen
+    if (div.hasClass('chosen')) {
+        div.removeClass("chosen");
+    }
+    // else select
+    else {
+        div.parent().children(".normal").hide();
+        div.parent().children(".selected").show();
+        // class chosen
+        wrapper.find(".selected").removeClass("chosen");
+        div.parent().children(".selected").addClass("chosen");
+    }
 }
+
+
 
 // adjusts icons appropriately for topic selection, multiple can be selected
 function selectTopicMultiple(div)
@@ -199,27 +205,27 @@ function selectTopicMultiple(div)
 
 function loadAjaxifyAnchors()
 {
-    $('.do-ajax-link').each(function(index, elem)
+    $('.do-ajax-link').off('click',  ajaxClicked);
+    var ajaxClicked = function(event)
     {
+        var elem = event.target;
         var href = $(elem).attr('href');
-        if (!$(elem).hasClass('ajax-link') &&
+        if (
             href != undefined &&
-            href != "" &&
-            href.indexOf("http://") == -1 &&
-            href != "#")
+                href != "" &&
+                href.indexOf("http://") == -1 &&
+                href != "#")
         {
-            $(elem).addClass("ajax-link");
-            $(elem).click(function(event)
-            {
-                event.preventDefault();
-                if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div').hide();
-                ajaxLink($(elem), true);
-                return false;
-            });
+            event.preventDefault();
+            if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').hide();
+            ajaxLink($(elem), true);
+            return false;
         }
-    });
+    }
+    $('.do-ajax-link').on('click',  ajaxClicked);
+
 }
 /***********************************************************************************************************************
  *
@@ -229,7 +235,6 @@ function loadAjaxifyAnchors()
 
 $(document).ready(function()
 {
-
     // csrf protect
     $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
@@ -260,11 +265,8 @@ $(document).ready(function()
         document.title = pageTitle;
     }
 
-    // universal bindings
-    if (frame==true) {
-        rebindUniversalFrame();
-    }
-
+    // universal frame binding
+    rebindUniversalFrame();
     // page specific bindings
     rebindFunction()
 });
@@ -632,6 +634,12 @@ function loadLeftSidebar()
         $('#create-news-div').show();
     });
 
+    $('#create-group-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-group-div').show();
+    });
+
     var timeout;
     var delay = 750;
     var isLoading = false;
@@ -766,6 +774,48 @@ function loadLeftSidebar()
                         rebind = returned.rebind;
                         closeLeftSideWrapper($('.create-wrapper.clicked'));
                         replaceCenter(returned.html);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $("body").html(jqXHR.responseText);
+                }
+            });
+    });
+
+    $('#create-group').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#group-input-title').val();
+        var full_text = $('#group-input-full_text').val();
+        var privacy = $('input:radio[name=privacy]:checked').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        $.ajax
+            ({
+                type:'POST',
+                url:'/action/',
+                data: {'action':'create',
+                        'title':title,
+                        'full_text':full_text,
+                        'topics':topic,
+                        'group_type':'U',
+                        'group_privacy':privacy,
+                        'type':'G'
+                },
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    if (returned.success == false)
+                    {
+                        alert('errors')
+                        $("#errors-title").html(returned.errors.title);
+                        $("#errors-full_text").html(returned.errors.full_text);
+                        $("#errors-topic").html(returned.errors.topics);
+                        $("#errors-non_field").html(returned.errors.non_field_errors);
+                    }
+                    else
+                    {
+                        window.location.href = returned.url;
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown)
@@ -1652,6 +1702,93 @@ function loadAbout()
 
 /***********************************************************************************************************************
  *
+ *      ~Profile
+ *
+ ***********************************************************************************************************************/
+function userFollowResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
+        {
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'followresponse',
+                'p_id': follow_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function loadProfile()
+{
+    $("#user-follow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'userfollow',
+                    'p_id': p_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
+    $("#user-unfollow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'stopfollow',
+                    'p_id': p_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
+    $(".follow-response-y").click( function(event) {
+        userFollowResponse(event,"Y",$(this));
+    });
+
+    $(".follow-response-n").click( function(event) {
+        userFollowResponse(event,"N",$(this));
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
  *      ~Petition
  *
  ***********************************************************************************************************************/
@@ -1779,44 +1916,198 @@ function loadAccount()
 }
 
 
-function loadNetwork()
-{
-    var loadingLockout = false;
 
-    function loadMoreUsers(event)
-    {
-        event.preventDefault();
-        var num = $('#network-displaynum').val();
-        var id = $('#network-id').val();
-        if (!loadingLockout)
+/***********************************************************************************************************************
+ *
+ *      ~Group
+ *
+ **********************************************************************************************************************/
+function groupFollowResponse(event,response,div,g_id)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".follow-id").val();
+    alert( follow_id );
+    $.ajax(
         {
-            loadingLockout = true;
+            url:'/action/',
+            type:'POST',
+            data: {
+                'action':'joinresponse',
+                'p_id': follow_id,
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function loadGroup()
+{
+    var loadUsersLockout = false;
+    var loadHistoLockout = false;
+
+    // load more users for display
+    function loadMoreUsers(event, replace)
+    {
+        if (replace == true) {
+            $("#histogram-displayed-num").val(0);
+        }
+        event.preventDefault();
+        var histogram_displayed_num = $('#histogram-displayed-num').val();
+        var histogram_topic = $('#histogram-topic').val();
+        var histogram_block = $('#histogram-block').val();
+        var group_id = $('#group-id').val();
+        if (!loadUsersLockout)
+        {
+            loadUsersLockout = true;
             $.ajax
                 ({
                     url:'/actionGET/',
                     type: 'GET',
-                    data: {'action':'loadNetworkUsers','num':num,'id':id},
+                    data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
+                        'histogram_topic':histogram_topic,'histogram_block':histogram_block },
                     success: function(data)
                     {
                         var returned = eval('(' + data + ')');
-                        $('#members-list').append(returned.html);
-                        $('#network-displaynum').val(returned.num);
+                        if (replace==true) {
+                            $('#members-list').html(returned.html);
+                        }
+                        else {
+                            $('#members-list').append(returned.html);
+                        }
+                        $('#histogram-displayed-num').val(returned.num);
                         loadHoverComparison();
                         loadAjaxifyAnchors();
                         bindNewDivs();
-                        loadingLockout = false;
+                        loadUsersLockout = false;
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
-                        alert("failed to submit");
+                        $('body').html(jqXHR.responseText);
                     }
                 });
         }
     }
 
+    // load new histogram data
+    function getHistogram() {
+        var histogram_topic = $('#histogram-topic').val();
+        var group_id = $('#group-id').val();
+        if (!loadHistoLockout)
+        {
+            loadHistoLockout = true;
+            $.ajax
+                ({
+                    url:'/actionGET/',
+                    type: 'GET',
+                    data: {'action':'loadHistogram','group_id':group_id,
+                        'histogram_topic':histogram_topic},
+                    success: function(data)
+                    {
+                        var returned = eval('(' + data + ')');
+                        $(".histogram-bars").html(returned.html);
+                        loadHistoLockout = false;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('body').html(jqXHR.responseText);
+                    }
+                });
+        }
+    }
+
+    $(".group-response-y").click( function(event) {
+        groupFollowResponse(event,"Y",$(this),g_id);
+    });
+
+    $(".group-response-n").click( function(event) {
+        groupFollowResponse(event,"N",$(this),g_id);
+    });
+
+    $("#group-follow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'join',
+                    'g_id': g_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+    /* Uncomment when adding unfollowing to groups
+    $("#user-unfollow").click( function(event) {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'stopfollow',
+                    'p_id': g_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+    */
+    // select histogram block
+    $(".histogram-select-block").click(function(event) {
+        event.preventDefault();
+        var block = $(this).siblings(".block-val").val();
+        var was = $("#histogram-block").val();
+        if (block == was) {
+            $("#histogram-block").val(-1);
+        }
+        else {
+            $("#histogram-block").val(block);
+        }
+        loadMoreUsers(event, true);
+    });
+
+    // change histogram topic
+    $(".h-topic-img").click(function(event) {
+        selectTopicSingle($(this));
+        var topic = $(this).siblings(".t-alias").val();
+        var was = $("#histogram-topic").val();
+        if (topic == was) {
+            $("#histogram-topic").val('general');
+        }
+        else {
+            $("#histogram-topic").val(topic);
+        }
+        loadMoreUsers(event, true);
+        getHistogram();
+    });
+
     function bindNewDivs()
     {
-        $('.network-member-div').hover
+        $('.group-member-div').hover
             (
                 function(){ $(this).css("background-color","#EBEBEB") },
                 function(){ $(this).css("background-color","#FFFFFF") }
@@ -1825,48 +2116,20 @@ function loadNetwork()
     }
 
 
-    $(window).scroll(function(event)
-    {
-        if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
-    });
+    /*
+     $(window).scroll(function(event)
+     {
+     if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
+     });
+     */
 
-    $('#network-see-more-users').click(function(event)
+    $('#group-see-more-users').click(function(event)
     {
-        loadMoreUsers(event);
+        loadMoreUsers(event, false);
     });
 
     bindNewDivs();
-}
-
-
-/***********************************************************************************************************************
- *
- *      ~Login
- *
- **********************************************************************************************************************/
-function loadLogin() {
-
-    $("#recover").click(function(event)
-    {
-        event.preventDefault();
-        $.ajax
-            ({
-                type:'POST',
-                url:location.url,
-                data: {'button':'recover','username':$("#username-input").val()},
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
-                }
-            });
-    });
-
 
 }
-
 
 

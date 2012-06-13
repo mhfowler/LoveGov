@@ -67,6 +67,9 @@ def splash(request):
 def learnmore(request):
     return splashForm(request, 'deployment/pages/splash/learnmore.html')
 
+def underConstruction(request):
+    return render_to_response('deployment/pages/microcopy/construction.html')
+
 def splashForm(request,templateURL):
     dict = {}
     if request.method=='POST':
@@ -232,7 +235,7 @@ def requiresLogin(view):
             user = betabackend.getUserProfile(request)
             # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
             if UPDATE and not user.developer and not LOCAL:
-                return shortcuts.redirect("/login/web/")
+                return shortcuts.redirect("/underconstruction/")
             # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
             elif not request.user.is_authenticated():
                 print request.path
@@ -524,18 +527,55 @@ def profile(request, alias=None, dict={}):
         if alias:
             frame(request, dict)
             getUserResponses(request,dict)
-
             # get comparison of person you are looking at
-            to_compare = UserProfile.objects.get(alias=alias)
-            comparison = betabackend.getUserUserComparison(user, to_compare)
-            dict['to_compare'] = to_compare
+            user_prof = UserProfile.objects.get(alias=alias)
+            comparison = betabackend.getUserUserComparison(user, user_prof)
+            dict['user_prof'] = user_prof
             dict['comparison'] = comparison
             jsonData = comparison.toJSON()
             dict['json'] = jsonData
             logger.debug("json- " + jsonData)       # debug
-            setPageTitle("lovegov: " + to_compare.get_name(),dict)
+            setPageTitle("lovegov: " + user_prof.get_name(),dict)
+
+            # Get user's top 5 similar friends
+            prof_follow_me = list(user_prof.getFollowMe())
+            for follow_me in prof_follow_me:
+                comparison = betabackend.getUserUserComparison(user_prof, follow_me)
+                follow_me.compare = comparison.toJSON()
+                follow_me.result = comparison.result
+            prof_follow_me.sort(key=lambda x:x.result,reverse=True)
+            dict['prof_follow_me'] = prof_follow_me[0:5]
+
+            # Get user's random 5 friends
+            #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+
+            # Get user's top 5 similar groups
+            prof_groups = list(user_prof.getGroups())
+            for group in prof_groups:
+                comparison = betabackend.getUserGroupComparison(user_prof, group)
+                group.compare = comparison.toJSON()
+                group.result = comparison.result
+            prof_groups.sort(key=lambda x:x.result,reverse=True)
+            dict['prof_groups'] = prof_groups[0:5]
+
+            # Get user's random 5 groups
+            #dict['prof_groups'] = user_prof.getGroups(5)
+
+            # Get Follow Requests
+            dict['prof_requests'] = list(user_prof.getFollowRequests())
+
+            # Is the current user already (requesting to) following this profile?
+            dict['is_user_follow'] = False
+            dict['is_user_confirmed'] = False
+            user_follow = betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof)
+            if user_follow:
+                if user_follow.requested:
+                    dict['is_user_follow'] = True
+                if user_follow.confirmed:
+                    dict['is_user_confirmed'] = True
+
             # get responses
-            dict['responses'] = to_compare.getView().responses.count()
+            dict['responses'] = user_prof.getView().responses.count()
             if request.is_ajax():
                 html = ajaxRender('deployment/center/profile.html', dict, request)
                 url = '/profile/' + alias
@@ -545,7 +585,7 @@ def profile(request, alias=None, dict={}):
             else:
                 return renderToResponseCSRF(template='deployment/pages/profile.html', dict=dict, request=request)
         else:
-            return shortcuts.redirect('/alpha/' + user.alias)
+            return shortcuts.redirect('/profile/' + user.alias)
     else:
         if request.POST['action']:
             return betaactions.answer(request, dict)
@@ -557,25 +597,63 @@ def profile(request, alias=None, dict={}):
 # Network page
 #-----------------------------------------------------------------------------------------------------------------------
 def network(request, name=None, dict={}):
-    user = dict['user']
     if not name:
+        user = dict['user']
         return shortcuts.redirect(user.getNetwork().get_url())
     network = betamodels.Network.objects.get(name=name)
-    dict['network'] = network
-    comparison = betabackend.getUserGroupComparison(user, network, force=True)
+    return group(request,g_id=network.id,dict=dict)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Group page
+#-----------------------------------------------------------------------------------------------------------------------
+def group(request, g_id=None, dict={}):
+    user = dict['user']
+    if not g_id:
+        return HttpResponse('Group id not provided to view function')
+    group = betamodels.Group.lg.get_or_none(id=g_id)
+    if not group:
+        return HttpResponse('Group id not found in database')
+    dict['group'] = group
+    comparison = betabackend.getUserGroupComparison(user, group, force=True)
     dict['comparison'] = comparison
     jsonData = comparison.toJSON()
     dict['json'] = jsonData
     dict['defaultImage'] = betabackend.getDefaultImage().image
-    setPageTitle("lovegov: " + network.title,dict)
+
+    # Histogram Things
+    dict['histogram'] = group.getComparisonHistogram(user)
+    dict['histogram_resolution'] = betaconstants.HISTOGRAM_RESOLUTION
+    dict['group_members'] = group.members.order_by('id')[0:25]
+
+    # Get Follow Requests
+    dict['prof_requests'] = list(group.getFollowRequests())
+
+    # Is the current user already (requesting to) following this group?
+    dict['is_user_follow'] = False
+    dict['is_user_confirmed'] = False
+    user_follow = betamodels.GroupFollow.lg.get_or_none(user=user,group=group)
+    if user_follow:
+        if user_follow.requested:
+            dict['is_user_follow'] = True
+        if user_follow.confirmed:
+            dict['is_user_confirmed'] = True
+
+    dict['is_user_admin'] = False
+    admins = list( group.admins.all() )
+    for admin in admins:
+        if admin.id == user.id:
+            dict['is_user_admin'] = True
+
+    setPageTitle("lovegov: " + group.title,dict)
     if request.is_ajax():
-        html = ajaxRender('deployment/center/network.html', dict, request)
-        url = network.get_url()
-        rebind = 'network'
+        html = ajaxRender('deployment/center/group.html', dict, request)
+        url = group.get_url()
+        rebind = 'group'
         to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
         return HttpResponse(json.dumps(to_return))
     else:
-        return renderToResponseCSRF(template='deployment/pages/network.html', dict=dict, request=request)
+        return renderToResponseCSRF(template='deployment/pages/group.html', dict=dict, request=request)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
@@ -824,7 +902,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_votes:
         user_votes = betamodels.Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = betamodels.Comment.objects.filter(creator_id=user.id)
+        user_comments = betamodels.Comment.objects.filter(creator=user)
     comments = betamodels.Comment.objects.filter(on_content=object).order_by('-status')
     if comments:
         to_return = "<div>"     # open list

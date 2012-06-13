@@ -280,6 +280,14 @@ class CreateNewsForm(CreateContentForm):
                 object.saveScreenShot(ref)
         return super(CreateNewsForm, self).complete(request, object=object)
 
+class CreateUserGroupForm(CreateContentForm):
+    class Meta:
+        model = UserGroup
+        fields = ('title', 'full_text', 'topics', 'group_type', 'type', 'group_privacy')
+    topics = SelectTopicsField(content_type=constants.TYPE_DICT['group'])
+    type = forms.CharField(widget=forms.HiddenInput(), initial=constants.TYPE_DICT['group'])
+
+
 class CreateMotionForm(CreateContentForm):
     class Meta:
         model = Motion
@@ -287,12 +295,7 @@ class CreateMotionForm(CreateContentForm):
     topics = SelectTopicsField(content_type=constants.TYPE_DICT['motion'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=constants.TYPE_DICT['motion'])
 
-class CreateGroupForm(CreateContentForm):
-    class Meta:
-        model = Group
-        fields = ('title', 'full_text', 'topics', 'group_type', 'type')
-    topics = SelectTopicsField(content_type=constants.TYPE_DICT['group'])
-    type = forms.CharField(widget=forms.HiddenInput(), initial=constants.TYPE_DICT['group'])
+
 
 
 
@@ -341,10 +344,10 @@ class EditMotionForm(EditContentForm):
     topics = SelectTopicsField(content_type=constants.TYPE_DICT['motion'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=constants.TYPE_DICT['motion'])
 
-class EditGroupForm(CreateContentForm):
+class EditUserGroupForm(CreateContentForm):
     class Meta:
-        model = Group
-        fields = ('title', 'summary', 'group_type', 'full_text', 'topics', 'type')
+        model = UserGroup
+        fields = ('title', 'summary', 'group_type', 'full_text', 'topics', 'type', 'group_privacy')
     topics = SelectTopicsField(content_type=constants.TYPE_DICT['group'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=constants.TYPE_DICT['group'])
 
