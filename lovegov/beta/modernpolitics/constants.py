@@ -196,9 +196,6 @@ NOTIFICATION_CHOICES = (
 # types of user action (for display)
 RELATIONSHIP_CHOICES = (
     ('CO','commented'),
-    ('MV','motion voted'),
-    ('DV','debate voted'),
-    ('DM', 'debate message'),
     ('SH','shared'),
     ('CR', 'created'),
     ('ED', 'edited'),
@@ -208,11 +205,18 @@ RELATIONSHIP_CHOICES = (
     ('VO', 'voted'),                        # divided into like and dislike
     ('FO', 'followed'),                     # divided into request, invited, denied and following.
     ('JO', 'joined'),                       # divided into request, invited, denied and joined.
-    ('AE', 'attending event'),              # divided into request, invited, denied and attending.
-    ('JD', 'joined debate'),                # divided into request, invited, denied and joined.
-    ('AC', 'admin content'),                # divided into request, invited, denied and joined.
-    ('OT', 'other')
+    ('AE', 'attended_event'),              # divided into request, invited, denied and attending.
+    ('JD', 'joined_debate'),                # divided into request, invited, denied and joined.
+    ('AC', 'admin_content'),                # divided into request, invited, denied and joined.
+    ('OT', 'other'),
+    ('MV','motion_voted'),
+    ('DV','debate_voted'),
+    ('DM', 'debate_messaged'),
     )
+
+RELATIONSHIP_DICT = {}
+for x in RELATIONSHIP_CHOICES:
+    RELATIONSHIP_DICT[x[1]]=x[0]
 
 # default, request, invite, deny, reject
 ACTION_MODIFIERS = (
@@ -222,6 +226,10 @@ ACTION_MODIFIERS = (
     ('X', 'rejected'),
     ('N', 'declined')
         )
+
+MODIFIERS_DICT = {}
+for x in ACTION_MODIFIERS:
+    MODIFIERS_DICT[x[1]]=x[0]
 
 
 # group privacy settings
