@@ -1,0 +1,21 @@
+{% extends 'deployment/templates/frame.html' %}
+
+{% block content %}
+
+<!-- CSS stylesheet -->
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/legislation.css" />
+
+<div id="content-leg-div">
+
+Session: {{session}}
+<br>
+	Type: {{type}}
+</br>
+<br>
+	Here you would see a list of bill numbers for the above session and legislation type.
+</br>
+<br>
+
+</div>
+
+{% endblock %}

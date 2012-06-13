@@ -1142,35 +1142,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
-    def notify(self, notification, action=None):
-        # if triggered by content use follow content notification setting or per-content custom setting
-        if notification.trig_content:
-            custom = self.custom_notification_settings.filter(content=notification.trig_content)
-            if custom:
-                notify = custom[0].checkNotify(notification.type)
-            else:
-                notify = (notification.type in self.content_notification_setting)
-        # elif triggered by user use follow user notification setting or per-user custom setting
-        elif notification.trig_user:
-            custom = self.custom_notification_settings.filter(user_id=notification.trig_user.id)
-            if custom:
-                notify = custom[0].checkNotify(notification.type)
-            else:
-                notify = (notification.type in self.user_notification_setting)
+    def notify(self, action, content=None, user=None):
+        if action.type in constants.NOTIFY_TYPES:
+            notification = Notification(action=action, notify_user=self)
+            notification.autoSave()
+            return True
         else:
-            custom = False
-            notify = True
-            # if notify, save notification, adn email if also email notification setting
-        if notify:
-            notification.autoSave(action=action)
-            if custom:
-                email = custom[0].email
-            else:
-                email = (notification.type in self.email_notification_setting)
-            if email:
-                self.emailNotification(notification)
-        return notify
-
+            return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)
@@ -1227,23 +1205,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1):
+    def getNotifications(self, num=-1, ignored=False, viewed=False):
         if num == -1:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')
+            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')
         else:
-            notifications = Notification.objects.filter( notify_user=self ).order_by('when')[:num]
-        for n in notifications:
-            n.viewed = True
-        return notifications
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a query set of all NEW notifications.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getNewNotifications(self, num=-1):
-        if num == -1:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False).order_by('when')
-        else:
-            notifications = Notification.objects.filter( notify_user=self, viewed=False ).order_by('when')[:num]
+            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')[:num]
         for n in notifications:
             n.viewed = True
         return notifications
@@ -1253,9 +1219,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False ).order_by('when')[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -1386,7 +1352,7 @@ class ControllingUser(User, LGModel):
         return self.user_profile
 
 #=======================================================================================================================
-# Keeps track of user activity. And handles notification via autoNotify()
+# Keeps track of user activity.
 #=======================================================================================================================
 class Action(Privacy):
     type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
@@ -1406,7 +1372,6 @@ class Action(Privacy):
     def autoSave(self, relationship=None, group=None):
         self.autoVerbose(relationship=relationship)
         self.save()
-        #self.autoNotify(relationship=relationship)
 
     def autoVerbose(self, relationship=None):
         if not relationship:
@@ -1424,7 +1389,7 @@ class Action(Privacy):
             if self.modifier == 'I':
                 action_verbose = ' was invited to follow '
             elif self.modifier == 'R':
-                action_verbose = ' requested to follow'
+                action_verbose = ' requested to follow '
             elif self.modifier == 'D':
                 action_verbose = ' is following '
             elif self.modifier == 'N':
@@ -1433,7 +1398,7 @@ class Action(Privacy):
             if self.modifier == 'I':
                 action_verbose = ' was invited to attend '
             elif self.modifier == 'R':
-                action_verbose = ' requested to attend'
+                action_verbose = ' requested to attend '
             elif self.modifier == 'D':
                 action_verbose = ' is attending '
             elif self.modifier == 'N':
@@ -1476,86 +1441,7 @@ class Action(Privacy):
             action_verbose = ' deleted '
         # SET VERBOSE
         self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
-
-    def autoNotify(self, relationship=None):
-        from lovegov.beta.modernpolitics.backend import getLoveGovUser
-        if not relationship:
-            relationship = self.getRelationship()
-        self.notified = [self.creator.user_id, -1, getLoveGovUser().id] # for keeping track of who has been notified and not duplicating
-        # NOTIFY FOLLOWERS OF OBJECT
-        if self.modifier == 'D' and self.type in ['JO', 'JD', 'AE', 'MV', 'DV', 'VO', 'DM', 'SI', 'SH', 'FC', 'CO', 'XX']:
-            self.notifyAll(follows=relationship.getTo().getUserFollowMe())
-            # SHARE
-        if self.type == 'SH':
-            shared = Shared.objects.get(id = self.relationship_id)
-            self.notifyAll(users=shared.share_users)
-            # share with group followers
-            for g in shared.share_groups:
-                self.notifyAll(follows=g.getUserFollowMe())
-            # REQUESTS AND INVITATIONS
-        # request to join group
-        if self.type == 'JO' and self.modifier =='R':
-            group = relationship.group
-            self.notifyAll(users=group.admins)
-        # request to join debate
-        elif self.type == 'JD' and self.modifier =='R':
-            debate = relationship.debate
-            self.notify(debate.getCreator())
-        # request to attend event
-        elif self.type == 'AE' and self.modifier =='R':
-            event = relationship.content
-            self.notify(event.getCreator())
-        # request to follow user
-        elif self.type == 'FO' and self.modifier =='R':
-            self.notify(relationship.to_user)
-        # invite
-        elif self.modifier =='I':
-            self.notify(user=relationship.user)
-        # decline
-        elif self.modifier =='N':
-            self.notify(user=relationship.content.getCreator())
-            # if rejected no need to notify modifier=='X'
-        # NOTIFY FOLLOWERS OF SUBJECT
-        # special case to escape notification of comment creation
-        if self.type=='CR' and relationship.content.type=='C':
-            tell_followers = False
-        # special case to escape following what was just created
-        elif self.type=='FC':
-            tell_followers = (relationship.content.getCreator() != relationship.getFrom())
-        else:
-            tell_followers = True
-        if tell_followers:
-            if relationship:
-                user = relationship.user
-            else:
-                user = self.getCreator()
-            self.notifyAll(follows=user.getUserFollowMe())
-
-    def notifyAll(self, users=None, follows=None):
-        if users:
-            for x in users:
-                self.notify(user=x)
-        elif follows:
-            for x in follows:
-                # if user follow
-                if x.relationship_type == 'FO':
-                    self.notify(user=x.user, trig_user=x.getTo())
-                # if content follow
-                elif x.relationship_type == 'FC':
-                    self.notify(user=x.user, trig_content=x.getTo())
-
-    def notify(self, user, trig_content=None, trig_user=None):
-        # check if already been notified (note that creator is in the list, so you wont notify yourself)
-        if not user.id in self.notified:
-            print "notify: " + user.get_name().encode('ascii','ignore')
-            # check if user has permission
-            if self.must_notify or self.getPermission(user):
-                notification = Notification(type=self.type, modifier=self.modifier,
-                    action=self, notify_user=user,
-                    privacy=self.privacy, creator=self.creator,
-                    trig_content=trig_content, trig_user=trig_user)
-                if user.notify(notification, action=self):
-                    self.notified.append(user.id)
+        print self.verbose
 
 
 #=======================================================================================================================
@@ -1566,10 +1452,9 @@ class Notification(Privacy):
     notify_user = models.ForeignKey(UserProfile, related_name = "notifywho")
     when = models.DateTimeField(auto_now_add=True)
     viewed = models.BooleanField(default=False)
+    ignored = models.BooleanField(default=False)
+    requires_action = models.BooleanField(default=True)
     action = models.ForeignKey(Action, null=True)
-    # optimization (these fields available in action)
-    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES, default='OT') # OT = other
-    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
@@ -1577,9 +1462,8 @@ class Notification(Privacy):
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
 
-    def autoSave(self, action=None):
-        if action:
-            self.verbose = action.verbose
+    def autoSave(self):
+        self.verbose = self.action.verbose
         self.save()
 
     def getEmail(self):
@@ -3210,9 +3094,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')
+            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')
         else:
-            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')[:num]
+            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')[:num]
 
 
 #=======================================================================================================================
@@ -3478,11 +3362,6 @@ class Relationship(Privacy):
     def getTo(self):
         return self.downcast().getTo()
 
-    def autoNotify(self, child, modifier='D', must_notify=False):
-        action = Action(type=self.relationship_type, modifier=modifier, must_notify=must_notify,
-            relationship_id=child.id, creator = self.creator, privacy=self.privacy)
-        action.autoSave(relationship=child)
-
 #=======================================================================================================================
 # Abstract model for handling relationships with requests and invitations.
 #=======================================================================================================================
@@ -3500,14 +3379,12 @@ class Invite(LGModel):
     def confirm(self):
         self.confirmed = True
         self.save()
-        #self.autoNotify(child=self)
     def request(self):
         self.requested = True
         if self.invited:
             self.confirm()
         else:
             self.save()
-            #self.autoNotify(child=self, modifier='R', must_notify=True)
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
@@ -3515,7 +3392,6 @@ class Invite(LGModel):
             self.confirm()
         else:
             self.save()
-            #self.autoNotify(child=self, modifier='I', must_notify=True)
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -3533,12 +3409,10 @@ class Invite(LGModel):
         if self.requested:
             self.rejected = True
             self.save()
-            #self.autoNotify(child=self, modifier='X', must_notify=True)
     def decline(self):
         if self.invited:
             self.declined = True
             self.save()
-            #self.autoNotify(child=self, modifier='N', must_notify=True)
     def accept(self):
         if self.invited:
             self.confirm()
@@ -3550,8 +3424,6 @@ class Invite(LGModel):
             self.confirmed = False
             self.rejected = True
             self.save()
-            #self.autoNotify(child=self, modifier='X', must_notify=True)
-
 
 #=======================================================================================================================
 # Relationships between User and Content.
@@ -3572,7 +3444,6 @@ class DebateVoted(UCRelationship):
         self.relationship_type = 'DV'
         self.creator=self.user_id
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Exact same as vote, except for motions.
@@ -3584,7 +3455,6 @@ class MotionVoted(UCRelationship):
         self.relationship_type = 'MV'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Vote by a user on a piece of content. like or dislike.
@@ -3596,7 +3466,6 @@ class Voted(UCRelationship):
         self.relationship_type = 'VO'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
     def getValue(self, ranking='D'):
         if ranking=='D':
@@ -3618,7 +3487,6 @@ class Created(UCRelationship):
         self.relationship_type = 'CR'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # User deletes content.
@@ -3628,7 +3496,6 @@ class Deleted(UCRelationship):
         self.relationship_type = 'XX'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Stores what content a user has created.
@@ -3640,7 +3507,6 @@ class Commented(UCRelationship):
         self.relationship_type = 'CO'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Stores when a user edits a piece of content.
@@ -3651,7 +3517,6 @@ class Edited(UCRelationship):
         self.relationship_type = 'ED'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
@@ -3664,7 +3529,6 @@ class Shared(UCRelationship):
         self.relationship_type = 'SH'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self, must_notify=True)
 
 #=======================================================================================================================
 # Stores a user following a piece of content.
@@ -3675,7 +3539,6 @@ class Followed(UCRelationship):
         self.relationship_type = 'FC'
         self.creator = self.user
         self.save()
-        self.autoNotify(child=self)
 
 #=======================================================================================================================
 # Relation between user and event, about whether or not they are attending.

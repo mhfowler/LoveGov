@@ -67,13 +67,13 @@ def actionPOST(request, dict={}):
             return userFollowStop(request, dict)
         elif action == 'answer':
             return answer(request, dict)
-        elif action == 'join':
+        elif action == 'joingroup':
             return joinGroupRequest(request, dict)
         elif action == 'joinresponse':
             return joinGroupResponse(request, dict)
+        elif action == 'leavegroup':
+            return leaveGroup(request, dict)
         ### actions below have not been proof checked ###
-        elif action == 'leave':
-            return leave(request, dict)
         elif action == 'linkfrom':
             return linkfrom(request, dict)
         elif action == 'linkto':
@@ -453,6 +453,30 @@ def joinGroupRequest(request, dict={}):
         return HttpResponse("request to join")
     return HttpResponse("you have already requested to join this group")
 
+
+#----------------------------------------------------------------------------------------------------------------------
+# Confirms or denies groupFollow, if groupFollow was requested.
+#-----------------------------------------------------------------------------------------------------------------------
+def joinGroupResponse(request, dict={}):
+    user = dict['user']
+    response = request.POST['response']
+    follow_user = UserProfile.objects.get(id=request.POST['follow_id'])
+    group = Group.objects.get(id=request.POST['g_id'])
+    already = GroupFollow.objects.filter(user=follow_user, group=group)
+    if already:
+        group_follow = already[0]
+        if group_follow.requested:
+            if response == 'Y':
+                group_follow.confirm()
+                group.members.add(follow_user)
+                return HttpResponse("they're now following you")
+            elif response == 'N':
+                group_follow.reject()
+                return HttpResponse("you have rejected their follow request")
+        if group_follow.confirmed:
+            return HttpResponse("This person is already following you")
+    return HttpResponse("this person has not requested to follow you")
+
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -472,6 +496,9 @@ def userFollowRequest(request, dict={}):
         follow = UserFollow(user=user, to_user=person)
         follow.autoSave()
     follow.request()
+    action = Action(relationship=follow)
+    action.autoSave()
+    follow.to_user.notify(action)
     return HttpResponse("you have requested to follow this person")
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -540,16 +567,24 @@ def joinGroupInvite(request, dict={}):
 # args: request
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
-def leave(request, dict={}):
+def leaveGroup(request, dict={}):
     """Leaves group if user is a member (and does stuff if user would be last admin)"""
     # if not system then remove
     user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
+    group_follow = GroupFollow.objects.get(group=group, user=user)
+    if group_follow:
+        group_follow.clear()
     if not group.system:
         group.members.remove(user)
         group.admins.remove(user)
-        # success, remove from myinvolvement
-        user.myinvolvement.remove(group)
+        if not group.admins.all():
+            members = list( group.members.all() )
+            if not members:
+                group.active = False
+                group.save()
+            for member in members:
+                group.admins.add(member)
         return HttpResponse("left")
     else:
         return HttpResponse("system group")

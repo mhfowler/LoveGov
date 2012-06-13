@@ -1,0 +1,29 @@
+{% extends 'deployment/templates/frame.html' %}
+
+{% block content %}
+
+<!-- CSS stylesheet -->
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/legislation.css" />
+
+<div id="content-leg-div">
+
+{% if error %}
+
+<span style="color:red">{{error}}</span>
+
+{% else %}
+
+Session: {{session}}
+<br>
+	Type: {{type}}
+</br>
+<br>
+	Number: {{number}}
+</br>
+<br>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
