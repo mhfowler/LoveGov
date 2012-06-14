@@ -119,11 +119,13 @@ input:focus
     font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif
 }
 
-.account-actions
+.account-actions, .account-actions:link, .account-actions:visited, .account-actions:active
 {
     margin-right:15px;
     margin-top: 21px;
-    font-size: 15px
+    font-size: 15px;
+    text-decoration:none;
+    color:#343434;
 }
 
 .account-actions:hover
@@ -318,6 +320,8 @@ table tr
     padding-top:15px;
     width:320px;
     float:left;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
 }
 
 .get-started-container:hover
@@ -363,7 +367,7 @@ table tr
 {
     font-family: "Gill Sans Std Light", Gill Sans, sans-serif;
     color:#0F5569;
-    font-size:24px;
+    font-size:26px;
     margin:0px;
     padding: 0px;
     margin-bottom: 5px;
@@ -628,14 +632,11 @@ table tr
 
 .forgot-password
 {
-    float:left;
-    width:475px;
+    width:428px;
+    margin-left:auto;
+    margin-right:auto;
 }
 
-.forgot-password-left
-{
-    margin-right:25px;
-}
 
 .forgot-password-right
 {
@@ -810,12 +811,7 @@ table tr
     border-radius: 25px;
 }
 
-.about-hover-element
-{
-    -moz-border-radius: 25px;
-    border-radius: 25px;
-    cursor:pointer;
-}
+
 
 .about-element h1
 {

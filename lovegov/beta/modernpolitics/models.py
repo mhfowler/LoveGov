@@ -3973,33 +3973,36 @@ class QuestionOrdering(LGModel):
     alias = models.CharField(max_length=30)
     questions = models.ManyToManyField(qOrdered)
 
+
+
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
-"""
+
 class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
-    email_code = models.CharField(max_length=200)
+    email_code = models.CharField(max_length=75)
 
-    def create(self, username):
-        if ResetPassword.objects.filter(userProfile__username=username).exists():
-            toDelete = ResetPassword.objects.get(userProfile__username=username)
-            toDelete.delete()
+    def create(username):
+        toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
+        if toDelete: toDelete.delete()
+
         if UserProfile.objects.filter(username=username).exists():
             try:
+                import backend
+                import send_email
                 userProfile = UserProfile.objects.get(username=username)
-                reseturl = generateRandomPassword(75)
+                reseturl = backend.generateRandomPassword(75)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
                 dict = {'firstname':userProfile.first_name, 'url':reseturl}
-                sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',dict,'info@lovegov.com',userProfile.username)
+                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',dict,'info@lovegov.com',userProfile.username)
                 return True
             except:
                 return False
         else:
             return False
     create = staticmethod(create)
-"""
 
 
 
