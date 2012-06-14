@@ -425,13 +425,13 @@ def joinGroupRequest(request, dict={}):
     if group.group_privacy == 'S' or group.system:
         return HttpResponse("cannot request to join secret group or system group")
     #Get GroupFollow relationship if it exists already
-    already = GroupFollow.objects.filter(user=user, group=group)
+    already = GroupJoined.objects.filter(user=user, group=group)
     if already:
         follow_request = already[0]
         if follow_request.confirmed:
             return HttpResponse("you are already a member of group")
     else: #If it doesn't exist, create it
-        follow_request = GroupFollow(user=user, content=group, group=group, privacy=getPrivacy(request))
+        follow_request = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
         follow_request.autoSave()
     #If the group type is open...
     if group.group_privacy == 'O':
@@ -513,13 +513,13 @@ def joinGroupInvite(request, dict={}):
     group = Group.objects.get(id=request.POST['g_id'])
     admin = group.admins.filter(id=user.id)
     if admin:
-        already = GroupFollow.objects.filter(user=to_invite, group=group)
+        already = GroupJoined.objects.filter(user=to_invite, group=group)
         if already:
             join=already[0]
             if join.invited or join.confirmed:
                 return HttpResponse("already invited or already member")
         else:
-            join = GroupFollow(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
+            join = GroupJoined(user=to_invite, content=group, group=group, privacy=getPrivacy(request))
             join.invite(inviter=user)
     else:
         return HttpResponse("You are not admin.")

@@ -1270,7 +1270,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Returns a list of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
-        group_joins = GroupFollow.objects.filter( user=self, confirmed=True )
+        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
         groups = []
         if num == -1:
             for g in group_joins:
@@ -3219,9 +3219,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')
+            return GroupJoined.objects.filter( group=self, confirmed=False ).order_by('when')
         else:
-            return GroupFollow.objects.filter( group=self, confirmed=False ).order_by('when')[:num]
+            return GroupJoined.objects.filter( group=self, confirmed=False ).order_by('when')[:num]
 
 
 #=======================================================================================================================
@@ -3706,7 +3706,7 @@ class Attending(UCRelationship, Invite):
 # Relation between user and event, about whether or not they are attending.
 #
 #=======================================================================================================================
-class GroupFollow(UCRelationship, Invite):
+class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
