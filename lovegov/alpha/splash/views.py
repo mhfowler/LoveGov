@@ -689,8 +689,9 @@ def legislation(request, session=None, type=None, number=None, dict={}):
     if len(legs)==0:
         dict['error'] = "No legislation found with the given parameters."
     else:
-        dict['leg_titles'] = betamodels.Legislation.legislationtitle_set.all()
-        dict['leg'] = legs[0]
+	leg = legs[0]
+        dict['leg_titles'] = leg.legislationtitle_set.all()
+        dict['leg'] = leg
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', dict=dict, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
