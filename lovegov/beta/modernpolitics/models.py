@@ -68,12 +68,16 @@ def photoKey(type=".jpg"):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
+def initCreator():
+    from lovegov.beta.modernpolitics.backend import getLoveGovUser
+    return getLoveGovUser()
+
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)
+    creator = models.ForeignKey("UserProfile", default=initCreator)
     class Meta:
         abstract = True
-        #-------------------------------------------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns boolean, as to whether user has permission to view this.
     #-------------------------------------------------------------------------------------------------------------------
     def getPermission(self, user):
@@ -219,7 +223,7 @@ class Content(Privacy, LocationLevel):
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey("UserImage", null=True)           # foreign key to UserImage
+    main_image = models.ForeignKey("UserImage", null=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
@@ -319,9 +323,12 @@ class Content(Privacy, LocationLevel):
     # Returns UserImage associated with this content
     #-------------------------------------------------------------------------------------------------------------------
     def getMainImage(self):
-        image = UserImage.lg.get_or_none(id=self.main_image_id)
-        if image:
-            return image
+        if self.main_image:
+            image = UserImage.lg.get_or_none(id=self.main_image_id)
+            if image:
+                return image
+            else:
+                return self.getMainTopic().getUserImage()
         else:
             return self.getMainTopic().getUserImage()
 
@@ -841,16 +848,21 @@ class FacebookProfileModel(models.Model):
 # Model for storing user of site. extends FacebookProfileModel, so that there are fields for that.
 # extends django user
 #=======================================================================================================================
+def initView():
+    view = WorldView()
+    view.save()
+    return view
+
 class UserProfile(FacebookProfileModel, LGModel):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
     # for downcasting
     user_type = models.CharField(max_length=1, choices=constants.USER_CHOICES, default='G')
     # info
-    alias = models.CharField(max_length=80, blank=True)
-    username = models.CharField(max_length=100, null=True)      # for display, not for login!
-    first_name = models.CharField(max_length=40)
-    last_name = models.CharField(max_length=40)
+    alias = models.CharField(max_length=200, blank=True)
+    username = models.CharField(max_length=500, null=True)      # for display, not for login!
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
     email = models.EmailField()
     # REGISTRATION
     registration_code = models.ForeignKey(RegisterCode,null=True)
@@ -860,13 +872,15 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view = models.ForeignKey("WorldView", null=True)        # foreign key to worldview
+    view = models.ForeignKey("WorldView", default=initView)        # foreign key to worldview
     network = models.ForeignKey("Network", null=True)    # foreign key to network group
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    my_connections = models.IntegerField(default=-1)     # foreign key to group of people I am following
+    i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
+    follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
+    private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
@@ -1013,15 +1027,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         else: return getOtherNetwork()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Gets facebook network for user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getMyConnections(self):
-        if self.my_connections != -1:
-            return Group.objects.get(id=self.my_connections)
-        else:
-            return createConnectionsGroup()
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Joins network group based on user email, or creates network group then joins.
     #-------------------------------------------------------------------------------------------------------------------
     def joinNetwork(self):
@@ -1046,7 +1051,14 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def follow( self , to_user , fb=False ):
         relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
-        self.getMyConnections().members.add(to_user)
+
+        if not self.i_follow:
+            self.createIFollowGroup()
+        self.i_follow.members.add(to_user)
+
+        if not to_user.follow_me:
+            to_user.createFollowMeGroup()
+        to_user.follow_me.members.add(self)
 
         #Check and Make Relationship A
         if not relationship:
@@ -1061,13 +1073,15 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Breaks connections between this UserProfile and another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
-    def unfollow( self , person ):
-        relationship = UserFollow.lg.get_or_none( user=self, to_user=person )
-        self.getMyConnections().members.remove(person)
+    def unfollow( self , to_user ):
+        relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+        if self.i_follow:
+            self.i_follow.members.remove(to_user)
+        if to_user.follow_me:
+            to_user.follow_me.members.remove(self)
         # Clear UserFollow
         if relationship:
             relationship.clear()
-            relationship.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets image to inputted file.
@@ -1160,23 +1174,24 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
-    def createConnectionsGroup(self):
-        title = self.get_name() + " Connections Group"
-        group = Group(title=title, full_text="My connections.", group_type='P', system=True, in_search=False, in_calc=False)
+    def createIFollowGroup(self):
+        title = "Group who " + self.get_name() + " follows."
+        group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
-        group.members.add(self)
-        self.my_connections = group.id
+        self.i_follow = group
         self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Updates connections group using your current "I Follow" (creates connections group if it doesn't already exist)
+    # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
-    def updateConnectionsGroup(self):
-        following = self.getIFollow()
-        my_connections = getMyConnections()
-        for connect in following:
-            my_connections.add(connect)
+    def createFollowMeGroup(self):
+        title = "Group who follows "  + self.get_name()
+        group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+        group.autoSave()
+        self.follow_me = group
+        self.save()
+        return group
 
     #-------------------------------------------------------------------------------------------------------------------
     # Adds user to lovegov group.
@@ -1212,15 +1227,15 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when')
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
-        group_joins = GroupFollow.objects.filter( user=self, confirmed=True )
+        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
         groups = []
         if num == -1:
             for g in group_joins:
@@ -1301,9 +1316,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
-    def getActivity(self):
-        actions = Action.objects.filter(relationship__user=self).order_by('when')
-        return actions
+    def getActivity(self, num=-1):
+        if num == -1:
+            return Action.objects.filter(relationship__user=self).order_by('when')
+        else:
+            return Action.objects.filter(relationship__user=self).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
@@ -1378,6 +1395,7 @@ class Action(Privacy):
     def autoVerbose(self,relationship=None):
         if not relationship:
             relationship = self.relationship
+        action_verbose = ' nothing? '
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':
@@ -1396,6 +1414,8 @@ class Action(Privacy):
                 action_verbose = ' is following '
             elif self.modifier == 'N':
                 action_verbose = ' declined to follow '
+            elif self.modifier == 'X':
+                action_verbose = ' was rejected from following '
         elif self.type == 'AE':
             if self.modifier == 'I':
                 action_verbose = ' was invited to attend '
@@ -1405,6 +1425,8 @@ class Action(Privacy):
                 action_verbose = ' is attending '
             elif self.modifier == 'N':
                 action_verbose = ' declined to attend '
+            elif self.modifier == 'X':
+                action_verbose = ' was rejected from attending '
         elif self.type == 'JD':
             if self.modifier == 'I':
                 action_verbose = ' was invited to debate '
@@ -1416,6 +1438,8 @@ class Action(Privacy):
                 action_verbose = ' is debating '
             elif self.modifier == 'N':
                 action_verbose = ' declined to debate '
+            elif self.modifier == 'X':
+                action_verbose = ' was rejected from debating '
         elif self.type == 'FC':
             action_verbose = ' is following '
         elif self.type == 'MV':
@@ -1463,6 +1487,9 @@ class Notification(Privacy):
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
+    # deprecated
+    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
+    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
 
     def autoSave(self):
         self.verbose = self.action.verbose
@@ -3096,9 +3123,10 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')
         else:
-            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')[:num]
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
+
 
 
 #=======================================================================================================================
@@ -3562,7 +3590,7 @@ class Attending(UCRelationship, Invite):
 # Relation between user and event, about whether or not they are attending.
 #
 #=======================================================================================================================
-class GroupFollow(UCRelationship, Invite):
+class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'

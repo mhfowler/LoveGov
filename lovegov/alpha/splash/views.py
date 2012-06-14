@@ -87,9 +87,9 @@ def splashForm(request,templateURL):
 def postEmail(request):
     if request.method=='POST' and request.POST['email']:
         email = request.POST['email']
-        emails = m_other.EmailList.objects.filter(email=email)
+        emails = betamodels.EmailList.objects.filter(email=email)
         if not emails:
-            newEmail = m_other.EmailList(email=email)
+            newEmail = betamodels.EmailList(email=email)
             newEmail.save()
         if request.is_ajax():
             return HttpResponse('+')
@@ -187,7 +187,6 @@ def passwordRecovery(request, to_page='home', message="", confirm_link=None, dic
     else:
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
-
 def logout(request, dict={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
@@ -204,7 +203,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
         print "user:" + user.get_name()
     if request.method == 'GET':
         # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
-        return renderToResponseCSRF('deployment/pages/login/login-register-confirmation.html', dict=dict, request=request)
+        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', dict=dict, request=request)
     else:
         return loginPOST(request,to_page,message,dict)
 
@@ -520,7 +519,7 @@ def profile(request, alias=None, dict={}):
             logger.debug("json- " + jsonData)       # debug
             setPageTitle("lovegov: " + user_prof.get_name(),dict)
 
-            # Get user's top 5 similar friends
+            # Get user's top 5 similar followers
             prof_follow_me = list(user_prof.getFollowMe())
             for follow_me in prof_follow_me:
                 comparison = betabackend.getUserUserComparison(user_prof, follow_me)
@@ -529,8 +528,20 @@ def profile(request, alias=None, dict={}):
             prof_follow_me.sort(key=lambda x:x.result,reverse=True)
             dict['prof_follow_me'] = prof_follow_me[0:5]
 
-            # Get user's random 5 friends
+            # Get user's top 5 similar follows
+            prof_i_follow = list(user_prof.getIFollow())
+            for i_follow in prof_i_follow:
+                comparison = betabackend.getUserUserComparison(user_prof, i_follow)
+                i_follow.compare = comparison.toJSON()
+                i_follow.result = comparison.result
+            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
+            dict['prof_i_follow'] = prof_i_follow[0:5]
+
+            # Get user's random 5 followers
             #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+
+            # Get user's random 5 follows
+            #dict['prof_i_follow'] = user_prof.getIFollow(5)
 
             # Get user's top 5 similar groups
             prof_groups = list(user_prof.getGroups())
@@ -548,14 +559,17 @@ def profile(request, alias=None, dict={}):
             dict['prof_requests'] = list(user_prof.getFollowRequests())
 
             # Is the current user already (requesting to) following this profile?
-            dict['is_user_follow'] = False
+            dict['is_user_requested'] = False
             dict['is_user_confirmed'] = False
             user_follow = betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof)
             if user_follow:
                 if user_follow.requested:
-                    dict['is_user_follow'] = True
+                    dict['is_user_requested'] = True
                 if user_follow.confirmed:
                     dict['is_user_confirmed'] = True
+
+            # Get Activity
+            dict['actions'] = user.getActivity(5)
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
@@ -614,7 +628,7 @@ def group(request, g_id=None, dict={}):
     # Is the current user already (requesting to) following this group?
     dict['is_user_follow'] = False
     dict['is_user_confirmed'] = False
-    user_follow = betamodels.GroupFollow.lg.get_or_none(user=user,group=group)
+    user_follow = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
     if user_follow:
         if user_follow.requested:
             dict['is_user_follow'] = True
@@ -661,22 +675,21 @@ def about(request, dict={}):
 def legislation(request, session=None, type=None, number=None, dict={}):
     dict['session'], dict['type'], dict['number'] = session, type, number
     if session==None:
-
-        dict['sessions'] = [x['bill_sessions'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
-        logger.debug(str(dict['sessions']))
-
         dict['sessions'] = [x['bill_session'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session)
     if type==None:
-        dict['types'] = [x['bill_type'] for x in betamodels.Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
+        type_list = [x['bill_type'] for x in betamodels.Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
+        dict['types'] = [(x, betaconstants.BILL_TYPES[x]) for x in type_list]
         return renderToResponseCSRF(template='deployment/pages/legislation-session.html', dict=dict, request=request)
     if number==None:
+        dict['numbers'] = [x['bill_number'] for x in betamodels.Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation-type.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
         dict['error'] = "No legislation found with the given parameters."
     else:
+        dict['leg_titles'] = betamodels.Legislation.legislationtitle_set.all()
         dict['leg'] = legs[0]
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', dict=dict, request=request)
 

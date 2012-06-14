@@ -13,7 +13,7 @@ Session: {{session}}
 
 <ul>
 	{% for type in types %}
-	<li><a href='/legislation/{{session}}/{{type}}'>{{type}}</a></li>
+	<li><a href='/legislation/{{session}}/{{type[0]}}'>{{type[1]}}</a></li>
 	{% empty %}
 	<li>Congressional bill type data is unavailable for the given congressional session.</li>
 	{% endfor %}

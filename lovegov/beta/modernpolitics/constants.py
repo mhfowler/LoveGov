@@ -21,6 +21,16 @@ GOOGLE_LOVEGOV = 'UA-31122448-1'
 sunlight.config.API_KEY  = '47ec0a395b9241d7902d6c5c896a8167'
 GOOGLEMAPS_API_KEY = 'AIzaSyA_ZfbazhowTs7D4e93YuG6pdLefZIG1gs'
 
+BILL_TYPES = {
+    's': 'Senate Bill',
+    'h': 'House of Representatives Bill',
+    'hr': 'House of Representatives Resolution',
+    'sr': 'Senate Resolution',
+    'hc': 'House of Representatives Committee Bill',
+    'sc': 'Senate Committee Bill',
+    'sj': 'Senate Joint Bill',
+    'hj': 'House of Representatives Joint Bill',
+}
 
 ########################################## FOR RANKING & FILTERING #####################################################
 
@@ -240,7 +250,6 @@ GROUP_PRIVACY_CHOICES = (
 
 # types of groups
 GROUP_TYPE_CHOICES = (
-    ('F','follow'),
     ('N','network'),
     ('U','user'),
 )
