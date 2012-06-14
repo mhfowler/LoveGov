@@ -1485,6 +1485,9 @@ class Notification(Privacy):
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
+    # deprecated
+    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
+    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
 
     def autoSave(self):
         self.verbose = self.action.verbose
