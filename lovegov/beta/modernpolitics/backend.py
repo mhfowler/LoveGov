@@ -59,6 +59,17 @@ def updateRank(debug=True):
         print (c.title + ": " + str(calcRank(content=c, filter_setting=filter, users=users, debug=debug)))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Updates the score/status of all content (1 pt per vote)
+#-----------------------------------------------------------------------------------------------------------------------
+def updateStatus():
+    content = Content.objects.all()
+    for x in content:
+        votes = Voted.objects.filter(content=x)
+        score = calcScore(votes)
+        x.status = score
+        x.save()
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for all groups
 # args:
 # tags: USABLE
@@ -815,6 +826,11 @@ def createAlphaUser(name, email):
     createUser(name, email, password)
     sendAlphaTesterEmail(name, email, password)
 
+def createFBUser(name, email):
+    password = generateRandomPassword(10)
+    control = createUser(name, email, password)
+    sendFBRegisterEmail(name, email, password)
+    return control
 
 def passwordAutogen(length=10):
     possible = "23456qwertasdfgzxcvbQWERTASDFGZXCVB789yuiophjknmYUIPHJKLNM"
@@ -883,7 +899,11 @@ def createUserHelper(control,name,type='userProfile',active=True):
         userProfile = Senator(user_type='S')
     elif type=="representative":
         userProfile = Representative(user_type='R')
-    else: userProfile = UserProfile(user_type='U')
+    else:
+        userProfile = UserProfile(user_type='U')
+        toregister = getToRegisterNumber()
+        toregister.number -= 1
+        toregister.save()
     # split name into first and last
     names = name.split(" ")
     if len(names) == 2:
@@ -926,6 +946,9 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # associate with control
     userProfile.user = control
     userProfile.save()
+    if type=="userProfile":
+        from lovegov.beta.modernpolitics.send_email import sendYayRegisterEmail
+        sendYayRegisterEmail(userProfile)
     # return control
     return userProfile
 
@@ -1403,6 +1426,16 @@ def sendConfirmationEmail(userProfile):
 def sendAlphaTesterEmail(name, email, password):
     recipient_list = [email]
     message = "<h3>" + "Hello " + name + ", </h3>"
+    message += "<p>" + "username: " + email + "</p>"
+    message += "<p>" + "password: " + password + "</p>"
+    send_mail(subject='Welcome to LoveGov.', message=message,
+        from_email='info@lovegov.com', recipient_list=recipient_list)
+
+def sendFBRegisterEmail(name, email, password):
+    recipient_list = [email]
+    message = "<h3>" + "Hello " + name + ", </h3>"
+    message += "<p> welcome to LoveGov! You registered via facebook, and you can connect in the future via facebook or using\
+    the username and password below. You can also change your password once you are logged on through the account settings page."
     message += "<p>" + "username: " + email + "</p>"
     message += "<p>" + "password: " + password + "</p>"
     send_mail(subject='Welcome to LoveGov.', message=message,
@@ -2017,6 +2050,15 @@ def getCongressNetwork():
         return to_return
     else:
         return initializeCongressNetwork()
+
+
+def getToRegisterNumber():
+    num = LGNumber.lg.get_or_none(alias="to_register")
+    if not num:
+        num = LGNumber(alias="to_register", number=100)
+        num.save()
+    return num
+
 
 def enc(s):
     return s.encode('ascii', 'ignore')

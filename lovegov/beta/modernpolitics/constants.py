@@ -69,21 +69,19 @@ COMPARISON_CHUNKSIZE = 2
 
 ###### FOR AESTHETICALLY PLEASING STATUS #####
 # initial bonus on creation
-STATUS_CREATION = 25
-
-# decrease per day
-STATUS_LOG = 2
-STATUS_TIME = 100
+STATUS_CREATION = 0
 
 # increase with vote
-STATUS_VOTE = 5
+STATUS_VOTE = 1
 
 # increase with various actions
-STATUS_COMMENT = 3
-STATUS_SHARE = 3
-STATUS_FOLLOW = 3
+STATUS_COMMENT = 0
+STATUS_SHARE = 0
+STATUS_FOLLOW = 0
 
-TEAM_EMAILS = ['clayton_dunwell@brown.edu','clay@lovegov.com','joschka_tryba@brown.edu','max_fowler@brown.edu','jonathanvkoh@gmail.com', 'cat@lovegov.com','yoshi141@gmail.com','cschmidt@risd.edu']
+TEAM_EMAILS = ['clayton_dunwell@brown.edu','clay@lovegov.com','joschka_tryba@brown.edu','max_fowler@brown.edu','loweth.g@gmail.com','jonathanvkoh@gmail.com', 'cat@lovegov.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
+
+YAY_EMAILS = ['clay@lovegov.com','max_fowler@brown.edu','jonathanvkoh@gmail.com','loweth.g@gmail.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
 
 ############ DEFAULT SETTINGS ################
 
@@ -163,8 +161,7 @@ LEVEL_CHOICES = (
 # privacy setting types
 PRIVACY_CHOICES = (
     ('PUB','Public'),
-    ('PRI','Private'),
-    ('FOL', 'Followers')
+    ('PRI','Private')
     )
 
 # content types
