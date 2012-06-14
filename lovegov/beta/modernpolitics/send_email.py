@@ -1,6 +1,8 @@
 __author__ = 'CLAY'
 ########################################################################################################################
 
+from lovegov.beta.modernpolitics import constants
+
 # Django Imports
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
@@ -65,3 +67,8 @@ def sendPasswordChangeEmail(django_user, password):
     message += "<p>" + "password: " + password + "</p>"
     send_mail(subject='LoveGov password change.', message=message,
         from_email='info@lovegov.com', recipient_list=recipient_list)
+
+def sendYayRegisterEmail(user):
+    message = "<h3>" + user.get_name() + " just registered. LOVEGOV </h3>"
+    send_mail(subject='LoveGov Registration', message=message,
+        from_email='info@lovegov.com', recipient_list=constants.YAY_EMAILS)

@@ -18,6 +18,7 @@ from datetime import timedelta
 from django.core.mail import send_mail
 from django.utils import simplejson
 from django.db.models import Q
+from django.template.loader import render_to_string
 
 # python
 import random
@@ -88,15 +89,7 @@ class Privacy(LGModel):
                 return True
             else:
                 return False
-        elif self.privacy == 'FOL':
-            if user == self.creator:
-                return True
-            else:
-                following_creator = user.getIFollow().filter(to_user__id=self.creator.user_id)
-                if following_creator:
-                    return True
-                else:
-                    return False
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns user who created this.
     #-------------------------------------------------------------------------------------------------------------------
@@ -227,7 +220,7 @@ class Content(Privacy, LocationLevel):
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
-    status = models.IntegerField(default=20)
+    status = models.IntegerField(default=constants.STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -496,10 +489,12 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Get creator name if viewing user has permission.
     #-------------------------------------------------------------------------------------------------------------------
-    def getCreatorDisplayName(self, user):
+    def getCreatorDisplayName(self, user, url=None):
         permission = self.getPermission(user)
         if permission:
             return self.getCreator().get_name()
+        elif url:
+            return self.getCreator().getAnonDisplay(url)
         else:
             return 'Anonymous'
 
@@ -808,7 +803,13 @@ class RegisterCode(LGModel):
     start_date = models.DateTimeField(auto_now_add=True)
     expiration_date = models.DateTimeField(null=True)
 
-
+#=======================================================================================================================
+# For storing anonymous user ids.
+#
+#=======================================================================================================================
+class AnonID(LGModel):
+    url = models.URLField()
+    number = models.IntegerField()
 
 #=======================================================================================================================
 # Fields for userprofile
@@ -894,6 +895,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    # anon ids
+    anonymous = models.ManyToManyField(AnonID)
     def __unicode__(self):
         return self.first_name
     def get_url(self):
@@ -960,6 +963,21 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getLastPageAccess(self):
         return PageAccess.lg.get_or_none(id=self.last_page_access)
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets anonymous id for the user for that url.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getAnonID(self, url):
+        anon = self.anonymous.filter(url=url)
+        if not anon:
+            anon = AnonID(url=url, number=random.randint(0,1000))
+            anon.save()
+            self.anonymous.add(anon)
+        else: anon = anon[0]
+        return anon.number
+
+    def getAnonDisplay(self, url):
+        return "Anonymous" + str(self.getAnonID(url))
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profilepage for this user.
@@ -1378,7 +1396,7 @@ class Action(Privacy):
     relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
     # optimization
-    verbose = models.TextField()
+    verbose = models.TextField()  # Don't use me!  I'm deprecated
 
     def getRelationship(self):
         if self.relationship_id == -1:
@@ -1389,13 +1407,12 @@ class Action(Privacy):
     def autoSave(self):
         relationship = self.relationship
         self.type = relationship.relationship_type
-        self.autoVerbose(relationship)
         self.save()
 
-    def autoVerbose(self,relationship=None):
+    def getVerbose(self,relationship=None,from_you=False,to_you=False):
         if not relationship:
             relationship = self.relationship
-        action_verbose = ' nothing? '
+        action_verbose = ' no action '
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':
@@ -1405,30 +1422,51 @@ class Action(Privacy):
                 action_verbose = ' disliked '
             else:
                 action_verbose = ' unvoted '
+        #Follow Section
         elif self.type == 'FO':
             if self.modifier == 'I':
-                action_verbose = ' was invited to follow '
+                if from_you:
+                    action_verbose = ' were invited to follow '
+                else:
+                    action_verbose = ' was invited to follow '
             elif self.modifier == 'R':
                 action_verbose = ' requested to follow '
             elif self.modifier == 'D':
-                action_verbose = ' is following '
+                if from_you:
+                    action_verbose = ' are following '
+                else:
+                    action_verbose = ' is following '
             elif self.modifier == 'N':
                 action_verbose = ' declined to follow '
             elif self.modifier == 'X':
-                action_verbose = ' was rejected from following '
+                if from_you:
+                    action_verbose = ' were rejected from following '
+                else:
+                    action_verbose = ' was rejected from following '
             elif self.modifier == 'S':
                 action_verbose = ' stopped following '
+        #Event Section
         elif self.type == 'AE':
             if self.modifier == 'I':
-                action_verbose = ' was invited to attend '
+                if from_you:
+                    action_verbose = ' were invited to attend '
+                else:
+                    action_verbose = ' was invited to attend '
             elif self.modifier == 'R':
                 action_verbose = ' requested to attend '
             elif self.modifier == 'D':
-                action_verbose = ' is attending '
+                if from_you:
+                    action_verbose = ' are attending '
+                else:
+                    action_verbose = ' is attending '
             elif self.modifier == 'N':
                 action_verbose = ' declined to attend '
             elif self.modifier == 'X':
-                action_verbose = ' was rejected from attending '
+                if from_you:
+                    action_verbose = ' were rejected from attending '
+                else:
+                    action_verbose = ' was rejected from attending '
+        #Debate Section
         elif self.type == 'JD':
             if self.modifier == 'I':
                 action_verbose = ' was invited to debate '
@@ -1443,7 +1481,10 @@ class Action(Privacy):
             elif self.modifier == 'X':
                 action_verbose = ' was rejected from debating '
         elif self.type == 'FC':
-            action_verbose = ' is following '
+            if from_you:
+                action_verbose = ' are following '
+            else:
+                action_verbose = ' is following '
         elif self.type == 'MV':
             action_verbose = ' voted on '
         elif self.type == 'DV':
@@ -1466,8 +1507,14 @@ class Action(Privacy):
         elif self.type == 'XX':
             action_verbose = ' deleted '
         # SET VERBOSE
-        self.verbose = action_verbose
-        print self.verbose
+        to_user = relationship.getTo()
+        from_user = relationship.getFrom()
+        if from_you:
+            action_verbose = 'You' + action_verbose
+        else:
+            action_verbose = from_user.get_name() + action_verbose
+        end_string = render_to_string('deployment/snippets/action_verbose.html',{'to_user':to_user,'to_you':to_you})
+        return action_verbose + end_string
 
 
 #=======================================================================================================================
@@ -1492,7 +1539,6 @@ class Notification(Privacy):
     modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
 
     def autoSave(self):
-        self.verbose = self.action.verbose
         self.save()
 
     def getEmail(self):
@@ -1817,13 +1863,6 @@ class Comment(Content):
         topics = self.on_content.topics.all()
         for t in topics:
             self.topics.add(t)
-
-    def getCreatorDisplayName(self, user):
-        permission = self.getPermission(user)
-        if permission:
-            return self.getCreator().get_name()
-        else:
-            return self.creator_name
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
@@ -3845,12 +3884,9 @@ class DebateMessage(Content):
         return ''
 
 
-
-
-
-
-
-
+class LGNumber(LGModel):
+    alias = models.CharField(max_length=50)
+    number = models.IntegerField()
 
 
 ########################################################################################################################

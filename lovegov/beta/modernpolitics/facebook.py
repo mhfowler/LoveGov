@@ -26,7 +26,6 @@ logger = logging.getLogger('filelogger')
 def fbMakeFriends(request, dict={}):
     user = dict['user']
     path = user.getFBAlias() + '/friends'
-    print "path: " + path
     response =  fbGet(request, path)
     if response:
         friends = response['data']
@@ -99,13 +98,15 @@ def fbLogin(request, dict={}):
             if not user_prof:
                 logging.debug("fb - register")
                 name = me['first_name'] + " " + me['last_name']
-                control = backend.createUser(name, fb_email, 'password')
+                control = backend.createFBUser(name, fb_email)
                 user_prof = control.user_profile
+                user_prof.refreshFB(me)
+                dict['user'] = user_prof
+                fbMakeFriends(request, dict)
         user_prof.refreshFB(me)
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
-        #fbMakeFriends(request,dict)
         return True
     else:
         return False

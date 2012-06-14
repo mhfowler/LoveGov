@@ -123,16 +123,9 @@
     {% endif %}
 
     <h4>Activity</h4>
-    {% if user.id == user_prof.id %}
-        {% for action in actions %}
-        You{{ action.verbose }}{{ action.getTo.name }}<br>
+        {% for action in actions_text %}
+            {{ action|safe|escape }}<br>
         {% endfor %}
-    {% else %}
-        {% for action in actions %}
-        {{ user.get_name }}{{ action.verbose }}{{ action.getTo.get_name }}<br>
-        {% endfor %}
-    {% endif %}
-
     <script>
         var p_id = "{{ user_prof.id }}";
     </script>
