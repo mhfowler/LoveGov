@@ -24,8 +24,20 @@ Session: {{session}}
 
 <p><strong>Bill Information</strong>
 
+{% for title in titles %}
+Bill title
+<ul>
+	<li>Title: {{title.title}}</li>
+	<li>Type: {{title.title_type}}</li>
+	<li>As: {{title.title_as}}</li>
+</ul>
+{% endfor %}
+
 <ul>
 	<li>Last updated: {{leg.bill_updated}}</li>
+	<li>State datetime: {{leg.state_datetime}}</li>
+	<li>State text: {{leg.state_text}}</li>
+	<li>Bill status: {{leg.bill_status.}}
 </ul>
 
 {% endif %}

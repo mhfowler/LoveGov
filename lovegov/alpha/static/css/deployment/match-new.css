@@ -298,6 +298,11 @@
     float:left;
 }
 
+#match-ajax-content
+{
+    float:left;
+}
+
 .circle-div-gray
 {
     background: #CCC;
@@ -543,8 +548,6 @@
     color:#f0503b;
     font-size:33px;
 }
-
-
 
 
 
