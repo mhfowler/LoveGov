@@ -514,21 +514,21 @@ def userFollowRequest(request, dict={}):
         user_follow.autoSave()
     # If this user is public follow
     if not to_user.private_follow:
-        user_follow.confirm() #Join them!
         from_user.follow(to_user)
         action = Action(relationship=user_follow,modifier='D')
         action.autoSave()
         to_user.notify(action)
         return HttpResponse("you are now following this person")
     #otherwise, if you've already requested to follow this user, you're done
-    if user_follow.requested:
+    elif user_follow.requested:
         return HttpResponse("you have already requested to follow this person")
     #Otherwise, make the request to follow this user
-    user_follow.request()
-    action = Action(relationship=user_follow,modifier='R')
-    action.autoSave()
-    to_user.notify(action)
-    return HttpResponse("you have requested to follow this person")
+    else:
+        user_follow.request()
+        action = Action(relationship=user_follow,modifier='R')
+        action.autoSave()
+        to_user.notify(action)
+        return HttpResponse("you have requested to follow this person")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or denies user follow, if user follow was requested.
@@ -542,7 +542,6 @@ def userFollowResponse(request, dict={}):
         user_follow = already[0]
         if user_follow.requested:
             if response == 'Y':
-                user_follow.confirm()
                 # Create follow relationship!
                 from_user.follow(to_user)
                 action = Action(relationship=user_follow,modifier='D')
@@ -567,10 +566,12 @@ def userFollowStop(request, dict={}):
     from_user = dict['user']
     to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
     if to_user:
-        user_follow = UserFollow.objects.filter(user=from_user, to_user=to_user)
-        if not user_follow:
+        already = UserFollow.objects.filter(user=from_user, to_user=to_user)
+        if not already:
             user_follow = UserFollow(user=from_user, to_user=to_user)
             user_follow.autoSave()
+        else:
+            user_follow = already[0]
         from_user.unfollow(to_user)
         action = Action(relationship=user_follow,modifier='S')
         action.autoSave()

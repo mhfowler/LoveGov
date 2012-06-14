@@ -878,8 +878,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    i_follow = models.ForeignKey('Group', related_name='i_follow')
-    follow_me = models.ForeignKey('Group', related_name='follow_me')
+    i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
+    follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
     private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
@@ -1316,9 +1316,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
-    def getActivity(self):
-        actions = Action.objects.filter(relationship__user=self).order_by('when')
-        return actions
+    def getActivity(self, num=-1):
+        if num == -1:
+            return Action.objects.filter(relationship__user=self).order_by('when')
+        else:
+            return Action.objects.filter(relationship__user=self).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
