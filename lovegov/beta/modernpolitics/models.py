@@ -859,10 +859,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     # for downcasting
     user_type = models.CharField(max_length=1, choices=constants.USER_CHOICES, default='G')
     # info
-    alias = models.CharField(max_length=80, blank=True)
-    username = models.CharField(max_length=100, null=True)      # for display, not for login!
-    first_name = models.CharField(max_length=40)
-    last_name = models.CharField(max_length=40)
+    alias = models.CharField(max_length=200, blank=True)
+    username = models.CharField(max_length=500, null=True)      # for display, not for login!
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
     email = models.EmailField()
     # REGISTRATION
     registration_code = models.ForeignKey(RegisterCode,null=True)
@@ -1487,6 +1487,9 @@ class Notification(Privacy):
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
+    # deprecated
+    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
+    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
 
     def autoSave(self):
         self.verbose = self.action.verbose
