@@ -570,7 +570,7 @@ def profile(request, alias=None, dict={}):
 
             # Get Activity
             dict['actions'] = user.getActivity(5)
-
+            print dict['actions'][0].getTo().get_name()
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
             if request.is_ajax():
@@ -751,9 +751,9 @@ def match(request,dict={}):
         dict['fb_friends'] = fb_friends
 
         # Get facebook friends network aggregate view
-        my_connections = user.getMyConnections()
-        my_connections.compare = betabackend.getUserGroupComparison(user,my_connections).toJSON()
-        dict['my_connections'] = my_connections
+        #my_connections = user.getMyConnections()
+        #my_connections.compare = betabackend.getUserGroupComparison(user,my_connections).toJSON()
+        #dict['my_connections'] = my_connections
 
         # dict['user'] doesn't translate well in the template
         dict['userProfile'] = user
