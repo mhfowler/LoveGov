@@ -500,18 +500,30 @@ def joinGroupResponse(request, dict={}):
 def userFollowRequest(request, dict={}):
     from_user = dict['user']
     to_user = UserProfile.objects.get(id=request.POST['p_id'])
+    #No Self Following
     if to_user.id == from_user.id:
         return HttpResponse("you cannot follow yourself")
     already = UserFollow.objects.filter(user=from_user, to_user=to_user)
-    if already:
+    #If there's already a follow relationship
+    if already: #If it exists, get it
         user_follow = already[0]
-        if user_follow.confirmed:
+        if user_follow.confirmed: #If you're confirmed following already, you're done
             return HttpResponse("you are already following this person")
-        elif user_follow.requested:
-            return HttpResponse("you have already requested to follow this person")
-    else:
+    else: #If there's no follow relationship, make one
         user_follow = UserFollow(user=from_user, to_user=to_user)
         user_follow.autoSave()
+    # If this user is public follow
+    if not to_user.private_follow:
+        user_follow.confirm() #Join them!
+        from_user.follow(to_user)
+        action = Action(relationship=user_follow,modifier='D')
+        action.autoSave()
+        to_user.notify(action)
+        return HttpResponse("you are now following this person")
+    #otherwise, if you've already requested to follow this user, you're done
+    if user_follow.requested:
+        return HttpResponse("you have already requested to follow this person")
+    #Otherwise, make the request to follow this user
     user_follow.request()
     action = Action(relationship=user_follow,modifier='R')
     action.autoSave()
@@ -533,7 +545,6 @@ def userFollowResponse(request, dict={}):
                 user_follow.confirm()
                 # Create follow relationship!
                 from_user.follow(to_user)
-                to_user.follow(from_user)# If follows aren't two way, comment this out!
                 action = Action(relationship=user_follow,modifier='D')
                 action.autoSave()
                 from_user.notify(action)
@@ -556,18 +567,16 @@ def userFollowStop(request, dict={}):
     from_user = dict['user']
     to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
     if to_user:
-        already = UserFollow.objects.filter(user=from_user, to_user=to_user)
-        if already:
-            user_follow = already[0]
-            user_follow.clear()
-        from_user.unfollow(to_user) #For one way relationships
-        to_user.unfollow(from_user) #Removes the TWO WAY RELATIONSHIP
+        user_follow = UserFollow.objects.filter(user=from_user, to_user=to_user)
+        if not user_follow:
+            user_follow = UserFollow(user=from_user, to_user=to_user)
+            user_follow.autoSave()
+        from_user.unfollow(to_user)
         action = Action(relationship=user_follow,modifier='S')
         action.autoSave()
         to_user.notify(action)
         return HttpResponse("removed")
     return HttpResponse("To User does not exist")
-
 
 
 #----------------------------------------------------------------------------------------------------------------------

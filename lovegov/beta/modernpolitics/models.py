@@ -866,7 +866,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    my_connections = models.IntegerField(default=-1)     # foreign key to group of people I am following
+    i_follow = models.ForeignKey(Group, null=True)
+    follow_me = models.ForeignKey(Group, null=True)
+    private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
@@ -1013,15 +1015,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         else: return getOtherNetwork()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Gets facebook network for user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getMyConnections(self):
-        if self.my_connections != -1:
-            return Group.objects.get(id=self.my_connections)
-        else:
-            return createConnectionsGroup()
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Joins network group based on user email, or creates network group then joins.
     #-------------------------------------------------------------------------------------------------------------------
     def joinNetwork(self):
@@ -1046,7 +1039,14 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def follow( self , to_user , fb=False ):
         relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
-        self.getMyConnections().members.add(to_user)
+
+        if not self.i_follow:
+            self.createIFollowGroup()
+        self.i_follow.members.add(to_user)
+
+        if not to_user.follow_me:
+            to_user.createFollowMeGroup()
+        to_user.follow_me.members.add(self)
 
         #Check and Make Relationship A
         if not relationship:
@@ -1061,13 +1061,15 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Breaks connections between this UserProfile and another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
-    def unfollow( self , person ):
-        relationship = UserFollow.lg.get_or_none( user=self, to_user=person )
-        self.getMyConnections().members.remove(person)
+    def unfollow( self , to_user ):
+        relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+        if self.i_follow:
+            self.i_follow.members.remove(to_user)
+        if to_user.follow_me:
+            to_user.follow_me.members.remove(self)
         # Clear UserFollow
         if relationship:
             relationship.clear()
-            relationship.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets image to inputted file.
@@ -1160,23 +1162,24 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
-    def createConnectionsGroup(self):
-        title = self.get_name() + " Connections Group"
-        group = Group(title=title, full_text="My connections.", group_type='P', system=True, in_search=False, in_calc=False)
+    def createIFollowGroup(self):
+        title = "Group who " + self.get_name() + " follows."
+        group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
-        group.members.add(self)
-        self.my_connections = group.id
+        self.i_follow = group
         self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Updates connections group using your current "I Follow" (creates connections group if it doesn't already exist)
+    # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
-    def updateConnectionsGroup(self):
-        following = self.getIFollow()
-        my_connections = getMyConnections()
-        for connect in following:
-            my_connections.add(connect)
+    def createFollowMeGroup(self):
+        title = "Group who follows "  + self.get_name()
+        group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+        group.autoSave()
+        self.follow_me = group
+        self.save()
+        return group
 
     #-------------------------------------------------------------------------------------------------------------------
     # Adds user to lovegov group.
