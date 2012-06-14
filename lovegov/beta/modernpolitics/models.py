@@ -68,12 +68,16 @@ def photoKey(type=".jpg"):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
+def initCreator():
+    from lovegov.beta.modernpolitics.backend import getLoveGovUser
+    return getLoveGovUser()
+
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)
+    creator = models.ForeignKey("UserProfile", default=initCreator)
     class Meta:
         abstract = True
-        #-------------------------------------------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns boolean, as to whether user has permission to view this.
     #-------------------------------------------------------------------------------------------------------------------
     def getPermission(self, user):
@@ -219,7 +223,7 @@ class Content(Privacy, LocationLevel):
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey("UserImage", null=True)           # foreign key to UserImage
+    main_image = models.ForeignKey("UserImage", null=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
@@ -841,6 +845,11 @@ class FacebookProfileModel(models.Model):
 # Model for storing user of site. extends FacebookProfileModel, so that there are fields for that.
 # extends django user
 #=======================================================================================================================
+def initView():
+    view = WorldView()
+    view.save()
+    return view
+
 class UserProfile(FacebookProfileModel, LGModel):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
@@ -860,7 +869,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view = models.ForeignKey("WorldView", null=True)        # foreign key to worldview
+    view = models.ForeignKey("WorldView", default=initView)        # foreign key to worldview
     network = models.ForeignKey("Network", null=True)    # foreign key to network group
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS

@@ -232,7 +232,6 @@ def requiresLogin(view):
     """Wrapper for all views which require login."""
     def new_view(request, *args, **kwargs):
         try:
-            return shortcuts.redirect("/underconstruction/")
             user = betabackend.getUserProfile(request)
             # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
             if UPDATE and not user.developer and not LOCAL:
