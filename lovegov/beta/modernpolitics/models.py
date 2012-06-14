@@ -3990,7 +3990,7 @@ class ResetPassword(LGModel):
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
                 dict = {'firstname':userProfile.first_name, 'url':reseturl}
-                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',dict,'noreply@lovegov.com',userProfile.username)
+                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',dict,'info@lovegov.com',userProfile.username)
                 return True
             except:
                 return False
