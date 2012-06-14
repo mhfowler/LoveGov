@@ -596,14 +596,17 @@ def profile(request, alias=None, dict={}):
             dict['prof_requests'] = list(user_prof.getFollowRequests())
 
             # Is the current user already (requesting to) following this profile?
-            dict['is_user_follow'] = False
+            dict['is_user_requested'] = False
             dict['is_user_confirmed'] = False
             user_follow = betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof)
             if user_follow:
                 if user_follow.requested:
-                    dict['is_user_follow'] = True
+                    dict['is_user_requested'] = True
                 if user_follow.confirmed:
                     dict['is_user_confirmed'] = True
+
+            # Get Activity
+            dict['actions'] = user.getActivity()
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()

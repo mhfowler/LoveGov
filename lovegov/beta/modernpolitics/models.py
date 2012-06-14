@@ -1212,9 +1212,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when')
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True ).order_by('when')[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -1378,6 +1378,7 @@ class Action(Privacy):
     def autoVerbose(self,relationship=None):
         if not relationship:
             relationship = self.relationship
+        action_verbose = ' nothing? '
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':
@@ -1396,6 +1397,8 @@ class Action(Privacy):
                 action_verbose = ' is following '
             elif self.modifier == 'N':
                 action_verbose = ' declined to follow '
+            elif self.modifier == 'X':
+                action_verbose = ' was rejected from following '
         elif self.type == 'AE':
             if self.modifier == 'I':
                 action_verbose = ' was invited to attend '
@@ -1405,6 +1408,8 @@ class Action(Privacy):
                 action_verbose = ' is attending '
             elif self.modifier == 'N':
                 action_verbose = ' declined to attend '
+            elif self.modifier == 'X':
+                action_verbose = ' was rejected from attending '
         elif self.type == 'JD':
             if self.modifier == 'I':
                 action_verbose = ' was invited to debate '
@@ -1416,6 +1421,8 @@ class Action(Privacy):
                 action_verbose = ' is debating '
             elif self.modifier == 'N':
                 action_verbose = ' declined to debate '
+            elif self.modifier == 'X':
+                action_verbose = ' was rejected from debating '
         elif self.type == 'FC':
             action_verbose = ' is following '
         elif self.type == 'MV':
@@ -3096,9 +3103,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')
+            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')
         else:
-            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True ).order_by('when')[:num]
+            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
 
 
 #=======================================================================================================================

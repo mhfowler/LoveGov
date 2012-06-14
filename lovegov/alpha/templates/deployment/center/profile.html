@@ -64,6 +64,7 @@
         </div>
     </div>
 
+    <h4>Friends</h4>
     <ul id="friends">
         {% for friend in prof_follow_me %}
             <li>{{ friend.get_name }}</li>
@@ -72,6 +73,7 @@
         {% endfor %}
     </ul>
 
+    <h4>Groups</h4>
     <ul id="groups">
         {% for group in prof_groups %}
             <li>{{ group.title }}</li>
@@ -80,32 +82,41 @@
         {% endfor %}
     </ul>
 
+    <h4>Activity</h4>
+    {% for x in actions %}
+    {{ x.verbose }}
+    <br>
+    {% endfor %}
+
     {% if user.id == user_prof.id %}
-        <ul id="follow-requests">
+    <h4>Follow Requests</h4>
+        <div id="follow-requests">
             {% for req in prof_requests %}
-                <li>{{ req.getFrom.get_name }} has requested to follow you:
+                <div id="{{ req.getFrom.id }}-request">{{ req.getFrom.get_name }} has requested to follow you:
                     <a href="" class="follow-response-y"> I accept! </a> ||
                     <a href="" class="follow-response-n"> I decline! </a>
                     <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-                </li>
+                </div>
+            <br>
             {% empty %}
-                <li>No follow requests! =( </li>
+                <div>No follow requests! =( </div><br>
             {% endfor %}
-        </ul>
-    {% endif %}
+        <div>
 
-    {% if user.id != user_prof.id and not is_user_follow and not is_user_confirmed %}
-        <a href="" id="user-follow">
-            follow me!
-        </a>
-    {% elif user.id != user_prof.id and is_user_confirmed or is_user_follow %}
+    {% elif is_user_confirmed or is_user_requested %}
         <a href="" id="user-unfollow">
             {% if is_user_confirmed %}
-            unfollow me!
-            {% elif is_user_follow %}
-            un-request me!
+            <h4>unfollow me!</h4>
+            {% elif is_user_requested %}
+            <h4>un-request me!</h4>
             {% endif %}
         </a>
+
+    {% else %}
+    <a href="" id="user-follow">
+        <h4>follow me!</h4>
+    </a>
+
     {% endif %}
 
     <script>
