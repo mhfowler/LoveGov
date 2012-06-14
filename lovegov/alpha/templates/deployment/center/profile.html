@@ -123,11 +123,9 @@
     {% endif %}
 
     <h4>Activity</h4>
-    {% for x in actions %}
-    {{ x.verbose }}
-    <br>
-    {% endfor %}
-
+        {% for action in actions_text %}
+            {{ action|safe|escape }}<br>
+        {% endfor %}
     <script>
         var p_id = "{{ user_prof.id }}";
     </script>
