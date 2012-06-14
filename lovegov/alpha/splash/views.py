@@ -87,9 +87,9 @@ def splashForm(request,templateURL):
 def postEmail(request):
     if request.method=='POST' and request.POST['email']:
         email = request.POST['email']
-        emails = m_other.EmailList.objects.filter(email=email)
+        emails = betamodels.EmailList.objects.filter(email=email)
         if not emails:
-            newEmail = m_other.EmailList(email=email)
+            newEmail = betamodels.EmailList(email=email)
             newEmail.save()
         if request.is_ajax():
             return HttpResponse('+')
@@ -617,7 +617,7 @@ def group(request, g_id=None, dict={}):
     # Is the current user already (requesting to) following this group?
     dict['is_user_follow'] = False
     dict['is_user_confirmed'] = False
-    user_follow = betamodels.GroupFollow.lg.get_or_none(user=user,group=group)
+    user_follow = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
     if user_follow:
         if user_follow.requested:
             dict['is_user_follow'] = True
