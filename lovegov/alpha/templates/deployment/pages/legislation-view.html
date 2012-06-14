@@ -34,7 +34,7 @@ Session: {{session}}
 	<li>Last updated: {{leg.bill_updated}}</li>
 	<li>State datetime: {{leg.state_datetime}}</li>
 	<li>Introduced: {{leg.introduced_datetime}}</li>
-	<li>Sponsor: {{leg.sponsor.full_name}}</li>
+	<li>Sponsor: <a href='{{leg.sponsor.get_url}}'>{{leg.sponsor.get_name}}</a></li>
 	<li>Current state: {{leg.state_text}}</li>
 	<ul>
 		<li>Status: {{leg.bill_status.status_text}}</li>
