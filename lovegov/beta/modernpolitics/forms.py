@@ -184,6 +184,39 @@ class LoginForm(forms.Form):
         return cleaned_data
 
 #=======================================================================================================================
+# Form for reseting your password
+#=======================================================================================================================
+class RecoveryPassword(forms.Form):
+    password1 = forms.CharField(widget=forms.PasswordInput,required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput,required=True)
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Validates form data and returns cleaned data with any errors
+    #-------------------------------------------------------------------------------------------------------------------
+    def clean(self):
+        cleaned_data = super(RecoveryPassword, self).clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        none_error = u"Please enter your desired password."
+        if not password1: self._errors["password1"] = self.error_class([none_error])
+        if not password2: self._errors["password2"] = self.error_class([none_error])
+        if password1 and password2 and password1 != password2:
+            match_error = u"Passwords don't match"
+            self._errors["password1"] = self.error_class([match_error])
+            self._errors["password2"] = self.error_class([match_error])
+
+        return cleaned_data
+
+    def save(self,confirm_link):
+        resetPassword = ResetPassword.lg.get_or_none(email_code=confirm_link)
+        if resetPassword:
+            user= resetPassword.userProfile.user
+            user.set_password(self.cleaned_data['password1'])
+            user.save()
+            resetPassword.delete()
+
+#=======================================================================================================================
 # Form for changing password.
 #=======================================================================================================================
 class PasswordForm(forms.Form):

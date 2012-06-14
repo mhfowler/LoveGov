@@ -1,6 +1,7 @@
 ### LOVEGOV ALPHA ###
 from lovegov.beta.modernpolitics.forms import EmailListForm
 from lovegov.beta.modernpolitics.forms import RegisterForm
+from lovegov.beta.modernpolitics.forms import RecoveryPassword
 
 #### LOVEGOV BETA ###
 from lovegov.beta.modernpolitics import models as betamodels
@@ -170,22 +171,28 @@ def loginPOST(request, to_page='web',message="",dict={}):
         message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
         return HttpResponse(json.dumps(message))
 
-def passwordRecovery(request, to_page='home', message="", confirm_link=None, dict={}):
-    if request.POST:
-        if "first_step" in request.POST:
-            user =  betamodels.UserProfile.lg.get_or_none(email=request.POST['email'])
-            if user:
-                if request.is_ajax(): return HttpResponse(json.dumps({'html': ajaxRender('deployment/pages/login/login-forgot-password-step_two.html',dict=dict,request=request)}))
-                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({"step_two":True}),request=request)
-            else:
-                msg = u"No user with this email exists."
-                if request.is_ajax(): return HttpResponse(json.dumps({'error1': msg}))
-                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'error1':msg}),request=request)
-        elif "second_step" in request.POST:
-            pass
+def passwordRecovery(request,confirm_link=None, dict={}):
+    if request.POST and "email" in request.POST:
+        success = betamodels.ResetPassword.create(username=request.POST['email'])
+        if success:
+            msg = u"Success. Check your email for instructions to reset your password"
+            if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
+            else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'message':msg}),request=request)
         else:
-            return HttpResponse("check")
+            msg = u"No user with this email exists."
+            if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
+            else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'message':msg}),request=request)
     else:
+        if confirm_link:
+            confirm = betamodels.ResetPassword.lg.get_or_none(email_code=confirm_link)
+            if confirm:
+                dict['recoveryForm'] = RecoveryPassword()
+                if request.POST:
+                    recoveryForm = RecoveryPassword(request.POST)
+                    if recoveryForm.is_valid(): recoveryForm.save(confirm_link)
+                    else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
+                else:
+                    return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
 def logout(request, dict={}):
