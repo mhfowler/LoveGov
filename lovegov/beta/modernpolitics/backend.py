@@ -838,7 +838,7 @@ def generateRandomPassword(length):
 # - name, email, password
 #-------------------------------------------------------------------------------------------------------------------
 def createUser(name, email, password, type='userProfile',active=True):
-    if not ControllingUser.objects.filter(username=email).exists():
+    if not ControllingUser.objects.filter(username=email):
         control = ControllingUser.objects.create_user(username=email, email=email, password=password)
         control.is_active = active
         control.save()

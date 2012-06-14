@@ -1195,14 +1195,17 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1, ignored=False, viewed=False):
-        if num == -1:
-            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')
+    def getNotifications(self, num=-1, dropdown=False):
+        if dropdown:
+            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when')
         else:
-            notifications = Notification.objects.filter( notify_user=self, ignored=ignored, viewed=viewed ).order_by('when')[:num]
-        for n in notifications:
-            n.viewed = True
+            notifications = Notification.objects.filter( notify_user=self, requires_action=True).order_by('when')
+        if num != -1:
+            notifications = notifications[0:num]
         return notifications
+
+    def getAllNotifications(self):
+        return Notification.objects.filter(notify_user=self).order_by('when')
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -1294,6 +1297,13 @@ class UserProfile(FacebookProfileModel, LGModel):
         questions_ids = random.sample(unanswered_ids, sample_size)
         questions = unanswered.filter(id__in=questions_ids)
         return questions
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a users recent activity.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getActivity(self):
+        actions = Action.objects.filter(relationship__user=self).order_by('when')
+        return actions
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
