@@ -440,16 +440,28 @@ def joinGroupRequest(request, dict={}):
         if follow_request.invited:
             follow_request.confirm()
             group.members.add(user)
+            action = Action(relationship=follow_request,modifier="D")
+            action.autoSave()
+            for admin in group.admins.all():
+                admin.notify(action)
             return HttpResponse("joined")
         return HttpResponse("cannot request to join secret group")
     #If the group type is open...
     if group.group_privacy == 'O':
         follow_request.confirm()
         group.members.add(user)
+        action = Action(relationship=follow_request,modifier="D")
+        action.autoSave()
+        for admin in group.admins.all():
+            admin.notify(action)
         return HttpResponse("joined")
     #If the group type is private and not requested yet
     elif group.group_privacy == 'P' and not follow_request.requested:
         follow_request.request()
+        action = Action(relationship=follow_request,modifier="R")
+        action.autoSave()
+        for admin in group.admins.all():
+            admin.notify(action)
         return HttpResponse("request to join")
     return HttpResponse("you have already requested to join this group")
 
@@ -458,7 +470,6 @@ def joinGroupRequest(request, dict={}):
 # Confirms or denies groupFollow, if groupFollow was requested.
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, dict={}):
-    user = dict['user']
     response = request.POST['response']
     follow_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
@@ -488,10 +499,10 @@ def joinGroupResponse(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def userFollowRequest(request, dict={}):
     user = dict['user']
-    person = UserProfile.objects.get(id=request.POST['p_id'])
-    if person.id == user.id:
+    to_user = UserProfile.objects.get(id=request.POST['p_id'])
+    if to_user.id == user.id:
         return HttpResponse("you cannot follow yourself")
-    already = UserFollow.objects.filter(user=user, to_user=person)
+    already = UserFollow.objects.filter(user=user, to_user=to_user)
     if already:
         follow = already[0]
         if follow.confirmed:
@@ -499,12 +510,12 @@ def userFollowRequest(request, dict={}):
         elif follow.requested:
             return HttpResponse("you have already requested to follow this person")
     else:
-        follow = UserFollow(user=user, to_user=person)
+        follow = UserFollow(user=user, to_user=to_user)
         follow.autoSave()
     follow.request()
     action = Action(relationship=follow,modifier='R')
     action.autoSave()
-    follow.to_user.notify(action)
+    to_user.notify(action)
     return HttpResponse("you have requested to follow this person")
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -520,11 +531,18 @@ def userFollowResponse(request, dict={}):
         if follow.requested:
             if response == 'Y':
                 follow.confirm()
-                # As long as friendships are two way...
-                user.makeFriends(from_user) # If follows aren't two way, comment this out!
+                # Create follow relationship!
+                from_user.follow(user)
+                user.follow(from_user)# If follows aren't two way, comment this out!
+                action = Action(relationship=follow,modifier='D')
+                action.autoSave()
+                to_user.notify(action)
                 return HttpResponse("they're now following you")
             elif response == 'N':
                 follow.reject()
+                action = Action(relationship=follow,modifier='X')
+                action.autoSave()
+                to_user.notify(action)
                 return HttpResponse("you have rejected their follow request")
         if follow.confirmed:
             return HttpResponse("This person is already following you")
@@ -540,6 +558,9 @@ def userFollowStop(request, dict={}):
     if to_user:
         from_user.unfollow(to_user) #For one way relationships
         to_user.unfollow(from_user) #Removes the TWO WAY RELATIONSHIP
+        action = Action(relationship=follow,modifier='S')
+        action.autoSave()
+        to_user.notify(action)
         return HttpResponse("removed")
     return HttpResponse("To User does not exist")
 
@@ -591,6 +612,10 @@ def leaveGroup(request, dict={}):
                 group.save()
             for member in members:
                 group.admins.add(member)
+        action = Action(relationship=group_follow,modifier='S')
+        action.autoSave()
+        for admin in group.admins.all():
+            admin.notify(action)
         return HttpResponse("left")
     else:
         return HttpResponse("system group")

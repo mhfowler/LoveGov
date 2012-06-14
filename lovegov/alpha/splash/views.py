@@ -126,6 +126,7 @@ def login(request, to_page='web/', message="", dict={}):
     # if has fb authenticated, try to facebook login
     if facebook.fbLogin(request):
         print "topage: " + to_page
+        #facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
         return shortcuts.redirect('/' + to_page)
     fb_state = facebook.fbGetRedirect(request, dict)
     if request.method == 'POST' and 'button' in request.POST:
@@ -152,8 +153,9 @@ def loginNew(request, to_page='web/', message="", dict={}):
     @return:
     """
     # if has fb authenticated, try to facebook login
-    if facebook.fbLogin(request):
+    if facebook.fbLogin(request,dict):
         print "topage: " + to_page
+        #facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
         return shortcuts.redirect('/' + to_page)
     fb_state = facebook.fbGetRedirect(request, dict)
     if request.method == 'POST' and 'button' in request.POST:
@@ -707,13 +709,18 @@ def about(request, dict={}):
 def legislation(request, session=None, type=None, number=None, dict={}):
     dict['session'], dict['type'], dict['number'] = session, type, number
     if session==None:
+
         dict['sessions'] = [x['bill_sessions'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
         logger.debug(str(dict['sessions']))
+
+        dict['sessions'] = [x['bill_session'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session)
     if type==None:
+        dict['types'] = [x['bill_type'] for x in betamodels.Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation-session.html', dict=dict, request=request)
     if number==None:
+        dict['numbers'] = [x['bill_number'] for x in betamodels.Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation-type.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
