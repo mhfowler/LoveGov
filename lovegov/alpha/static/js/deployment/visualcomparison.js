@@ -35,7 +35,7 @@ var VisualComparison = Class.extend
         this.width = 300;
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
-        this.skew = 105;
+        this.skew = 100;
     },
 
     /**
@@ -82,7 +82,7 @@ var VisualComparison = Class.extend
         });
         self.shapesLayer.add(circle);
 
-        var percentText = createText((percentage*100).toFixed() + '%',x,y,14);
+        var percentText = createText((percentage*100).toFixed() + '%',x,y+8,16);
         percentText.on("mouseover",function()
         {
             self.textLayer.add(textobj);
@@ -129,7 +129,6 @@ var VisualComparison = Class.extend
                 ({
                     x: x-17,
                     y: y-16,
-                    alpha:0.8,
                     image: imageObj,
                     width: 35,
                     height: 35,
@@ -142,7 +141,6 @@ var VisualComparison = Class.extend
                     self.hoverText = createText(Math.round(percentage*100) + "%", x,y-35,10); self.hoverLayer.add(self.hoverText);
                     self.hoverLayer.draw();
                     circle.mouseOver();
-                    this.alpha = 1;
                     self.textLayer.add(textobj);
                     self.textLayer.draw();
                     self.shapesLayer.draw();
@@ -155,7 +153,6 @@ var VisualComparison = Class.extend
                     self.hoverLayer.remove(self.hoverText);
                     self.hoverLayer.draw();
                     circle.mouseOut();
-                    this.alpha = 0.8;
                     self.textLayer.remove(textobj);
                     self.textLayer.draw();
                     self.shapesLayer.draw();
@@ -208,7 +205,7 @@ function createCircle(x, y, colorObject, radius, percentage)
         fill:colorObject.light,
         stroke: colorObject.default,
         radius: radius,
-        strokeWidth:1,
+        strokeWidth:2,
         zIndex:10,
         mouseOver:function()
         {

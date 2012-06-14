@@ -15,7 +15,15 @@
                 <img src="/static/images/match/arrow_left_light.png"/>
             </div>
 
-            {% include 'deployment/snippets/match-election-center.html' %}
+            <div id="match-ajax-content">
+                {% if section == "election" %}
+                    {% include 'deployment/center/match/match-election-center.html' %}
+                {% elif section == "social" %}
+                    {% include 'deployment/center/match/match-social-network.html' %}
+                {% elif section == "cause" %}
+
+                {% endif %}
+            </div>
 
             <div id="match-arrow-right" class="match-arrow">
                 <img src="/static/images/match/arrow_right_light.png"/>
@@ -25,14 +33,17 @@
     </div>
 
     <!-- Red/Gray Circles -->
-    {% include 'deployment/snippets/match-selection-line-break.html' %}
+    {% include 'deployment/center/match/match-selection-line-break.html' %}
 
     <!-- Select Match Section -->
-    {% include 'deployment/snippets/match-selection.html' %}
+    {% include 'deployment/center/match/match-selection.html' %}
 
 </div>
 
 <script type="text/javascript">
+
+
+
     $('.match-arrow img').hover(function()
     {
         $(this).css({'background-color':'#F0F0F0'});
