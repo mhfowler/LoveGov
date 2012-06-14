@@ -123,12 +123,9 @@
     {% endif %}
 
     <h4>Activity</h4>
-    {% autoescape on %}
-    {% for action in actions_text %}
-        {{ action }}<br>
-    {% endfor %}
-    {% endautoescape %}
-
+        {% for action in actions_text %}
+            {{ action|safe|escape }}<br>
+        {% endfor %}
     <script>
         var p_id = "{{ user_prof.id }}";
     </script>
