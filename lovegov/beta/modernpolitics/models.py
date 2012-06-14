@@ -100,13 +100,15 @@ class Privacy(LGModel):
             from lovegov.beta.modernpolitics.backend import getLoveGovUser
             return getLoveGovUser() 
         return creator
-        # if self.creator_id != -1:
-        #     creator = UserProfile.objects.filter(id=self.creator_id)
-        #     if creator:
-        #         return creator[0]
-        # else:
-        #     from lovegov.beta.modernpolitics.backend import getLoveGovUser
-        #     return getLoveGovUser()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Return boolean based on privacy.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPrivate(self):
+        return self.privacy == 'PRI'
+
+    def getPublic(self):
+        return self.privacy == 'PUB'
 
 #=======================================================================================================================
 # physical address
@@ -490,13 +492,14 @@ class Content(Privacy, LocationLevel):
     # Get creator name if viewing user has permission.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreatorDisplayName(self, user, url=None):
-        permission = self.getPermission(user)
-        if permission:
+        if self.getPublic():
             return self.getCreator().get_name()
-        elif url:
-            return self.getCreator().getAnonDisplay(url)
         else:
-            return 'Anonymous'
+            creator = self.getCreator()
+            anon = creator.getAnonDisplay(url)
+            if creator == user:
+                anon += " (You)"
+            return anon
 
     def getDisplayNameQuick(self):
         if self.privacy == 'PUB':
@@ -977,7 +980,10 @@ class UserProfile(FacebookProfileModel, LGModel):
         return anon.number
 
     def getAnonDisplay(self, url):
-        return "Anonymous" + str(self.getAnonID(url))
+        if url:
+            return "Anonymous" + str(self.getAnonID(url))
+        else:
+            return "Anonymous"
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profilepage for this user.
