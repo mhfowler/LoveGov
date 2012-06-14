@@ -919,7 +919,7 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # notification settings
     userProfile.initNotificationSettings()
     # connections group and lovegov group and join or create network group
-    userProfile.createConnectionsGroup()
+    userProfile.createConnectionsGroup()                # TODO: replace with iFollow and followMe groups
     userProfile.joinLoveGovGroup()
     userProfile.joinNetwork()
     # associate with control

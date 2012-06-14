@@ -3120,6 +3120,7 @@ class Group(Content):
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
 
 
+
 #=======================================================================================================================
 # Motion, for democratic groups.
 #

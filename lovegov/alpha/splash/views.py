@@ -187,7 +187,6 @@ def passwordRecovery(request, to_page='home', message="", confirm_link=None, dic
     else:
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
-
 def logout(request, dict={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
@@ -204,7 +203,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
         print "user:" + user.get_name()
     if request.method == 'GET':
         # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
-        return renderToResponseCSRF('deployment/pages/login/login-register-confirmation.html', dict=dict, request=request)
+        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', dict=dict, request=request)
     else:
         return loginPOST(request,to_page,message,dict)
 
