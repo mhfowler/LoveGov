@@ -205,7 +205,7 @@ function createCircle(x, y, colorObject, radius, percentage)
         fill:colorObject.light,
         stroke: colorObject.default,
         radius: radius,
-        strokeWidth:2,
+        lineWidth:2,
         zIndex:10,
         mouseOver:function()
         {
@@ -238,6 +238,7 @@ function createCircle(x, y, colorObject, radius, percentage)
             ctx.arc(x,y,this.radius,0,2*Math.PI,false);
             ctx.closePath();
             ctx.strokeStyle = this.stroke;
+            ctx.lineWidth = this.lineWidth;
             ctx.stroke();
         }
     });
