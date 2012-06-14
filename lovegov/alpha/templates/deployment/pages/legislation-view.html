@@ -20,7 +20,7 @@ Session: {{session}}
 <p><h2>Bill Information</h2>
 
 {% for title in leg_titles %}
-<p><strong>Bill title</strong>
+<p><h3>Bill title</h3>
 <ul>
 	<li>Title: {{title.title}}</li>
 	<li>Type: {{title.title_type}}</li>
@@ -28,11 +28,10 @@ Session: {{session}}
 </ul>
 {% endfor %}
 
-<p><strong>Misc Info</strong>
+<p><h3>Misc Info</h3>
 
 <ul>
 	<li>Last updated: {{leg.bill_updated}}</li>
-	<li>State datetime: {{leg.state_datetime}}</li>
 	<li>Introduced: {{leg.introduced_datetime}}</li>
 	<li>Sponsor: <a href='{{leg.sponsor.get_url}}'>{{leg.sponsor.get_name}}</a></li>
 	<li>Current state: {{leg.state_text}}</li>
@@ -44,7 +43,18 @@ Session: {{session}}
 		<li>How: {{leg.bill_status.how}}</li>
 		<li>Roll: {{leg.bill_status.roll}}</li>
 	</ul>
+	<li>State datetime: {{leg.state_datetime}}</li>
 </ul>
+
+<p><h3>Bill Co-sponsors</h3>
+
+{% for cosponsor in leg.cosponsors.all %}
+<ul>
+	<li><a href='{{cosponsor.get_url}}'>{{cosponsor}}</a></li>
+</ul>
+{% endfor %}
+
+
 
 {% endif %}
 
