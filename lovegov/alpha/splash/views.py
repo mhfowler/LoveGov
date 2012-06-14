@@ -187,7 +187,6 @@ def passwordRecovery(request, to_page='home', message="", confirm_link=None, dic
     else:
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
-
 def logout(request, dict={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
@@ -204,7 +203,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
         print "user:" + user.get_name()
     if request.method == 'GET':
         # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
-        return renderToResponseCSRF('deployment/pages/login/login-register-confirmation.html', dict=dict, request=request)
+        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', dict=dict, request=request)
     else:
         return loginPOST(request,to_page,message,dict)
 
@@ -520,7 +519,7 @@ def profile(request, alias=None, dict={}):
             logger.debug("json- " + jsonData)       # debug
             setPageTitle("lovegov: " + user_prof.get_name(),dict)
 
-            # Get user's top 5 similar friends
+            # Get user's top 5 similar followers
             prof_follow_me = list(user_prof.getFollowMe())
             for follow_me in prof_follow_me:
                 comparison = betabackend.getUserUserComparison(user_prof, follow_me)
@@ -529,8 +528,20 @@ def profile(request, alias=None, dict={}):
             prof_follow_me.sort(key=lambda x:x.result,reverse=True)
             dict['prof_follow_me'] = prof_follow_me[0:5]
 
-            # Get user's random 5 friends
+            # Get user's top 5 similar follows
+            prof_i_follow = list(user_prof.getIFollow())
+            for i_follow in prof_i_follow:
+                comparison = betabackend.getUserUserComparison(user_prof, i_follow)
+                i_follow.compare = comparison.toJSON()
+                i_follow.result = comparison.result
+            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
+            dict['prof_i_follow'] = prof_i_follow[0:5]
+
+            # Get user's random 5 followers
             #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+
+            # Get user's random 5 follows
+            #dict['prof_i_follow'] = user_prof.getIFollow(5)
 
             # Get user's top 5 similar groups
             prof_groups = list(user_prof.getGroups())
@@ -558,7 +569,7 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_confirmed'] = True
 
             # Get Activity
-            dict['actions'] = user.getActivity()
+            dict['actions'] = user.getActivity(5)
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()

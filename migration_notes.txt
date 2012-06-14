@@ -1,9 +1,8 @@
 General Topic 
 
-The negative one problem...
-Topic, forum_id
-Content, main_image_id
-CustomNotificationSetting, user_id
-UserProfile, view_id network_id
 
-
+UserProfile:
+	(-)my_connections (integer id -> foreign key -> group)
+	(+)private_follow (boolean)
+	(+)i_follow (foreign key -> group)
+	(+)follow_me (foreign key -> group)

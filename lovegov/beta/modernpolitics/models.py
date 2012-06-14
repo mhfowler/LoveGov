@@ -859,10 +859,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     # for downcasting
     user_type = models.CharField(max_length=1, choices=constants.USER_CHOICES, default='G')
     # info
-    alias = models.CharField(max_length=80, blank=True)
-    username = models.CharField(max_length=100, null=True)      # for display, not for login!
-    first_name = models.CharField(max_length=40)
-    last_name = models.CharField(max_length=40)
+    alias = models.CharField(max_length=200, blank=True)
+    username = models.CharField(max_length=500, null=True)      # for display, not for login!
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
     email = models.EmailField()
     # REGISTRATION
     registration_code = models.ForeignKey(RegisterCode,null=True)
@@ -878,7 +878,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    my_connections = models.IntegerField(default=-1)     # foreign key to group of people I am following
+    i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
+    follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
+    private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
@@ -1025,15 +1027,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         else: return getOtherNetwork()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Gets facebook network for user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getMyConnections(self):
-        if self.my_connections != -1:
-            return Group.objects.get(id=self.my_connections)
-        else:
-            return createConnectionsGroup()
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Joins network group based on user email, or creates network group then joins.
     #-------------------------------------------------------------------------------------------------------------------
     def joinNetwork(self):
@@ -1058,7 +1051,14 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def follow( self , to_user , fb=False ):
         relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
-        self.getMyConnections().members.add(to_user)
+
+        if not self.i_follow:
+            self.createIFollowGroup()
+        self.i_follow.members.add(to_user)
+
+        if not to_user.follow_me:
+            to_user.createFollowMeGroup()
+        to_user.follow_me.members.add(self)
 
         #Check and Make Relationship A
         if not relationship:
@@ -1073,13 +1073,15 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Breaks connections between this UserProfile and another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
-    def unfollow( self , person ):
-        relationship = UserFollow.lg.get_or_none( user=self, to_user=person )
-        self.getMyConnections().members.remove(person)
+    def unfollow( self , to_user ):
+        relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+        if self.i_follow:
+            self.i_follow.members.remove(to_user)
+        if to_user.follow_me:
+            to_user.follow_me.members.remove(self)
         # Clear UserFollow
         if relationship:
             relationship.clear()
-            relationship.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets image to inputted file.
@@ -1172,23 +1174,24 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
-    def createConnectionsGroup(self):
-        title = self.get_name() + " Connections Group"
-        group = Group(title=title, full_text="My connections.", group_type='P', system=True, in_search=False, in_calc=False)
+    def createIFollowGroup(self):
+        title = "Group who " + self.get_name() + " follows."
+        group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
-        group.members.add(self)
-        self.my_connections = group.id
+        self.i_follow = group
         self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Updates connections group using your current "I Follow" (creates connections group if it doesn't already exist)
+    # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
-    def updateConnectionsGroup(self):
-        following = self.getIFollow()
-        my_connections = getMyConnections()
-        for connect in following:
-            my_connections.add(connect)
+    def createFollowMeGroup(self):
+        title = "Group who follows "  + self.get_name()
+        group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+        group.autoSave()
+        self.follow_me = group
+        self.save()
+        return group
 
     #-------------------------------------------------------------------------------------------------------------------
     # Adds user to lovegov group.
@@ -1313,9 +1316,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
-    def getActivity(self):
-        actions = Action.objects.filter(relationship__user=self).order_by('when')
-        return actions
+    def getActivity(self, num=-1):
+        if num == -1:
+            return Action.objects.filter(relationship__user=self).order_by('when')
+        else:
+            return Action.objects.filter(relationship__user=self).order_by('when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
@@ -1482,6 +1487,9 @@ class Notification(Privacy):
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
+    # deprecated
+    type = models.CharField(max_length=2, choices=constants.RELATIONSHIP_CHOICES)
+    modifier = models.CharField(max_length=1, choices=constants.ACTION_MODIFIERS, default='D')
 
     def autoSave(self):
         self.verbose = self.action.verbose
@@ -3118,6 +3126,7 @@ class Group(Content):
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')
         else:
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
+
 
 
 #=======================================================================================================================
