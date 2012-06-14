@@ -977,7 +977,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         return anon.number
 
     def getAnonDisplay(self, url):
-        print "url: " + url
         return "Anonymous" + str(self.getAnonID(url))
 
     #-------------------------------------------------------------------------------------------------------------------

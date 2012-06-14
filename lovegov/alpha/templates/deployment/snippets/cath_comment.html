@@ -22,7 +22,7 @@
     </div>
     <div class="comment-text">
         {% if comment.active %}
-            {{ comment.text|linebreaks }}
+            {{ comment.text|linebreaks }} .. {{ permission }}
         {% else %}
             deleted
     {% endif %}
