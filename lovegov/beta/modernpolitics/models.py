@@ -878,8 +878,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    i_follow = models.ForeignKey(Group, null=True)
-    follow_me = models.ForeignKey(Group, null=True)
+    i_follow = models.ForeignKey('Group', related_name='i_follow')
+    follow_me = models.ForeignKey('Group', related_name='follow_me')
     private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
