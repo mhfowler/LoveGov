@@ -570,7 +570,7 @@ def profile(request, alias=None, dict={}):
 
             # Get Activity
             dict['actions'] = user.getActivity(5)
-
+            print dict['actions'][0].getTo().get_name()
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
             if request.is_ajax():
@@ -750,9 +750,9 @@ def match(request,dict={}):
         dict['fb_friends'] = fb_friends
 
         # Get facebook friends network aggregate view
-        my_connections = user.getMyConnections()
-        my_connections.compare = betabackend.getUserGroupComparison(user,my_connections).toJSON()
-        dict['my_connections'] = my_connections
+        #my_connections = user.getMyConnections()
+        #my_connections.compare = betabackend.getUserGroupComparison(user,my_connections).toJSON()
+        #dict['my_connections'] = my_connections
 
         # dict['user'] doesn't translate well in the template
         dict['userProfile'] = user
@@ -768,7 +768,7 @@ def match(request,dict={}):
             return renderToResponseCSRF(template='deployment/pages/match.html', dict=dict, request=request)
 
 def matchNew(request, dict={}):
-    if request.method == 'GET':
+    def election(request,dict={}):
         user = dict['user']
         c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
         c2 = betamodels.UserProfile.objects.get(first_name="Katy",last_name="Perry")
@@ -783,16 +783,59 @@ def matchNew(request, dict={}):
 
         # dict['user'] doesn't translate well in the template
         dict['userProfile'] = user
-
         setPageTitle("lovegov: match2",dict)
         if request.is_ajax():
-            html = ajaxRender('deployment/center/match-new.html', dict, request)
+            html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
             url = '/match/'
             rebind = 'match-new'
             to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
             return HttpResponse(json.dumps(to_return))
         else:
-            return renderToResponseCSRF(template='deployment/pages/match-new.html', dict=dict, request=request)
+            dict['section'] = 'election'
+            return renderToResponseCSRF(template='deployment/pages/match/match-new.html', dict=dict, request=request)
+
+    def social(request,dict={}):
+        user = dict['user']
+        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
+        comparison = betabackend.getUserUserComparison(user,c1)
+        c1.compare = comparison.toJSON()
+        c1.result = comparison.result
+        dict['c1'] = c1
+
+        dict['userProfile'] = user
+        setPageTitle("lovegov: match2",dict)
+        if request.is_ajax():
+            html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+            url = '/match/'
+            rebind = 'match-new'
+            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
+            return HttpResponse(json.dumps(to_return))
+        else:
+            dict['section'] = 'social'
+            return renderToResponseCSRF(template='deployment/pages/match/match-new.html', dict=dict, request=request)
+
+
+    if request.method == 'GET':
+        if 'section' in request.GET:
+            section = request.GET['section']
+            if section == "social": return social(request,dict)
+            elif section == "election": return election(request,dict)
+            elif section == "cause":
+                pass
+            else:
+                pass
+        else:
+            return election(request,dict)
+    else:
+        pass
+
+
+
+
+
+
+
+
 
 
 #-----------------------------------------------

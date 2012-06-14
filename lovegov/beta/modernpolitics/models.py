@@ -1212,24 +1212,24 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getNotifications(self, num=-1, dropdown=False):
         if dropdown:
-            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when')
+            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when').reverse()
         else:
-            notifications = Notification.objects.filter( notify_user=self, requires_action=True).order_by('when')
+            notifications = Notification.objects.filter( notify_user=self, requires_action=True).order_by('when').reverse()
         if num != -1:
             notifications = notifications[0:num]
         return notifications
 
     def getAllNotifications(self):
-        return Notification.objects.filter(notify_user=self).order_by('when')
+        return Notification.objects.filter(notify_user=self).order_by('when').reverse()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when')
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -1318,9 +1318,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, num=-1):
         if num == -1:
-            return Action.objects.filter(relationship__user=self).order_by('when')
+            return Action.objects.filter(relationship__user=self).order_by('when').reverse()
         else:
-            return Action.objects.filter(relationship__user=self).order_by('when')[:num]
+            return Action.objects.filter(relationship__user=self).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
@@ -1416,6 +1416,8 @@ class Action(Privacy):
                 action_verbose = ' declined to follow '
             elif self.modifier == 'X':
                 action_verbose = ' was rejected from following '
+            elif self.modifier == 'S':
+                action_verbose = ' stopped following '
         elif self.type == 'AE':
             if self.modifier == 'I':
                 action_verbose = ' was invited to attend '
@@ -1457,8 +1459,6 @@ class Action(Privacy):
         elif self.type == 'CR':
             if relationship.content.type == 'R':
                 action_verbose = ' answered '
-                self.verbose = relationship.getFrom().get_name() + action_verbose  + relationship.getTo().question.get_name()
-                return
             else:
                 action_verbose = ' created '
         elif self.type == 'ED':
@@ -1466,7 +1466,7 @@ class Action(Privacy):
         elif self.type == 'XX':
             action_verbose = ' deleted '
         # SET VERBOSE
-        self.verbose = relationship.getFrom().get_name() + action_verbose + relationship.getTo().get_name()
+        self.verbose = action_verbose
         print self.verbose
 
 
@@ -3123,9 +3123,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
         else:
-            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
 
 
 
