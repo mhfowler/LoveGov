@@ -6,3 +6,5 @@
 
 # full backup
 mysqldump live -u root -p --complete-insert --ignore-table=live.django_site --ignore-table=live.auth_permission --ignore-table=live.django_content_type > $1
+
+echo "$(date)" 
