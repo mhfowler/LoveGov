@@ -25,7 +25,7 @@ Session: {{session}}
 <p><strong>Bill Information</strong>
 
 {% for title in leg_titles %}
-Bill title
+<p>Bill title
 <ul>
 	<li>Title: {{title.title}}</li>
 	<li>Type: {{title.title_type}}</li>
@@ -33,11 +33,22 @@ Bill title
 </ul>
 {% endfor %}
 
+
+
 <ul>
 	<li>Last updated: {{leg.bill_updated}}</li>
 	<li>State datetime: {{leg.state_datetime}}</li>
-	<li>State text: {{leg.state_text}}</li>
-	<li>Bill status: {{leg.bill_status.}}
+	<li>Current state: {{leg.state_text}}</li>
+	<li>
+		<ul>
+			<li>Status: {{leg.bill_status.status_text}}</li>
+			<li>Datetime: {{leg.bill_status.datetime}}</li>
+			<li>Where: {{leg.bill_status.where}}</li>
+			<li>Result: {{leg.bill_status.result}}</li>
+			<li>How: {{leg.bill_status.how}}</li>
+			<li>Roll: {{leg.bill_status.roll}}</li>
+		</ul>
+	</li>
 </ul>
 
 {% endif %}
