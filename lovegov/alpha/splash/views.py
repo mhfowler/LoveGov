@@ -1003,8 +1003,8 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     'owner': i_own,
                     'votes': c.upvotes - c.downvotes,
                     'creator': creator,
-                    'display_name': creator.getAnonDisplay(getAjaxSource(request)),
-                    'permission': c.getPermission(user),
+                    'display_name': c.getCreatorDisplayName(user, getAjaxSource(request)),
+                    'public': c.getPublic(),
                     'margin': 30*(depth+1),
                     'width': 690-(30*depth+1)-30}
             dict['defaultImage'] = betabackend.getDefaultImage().image
