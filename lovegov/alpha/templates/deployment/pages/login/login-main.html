@@ -8,20 +8,20 @@
         </div>
 
         <div id="middle-right">
+            <!-- Forms -->
             {% include 'deployment/pages/login/login-fb.form.html' %}
             {% include 'deployment/pages/login/login-login.form.html' %}
             {% include 'deployment/pages/login/login-register.form.html' %}
         </div>
     </div>
 
+    <!-- Fade-in Divs -->
     {% include 'deployment/pages/login/login-about.html' %}
-
     {% include 'deployment/pages/login/login-privacy.html' %}
 
     <script type="text/javascript">
         $(document).ready(function()
         {
-
             $('#what-is-lovegov').click(function()
             {
                 $('.fade').fadeOut(300);

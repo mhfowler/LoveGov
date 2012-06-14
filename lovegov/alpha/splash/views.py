@@ -124,7 +124,7 @@ def login(request, to_page='web/', message="", dict={}):
     @return:
     """
     # if has fb authenticated, try to facebook login
-    if facebook.fbLogin(request):
+    if facebook.fbLogin(request,dict):
         print "topage: " + to_page
         #facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
         return shortcuts.redirect('/' + to_page)
@@ -132,41 +132,12 @@ def login(request, to_page='web/', message="", dict={}):
     if request.method == 'POST' and 'button' in request.POST:
         response = loginPOST(request,to_page,message,dict)
     else:
-        dict['error'] = message
-        registerform = RegisterForm()
-        dict['registerform'] = registerform
-        dict['username'] = ''
-        dict['error'] = ''
-        response = renderToResponseCSRF(template='deployment/pages/login-main.html', dict=dict, request=request)
-    response.set_cookie("fb_state", fb_state)
-    return response
-
-def loginNew(request, to_page='web/', message="", dict={}):
-    """
-    Handles logging a user into LoveGov
-
-    @param request:
-    @type request: HttpRequest
-    @param to_page:
-    @param dict:
-    @type dict: dictionary
-    @return:
-    """
-    # if has fb authenticated, try to facebook login
-    if facebook.fbLogin(request,dict):
-        print "topage: " + to_page
-        #facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
-        return shortcuts.redirect('/' + to_page)
-    fb_state = facebook.fbGetRedirect(request, dict)
-    if request.method == 'POST' and 'button' in request.POST:
-        response = loginNewPOST(request,to_page,message,dict)
-    else:
         dict.update({"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'})
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
     response.set_cookie("fb_state", fb_state)
     return response
 
-def loginNewPOST(request, to_page='web',message="",dict={}):
+def loginPOST(request, to_page='web',message="",dict={}):
     dict['registerform'] = RegisterForm()
     if request.POST['button'] == 'login':
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
@@ -198,6 +169,25 @@ def loginNewPOST(request, to_page='web',message="",dict={}):
         message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
         return HttpResponse(json.dumps(message))
 
+def passwordRecovery(request, to_page='home', message="", confirm_link=None, dict={}):
+    if request.POST:
+        if "first_step" in request.POST:
+            user =  betamodels.UserProfile.lg.get_or_none(email=request.POST['email'])
+            if user:
+                if request.is_ajax(): return HttpResponse(json.dumps({'html': ajaxRender('deployment/pages/login/login-forgot-password-step_two.html',dict=dict,request=request)}))
+                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({"step_two":True}),request=request)
+            else:
+                msg = u"No user with this email exists."
+                if request.is_ajax(): return HttpResponse(json.dumps({'error1': msg}))
+                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'error1':msg}),request=request)
+        elif "second_step" in request.POST:
+            pass
+        else:
+            return HttpResponse("check")
+    else:
+        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
+
+
 def logout(request, dict={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
@@ -217,44 +207,6 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
         return renderToResponseCSRF('deployment/pages/login/login-register-confirmation.html', dict=dict, request=request)
     else:
         return loginPOST(request,to_page,message,dict)
-
-def loginPOST(request, to_page='web',message="",dict={}):
-    registerform = RegisterForm()
-    dict['registerform'] = registerform
-    if request.POST['button'] == 'login':
-        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user:
-            user_prof = betabackend.getUserProfile(control_id=user.id)
-            if user_prof.confirmed:
-                auth.login(request, user)
-                redirect_response = shortcuts.redirect('/' + to_page)
-                redirect_response.set_cookie('privacy', value='PUB')
-                return redirect_response
-            else:
-                error = 'Your account has not been validated yet. Check your email for a confirmation link.'
-        else:
-            error = 'Invalid Login/Password. Did you <a class="light" href="" id="recover">forget your password?</a>'
-        dict['username'] = request.POST['username']
-        dict['message'] = message
-        dict['error'] = error
-        return renderToResponseCSRF(template='deployment/pages/login-main.html', dict=dict, request=request)
-    elif request.POST['button'] == 'register':
-        registerform = RegisterForm(request.POST)
-        if registerform.is_valid():
-            registerform.save()
-            dict['firstname'] = registerform.cleaned_data.get("firstname")
-            dict['email'] = registerform.cleaned_data.get('email')
-            return renderToResponseCSRF(template='deployment/pages/login-register-success.html', dict=dict, request=request)
-        else:
-            print "error!"
-            dict['registerform'] = registerform
-            return renderToResponseCSRF(template='deployment/pages/login-main.html', dict=dict, request=request)
-    elif request.POST['button'] == 'recover':
-        user = betamodels.ControllingUser.lg.get_or_none(username=request.POST['username'])
-        if user:
-            betabackend.resetPassword(user)
-        message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
-        return HttpResponse(json.dumps(message))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all alpha views which require login.

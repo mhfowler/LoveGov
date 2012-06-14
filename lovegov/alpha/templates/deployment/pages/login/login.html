@@ -86,7 +86,7 @@
 </div>
 <!--Some facebook code requires the fb-root div -->
 <script src="/static/js/facebook.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
     facebookAppId = '{{ FACEBOOK_APP_ID }}';
     facebookDefaultScope = {{ FACEBOOK_DEFAULT_SCOPE_JS }};
     staticUrl = '{{ STATIC_URL }}';
@@ -99,27 +99,11 @@
     F.load();
 </script>
 
-<script>
+<script type="text/javascript">
     $(document).ready(function()
     {
-        $("#recover").click(function(event)
-        {
-            event.preventDefault();
-            $.ajax
-            ({
-                type:'POST',
-                url:location.url,
-                data: {'button':'recover','username':$("#username-input").val()},
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
-                }
-            });
-        });
+        // CSRF protection
+        $.ajaxSetup({ data: {csrfmiddlewaretoken: "{{ csrf_token }}" }});
     });
 </script>
 

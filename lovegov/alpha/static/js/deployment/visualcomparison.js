@@ -291,7 +291,7 @@ function createText(string,x,y,fontSize)
     ({
         text:string,
         fontSize:fontSize,
-        fontFamily:"Verdana",
+        fontFamily:"Gill Sans Std Light",
         textFill:"black",
         x:x,
         y:y,

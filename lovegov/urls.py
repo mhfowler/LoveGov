@@ -55,6 +55,7 @@ urlpatterns += patterns('',
     (r'^fb/action/$', requiresLogin(alphaviews.facebookAction) ),
     (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
     (r'^fb/handle/$', alphaviews.facebookHandle),
+    (r'^passwordRecovery/$', alphaviews.passwordRecovery),
 
     # under construction
     (r'^underconstruction/$', alphaviews.underConstruction),
@@ -66,7 +67,6 @@ urlpatterns += patterns('',
     (r'^account/$', requiresLogin(alphaviews.account)),                         # account/change password
     (r'^match/$', requiresLogin(alphaviews.match)),                             # match page
     (r'^matchNew/$', requiresLogin(alphaviews.matchNew)),
-    (r'^loginNew/$', alphaviews.loginNew),
 
     ### content pages ####
     (r'^question/(\d+)/$', requiresLogin(alphaviews.questionDetail)),           # question detail
