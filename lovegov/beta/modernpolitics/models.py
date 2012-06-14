@@ -3977,7 +3977,7 @@ class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
     email_code = models.CharField(max_length=75)
 
-    def create(self, username):
+    def create(username):
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 

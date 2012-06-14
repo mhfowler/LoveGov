@@ -174,7 +174,6 @@ def loginPOST(request, to_page='web',message="",dict={}):
 def passwordRecovery(request,confirm_link=None, dict={}):
     if request.POST and "email" in request.POST:
         success = betamodels.ResetPassword.create(username=request.POST['email'])
-        if request.is_ajax(): return HttpResponse(json.dumps({'message': "worked"}))
         if success:
             msg = u"Success. Check your email for instructions to reset your password."
             if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
