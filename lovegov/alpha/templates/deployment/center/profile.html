@@ -64,13 +64,21 @@
         </div>
     </div>
 
-    <h4>Friends</h4>
-
-    <ul id="friends">
-        {% for friend in prof_follow_me %}
-            <li>{{ friend.get_name }}</li>
+    <h4>Followers</h4>
+    <ul id="followers">
+        {% for follower in prof_follow_me %}
+            <li>{{ follower.get_name }}</li>
         {% empty %}
-            <li>{{ user_prof.get_name }} has no friends! =( </li>
+            <li>{{ user_prof.get_name }} has no followers! =( </li>
+        {% endfor %}
+    </ul>
+
+    <h4>People I Follow</h4>
+    <ul id="following">
+        {% for follow in prof_i_follow %}
+        <li>{{ follow.get_name }}</li>
+        {% empty %}
+        <li>{{ user_prof.get_name }} follows no man. </li>
         {% endfor %}
     </ul>
 
@@ -82,12 +90,6 @@
             <li>{{ user_prof.get_name }} has no groups! =( </li>
         {% endfor %}
     </ul>
-
-    <h4>Activity</h4>
-    {% for x in actions %}
-        {{ x.verbose }}
-        <br>
-    {% endfor %}
 
     {% if user.id == user_prof.id %}
         <h4>Follow Requests</h4>
@@ -119,6 +121,12 @@
         </a>
 
     {% endif %}
+
+    <h4>Activity</h4>
+    {% for x in actions %}
+    {{ x.verbose }}
+    <br>
+    {% endfor %}
 
     <script>
         var p_id = "{{ user_prof.id }}";
