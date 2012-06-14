@@ -271,6 +271,7 @@ ADMINS = (
     ('Max Fowler', 'max_fowler@brown.edu'),
     ('Clay Dunwell','clayton_dunwell@brown.edu'),
     ('Jonathan Koh', 'jonathanvkoh@gmail.com'),
+    ('Jeremy Greenfield', 'jsgreenf@gmail.com'),
     )
 
 MANAGERS = ADMINS

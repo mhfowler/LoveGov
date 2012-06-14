@@ -88,15 +88,7 @@ class Privacy(LGModel):
                 return True
             else:
                 return False
-        elif self.privacy == 'FOL':
-            if user == self.creator:
-                return True
-            else:
-                following_creator = user.getIFollow().filter(to_user__id=self.creator.user_id)
-                if following_creator:
-                    return True
-                else:
-                    return False
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns user who created this.
     #-------------------------------------------------------------------------------------------------------------------
@@ -227,7 +219,7 @@ class Content(Privacy, LocationLevel):
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
-    status = models.IntegerField(default=20)
+    status = models.IntegerField(default=constants.STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -496,10 +488,12 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Get creator name if viewing user has permission.
     #-------------------------------------------------------------------------------------------------------------------
-    def getCreatorDisplayName(self, user):
+    def getCreatorDisplayName(self, user, url=None):
         permission = self.getPermission(user)
         if permission:
             return self.getCreator().get_name()
+        elif url:
+            return self.getCreator().getAnonDisplay(url)
         else:
             return 'Anonymous'
 
@@ -808,7 +802,13 @@ class RegisterCode(LGModel):
     start_date = models.DateTimeField(auto_now_add=True)
     expiration_date = models.DateTimeField(null=True)
 
-
+#=======================================================================================================================
+# For storing anonymous user ids.
+#
+#=======================================================================================================================
+class AnonID(LGModel):
+    url = models.URLField()
+    number = models.IntegerField()
 
 #=======================================================================================================================
 # Fields for userprofile
@@ -894,6 +894,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    # anon ids
+    anonymous = models.ManyToManyField(AnonID)
     def __unicode__(self):
         return self.first_name
     def get_url(self):
@@ -960,6 +962,22 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getLastPageAccess(self):
         return PageAccess.lg.get_or_none(id=self.last_page_access)
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets anonymous id for the user for that url.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getAnonID(self, url):
+        anon = self.anonymous.filter(url=url)
+        if not anon:
+            anon = AnonID(url=url, number=random.randint(0,1000))
+            anon.save()
+            self.anonymous.add(anon)
+        else: anon = anon[0]
+        return anon.number
+
+    def getAnonDisplay(self, url):
+        print "url: " + url
+        return "Anonymous" + str(self.getAnonID(url))
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profilepage for this user.
@@ -1817,13 +1835,6 @@ class Comment(Content):
         topics = self.on_content.topics.all()
         for t in topics:
             self.topics.add(t)
-
-    def getCreatorDisplayName(self, user):
-        permission = self.getPermission(user)
-        if permission:
-            return self.getCreator().get_name()
-        else:
-            return self.creator_name
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
@@ -3845,12 +3856,9 @@ class DebateMessage(Content):
         return ''
 
 
-
-
-
-
-
-
+class LGNumber(LGModel):
+    alias = models.CharField(max_length=50)
+    number = models.IntegerField()
 
 
 ########################################################################################################################
