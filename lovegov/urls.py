@@ -55,6 +55,7 @@ urlpatterns += patterns('',
     (r'^fb/action/$', requiresLogin(alphaviews.facebookAction) ),
     (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
     (r'^fb/handle/$', alphaviews.facebookHandle),
+    (r'^passwordRecovery/$', alphaviews.passwordRecovery),
 
     # under construction
     (r'^underconstruction/$', alphaviews.underConstruction),

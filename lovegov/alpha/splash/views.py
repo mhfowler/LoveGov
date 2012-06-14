@@ -198,6 +198,25 @@ def loginNewPOST(request, to_page='web',message="",dict={}):
         message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
         return HttpResponse(json.dumps(message))
 
+def passwordRecovery(request, to_page='home', message="", confirm_link=None, dict={}):
+    if request.POST:
+        if "first_step" in request.POST:
+            user =  betamodels.UserProfile.lg.get_or_none(email=request.POST['email'])
+            if user:
+                if request.is_ajax(): return HttpResponse(json.dumps({'html': ajaxRender('deployment/pages/login/login-forgot-password-step_two.html',dict=dict,request=request)}))
+                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({"step_two":True}),request=request)
+            else:
+                msg = u"No user with this email exists."
+                if request.is_ajax(): return HttpResponse(json.dumps({'error1': msg}))
+                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'error1':msg}),request=request)
+        elif "second_step" in request.POST:
+            pass
+        else:
+            return HttpResponse("check")
+    else:
+        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
+
+
 def logout(request, dict={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')

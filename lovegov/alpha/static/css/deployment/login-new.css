@@ -320,6 +320,11 @@ table tr
     float:left;
 }
 
+.get-started-container:hover
+{
+    background-color:#F0F0F0;
+}
+
 .get-started-container-left
 {
     padding-right:10px;
@@ -621,6 +626,23 @@ table tr
     background-color:#fff;
 }
 
+.forgot-password
+{
+    float:left;
+    width:475px;
+}
+
+.forgot-password-left
+{
+    margin-right:25px;
+}
+
+.forgot-password-right
+{
+    margin-left:25px;
+
+}
+
 #emailForm
 {
     float:left;
@@ -802,28 +824,7 @@ table tr
     font-weight: normal;
 }
 
-.get-started-container
-{
-    padding-top:15px;
-    width:320px;
-    float:left;
-}
 
-.get-started-container-left
-{
-    padding-right:10px;
-}
-
-.get-started-container-right
-{
-    padding-left:10px;
-}
-
-.get-started-container-center
-{
-    padding-left:10px;
-    padding-right:10px;
-}
 
 .get-started-left
 {
