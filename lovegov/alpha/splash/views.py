@@ -1000,12 +1000,6 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     'permission': c.getPermission(user),
                     'margin': 30*(depth+1),
                     'width': 690-(30*depth+1)-30}
-            try:
-                comp = betabackend.getUserUserComparison(user, c.getCreator())  # get percent similar
-            except AttributeError:
-                comp = None
-            if comp:
-                dict['sim_percent'] = comp.result
             dict['defaultImage'] = betabackend.getDefaultImage().image
             context = RequestContext(request,dict)
             template = loader.get_template('deployment/snippets/cath_comment.html')
