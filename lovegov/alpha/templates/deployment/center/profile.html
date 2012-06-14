@@ -65,6 +65,7 @@
     </div>
 
     <h4>Friends</h4>
+
     <ul id="friends">
         {% for friend in prof_follow_me %}
             <li>{{ friend.get_name }}</li>
@@ -84,38 +85,38 @@
 
     <h4>Activity</h4>
     {% for x in actions %}
-    {{ x.verbose }}
-    <br>
+        {{ x.verbose }}
+        <br>
     {% endfor %}
 
     {% if user.id == user_prof.id %}
-    <h4>Follow Requests</h4>
+        <h4>Follow Requests</h4>
         <div id="follow-requests">
-            {% for req in prof_requests %}
-                <div id="{{ req.getFrom.id }}-request">{{ req.getFrom.get_name }} has requested to follow you:
-                    <a href="" class="follow-response-y"> I accept! </a> ||
-                    <a href="" class="follow-response-n"> I decline! </a>
-                    <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-                </div>
+        {% for req in prof_requests %}
+            <div id="{{ req.getFrom.id }}-request">{{ req.getFrom.get_name }} has requested to follow you:
+                <a href="" class="follow-response-y"> I accept! </a> ||
+                <a href="" class="follow-response-n"> I decline! </a>
+                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+            </div>
             <br>
-            {% empty %}
-                <div>No follow requests! =( </div><br>
-            {% endfor %}
+        {% empty %}
+            <div>No follow requests! =( </div><br>
+        {% endfor %}
         <div>
 
     {% elif is_user_confirmed or is_user_requested %}
         <a href="" id="user-unfollow">
             {% if is_user_confirmed %}
-            <h4>unfollow me!</h4>
+                <h4>unfollow me!</h4>
             {% elif is_user_requested %}
-            <h4>un-request me!</h4>
+                <h4>un-request me!</h4>
             {% endif %}
         </a>
 
     {% else %}
-    <a href="" id="user-follow">
-        <h4>follow me!</h4>
-    </a>
+        <a href="" id="user-follow">
+            <h4>follow me!</h4>
+        </a>
 
     {% endif %}
 
@@ -123,4 +124,5 @@
         var p_id = "{{ user_prof.id }}";
     </script>
 
-</div>
+    </div>
+

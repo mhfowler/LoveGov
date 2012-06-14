@@ -68,12 +68,16 @@ def photoKey(type=".jpg"):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
+def initCreator():
+    from lovegov.beta.modernpolitics.backend import getLoveGovUser
+    return getLoveGovUser()
+
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", null=True)
+    creator = models.ForeignKey("UserProfile", default=initCreator)
     class Meta:
         abstract = True
-        #-------------------------------------------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns boolean, as to whether user has permission to view this.
     #-------------------------------------------------------------------------------------------------------------------
     def getPermission(self, user):
@@ -219,7 +223,7 @@ class Content(Privacy, LocationLevel):
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey("UserImage", null=True)           # foreign key to UserImage
+    main_image = models.ForeignKey("UserImage", null=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
     # RANK, VOTES
@@ -319,9 +323,12 @@ class Content(Privacy, LocationLevel):
     # Returns UserImage associated with this content
     #-------------------------------------------------------------------------------------------------------------------
     def getMainImage(self):
-        image = UserImage.lg.get_or_none(id=self.main_image_id)
-        if image:
-            return image
+        if self.main_image:
+            image = UserImage.lg.get_or_none(id=self.main_image_id)
+            if image:
+                return image
+            else:
+                return self.getMainTopic().getUserImage()
         else:
             return self.getMainTopic().getUserImage()
 
@@ -841,6 +848,11 @@ class FacebookProfileModel(models.Model):
 # Model for storing user of site. extends FacebookProfileModel, so that there are fields for that.
 # extends django user
 #=======================================================================================================================
+def initView():
+    view = WorldView()
+    view.save()
+    return view
+
 class UserProfile(FacebookProfileModel, LGModel):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
@@ -860,7 +872,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view = models.ForeignKey("WorldView", null=True)        # foreign key to worldview
+    view = models.ForeignKey("WorldView", default=initView)        # foreign key to worldview
     network = models.ForeignKey("Network", null=True)    # foreign key to network group
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
@@ -1223,7 +1235,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Returns a list of all Groups this user has joined and been accepted to.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroups(self, num=-1):
-        group_joins = GroupFollow.objects.filter( user=self, confirmed=True )
+        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
         groups = []
         if num == -1:
             for g in group_joins:
@@ -3106,9 +3118,10 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')
         else:
-            return GroupFollow.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when')[:num]
+
 
 
 #=======================================================================================================================
@@ -3572,7 +3585,7 @@ class Attending(UCRelationship, Invite):
 # Relation between user and event, about whether or not they are attending.
 #
 #=======================================================================================================================
-class GroupFollow(UCRelationship, Invite):
+class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'

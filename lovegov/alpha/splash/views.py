@@ -87,9 +87,9 @@ def splashForm(request,templateURL):
 def postEmail(request):
     if request.method=='POST' and request.POST['email']:
         email = request.POST['email']
-        emails = m_other.EmailList.objects.filter(email=email)
+        emails = betamodels.EmailList.objects.filter(email=email)
         if not emails:
-            newEmail = m_other.EmailList(email=email)
+            newEmail = betamodels.EmailList(email=email)
             newEmail.save()
         if request.is_ajax():
             return HttpResponse('+')
@@ -187,7 +187,6 @@ def passwordRecovery(request, to_page='home', message="", confirm_link=None, dic
     else:
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
-
 def logout(request, dict={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
@@ -204,7 +203,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
         print "user:" + user.get_name()
     if request.method == 'GET':
         # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
-        return renderToResponseCSRF('deployment/pages/login/login-register-confirmation.html', dict=dict, request=request)
+        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', dict=dict, request=request)
     else:
         return loginPOST(request,to_page,message,dict)
 
@@ -617,7 +616,7 @@ def group(request, g_id=None, dict={}):
     # Is the current user already (requesting to) following this group?
     dict['is_user_follow'] = False
     dict['is_user_confirmed'] = False
-    user_follow = betamodels.GroupFollow.lg.get_or_none(user=user,group=group)
+    user_follow = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
     if user_follow:
         if user_follow.requested:
             dict['is_user_follow'] = True
@@ -664,17 +663,15 @@ def about(request, dict={}):
 def legislation(request, session=None, type=None, number=None, dict={}):
     dict['session'], dict['type'], dict['number'] = session, type, number
     if session==None:
-
-        dict['sessions'] = [x['bill_sessions'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
-        logger.debug(str(dict['sessions']))
-
         dict['sessions'] = [x['bill_session'] for x in betamodels.Legislation.objects.values('bill_session').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session)
     if type==None:
-        dict['types'] = [x['bill_type'] for x in betamodels.Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
+        type_list = [x['bill_type'] for x in betamodels.Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
+        dict['types'] = [(x, betaconstants.BILL_TYPES[x]) for x in type_list]
         return renderToResponseCSRF(template='deployment/pages/legislation-session.html', dict=dict, request=request)
     if number==None:
+        dict['numbers'] = [x['bill_number'] for x in betamodels.Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='deployment/pages/legislation-type.html', dict=dict, request=request)
     legs = betamodels.Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
