@@ -569,8 +569,19 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_confirmed'] = True
 
             # Get Activity
-            dict['actions'] = user.getActivity(5)
-            print dict['actions'][0].getTo().get_name()
+            actions = user_prof.getActivity(5)
+            actions_text = []
+            for action in actions:
+                from_you = False
+                to_you = False
+                relationship = action.relationship
+                if relationship.getFrom().id == user.id:
+                    from_you = True
+                elif relationship.getTo().id == user.id:
+                    to_you = True
+                actions_text.append( action.getVerbose(from_you=from_you,to_you=to_you) )
+            dict['actions_text'] = actions_text
+
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
             if request.is_ajax():
