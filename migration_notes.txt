@@ -1,4 +1,8 @@
 General Topic 
 
 
-
+UserProfile:
+	(-)my_connections (integer id -> foreign key -> group)
+	(+)private_follow (boolean)
+	(+)i_follow (foreign key -> group)
+	(+)follow_me (foreign key -> group)

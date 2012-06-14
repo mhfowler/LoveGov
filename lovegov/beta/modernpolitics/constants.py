@@ -250,7 +250,6 @@ GROUP_PRIVACY_CHOICES = (
 
 # types of groups
 GROUP_TYPE_CHOICES = (
-    ('F','follow'),
     ('N','network'),
     ('U','user'),
 )
