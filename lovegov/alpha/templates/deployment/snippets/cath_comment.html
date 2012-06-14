@@ -1,7 +1,7 @@
 <div class="comment" style="margin-left:{{ margin }}px;width:{{ width }}px">
     <div class="comment-username feed-username">
         {% load thumbnail %}
-        {% if comment.creator_name != "Anonymous" and comment.active %}
+        {% if permission and comment.active %}
             {% thumbnail creator.getProfileImage.image "40x40" crop="center" as im %}
                 <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
             {% empty %}
@@ -12,14 +12,10 @@
         {% else %}
             {% thumbnail defaultImage "40x40" crop="center" as im %}
                 <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
-            {% empty %}
-                {% thumbnail defaultImage "40x40" crop="center" as im %}
-                    <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
-                {% endthumbnail %}
             {% endthumbnail %}
         {% endif %}
         {% if comment.active %}
-            <a href="{% if comment.creator_name != "Anonymous" %}{{creator.get_url}}{% endif %}">{{ comment.creator_name }}</a>
+            <a href="{% if permission %}{{creator.get_url}}{% endif %}">{{ display_name }}</a>
         {% else %}
             <a> deleted </a>
         {% endif %}

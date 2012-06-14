@@ -133,6 +133,7 @@ def login(request, to_page='web/', message="", dict={}):
         response = loginPOST(request,to_page,message,dict)
     else:
         dict.update({"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'})
+        dict['toregister'] = betabackend.getToRegisterNumber().number
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
     response.set_cookie("fb_state", fb_state)
     return response
@@ -989,11 +990,14 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                 i_vote = my_vote[0].value
             else: i_vote = 0
             i_own = user_comments.filter(id=c.id) # check if i own comment
+            creator = c.getCreator()
             dict = {'comment': c,
                     'my_vote': i_vote,
                     'owner': i_own,
                     'votes': c.upvotes - c.downvotes,
-                    'creator': c.getCreator(),
+                    'creator': creator,
+                    'display_name': creator.getAnonDisplay(getAjaxSource(request)),
+                    'permission': c.getPermission(user),
                     'margin': 30*(depth+1),
                     'width': 690-(30*depth+1)-30}
             try:
@@ -1012,6 +1016,18 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         return to_return
     else:
         return ''
+
+def getAjaxSource(request):
+    referer = request.META.get('HTTP_REFERER')
+    if not referer:
+        return request.path
+    else:
+        if LOCAL:
+            splitted = referer.split(".com:8000")
+        else:
+            splitted = referer.split(".com")
+        path = splitted[1]
+        return path
 
 #-----------------------------------------------------------------------------------------------------------------------
 # sensibly redirects to next question
