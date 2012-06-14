@@ -105,7 +105,7 @@ def fbLogin(request, dict={}):
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
-        fbMakeFriends(request,)
+        #fbMakeFriends(request,dict)
         return True
     else:
         return False
