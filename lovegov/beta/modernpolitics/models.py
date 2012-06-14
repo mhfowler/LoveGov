@@ -323,9 +323,12 @@ class Content(Privacy, LocationLevel):
     # Returns UserImage associated with this content
     #-------------------------------------------------------------------------------------------------------------------
     def getMainImage(self):
-        image = UserImage.lg.get_or_none(id=self.main_image_id)
-        if image:
-            return image
+        if self.main_image:
+            image = UserImage.lg.get_or_none(id=self.main_image_id)
+            if image:
+                return image
+            else:
+                return self.getMainTopic().getUserImage()
         else:
             return self.getMainTopic().getUserImage()
 
