@@ -894,6 +894,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    # deprecated
+    my_connections = models.IntegerField(default=-1)
     def __unicode__(self):
         return self.first_name
     def get_url(self):
