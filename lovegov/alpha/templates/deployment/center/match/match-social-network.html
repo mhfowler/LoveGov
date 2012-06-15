@@ -74,7 +74,7 @@
                 data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
                 success: function(data)
                 {
-                    if (check === currentDiv)
+                    if (check.is(currentDiv))
                     {
                         var returned = eval('(' + data + ')');
                         setTimeout(function(){$('.match-box-div').html(returned.html)},300);
