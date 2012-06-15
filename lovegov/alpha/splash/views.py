@@ -189,7 +189,9 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                         username = recoveryForm.save(confirm_link)
                         user = auth.authenticate(username=username, password=recoveryForm.cleaned_data.get('password1'))
                         if user: return loginAuthenticate(request,user)
-                    else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
+                    else:
+                        dict['recoveryForm'] = recoveryForm
+                        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
                 else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
