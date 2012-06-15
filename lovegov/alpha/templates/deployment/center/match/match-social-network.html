@@ -61,6 +61,7 @@
 
         $('.match-social-network-entity').hover(function()
         {
+            var check = $(this);
             currentDiv = $(this);
 
             $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
@@ -71,13 +72,13 @@
                 data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
                 success: function(data)
                 {
-                    if ($(this) == currentDiv)
+                    if (check == currentDiv)
                     {
                         var returned = eval('(' + data + ')');
                         setTimeout(function(){$('.match-box-div').html(returned.html)},300);
                         $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
                     }
-       
+
                 },
                 error: function(a,b,c)
                 {
