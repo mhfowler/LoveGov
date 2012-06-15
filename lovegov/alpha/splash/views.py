@@ -186,7 +186,7 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                     recoveryForm = RecoveryPassword(request.POST)
                     if recoveryForm.is_valid():
                         username = recoveryForm.save(confirm_link)
-                        user = auth.authenticate(username=username, password=recoveryForm.cleaned_data('password1'))
+                        user = auth.authenticate(username=username, password=recoveryForm.cleaned_data.get('password1'))
                         if user:
                             auth.login(request, user)
                             redirect_response = shortcuts.redirect('/')
