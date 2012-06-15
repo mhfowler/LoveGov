@@ -242,6 +242,10 @@ class Content(Privacy, LocationLevel):
             return '/topic/' + self.getMainTopic().alias + '/'
         elif self.type=='G':
             return '/group/' + str(self.id) + '/'
+        elif self.type=='C':
+            return self.downcast().root_content.getUrl()
+        elif self.type=='R':
+            return self.downcast().question.getUrl()
         else:
             return '/display/' + str(self.id) + '/'
 
