@@ -374,13 +374,14 @@
     float:left;
     width:300px;
     padding:0px;
-    height:460px;
+    height:450px;
 }
 
 .match-box-div
 {
     float:left;
     width:300px;
+    height:450px;
     padding:0px;
     border-radius:15px;
     -moz-border-radius:15px;
