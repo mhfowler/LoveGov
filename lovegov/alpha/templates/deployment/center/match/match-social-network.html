@@ -65,12 +65,12 @@
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                $('.match-box-div').hide({effect:'slide',speed:2000,direction:'down'});
+                //$('.match-box-div').hide({effect:'slide',speed:2000,direction:'down'});
                 setTimeout(function()
                 {
                     $('.match-box-div').html(returned.html);
                 },300);
-                $('.match-box-div').show({effect:'slide',speed:2000,direction:'up'});
+                $('.match-box-div').show({effect:'bounce',speed:2000,direction:'up'});
             },
             error: function(a,b,c)
             {
