@@ -165,7 +165,7 @@ def create(request, val={}):
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
             elif formtype == "G":
-                group_joined = GroupJoined(user=user, group=c, privacy=getPrivacy(request))
+                group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
                 group_joined.confirm()
                 group_joined.autoSave()
                 c.admins.add(user)

@@ -3666,7 +3666,6 @@ class GroupJoined(UCRelationship, Invite):
     def autoSave(self):
         self.relationship_type = 'JO'
         self.creator = self.user
-        self.content = self.group
         self.save()
 
 #=======================================================================================================================
