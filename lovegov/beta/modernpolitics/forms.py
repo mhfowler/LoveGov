@@ -19,6 +19,7 @@ from lovegov.beta.modernpolitics.constants import TYPE_DICT
 from django.core.files.base import ContentFile
 from lovegov.beta.modernpolitics import send_email
 from django.forms.widgets import CheckboxInput
+
 import string
 
 logger = logging.getLogger('filelogger')
@@ -209,6 +210,7 @@ class RecoveryPassword(forms.Form):
         return cleaned_data
 
     def save(self,confirm_link):
+        from models import ResetPassword
         resetPassword = ResetPassword.lg.get_or_none(email_code=confirm_link)
         if resetPassword:
             user= resetPassword.userProfile.user
