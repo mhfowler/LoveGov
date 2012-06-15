@@ -139,19 +139,20 @@ def login(request, to_page='web/', message="", dict={}):
     response.set_cookie("fb_state", fb_state)
     return response
 
+def loginAuthenticate(request,user,to_page=''):
+    auth.login(request, user)
+    redirect_response = shortcuts.redirect('/' + to_page)
+    redirect_response.set_cookie('privacy', value='PUB')
+    return redirect_response
+
 def loginPOST(request, to_page='web',message="",dict={}):
     dict['registerform'] = RegisterForm()
     if request.POST['button'] == 'login':
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
             user_prof = betabackend.getUserProfile(control_id=user.id)
-            if user_prof.confirmed:
-                auth.login(request, user)
-                redirect_response = shortcuts.redirect('/' + to_page)
-                redirect_response.set_cookie('privacy', value='PUB')
-                return redirect_response
-            else:
-                error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
+            if user_prof.confirmed: return loginAuthenticate(request,user,to_page)
+            else: error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
         else:
             error = 'Invalid Login/Password.'
         dict.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
@@ -187,12 +188,10 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                     if recoveryForm.is_valid():
                         username = recoveryForm.save(confirm_link)
                         user = auth.authenticate(username=username, password=recoveryForm.cleaned_data.get('password1'))
-                        if user:
-                            auth.login(request, user)
-                            redirect_response = shortcuts.redirect('/')
-                            redirect_response.set_cookie('privacy', value='PUB')
-                            return redirect_response
-                    else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
+                        if user: return loginAuthenticate(request,user)
+                    else:
+                        dict['recoveryForm'] = recoveryForm
+                        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
                 else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
@@ -570,15 +569,18 @@ def profile(request, alias=None, dict={}):
             # Is the current user already (requesting to) following this profile?
             dict['is_user_requested'] = False
             dict['is_user_confirmed'] = False
+            dict['is_user_rejected'] = False
             user_follow = betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof)
             if user_follow:
                 if user_follow.requested:
                     dict['is_user_requested'] = True
                 if user_follow.confirmed:
                     dict['is_user_confirmed'] = True
+                if user_follow.rejected:
+                    dict['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(5)
+            actions = user_prof.getActivity(10)
             actions_text = []
             for action in actions:
                 from_you = False
@@ -648,12 +650,15 @@ def group(request, g_id=None, dict={}):
     # Is the current user already (requesting to) following this group?
     dict['is_user_follow'] = False
     dict['is_user_confirmed'] = False
-    user_follow = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
-    if user_follow:
-        if user_follow.requested:
+    dict['is_user_rejected'] = False
+    group_joined = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
+    if group_joined:
+        if group_joined.requested:
             dict['is_user_follow'] = True
-        if user_follow.confirmed:
+        if group_joined.confirmed:
             dict['is_user_confirmed'] = True
+        if group_joined.rejected:
+            dict['is_user_rejected'] = True
 
     dict['is_user_admin'] = False
     admins = list( group.admins.all() )
@@ -761,13 +766,37 @@ def match(request,dict={}):
             dict['longitude'] = address.longitude
 
         # Get all facebook friends data
-        fb_friends = user.getFBFriends()
-        for friend in fb_friends:
-            comparison = betabackend.getUserUserComparison(user,friend)
-            friend.compare = comparison.toJSON()
-            friend.result = comparison.result
-        list.sort(key=lambda x:x.result, reverse=True)
-        dict['fb_friends'] = fb_friends
+#        fb_friends = user.getFBFriends()
+#        for friend in fb_friends:
+#            comparison = betabackend.getUserUserComparison(user,friend)
+#            friend.compare = comparison.toJSON()
+#            friend.result = comparison.result
+#        list.sort(key=lambda x:x.result, reverse=True)
+#        dict['fb_friends'] = fb_friends
+
+        # Get user's top 5 similar followers
+        prof_follow_me = user.getFollowMe()
+        for follow_me in prof_follow_me:
+            comparison = betabackend.getUserUserComparison(user, follow_me)
+            follow_me.compare = comparison.toJSON()
+            follow_me.result = comparison.result
+        prof_follow_me.sort(key=lambda x:x.result,reverse=True)
+        dict['user_follow_me'] = prof_follow_me[0:5]
+
+        # Get user's top 5 similar follows
+        prof_i_follow = user.getIFollow()
+        for i_follow in prof_i_follow:
+            comparison = betabackend.getUserUserComparison(user, i_follow)
+            i_follow.compare = comparison.toJSON()
+            i_follow.result = comparison.result
+        prof_i_follow.sort(key=lambda x:x.result,reverse=True)
+        dict['user_i_follow'] = prof_i_follow[0:5]
+
+        # Get user's random 5 followers
+        #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+
+        # Get user's random 5 follows
+        #dict['prof_i_follow'] = user_prof.getIFollow(5)
 
         # Get facebook friends network aggregate view
         #my_connections = user.getMyConnections()
@@ -790,8 +819,8 @@ def match(request,dict={}):
 def matchNew(request, dict={}):
     def election(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
-        c2 = betamodels.UserProfile.objects.get(first_name="Katy",last_name="Perry")
+        c1 = betamodels.UserProfile.objects.get(first_name="Barack", last_name="Obama")
+        c2 = betamodels.UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
         list = [c1,c2]
         for c in list:
@@ -816,11 +845,28 @@ def matchNew(request, dict={}):
 
     def social(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
-        comparison = betabackend.getUserUserComparison(user,c1)
-        c1.compare = comparison.toJSON()
-        c1.result = comparison.result
-        dict['c1'] = c1
+        comparison = betabackend.getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
+
+        """
+        # Get network and do comparison
+        network = user.getNetwork()
+        network.compare = betabackend.getUserGroupComparison(user, network).toJSON()
+        dict['network'] = network
+        congress = betabackend.getCongressNetwork()
+        congress.compare = betabackend.getUserGroupComparison(user, congress).toJSON()
+        dict['congress'] = congress
+        lovegov = betabackend.getLoveGovUser()
+        lovegov.compare = betabackend.getUserUserComparison(user, lovegov).toJSON()
+        dict['lovegov'] = lovegov
+        """
+
+        lovegov = betabackend.getLoveGovUser()
+        network = user.getNetwork()
+        congress = betabackend.getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
 
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
@@ -837,6 +883,7 @@ def matchNew(request, dict={}):
 
     if request.method == 'GET':
         if 'section' in request.GET:
+            dict['defaultImage'] = betabackend.getDefaultImage().image
             section = request.GET['section']
             if section == "social": return social(request,dict)
             elif section == "election": return election(request,dict)
@@ -886,7 +933,9 @@ def topicDetail(request, topic_alias=None, dict={}):
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def petitionDetail(request, p_id, dict={}):
-    petition = betamodels.Petition.objects.get(id=p_id)
+    petition = betamodels.Petition.lg.get_or_none(id=p_id)
+    if not petition:
+        return HttpResponse("This petition does not exist")
     dict['pageTitle'] = "lovegov: " + petition.title
     dict['petition'] = petition
     signers = petition.getSigners()

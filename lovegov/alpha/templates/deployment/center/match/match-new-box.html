@@ -1,11 +1,11 @@
 <div class="match-box-div">
     <div class="match-user-info">
         {% load thumbnail %}
-        {% thumbnail userProfile.getProfileImage.image "85x85" crop="center" as img %}
+        {% thumbnail entity.getProfileImage.image "85x85" crop="center" as img %}
             <img class="match-user-img" src="{{ img.url }}"/>
         {% endthumbnail %}
         <div style="float:left">
-            <span class="match-user-info-span">{{ userProfile.get_name }}</span>
+            <span class="match-user-info-span">{{ entity.get_name }}</span>
             <ul>
                 <li>Party: <span style="color: #959595;">Republican</span></li>
                 <li>Roll:</li>
@@ -13,7 +13,7 @@
             </ul>
         </div>
     </div>
-    <div id="{{ userProfile.alias }}-canvas" style="clear:both">
+    <div id="{{ entity.alias }}-canvas" style="clear:both">
 
     </div>
 
@@ -22,6 +22,6 @@
     </div>
 
     <script>
-        new VisualComparison("{{ userProfile.alias }}-canvas",eval('(' + '{{ userProfile.compare|escapejs }}' + ')')).draw();
+        new VisualComparison("{{ entity.alias }}-canvas",eval('(' + '{{ entity.compare|escapejs }}' + ')')).draw();
     </script>
 </div>

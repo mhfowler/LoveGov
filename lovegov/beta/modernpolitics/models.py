@@ -536,23 +536,28 @@ class Content(Privacy, LocationLevel):
     # Add like vote to content from inputted user (or adjust his vote appropriately)
     #-------------------------------------------------------------------------------------------------------------------
     def like(self, user, privacy):
-        my_vote = Voted.objects.filter(user=user, content=self)
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
         if my_vote:
             # if already liked, do nothing
-            if my_vote[0].value == 1:
+            if my_vote.value == 1:
                 pass
             # if disliked or neutral, increase vote by
             else:
-                my_vote[0].value += 1
-                my_vote[0].autoSave()
+                my_vote.value += 1
+                my_vote.autoSave()
+                mod = 'S'
                 # adjust content values about status and vote
-                if my_vote[0].value == 0:
+                if my_vote.value == 1:
                     self.upvotes += 1
+                    mod = 'L'
                 else:
                     self.downvotes -= 1
+                    mod = 'U'
                 self.status += constants.STATUS_VOTE
                 self.save()
-            return my_vote[0].value
+                action = Action(relationship=my_vote,modifier=mod)
+                action.autoSave()
+            return my_vote.value
         else:
             # create new vote
             new_vote = Voted(value=1, content=self, user=user, privacy=privacy)
@@ -561,28 +566,35 @@ class Content(Privacy, LocationLevel):
             self.upvotes += 1
             self.status += constants.STATUS_VOTE
             self.save()
+            action = Action(relationship=my_vote,modifier='L')
+            action.autoSave()
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add dislike vote to content from inputted user (or adjust his vote appropriately)
     #-------------------------------------------------------------------------------------------------------------------
     def dislike(self, user, privacy):
-        my_vote = Voted.objects.filter(user=user, content=self)
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
         if my_vote:
             # if already disliked, do nothing
-            if my_vote[0].value == -1:
+            if my_vote.value == -1:
                 pass
             else:
-                my_vote[0].value -= 1
-                my_vote[0].autoSave()
+                my_vote.value -= 1
+                my_vote.autoSave()
+                mod = 'S'
                 # adjust content values about status and vote
-                if my_vote[0].value == 0:
+                if my_vote.value == -1:
                     self.downvotes += 1
+                    mod = 'D'
                 else:
                     self.upvotes -= 1
+                    mod = 'U'
                 self.status -= constants.STATUS_VOTE
                 self.save()
-            return my_vote[0].value
+                action = Action(relationship=my_vote,modifier=mod)
+                action.autoSave()
+            return my_vote.value
         else:
             # create new vote
             new_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -591,6 +603,8 @@ class Content(Privacy, LocationLevel):
             self.downvotes += 1
             self.status -= constants.STATUS_VOTE
             self.save()
+            action = Action(relationship=my_vote,modifier='D')
+            action.autoSave()
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1425,11 +1439,11 @@ class Action(Privacy):
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':
-            if relationship.value == 1:
+            if self.modifier == 'L':
                 action_verbose = ' liked '
-            elif relationship.value == -1:
+            elif self.modifier == 'D':
                 action_verbose = ' disliked '
-            else:
+            else: #self.modifier == 'U'
                 action_verbose = ' unvoted '
         #Follow Section
         elif self.type == 'FO':
@@ -1504,10 +1518,28 @@ class Action(Privacy):
             action_verbose = ' signed '
         elif self.type == 'SH':
             action_verbose = ' shared '
+            #Follow Section
         elif self.type == 'JO':
-            action_verbose = ' joined '
+            if self.modifier == 'I':
+                if from_you:
+                    action_verbose = ' were invited to join '
+                else:
+                    action_verbose = ' was invited to join '
+            elif self.modifier == 'R':
+                action_verbose = ' requested to join '
+            elif self.modifier == 'D':
+                action_verbose = ' joined '
+            elif self.modifier == 'N':
+                action_verbose = ' declined to join '
+            elif self.modifier == 'X':
+                if from_you:
+                    action_verbose = ' were rejected from '
+                else:
+                    action_verbose = ' was rejected from '
+            elif self.modifier == 'S':
+                action_verbose = ' left '
         elif self.type == 'CR':
-            if relationship.content.type == 'R':
+            if relationship.getTo().type == 'R':
                 action_verbose = ' answered '
             else:
                 action_verbose = ' created '
@@ -2682,9 +2714,6 @@ class UserResponse(Response):
         return self
 
 
-
-
-
 ########################################################################################################################
 ########################################################################################################################
 #   Debates
@@ -3425,11 +3454,13 @@ class Relationship(Privacy):
         elif type == 'AE':
             object = self.ucrelationship.attending
         elif type== 'JO':
-            object = self.ucrelationship.groupfollow
+            object = self.ucrelationship.groupjoined
         elif type== 'JD':
             object = self.ucrelationship.debatejoined
         elif type == 'FO':
             object = self.uurelationship.userfollow
+        elif type == 'SI':
+            object = self.ucrelationship.signed
         else:
             object = self
         return object
@@ -3448,7 +3479,6 @@ class Invite(LGModel):
     invited = models.BooleanField(default=False)        # unused in bi-directional relationships
     requested = models.BooleanField(default=False)
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
-    ## BELOW ARE DEPRECATED ## sorrry
     rejected = models.BooleanField(default=False)
     declined = models.BooleanField(default=False)
 
@@ -3547,7 +3577,7 @@ class Voted(UCRelationship):
 
     def getValue(self, ranking='D'):
         if ranking=='D':
-            if self.value ==1:
+            if self.value == 1:
                 value = 1
             elif self.value == -1:
                 value = -1
@@ -3605,6 +3635,16 @@ class Shared(UCRelationship):
     share_groups = models.ManyToManyField(Group)
     def autoSave(self):
         self.relationship_type = 'SH'
+        self.creator = self.user
+        self.save()
+
+#=======================================================================================================================
+# Stores a user sharing a piece of content.
+# inherits from relationship
+#=======================================================================================================================
+class Signed(UCRelationship):
+    def autoSave(self):
+        self.relationship_type = 'SI'
         self.creator = self.user
         self.save()
 
@@ -3981,7 +4021,7 @@ class QuestionOrdering(LGModel):
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
-
+#TODO: make this link expire after a certain length of time
 class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
     email_code = models.CharField(max_length=75)
@@ -3990,7 +4030,8 @@ class ResetPassword(LGModel):
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
-        if UserProfile.objects.filter(username=username).exists():
+        userProfile = UserProfile.lg.get_or_none(username=username)
+        if userProfile and userProfile.confirmed:
             try:
                 import backend
                 import send_email

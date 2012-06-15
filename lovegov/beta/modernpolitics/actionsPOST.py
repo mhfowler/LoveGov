@@ -51,6 +51,8 @@ def actionPOST(request, dict={}):
             return delete(request, dict)
         elif action == 'setprivacy':
             return setPrivacy(request, dict)
+        elif action == 'followprivacy':
+            return setFollowPrivacy(request, dict)
         elif action == 'vote':
             return vote(request, dict)
         elif action == 'hoverComparison':
@@ -73,6 +75,8 @@ def actionPOST(request, dict={}):
             return joinGroupResponse(request, dict)
         elif action == 'leavegroup':
             return leaveGroup(request, dict)
+        elif action == 'matchComparison':
+            return matchComparison(request,dict)
         ### actions below have not been proof checked ###
         elif action == 'linkfrom':
             return linkfrom(request, dict)
@@ -161,11 +165,13 @@ def create(request, val={}):
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
             elif formtype == "G":
-                follow_request = GroupFollow(user=user, content=c, group=c, privacy=getPrivacy(request))
-                follow_request.confirm()
-                follow_request.autoSave()
+                group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
+                group_joined.confirm()
+                group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
+                action = Action(relationship=c.getCreatedRelationship())
+                action.autoSave()
                 from lovegov.alpha.splash.views import group
                 return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
@@ -205,9 +211,16 @@ def sign(request, vals={}):
     user = vals['user']
     privacy = getPrivacy(request)
     if privacy == 'PUB':
-        petition = Petition.objects.get(id=request.POST['c_id'])
+        petition = Petition.lg.get_or_none(id=request.POST['c_id'])
+        if not petition:
+            return HttpResponse("This petition does not exist")
         if petition.finalized:
             if petition.sign(user):
+                signed = Signed(user=user, content=petition)
+                signed.autoSave()
+                action = Action(relationship=signed)
+                action.autoSave()
+                petition.getCreator().notify(action)
                 vals['signer'] = user
                 context = RequestContext(request,vals)
                 template = loader.get_template('deployment/snippets/signer.html')
@@ -302,6 +315,9 @@ def comment(request, dict={}):
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
+        action = Action(relationship=rel)
+        action.autoSave()
+        comment.on_content.getCreator().notify(action)
         return HttpResponse("+")
     else:
         if request.is_ajax():
@@ -328,6 +344,23 @@ def setPrivacy(request, dict={}):
     return response
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Sets privacy cookie and redirects to inputted page.
+# post: path - current url, mode - new privacy setting
+# args: request
+# tags: USABLE
+#-----------------------------------------------------------------------------------------------------------------------
+def setFollowPrivacy(request, dict={}):
+    user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if not user:
+        return HttpResponse("User does not exist")
+    if not request.POST['private_follow']:
+        return HttpResponse("No user follow privacy specified")
+    user.private_follow = request.POST['private_follow']
+    user.save()
+    return HttpResponse("Follow privacy set")
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
 # post: vote - type of vote (like or dislike), c_id - id of content to be voted on
 # cookies: privacy - privacy setting
@@ -347,13 +380,6 @@ def vote(request, dict):
         value = content.dislike(user=user, privacy=privacy)
     to_return = {'my_vote':value, 'status':content.status}
     return HttpResponse(json.dumps(to_return))
-    """
-        return HttpResponse("+")
-    if content.type == "C":
-        return HttpResponse("+")
-    else:
-
-    """
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves a users answer to a question.
@@ -381,6 +407,8 @@ def answer(request, dict={}):
                 weight = weight,
                 explanation = explanation)
             response.autoSave(creator=user, privacy=privacy)
+            action = Action(relationship=response.getCreatedRelationship())
+            action.autoSave()
         # else update old response
         else:
             response = my_response[0]
@@ -390,6 +418,8 @@ def answer(request, dict={}):
             user_response.explanation = explanation
             # update creation relationship
             user_response.saveEdited(privacy)
+            action = Action(relationship=user_response.getCreatedRelationship())
+            action.autoSave()
         if request.is_ajax():
             url = response.get_url()
             # get percentage agreed
@@ -426,21 +456,21 @@ def joinGroupRequest(request, dict={}):
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
-    #Get GroupFollow relationship if it exists already
+    #Get GroupJoined relationship if it exists already
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
-        group_follow = already[0]
-        if group_follow.confirmed:
+        group_joined = already[0]
+        if group_joined.confirmed:
             return HttpResponse("you are already a member of group")
     else: #If it doesn't exist, create it
-        group_follow = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
-        group_follow.autoSave()
+        group_joined = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
+        group_joined.autoSave()
     #If the group is privacy secret...
     if group.group_privacy == 'S':
-        if group_follow.invited:
-            group_follow.confirm()
+        if group_joined.invited:
+            group_joined.confirm()
             group.members.add(from_user)
-            action = Action(relationship=group_follow,modifier="D")
+            action = Action(relationship=group_joined,modifier="D")
             action.autoSave()
             for admin in group.admins.all():
                 admin.notify(action)
@@ -448,49 +478,52 @@ def joinGroupRequest(request, dict={}):
         return HttpResponse("cannot request to join secret group")
     #If the group type is open...
     if group.group_privacy == 'O':
-        group_follow.confirm()
+        group_joined.confirm()
         group.members.add(from_user)
-        action = Action(relationship=group_follow,modifier="D")
+        action = Action(relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
         return HttpResponse("joined")
     #If the group type is private and not requested yet
-    elif group.group_privacy == 'P' and not group_follow.requested:
-        group_follow.request()
-        action = Action(relationship=group_follow,modifier="R")
+    else: # group.group_privacy == 'P'
+        if group_joined.requested and not group_joined.rejected:
+            return HttpResponse("you have already requested to join this group")
+        group_joined.clear()
+        group_joined.request()
+        action = Action(relationship=group_joined,modifier='R')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
         return HttpResponse("request to join")
-    return HttpResponse("you have already requested to join this group")
+
 
 
 #----------------------------------------------------------------------------------------------------------------------
-# Confirms or denies groupFollow, if groupFollow was requested.
+# Confirms or denies GroupJoined, if GroupJoined was requested.
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, dict={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupFollow.objects.filter(user=from_user, group=group)
+    already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
-        group_follow = already[0]
-        if group_follow.requested:
+        group_joined = already[0]
+        if group_joined.requested:
             if response == 'Y':
-                group_follow.confirm()
+                group_joined.confirm()
                 group.members.add(from_user)
-                action = Action(relationship=group_follow,modifier="D")
+                action = Action(relationship=group_joined,modifier="D")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now following you")
             elif response == 'N':
-                group_follow.reject()
-                action = Action(relationship=group_follow,modifier="X")
+                group_joined.reject()
+                action = Action(relationship=group_joined,modifier="X")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected their follow request")
-        if group_follow.confirmed:
+        if group_joined.confirmed:
             return HttpResponse("This person is already following you")
     return HttpResponse("this person has not requested to follow you")
 
@@ -520,10 +553,11 @@ def userFollowRequest(request, dict={}):
         to_user.notify(action)
         return HttpResponse("you are now following this person")
     #otherwise, if you've already requested to follow this user, you're done
-    elif user_follow.requested:
+    elif user_follow.requested and not user_follow.rejected:
         return HttpResponse("you have already requested to follow this person")
     #Otherwise, make the request to follow this user
     else:
+        user_follow.clear()
         user_follow.request()
         action = Action(relationship=user_follow,modifier='R')
         action.autoSave()
@@ -613,9 +647,9 @@ def leaveGroup(request, dict={}):
     # if not system then remove
     from_user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
-    group_follow = GroupFollow.objects.get(group=group, user=from_user)
-    if group_follow:
-        group_follow.clear()
+    group_joined = GroupJoined.objects.get(group=group, user=from_user)
+    if group_joined:
+        group_joined.clear()
     if not group.system:
         group.members.remove(from_user)
         group.admins.remove(from_user)
@@ -626,7 +660,7 @@ def leaveGroup(request, dict={}):
                 group.save()
             for member in members:
                 group.admins.add(member)
-        action = Action(relationship=group_follow,modifier='S')
+        action = Action(relationship=group_joined,modifier='S')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -1085,3 +1119,21 @@ def addEmailList(request):
     newEmail.save()
     return HttpResponse("Success")
 
+
+def matchComparison(request,dict={}):
+    from lovegov.alpha.splash.views import ajaxRender
+    def returnComparison(to_compare):
+        dict['entity'] = to_compare
+        html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
+        return HttpResponse(json.dumps({'html':html}))
+
+    user = dict['user']
+    url = request.POST['entity_url'].replace('/','').replace('profile','').replace('network','')
+    to_compare = UserProfile.lg.get_or_none(alias=url)
+    if to_compare:
+        to_compare.compare = backend.getUserUserComparison(user, to_compare).toJSON()
+        return returnComparison(to_compare)
+    else:
+        to_compare = Group.lg.get_or_none(alias=url)
+        to_compare.compare = backend.getUserGroupComparison(user, to_compare).toJSON()
+        return returnComparison(to_compare)

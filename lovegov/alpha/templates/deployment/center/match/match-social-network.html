@@ -1,4 +1,6 @@
-{% include 'deployment/center/match/match-new-box.html' with userProfile=c1 %}
+<div id="social-comparison">
+    {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
+</div>
 <div id="match-featured-social-network">
     <h1 class="match-h1">Friends & Networks</h1>
     <p class="match-p">
@@ -6,16 +8,14 @@
         your friends on social media and networks
         from your school, state and more.
     </p>
+
+    <!-- Friends -->
     <div class="match-social-network-entity-container match-social-network-entity-container-left">
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
+        <div class="match-social-network-entity-container-wrapper">
+            <p>
+                You don't have any friends. Make some.
+            </p>
+        </div>
         <div class="match-social-network-entity-button">
             <p>Friends <img src="/static/images/match/link_arrow.png"/></p>
         </div>
@@ -23,16 +23,14 @@
 
     <div class="match-social-networking-entity-container-border"></div>
 
+    <!-- Groups -->
     <div class="match-social-network-entity-container match-social-network-entity-container-center">
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
+        <div class="match-social-network-entity-container-wrapper">
+            <p>
+                You aren't in any groups. Join some.
+            </p>
+        </div>
+
         <div class="match-social-network-entity-button">
             <p>Groups <img src="/static/images/match/link_arrow.png"/></p>
         </div>
@@ -40,16 +38,15 @@
 
     <div class="match-social-networking-entity-container-border"></div>
 
+    <!-- Networks -->
     <div class="match-social-network-entity-container match-social-network-entity-container-right">
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
+        <div class="match-social-network-entity-container-wrapper">
+        {% for network in networks %}
+            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
+                {% include 'deployment/snippets/match/social-network-image.html' with entity=network %}
+            </div>
+        {% endfor %}
+        </div>
         <div class="match-social-network-entity-button">
             <p>Networks <img src="/static/images/match/link_arrow.png"/></p>
         </div>
@@ -58,6 +55,32 @@
 </div>
 
 <script type="text/javascript">
+    $('.match-social-network-entity').hover(function()
+    {
+        $.ajax
+        ({
+            type:'POST',
+            url:"/action/",
+            data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
+                setTimeout(function(){$('.match-box-div').html(returned.html)},300);
+                $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+            },
+            error: function(a,b,c)
+            {
+
+            }
+        })
+    }, function()
+    {
+
+    });
+
+
+
     $('.match-social-network-entity-button').hover(function()
     {
 
