@@ -71,7 +71,7 @@
                 ({
                     type:'POST',
                     url:"/action/",
-                    data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
+                    data:{action:'matchComparison',entity_url:check.children('a').attr('href')},
                     success: function(data)
                     {
                         if (check.is(currentDiv))
