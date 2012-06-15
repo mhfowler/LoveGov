@@ -1,0 +1,9 @@
+{% load thumbnail %}
+{% thumbnail entity.getProfileImage.image "45x45" crop="center" as img %}
+    <img src="{{ img.url }}"/>
+{% empty %}
+    {% load thumbnail %}
+    {% thumbnail defaultImage "45x45" crop="center" as img %}
+        <img src="{{ img.url }}"/>
+    {% endthumbnail %}
+{% endthumbnail %}
