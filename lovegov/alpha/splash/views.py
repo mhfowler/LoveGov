@@ -139,7 +139,6 @@ def login(request, to_page='web/', message="", dict={}):
     response.set_cookie("fb_state", fb_state)
     return response
 
-
 def loginAuthenticate(request,user,to_page=''):
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
