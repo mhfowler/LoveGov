@@ -55,9 +55,11 @@
 </div>
 
 <script type="text/javascript">
+    var currentDiv;
+
     (function()
     {
-        var currentDiv;
+
 
         $('.match-social-network-entity').hover(function()
         {
@@ -78,7 +80,6 @@
                         setTimeout(function(){$('.match-box-div').html(returned.html)},300);
                         $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
                     }
-
                 },
                 error: function(a,b,c)
                 {
