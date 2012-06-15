@@ -820,6 +820,24 @@ def matchNew(request, dict={}):
         user.result = comparison.result
         dict['c1'] = user
 
+        """
+        # Get network and do comparison
+        network = user.getNetwork()
+        network.compare = betabackend.getUserGroupComparison(user, network).toJSON()
+        dict['network'] = network
+        congress = betabackend.getCongressNetwork()
+        congress.compare = betabackend.getUserGroupComparison(user, congress).toJSON()
+        dict['congress'] = congress
+        lovegov = betabackend.getLoveGovUser()
+        lovegov.compare = betabackend.getUserUserComparison(user, lovegov).toJSON()
+        dict['lovegov'] = lovegov
+        """
+
+        lovegov = betabackend.getLoveGovUser()
+        network = user.getNetwork()
+        congress = betabackend.getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
+
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
         if request.is_ajax():

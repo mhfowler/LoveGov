@@ -6,6 +6,8 @@
         your friends on social media and networks
         from your school, state and more.
     </p>
+
+    <!-- Friends -->
     <div class="match-social-network-entity-container match-social-network-entity-container-left">
         <div class="match-social-network-entity match-social-network-entity-left"></div>
         <div class="match-social-network-entity match-social-network-entity-center"></div>
@@ -23,6 +25,7 @@
 
     <div class="match-social-networking-entity-container-border"></div>
 
+    <!-- Groups -->
     <div class="match-social-network-entity-container match-social-network-entity-container-center">
         <div class="match-social-network-entity match-social-network-entity-left"></div>
         <div class="match-social-network-entity match-social-network-entity-center"></div>
@@ -40,16 +43,17 @@
 
     <div class="match-social-networking-entity-container-border"></div>
 
+    <!-- Networks -->
     <div class="match-social-network-entity-container match-social-network-entity-container-right">
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
-        <div class="match-social-network-entity match-social-network-entity-left"></div>
-        <div class="match-social-network-entity match-social-network-entity-center"></div>
-        <div class="match-social-network-entity match-social-network-entity-right"></div>
+        {% for network in networks %}
+            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
+                {% load thumbnail %}
+                {% thumbnail network.getProfileImage.image "45x45" crop="center" as img %}
+                    <img src="{{ img.url }}"/>
+                {% empty %}
+                {% endthumbnail %}
+            </div>
+        {% endfor %}
         <div class="match-social-network-entity-button">
             <p>Networks <img src="/static/images/match/link_arrow.png"/></p>
         </div>
