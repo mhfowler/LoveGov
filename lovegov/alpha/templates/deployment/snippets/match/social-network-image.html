@@ -1,9 +1,9 @@
 {% load thumbnail %}
 {% thumbnail entity.getProfileImage.image "45x45" crop="center" as img %}
-    <a href="{{ entity.getAlphaURL }}" class="do-ajax-link"><img src="{{ img.url }}"/></a>
+    <a href="{{ entity.get_url }}" class="do-ajax-link"><img src="{{ img.url }}"/></a>
 {% empty %}
     {% load thumbnail %}
     {% thumbnail defaultImage "45x45" crop="center" as img %}
-        <a href="{{ entity.getAlphaURL }}" class="do-ajax-link"><img src="{{ img.url }}"/></a>
+        <a href="{{ entity.get_url }}" class="do-ajax-link"><img src="{{ img.url }}"/></a>
     {% endthumbnail %}
 {% endthumbnail %}
