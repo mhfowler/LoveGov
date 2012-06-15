@@ -536,23 +536,28 @@ class Content(Privacy, LocationLevel):
     # Add like vote to content from inputted user (or adjust his vote appropriately)
     #-------------------------------------------------------------------------------------------------------------------
     def like(self, user, privacy):
-        my_vote = Voted.objects.filter(user=user, content=self)
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
         if my_vote:
             # if already liked, do nothing
-            if my_vote[0].value == 1:
+            if my_vote.value == 1:
                 pass
             # if disliked or neutral, increase vote by
             else:
-                my_vote[0].value += 1
-                my_vote[0].autoSave()
+                my_vote.value += 1
+                my_vote.autoSave()
+                mod = 'S'
                 # adjust content values about status and vote
-                if my_vote[0].value == 0:
+                if my_vote.value == 1:
                     self.upvotes += 1
+                    mod = 'L'
                 else:
                     self.downvotes -= 1
+                    mod = 'U'
                 self.status += constants.STATUS_VOTE
                 self.save()
-            return my_vote[0].value
+                action = Action(relationship=my_vote,modifier=mod)
+                action.autoSave()
+            return my_vote.value
         else:
             # create new vote
             new_vote = Voted(value=1, content=self, user=user, privacy=privacy)
@@ -561,28 +566,35 @@ class Content(Privacy, LocationLevel):
             self.upvotes += 1
             self.status += constants.STATUS_VOTE
             self.save()
+            action = Action(relationship=my_vote,modifier='L')
+            action.autoSave()
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add dislike vote to content from inputted user (or adjust his vote appropriately)
     #-------------------------------------------------------------------------------------------------------------------
     def dislike(self, user, privacy):
-        my_vote = Voted.objects.filter(user=user, content=self)
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
         if my_vote:
             # if already disliked, do nothing
-            if my_vote[0].value == -1:
+            if my_vote.value == -1:
                 pass
             else:
-                my_vote[0].value -= 1
-                my_vote[0].autoSave()
+                my_vote.value -= 1
+                my_vote.autoSave()
+                mod = 'S'
                 # adjust content values about status and vote
-                if my_vote[0].value == 0:
+                if my_vote.value == -1:
                     self.downvotes += 1
+                    mod = 'D'
                 else:
                     self.upvotes -= 1
+                    mod = 'U'
                 self.status -= constants.STATUS_VOTE
                 self.save()
-            return my_vote[0].value
+                action = Action(relationship=my_vote,modifier=mod)
+                action.autoSave()
+            return my_vote.value
         else:
             # create new vote
             new_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -591,6 +603,8 @@ class Content(Privacy, LocationLevel):
             self.downvotes += 1
             self.status -= constants.STATUS_VOTE
             self.save()
+            action = Action(relationship=my_vote,modifier='D')
+            action.autoSave()
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1422,11 +1436,11 @@ class Action(Privacy):
         if self.type == 'CO':
             action_verbose = ' commented on '
         elif self.type == 'VO':
-            if relationship.value == 1:
+            if self.modifier == 'L':
                 action_verbose = ' liked '
-            elif relationship.value == -1:
+            elif self.modifier == 'D':
                 action_verbose = ' disliked '
-            else:
+            else: #self.modifier == 'U'
                 action_verbose = ' unvoted '
         #Follow Section
         elif self.type == 'FO':
@@ -3560,7 +3574,7 @@ class Voted(UCRelationship):
 
     def getValue(self, ranking='D'):
         if ranking=='D':
-            if self.value ==1:
+            if self.value == 1:
                 value = 1
             elif self.value == -1:
                 value = -1
