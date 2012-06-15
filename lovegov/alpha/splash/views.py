@@ -580,7 +580,7 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(5)
+            actions = user_prof.getActivity(10)
             actions_text = []
             for action in actions:
                 from_you = False
