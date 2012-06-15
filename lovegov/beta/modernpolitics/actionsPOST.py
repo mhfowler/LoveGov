@@ -51,6 +51,8 @@ def actionPOST(request, dict={}):
             return delete(request, dict)
         elif action == 'setprivacy':
             return setPrivacy(request, dict)
+        elif action == 'followprivacy':
+            return setFollowPrivacy(request, dict)
         elif action == 'vote':
             return vote(request, dict)
         elif action == 'hoverComparison':
@@ -207,7 +209,9 @@ def sign(request, vals={}):
     user = vals['user']
     privacy = getPrivacy(request)
     if privacy == 'PUB':
-        petition = Petition.objects.get(id=request.POST['c_id'])
+        petition = Petition.lg.get_or_none(id=request.POST['c_id'])
+        if not petition:
+            return HttpResponse("This petition does not exist")
         if petition.finalized:
             if petition.sign(user):
                 signed = Signed(user=user, content=petition)
@@ -336,6 +340,23 @@ def setPrivacy(request, dict={}):
     response = shortcuts.redirect(path)
     response.set_cookie('privacy',value=mode)
     return response
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Sets privacy cookie and redirects to inputted page.
+# post: path - current url, mode - new privacy setting
+# args: request
+# tags: USABLE
+#-----------------------------------------------------------------------------------------------------------------------
+def setFollowPrivacy(request, dict={}):
+    user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if not user:
+        return HttpResponse("User does not exist")
+    if not request.POST['private_follow']:
+        return HttpResponse("No user follow privacy specified")
+    user.private_follow = request.POST['private_follow']
+    user.save()
+    return HttpResponse("Follow privacy set")
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.

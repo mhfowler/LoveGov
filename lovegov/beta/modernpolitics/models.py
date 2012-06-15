@@ -3442,6 +3442,8 @@ class Relationship(Privacy):
             object = self.ucrelationship.debatejoined
         elif type == 'FO':
             object = self.uurelationship.userfollow
+        elif type == 'SI':
+            object = self.ucrelationship.signed
         else:
             object = self
         return object
@@ -3626,6 +3628,7 @@ class Shared(UCRelationship):
 class Signed(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'SI'
+        self.creator = self.user
         self.save()
 
 #=======================================================================================================================

@@ -67,7 +67,7 @@
     <h4>Followers</h4>
     <ul id="followers">
         {% for follower in prof_follow_me %}
-            <li>{{ follower.get_name }}</li>
+            <li><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></li>
         {% empty %}
             <li>{{ user_prof.get_name }} has no followers! =( </li>
         {% endfor %}
@@ -76,7 +76,7 @@
     <h4>People I Follow</h4>
     <ul id="following">
         {% for follow in prof_i_follow %}
-        <li>{{ follow.get_name }}</li>
+        <li><a href="{{ follow.get_url }}">{{ follow.get_name }}</a></li>
         {% empty %}
         <li>{{ user_prof.get_name }} follows no man. </li>
         {% endfor %}
@@ -85,7 +85,7 @@
     <h4>Groups</h4>
     <ul id="groups">
         {% for group in prof_groups %}
-            <li>{{ group.title }}</li>
+            <li><a href="{{ group.get_url }}">{{ group.title }}</a></li>
         {% empty %}
             <li>{{ user_prof.get_name }} has no groups! =( </li>
         {% endfor %}
@@ -105,7 +105,13 @@
         {% empty %}
             <div>No follow requests! =( </div><br>
         {% endfor %}
-        <div>
+
+        Set following privacy to:
+        {% if user.private_follow %}
+            <a href="" id="public-follow">public</a>
+        {% else %}
+            <a href="" id="private-follow">private</a>
+        {% endif %}
 
     {% elif is_user_rejected or not is_user_confirmed and not is_user_requested %}
         <a href="" id="user-follow">
@@ -127,9 +133,11 @@
         {% for action in actions_text %}
             {{ action|safe|escape }}<br>
         {% endfor %}
+
     <script>
         var p_id = "{{ user_prof.id }}";
     </script>
 
     </div>
 
+</div>

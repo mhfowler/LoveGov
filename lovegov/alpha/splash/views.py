@@ -909,7 +909,9 @@ def topicDetail(request, topic_alias=None, dict={}):
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def petitionDetail(request, p_id, dict={}):
-    petition = betamodels.Petition.objects.get(id=p_id)
+    petition = betamodels.Petition.lg.get_or_none(id=p_id)
+    if not petition:
+        return HttpResponse("This petition does not exist")
     dict['pageTitle'] = "lovegov: " + petition.title
     dict['petition'] = petition
     signers = petition.getSigners()

@@ -1743,7 +1743,8 @@ function userFollowResponse(event,response,div)
 
 function loadProfile()
 {
-    $("#user-follow").click( function(event) {
+    $("#user-follow").click( function(event)
+    {
         event.preventDefault();
         $.ajax(
             {
@@ -1765,7 +1766,8 @@ function loadProfile()
         );
     });
 
-    $("#user-unfollow").click( function(event) {
+    $("#user-unfollow").click( function(event)
+    {
         event.preventDefault();
         $.ajax(
             {
@@ -1793,6 +1795,54 @@ function loadProfile()
 
     $(".follow-response-n").click( function(event) {
         userFollowResponse(event,"N",$(this));
+    });
+
+    $("#public-follow").click( function(event)
+    {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'followprivacy',
+                    'p_id': p_id,
+                    'private_follow': false
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        )
+    });
+
+    $("#private-follow").click( function(event)
+    {
+        event.preventDefault();
+        $.ajax(
+            {
+                url:'/action/',
+                type:'POST',
+                data: {
+                    'action':'followprivacy',
+                    'p_id': p_id,
+                    'private_follow': true
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        )
     });
 }
 
