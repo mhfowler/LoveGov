@@ -139,19 +139,21 @@ def login(request, to_page='web/', message="", dict={}):
     response.set_cookie("fb_state", fb_state)
     return response
 
+
+def loginAuthenticate(request,user,to_page=''):
+    auth.login(request, user)
+    redirect_response = shortcuts.redirect('/' + to_page)
+    redirect_response.set_cookie('privacy', value='PUB')
+    return redirect_response
+
 def loginPOST(request, to_page='web',message="",dict={}):
     dict['registerform'] = RegisterForm()
     if request.POST['button'] == 'login':
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
             user_prof = betabackend.getUserProfile(control_id=user.id)
-            if user_prof.confirmed:
-                auth.login(request, user)
-                redirect_response = shortcuts.redirect('/' + to_page)
-                redirect_response.set_cookie('privacy', value='PUB')
-                return redirect_response
-            else:
-                error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
+            if user_prof.confirmed: return loginAuthenticate(request,user,to_page)
+            else: error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
         else:
             error = 'Invalid Login/Password.'
         dict.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
@@ -187,11 +189,7 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                     if recoveryForm.is_valid():
                         username = recoveryForm.save(confirm_link)
                         user = auth.authenticate(username=username, password=recoveryForm.cleaned_data.get('password1'))
-                        if user:
-                            auth.login(request, user)
-                            redirect_response = shortcuts.redirect('/')
-                            redirect_response.set_cookie('privacy', value='PUB')
-                            return redirect_response
+                        if user: return loginAuthenticate(request,user)
                     else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
                 else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
