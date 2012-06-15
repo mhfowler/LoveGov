@@ -815,11 +815,10 @@ def matchNew(request, dict={}):
 
     def social(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(user)
-        comparison = betabackend.getUserUserComparison(user,c1)
-        c1.compare = comparison.toJSON()
-        c1.result = comparison.result
-        dict['c1'] = c1
+        comparison = betabackend.getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
 
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
