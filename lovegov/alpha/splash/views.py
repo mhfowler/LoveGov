@@ -580,7 +580,7 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(5)
+            actions = user_prof.getActivity(10)
             actions_text = []
             for action in actions:
                 from_you = False
@@ -909,7 +909,9 @@ def topicDetail(request, topic_alias=None, dict={}):
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def petitionDetail(request, p_id, dict={}):
-    petition = betamodels.Petition.objects.get(id=p_id)
+    petition = betamodels.Petition.lg.get_or_none(id=p_id)
+    if not petition:
+        return HttpResponse("This petition does not exist")
     dict['pageTitle'] = "lovegov: " + petition.title
     dict['petition'] = petition
     signers = petition.getSigners()
