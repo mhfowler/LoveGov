@@ -65,26 +65,29 @@
             var check = $(this);
             currentDiv = $(this);
 
-            $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
-            $.ajax
-            ({
-                type:'POST',
-                url:"/action/",
-                data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
-                success: function(data)
-                {
-                    if (check.is(currentDiv))
+            $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'},function()
+            {
+                $.ajax
+                ({
+                    type:'POST',
+                    url:"/action/",
+                    data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
+                    success: function(data)
                     {
-                        var returned = eval('(' + data + ')');
-                        $('.match-box-div').html(returned.html);
-                        $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
-                    }
-                },
-                error: function(a,b,c)
-                {
+                        if (check.is(currentDiv))
+                        {
+                            var returned = eval('(' + data + ')');
+                            $('.match-box-div').html(returned.html);
+                            $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+                        }
+                    },
+                    error: function(a,b,c)
+                    {
 
-                }
-            })
+                    }
+                })
+            });
+
         }, function()
         {
 
