@@ -99,7 +99,7 @@
     {% if is_user_admin %}
     <ul id="group-requests">
         {% for req in prof_requests %}
-        <li>{{ req.getFrom.get_name }} has requested to follow you:
+        <li><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
             <a href="" class="group-response-y"> I accept! </a> ||
             <a href="" class="group-response-n"> I decline! </a>
             <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
@@ -110,7 +110,7 @@
     </ul>
     {% endif %}
 
-    {% if not is_user_follow and not is_user_confirmed %}
+    {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
     <a href="" id="group-follow">
         follow me!
     </a>

@@ -5,3 +5,4 @@ lovegov/.idea
 lovegov/beta/modernpolitics/migrations
 lovegov/beta/modernpolitics/search_indexes
 .DS_Store
+lovegov/db/local.db-journal
