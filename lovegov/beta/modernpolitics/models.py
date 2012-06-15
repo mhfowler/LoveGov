@@ -1501,10 +1501,28 @@ class Action(Privacy):
             action_verbose = ' signed '
         elif self.type == 'SH':
             action_verbose = ' shared '
+            #Follow Section
         elif self.type == 'JO':
-            action_verbose = ' joined '
+            if self.modifier == 'I':
+                if from_you:
+                    action_verbose = ' were invited to join '
+                else:
+                    action_verbose = ' was invited to join '
+            elif self.modifier == 'R':
+                action_verbose = ' requested to join '
+            elif self.modifier == 'D':
+                action_verbose = ' joined '
+            elif self.modifier == 'N':
+                action_verbose = ' declined to join '
+            elif self.modifier == 'X':
+                if from_you:
+                    action_verbose = ' were rejected from '
+                else:
+                    action_verbose = ' was rejected from '
+            elif self.modifier == 'S':
+                action_verbose = ' left '
         elif self.type == 'CR':
-            if relationship.content.type == 'R':
+            if relationship.getTo().type == 'R':
                 action_verbose = ' answered '
             else:
                 action_verbose = ' created '
@@ -2679,9 +2697,6 @@ class UserResponse(Response):
         return self
 
 
-
-
-
 ########################################################################################################################
 ########################################################################################################################
 #   Debates
@@ -3422,7 +3437,7 @@ class Relationship(Privacy):
         elif type == 'AE':
             object = self.ucrelationship.attending
         elif type== 'JO':
-            object = self.ucrelationship.groupfollow
+            object = self.ucrelationship.groupjoined
         elif type== 'JD':
             object = self.ucrelationship.debatejoined
         elif type == 'FO':
@@ -3445,7 +3460,6 @@ class Invite(LGModel):
     invited = models.BooleanField(default=False)        # unused in bi-directional relationships
     requested = models.BooleanField(default=False)
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
-    ## BELOW ARE DEPRECATED ## sorrry
     rejected = models.BooleanField(default=False)
     declined = models.BooleanField(default=False)
 
@@ -3606,6 +3620,15 @@ class Shared(UCRelationship):
         self.save()
 
 #=======================================================================================================================
+# Stores a user sharing a piece of content.
+# inherits from relationship
+#=======================================================================================================================
+class Signed(UCRelationship):
+    def autoSave(self):
+        self.relationship_type = 'SI'
+        self.save()
+
+#=======================================================================================================================
 # Stores a user following a piece of content.
 # inherits from relationship
 #=======================================================================================================================
@@ -3640,6 +3663,7 @@ class GroupJoined(UCRelationship, Invite):
     def autoSave(self):
         self.relationship_type = 'JO'
         self.creator = self.user
+        self.content = self.group
         self.save()
 
 #=======================================================================================================================

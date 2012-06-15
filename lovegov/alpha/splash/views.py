@@ -570,12 +570,15 @@ def profile(request, alias=None, dict={}):
             # Is the current user already (requesting to) following this profile?
             dict['is_user_requested'] = False
             dict['is_user_confirmed'] = False
+            dict['is_user_rejected'] = False
             user_follow = betamodels.UserFollow.lg.get_or_none(user=user,to_user=user_prof)
             if user_follow:
                 if user_follow.requested:
                     dict['is_user_requested'] = True
                 if user_follow.confirmed:
                     dict['is_user_confirmed'] = True
+                if user_follow.rejected:
+                    dict['is_user_rejected'] = True
 
             # Get Activity
             actions = user_prof.getActivity(5)
@@ -648,12 +651,15 @@ def group(request, g_id=None, dict={}):
     # Is the current user already (requesting to) following this group?
     dict['is_user_follow'] = False
     dict['is_user_confirmed'] = False
-    user_follow = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
-    if user_follow:
-        if user_follow.requested:
+    dict['is_user_rejected'] = False
+    group_joined = betamodels.GroupJoined.lg.get_or_none(user=user,group=group)
+    if group_joined:
+        if group_joined.requested:
             dict['is_user_follow'] = True
-        if user_follow.confirmed:
+        if group_joined.confirmed:
             dict['is_user_confirmed'] = True
+        if group_joined.rejected:
+            dict['is_user_rejected'] = True
 
     dict['is_user_admin'] = False
     admins = list( group.admins.all() )
