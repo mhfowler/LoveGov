@@ -580,7 +580,7 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(5)
+            actions = user_prof.getActivity(10)
             actions_text = []
             for action in actions:
                 from_you = False
@@ -767,13 +767,37 @@ def match(request,dict={}):
             dict['longitude'] = address.longitude
 
         # Get all facebook friends data
-        fb_friends = user.getFBFriends()
-        for friend in fb_friends:
-            comparison = betabackend.getUserUserComparison(user,friend)
-            friend.compare = comparison.toJSON()
-            friend.result = comparison.result
-        list.sort(key=lambda x:x.result, reverse=True)
-        dict['fb_friends'] = fb_friends
+#        fb_friends = user.getFBFriends()
+#        for friend in fb_friends:
+#            comparison = betabackend.getUserUserComparison(user,friend)
+#            friend.compare = comparison.toJSON()
+#            friend.result = comparison.result
+#        list.sort(key=lambda x:x.result, reverse=True)
+#        dict['fb_friends'] = fb_friends
+
+        # Get user's top 5 similar followers
+        prof_follow_me = user.getFollowMe()
+        for follow_me in prof_follow_me:
+            comparison = betabackend.getUserUserComparison(user, follow_me)
+            follow_me.compare = comparison.toJSON()
+            follow_me.result = comparison.result
+        prof_follow_me.sort(key=lambda x:x.result,reverse=True)
+        dict['user_follow_me'] = prof_follow_me[0:5]
+
+        # Get user's top 5 similar follows
+        prof_i_follow = user.getIFollow()
+        for i_follow in prof_i_follow:
+            comparison = betabackend.getUserUserComparison(user, i_follow)
+            i_follow.compare = comparison.toJSON()
+            i_follow.result = comparison.result
+        prof_i_follow.sort(key=lambda x:x.result,reverse=True)
+        dict['user_i_follow'] = prof_i_follow[0:5]
+
+        # Get user's random 5 followers
+        #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+
+        # Get user's random 5 follows
+        #dict['prof_i_follow'] = user_prof.getIFollow(5)
 
         # Get facebook friends network aggregate view
         #my_connections = user.getMyConnections()
@@ -910,7 +934,9 @@ def topicDetail(request, topic_alias=None, dict={}):
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def petitionDetail(request, p_id, dict={}):
-    petition = betamodels.Petition.objects.get(id=p_id)
+    petition = betamodels.Petition.lg.get_or_none(id=p_id)
+    if not petition:
+        return HttpResponse("This petition does not exist")
     dict['pageTitle'] = "lovegov: " + petition.title
     dict['petition'] = petition
     signers = petition.getSigners()

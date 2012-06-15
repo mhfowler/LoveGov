@@ -236,7 +236,7 @@ ACTION_MODIFIERS = (
         )
 
 # types of action which user should be notified about
-NOTIFY_TYPES = ['FO']
+NOTIFY_TYPES = ['FO','SI','JO','CO']
 
 # group privacy settings
 GROUP_PRIVACY_CHOICES = (

@@ -1,5 +1,7 @@
 <div id="social-comparison">
-    {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
+    <div class="match-box-div">
+        {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
+    </div>
 </div>
 <div id="match-featured-social-network">
     <h1 class="match-h1">Friends & Networks</h1>
@@ -65,7 +67,12 @@
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                $('#social-comparison').html(returned.html);
+                $('.match-box-div').hide({effect:'explode',speed:2000});
+                setTimeout(function()
+                {
+                    $('.match-box-div').html(returned.html);
+                },300);
+                $('.match-box-div').show({effect:'explode',speed:2000});
             },
             error: function(a,b,c)
             {
