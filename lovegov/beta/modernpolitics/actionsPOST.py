@@ -18,6 +18,7 @@
 from lovegov.beta.modernpolitics import backend
 from lovegov.beta.modernpolitics.backend import getUserProfile, getPrivacy
 from lovegov.beta.modernpolitics.forms import *
+from lovegov.alpha.splash.views import ajaxRender
 
 ### DJANGO LIBRARIES ###
 from django.forms import *
@@ -73,6 +74,8 @@ def actionPOST(request, dict={}):
             return joinGroupResponse(request, dict)
         elif action == 'leavegroup':
             return leaveGroup(request, dict)
+        elif action == 'matchComparison':
+            return matchComparison(request,dict)
         ### actions below have not been proof checked ###
         elif action == 'linkfrom':
             return linkfrom(request, dict)
@@ -1103,3 +1106,20 @@ def addEmailList(request):
     newEmail.save()
     return HttpResponse("Success")
 
+
+def matchComparison(request,dict={}):
+    def returnComparison(to_compare):
+        dict['entity'] = to_compare
+        html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
+        return HttpResponse(json.dumps({'html':html}))
+
+    user = dict['user']
+    url = request.POST['entity_url'].replace('/','').replace('profile','').replace('network','')
+    to_compare = UserProfile.lg.get_or_none(alias=url)
+    if to_compare:
+        to_compare.comparison = backend.getUserUserComparison(user, to_compare).toJSON()
+        return returnComparison(to_compare)
+    else:
+        to_compare = Group.lg.get_or_none(id=url)
+        to_compare.comparison = backend.getUserGroupComparison(user, to_compare).toJSON()
+        return returnComparison(to_compare)
