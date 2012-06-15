@@ -1003,11 +1003,11 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     'owner': i_own,
                     'votes': c.upvotes - c.downvotes,
                     'creator': creator,
-                    'display_name': creator.getAnonDisplay(getAjaxSource(request)),
-                    'permission': c.getPermission(user),
+                    'display_name': c.getCreatorDisplayName(user, betabackend.getSourcePath(request)),
+                    'public': c.getPublic(),
                     'margin': 30*(depth+1),
-                    'width': 690-(30*depth+1)-30}
-            dict['defaultImage'] = betabackend.getDefaultImage().image
+                    'width': 690-(30*depth+1)-30,
+                    'defaultImage':betabackend.getDefaultImage().image}
             context = RequestContext(request,dict)
             template = loader.get_template('deployment/snippets/cath_comment.html')
             comment_string = template.render(context)  # render comment html
@@ -1017,18 +1017,6 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         return to_return
     else:
         return ''
-
-def getAjaxSource(request):
-    referer = request.META.get('HTTP_REFERER')
-    if not referer:
-        return request.path
-    else:
-        if LOCAL:
-            splitted = referer.split(".com:8000")
-        else:
-            splitted = referer.split(".com")
-        path = splitted[1]
-        return path
 
 #-----------------------------------------------------------------------------------------------------------------------
 # sensibly redirects to next question

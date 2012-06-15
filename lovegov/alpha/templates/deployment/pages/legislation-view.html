@@ -48,13 +48,28 @@ Session: {{session}}
 
 <p><h3>Bill Co-sponsors</h3>
 
-{% for cosponsor in leg.cosponsors.all %}
 <ul>
-	<li><a href='{{cosponsor.get_url}}'>{{cosponsor}}</a></li>
+	{% for cosponsor in leg.cosponsors.all %}
+	<li><a href='{{cosponsor.get_url}}'>{{cosponsor.get_name}}</a></li>
+	{% endfor %}
 </ul>
+
+<p><h3>Committees</h3>
+
+{% for committee in leg.committees.all %}
+
+<ul>
+	<li>Name: {{committee.name}}</li>
+	<li>Code: {{committee.code}}</li>
+	<li>Type: {{committee.type}}</li>
+	<li>Members: <ul>
+		{% for cmember in committee.members.all %}
+		<li><a href='{{cmember.get_url}}'>{{cmember.get_name}}</a></li>
+		{% endfor %}
+	</ul></li>
+</ul>
+
 {% endfor %}
-
-
 
 {% endif %}
 

@@ -2064,6 +2064,26 @@ def enc(s):
     return s.encode('ascii', 'ignore')
 
 
+#-----------------------------------------------------------------------------------------------------------------------
+# takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
+# is the referer if it is an ajax request.
+#-----------------------------------------------------------------------------------------------------------------------
+def getSourcePath(request):
+    if request.is_ajax():
+        referer = request.META.get('HTTP_REFERER')
+        if not referer:
+            return request.path
+        else:
+            if LOCAL:
+                splitted = referer.split(".com:8000")
+            else:
+                splitted = referer.split(".com")
+            path = splitted[1]
+    else:
+        path = request.path
+    return path
+
+
 ########################################################################################################################
 ########################################################################################################################
 #    methods because I fucked up
