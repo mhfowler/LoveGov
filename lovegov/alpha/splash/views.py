@@ -790,8 +790,8 @@ def match(request,dict={}):
 def matchNew(request, dict={}):
     def election(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
-        c2 = betamodels.UserProfile.objects.get(first_name="Katy",last_name="Perry")
+        c1 = betamodels.UserProfile.objects.get(first_name="Barack", last_name="Obama")
+        c2 = betamodels.UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
         list = [c1,c2]
         for c in list:
@@ -816,7 +816,7 @@ def matchNew(request, dict={}):
 
     def social(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
+        c1 = betamodels.UserProfile.objects.get(user)
         comparison = betabackend.getUserUserComparison(user,c1)
         c1.compare = comparison.toJSON()
         c1.result = comparison.result
