@@ -57,6 +57,7 @@
 <script type="text/javascript">
     $('.match-social-network-entity').hover(function()
     {
+        $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
         $.ajax
         ({
             type:'POST',
@@ -65,7 +66,6 @@
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
                 setTimeout(function(){$('.match-box-div').html(returned.html)},300);
                 $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
             },
