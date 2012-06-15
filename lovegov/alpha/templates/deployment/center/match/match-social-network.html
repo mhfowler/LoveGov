@@ -1,4 +1,6 @@
-{% include 'deployment/center/match/match-new-box.html' with userProfile=c1 %}
+<div id="social-comparison">
+    {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
+</div>
 <div id="match-featured-social-network">
     <h1 class="match-h1">Friends & Networks</h1>
     <p class="match-p">
@@ -42,7 +44,6 @@
         {% for network in networks %}
             <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
                 {% include 'deployment/snippets/match/social-network-image.html' with entity=network %}
-
             </div>
         {% endfor %}
         </div>
@@ -54,6 +55,30 @@
 </div>
 
 <script type="text/javascript">
+    $('.match-social-network-entity').hover(function()
+    {
+        $.ajax
+        ({
+            type:'POST',
+            url:"/action/",
+            data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                $('#social-comparison').html(returned.html);
+            },
+            error: function(a,b,c)
+            {
+
+            }
+        })
+    }, function()
+    {
+
+    });
+
+
+
     $('.match-social-network-entity-button').hover(function()
     {
 
