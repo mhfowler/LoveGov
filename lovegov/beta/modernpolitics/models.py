@@ -862,6 +862,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     user = models.ForeignKey(User, null=True)
     # for downcasting
     user_type = models.CharField(max_length=1, choices=constants.USER_CHOICES, default='G')
+    # twitter integration
+    twitter_user_id = models.IntegerField(null=True)
+    twitter_screen_name = models.CharField(max_length=200, null=True)
     # info
     alias = models.CharField(max_length=200, blank=True)
     username = models.CharField(max_length=500, null=True)      # for display, not for login!

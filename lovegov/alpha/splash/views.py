@@ -124,11 +124,11 @@ def login(request, to_page='web/', message="", dict={}):
     @type dict: dictionary
     @return:
     """
-    # if has fb authenticated, try to facebook login
     if facebook.fbLogin(request,dict):
-        print "topage: " + to_page
-        #facebook.fbMakeFriends(request,dict) #when fb is authenticated, check to make friends with their current friends
         return shortcuts.redirect('/' + to_page)
+    twitter = facebook.twitterLogin(request, "/" + to_page, dict)
+    if twitter:
+        return twitter
     fb_state = facebook.fbGetRedirect(request, dict)
     if request.method == 'POST' and 'button' in request.POST:
         response = loginPOST(request,to_page,message,dict)
@@ -1109,6 +1109,15 @@ def facebookHandle(request, to_page="/web/", dict={}):
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Authenticate with twitter via redirect.
+#-----------------------------------------------------------------------------------------------------------------------
+def twitterRedirect(request, redirect_uri=None):
+    return facebook.twitterRedirect(request, redirect_uri)
+
+def twitterHandle(request, to_page="/web/", dict={}):
+    return facebook.twitterGetAccessToken(request)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Authorize permission from facebook
 # Inputs: GET[ fb_scope , fb_to_page ]
 #----------------------------------------------------------------------------------------------------------------------
@@ -1124,6 +1133,7 @@ def facebookAuthorize(request, dict={}, scope="email"):
     if auth_to_page and not request.COOKIES.get('auth_to_page'): #If there is no authorization to_page in Cookies
         response.set_cookie("auth_to_page",auth_to_page) #use the retrieved one if there is one
     return response
+
 
 def facebookAction(request, to_page="/web/", dict={}):
     fb_action = request.GET.get('fb_action')
