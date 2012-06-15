@@ -1117,9 +1117,9 @@ def matchComparison(request,dict={}):
     url = request.POST['entity_url'].replace('/','').replace('profile','').replace('network','')
     to_compare = UserProfile.lg.get_or_none(alias=url)
     if to_compare:
-        to_compare.comparison = backend.getUserUserComparison(user, to_compare).toJSON()
+        to_compare.comparison = backend.getUserUserComparison(user, to_compare)
         return returnComparison(to_compare)
     else:
-        to_compare = Group.lg.get_or_none(id=url)
-        to_compare.comparison = backend.getUserGroupComparison(user, to_compare).toJSON()
+        to_compare = Group.lg.get_or_none(alias=url)
+        to_compare.comparison = backend.getUserGroupComparison(user, to_compare)
         return returnComparison(to_compare)

@@ -380,7 +380,10 @@
     margin-top:15px;
 }
 
-
+#social-comparison
+{
+    float:left;
+}
 
 .match-arrow
 {
