@@ -3978,7 +3978,7 @@ class QuestionOrdering(LGModel):
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
-
+#TODO: make this link expire after a certain length of time
 class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
     email_code = models.CharField(max_length=75)
@@ -3987,7 +3987,8 @@ class ResetPassword(LGModel):
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
-        if UserProfile.objects.filter(username=username).exists():
+        userProfile = UserProfile.lg.get_or_none(username=username)
+        if userProfile and userProfile.confirmed:
             try:
                 import backend
                 import send_email
