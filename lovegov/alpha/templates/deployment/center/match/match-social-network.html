@@ -76,7 +76,7 @@
                     if (check.is(currentDiv))
                     {
                         var returned = eval('(' + data + ')');
-                        setTimeout(function(){$('.match-box-div').html(returned.html)},300);
+                        $('.match-box-div').html(returned.html);
                         $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
                     }
                 },
