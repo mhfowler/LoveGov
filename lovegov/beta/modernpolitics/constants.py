@@ -125,13 +125,13 @@ MAIN_TOPICS_MINI_IMG = {'Economy':MAIN_TOPIC_IMG_FOLDER + 'economy/eco_mini.png'
                         'Energy':MAIN_TOPIC_IMG_FOLDER + 'energy/ene_mini.png',
                         'Health Care':MAIN_TOPIC_IMG_FOLDER + 'healthcare/hea_mini.png'}
 
-MAIN_TOPICS_COLORS = {'Economy':{'default':'#92B76C','light':'#CBE0AF'},
-                     'Education':{'default':'#9DC5C9','light':'#C3E7ED'},
+MAIN_TOPICS_COLORS = {'Economy':{'default':'#92B76C','light':'#CCDDC0'},
+                     'Education':{'default':'#9DC5C9','light':'#D3EBED'},
                      'Social Issues':{'default':'#639E9B','light':'#A3C6C4'},
-                     'National Security':{'default':'#EA947D','light':'#F9BFB4'},
-                     'Environment':{'default':'#9797C6','light':'#CACAD8'},
+                     'National Security':{'default':'#EA947D','light':'#FFCBC0'},
+                     'Environment':{'default':'#9797C6','light':'#D4D3EF'},
                      'Energy':{'default':'#F9D180','light':'#FFF0C5'},
-                     'Health Care':{'default':'#EA7D95','light':'#E8B8C6'}}
+                     'Health Care':{'default':'#EA7D95','light':'#FBCCD6'}}
 
 MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Education':1,
