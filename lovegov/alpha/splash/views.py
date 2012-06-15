@@ -173,15 +173,10 @@ def loginPOST(request, to_page='web',message="",dict={}):
 
 def passwordRecovery(request,confirm_link=None, dict={}):
     if request.POST and "email" in request.POST:
-        success = betamodels.ResetPassword.create(username=request.POST['email'])
-        if success:
-            msg = u"Success. Check your email for instructions to reset your password."
-            if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
-            else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'message':msg}),request=request)
-        else:
-            msg = u"No user with this email exists."
-            if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
-            else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'message':msg}),request=request)
+        betamodels.ResetPassword.create(username=request.POST['email'])
+        msg = u"Check your email for instructions to reset your password."
+        if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
+        else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'message':msg}),request=request)
     else:
         if confirm_link is not None:
             confirm = betamodels.ResetPassword.lg.get_or_none(email_code=confirm_link)
@@ -189,10 +184,16 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                 dict['recoveryForm'] = RecoveryPassword()
                 if request.POST:
                     recoveryForm = RecoveryPassword(request.POST)
-                    if recoveryForm.is_valid(): recoveryForm.save(confirm_link)
+                    if recoveryForm.is_valid():
+                        recoveryForm.save(confirm_link)
+                        user = auth.authenticate(username=confirm.userProfile.username, password=recoveryForm.cleaned_data('password1'))
+                        if user and confirm.userProfile.confirmed:
+                            auth.login(request, user)
+                            redirect_response = shortcuts.redirect('/')
+                            redirect_response.set_cookie('privacy', value='PUB')
+                            return redirect_response
                     else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
-                else:
-                    return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
+                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
 def logout(request, dict={}):

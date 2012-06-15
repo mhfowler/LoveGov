@@ -3992,7 +3992,7 @@ class ResetPassword(LGModel):
                 import backend
                 import send_email
                 userProfile = UserProfile.objects.get(username=username)
-                reseturl = backend.generateRandomPassword(75)
+                reseturl = backend.generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
                 dict = {'firstname':userProfile.first_name, 'url':reseturl}
