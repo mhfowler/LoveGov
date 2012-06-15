@@ -227,12 +227,14 @@ for x in RELATIONSHIP_CHOICES:
 
 # default, request, invite, deny, reject
 ACTION_MODIFIERS = (
-    ('D','default'),
+    ('D','default'), #Can also be dislike
     ('R','request'),
     ('I','invited'),
     ('X', 'rejected'),
     ('N', 'declined'),
-    ('S', 'stop')
+    ('S', 'stop'),
+    ('L', 'like'),
+    ('U', 'unvoted')
         )
 
 # types of action which user should be notified about

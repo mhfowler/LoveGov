@@ -380,13 +380,6 @@ def vote(request, dict):
         value = content.dislike(user=user, privacy=privacy)
     to_return = {'my_vote':value, 'status':content.status}
     return HttpResponse(json.dumps(to_return))
-    """
-        return HttpResponse("+")
-    if content.type == "C":
-        return HttpResponse("+")
-    else:
-
-    """
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves a users answer to a question.
