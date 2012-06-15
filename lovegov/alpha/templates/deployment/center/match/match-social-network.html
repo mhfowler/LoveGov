@@ -26,9 +26,11 @@
     <!-- Groups -->
     <div class="match-social-network-entity-container match-social-network-entity-container-center">
         <div class="match-social-network-entity-container-wrapper">
-            <p>
-                You aren't in any groups. Join some.
-            </p>
+        {% for group in groups %}
+            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
+                {% include 'deployment/snippets/match/social-network-image.html' with entity=group %}
+            </div>
+        {% endfor %}
         </div>
 
         <div class="match-social-network-entity-button">
