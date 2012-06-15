@@ -161,7 +161,7 @@ def create(request, val={}):
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
             elif formtype == "G":
-                follow_request = GroupFollow(user=user, content=c, group=c, privacy=getPrivacy(request))
+                follow_request = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
                 follow_request.confirm()
                 follow_request.autoSave()
                 c.admins.add(user)
@@ -426,7 +426,7 @@ def joinGroupRequest(request, dict={}):
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
-    #Get GroupFollow relationship if it exists already
+    #Get GroupJoined relationship if it exists already
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_follow = already[0]
@@ -467,13 +467,13 @@ def joinGroupRequest(request, dict={}):
 
 
 #----------------------------------------------------------------------------------------------------------------------
-# Confirms or denies groupFollow, if groupFollow was requested.
+# Confirms or denies GroupJoined, if GroupJoined was requested.
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, dict={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupFollow.objects.filter(user=from_user, group=group)
+    already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_follow = already[0]
         if group_follow.requested:
@@ -613,7 +613,7 @@ def leaveGroup(request, dict={}):
     # if not system then remove
     from_user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
-    group_follow = GroupFollow.objects.get(group=group, user=from_user)
+    group_follow = GroupJoined.objects.get(group=group, user=from_user)
     if group_follow:
         group_follow.clear()
     if not group.system:

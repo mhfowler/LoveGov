@@ -5,12 +5,12 @@
 
     <div id="create-buttons">
 
-        <div id="create-petition-button" class="button-placeholder">
-            <img src="/static/images/create/petitionsicon.png"/>
-        </div>
-
         <div id="create-news-button" class="button-placeholder">
             <img src="/static/images/create/newsicon.png"/>
+        </div>
+
+        <div id="create-petition-button" class="button-placeholder">
+            <img src="/static/images/create/petitionsicon.png"/>
         </div>
 
         <div id="create-group-button" class="button-placeholder">
@@ -19,8 +19,8 @@
 
     </div>
 
-    {% include 'deployment/pieces/create_petition.html' %}
     {% include 'deployment/pieces/create_news.html' %}
+    {% include 'deployment/pieces/create_petition.html' %}
     {% include 'deployment/pieces/create_group.html' %}
 
 </div>
