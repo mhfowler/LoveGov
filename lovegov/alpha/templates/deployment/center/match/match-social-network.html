@@ -45,15 +45,21 @@
 
     <!-- Networks -->
     <div class="match-social-network-entity-container match-social-network-entity-container-right">
+        <div class="match-social-network-entity-container-wrapper">
         {% for network in networks %}
             <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
                 {% load thumbnail %}
                 {% thumbnail network.getProfileImage.image "45x45" crop="center" as img %}
                     <img src="{{ img.url }}"/>
                 {% empty %}
+                    {% load thumbnail %}
+                    {% thumbnail defaultImage "45x45" crop="center" as img %}
+                        <img src="{{ img.url }}"/>
+                    {% endthumbnail %}
                 {% endthumbnail %}
             </div>
         {% endfor %}
+        </div>
         <div class="match-social-network-entity-button">
             <p>Networks <img src="/static/images/match/link_arrow.png"/></p>
         </div>

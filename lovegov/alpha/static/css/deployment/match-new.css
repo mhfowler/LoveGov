@@ -54,6 +54,12 @@
     float:left;
 }
 
+.match-social-network-entity-container-wrapper
+{
+    height:150px;
+    float:left;
+}
+
 .match-social-network-entity-container-left
 {
     margin-right:14px;

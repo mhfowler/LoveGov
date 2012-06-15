@@ -854,6 +854,7 @@ def matchNew(request, dict={}):
 
     if request.method == 'GET':
         if 'section' in request.GET:
+            dict['defaultImage'] = betabackend.getDefaultImage().image
             section = request.GET['section']
             if section == "social": return social(request,dict)
             elif section == "election": return election(request,dict)
