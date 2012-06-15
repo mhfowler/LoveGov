@@ -2633,6 +2633,7 @@ class Question(Content):
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
     answers = models.ManyToManyField(Answer)
+    parent = models.
     class Admin:
         pass
     def __unicode__(self):

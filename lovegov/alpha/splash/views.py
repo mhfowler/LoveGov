@@ -1163,7 +1163,7 @@ def facebookHandle(request, to_page="/web/", dict={}):
 def twitterRedirect(request, redirect_uri=None):
     return facebook.twitterRedirect(request, redirect_uri)
 
-def twitterHandle(request, to_page="/web/", dict={}):
+def twitterHandle(request, dict={}):
     return facebook.twitterGetAccessToken(request)
 
 #-----------------------------------------------------------------------------------------------------------------------

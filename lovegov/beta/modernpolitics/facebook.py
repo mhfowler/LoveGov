@@ -246,7 +246,7 @@ def twitterRedirect(request, redirect_uri=None):
 
     return response
 
-def twitterGetAccessToken(request):
+def twitterGetAccessToken(request, to_page="/web/"):
     oauth_verifier = request.GET.get('oauth_verifier')
     oauth_token = request.GET.get('oauth_token')
     oauth_token_secret = request.COOKIES.get('twitter_secret')
@@ -266,22 +266,19 @@ def twitterGetAccessToken(request):
     print "You may now access protected resources using the access tokens above."
     print
 
-    response = shortcuts.redirect('/comingsoon/')
+    response = shortcuts.redirect(to_page)
     response.set_cookie("twitter_access_token", access_token)
 
     return response
 
-
 def twitterLogin(request, to_page="/web/", dict={}):
     twitter_access_token = request.COOKIES.get('twitter_access_token')
-    #print "twit: " + twitter_access_token
     tat = twitter_access_token.replace('\'','\"')
     tat = json.loads(str(tat))
     if tat:
         twitter_user_id = tat['user_id']
         user_prof = UserProfile.lg.get_or_none(twitter_user_id=twitter_user_id)
         logging.debug("twitter")
-        # if there is not lg user with twitter id, twitter register
         if not user_prof:
             return twitterRegister(request)
         else:
@@ -290,6 +287,7 @@ def twitterLogin(request, to_page="/web/", dict={}):
             user = user_prof.user
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
+            return shortcuts.redirect(to_page)
     else:
         return False
 
