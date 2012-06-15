@@ -1134,6 +1134,6 @@ def matchComparison(request,dict={}):
         to_compare.compare = backend.getUserUserComparison(user, to_compare).toJSON()
         return returnComparison(to_compare)
     else:
-        to_compare = Group.lg.get_or_none(alias=url)
+        to_compare = Network.lg.get_or_none(name=url)
         to_compare.compare = backend.getUserGroupComparison(user, to_compare).toJSON()
         return returnComparison(to_compare)

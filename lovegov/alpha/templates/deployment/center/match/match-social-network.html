@@ -1,4 +1,4 @@
-<div id="social-comparison">
+<div id="social-comparison" class="match-box-div-wrapper">
     {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
 </div>
 <div id="match-featured-social-network">
@@ -55,37 +55,50 @@
 </div>
 
 <script type="text/javascript">
-    $('.match-social-network-entity').hover(function()
+    (function()
     {
-        $.ajax
-        ({
-            type:'POST',
-            url:"/action/",
-            data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
-                setTimeout(function(){$('.match-box-div').html(returned.html)},300);
-                $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
-            },
-            error: function(a,b,c)
-            {
+        var currentDiv;
 
-            }
+        $('.match-social-network-entity').hover(function()
+        {
+            var check = $(this);
+            currentDiv = $(this);
+
+            $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
+            $.ajax
+            ({
+                type:'POST',
+                url:"/action/",
+                data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
+                success: function(data)
+                {
+                    if (check == currentDiv)
+                    {
+                        var returned = eval('(' + data + ')');
+                        setTimeout(function(){$('.match-box-div').html(returned.html)},300);
+                        $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+                    }
+
+                },
+                error: function(a,b,c)
+                {
+
+                }
+            })
+        }, function()
+        {
+
+        });
+
+
+
+        $('.match-social-network-entity-button').hover(function()
+        {
+
+        }, function()
+        {
+
         })
-    }, function()
-    {
 
-    });
-
-
-
-    $('.match-social-network-entity-button').hover(function()
-    {
-
-    }, function()
-    {
-
-    })
+    })();
 </script>

@@ -369,11 +369,12 @@
     margin-top:15px;
 }
 
-#social-comparison
+.match-box-div-wrapper
 {
     float:left;
     width:300px;
     padding:0px;
+    height:450px;
 }
 
 .match-box-div
