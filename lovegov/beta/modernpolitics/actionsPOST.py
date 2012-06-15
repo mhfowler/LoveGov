@@ -18,7 +18,6 @@
 from lovegov.beta.modernpolitics import backend
 from lovegov.beta.modernpolitics.backend import getUserProfile, getPrivacy
 from lovegov.beta.modernpolitics.forms import *
-from lovegov.alpha.splash.views import ajaxRender
 
 ### DJANGO LIBRARIES ###
 from django.forms import *
@@ -1108,6 +1107,7 @@ def addEmailList(request):
 
 
 def matchComparison(request,dict={}):
+    from lovegov.alpha.splash.views import ajaxRender
     def returnComparison(to_compare):
         dict['entity'] = to_compare
         html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
