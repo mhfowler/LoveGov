@@ -63,7 +63,7 @@ Session: {{session}}
 	<li>Code: {{committee.code}}</li>
 	<li>Type: {{committee.type}}</li>
 	<li>Members: <ul>
-		{% for cmember in committee.members.all %}
+		{% for cmember in committee.members.electedofficial.all %}
 		<li><a href='{{cmember.get_url}}'>{{cmember.get_name}}</a></li>
 		{% endfor %}
 	</ul></li>

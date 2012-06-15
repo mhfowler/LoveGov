@@ -139,19 +139,20 @@ def login(request, to_page='web/', message="", dict={}):
     response.set_cookie("fb_state", fb_state)
     return response
 
+def loginAuthenticate(request,user,to_page=''):
+    auth.login(request, user)
+    redirect_response = shortcuts.redirect('/' + to_page)
+    redirect_response.set_cookie('privacy', value='PUB')
+    return redirect_response
+
 def loginPOST(request, to_page='web',message="",dict={}):
     dict['registerform'] = RegisterForm()
     if request.POST['button'] == 'login':
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
             user_prof = betabackend.getUserProfile(control_id=user.id)
-            if user_prof.confirmed:
-                auth.login(request, user)
-                redirect_response = shortcuts.redirect('/' + to_page)
-                redirect_response.set_cookie('privacy', value='PUB')
-                return redirect_response
-            else:
-                error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
+            if user_prof.confirmed: return loginAuthenticate(request,user,to_page)
+            else: error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
         else:
             error = 'Invalid Login/Password.'
         dict.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
@@ -185,14 +186,12 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                 if request.POST:
                     recoveryForm = RecoveryPassword(request.POST)
                     if recoveryForm.is_valid():
-                        recoveryForm.save(confirm_link)
-                        user = auth.authenticate(username=confirm.userProfile.username, password=recoveryForm.cleaned_data('password1'))
-                        if user and confirm.userProfile.confirmed:
-                            auth.login(request, user)
-                            redirect_response = shortcuts.redirect('/')
-                            redirect_response.set_cookie('privacy', value='PUB')
-                            return redirect_response
-                    else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
+                        username = recoveryForm.save(confirm_link)
+                        user = auth.authenticate(username=username, password=recoveryForm.cleaned_data.get('password1'))
+                        if user: return loginAuthenticate(request,user)
+                    else:
+                        dict['recoveryForm'] = recoveryForm
+                        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
                 else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
         return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
 
@@ -796,8 +795,8 @@ def match(request,dict={}):
 def matchNew(request, dict={}):
     def election(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
-        c2 = betamodels.UserProfile.objects.get(first_name="Katy",last_name="Perry")
+        c1 = betamodels.UserProfile.objects.get(first_name="Barack", last_name="Obama")
+        c2 = betamodels.UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
         list = [c1,c2]
         for c in list:
@@ -822,11 +821,28 @@ def matchNew(request, dict={}):
 
     def social(request,dict={}):
         user = dict['user']
-        c1 = betamodels.UserProfile.objects.get(first_name="Clayton",last_name="Dunwell")
-        comparison = betabackend.getUserUserComparison(user,c1)
-        c1.compare = comparison.toJSON()
-        c1.result = comparison.result
-        dict['c1'] = c1
+        comparison = betabackend.getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
+
+        """
+        # Get network and do comparison
+        network = user.getNetwork()
+        network.compare = betabackend.getUserGroupComparison(user, network).toJSON()
+        dict['network'] = network
+        congress = betabackend.getCongressNetwork()
+        congress.compare = betabackend.getUserGroupComparison(user, congress).toJSON()
+        dict['congress'] = congress
+        lovegov = betabackend.getLoveGovUser()
+        lovegov.compare = betabackend.getUserUserComparison(user, lovegov).toJSON()
+        dict['lovegov'] = lovegov
+        """
+
+        lovegov = betabackend.getLoveGovUser()
+        network = user.getNetwork()
+        congress = betabackend.getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
 
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
@@ -843,6 +859,7 @@ def matchNew(request, dict={}):
 
     if request.method == 'GET':
         if 'section' in request.GET:
+            dict['defaultImage'] = betabackend.getDefaultImage().image
             section = request.GET['section']
             if section == "social": return social(request,dict)
             elif section == "election": return election(request,dict)

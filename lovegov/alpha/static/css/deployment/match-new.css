@@ -54,6 +54,12 @@
     float:left;
 }
 
+.match-social-network-entity-container-wrapper
+{
+    height:150px;
+    float:left;
+}
+
 .match-social-network-entity-container-left
 {
     margin-right:14px;
@@ -83,10 +89,13 @@
 {
     width:45px;
     height:45px;
-    background-color:#528CE0;
-    border-radius:5px;
     float:left;
     margin-top:5px;
+}
+
+.match-social-network-entity img
+{
+    border-radius:5px;
 }
 
 .match-social-network-entity-left
