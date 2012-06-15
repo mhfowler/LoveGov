@@ -585,12 +585,15 @@ def profile(request, alias=None, dict={}):
             for action in actions:
                 from_you = False
                 to_you = False
-                relationship = action.relationship
-                if relationship.getFrom().id == user.id:
-                    from_you = True
-                elif relationship.getTo().id == user.id:
-                    to_you = True
-                actions_text.append( action.getVerbose(from_you=from_you,to_you=to_you) )
+                try:
+                    relationship = action.relationship
+                    if relationship.getFrom().id == user.id:
+                        from_you = True
+                    elif relationship.getTo().id == user.id:
+                        to_you = True
+                    actions_text.append( action.getVerbose(from_you=from_you,to_you=to_you) )
+                except:
+                    actions_text.append( "This action no longer exists" )
             dict['actions_text'] = actions_text
 
             # get responses
