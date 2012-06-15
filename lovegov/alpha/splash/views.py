@@ -872,6 +872,8 @@ def matchNew(request, dict={}):
         congress = betabackend.getCongressNetwork()
         dict['networks'] = [network,congress,lovegov]
 
+        dict['groups'] = user.getGroups()
+
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
         if request.is_ajax():
