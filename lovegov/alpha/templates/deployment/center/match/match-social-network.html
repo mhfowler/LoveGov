@@ -57,6 +57,7 @@
 <script type="text/javascript">
     $('.match-social-network-entity').hover(function()
     {
+        $('#social-comparison').children('.ajax-loader').show();
         $.ajax
         ({
             type:'POST',
@@ -65,6 +66,7 @@
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
+                $('#social-comparison').children('.ajax-loader').hide();
                 $('#social-comparison').html(returned.html);
             },
             error: function(a,b,c)
