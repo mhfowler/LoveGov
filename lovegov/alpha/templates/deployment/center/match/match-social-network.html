@@ -66,6 +66,7 @@
             currentDiv = $(this);
 
             $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
+
             $.ajax
             ({
                 type:'POST',
@@ -76,8 +77,11 @@
                     if (check.is(currentDiv))
                     {
                         var returned = eval('(' + data + ')');
-                        $('.match-box-div').html(returned.html);
-                        $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+                        $('.match-box-div').promise().done(function()
+                        {
+                            $('.match-box-div').html(returned.html);
+                            $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+                        });
                     }
                 },
                 error: function(a,b,c)
@@ -85,6 +89,8 @@
 
                 }
             })
+
+
         }, function()
         {
 
