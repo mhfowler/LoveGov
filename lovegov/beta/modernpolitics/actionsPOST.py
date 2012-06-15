@@ -161,11 +161,13 @@ def create(request, val={}):
                 from lovegov.alpha.splash.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,dict=val)
             elif formtype == "G":
-                follow_request = GroupFollow(user=user, content=c, group=c, privacy=getPrivacy(request))
-                follow_request.confirm()
-                follow_request.autoSave()
+                group_joined = GroupJoined(user=user, group=c, privacy=getPrivacy(request))
+                group_joined.confirm()
+                group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
+                action = Action(relationship=c.getCreatedRelationship())
+                action.autoSave()
                 from lovegov.alpha.splash.views import group
                 return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
@@ -208,6 +210,11 @@ def sign(request, vals={}):
         petition = Petition.objects.get(id=request.POST['c_id'])
         if petition.finalized:
             if petition.sign(user):
+                signed = Signed(user=user, content=petition)
+                signed.autoSave()
+                action = Action(relationship=signed)
+                action.autoSave()
+                petition.getCreator().notify(action)
                 vals['signer'] = user
                 context = RequestContext(request,vals)
                 template = loader.get_template('deployment/snippets/signer.html')
@@ -302,6 +309,9 @@ def comment(request, dict={}):
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
+        action = Action(relationship=rel)
+        action.autoSave()
+        comment.on_content.getCreator().notify(action)
         return HttpResponse("+")
     else:
         if request.is_ajax():
@@ -381,6 +391,8 @@ def answer(request, dict={}):
                 weight = weight,
                 explanation = explanation)
             response.autoSave(creator=user, privacy=privacy)
+            action = Action(relationship=response.getCreatedRelationship())
+            action.autoSave()
         # else update old response
         else:
             response = my_response[0]
@@ -390,6 +402,8 @@ def answer(request, dict={}):
             user_response.explanation = explanation
             # update creation relationship
             user_response.saveEdited(privacy)
+            action = Action(relationship=user_response.getCreatedRelationship())
+            action.autoSave()
         if request.is_ajax():
             url = response.get_url()
             # get percentage agreed
@@ -426,21 +440,21 @@ def joinGroupRequest(request, dict={}):
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
-    #Get GroupFollow relationship if it exists already
+    #Get GroupJoined relationship if it exists already
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
-        group_follow = already[0]
-        if group_follow.confirmed:
+        group_joined = already[0]
+        if group_joined.confirmed:
             return HttpResponse("you are already a member of group")
     else: #If it doesn't exist, create it
-        group_follow = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
-        group_follow.autoSave()
+        group_joined = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
+        group_joined.autoSave()
     #If the group is privacy secret...
     if group.group_privacy == 'S':
-        if group_follow.invited:
-            group_follow.confirm()
+        if group_joined.invited:
+            group_joined.confirm()
             group.members.add(from_user)
-            action = Action(relationship=group_follow,modifier="D")
+            action = Action(relationship=group_joined,modifier="D")
             action.autoSave()
             for admin in group.admins.all():
                 admin.notify(action)
@@ -448,49 +462,52 @@ def joinGroupRequest(request, dict={}):
         return HttpResponse("cannot request to join secret group")
     #If the group type is open...
     if group.group_privacy == 'O':
-        group_follow.confirm()
+        group_joined.confirm()
         group.members.add(from_user)
-        action = Action(relationship=group_follow,modifier="D")
+        action = Action(relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
         return HttpResponse("joined")
     #If the group type is private and not requested yet
-    elif group.group_privacy == 'P' and not group_follow.requested:
-        group_follow.request()
-        action = Action(relationship=group_follow,modifier="R")
+    else: # group.group_privacy == 'P'
+        if group_joined.requested and not group_joined.rejected:
+            return HttpResponse("you have already requested to join this group")
+        group_joined.clear()
+        group_joined.request()
+        action = Action(relationship=group_joined,modifier='R')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
         return HttpResponse("request to join")
-    return HttpResponse("you have already requested to join this group")
+
 
 
 #----------------------------------------------------------------------------------------------------------------------
-# Confirms or denies groupFollow, if groupFollow was requested.
+# Confirms or denies GroupJoined, if GroupJoined was requested.
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, dict={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupFollow.objects.filter(user=from_user, group=group)
+    already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
-        group_follow = already[0]
-        if group_follow.requested:
+        group_joined = already[0]
+        if group_joined.requested:
             if response == 'Y':
-                group_follow.confirm()
+                group_joined.confirm()
                 group.members.add(from_user)
-                action = Action(relationship=group_follow,modifier="D")
+                action = Action(relationship=group_joined,modifier="D")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now following you")
             elif response == 'N':
-                group_follow.reject()
-                action = Action(relationship=group_follow,modifier="X")
+                group_joined.reject()
+                action = Action(relationship=group_joined,modifier="X")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected their follow request")
-        if group_follow.confirmed:
+        if group_joined.confirmed:
             return HttpResponse("This person is already following you")
     return HttpResponse("this person has not requested to follow you")
 
@@ -520,10 +537,11 @@ def userFollowRequest(request, dict={}):
         to_user.notify(action)
         return HttpResponse("you are now following this person")
     #otherwise, if you've already requested to follow this user, you're done
-    elif user_follow.requested:
+    elif user_follow.requested and not user_follow.rejected:
         return HttpResponse("you have already requested to follow this person")
     #Otherwise, make the request to follow this user
     else:
+        user_follow.clear()
         user_follow.request()
         action = Action(relationship=user_follow,modifier='R')
         action.autoSave()
@@ -613,9 +631,9 @@ def leaveGroup(request, dict={}):
     # if not system then remove
     from_user = dict['user']
     group = Group.objects.get(id=request.POST['g_id'])
-    group_follow = GroupFollow.objects.get(group=group, user=from_user)
-    if group_follow:
-        group_follow.clear()
+    group_joined = GroupJoined.objects.get(group=group, user=from_user)
+    if group_joined:
+        group_joined.clear()
     if not group.system:
         group.members.remove(from_user)
         group.admins.remove(from_user)
@@ -626,7 +644,7 @@ def leaveGroup(request, dict={}):
                 group.save()
             for member in members:
                 group.admins.add(member)
-        action = Action(relationship=group_follow,modifier='S')
+        action = Action(relationship=group_joined,modifier='S')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
