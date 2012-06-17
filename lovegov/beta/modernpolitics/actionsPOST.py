@@ -1127,10 +1127,9 @@ def matchComparison(request,dict={}):
     user = dict['user']
     object = urlToObject(request.POST['entity_url'])
 
-    if object.__class__.__name__ == 'UserProfile':
-        object.compare = backend.getUserUserComparison(user, object).toJSON()
-    else:
-        object.compare = backend.getUserGroupComparison(user, object).toJSON()
+    if object.type == "U": object.compare = backend.getUserUserComparison(user, object).toJSON()
+    elif object.type == "G": object.compare = backend.getUserGroupComparison(user, object).toJSON()
+    else: object.compare = backend.getUserContentComparison(user, object).toJSON()
 
     dict['entity'] = object
     html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
