@@ -12,9 +12,11 @@
     <!-- Friends -->
     <div class="match-social-network-entity-container match-social-network-entity-container-left">
         <div class="match-social-network-entity-container-wrapper">
-            <p>
-                You don't have any friends. Make some.
-            </p>
+        {% for friend in friends %}
+            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
+                {% include 'deployment/snippets/match/social-network-image.html' with entity=friend %}
+            </div>
+        {% endfor %}
         </div>
         <div class="match-social-network-entity-button">
             <p>Friends <img src="/static/images/match/link_arrow.png"/></p>
