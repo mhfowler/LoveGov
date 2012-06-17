@@ -57,6 +57,9 @@ urlpatterns += patterns('',
     (r'^fb/handle/$', alphaviews.facebookHandle),
     (r'^passwordRecovery/(\S*)$', alphaviews.passwordRecovery),
 
+    (r'^twitter/redirect/$', alphaviews.twitterRedirect),
+    (r'^twitter/handle/$', alphaviews.twitterHandle),
+
     # under construction
     (r'^underconstruction/$', alphaviews.underConstruction),
 
