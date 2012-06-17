@@ -59,7 +59,7 @@
             next = $('.match-selection-box-center');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
-            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,next);
+            matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
         else if (currentSelected.hasClass("match-selection-box-center"))
         {
@@ -67,7 +67,7 @@
             next = $('.match-selection-box-right');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
-            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,next);
+            matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
         else
         {
@@ -75,7 +75,7 @@
             next = $('.match-selection-box-left');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
-            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,next);
+            matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
         circle.removeClass('circle-div-gray');
         circle.addClass("circle-div-red");
