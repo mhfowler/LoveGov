@@ -55,8 +55,8 @@
         var next;
         if (currentSelected.hasClass('match-selection-box-left'))
         {
-            $('.circle-div-left').removeClass('circle-div-red').addClass('.circle-div-gray');
-            $('.circle-div-center').removeClass('.circle-div-gray').addClass('.circle-div-red');
+            $('.circle-div-left').removeClass('circle-div-red').addClass('circle-div-gray');
+            $('.circle-div-center').removeClass('circle-div-gray').addClass('circle-div-red');
             next = $('.match-selection-box-center');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
@@ -64,8 +64,8 @@
         }
         else if (currentSelected.hasClass("match-selection-box-center"))
         {
-            $('.circle-div-center').removeClass('circle-div-red').addClass('.circle-div-gray');
-            $('.circle-div-right').removeClass('.circle-div-gray').addClass('.circle-div-red');
+            $('.circle-div-center').removeClass('circle-div-red').addClass('circle-div-gray');
+            $('.circle-div-right').removeClass('circle-div-gray').addClass('circle-div-red');
             next = $('.match-selection-box-right');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
@@ -73,8 +73,8 @@
         }
         else
         {
-            $('.circle-div-right').removeClass('circle-div-red').addClass('.circle-div-gray');
-            $('.circle-div-left').removeClass('.circle-div-gray').addClass('.circle-div-red');
+            $('.circle-div-right').removeClass('circle-div-red').addClass('circle-div-gray');
+            $('.circle-div-left').removeClass('circle-div-gray').addClass('circle-div-red');
             next = $('.match-selection-box-left');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
