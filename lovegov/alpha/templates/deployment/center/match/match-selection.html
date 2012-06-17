@@ -1,7 +1,7 @@
 <div id="match-selection">
 
     <a href="/matchNew/?section=election" style="color:black">
-        <div class="match-selection-box match-selection-box-left">
+        <div class="match-selection-box match-selection-box-left match-selection-box-selected">
             <div class="match-selection-box-inner">
                 <h2>Election Center</h2>
                 <div class="match-selection-box-inner-content">
@@ -9,7 +9,6 @@
                         Find and compare yourself to your government representatives.
                     </p>
                     <img src="/static/images/match/election_center.png" style="float:left"/>
-                    </div>
                 </div>
             </div>
         </div>
@@ -46,8 +45,49 @@
 </div>
 
 <script type="text/javascript">
+
+
+
+    var autoSwitch = setInterval(function()
+    {
+        var currentSelected = $('.match-selection-box-selected');
+        var circle;
+        var next;
+        if (currentSelected.hasClass('match-selection-box-left'))
+        {
+            circle = $('.circle-div-left');
+            next = $('.match-selection-box-center');
+            next.addClass('match-selection-box-selected');
+            currentSelected.removeClass('match-selection-box-selected');
+            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,next);
+        }
+        else if (currentSelected.hasClass("match-selection-box-center"))
+        {
+            circle = $('.circle-div-center');
+            next = $('.match-selection-box-right');
+            next.addClass('match-selection-box-selected');
+            currentSelected.removeClass('match-selection-box-selected');
+            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,next);
+        }
+        else
+        {
+            circle = $('.circle-div-right');
+            next = $('.match-selection-box-left');
+            next.addClass('match-selection-box-selected');
+            currentSelected.removeClass('match-selection-box-selected');
+            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,next);
+        }
+        circle.removeClass('circle-div-gray');
+        circle.addClass("circle-div-red");
+    },3000);
+
+
+
+
     $('.match-selection-box').bind('click',function(event)
     {
+        clearInterval(autoSwitch);
+
         var currentSelected = $('.match-selection-box-selected');
         event.preventDefault();
         $('.match-selection-box').removeClass('match-selection-box-selected');
