@@ -81,67 +81,62 @@ function loadHoverComparison()
     }
 
     $('#comparison-hover-div').hoverIntent
-    (
-        function() { clearTimeout(hoverTimer); },
-        function() { hoverTimer = setTimeout(function(){clearHover();},100)}
-    );
+        (
+            function() { clearTimeout(hoverTimer); },
+            function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+        );
 
     $('.feed-username').hoverIntent
-    (
-        // hover over
-        function(event)
-        {
-            var self = $(this);
-            var a = $(this).find('a');
-            if (a.attr('href') != undefined)
+        (
+            // hover over
+            function(event)
             {
-                clearTimeout(hoverTimer);
-                $('#comparison-hover').empty();
-                var alias = a.attr('href').split('/')[2].toString();
-                var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
-                if (top <= $(document).scrollTop())
+                var self = $(this);
+                var a = $(this).find('a');
+                if (a.attr('href') != undefined)
                 {
-                    top = self.offset().top + 70;
-                    $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-                }
-                else
-                {
-                    $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-                }
-                var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
-                var offset = {top:top,left:left};
-                $('#comparison-hover-div p').text('You & ' + a.text());
-                $('#comparison-hover-loading-img').show();
-                $('#comparison-hover-div').fadeIn(100);
-                $('#comparison-hover-div').offset(offset);
-                $.ajax
-                ({
-                    url:'/action/',
-                    type:'POST',
-                    data: {'action':'hoverComparison','alias':alias},
-                    success: function(data)
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    var alias = a.attr('href').split('/')[2].toString();
+                    var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
+                    if (top <= $(document).scrollTop())
                     {
-                        var obj = eval('(' + data + ')');
-                        $('#comparison-hover-loading-img').hide();
-                        new VisualComparison('comparison-hover',obj).draw();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown)
-                    {
-                        $('#comparison-hover-div p').text('Sorry there was an error');
+                        top = self.offset().top + 70;
+                        $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
                     }
-                });
-            }
-        },
-        // hover out
-        function(event)
-        {
-            hoverTimer = setTimeout(function()
+                    else
+                    {
+                        $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+                    }
+                    var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
+                    var offset = {top:top,left:left};
+                    $('#comparison-hover-div p').text('You & ' + a.text());
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    ajaxPost({
+                        'data': {'action':'hoverComparison','alias':alias},
+                        'success': function(data) {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            new VisualComparison('comparison-hover',obj).draw();
+                        },
+                        'error': function(jqXHR, textStatus, errorThrown) {
+                            $('#comparison-hover-div p').text('Sorry there was an error');
+                        }
+                    });
+                }
+            },
+            // hover out
+            function(event)
             {
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div').fadeOut(100);
-            },500)
-        }
-    );
+                hoverTimer = setTimeout(function()
+                {
+                    $('#comparison-hover').empty();
+                    $('#comparison-hover-div').fadeOut(100);
+                },500)
+            }
+        );
 
 }
 
@@ -300,6 +295,24 @@ function ajaxLink(div, loadimg)
     if (div instanceof jQuery && div.attr('href')){ link = div.attr("href"); }
     else { link = div;}
     ajaxReload(link, loadimg);
+}
+
+// wrapper for ajax post
+function ajaxPost(dict) {
+    var data = dict['data'];
+    var success_fun = dict['success'];
+    var error_fun = dict['error'];
+    if (error_fun == null) {
+        error_fun = function(jqXHR, textStatus, errorThrown) { $('body').html(jqXHR.responseText); };
+    }
+    data['url'] = window.location.href;
+    $.ajax({
+        url:'/action/',
+        type: 'POST',
+        data: data,
+        success: success_fun,
+        error: error_fun
+    });
 }
 
 // ajax load home page
@@ -759,10 +772,7 @@ function loadLeftSidebar()
         var full_text = $('#input-full_text').val();
         var link = $('#input-link').val();
         var topic = $('input:radio[name=topics]:checked').val();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
                 success: function(data)
                 {
@@ -778,7 +788,7 @@ function loadLeftSidebar()
                     else
                     {
                         $('.normal').show();
-                        $('')
+                        $('');
                         clearPetitionErrors();
                         History.pushState( {k:1}, returned.title, returned.url);
                         rebind = returned.rebind;
@@ -800,17 +810,14 @@ function loadLeftSidebar()
         var full_text = $('#group-input-full_text').val();
         var privacy = $('input:radio[name=privacy]:checked').val();
         var topic = $('input:radio[name=topics]:checked').val();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'create',
-                        'title':title,
-                        'full_text':full_text,
-                        'topics':topic,
-                        'group_type':'U',
-                        'group_privacy':privacy,
-                        'type':'G'
+                    'title':title,
+                    'full_text':full_text,
+                    'topics':topic,
+                    'group_type':'U',
+                    'group_privacy':privacy,
+                    'type':'G'
                 },
                 success: function(data)
                 {
@@ -844,10 +851,7 @@ function loadLeftSidebar()
         var description = $('#news-link-generation-description').text();
         var screenshot = $('#news-link-image-src').attr("src");
         var topic = $('input:radio[name=topics]:checked').val();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'create','title':title,'summary':summary,'link':link,
                     'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
                 success: function(data)
@@ -878,10 +882,7 @@ function loadLeftSidebar()
         event.preventDefault();
         var text = $('#feedback-text').val();
         var name = $('#feedback-name').val();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'feedback','text':text,'path':path,'name':name},
                 success: function(data)
                 {
@@ -903,10 +904,7 @@ function loadLeftSidebar()
         var email = $("#email-input").val();
         $("#invite-return-message").text("");
         $("#invite-return-loading-img").show();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'invite','email':email},
                 success: function(data)
                 {
@@ -1197,10 +1195,7 @@ function heartDisplay()
 
 function vote(div, content_id, v)
 {
-    $.ajax
-        ({
-            url:'/action/',
-            type: 'POST',
+    ajaxPost({
             data: {'action':'vote','c_id':content_id, 'vote':v},
             success: function(data)
             {
@@ -1282,6 +1277,7 @@ function getNew(feed_type)
 {
     ajaxFeed(feed_type, topics, 0, 10, true);
 }
+
 
 function ajaxFeed(feed_type, topics, start, how_many, force_replace)
 {
@@ -1392,10 +1388,7 @@ function submitAnswer()
     var explanation = "";
     var weight = 5;
     // var exp = $("#explanation").val();
-    $.ajax
-        ({
-            url:'/action/',
-            type: 'POST',
+    ajaxPost({
             data: {'action':'answer','q_id': q_id,'choice':choice,'weight':weight,'explanation':explanation},
             success: function(data) {
             },
@@ -1456,20 +1449,13 @@ function loadThread()
         {
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
-            $.ajax
-                ({
-                    url:'/action/',
-                    type: 'POST',
-                    data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
-                    success: function(data)
-                    {
-                        ajaxThread();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown)
-                    {
-                        alert("Oops we made an error.  Try submitting again.")
-                    }
-                });
+            ajaxPost({
+                'data': {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                'success': function(data) {
+                    ajaxThread();
+                },
+                'error': null
+            });
         }
         else
         {
@@ -1531,9 +1517,7 @@ function loadThread()
         if (comment_text_length <= 1000)
         {
             var content_id = $(this).children(".hidden_id").val();
-            $.ajax({
-                url:'/action/',
-                type: 'POST',
+            ajaxPost({
                 data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
                 success: function(data)
                 {
@@ -1720,10 +1704,7 @@ function userFollowResponse(event,response,div)
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
     alert( follow_id );
-    $.ajax(
-        {
-            url:'/action/',
-            type:'POST',
+    ajaxPost({
             data: {
                 'action':'followresponse',
                 'p_id': follow_id,
@@ -1746,10 +1727,7 @@ function loadProfile()
     $("#user-follow").click( function(event)
     {
         event.preventDefault();
-        $.ajax(
-            {
-                url:'/action/',
-                type:'POST',
+        ajaxPost({
                 data: {
                     'action':'userfollow',
                     'p_id': p_id
@@ -1769,10 +1747,7 @@ function loadProfile()
     $("#user-unfollow").click( function(event)
     {
         event.preventDefault();
-        $.ajax(
-            {
-                url:'/action/',
-                type:'POST',
+        ajaxPost({
                 data: {
                     'action':'stopfollow',
                     'p_id': p_id
@@ -1800,10 +1775,7 @@ function loadProfile()
     $("#public-follow").click( function(event)
     {
         event.preventDefault();
-        $.ajax(
-            {
-                url:'/action/',
-                type:'POST',
+        ajaxPost({
                 data: {
                     'action':'followprivacy',
                     'p_id': p_id,
@@ -1824,10 +1796,7 @@ function loadProfile()
     $("#private-follow").click( function(event)
     {
         event.preventDefault();
-        $.ajax(
-            {
-                url:'/action/',
-                type:'POST',
+        ajaxPost({
                 data: {
                     'action':'followprivacy',
                     'p_id': p_id,
@@ -1858,10 +1827,7 @@ function loadPetition()
     $("#sign-button").click(function(event)
     {
         event.preventDefault();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'sign','c_id':c_id},
                 success: function(data)
                 {
@@ -1892,10 +1858,7 @@ function loadPetition()
     $("#finalize-button").click(function(event)
     {
         event.preventDefault();
-        $.ajax
-            ({
-                type:'POST',
-                url:'/action/',
+        ajaxPost({
                 data: {'action':'finalize','c_id':c_id},
                 success: function(data)
                 {
@@ -1987,10 +1950,7 @@ function groupFollowResponse(event,response,div,g_id)
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
     alert( follow_id );
-    $.ajax(
-        {
-            url:'/action/',
-            type:'POST',
+    ajaxPost({
             data: {
                 'action':'joinresponse',
                 'follow_id': follow_id,
@@ -2094,10 +2054,7 @@ function loadGroup()
 
     $("#group-follow").click( function(event) {
         event.preventDefault();
-        $.ajax(
-            {
-                url:'/action/',
-                type:'POST',
+        ajaxPost({
                 data: {
                     'action':'joingroup',
                     'g_id': g_id
@@ -2115,10 +2072,7 @@ function loadGroup()
     });
     $("#group-unfollow").click( function(event) {
         event.preventDefault();
-        $.ajax(
-            {
-                url:'/action/',
-                type:'POST',
+        ajaxPost({
                 data: {
                     'action':'leavegroup',
                     'g_id': g_id

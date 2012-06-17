@@ -107,6 +107,9 @@ pip install googlemaps
 south
 pip install South
 
+oauth2
+pip install oauth2
+
 ********** GETTING STARTED ************
 
 Now that you have checked out a version of the project and installed all the dependencies you should be pretty much ready to go. 
