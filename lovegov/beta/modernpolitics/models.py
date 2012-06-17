@@ -919,6 +919,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
+    type = models.CharField(max_length=1,default="U")
+
+
     def __unicode__(self):
         return self.first_name
     def get_url(self):
