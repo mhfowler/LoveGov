@@ -69,9 +69,16 @@ def photoKey(type=".jpg"):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
+def initCreator():
+    lg = UserProfile.lg.get_or_none(alias="lovegov")
+    if lg:
+        return lg
+    else:
+        return 154        #154 = lovegovuser
+
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=constants.PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=154)     #154 = lovegovuser
+    creator = models.ForeignKey("UserProfile", default=initCreator)
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
