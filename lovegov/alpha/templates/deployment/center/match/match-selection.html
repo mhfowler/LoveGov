@@ -80,7 +80,7 @@
             currentSelected.removeClass('match-selection-box-selected');
             matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
-    },3000);
+    },3750);
 
 
 
@@ -163,12 +163,12 @@
                 var returned = eval('(' + data + ')' );
                 if (directionFrom != null)
                 {
-                    $('#match-ajax-content').hide({effect:'slide',speed:2000, direction:directionFrom});
+                    $('#match-ajax-content').hide({effect:'slide',speed:2500, direction:directionFrom});
                     setTimeout(function()
                     {
                         $('#match-ajax-content').html(returned.html);
                     },300);
-                    $('#match-ajax-content').show({effect:'slide',speed:1750,direction:directionTo});
+                    $('#match-ajax-content').show({effect:'slide',speed:2000,direction:directionTo});
 
 
                 }
