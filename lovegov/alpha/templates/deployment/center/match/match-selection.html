@@ -55,7 +55,8 @@
         var next;
         if (currentSelected.hasClass('match-selection-box-left'))
         {
-            circle = $('.circle-div-left');
+            $('.circle-div-left').removeClass('circle-div-red').addClass('.circle-div-gray');
+            $('.circle-div-center').removeClass('.circle-div-gray').addClass('.circle-div-red');
             next = $('.match-selection-box-center');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
@@ -63,7 +64,8 @@
         }
         else if (currentSelected.hasClass("match-selection-box-center"))
         {
-            circle = $('.circle-div-center');
+            $('.circle-div-center').removeClass('circle-div-red').addClass('.circle-div-gray');
+            $('.circle-div-right').removeClass('.circle-div-gray').addClass('.circle-div-red');
             next = $('.match-selection-box-right');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
@@ -71,14 +73,13 @@
         }
         else
         {
-            circle = $('.circle-div-right');
+            $('.circle-div-right').removeClass('circle-div-red').addClass('.circle-div-gray');
+            $('.circle-div-left').removeClass('.circle-div-gray').addClass('.circle-div-red');
             next = $('.match-selection-box-left');
             next.addClass('match-selection-box-selected');
             currentSelected.removeClass('match-selection-box-selected');
             matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
-        circle.removeClass('circle-div-gray');
-        circle.addClass("circle-div-red");
     },3000);
 
 
