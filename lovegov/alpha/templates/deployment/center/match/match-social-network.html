@@ -16,6 +16,8 @@
             <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
                 {% include 'deployment/snippets/match/social-network-image.html' with entity=friend %}
             </div>
+        {% empty %}
+            &nbsp;
         {% endfor %}
         </div>
         <div class="match-social-network-entity-button">
@@ -32,6 +34,8 @@
             <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
                 {% include 'deployment/snippets/match/social-network-image.html' with entity=group %}
             </div>
+        {% empty %}
+            &nbsp;
         {% endfor %}
         </div>
 
@@ -49,6 +53,8 @@
             <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
                 {% include 'deployment/snippets/match/social-network-image.html' with entity=network %}
             </div>
+        {% empty %}
+            &nbsp;
         {% endfor %}
         </div>
         <div class="match-social-network-entity-button">
