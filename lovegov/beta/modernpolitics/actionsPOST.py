@@ -1122,18 +1122,20 @@ def addEmailList(request):
 
 def matchComparison(request,dict={}):
     from lovegov.alpha.splash.views import ajaxRender
-    def returnComparison(to_compare):
-        dict['entity'] = to_compare
-        html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
-        return HttpResponse(json.dumps({'html':html}))
+    from lovegov.beta.modernpolitics.backend import urlToObject
 
     user = dict['user']
-    url = request.POST['entity_url'].replace('/','').replace('profile','').replace('network','')
-    to_compare = UserProfile.lg.get_or_none(alias=url)
-    if to_compare:
-        to_compare.compare = backend.getUserUserComparison(user, to_compare).toJSON()
-        return returnComparison(to_compare)
+    object = urlToObject(request.POST['entity_url'])
+
+    if object.__class__.__name__ == 'UserProfile':
+        object.compare = backend.getUserUserComparison(user, object).toJSON()
     else:
-        to_compare = Network.lg.get_or_none(name=url)
-        to_compare.compare = backend.getUserGroupComparison(user, to_compare).toJSON()
-        return returnComparison(to_compare)
+        object.compare = backend.getUserGroupComparison(user, object).toJSON()
+
+    dict['entity'] = object
+    html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
+    return HttpResponse(json.dumps({'html':html}))
+
+
+
+

@@ -26,9 +26,11 @@
     <!-- Groups -->
     <div class="match-social-network-entity-container match-social-network-entity-container-center">
         <div class="match-social-network-entity-container-wrapper">
-            <p>
-                You aren't in any groups. Join some.
-            </p>
+        {% for group in groups %}
+            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
+                {% include 'deployment/snippets/match/social-network-image.html' with entity=group %}
+            </div>
+        {% endfor %}
         </div>
 
         <div class="match-social-network-entity-button">
@@ -55,6 +57,7 @@
 </div>
 
 <script type="text/javascript">
+
     (function()
     {
         var currentDiv;
@@ -65,6 +68,7 @@
             currentDiv = $(this);
 
             $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
+
             $.ajax
             ({
                 type:'POST',
@@ -72,19 +76,23 @@
                 data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
                 success: function(data)
                 {
-                    if (check == currentDiv)
+                    if (check.is(currentDiv))
                     {
                         var returned = eval('(' + data + ')');
-                        setTimeout(function(){$('.match-box-div').html(returned.html)},300);
-                        $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+                        $('.match-box-div').promise().done(function()
+                        {
+                            $('.match-box-div').html(returned.html);
+                            $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
+                        });
                     }
-
                 },
                 error: function(a,b,c)
                 {
 
                 }
             })
+
+
         }, function()
         {
 

@@ -433,6 +433,9 @@ def updateComparison(comparison):
     return viewCompare(viewA=comparison.viewA, viewB=comparison.viewB)
 
 
+
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a group and saves/updates AggregateResponse appropriately.
 # args: group (group to save view for)
@@ -2082,6 +2085,21 @@ def getSourcePath(request):
     else:
         path = request.path
     return path
+
+def urlToObject(url):
+    split = filter(None,url.split('/'))
+    type = split[0]
+    alias = split[1]
+    if type == 'profile':
+        return UserProfile.lg.get_or_none(alias=alias)
+    elif type == 'network':
+        return Network.lg.get_or_none(name=alias)
+    elif type == 'group':
+        return Group.lg.get_or_none(id=alias)
+
+
+
+
 
 
 ########################################################################################################################
