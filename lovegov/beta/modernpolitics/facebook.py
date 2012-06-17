@@ -273,9 +273,9 @@ def twitterGetAccessToken(request, to_page="/web/"):
 
 def twitterLogin(request, to_page="/web/", dict={}):
     twitter_access_token = request.COOKIES.get('twitter_access_token')
-    tat = twitter_access_token.replace('\'','\"')
-    tat = json.loads(str(tat))
-    if tat:
+    if twitter_access_token:
+        tat = twitter_access_token.replace('\'','\"')
+        tat = json.loads(str(tat))
         twitter_user_id = tat['user_id']
         user_prof = UserProfile.lg.get_or_none(twitter_user_id=twitter_user_id)
         logging.debug("twitter")

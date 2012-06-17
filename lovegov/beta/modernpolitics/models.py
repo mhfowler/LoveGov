@@ -549,7 +549,6 @@ class Content(Privacy, LocationLevel):
             else:
                 my_vote.value += 1
                 my_vote.autoSave()
-                mod = 'S'
                 # adjust content values about status and vote
                 if my_vote.value == 1:
                     self.upvotes += 1
@@ -570,7 +569,7 @@ class Content(Privacy, LocationLevel):
             self.upvotes += 1
             self.status += constants.STATUS_VOTE
             self.save()
-            action = Action(relationship=my_vote,modifier='L')
+            action = Action(relationship=new_vote,modifier='L')
             action.autoSave()
             return new_vote.value
 
@@ -586,7 +585,6 @@ class Content(Privacy, LocationLevel):
             else:
                 my_vote.value -= 1
                 my_vote.autoSave()
-                mod = 'S'
                 # adjust content values about status and vote
                 if my_vote.value == -1:
                     self.downvotes += 1
@@ -607,7 +605,7 @@ class Content(Privacy, LocationLevel):
             self.downvotes += 1
             self.status -= constants.STATUS_VOTE
             self.save()
-            action = Action(relationship=my_vote,modifier='D')
+            action = Action(relationship=new_vote,modifier='D')
             action.autoSave()
             return new_vote.value
 
@@ -2637,12 +2635,10 @@ class Question(Content):
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
     answers = models.ManyToManyField(Answer)
-    parent = models.
     class Admin:
         pass
     def __unicode__(self):
         return self.title
-
     def toJSON(self):
         pass
 
