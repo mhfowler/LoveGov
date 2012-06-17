@@ -98,12 +98,15 @@ TEMPLATE_DIRS = (
     )
 
 ########################################################################################################################
-#    authentication (and integration with facebook)
+#    authentication (and integration with facebook and twitter)
 #
 ########################################################################################################################
 
 FACEBOOK_APP_ID = 	'184966154940334'
 FACEBOOK_APP_SECRET = 	'0ec0b8b37633508361584510db53a6dc'
+
+TWITTER_KEY = 'kb6Hop3poGH4Ocb0bJUgw'
+TWITTER_SECRET = 'MWHKY9onFg9ZMX5lOtEyLJWsAkCMNqRAXBo9dS3Iw'
 
 AUTH_PROFILE_MODULE = 'modernpolitics.UserProfile'
 

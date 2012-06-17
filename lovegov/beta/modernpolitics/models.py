@@ -549,7 +549,6 @@ class Content(Privacy, LocationLevel):
             else:
                 my_vote.value += 1
                 my_vote.autoSave()
-                mod = 'S'
                 # adjust content values about status and vote
                 if my_vote.value == 1:
                     self.upvotes += 1
@@ -570,7 +569,7 @@ class Content(Privacy, LocationLevel):
             self.upvotes += 1
             self.status += constants.STATUS_VOTE
             self.save()
-            action = Action(relationship=my_vote,modifier='L')
+            action = Action(relationship=new_vote,modifier='L')
             action.autoSave()
             return new_vote.value
 
@@ -586,7 +585,6 @@ class Content(Privacy, LocationLevel):
             else:
                 my_vote.value -= 1
                 my_vote.autoSave()
-                mod = 'S'
                 # adjust content values about status and vote
                 if my_vote.value == -1:
                     self.downvotes += 1
@@ -607,7 +605,7 @@ class Content(Privacy, LocationLevel):
             self.downvotes += 1
             self.status -= constants.STATUS_VOTE
             self.save()
-            action = Action(relationship=my_vote,modifier='D')
+            action = Action(relationship=new_vote,modifier='D')
             action.autoSave()
             return new_vote.value
 
@@ -880,6 +878,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     user = models.ForeignKey(User, null=True)
     # for downcasting
     user_type = models.CharField(max_length=1, choices=constants.USER_CHOICES, default='G')
+    # twitter integration
+    twitter_user_id = models.IntegerField(null=True)
+    twitter_screen_name = models.CharField(max_length=200, null=True)
     # info
     alias = models.CharField(max_length=200, blank=True)
     username = models.CharField(max_length=500, null=True)      # for display, not for login!
@@ -919,7 +920,6 @@ class UserProfile(FacebookProfileModel, LGModel):
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     type = models.CharField(max_length=1,default="U")
-
 
     def __unicode__(self):
         return self.first_name
@@ -2641,7 +2641,6 @@ class Question(Content):
         pass
     def __unicode__(self):
         return self.title
-
     def toJSON(self):
         pass
 

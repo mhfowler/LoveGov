@@ -1216,7 +1216,7 @@ function vote(div, content_id, v)
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                //location.reload()
+                $("body").html(jqXHR.responseText);
             }
         });
 }
