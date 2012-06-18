@@ -46,5 +46,5 @@ class ListField(models.TextField):
 
 
 # Tell south how to reconstruct custom field instances
-add_introspection_rules([], ["^lovegov\.beta\.modernpolitics\.custom_fields\.ListField"])
+add_introspection_rules([], ["^lovegov\.modernpolitics\.custom_fields\.ListField"])
 
