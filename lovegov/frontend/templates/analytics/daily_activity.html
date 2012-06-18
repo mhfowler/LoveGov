@@ -6,7 +6,7 @@
 
 <h2>
     {% if days %}
-        Summary of all user activity in the last {{ days }} day{{ days|pluralize }}.
+        Summary of all user activity from {{ days }} day{{ days|pluralize }} ago.
     {% else %}
         Summary of all user activity forever.
     {% endif %}
