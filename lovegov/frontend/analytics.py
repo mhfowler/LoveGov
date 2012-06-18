@@ -16,15 +16,15 @@ ANALYTICS_EMAILS = ['max_fowler@brown.edu']
 #-----------------------------------------------------------------------------------------------------------------------
 def userSummary(user, request):
     today = datetime.datetime.now() - datetime.timedelta(days=1)
-    pa = PageAccess.objects.filter(user=user, when__gt=today).order_by("-when")
+    pa = PageAccess.objects.filter(user=user, when__gt=today).order_by("when")
     if pa:
         access = {}
         for x in pa:
             page = x.page
             if page in access:
-                access['page'] += 1
+                access[page] += 1
             else:
-                access['page'] = 0
+                access[page] = 0
         vals = {'access':access, 'pa':pa, 'user':user}
         return ajaxRender('analytics/user_summary.html', vals, request)
     else:
