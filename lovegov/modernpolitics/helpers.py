@@ -24,7 +24,10 @@ import string
 #-----------------------------------------------------------------------------------------------------------------------
 def getSourcePath(request):
     if request.is_ajax():
-        path = request.POST.get('url')
+        if request.method == 'GET':
+            path = request.POST.get('url')
+        else:
+            path = request.GET.get('url')
         if not path:
             referer = request.META.get('HTTP_REFERER')
             if not referer:
@@ -35,6 +38,12 @@ def getSourcePath(request):
                 else:
                     splitted = referer.split(".com")
                 path = splitted[1]
+        else:
+            if LOCAL:
+                splitted = path.split(".com:8000")
+            else:
+                splitted = path.split(".com")
+            path = splitted[1]
     else:
         path = request.path
     print "path: " + path

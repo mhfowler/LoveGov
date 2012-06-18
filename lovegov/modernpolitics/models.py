@@ -3108,7 +3108,6 @@ class Group(Content):
             else:
                 pix = (num/people*100)*5
             tuple['pix'] = int(pix)
-        print histogram
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3188,7 +3187,6 @@ class Group(Content):
                    comparison = comparison.bytopic.get(topic=topic)
                 if comparison.num_q:
                     x_block = comparison.result / HISTOGRAM_RESOLUTION
-                    print x.get_name() + ": " + str(x_block)
                     if x_block == block:
                         ids.append(x.id)
             return self.members.filter(id__in=ids).order_by('id')

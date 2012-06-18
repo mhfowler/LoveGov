@@ -16,6 +16,18 @@ from lovegov.settings import UPDATE
 from PIL import Image
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
+#-----------------------------------------------------------------------------------------------------------------------
+def framedResponse(request, html, url, dict):
+    if request.is_ajax():
+        to_return = {'html':html, 'url':url, 'title':dict['pageTitle']}
+        return HttpResponse(json.dumps(to_return))
+    else:
+        dict['center'] = html
+        frame(request, dict)
+        return renderToResponseCSRF(template='deployment/templates/frame.html', dict=dict, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, blah="blah"):
@@ -210,26 +222,6 @@ def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
         return loginPOST(request,to_page,message,dict)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# ajax get method switcher
-#-----------------------------------------------------------------------------------------------------------------------
-def ajaxSwitch(request, dict):
-    type = request.POST['type']
-    if type=='thread':
-        return ajaxThread(request, dict)
-    elif type=='feed':
-        return ajaxFeed(request, dict)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# get ajax thread
-#-----------------------------------------------------------------------------------------------------------------------
-def ajaxThread(request, dict={}):
-    content = Content.objects.get(id=request.POST['c_id'])
-    user = dict['user']
-    thread = makeThread(request, content, user)
-    to_return = {'html':thread}
-    return HttpResponse(json.dumps(to_return))
-
-#-----------------------------------------------------------------------------------------------------------------------
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, dict):
@@ -281,7 +273,6 @@ def getUserWebResponsesJSON(request,dict={}):
         questionsArray[topic_text].append(toAddquestion)
     dict['questionsArray'] = json.dumps(questionsArray)
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates hte QAWeb
 #-----------------------------------------------------------------------------------------------------------------------
@@ -298,15 +289,9 @@ def web(request, dict={}):
     if request.method == 'GET':
         getUserWebResponsesJSON(request,dict)
         setPageTitle("lovegov: web",dict)
-        if request.is_ajax():
-            html = ajaxRender('deployment/center/qaweb.html', dict, request)
-            url = '/web/'
-            rebind = 'qaweb'
-            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-            return HttpResponse(json.dumps(to_return))
-        else:
-            frame(request, dict)
-            return renderToResponseCSRF(template='deployment/pages/web.html', dict=dict, request=request)
+        html = ajaxRender('deployment/center/qaweb.html', dict, request)
+        url = '/web/'
+        return framedResponse(request, html, url, dict)
     if request.method == 'POST':
         if request.POST['action']:
             return actions.answer(request, dict)
@@ -370,15 +355,9 @@ def home(request, dict={}):
     dict['best_length'] = len(best)
     dict['bestfeed'] = best
     setPageTitle("lovegov: beta",dict)
-    if request.is_ajax():
-        html = ajaxRender('deployment/center/home.html', dict, request)
-        url = '/home/'
-        rebind = 'home'
-        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        frame(request, dict)
-        return renderToResponseCSRF('deployment/pages/home.html', dict=dict, request=request)
+    html = ajaxRender('deployment/center/home.html', dict, request)
+    url = '/home/'
+    return framedResponse(request, html, url, dict)
 
 def latest(user, start=0, stop=5, content=None):
     if not content:
@@ -421,42 +400,6 @@ def feedHelper(user, feed_type='H', start=0, stop=5, topics=None):
             my_vote=0
         list.append((c,my_vote))    # content, my_vote
     return list
-
-def ajaxFeed(request, dict={}):
-    if request.method == 'POST':
-        user = dict['user']
-        feed_type = request.POST['feed_type']
-        start = int(request.POST['start'])
-        how_many = int(request.POST['how_many'])
-        json_data = request.POST['topics']
-        topic_aliases = json.loads(json_data)
-        stop = start + how_many
-        if topic_aliases:
-            topics = Topic.objects.filter(alias__in=topic_aliases)
-            content = Content.objects.filter(Q(type='P') | Q(type='N'))
-            content = content.filter(main_topic__in=topics)
-        else:
-            content = Content.objects.filter(Q(type='P') | Q(type='N'))
-        if feed_type == 'N':
-            feed = latest(user, start, stop, content)
-        elif feed_type == 'B':
-            feed = greatest(user, start, stop, content)
-        else:
-            if not topic_aliases:
-                feed = feedHelper(user, feed_type, start, stop)
-            else:
-                print ("check it: " + str(topics))
-                feed = feedHelper(user, feed_type, start, stop, topics)
-        dict['feed'] = feed
-        position = start + len(feed)
-        dict['defaultImage'] = getDefaultImage().image
-        context = RequestContext(request,dict)
-        template = loader.get_template('deployment/snippets/feed_helper.html')
-        feed_string = template.render(context)  # render comment html
-        to_return = {'feed':feed_string, 'position':position}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        return HttpResponse("not a real page")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Profile Link
@@ -548,19 +491,14 @@ def profile(request, alias=None, dict={}):
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
-            if request.is_ajax():
-                html = ajaxRender('deployment/center/profile.html', dict, request)
-                url = '/profile/' + alias
-                rebind = 'profile'
-                to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-                return HttpResponse(json.dumps(to_return))
-            else:
-                return renderToResponseCSRF(template='deployment/pages/profile.html', dict=dict, request=request)
+            html = ajaxRender('deployment/center/profile.html', dict, request)
+            url = '/profile/' + alias
+            return framedResponse(request, html, url, dict)
         else:
             return shortcuts.redirect('/profile/' + user.alias)
     else:
         if request.POST['action']:
-            return actions.answer(request, dict)
+            return answer(request, dict)
         else:
             to_alias = request.POST['alias']
             return shortcuts.redirect('/alpha/' + to_alias)
@@ -620,14 +558,9 @@ def group(request, g_id=None, dict={}):
             dict['is_user_admin'] = True
 
     setPageTitle("lovegov: " + group.title,dict)
-    if request.is_ajax():
-        html = ajaxRender('deployment/center/group.html', dict, request)
-        url = group.get_url()
-        rebind = 'group'
-        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        return renderToResponseCSRF(template='deployment/pages/group.html', dict=dict, request=request)
+    html = ajaxRender('deployment/center/group.html', dict, request)
+    url = group.get_url()
+    return framedResponse(request, html, url, dict)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -636,15 +569,9 @@ def group(request, g_id=None, dict={}):
 def about(request, dict={}):
     if request.method == 'GET':
         setPageTitle("lovegov: about",dict)
-        if request.is_ajax():
-            html = ajaxRender('deployment/center/about.html', dict, request)
-            url = '/about/'
-            rebind = 'about'
-            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-            return HttpResponse(json.dumps(to_return))
-        else:
-            frame(request, dict)
-            return renderToResponseCSRF(template='deployment/pages/about.html', dict=dict, request=request)
+        html = ajaxRender('deployment/center/about.html', dict, request)
+        url = '/about/'
+        return framedResponse(request, html, url, dict)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
@@ -760,14 +687,9 @@ def match(request,dict={}):
         dict['userProfile'] = user
 
         setPageTitle("lovegov: match",dict)
-        if request.is_ajax():
-            html = ajaxRender('deployment/center/match.html', dict, request)
-            url = '/match/'
-            rebind = 'match'
-            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-            return HttpResponse(json.dumps(to_return))
-        else:
-            return renderToResponseCSRF(template='deployment/pages/match.html', dict=dict, request=request)
+        html = ajaxRender('deployment/center/match.html', dict, request)
+        url = '/match/'
+        return framedResponse(request, html, url, dict)
 
 def matchNew(request, dict={}):
     def election(request,dict={}):
@@ -786,15 +708,9 @@ def matchNew(request, dict={}):
         # dict['user'] doesn't translate well in the template
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
-        if request.is_ajax():
-            html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
-            url = '/match/'
-            rebind = 'match-new'
-            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-            return HttpResponse(json.dumps(to_return))
-        else:
-            dict['section'] = 'election'
-            return renderToResponseCSRF(template='deployment/pages/match/match-new.html', dict=dict, request=request)
+        html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
+        url = '/match/'
+        return framedResponse(request, html, url, dict)
 
     def social(request,dict={}):
         user = dict['user']
@@ -817,15 +733,9 @@ def matchNew(request, dict={}):
 
         dict['userProfile'] = user
         setPageTitle("lovegov: match2",dict)
-        if request.is_ajax():
-            html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
-            url = '/match/'
-            rebind = 'match-new'
-            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-            return HttpResponse(json.dumps(to_return))
-        else:
-            dict['section'] = 'social'
-            return renderToResponseCSRF(template='deployment/pages/match/match-new.html', dict=dict, request=request)
+        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+        url = '/match/'
+        return framedResponse(request, html, url, dict)
 
 
     if request.method == 'GET':
@@ -881,15 +791,9 @@ def petitionDetail(request, p_id, dict={}):
     dict['i_signed'] = (dict['user'] in signers)
     contentDetail(request=request, content=petition, dict=dict)
     setPageTitle("lovegov: " + petition.title,dict)
-    if request.is_ajax():
-        html = ajaxRender('deployment/center/petition_detail.html', dict, request)
-        url = '/petition/' + str(petition.id)
-        rebind = 'petition'
-        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        frame(request, dict)
-        return renderToResponseCSRF('deployment/pages/petition_detail.html', dict, request)
+    html = ajaxRender('deployment/center/petition_detail.html', dict, request)
+    url = '/petition/' + str(petition.id)
+    return framedResponse(request, html, url, dict)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of news with attached forum
@@ -900,15 +804,9 @@ def newsDetail(request, n_id, dict={}):
     dict['news'] = news
     contentDetail(request=request, content=news, dict=dict)
     setPageTitle("lovegov: " + news.title,dict)
-    if request.is_ajax():
-        html = ajaxRender('deployment/center/news_detail.html', dict, request)
-        url = '/news/' + str(news.id)
-        rebind = 'news'
-        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        frame(request, dict)
-        return renderToResponseCSRF('deployment/pages/news_detail.html', dict, request)
+    html = ajaxRender('deployment/center/news_detail.html', dict, request)
+    url = '/news/' + str(news.id)
+    return framedResponse(request, html, url, dict)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
@@ -922,15 +820,9 @@ def questionDetail(request, q_id=-1, dict={}):
             return HttpResponse("Congratulations, you have answered every question!")
     dictQuestion(request, q_id, dict)
     dict['pageTitle'] = "lovegov: " + dict['question'].question_text
-    if request.is_ajax():
-        html = ajaxRender('deployment/center/question_detail.html', dict, request)
-        url = dict['question'].get_url()
-        rebind = 'question'
-        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        frame(request, dict)
-        return renderToResponseCSRF('deployment/pages/question_detail.html', dict, request)
+    html = ajaxRender('deployment/center/question_detail.html', dict, request)
+    url = dict['question'].get_url()
+    return framedResponse(request, html, url, dict)
 
 def dictQuestion(request, q_id, dict={}):
     user = dict['user']
@@ -1012,15 +904,9 @@ def nextQuestion(request, dict={}):
     question = getNextQuestion(request, dict)
     dictQuestion(request, question.id, dict)
     setPageTitle("lovegov: " + question.question_text,dict)
-    if request.is_ajax():
-        html = ajaxRender('deployment/center/question_detail.html', dict, request)
-        url = question.get_url()
-        rebind = 'question'
-        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        frame(request, dict)
-        return renderToResponseCSRF('deployment/pages/question_detail.html', dict, request)
+    html = ajaxRender('deployment/center/question_detail.html', dict, request)
+    url = question.get_url()
+    return framedResponse(request, html, url, dict)
 
 def getNextQuestion(request, dict={}):
     user = dict['user']
@@ -1044,15 +930,9 @@ def account(request, dict={}):
         dict['password_form'] = PasswordForm()
         dict['uploadform'] = UploadFileForm()
         setPageTitle("lovegov: account",dict)
-        if request.is_ajax():
-            html = ajaxRender('deployment/center/account.html', dict, request)
-            url = '/account/'
-            rebind = 'account'
-            to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
-            return HttpResponse(json.dumps(to_return))
-        else:
-            frame(request, dict)
-            return renderToResponseCSRF('deployment/pages/account.html', dict, request)
+        html = ajaxRender('deployment/center/account.html', dict, request)
+        url = '/account/'
+        return framedResponse(request, html, url, dict)
     elif request.method == 'POST':
         if request.POST['box'] == 'password':
             password_form = PasswordForm(request.POST)

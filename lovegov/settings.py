@@ -136,7 +136,7 @@ HAYSTACK_CONNECTIONS = {
 
 # for django-debug-toolbar
 def show_toolbar(request):
-    from lovegov.old.views import getUserProfile
+    from lovegov.modernpolitics.helpers import getUserProfile
     if DEBUG and SHOW_TOOLBAR:
         user_prof = getUserProfile(request)
         if user_prof:
