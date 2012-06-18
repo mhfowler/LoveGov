@@ -473,7 +473,7 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(10)
+            actions = user_prof.getActivity(5)
             actions_text = []
             for action in actions:
                 from_you = False
@@ -488,6 +488,22 @@ def profile(request, alias=None, dict={}):
                 except:
                     actions_text.append( "This action no longer exists" )
             dict['actions_text'] = actions_text
+
+            # Get Notifications
+            if user.id == user_prof.id:
+                notifications = user.getNotifications(5,dropdown=True)
+                notifications_text = []
+                for notification in notifications:
+                    from_you = False
+                    to_you = False
+                    n_action = notification.action
+                    relationship = n_action.relationship
+                    if relationship.getFrom().id == user.id:
+                        from_you = True
+                    elif relationship.getTo().id == user.id:
+                        to_you = True
+                    notifications_text.append( n_action.getVerbose(from_you=from_you,to_you=to_you,notification=True) )
+                dict['notifications_text'] = notifications_text
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()

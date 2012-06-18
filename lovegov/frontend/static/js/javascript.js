@@ -63,6 +63,34 @@ function rebindFunction()
     }
 }
 
+/***********************************************************************************************************************
+ *
+ *      ~Auxiliary
+ *
+ ***********************************************************************************************************************/
+function userFollowResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".user-follow-id").val();
+    alert( follow_id );
+    ajaxPost({
+            data: {
+                'action':'followresponse',
+                'p_id': follow_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
 
 /***********************************************************************************************************************
  *
@@ -421,6 +449,35 @@ function loadHeader()
             $(this).css("color",'#959595');
         }
         $(this).blur();
+    });
+
+    $('#notifications-dropdown-arrow').click(
+        function(event)
+        {
+            event.preventDefault();
+            $('#notifications-dropdown').show();
+            ajaxPost({
+                'data': {'action':'dropdownnotifications'},
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#notifications-dropdown').html(obj.html);
+                    $('#notifications-dropdown').fadeIn('fast');
+                    unbindNotification();
+                    loadNotification();
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
+    $('#notifications-dropdown').bind('clickoutside',function(event)
+    {
+        $(this).empty();
+        $(this).hide();
     });
 
     $('#logo-img').hover
@@ -1680,38 +1737,60 @@ function loadAbout()
         );
 }
 
+/***********************************************************************************************************************
+ *
+ *      ~Notifications
+ *
+ ***********************************************************************************************************************/
+function unbindNotification()
+{
+    $('.notificaiton-user-follow').unbind();
+    $('.notificaiton-follow-response-y').unbind();
+    $(".notification-follow-response-n").unbind();
+}
+
+function loadNotification()
+{
+    $(".notification-user-follow").click( function(event)
+    {
+        event.preventDefault();
+        var follow_id = $(this).siblings(".user-follow-id").val();
+        alert( follow_id );
+        ajaxPost({
+                data: {
+                    'action':'userfollow',
+                    'p_id': follow_id
+                },
+                success: function(data)
+                {
+                    alert(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        );
+    });
+
+    $(".notification-follow-response-y").click( function(event) {
+        userFollowResponse(event,"Y",$(this));
+    });
+
+    $(".notification-follow-response-n").click( function(event) {
+        userFollowResponse(event,"N",$(this));
+    });
+}
+
 
 /***********************************************************************************************************************
  *
  *      ~Profile
  *
  ***********************************************************************************************************************/
-function userFollowResponse(event,response,div)
-{
-    event.preventDefault();
-    var follow_id = div.siblings(".follow-id").val();
-    alert( follow_id );
-    ajaxPost({
-            data: {
-                'action':'followresponse',
-                'p_id': follow_id,
-                'response': response
-            },
-            success: function(data)
-            {
-                alert(data);
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
-            }
-        }
-    );
-}
-
 function loadProfile()
 {
-    $("#user-follow").click( function(event)
+    $(".user-follow-button").click( function(event)
     {
         event.preventDefault();
         ajaxPost({
@@ -1731,7 +1810,7 @@ function loadProfile()
         );
     });
 
-    $("#user-unfollow").click( function(event)
+    $(".user-unfollow-button").click( function(event)
     {
         event.preventDefault();
         ajaxPost({
@@ -1751,11 +1830,11 @@ function loadProfile()
         );
     });
 
-    $(".follow-response-y").click( function(event) {
+    $(".user-follow-response-y").click( function(event) {
         userFollowResponse(event,"Y",$(this));
     });
 
-    $(".follow-response-n").click( function(event) {
+    $(".user-follow-response-n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
 
@@ -1800,6 +1879,8 @@ function loadProfile()
             }
         )
     });
+    unbindNotification();
+    loadNotification();
 }
 
 

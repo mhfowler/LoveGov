@@ -1,4 +1,4 @@
-<div class="action">
+<div class="notification">
     <!-- Commented -->
     {% if type == 'CO' %}
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -23,29 +23,40 @@
 
     <!-- Followed -->
     {% elif type == 'FO' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        {% if modifier == 'I' %}
-            {% if from_you %}
-                were invited to follow
-            {% else %}
-                was invited to follow
-            {% endif %}
-        {% elif modifier == 'R' %}
+        {% if modifier == 'R' %}
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             requested to follow
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <div class="notification-follow-response">
+                <a href="" class="notification-follow-response-y"> I accept! </a> ||
+                <a href="" class="notification-follow-response-n"> I decline! </a>
+                <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+            </div>
         {% elif modifier == 'D' %}
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             followed
-        {% elif modifier == 'N' %}
-            refused to follow
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <div class="notification-follow">
+                <a href="" class="notification-user-follow">
+                    follow them back!
+                </a>
+                <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+            </div>
         {% elif modifier == 'X' %}
             {% if from_you %}
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 were rejected from following
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             {% else %}
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 was rejected from following
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             {% endif %}
         {% elif modifier == 'S' %}
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             stopped following
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% endif %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     <!-- Group Follow -->
     {% elif type == 'JO' %}
