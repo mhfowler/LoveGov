@@ -91,6 +91,9 @@
         {% endfor %}
     </ul>
 
+    {{ user.id }}
+    {{ user_prof.id }}
+
     {% if user.id == user_prof.id %}
         <h4>Follow Requests</h4>
         <div id="follow-requests-container">

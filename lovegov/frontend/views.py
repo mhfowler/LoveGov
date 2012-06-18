@@ -516,8 +516,7 @@ def profile(request, alias=None, dict={}):
                     notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
                 dict['notifications_text'] = notifications_text
                 dict['num_notifications'] = num_notifications
-            print user_prof.get_name()
-            print user_prof.private_follow
+
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
             html = ajaxRender('deployment/center/profile.html', dict, request)
