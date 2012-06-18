@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
+from lovegov.modernpolitics.images import *
 
 # django
 from django.utils import simplejson
@@ -55,11 +56,11 @@ def getLinkInfo(request, dict={}):
                 try:
                     img_url = image_refs[num]['src']
                     if num == 0:
-                        first_image = images.downloadImage(img_url=img_url,url=URL,min_size=1)
+                        first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
                     elif len(list) == 3:
                         break
                     else:
-                        toAdd = images.downloadImage(img_url=img_url,url=URL)
+                        toAdd = downloadImage(img_url=img_url,url=URL)
                         if toAdd: list.append(toAdd)
                 except:
                     continue
@@ -68,7 +69,7 @@ def getLinkInfo(request, dict={}):
 
             try:
                 for imageobj in list:
-                    imageobj['path'] = images.resizeImage(imageobj['path'])
+                    imageobj['path'] = resizeImage(imageobj['path'])
             except:
                 pass
 
