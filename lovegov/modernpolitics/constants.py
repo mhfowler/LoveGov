@@ -290,7 +290,7 @@ PERMISSION_CHOICES = (
     ('C', 'campaign')
 )
 
-# type dict
+# type vals
 TYPE_DICT = {'event':'E', 'petition':'P', 'news':'N', 'legislation':'L',
              'question':'Q','response':'R','group':'G','comment':'C',
              'image':'I','album':'A','content-response':'Z','debate':'D',

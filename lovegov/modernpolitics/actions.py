@@ -27,7 +27,7 @@ from googlemaps import GoogleMaps
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
-def getLinkInfo(request, dict={}):
+def getLinkInfo(request, vals={}):
     url = str(request.POST['url'])
     url.strip()
     # url may not be well formed so try variations until one works
@@ -40,15 +40,15 @@ def getLinkInfo(request, dict={}):
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        dict = {}
+        vals = {}
         try:
-            dict['title'] = soup.title.string
+            vals['title'] = soup.title.string
         except:
-            dict['title'] = "No Title"
+            vals['title'] = "No Title"
         try:
-            dict['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
+            vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
         except:
-            dict['description'] = "No Description"
+            vals['description'] = "No Description"
         try:
             image_refs = soup.findAll("img")
             list = []
@@ -82,8 +82,8 @@ def getLinkInfo(request, dict={}):
             if len(list) == 0:
                 list.append({'path':"/static/images/top-logo-default.png"})
 
-            dict['imglink'] = list
-            html = ajaxRender('deployment/snippets/news-autogen.html', dict, request)
+            vals['imglink'] = list
+            html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
             return HttpResponse(json.dumps({'html':html,'imglink':list}))
 
         except:
@@ -93,9 +93,9 @@ def getLinkInfo(request, dict={}):
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
 # generates comparisons, and returns HTML back to user
 #-----------------------------------------------------------------------------------------------------------------------
-def getCongressmen(request, dict={}):
+def getCongressmen(request, vals={}):
     # POST variables from POST request and formats data
-    user = dict['user']
+    user = vals['user']
     address = request.POST['address']
     zip = request.POST['zip']
     if zip is None: zip = ""
@@ -138,32 +138,32 @@ def getCongressmen(request, dict={}):
         congressmen.append(senator)
 
     # Generate HTML and send back HTML to user via ajax
-    dict['userProfile'] = user
-    dict['congressmen'] = congressmen
-    dict['state'] = state_district[0]['state']
-    dict['district'] = state_district[0]['number']
-    dict['latitude'] = coordinates[0]
-    dict['longitude'] = coordinates[1]
-    html = ajaxRender('deployment/snippets/match-compare-div.html', dict, request)
+    vals['userProfile'] = user
+    vals['congressmen'] = congressmen
+    vals['state'] = state_district[0]['state']
+    vals['district'] = state_district[0]['number']
+    vals['latitude'] = coordinates[0]
+    vals['longitude'] = coordinates[1]
+    html = ajaxRender('deployment/snippets/match-compare-div.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Returns json of list of results which match inputted 'term'. For jquery autocomplete.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def searchAutoComplete(request,dict={},limit=5):
+def searchAutoComplete(request,vals={},limit=5):
     string = request.POST['string'].lstrip().rstrip()
     userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=string)
-    dict['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
-    html = ajaxRender('deployment/pieces/autocomplete.html', dict, request)
+    vals['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
+    html = ajaxRender('deployment/pieces/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Loads members.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def loadGroupUsers(request,dict={}):
-    user = dict['user']
+def loadGroupUsers(request,vals={}):
+    user = vals['user']
     num = int(request.POST['histogram_displayed_num'])
     histogram_topic = request.POST['histogram_topic']
     histogram_block = int(request.POST['histogram_block'])
@@ -179,22 +179,22 @@ def loadGroupUsers(request,dict={}):
     for x in more_members:
         print x.get_name()
     html = ""
-    dict['defaultImage'] = getDefaultImage().image
+    vals['defaultImage'] = getDefaultImage().image
     for member in more_members:
-        dict['member'] = member
-        html += ajaxRender('deployment/snippets/group-member.div.html',dict,request)
+        vals['member'] = member
+        html += ajaxRender('deployment/snippets/group-member.div.html',vals,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Loads histogram data.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def loadHistogram(request, dict={}):
-    user = dict['user']
+def loadHistogram(request, vals={}):
+    user = vals['user']
     group = Group.objects.get(id=request.POST['group_id'])
     histogram_topic = request.POST['histogram_topic']
-    dict['histogram'] = group.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=HISTOGRAM_RESOLUTION)
-    html = ajaxRender('deployment/pieces/histogram.html', dict, request)
+    vals['histogram'] = group.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=HISTOGRAM_RESOLUTION)
+    html = ajaxRender('deployment/pieces/histogram.html', vals, request)
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
@@ -225,10 +225,10 @@ def create(request, val={}):
         if request.is_ajax():
             if formtype == "P":
                 from lovegov.frontend.views import petitionDetail
-                return petitionDetail(request=request,p_id=c.id,dict=val)
+                return petitionDetail(request=request,p_id=c.id,vals=val)
             elif formtype == "N":
                 from lovegov.frontend.views import newsDetail
-                return newsDetail(request=request,n_id=c.id,dict=val)
+                return newsDetail(request=request,n_id=c.id,vals=val)
             elif formtype == "G":
                 group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
                 group_joined.confirm()
@@ -314,9 +314,9 @@ def finalize(request, vals={}):
 # Edit content based on editform.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def edit(request, dict={}):
+def edit(request, vals={}):
     """Simple interface for editing content (to be deprecated)"""
-    user = dict['user']
+    user = vals['user']
     content = Content.objects.get(id=request.POST['c_id'])
     creator = content.getCreator()
     if creator == user:
@@ -327,18 +327,18 @@ def edit(request, dict={}):
             form.complete(request)
             return shortcuts.redirect(content.get_url())
         else:
-            dict = {'form':form}
-            return renderToResponseCSRF('forms/contentform.html', dict, request)
+            vals = {'form':form}
+            return renderToResponseCSRF('forms/contentform.html', vals, request)
     else:
-        dict = {'message':'You cannot edit a piece of content you did not create.'}
-        return renderToResponseCSRF('usable/message.html',dict,request)
+        vals = {'message':'You cannot edit a piece of content you did not create.'}
+        return renderToResponseCSRF('usable/message.html',vals,request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Deletes content.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def delete(request, dict={}):
-    user = dict['user']
+def delete(request, vals={}):
+    user = vals['user']
     content = Content.objects.get(id=request.POST['c_id'])
     if user == content.getCreator():
         content.active = False
@@ -353,15 +353,15 @@ def delete(request, dict={}):
 # Saves comment to database from post request.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def comment(request, dict={}):
+def comment(request, vals={}):
     """
     Saves comment to database from post request.
 
     @param request
-    @param dict
+    @param vals
             - user
     """
-    user = dict['user']
+    user = vals['user']
     privacy = getPrivacy(request)
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():
@@ -382,14 +382,14 @@ def comment(request, dict={}):
                 to_return['errors'] = to_return['errors'].append(e)
             return HttpResponse(simplejson.dumps(to_return))
         else:
-            dict = {'message':'Comment post failed'}
-            return renderToResponseCSRF('usable/message.html',dict,request)
+            vals = {'message':'Comment post failed'}
+            return renderToResponseCSRF('usable/message.html',vals,request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sets privacy cookie and redirects to inputted page.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def setPrivacy(request, dict={}):
+def setPrivacy(request, vals={}):
     """Sets privacy cookie and redirects to inputted page."""
     path = request.POST['path']
     mode = request.POST['mode']
@@ -401,7 +401,7 @@ def setPrivacy(request, dict={}):
 # Sets privacy cookie and redirects to inputted page.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def setFollowPrivacy(request, dict={}):
+def setFollowPrivacy(request, vals={}):
     user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
     if not user:
         return HttpResponse("User does not exist")
@@ -418,9 +418,9 @@ def setFollowPrivacy(request, dict={}):
 # Likes or dislikes content based on post.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def vote(request, dict):
+def vote(request, vals):
     """Likes or dislikes content based on post."""
-    user = dict['user']
+    user = vals['user']
     privacy = getPrivacy(request)
     content = Content.objects.get(id=request.POST['c_id'])
     vote = request.POST['vote']
@@ -436,9 +436,9 @@ def vote(request, dict):
 # Saves a users answer to a question.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def answer(request, dict={}):
+def answer(request, vals={}):
     """ Saves a users answer to a question."""
-    user = dict['user']
+    user = vals['user']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = getPrivacy(request)
     my_response = user.getView().responses.filter(question=question)
@@ -496,9 +496,9 @@ def answer(request, dict={}):
 # Joins group if user is not already a part.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def joinGroupRequest(request, dict={}):
+def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
-    from_user = dict['user']
+    from_user = vals['user']
     group = Group.objects.get(id=request.POST['g_id'])
     #Secret groups and System Groups cannot be join requested
     if group.system:
@@ -550,7 +550,7 @@ def joinGroupRequest(request, dict={}):
 # Confirms or denies GroupJoined, if GroupJoined was requested.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def joinGroupResponse(request, dict={}):
+def joinGroupResponse(request, vals={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
@@ -579,8 +579,8 @@ def joinGroupResponse(request, dict={}):
 # Requests to follow inputted user.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def userFollowRequest(request, dict={}):
-    from_user = dict['user']
+def userFollowRequest(request, vals={}):
+    from_user = vals['user']
     to_user = UserProfile.objects.get(id=request.POST['p_id'])
     #No Self Following
     if to_user.id == from_user.id:
@@ -616,8 +616,8 @@ def userFollowRequest(request, dict={}):
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or denies user follow, if user follow was requested.
 #-----------------------------------------------------------------------------------------------------------------------
-def userFollowResponse(request, dict={}):
-    to_user = dict['user']
+def userFollowResponse(request, vals={}):
+    to_user = vals['user']
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['p_id'])
     already = UserFollow.objects.filter(user=from_user, to_user=to_user)
@@ -644,9 +644,9 @@ def userFollowResponse(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Clears userfollow relationship between users.
 #-----------------------------------------------------------------------------------------------------------------------
-def userFollowStop(request, dict={}):
+def userFollowStop(request, vals={}):
     """Removes connection between users."""
-    from_user = dict['user']
+    from_user = vals['user']
     to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
     if to_user:
         already = UserFollow.objects.filter(user=from_user, to_user=to_user)
@@ -666,9 +666,9 @@ def userFollowStop(request, dict={}):
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
 #-----------------------------------------------------------------------------------------------------------------------
-def joinGroupInvite(request, dict={}):
+def joinGroupInvite(request, vals={}):
     """Invites inputted to join group, if inviting user is admin."""
-    user = dict['user']
+    user = vals['user']
     to_invite = UserProfile.objects.get(id=request.POST['invited_id'])
     group = Group.objects.get(id=request.POST['g_id'])
     admin = group.admins.filter(id=user.id)
@@ -691,10 +691,10 @@ def joinGroupInvite(request, dict={}):
 # args: request
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
-def leaveGroup(request, dict={}):
+def leaveGroup(request, vals={}):
     """Leaves group if user is a member (and does stuff if user would be last admin)"""
     # if not system then remove
-    from_user = dict['user']
+    from_user = vals['user']
     group = Group.objects.get(id=request.POST['g_id'])
     group_joined = GroupJoined.objects.get(group=group, user=from_user)
     if group_joined:
@@ -721,9 +721,9 @@ def leaveGroup(request, dict={}):
 # Creates share relationship between user and content.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def share(request, dict={}):
+def share(request, vals={}):
     # get data
-    user = dict['user']
+    user = vals['user']
     content = Content.objects.get(id=request.POST['c_id'])
     # check if already following
     my_share = Shared.objects.filter(user=user,content=content)
@@ -744,9 +744,9 @@ def share(request, dict={}):
 # Creates follow relationship between user and content.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def follow(request, dict={}):
+def follow(request, vals={}):
     # get data
-    user = dict['user']
+    user = vals['user']
     content = Content.objects.get(id=request.POST['c_id'])
     # check if already following
     my_follow = Followed.objects.filter(user=user,content=content)
@@ -765,7 +765,7 @@ def follow(request, dict={}):
 # Adds content to group.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def posttogroup(request, dict={}):
+def posttogroup(request, vals={}):
     """Adds content to group."""
     content_id = request.POST['c_id']
     group_id = request.POST['g_id']
@@ -778,7 +778,7 @@ def posttogroup(request, dict={}):
 # Updates inputted comparison.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def updateCompare(request, dict={}):
+def updateCompare(request, vals={}):
     """Saves a Comparison between the two inputted users."""
     comp = ViewComparison.objects.get(id=request.POST['c_id'])
     comparison = updateComparison(comp)
@@ -788,17 +788,17 @@ def updateCompare(request, dict={}):
 # Returns the url of the latest comparison between two users, or creates a comparison between two users and then
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def viewCompare(request, dict={}):
+def viewCompare(request, vals={}):
     """Returns link to comparison between the two inputted users via simplejson/ajax."""
-    dict = {'url':'/compare/' + request.POST['a_id'] + '/' +  request.POST['b_id'] + '/'}
-    return HttpResponse(simplejson.dumps(dict))
+    vals = {'url':'/compare/' + request.POST['a_id'] + '/' +  request.POST['b_id'] + '/'}
+    return HttpResponse(simplejson.dumps(vals))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves a users answer to a question from the QAWeb interface
 #-----------------------------------------------------------------------------------------------------------------------
-def answerWeb(request, dict={}):
+def answerWeb(request, vals={}):
     """ Saves a users answer to a question."""
-    user = dict['user']
+    user = vals['user']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = getPrivacy(request)
     # check if already responded
@@ -821,21 +821,21 @@ def answerWeb(request, dict={}):
         response.updateCreated(user, privacy)
         # if ajax return url via simplejson
     if request.is_ajax():
-        dict = {'object': response, 'back': request.POST['back']}
-        return renderToResponseCSRF('qaweb/display_response.html', dict, request)
+        vals = {'object': response, 'back': request.POST['back']}
+        return renderToResponseCSRF('qaweb/display_response.html', vals, request)
     else:
         return shortcuts.redirect(response.get_url)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves user feedback to db.
 #-----------------------------------------------------------------------------------------------------------------------
-def feedback(request,dict={}):
+def feedback(request,vals={}):
     def sendFeedbackEmail(text,user):
-        dict = {'text':text,'name':name}
+        vals = {'text':text,'name':name}
         for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',dict,"team@lovegov.com",team_member)
+            send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
         return
-    user = dict['user']
+    user = vals['user']
     page = request.POST['path']
     text = request.POST['text']
     name = request.POST['name']
@@ -847,7 +847,7 @@ def feedback(request,dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates the aggregate view in the db for a particular group of users.
 #-----------------------------------------------------------------------------------------------------------------------
-def updateGroupView(request,dict={}):
+def updateGroupView(request,vals={}):
     group = Group.objects.get(id=request.POST['g_id'])
     updateGroupView(group)
     return HttpResponse("updated")
@@ -858,8 +858,8 @@ def updateGroupView(request,dict={}):
 # POST: alias
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
-def hoverComparison(request,dict={}):
-    user = dict['user']
+def hoverComparison(request,vals={}):
+    user = vals['user']
     alias = request.POST['alias']
     to_compare = UserProfile.objects.get(alias=alias)
     comparison = getUserUserComparison(user, to_compare, force=True)
@@ -878,24 +878,24 @@ def addEmailList(request):
 #-----------------------------------------------------------------------------------------------------------------------
 # returns match of user
 #-----------------------------------------------------------------------------------------------------------------------
-def matchComparison(request,dict={}):
-    user = dict['user']
+def matchComparison(request,vals={}):
+    user = vals['user']
     object = urlToObject(request.POST['entity_url'])
 
     if object.type == "U": object.compare = getUserUserComparison(user, object).toJSON()
     elif object.type == "G": object.compare = getUserGroupComparison(user, object).toJSON()
     else: object.compare =  getUserContentComparison(user, object).toJSON()
 
-    dict['entity'] = object
-    html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
+    vals['entity'] = object
+    html = ajaxRender('deployment/center/match/match-new-box.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns more feed items
 #-----------------------------------------------------------------------------------------------------------------------
-def ajaxFeed(request, dict={}):
+def ajaxFeed(request, vals={}):
     if request.method == 'POST':
-        user = dict['user']
+        user = vals['user']
         feed_type = request.POST['feed_type']
         start = int(request.POST['start'])
         how_many = int(request.POST['how_many'])
@@ -918,10 +918,10 @@ def ajaxFeed(request, dict={}):
             else:
                 print ("check it: " + str(topics))
                 feed = feedHelper(user, feed_type, start, stop, topics)
-        dict['feed'] = feed
+        vals['feed'] = feed
         position = start + len(feed)
-        dict['defaultImage'] = getDefaultImage().image
-        context = RequestContext(request,dict)
+        vals['defaultImage'] = getDefaultImage().image
+        context = RequestContext(request,vals)
         template = loader.get_template('deployment/snippets/feed_helper.html')
         feed_string = template.render(context)  # render comment html
         to_return = {'feed':feed_string, 'position':position}
@@ -932,10 +932,10 @@ def ajaxFeed(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # reloads html for thread
 #-----------------------------------------------------------------------------------------------------------------------
-def ajaxThread(request, dict={}):
+def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
-    user = dict['user']
+    user = vals['user']
     thread = makeThread(request, content, user)
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
@@ -943,7 +943,7 @@ def ajaxThread(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets feed using inputted post parameters
 #-----------------------------------------------------------------------------------------------------------------------
-def ajaxGetFeed(request, dict={}):
+def ajaxGetFeed(request, vals={}):
 
     feed_ranking = request.POST['feed_ranking']
     feed_topics = json.loads(request.POST['feed_topics'])
@@ -974,9 +974,9 @@ def ajaxGetFeed(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets dropdown notifications
 #-----------------------------------------------------------------------------------------------------------------------
-def getNotifications(request, dict={}):
+def getNotifications(request, vals={}):
     # Get Notifications
-    user = dict['user']
+    user = vals['user']
     num_notifications = 0
     if 'num_notifications' in request.POST:
         num_notifications = int(request.POST['num_notifications'])
@@ -988,20 +988,20 @@ def getNotifications(request, dict={}):
         n_action = notification.action
         relationship = n_action.relationship
         notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
-    dict['dropdown_notifications_text'] = notifications_text
+    vals['dropdown_notifications_text'] = notifications_text
     num_notifications += NOTIFICATION_INCREMENT
-    dict['num_notifications'] = num_notifications
-    html = ajaxRender('deployment/snippets/notification_snippet.html', dict, request)
+    vals['num_notifications'] = num_notifications
+    html = ajaxRender('deployment/snippets/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('deployment/snippets/notification_dropdown.html', dict, request)
+        html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
 
 
-def matchSection(request, dict={}):
+def matchSection(request, vals={}):
     section = request.POST['section']
-    dict['defaultImage'] = getDefaultImage().image
+    vals['defaultImage'] = getDefaultImage().image
     if section == 'election':
-        user = dict['user']
+        user = vals['user']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -1010,56 +1010,56 @@ def matchSection(request, dict={}):
             comparison = getUserUserComparison(user,c)
             c.compare = comparison.toJSON()
             c.result = comparison.result
-        dict['c1'] = c1
-        dict['c2'] = c2
+        vals['c1'] = c1
+        vals['c2'] = c2
 
-        # dict['user'] doesn't translate well in the template
-        dict['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
+        # vals['user'] doesn't translate well in the template
+        vals['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-election-center.html', vals, request)
 
     elif section == 'social':
-        user = dict['user']
+        user = vals['user']
         comparison = getUserUserComparison(user,user)
         user.compare = comparison.toJSON()
         user.result = comparison.result
-        dict['c1'] = user
+        vals['c1'] = user
 
         # friends
-        dict['friends'] = user.getIFollow()[0:5]
+        vals['friends'] = user.getIFollow()[0:5]
 
         # groups
-        dict['groups'] = user.getGroups()
+        vals['groups'] = user.getGroups()
 
         # networks
         lovegov = getLoveGovUser()
         network = user.getNetwork()
         congress = getCongressNetwork()
-        dict['networks'] = [network,congress,lovegov]
+        vals['networks'] = [network,congress,lovegov]
 
-        dict['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+        vals['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
 
     elif section == 'cause':
-        user = dict['user']
+        user = vals['user']
         comparison = getUserUserComparison(user,user)
         user.compare = comparison.toJSON()
         user.result = comparison.result
-        dict['c1'] = user
+        vals['c1'] = user
 
         # friends
-        dict['friends'] = user.getIFollow()[0:5]
+        vals['friends'] = user.getIFollow()[0:5]
 
         # groups
-        dict['groups'] = user.getGroups()
+        vals['groups'] = user.getGroups()
 
         # networks
         lovegov = getLoveGovUser()
         network = user.getNetwork()
         congress = getCongressNetwork()
-        dict['networks'] = [network,congress,lovegov]
+        vals['networks'] = [network,congress,lovegov]
 
-        dict['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+        vals['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
 
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1118,9 +1118,9 @@ actions = { 'getLinkInfo': getLinkInfo,
 # args: request
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
-def actionPOST(request, dict={}):
+def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
-        dict['user'] = getUserProfile(request)
+        vals['user'] = getUserProfile(request)
     action = request.POST['action']
-    return actions[action](request, dict)
+    return actions[action](request, vals)

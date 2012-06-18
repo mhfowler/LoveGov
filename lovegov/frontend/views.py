@@ -18,14 +18,14 @@ from PIL import Image
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
-def framedResponse(request, html, url, dict):
+def framedResponse(request, html, url, vals):
     if request.is_ajax():
-        to_return = {'html':html, 'url':url, 'title':dict['pageTitle']}
+        to_return = {'html':html, 'url':url, 'title':vals['pageTitle']}
         return HttpResponse(json.dumps(to_return))
     else:
-        dict['center'] = html
-        frame(request, dict)
-        return renderToResponseCSRF(template='deployment/templates/frame.html', dict=dict, request=request)
+        vals['center'] = html
+        frame(request, vals)
+        return renderToResponseCSRF(template='deployment/templates/frame.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
@@ -43,18 +43,18 @@ def underConstruction(request):
     return render_to_response('deployment/pages/microcopy/construction.html')
 
 def splashForm(request,templateURL):
-    dict = {}
+    vals = {}
     if request.method=='POST':
         emailform = EmailListForm(request.POST)
         if emailform.is_valid():
             emailform.save()
-            return render_to_response(templateURL, dict, RequestContext(request))
+            return render_to_response(templateURL, vals, RequestContext(request))
         else:
-            return render_to_response(templateURL, dict, RequestContext(request))
+            return render_to_response(templateURL, vals, RequestContext(request))
     else:
         emailform = EmailListForm()
-        dict['emailform'] = emailform
-        return render_to_response(templateURL, dict, RequestContext(request))
+        vals['emailform'] = emailform
+        return render_to_response(templateURL, vals, RequestContext(request))
 
 def postEmail(request):
     if request.method=='POST' and request.POST['email']:
@@ -66,19 +66,19 @@ def postEmail(request):
         if request.is_ajax():
             return HttpResponse('+')
         else:
-            dict = {'emailMessage':"Thanks! We'll keep you updated!"}
-            return renderToResponseCSRF(template='deployment/pages/login-main.html', dict=dict, request=request)
+            vals = {'emailMessage':"Thanks! We'll keep you updated!"}
+            return renderToResponseCSRF(template='deployment/pages/login-main.html', vals=vals, request=request)
     else:
         return shortcuts.redirect('/comingsoon/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Privacy policy page.
 #-----------------------------------------------------------------------------------------------------------------------
-def privacyPolicy(request,dict={}):
+def privacyPolicy(request,vals={}):
     if request.method == 'POST' and 'button' in request.POST:
-        return loginPOST(request,dict={})
+        return loginPOST(request,vals={})
     else:
-        return renderToResponseCSRF(template='deployment/pages/login-privacy-policy.html', dict=dict, request=request)
+        return renderToResponseCSRF(template='deployment/pages/login-privacy-policy.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all alpha views which require login.
@@ -97,8 +97,8 @@ def requiresLogin(view):
                 return HttpResponseRedirect('/login' + request.path)
             # ELSE AUTHENTICATED
             else:
-                dict = {'user':user, 'google':GOOGLE_LOVEGOV}
-                rightSideBar(None, dict)
+                vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
+                rightSideBar(None, vals)
             # SAVE PAGE ACCESS
             if request.method == 'GET':
                 ignore = request.GET.get('log-ignore')
@@ -113,35 +113,35 @@ def requiresLogin(view):
             response.delete_cookie('sessionid')
             logger.debug('deleted cookie')
             return response
-        return view(request, dict=dict, *args, **kwargs)
+        return view(request, vals=vals, *args, **kwargs)
     return new_view
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Alpha login page.
 #-----------------------------------------------------------------------------------------------------------------------
-def login(request, to_page='web/', message="", dict={}):
+def login(request, to_page='web/', message="", vals={}):
     """
     Handles logging a user into LoveGov
 
     @param request:
     @type request: HttpRequest
     @param to_page:
-    @param dict:
-    @type dict: dictionary
+    @param vals:
+    @type vals: dictionary
     @return:
     """
-    if fbLogin(request,dict):
+    if fbLogin(request,vals):
         return shortcuts.redirect('/' + to_page)
-    twitter = twitterLogin(request, "/" + to_page, dict)
+    twitter = twitterLogin(request, "/" + to_page, vals)
     if twitter:
         return twitter
-    fb_state = fbGetRedirect(request, dict)
+    fb_state = fbGetRedirect(request, vals)
     if request.method == 'POST' and 'button' in request.POST:
-        response = loginPOST(request,to_page,message,dict)
+        response = loginPOST(request,to_page,message,vals)
     else:
-        dict.update({"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'})
-        dict['toregister'] = getToRegisterNumber().number
-        response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
+        vals.update({"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'})
+        vals['toregister'] = getToRegisterNumber().number
+        response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
     response.set_cookie("fb_state", fb_state)
     return response
 
@@ -151,8 +151,8 @@ def loginAuthenticate(request,user,to_page=''):
     redirect_response.set_cookie('privacy', value='PUB')
     return redirect_response
 
-def loginPOST(request, to_page='web',message="",dict={}):
-    dict['registerform'] = RegisterForm()
+def loginPOST(request, to_page='web',message="",vals={}):
+    vals['registerform'] = RegisterForm()
     if request.POST['button'] == 'login':
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
@@ -161,34 +161,34 @@ def loginPOST(request, to_page='web',message="",dict={}):
             else: error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
         else:
             error = 'Invalid Login/Password.'
-        dict.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
-        return renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
+        vals.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
+        return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
     elif request.POST['button'] == 'register':
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
-            dict.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email')})
-            return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', dict=dict, request=request)
+            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email')})
+            return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
-            dict.update({"registerform":registerform, "state":'register'})
-            return renderToResponseCSRF(template='deployment/pages/login/login-main.html', dict=dict, request=request)
+            vals.update({"registerform":registerform, "state":'register'})
+            return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
     elif request.POST['button'] == 'recover':
         user = ControllingUser.lg.get_or_none(username=request.POST['username'])
         if user: resetPassword(user)
         message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
         return HttpResponse(json.dumps(message))
 
-def passwordRecovery(request,confirm_link=None, dict={}):
+def passwordRecovery(request,confirm_link=None, vals={}):
     if request.POST and "email" in request.POST:
         ResetPassword.create(username=request.POST['email'])
         msg = u"Check your email for instructions to reset your password."
         if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
-        else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict.update({'message':msg}),request=request)
+        else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",vals=vals.update({'message':msg}),request=request)
     else:
         if confirm_link is not None:
             confirm = ResetPassword.lg.get_or_none(email_code=confirm_link)
             if confirm:
-                dict['recoveryForm'] = RecoveryPassword()
+                vals['recoveryForm'] = RecoveryPassword()
                 if request.POST:
                     recoveryForm = RecoveryPassword(request.POST)
                     if recoveryForm.is_valid():
@@ -196,65 +196,65 @@ def passwordRecovery(request,confirm_link=None, dict={}):
                         user = auth.authenticate(username=username, password=recoveryForm.cleaned_data.get('password1'))
                         if user: return loginAuthenticate(request,user)
                     else:
-                        dict['recoveryForm'] = recoveryForm
-                        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
-                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",dict=dict,request=request)
-        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",dict=dict,request=request)
+                        vals['recoveryForm'] = recoveryForm
+                        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
+                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
+        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",vals=vals,request=request)
 
-def logout(request, dict={}):
+def logout(request, vals={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
     response.delete_cookie('fb_token')
     return response
 
-def confirm(request, to_page='home', message="", confirm_link=None,  dict={}):
+def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
     print "confirm: " + confirm_link
     user = UserProfile.lg.get_or_none(confirmation_link=confirm_link)
     if user:
         user.confirmed = True
         user.save()
-        dict['user'] = user
+        vals['user'] = user
         print "user:" + user.get_name()
     if request.method == 'GET':
         # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
-        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', dict=dict, request=request)
+        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
     else:
-        return loginPOST(request,to_page,message,dict)
+        return loginPOST(request,to_page,message,vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
-def frame(request, dict):
-    userProfile = dict['user']
-    dict['all_users'] = UserProfile.objects.filter(confirmed=True).order_by("last_name")
-    dict['firstLogin'] = userProfile.checkFirstLogin()
+def frame(request, vals):
+    userProfile = vals['user']
+    vals['all_users'] = UserProfile.objects.filter(confirmed=True).order_by("last_name")
+    vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets values for right side bar and puts in dictionary
 #-----------------------------------------------------------------------------------------------------------------------
-def rightSideBar(request, dict):
-    userProfile = dict['user']
-    dict['random_questions'] = userProfile.getQuestions()
-    dict['all_questions'] = Question.objects.all().order_by("-rank")
-    dict['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
-    dict['root_topic'] = getGeneralTopic()
+def rightSideBar(request, vals):
+    userProfile = vals['user']
+    vals['random_questions'] = userProfile.getQuestions()
+    vals['all_questions'] = Question.objects.all().order_by("-rank")
+    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+    vals['root_topic'] = getGeneralTopic()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserResponses(request,dict={}):
-    userProfile = dict['user']
-    dict['qr'] = userProfile.getUserResponses()
+def getUserResponses(request,vals={}):
+    userProfile = vals['user']
+    vals['qr'] = userProfile.getUserResponses()
 
-def setPageTitle(title,dict={}):
-    dict['pageTitle'] = title
+def setPageTitle(title,vals={}):
+    vals['pageTitle'] = title
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses proper format for web
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserWebResponsesJSON(request,dict={}):
+def getUserWebResponsesJSON(request,vals={}):
     questionsArray = {}
-    for (question,response) in dict['user'].getUserResponses():
+    for (question,response) in vals['user'].getUserResponses():
         for topic in question.topics.all():
             topic_text = topic.topic_text
             if topic_text not in questionsArray:
@@ -271,65 +271,65 @@ def getUserWebResponsesJSON(request,dict={}):
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"Idk",'childrenData':[]}
         questionsArray[topic_text].append(toAddquestion)
-    dict['questionsArray'] = json.dumps(questionsArray)
+    vals['questionsArray'] = json.dumps(questionsArray)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates hte QAWeb
 #-----------------------------------------------------------------------------------------------------------------------
-def web(request, dict={}):
+def web(request, vals={}):
     """
     This is the view that generates the QAWeb
 
     @param request: the request from the user to the server containing metadata about the request
     @type request: HttpRequest
-    @param dict: the dictionary of values to pass into the template
-    @type dict: dictionary
+    @param vals: the dictionary of values to pass into the template
+    @type vals: dictionary
     @return:
     """
     if request.method == 'GET':
-        getUserWebResponsesJSON(request,dict)
-        setPageTitle("lovegov: web",dict)
-        html = ajaxRender('deployment/center/qaweb.html', dict, request)
+        getUserWebResponsesJSON(request,vals)
+        setPageTitle("lovegov: web",vals)
+        html = ajaxRender('deployment/center/qaweb.html', vals, request)
         url = '/web/'
-        return framedResponse(request, html, url, dict)
+        return framedResponse(request, html, url, vals)
     if request.method == 'POST':
         if request.POST['action']:
-            return actions.answer(request, dict)
+            return actions.answer(request, vals)
         else:
             return shortcuts.redirect('/alpha/')
 
 
-def compareWeb(request,alias=None,dict={}):
+def compareWeb(request,alias=None,vals={}):
     """
     This is the view that generates the QAWeb
 
     @param request: the request from the user to the server containing metadata about the request
     @type request: HttpRequest
-    @param dict: the dictionary of values to pass into the template
-    @type dict: dictionary
+    @param vals: the dictionary of values to pass into the template
+    @type vals: dictionary
     @return: HttpResponse
     """
     if request.method == 'GET':
         if alias:
-            user = dict['user']
-            dict['user'] = UserProfile.objects.get(alias=alias)
-            comparison = getUserUserComparison(user, dict['user'])
-            getUserWebResponsesJSON(request,dict)
-            dict['user'] = user
-            dict['json'] = comparison.toJSON()
-            setPageTitle("lovegov: web2",dict)
+            user = vals['user']
+            vals['user'] = UserProfile.objects.get(alias=alias)
+            comparison = getUserUserComparison(user, vals['user'])
+            getUserWebResponsesJSON(request,vals)
+            vals['user'] = user
+            vals['json'] = comparison.toJSON()
+            setPageTitle("lovegov: web2",vals)
             if request.is_ajax():
-                html = ajaxRender('deployment/center/qaweb-temp.html', dict, request)
+                html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
                 url = '/profile/web/' + alias + '/'
                 rebind = 'qaweb'
-                to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':dict['pageTitle']}
+                to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['pageTitle']}
                 return HttpResponse(json.dumps(to_return))
             else:
-                frame(request, dict)
-                return renderToResponseCSRF(template='deployment/pages/web.html', dict=dict, request=request)
+                frame(request, vals)
+                return renderToResponseCSRF(template='deployment/pages/web.html', vals=vals, request=request)
     if request.method == 'POST':
         if request.POST['action']:
-            return actions.answer(request, dict)
+            return actions.answer(request, vals)
         else:
             return shortcuts.redirect('/alpha/')
 
@@ -337,47 +337,47 @@ def compareWeb(request,alias=None,dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # new feeds page
 #-----------------------------------------------------------------------------------------------------------------------
-def theFeed(request, dict={}):
+def theFeed(request, vals={}):
 
-    rightSideBar(request, dict)
+    rightSideBar(request, vals)
 
-    dict['feed_ranking'] = 'N'
-    dict['feed_topics'] = json.dumps([])
-    dict['feed_types'] = json.dumps([])
-    dict['feed_groups'] = json.dumps([])
-    dict['feed_just'] = 1
-    dict['feed_display'] = 'linear'
+    vals['feed_ranking'] = 'N'
+    vals['feed_topics'] = json.dumps([])
+    vals['feed_types'] = json.dumps([])
+    vals['feed_groups'] = json.dumps([])
+    vals['feed_just'] = 1
+    vals['feed_display'] = 'linear'
 
-    dict['groups'] = UserGroup.objects.all()
+    vals['groups'] = UserGroup.objects.all()
 
-    html = ajaxRender('test/feed.html', dict, request)
+    html = ajaxRender('test/feed.html', vals, request)
     url = '/feed/'
-    return framedResponse(request, html, url, dict)
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
 #-----------------------------------------------------------------------------------------------------------------------
-def home(request, dict={}):
-    rightSideBar(request, dict)             # even though its homesidebar
+def home(request, vals={}):
+    rightSideBar(request, vals)             # even though its homesidebar
     # get feed stuff
-    user=dict['user']
+    user=vals['user']
     # new
     new = latest(user)
-    dict['defaultImage'] = getDefaultImage().image
-    dict['new_length'] = len(new)
-    dict['newfeed'] = new
+    vals['defaultImage'] = getDefaultImage().image
+    vals['new_length'] = len(new)
+    vals['newfeed'] = new
     # hot
     hot = feedHelper(user=user, feed_type='H')
-    dict['hot_length'] = len(hot)
-    dict['hotfeed'] = hot
+    vals['hot_length'] = len(hot)
+    vals['hotfeed'] = hot
     # best
     best = greatest(user)
-    dict['best_length'] = len(best)
-    dict['bestfeed'] = best
-    setPageTitle("lovegov: beta",dict)
-    html = ajaxRender('deployment/center/home.html', dict, request)
+    vals['best_length'] = len(best)
+    vals['bestfeed'] = best
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/center/home.html', vals, request)
     url = '/home/'
-    return framedResponse(request, html, url, dict)
+    return framedResponse(request, html, url, vals)
 
 def latest(user, start=0, stop=5, content=None):
     if not content:
@@ -424,21 +424,20 @@ def feedHelper(user, feed_type='H', start=0, stop=5, topics=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # Profile Link
 #-----------------------------------------------------------------------------------------------------------------------
-def profile(request, alias=None, dict={}):
-    user = dict['user']
+def profile(request, alias=None, vals={}):
+    user = vals['viewer']
     if request.method == 'GET':
         if alias:
-            frame(request, dict)
-            getUserResponses(request,dict)
+            frame(request, vals)
+            getUserResponses(request,vals)
             # get comparison of person you are looking at
             user_prof = UserProfile.objects.get(alias=alias)
             comparison = getUserUserComparison(user, user_prof)
-            dict['user_prof'] = user_prof
-            dict['comparison'] = comparison
+            vals['user_prof'] = user_prof
+            vals['comparison'] = comparison
             jsonData = comparison.toJSON()
-            dict['json'] = jsonData
-            logger.debug("json- " + jsonData)       # debug
-            setPageTitle("lovegov: " + user_prof.get_name(),dict)
+            vals['json'] = jsonData
+            setPageTitle("lovegov: " + user_prof.get_name(),vals)
 
             # Get user's top 5 similar followers
             prof_follow_me = list(user_prof.getFollowMe())
@@ -447,7 +446,7 @@ def profile(request, alias=None, dict={}):
                 follow_me.compare = comparison.toJSON()
                 follow_me.result = comparison.result
             prof_follow_me.sort(key=lambda x:x.result,reverse=True)
-            dict['prof_follow_me'] = prof_follow_me[0:5]
+            vals['prof_follow_me'] = prof_follow_me[0:5]
 
             # Get user's top 5 similar follows
             prof_i_follow = list(user_prof.getIFollow())
@@ -456,13 +455,13 @@ def profile(request, alias=None, dict={}):
                 i_follow.compare = comparison.toJSON()
                 i_follow.result = comparison.result
             prof_i_follow.sort(key=lambda x:x.result,reverse=True)
-            dict['prof_i_follow'] = prof_i_follow[0:5]
+            vals['prof_i_follow'] = prof_i_follow[0:5]
 
             # Get user's random 5 followers
-            #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+            #vals['prof_follow_me'] = user_prof.getFollowMe(5)
 
             # Get user's random 5 follows
-            #dict['prof_i_follow'] = user_prof.getIFollow(5)
+            #vals['prof_i_follow'] = user_prof.getIFollow(5)
 
             # Get user's top 5 similar groups
             prof_groups = list(user_prof.getGroups())
@@ -471,26 +470,26 @@ def profile(request, alias=None, dict={}):
                 group.compare = comparison.toJSON()
                 group.result = comparison.result
             prof_groups.sort(key=lambda x:x.result,reverse=True)
-            dict['prof_groups'] = prof_groups[0:5]
+            vals['prof_groups'] = prof_groups[0:5]
 
             # Get user's random 5 groups
-            #dict['prof_groups'] = user_prof.getGroups(5)
+            #vals['prof_groups'] = user_prof.getGroups(5)
 
             # Get Follow Requests
-            dict['prof_requests'] = list(user_prof.getFollowRequests())
+            vals['prof_requests'] = list(user_prof.getFollowRequests())
 
             # Is the current user already (requesting to) following this profile?
-            dict['is_user_requested'] = False
-            dict['is_user_confirmed'] = False
-            dict['is_user_rejected'] = False
+            vals['is_user_requested'] = False
+            vals['is_user_confirmed'] = False
+            vals['is_user_rejected'] = False
             user_follow = UserFollow.lg.get_or_none(user=user,to_user=user_prof)
             if user_follow:
                 if user_follow.requested:
-                    dict['is_user_requested'] = True
+                    vals['is_user_requested'] = True
                 if user_follow.confirmed:
-                    dict['is_user_confirmed'] = True
+                    vals['is_user_confirmed'] = True
                 if user_follow.rejected:
-                    dict['is_user_rejected'] = True
+                    vals['is_user_rejected'] = True
 
             # Get Activity
             actions = user_prof.getActivity(5)
@@ -503,7 +502,7 @@ def profile(request, alias=None, dict={}):
                     actions_text.append( action.getVerbose(view_user=user,relationship=relationship) )
                 except:
                     actions_text.append( "This action no longer exists" )
-            dict['actions_text'] = actions_text
+            vals['actions_text'] = actions_text
 
             # Get Notifications
             if user.id == user_prof.id:
@@ -514,20 +513,20 @@ def profile(request, alias=None, dict={}):
                     n_action = notification.action
                     relationship = n_action.relationship
                     notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
-                dict['notifications_text'] = notifications_text
-                dict['num_notifications'] = num_notifications
+                vals['notifications_text'] = notifications_text
+                vals['num_notifications'] = num_notifications
             print user_prof.get_name()
             print user_prof.private_follow
             # get responses
-            dict['responses'] = user_prof.getView().responses.count()
-            html = ajaxRender('deployment/center/profile.html', dict, request)
+            vals['responses'] = user_prof.getView().responses.count()
+            html = ajaxRender('deployment/center/profile.html', vals, request)
             url = '/profile/' + alias
-            return framedResponse(request, html, url, dict)
+            return framedResponse(request, html, url, vals)
         else:
             return shortcuts.redirect('/profile/' + user.alias)
     else:
         if request.POST['action']:
-            return answer(request, dict)
+            return answer(request, vals)
         else:
             to_alias = request.POST['alias']
             return shortcuts.redirect('/alpha/' + to_alias)
@@ -535,105 +534,105 @@ def profile(request, alias=None, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Network page
 #-----------------------------------------------------------------------------------------------------------------------
-def network(request, name=None, dict={}):
+def network(request, name=None, vals={}):
     if not name:
-        user = dict['user']
+        user = vals['user']
         return shortcuts.redirect(user.getNetwork().get_url())
     network = Network.objects.get(name=name)
-    return group(request,g_id=network.id,dict=dict)
+    return group(request,g_id=network.id,vals=vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Group page
 #-----------------------------------------------------------------------------------------------------------------------
-def group(request, g_id=None, dict={}):
-    user = dict['user']
+def group(request, g_id=None, vals={}):
+    user = vals['user']
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
     if not group:
         return HttpResponse('Group id not found in database')
-    dict['group'] = group
+    vals['group'] = group
     comparison = getUserGroupComparison(user, group, force=True)
-    dict['comparison'] = comparison
+    vals['comparison'] = comparison
     jsonData = comparison.toJSON()
-    dict['json'] = jsonData
-    dict['defaultImage'] = getDefaultImage().image
+    vals['json'] = jsonData
+    vals['defaultImage'] = getDefaultImage().image
 
     # Histogram Things
-    dict['histogram'] = group.getComparisonHistogram(user)
-    dict['histogram_resolution'] = HISTOGRAM_RESOLUTION
-    dict['group_members'] = group.members.order_by('id')[0:25]
+    vals['histogram'] = group.getComparisonHistogram(user)
+    vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
+    vals['group_members'] = group.members.order_by('id')[0:25]
 
     # Get Follow Requests
-    dict['prof_requests'] = list(group.getFollowRequests())
+    vals['prof_requests'] = list(group.getFollowRequests())
 
     # Is the current user already (requesting to) following this group?
-    dict['is_user_follow'] = False
-    dict['is_user_confirmed'] = False
-    dict['is_user_rejected'] = False
+    vals['is_user_follow'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
     group_joined = GroupJoined.lg.get_or_none(user=user,group=group)
     if group_joined:
         if group_joined.requested:
-            dict['is_user_follow'] = True
+            vals['is_user_follow'] = True
         if group_joined.confirmed:
-            dict['is_user_confirmed'] = True
+            vals['is_user_confirmed'] = True
         if group_joined.rejected:
-            dict['is_user_rejected'] = True
+            vals['is_user_rejected'] = True
 
-    dict['is_user_admin'] = False
+    vals['is_user_admin'] = False
     admins = list( group.admins.all() )
     for admin in admins:
         if admin.id == user.id:
-            dict['is_user_admin'] = True
+            vals['is_user_admin'] = True
 
-    setPageTitle("lovegov: " + group.title,dict)
-    html = ajaxRender('deployment/center/group.html', dict, request)
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/group.html', vals, request)
     url = group.get_url()
-    return framedResponse(request, html, url, dict)
+    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
 #-----------------------------------------------------------------------------------------------------------------------
-def about(request, dict={}):
+def about(request, vals={}):
     if request.method == 'GET':
-        setPageTitle("lovegov: about",dict)
-        html = ajaxRender('deployment/center/about.html', dict, request)
+        setPageTitle("lovegov: about",vals)
+        html = ajaxRender('deployment/center/about.html', vals, request)
         url = '/about/'
-        return framedResponse(request, html, url, dict)
+        return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
 
-def legislation(request, session=None, type=None, number=None, dict={}):
-    dict['session'], dict['type'], dict['number'] = session, type, number
+def legislation(request, session=None, type=None, number=None, vals={}):
+    vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
-        dict['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
-        return renderToResponseCSRF(template='deployment/pages/legislation.html', dict=dict, request=request)
+        vals['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
+        return renderToResponseCSRF(template='deployment/pages/legislation.html', vals=vals, request=request)
     legs = Legislation.objects.filter(bill_session=session)
     if type==None:
         type_list = [x['bill_type'] for x in Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
-        dict['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='deployment/pages/legislation-session.html', dict=dict, request=request)
+        vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
+        return renderToResponseCSRF(template='deployment/pages/legislation-session.html', vals=vals, request=request)
     if number==None:
-        dict['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='deployment/pages/legislation-type.html', dict=dict, request=request)
+        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
+        return renderToResponseCSRF(template='deployment/pages/legislation-type.html', vals=vals, request=request)
     legs = Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
-        dict['error'] = "No legislation found with the given parameters."
+        vals['error'] = "No legislation found with the given parameters."
     else:
 	leg = legs[0]
-        dict['leg_titles'] = leg.legislationtitle_set.all()
-        dict['leg'] = leg
-    return renderToResponseCSRF(template='deployment/pages/legislation-view.html', dict=dict, request=request)
+        vals['leg_titles'] = leg.legislationtitle_set.all()
+        vals['leg'] = leg
+    return renderToResponseCSRF(template='deployment/pages/legislation-view.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # All Users Link
 #-----------------------------------------------------------------------------------------------------------------------
-def match(request,dict={}):
+def match(request,vals={}):
     if request.method == 'GET':
-        user = dict['user']
+        user = vals['user']
 
         # Get presidential candidates, do comparison, rank them
         obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
@@ -645,18 +644,18 @@ def match(request,dict={}):
             presidential_user.compare = comparison.toJSON()
             presidential_user.result = comparison.result
         list.sort(key=lambda x:x.result,reverse=True)
-        dict['presidential_users'] = list
+        vals['presidential_users'] = list
 
         # Get network and do comparison
         network = user.getNetwork()
         network.compare = getUserGroupComparison(user, network).toJSON()
-        dict['network'] = network
+        vals['network'] = network
         congress = getCongressNetwork()
         congress.compare = getUserGroupComparison(user, congress).toJSON()
-        dict['congress'] = congress
+        vals['congress'] = congress
         lovegov = getLoveGovUser()
         lovegov.compare = getUserUserComparison(user, lovegov).toJSON()
-        dict['lovegov'] = lovegov
+        vals['lovegov'] = lovegov
 
         # Get latest address, find congressmen, do comparison
         if user.userAddress:
@@ -669,11 +668,11 @@ def match(request,dict={}):
             for senator in senators:
                 senator.json = getUserUserComparison(user,senator).toJSON()
                 congressmen.append(senator)
-            dict['congressmen'] = congressmen
-            dict['state'] = address.state
-            dict['district'] = address.district
-            dict['latitude'] = address.latitude
-            dict['longitude'] = address.longitude
+            vals['congressmen'] = congressmen
+            vals['state'] = address.state
+            vals['district'] = address.district
+            vals['latitude'] = address.latitude
+            vals['longitude'] = address.longitude
 
         # Get all facebook friends data
 #        fb_friends = user.getFBFriends()
@@ -682,7 +681,7 @@ def match(request,dict={}):
 #            friend.compare = comparison.toJSON()
 #            friend.result = comparison.result
 #        list.sort(key=lambda x:x.result, reverse=True)
-#        dict['fb_friends'] = fb_friends
+#        vals['fb_friends'] = fb_friends
 
         # Get user's top 5 similar followers
         prof_follow_me = user.getFollowMe()
@@ -691,7 +690,7 @@ def match(request,dict={}):
             follow_me.compare = comparison.toJSON()
             follow_me.result = comparison.result
         prof_follow_me.sort(key=lambda x:x.result,reverse=True)
-        dict['user_follow_me'] = prof_follow_me[0:5]
+        vals['user_follow_me'] = prof_follow_me[0:5]
 
         # Get user's top 5 similar follows
         prof_i_follow = user.getIFollow()
@@ -700,31 +699,31 @@ def match(request,dict={}):
             i_follow.compare = comparison.toJSON()
             i_follow.result = comparison.result
         prof_i_follow.sort(key=lambda x:x.result,reverse=True)
-        dict['user_i_follow'] = prof_i_follow[0:5]
+        vals['user_i_follow'] = prof_i_follow[0:5]
 
         # Get user's random 5 followers
-        #dict['prof_follow_me'] = user_prof.getFollowMe(5)
+        #vals['prof_follow_me'] = user_prof.getFollowMe(5)
 
         # Get user's random 5 follows
-        #dict['prof_i_follow'] = user_prof.getIFollow(5)
+        #vals['prof_i_follow'] = user_prof.getIFollow(5)
 
         # Get facebook friends network aggregate view
         #my_connections = user.getMyConnections()
         #my_connections.compare = getUserGroupComparison(user,my_connections).toJSON()
-        #dict['my_connections'] = my_connections
+        #vals['my_connections'] = my_connections
 
-        # dict['user'] doesn't translate well in the template
-        dict['userProfile'] = user
+        # vals['user'] doesn't translate well in the template
+        vals['userProfile'] = user
 
-        setPageTitle("lovegov: match",dict)
-        html = ajaxRender('deployment/center/match.html', dict, request)
+        setPageTitle("lovegov: match",vals)
+        html = ajaxRender('deployment/center/match.html', vals, request)
         url = '/match/'
-        return framedResponse(request, html, url, dict)
+        return framedResponse(request, html, url, vals)
 
-def matchNew(request, dict={}):
+def matchNew(request, vals={}):
     if request.method == 'GET':
-        dict['defaultImage'] = getDefaultImage().image
-        user = dict['user']
+        vals['defaultImage'] = getDefaultImage().image
+        user = vals['user']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -733,97 +732,97 @@ def matchNew(request, dict={}):
             comparison = getUserUserComparison(user,c)
             c.compare = comparison.toJSON()
             c.result = comparison.result
-        dict['c1'] = c1
-        dict['c2'] = c2
+        vals['c1'] = c1
+        vals['c2'] = c2
 
-        # dict['user'] doesn't translate well in the template
-        dict['userProfile'] = user
-        setPageTitle("lovegov: match",dict)
-        html = ajaxRender('deployment/center/match/match-new.html', dict, request)
+        # vals['user'] doesn't translate well in the template
+        vals['userProfile'] = user
+        setPageTitle("lovegov: match",vals)
+        html = ajaxRender('deployment/center/match/match-new.html', vals, request)
         url = '/match/'
-        return framedResponse(request, html, url, dict)
+        return framedResponse(request, html, url, vals)
 
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail
 #-----------------------------------------------------------------------------------------------------------------------
-def contentDetail(request, content, dict):
-    rightSideBar(request, dict)
-    dict['thread_html'] = makeThread(request, content, dict['user'])
-    dict['topic'] = content.getMainTopic()
-    dict['content'] = content
+def contentDetail(request, content, vals):
+    rightSideBar(request, vals)
+    vals['thread_html'] = makeThread(request, content, vals['user'])
+    vals['topic'] = content.getMainTopic()
+    vals['content'] = content
     creator = content.getCreator()
-    dict['creator'] = creator
-    dict['iown'] = (creator == dict['user'])
+    vals['creator'] = creator
+    vals['iown'] = (creator == vals['user'])
 
 #-----------------------------------------------------------------------------------------------------------------------
 # displays a list of all questions of that topic, along with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def topicDetail(request, topic_alias=None, dict={}):
+def topicDetail(request, topic_alias=None, vals={}):
     if not topic_alias:
         return HttpResponse("list of all topics")
     else:
         topic = Topic.objects.get(alias=topic_alias)
-        contentDetail(request, topic.getForum(), dict)
-        frame(request, dict)
-        return renderToResponseCSRF('deployment/pages/topic_detail.html', dict, request)
+        contentDetail(request, topic.getForum(), vals)
+        frame(request, vals)
+        return renderToResponseCSRF('deployment/pages/topic_detail.html', vals, request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def petitionDetail(request, p_id, dict={}):
+def petitionDetail(request, p_id, vals={}):
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
-    dict['pageTitle'] = "lovegov: " + petition.title
-    dict['petition'] = petition
+    vals['pageTitle'] = "lovegov: " + petition.title
+    vals['petition'] = petition
     signers = petition.getSigners()
-    dict['signers'] = signers
-    dict['i_signed'] = (dict['user'] in signers)
-    contentDetail(request=request, content=petition, dict=dict)
-    setPageTitle("lovegov: " + petition.title,dict)
-    html = ajaxRender('deployment/center/petition_detail.html', dict, request)
+    vals['signers'] = signers
+    vals['i_signed'] = (vals['user'] in signers)
+    contentDetail(request=request, content=petition, vals=vals)
+    setPageTitle("lovegov: " + petition.title,vals)
+    html = ajaxRender('deployment/center/petition_detail.html', vals, request)
     url = '/petition/' + str(petition.id)
-    return framedResponse(request, html, url, dict)
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of news with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def newsDetail(request, n_id, dict={}):
+def newsDetail(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
-    dict['pageTitle'] = "lovegov: " + news.title
-    dict['news'] = news
-    contentDetail(request=request, content=news, dict=dict)
-    setPageTitle("lovegov: " + news.title,dict)
-    html = ajaxRender('deployment/center/news_detail.html', dict, request)
+    vals['pageTitle'] = "lovegov: " + news.title
+    vals['news'] = news
+    contentDetail(request=request, content=news, vals=vals)
+    setPageTitle("lovegov: " + news.title,vals)
+    html = ajaxRender('deployment/center/news_detail.html', vals, request)
     url = '/news/' + str(news.id)
-    return framedResponse(request, html, url, dict)
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def questionDetail(request, q_id=-1, dict={}):
+def questionDetail(request, q_id=-1, vals={}):
     if q_id==-1:
-        question = getNextQuestion(request, dict)
+        question = getNextQuestion(request, vals)
         if question:
             q_id=question.id
         else:
             return HttpResponse("Congratulations, you have answered every question!")
-    dictQuestion(request, q_id, dict)
-    dict['pageTitle'] = "lovegov: " + dict['question'].question_text
-    html = ajaxRender('deployment/center/question_detail.html', dict, request)
-    url = dict['question'].get_url()
-    return framedResponse(request, html, url, dict)
+    valsQuestion(request, q_id, vals)
+    vals['pageTitle'] = "lovegov: " + vals['question'].question_text
+    html = ajaxRender('deployment/center/question_detail.html', vals, request)
+    url = vals['question'].get_url()
+    return framedResponse(request, html, url, vals)
 
-def dictQuestion(request, q_id, dict={}):
-    user = dict['user']
+def valsQuestion(request, q_id, vals={}):
+    user = vals['user']
     question = Question.objects.filter(id=q_id)[0]
-    contentDetail(request=request, content=question, dict=dict)
-    dict['question'] = question
+    contentDetail(request=request, content=question, vals=vals)
+    vals['question'] = question
     my_response = user.getView().responses.filter(question=question)
     if my_response:
-        dict['response']=my_response[0]
+        vals['response']=my_response[0]
     answers = []
     agg = getLoveGovGroupView().filter(question=question)
     # get aggregate percentages for answers
@@ -839,10 +838,10 @@ def dictQuestion(request, q_id, dict={}):
         else:
             percent = 0
         answers.append(AnswerClass(a.answer_text, a.value, percent))
-    dict['answers'] = answers
+    vals['answers'] = answers
     topic_text = question.topics.all()[0].topic_text
-    dict['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
-    dict['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
+    vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
+    vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
 
 class AnswerClass:
     def __init__(self, text, value, percent):
@@ -869,7 +868,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
             else: i_vote = 0
             i_own = user_comments.filter(id=c.id) # check if i own comment
             creator = c.getCreator()
-            dict = {'comment': c,
+            vals = {'comment': c,
                     'my_vote': i_vote,
                     'owner': i_own,
                     'votes': c.upvotes - c.downvotes,
@@ -879,7 +878,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     'margin': 30*(depth+1),
                     'width': 690-(30*depth+1)-30,
                     'defaultImage':getDefaultImage().image}
-            context = RequestContext(request,dict)
+            context = RequestContext(request,vals)
             template = loader.get_template('deployment/snippets/cath_comment.html')
             comment_string = template.render(context)  # render comment html
             to_return += comment_string
@@ -892,16 +891,16 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
 #-----------------------------------------------------------------------------------------------------------------------
 # sensibly redirects to next question
 #-----------------------------------------------------------------------------------------------------------------------
-def nextQuestion(request, dict={}):
-    question = getNextQuestion(request, dict)
-    dictQuestion(request, question.id, dict)
-    setPageTitle("lovegov: " + question.question_text,dict)
-    html = ajaxRender('deployment/center/question_detail.html', dict, request)
+def nextQuestion(request, vals={}):
+    question = getNextQuestion(request, vals)
+    valsQuestion(request, question.id, vals)
+    setPageTitle("lovegov: " + question.question_text,vals)
+    html = ajaxRender('deployment/center/question_detail.html', vals, request)
     url = question.get_url()
-    return framedResponse(request, html, url, dict)
+    return framedResponse(request, html, url, vals)
 
-def getNextQuestion(request, dict={}):
-    user = dict['user']
+def getNextQuestion(request, vals={}):
+    user = vals['user']
     responses = user.getView().responses
     answered_ids = responses.values_list('question__id', flat=True)
     unanswered = Question.objects.exclude(id__in=answered_ids)
@@ -914,17 +913,17 @@ def getNextQuestion(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request, dict={}):
-    user = dict['user']
-    dict['userProfile'] = user
-    dict['uploadform'] = UploadFileForm()
+def account(request, vals={}):
+    user = vals['user']
+    vals['userProfile'] = user
+    vals['uploadform'] = UploadFileForm()
     if request.method == 'GET':
-        dict['password_form'] = PasswordForm()
-        dict['uploadform'] = UploadFileForm()
-        setPageTitle("lovegov: account",dict)
-        html = ajaxRender('deployment/center/account.html', dict, request)
+        vals['password_form'] = PasswordForm()
+        vals['uploadform'] = UploadFileForm()
+        setPageTitle("lovegov: account",vals)
+        html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'
-        return framedResponse(request, html, url, dict)
+        return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
         if request.POST['box'] == 'password':
             password_form = PasswordForm(request.POST)
@@ -933,26 +932,26 @@ def account(request, dict={}):
             else:
                 message = "Either the two new passwords you entered were not the same, "\
                           "or your old password was incorrect. Try again?"
-            dict['pass_message'] = message
-            dict['password_form'] = password_form
+            vals['pass_message'] = message
+            vals['password_form'] = password_form
         elif request.POST['box'] == 'pic' and 'image' in request.FILES:
             try:
                 file_content = ContentFile(request.FILES['image'].read())
                 Image.open(file_content)
                 user.setProfileImage(file_content)
-                dict['pic_message'] = "You look great!"
+                vals['pic_message'] = "You look great!"
             except IOError:
-                dict['pic_message'] = "The image upload didn't work. Try again?"
-                dict['uploadform'] = UploadFileForm(request.POST)
+                vals['pic_message'] = "The image upload didn't work. Try again?"
+                vals['uploadform'] = UploadFileForm(request.POST)
         else:
             pass
-        return renderToResponseCSRF('deployment/pages/account.html', dict, request)
+        return renderToResponseCSRF('deployment/pages/account.html', vals, request)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------
-def facebookHandle(request, to_page="/web/", dict={}):
+def facebookHandle(request, to_page="/web/", vals={}):
     if request.GET['state'] == request.COOKIES['fb_state']: #If this is the correct authorization state
         code = request.GET.get('code') #Get the associated code
         redirect_uri = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
@@ -973,51 +972,51 @@ def facebookHandle(request, to_page="/web/", dict={}):
 def twitterRedirect(request, redirect_uri=None):
     return twitterRedirect(request, redirect_uri)
 
-def twitterHandle(request, dict={}):
+def twitterHandle(request, vals={}):
     return twitterGetAccessToken(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Authorize permission from facebook
 # Inputs: GET[ fb_scope , fb_to_page ]
 #----------------------------------------------------------------------------------------------------------------------
-def facebookAuthorize(request, dict={}, scope="email"):
+def facebookAuthorize(request, vals={}, scope="email"):
     auth_to_page = request.GET.get('auth_to_page') #Check for an authorization to_page
     fb_scope = request.GET.get('fb_scope') #Check for a scope
     if fb_scope: #Set the scope if there is one
         scope = fb_scope
     redir = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
-    fb_state = fbGetRedirect(request , dict , redir , scope) #Get the FB State and FB Link for the auth CODE
-    response = shortcuts.redirect( dict['fb_link'] ) #Build a response to get authorization CODE
+    fb_state = fbGetRedirect(request , vals , redir , scope) #Get the FB State and FB Link for the auth CODE
+    response = shortcuts.redirect( vals['fb_link'] ) #Build a response to get authorization CODE
     response.set_cookie("fb_state", fb_state) #Set facebook state cookie
     if auth_to_page and not request.COOKIES.get('auth_to_page'): #If there is no authorization to_page in Cookies
         response.set_cookie("auth_to_page",auth_to_page) #use the retrieved one if there is one
     return response
 
 
-def facebookAction(request, to_page="/web/", dict={}):
+def facebookAction(request, to_page="/web/", vals={}):
     fb_action = request.GET.get('fb_action')
 
     if not fb_action:
-        dict['success'] = False
-        dict['fb_error'] = '200'
+        vals['success'] = False
+        vals['fb_error'] = '200'
 
     if fb_action == 'share': #Attempt a wall share!  Share destination (fb_share_to) and message specified in GET
-        dict['success'] = fbWallShare(request, dict) #Wall Share Success Boolean (puts errors in dict[fb_error])
-        dict['fb_scope'] = 'email,publish_stream' #Scope Needed if wall share fails
+        vals['success'] = fbWallShare(request, vals) #Wall Share Success Boolean (puts errors in vals[fb_error])
+        vals['fb_scope'] = 'email,publish_stream' #Scope Needed if wall share fails
         action_path = request.path #Path for this action
         action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
-        dict['auth_to_page'] = action_path + action_query #Build authorization to_page
+        vals['auth_to_page'] = action_path + action_query #Build authorization to_page
         auth_path = '/fb/authorize/' #Path to authorization
-        auth_path += '?fb_scope=' + dict['fb_scope'] #Add Queries to authorization path
-        dict['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
+        auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
+        vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
 
     if request.is_ajax(): #Return AJAX response
-        return_dict = { 'success':dict['success'], #Only return important dictionary values
-            'fb_auth_path':dict['fb_auth_path'] } #Add authorization path to return dictionary
-        if 'fb_error' in dict: #If there's an FB error
-            return_dict['fb_error'] = dict['fb_error'] #Add it to the dictionary
-        ajax_response = HttpResponse(json.dumps(return_dict)) #Build Ajax Response
-        ajax_response.set_cookie('auth_to_page',dict['auth_to_page']) #Add authorization to_page cookie
+        return_vals = { 'success':vals['success'], #Only return important dictionary values
+            'fb_auth_path':vals['fb_auth_path'] } #Add authorization path to return dictionary
+        if 'fb_error' in vals: #If there's an FB error
+            return_vals['fb_error'] = vals['fb_error'] #Add it to the dictionary
+        ajax_response = HttpResponse(json.dumps(return_vals)) #Build Ajax Response
+        ajax_response.set_cookie('auth_to_page',vals['auth_to_page']) #Add authorization to_page cookie
         return ajax_response
     else: #Return regular response
         action_to_page = request.GET.get('action_to_page') #Look for an action to_page
@@ -1028,7 +1027,7 @@ def facebookAction(request, to_page="/web/", dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # learn about our widget
 #-----------------------------------------------------------------------------------------------------------------------
-def widgetAbout(request, dict={}):
+def widgetAbout(request, vals={}):
     return HttpResponse("Get our widget!")
 
 

@@ -52,19 +52,19 @@ def getSourcePath(request):
 #-----------------------------------------------------------------------------------------------------------------------
 # Render template with csrf context processor.
 #-----------------------------------------------------------------------------------------------------------------------
-def renderToResponseCSRF(template, dict, request):
+def renderToResponseCSRF(template, vals, request):
     """Does stuff that we need to happen on every single template render (such as context processing)."""
     # get privacy mode
     try:
-        dict['privacy'] = request.COOKIES['privacy']
+        vals['privacy'] = request.COOKIES['privacy']
     except KeyError:
-        dict['privacy'] = 'PUB'
+        vals['privacy'] = 'PUB'
     try:
-        dict['linkfrom'] = request.COOKIES['linkfrom']
+        vals['linkfrom'] = request.COOKIES['linkfrom']
     except KeyError:
-        dict['linkfrom'] = 0
-    dict['request'] = request
-    return render_to_response(template, dict, context_instance=RequestContext(request))
+        vals['linkfrom'] = 0
+    vals['request'] = request
+    return render_to_response(template, vals, context_instance=RequestContext(request))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns and object from the url which uniquely identifies it
@@ -83,8 +83,8 @@ def urlToObject(url):
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method for rendering a template to string.
 #-----------------------------------------------------------------------------------------------------------------------
-def ajaxRender(template, dict, request):
-    context = RequestContext(request, dict)
+def ajaxRender(template, vals, request):
+    context = RequestContext(request, vals)
     template = loader.get_template(template)
     return template.render(context)
 

@@ -54,7 +54,7 @@
     <div id="middle-right">
         <div id="matching">
             <div id="myviews" class="middle-right-head-font">
-                {% if user.id != user_prof.id %}
+                {% if viewer.id != user_prof.id %}
                     You & {{ user_prof.get_name }}
                 {% else %}
                     You
@@ -91,7 +91,7 @@
         {% endfor %}
     </ul>
 
-    {% if user.id == user_prof.id %}
+    {% if viewer.id == user_prof.id %}
         <h4>Follow Requests</h4>
         <div id="follow-requests-container">
         {% for req in prof_requests %}
@@ -107,7 +107,7 @@
         {% endfor %}
 
         Set following privacy to:
-        {% if user_prof.private_follow %}
+        {% if viewer.private_follow %}
             <a href="" id="public-follow">public</a>
         {% else %}
             <a href="" id="private-follow">private</a>

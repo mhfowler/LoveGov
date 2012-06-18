@@ -2916,11 +2916,11 @@ class ViewComparison(LGModel):
                 topicDict['result'] = comparison.result
                 topicDict['num_q'] = comparison.num_q
             toReturn.append(topicDict)
-        dict = {'topics':toReturn,'main':{'result':self.result,'num_q':self.num_q}}
+        vals = {'topics':toReturn,'main':{'result':self.result,'num_q':self.num_q}}
         user = UserProfile.lg.get_or_none(view_id=self.viewB.id)
-        if user: dict['user_url'] = user.getWebUrl()
-        else: dict['user_url'] = ''
-        return dict
+        if user: vals['user_url'] = user.getWebUrl()
+        else: vals['user_url'] = ''
+        return vals
 
     def toJSON(self):
         return json.dumps(self.toDict())
@@ -3786,8 +3786,8 @@ class ResetPassword(LGModel):
                 reseturl = backend.generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
-                dict = {'firstname':userProfile.first_name, 'url':reseturl}
-                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',dict,'info@lovegov.com',userProfile.username)
+                vals = {'firstname':userProfile.first_name, 'url':reseturl}
+                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',vals,'info@lovegov.com',userProfile.username)
                 return True
             except:
                 return False
