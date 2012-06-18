@@ -42,6 +42,12 @@
             {% else %}
                 was rejected from following
             {% endif %}
+        {% elif modifier == 'A' %}
+            {% if from_you %}
+                were accepted to follow
+            {% else %}
+                was accepted to follow
+            {% endif %}
         {% elif modifier == 'S' %}
             stopped following
         {% endif %}

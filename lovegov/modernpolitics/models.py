@@ -1270,13 +1270,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1, dropdown=False):
-        if dropdown:
+    def getNotifications(self, start=0, num=-1, new=False):
+        if new:
             notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when').reverse()
         else:
-            notifications = Notification.objects.filter( notify_user=self, requires_action=True).order_by('when').reverse()
+            notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
         if num != -1:
-            notifications = notifications[0:num]
+            notifications = notifications[start:start+num]
         for note in notifications:
             note.viewed = True
             note.save()
@@ -1454,29 +1454,40 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,relationship=None,from_you=False,to_you=False,notification=False):
+    def getVerbose(self,view_user,relationship=None,notification=False):
+        #Check for relationship
         if not relationship:
             relationship = self.relationship
+        #Set default local variables
         action_verbose = ' no action '
-
+        from_you = False
+        to_you = False
+        #Set to and from users
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
+        #check to see if the viewing user is the to or from user
+        if from_user.id == view_user.id:
+            from_you = True
+        elif to_user.id == view_user.id:
+            to_you = True
+
+        action_context = {'to_user':to_user,
+                            'to_you':to_you,
+                            'from_user':from_user,
+                            'from_you':from_you,
+                            'type':self.type,
+                            'modifier':self.modifier,
+                            'true':True}
+        if self.type == 'FO' or self.type == 'JO':
+            action_context['follow'] = relationship.downcast()
+            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+            if reverse_follow:
+                action_context['reverse_follow'] = reverse_follow
+
         if notification:
-            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',{'to_user':to_user,
-                                                                                         'to_you':to_you,
-                                                                                         'from_user':from_user,
-                                                                                         'from_you':from_you,
-                                                                                         'type':self.type,
-                                                                                         'modifier':self.modifier,
-                                                                                         'true':True})
+            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',action_context)
         else:
-            action_verbose = render_to_string('deployment/snippets/action_verbose.html',{'to_user':to_user,
-                                                                                         'to_you':to_you,
-                                                                                         'from_user':from_user,
-                                                                                         'from_you':from_you,
-                                                                                         'type':self.type,
-                                                                                         'modifier':self.modifier,
-                                                                                         'true':True})
+            action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1489,7 +1500,6 @@ class Notification(Privacy):
     when = models.DateTimeField(auto_now_add=True)
     viewed = models.BooleanField(default=False)
     ignored = models.BooleanField(default=False)
-    requires_action = models.BooleanField(default=True)
     action = models.ForeignKey(Action, null=True)
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)

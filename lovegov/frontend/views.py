@@ -500,31 +500,24 @@ def profile(request, alias=None, dict={}):
                 to_you = False
                 try:
                     relationship = action.relationship
-                    if relationship.getFrom().id == user.id:
-                        from_you = True
-                    elif relationship.getTo().id == user.id:
-                        to_you = True
-                    actions_text.append( action.getVerbose(from_you=from_you,to_you=to_you) )
+                    actions_text.append( action.getVerbose(view_user=user,relationship=relationship) )
                 except:
                     actions_text.append( "This action no longer exists" )
             dict['actions_text'] = actions_text
 
             # Get Notifications
             if user.id == user_prof.id:
-                notifications = user.getNotifications(5,dropdown=True)
+                num_notifications = NOTIFICATION_INCREMENT
+                notifications = user.getNotifications(num=num_notifications)
                 notifications_text = []
                 for notification in notifications:
-                    from_you = False
-                    to_you = False
                     n_action = notification.action
                     relationship = n_action.relationship
-                    if relationship.getFrom().id == user.id:
-                        from_you = True
-                    elif relationship.getTo().id == user.id:
-                        to_you = True
-                    notifications_text.append( n_action.getVerbose(from_you=from_you,to_you=to_you,notification=True) )
+                    notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
                 dict['notifications_text'] = notifications_text
-
+                dict['num_notifications'] = num_notifications
+            print user_prof.get_name()
+            print user_prof.private_follow
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
             html = ajaxRender('deployment/center/profile.html', dict, request)

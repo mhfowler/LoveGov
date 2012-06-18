@@ -407,8 +407,10 @@ def setFollowPrivacy(request, dict={}):
         return HttpResponse("User does not exist")
     if not request.POST['private_follow']:
         return HttpResponse("No user follow privacy specified")
-    user.private_follow = request.POST['private_follow']
+    user.private_follow = bool(int(request.POST['private_follow']))
     user.save()
+    print user.get_name()
+    print user.private_follow
     return HttpResponse("Follow privacy set")
 
 
@@ -559,7 +561,7 @@ def joinGroupResponse(request, dict={}):
             if response == 'Y':
                 group_joined.confirm()
                 group.members.add(from_user)
-                action = Action(relationship=group_joined,modifier="D")
+                action = Action(relationship=group_joined,modifier="A")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now following you")
@@ -625,7 +627,7 @@ def userFollowResponse(request, dict={}):
             if response == 'Y':
                 # Create follow relationship!
                 from_user.follow(to_user)
-                action = Action(relationship=user_follow,modifier='D')
+                action = Action(relationship=user_follow,modifier='A')
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now following you")
@@ -656,7 +658,7 @@ def userFollowStop(request, dict={}):
         from_user.unfollow(to_user)
         action = Action(relationship=user_follow,modifier='S')
         action.autoSave()
-        to_user.notify(action)
+        # to_user.notify(action)
         return HttpResponse("removed")
     return HttpResponse("To User does not exist")
 
@@ -972,24 +974,27 @@ def ajaxGetFeed(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets dropdown notifications
 #-----------------------------------------------------------------------------------------------------------------------
-def getDropdownNotifications(request, dict={}):
+def getNotifications(request, dict={}):
     # Get Notifications
     user = dict['user']
-    notifications = user.getNotifications(5,dropdown=True)
+    num_notifications = 0
+    if 'num_notifications' in request.POST:
+        num_notifications = int(request.POST['num_notifications'])
+    notifications = user.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
+    if not notifications:
+        return HttpResponse(json.dumps({'error':'No more notifications'}))
     notifications_text = []
     for notification in notifications:
-        from_you = False
-        to_you = False
         n_action = notification.action
         relationship = n_action.relationship
-        if relationship.getFrom().id == user.id:
-            from_you = True
-        elif relationship.getTo().id == user.id:
-            to_you = True
-        notifications_text.append( n_action.getVerbose(from_you=from_you,to_you=to_you,notification=True) )
-    dict['notifications_text'] = notifications_text
-    html = ajaxRender('deployment/pieces/notifications_dropdown.html', dict, request)
-    return HttpResponse(json.dumps({'html':html}))
+        notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
+    dict['dropdown_notifications_text'] = notifications_text
+    num_notifications += NOTIFICATION_INCREMENT
+    dict['num_notifications'] = num_notifications
+    html = ajaxRender('deployment/snippets/notification_snippet.html', dict, request)
+    if 'dropdown' in request.POST:
+        html = ajaxRender('deployment/snippets/notification_dropdown.html', dict, request)
+    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
 
 
 def matchSection(request, dict={}):
@@ -1102,8 +1107,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'updateGroupView': updateGroupView,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
+            'getnotifications': getNotifications,
             'ajaxGetFeed': ajaxGetFeed,
-            'dropdownnotifications': getDropdownNotifications,
             'matchSection': matchSection
         }
 
