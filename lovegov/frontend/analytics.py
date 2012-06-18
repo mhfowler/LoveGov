@@ -25,7 +25,7 @@ def userSummary(user, request):
                 access[page] += 1
             else:
                 access[page] = 0
-        vals = {'access':access, 'pa':pa, 'user':user}
+        vals = {'access':access, 'pa':pa, 'u':user}
         return ajaxRender('analytics/user_summary.html', vals, request)
     else:
         return ""
