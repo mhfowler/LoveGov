@@ -4,12 +4,12 @@
 
 <p>
     user: {{ user.get_name }}
-    <br>
+    <br><br>
     {{ access }}
-    <br>
+    <br><br>
     times:
     {% for x in pa %}
-        {{ x.when }}
-        <br>
+        {{ x.page }}: {{ x.when }}
+        <br><br>
     {% endfor %}
 </p>
