@@ -31,8 +31,8 @@ INSTALLED_APPS = (
     'debug_toolbar',
 
     # internal
-    'lovegov.beta.modernpolitics',
-    'lovegov.alpha.splash',
+    'lovegov.modernpolitics',
+    'lovegov.frontend',
     'django_extensions'
 
     )

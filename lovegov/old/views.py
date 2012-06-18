@@ -28,14 +28,12 @@
 
 
 ### INTERNAL ###
-from lovegov.beta.modernpolitics.forms import *
-from lovegov.beta.modernpolitics import backend
-from lovegov.beta.modernpolitics.models import *
+from modernpolitics.forms import *
+from modernpolitics import backend
+from modernpolitics.models import *
 
 ### DJANGO LIBRARIES ###
-from django.http import *
 from django.forms import *
-from django.forms.models import model_to_dict
 
 from django.template import loader
 from django.template import Context
@@ -46,16 +44,13 @@ from django import shortcuts
 from django.shortcuts import render_to_response
 
 from django.core.urlresolvers import reverse
-from django.core.files.base import ContentFile
 
 from django.contrib import messages
-from django.contrib import auth
 
 from django.core.exceptions import ObjectDoesNotExist
 
 ### EXTERNAL LIBRARIES ###
 from PIL import Image
-import logging
 
 # logger
 logger = logging.getLogger('filelogger')
@@ -393,7 +388,7 @@ def displayPersistent(dict, object):
 #-----------------------------------------------------------------------------------------------------------------------
 def createSimple(request,  dict={}):
     """Simple interface for creating content (to be deprecated)"""
-    from lovegov.beta.modernpolitics.actionsPOST import actionPOST   # workaround for mutual import in model (has to be in method)
+    from modernpolitics.actionsPOST import actionPOST   # workaround for mutual import in model (has to be in method)
     petition = PetitionForm_simple()
     event = EventForm_simple()
     news = NewsForm_simple()
@@ -788,7 +783,7 @@ def scrollbar(request, dict={}):
 ### USABLE ###
 # views for creating each piece of content
 def createContent(request,  dict={}):
-    from lovegov.beta.modernpolitics.actionsPOST import actionPOST   # workaround for mutual import in model (has to be in method)
+    from modernpolitics.actionsPOST import actionPOST   # workaround for mutual import in model (has to be in method)
     # IF post
     if request.method == 'POST':
         return actionPOST(request)
@@ -870,14 +865,11 @@ def test_ajax(request, dict={}):
     else:
         return render_to_response('test/test_ajax.html')
 
-from django import shortcuts
 # logout user
 def test_logout(request):
     auth.logout(request)
     return shortcuts.redirect('/login_old/')
 
-
-from lovegov.beta.modernpolitics.models import Topic
 
 # test database
 def testSaveData(request, dict={}):
@@ -983,7 +975,6 @@ def test_inherit(request, dict={}):
     return render_to_response('home_inherit.html', locals())
 
 from BeautifulSoup import BeautifulSoup
-import os
 
 def billparser(request):
     Legislation.objects.all().delete()

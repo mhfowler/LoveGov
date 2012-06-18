@@ -11,12 +11,13 @@ alias lgdir='cd $LG'
 alias lgpull="cd $LG && git pull && cd -"
 alias lgcommit="cd $LG && git commit -a && cd -"
 alias lgpush="cd $LG && git push && cd -"
+alias lgpull="cd $LG && git pull && cd -"
 
 # functionality
-alias lgbetascript='python $LG/lovegov/beta/modernpolitics/scripts.py'
+alias lgscript='python $LG/lovegov/scripts/scheduled.py'
 alias lgcleardb='rm $LG/lovegov/db/local.db'
 alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
-alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/beta/modernpolitics/scripts.py initialize testdata'
+alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/frontend/scripts.py initialize testdata'
 alias lgresetdb='$LG/local_reset.sh'
 alias lgserver="$LG/local_server.sh"
 alias jserver="jpermission && lgserver"

@@ -1,24 +1,17 @@
-# external
+# lovegov
+from lovegov.frontend import views, tests
+from lovegov.modernpolitics import actions, lgwidget
+from lovegov.frontend.views import requiresLogin
+from lovegov.frontend import admin_views
+from lovegov.local_manage import LOCAL
+
+# django
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib.admin import site
 from django.contrib import admin
 from django.views.generic.simple import redirect_to
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
-from django.views.generic.simple import redirect_to
-
-import haystack
-
-# internal
-from lovegov.beta.modernpolitics import actionsPOST
-from lovegov.alpha.splash import views as alphaviews
-from lovegov.alpha.splash import views_admin as splash_admin
-from lovegov.beta.modernpolitics import actionsGET
-from lovegov.alpha.splash import tests
-from lovegov.alpha.splash.views import requiresLogin
-from lovegov.beta.modernpolitics import lgwidget
-from lovegov.local_manage import LOCAL
-
 
 
 admin.autodiscover()
@@ -27,9 +20,9 @@ admin.autodiscover()
 urlpatterns = patterns('',
 
     ## SPLASH ###
-    (r'^comingsoon/$', alphaviews.splash),
-    (r'^learnmore/$', alphaviews.learnmore),
-    (r'^postEmail/$',alphaviews.postEmail))
+    (r'^comingsoon/$', views.splash),
+    (r'^learnmore/$', views.learnmore),
+    (r'^postEmail/$',views.postEmail))
 
 # locally serve static and media
 if LOCAL:
@@ -47,56 +40,53 @@ if LOCAL:
 urlpatterns += patterns('',
 
 
-    ### outside of login ###
-    (r'^register/$',alphaviews.register),                                       # register page
-    (r'^login/(?P<to_page>\S*)/$',alphaviews.login),                             # login
-    (r'^confirm/(?P<confirm_link>\S+)/$', alphaviews.confirm),                   # confirm
-    (r'^privacypolicy/$', alphaviews.privacyPolicy),                            # privacy
-    (r'^fb/action/$', requiresLogin(alphaviews.facebookAction) ),
-    (r'^fb/authorize/$', alphaviews.facebookAuthorize ),
-    (r'^fb/handle/$', alphaviews.facebookHandle),
-    (r'^passwordRecovery/(\S*)$', alphaviews.passwordRecovery),
-
-    (r'^twitter/redirect/$', alphaviews.twitterRedirect),
-    (r'^twitter/handle/$', alphaviews.twitterHandle),
+    # outside of login
+    (r'^login/(?P<to_page>\S*)/$',views.login),                             # login
+    (r'^confirm/(?P<confirm_link>\S+)/$', views.confirm),                   # confirm
+    (r'^privacypolicy/$', views.privacyPolicy),                             # privacy
+    (r'^fb/authorize/$', views.facebookAuthorize ),
+    (r'^fb/handle/$', views.facebookHandle),
+    (r'^passwordRecovery/(\S*)$', views.passwordRecovery),
+    (r'^twitter/redirect/$', views.twitterRedirect),
+    (r'^twitter/handle/$', views.twitterHandle),
 
     # under construction
-    (r'^underconstruction/$', alphaviews.underConstruction),
+    (r'^underconstruction/$', views.underConstruction),
 
-    ### main pages ###
-    (r'^home/$', requiresLogin(alphaviews.home)),                               # home page with feeds
-    (r'^web/$', requiresLogin(alphaviews.web)),                                 # big look at web
-    (r'^about/$', requiresLogin(alphaviews.about)),                             # about
-    (r'^account/$', requiresLogin(alphaviews.account)),                         # account/change password
-    (r'^match/$', requiresLogin(alphaviews.match)),                             # match page
-    (r'^matchNew/$', requiresLogin(alphaviews.matchNew)),
+    # main pages
+    (r'^home/$', requiresLogin(views.home)),                               # home page with feeds
+    (r'^web/$', requiresLogin(views.web)),                                 # big look at web
+    (r'^about/$', requiresLogin(views.about)),                             # about
+    (r'^account/$', requiresLogin(views.account)),                         # account/change password
+    (r'^match/$', requiresLogin(views.match)),                             # match page
+    (r'^matchNew/$', requiresLogin(views.matchNew)),
 
-    ### content pages ####
-    (r'^question/(\d+)/$', requiresLogin(alphaviews.questionDetail)),           # question detail
-    (r'^topic/(\S+)/$', requiresLogin(alphaviews.topicDetail)),                 # topic detail
-    (r'^petition/(\d+)/$', requiresLogin(alphaviews.petitionDetail)),           # petition detail
-    (r'^news/(\d+)/$', requiresLogin(alphaviews.newsDetail)),                   # news detail
-    (r'^network/(\S+)/$', requiresLogin(alphaviews.network)),                   # network page
-    (r'^network/$', requiresLogin(alphaviews.network)),                         # network page
-    (r'^group/(\d+)/$', requiresLogin(alphaviews.group)),
-    (r'^profile/web/(\S+)/$', requiresLogin(alphaviews.compareWeb)),            # profile/comparison
-    (r'^profile/(\S+)/$', requiresLogin(alphaviews.profile)),                   # profile/comparison
-    (r'^nextquestion/$', requiresLogin(alphaviews.nextQuestion)),               # sensibly redirects to next question
-    (r'^legislation/$', requiresLogin(alphaviews.legislation)),
-    (r'^legislation/(?P<session>\d+)/$', requiresLogin(alphaviews.legislation)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', requiresLogin(alphaviews.legislation)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', requiresLogin(alphaviews.legislation)),
+    # content pages
+    (r'^question/(\d+)/$', requiresLogin(views.questionDetail)),           # question detail
+    (r'^topic/(\S+)/$', requiresLogin(views.topicDetail)),                 # topic detail
+    (r'^petition/(\d+)/$', requiresLogin(views.petitionDetail)),           # petition detail
+    (r'^news/(\d+)/$', requiresLogin(views.newsDetail)),                   # news detail
+    (r'^network/(\S+)/$', requiresLogin(views.network)),                   # network page
+    (r'^network/$', requiresLogin(views.network)),                         # network page
+    (r'^group/(\d+)/$', requiresLogin(views.group)),
+    (r'^profile/web/(\S+)/$', requiresLogin(views.compareWeb)),            # profile/comparison
+    (r'^profile/(\S+)/$', requiresLogin(views.profile)),                   # profile/comparison
+    (r'^nextquestion/$', requiresLogin(views.nextQuestion)),               # sensibly redirects to next question
+    (r'^legislation/$', requiresLogin(views.legislation)),
+    (r'^legislation/(?P<session>\d+)/$', requiresLogin(views.legislation)),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', requiresLogin(views.legislation)),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', requiresLogin(views.legislation)),
 
     # ajax pages
-    (r'^logout/$', requiresLogin(alphaviews.logout)),                           # logout
-    (r'^action/$', requiresLogin(actionsPOST.actionPOST)),                      # comment and other actions
-    (r'^actionGET/$', requiresLogin(actionsGET.actionGET)),                     # comment and other actions
-    (r'^answer/$', requiresLogin(alphaviews.profile)),                          # comment and other actions
-    (r'^ajax/feed$', requiresLogin(alphaviews.ajaxFeed)),                       # ajax get feed
-    (r'^ajax/$', requiresLogin(alphaviews.ajaxSwitch)),                         # ajax switcher
+    (r'^logout/$', requiresLogin(views.logout)),                            # logout
+    (r'^action/$', requiresLogin(actions.actionPOST)),                      # comment and other actions
+    (r'^fb/action/$', requiresLogin(views.facebookAction) ),
+    (r'^answer/$', requiresLogin(views.profile)),                           # comment and other actions
+    (r'^ajax/feed$', requiresLogin(views.ajaxFeed)),                        # ajax get feed
+    (r'^ajax/$', requiresLogin(views.ajaxSwitch)),                          # ajax switcher
 
     # widget pages
-    (r'^widget/about/$', alphaviews.widgetAbout),                               # widget about page
+    (r'^widget/about/$', views.widgetAbout),                                    # widget about page
     (r'^widget/$', redirect_to, {'url':"/widget/about/"}),                      # widget about page
     (r'^widget/access/$', lgwidget.access),                                     # widget api access
 
@@ -105,12 +95,11 @@ urlpatterns += patterns('',
     (r'^test2/$', tests.test2 ),                                                # for testing logging
 
     #admin
-    (r'^developer/$', requiresLogin(splash_admin.adminHome)),
-    (r'^alpha/admin_action/$', requiresLogin(splash_admin.adminAction)),
+    (r'^developer/$', requiresLogin(admin_views.adminHome)),
+    (r'^alpha/admin_action/$', requiresLogin(admin_views.adminAction)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(site.urls)),
 
-
-    ## REDIRECT
-    (r'.*/$', alphaviews.redirect),
-    (r'^$', alphaviews.redirect))
+    # REDIRECT
+    (r'.*/$', views.redirect),
+    (r'^$', views.redirect))
