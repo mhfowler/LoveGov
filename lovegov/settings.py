@@ -68,8 +68,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, 'alpha/static').replace('\\','/'),
-    os.path.join(PROJECT_PATH, 'beta/static').replace('\\','/'),
+    os.path.join(PROJECT_PATH, 'frontend/static').replace('\\','/'),
     )
 
 # List of finder classes that know how to find static files in
