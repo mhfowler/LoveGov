@@ -10,4 +10,4 @@ export DJANGO_SETTINGS_MODULE=lovegov.local_settings
 #setup
 python $SCRIPTPATH/lovegov/local_manage.py syncdb
 python $SCRIPTPATH/lovegov/local_manage.py loaddata $SCRIPTPATH/lovegov/db/migrate.json
-python $SCRIPTPATH/lovegov/beta/modernpolitics/scripts.py initialize testdata
+python $SCRIPTPATH/lovegov/scripts/scheduled.py initialize testdata

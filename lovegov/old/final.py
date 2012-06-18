@@ -11,13 +11,8 @@
 ### INTERNAL ###
 from lovegov.old.django_facebook import context_processors
 from lovegov.old.views import *
-from django.conf import settings
 
 ### DJANGO LIBRARIES ###
-
-from django import shortcuts
-
-from django.contrib import auth
 
 ### EXTERNAL LIBRARIES ###
 

@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 # NOTE: from inside the application, you can directly import the file
-from lovegov.old.django_facebook import  settings
+from alpha import views as lovegov_views
 from lovegov.old.django_facebook import tasks as facebook_tasks
 from lovegov.old.django_facebook.api import get_persistent_graph, FacebookUserConverter, \
     require_persistent_graph
@@ -19,8 +19,6 @@ from lovegov.old.django_facebook.decorators import (facebook_required,
                                         facebook_required_lazy)
 from open_facebook.utils import send_warning
 from open_facebook.exceptions import OpenFacebookException
-
-from lovegov.alpha.splash import views as lovegov_views
 
 logger = logging.getLogger(__name__)
 mylogger = logging.getLogger('filelogger')

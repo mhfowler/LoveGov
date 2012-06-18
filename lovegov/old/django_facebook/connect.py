@@ -12,8 +12,8 @@ from lovegov.old.django_facebook.api import get_facebook_graph, FacebookUserConv
 from lovegov.old.django_facebook.utils import ( get_profile_class)
 
 # internal
-from lovegov.beta.modernpolitics.backend import createUser
-from lovegov.beta.modernpolitics.backend import checkEmail, checkUnique
+from modernpolitics.backend import createUser
+from modernpolitics.backend import checkEmail, checkUnique
 from lovegov.old.django_facebook import signals
 
 logger = logging.getLogger(__name__)
