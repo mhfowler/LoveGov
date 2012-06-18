@@ -12,6 +12,7 @@ from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.images import *
+from haystack.query import SearchQuerySet
 
 # django
 from django.utils import simplejson
@@ -936,6 +937,29 @@ def ajaxThread(request, dict={}):
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets dropdown notifications
+#-----------------------------------------------------------------------------------------------------------------------
+def getDropdownNotifications(request, dict={}):
+    # Get Notifications
+    user = dict['user']
+    notifications = user.getNotifications(5,dropdown=True)
+    notifications_text = []
+    for notification in notifications:
+        from_you = False
+        to_you = False
+        n_action = notification.action
+        relationship = n_action.relationship
+        if relationship.getFrom().id == user.id:
+            from_you = True
+        elif relationship.getTo().id == user.id:
+            to_you = True
+        notifications_text.append( n_action.getVerbose(from_you=from_you,to_you=to_you,notification=True) )
+    dict['notifications_text'] = notifications_text
+    html = ajaxRender('deployment/pieces/notifications_dropdown.html', dict, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+
 def matchSection(request, dict={}):
     section = request.POST['section']
     dict['defaultImage'] = getDefaultImage().image
@@ -1004,7 +1028,6 @@ def matchSection(request, dict={}):
 
 
 
-
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1049,6 +1072,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'updateGroupView': updateGroupView,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
+            'dropdownnotifications': getDropdownNotifications,
             'matchSection': matchSection
         }
 

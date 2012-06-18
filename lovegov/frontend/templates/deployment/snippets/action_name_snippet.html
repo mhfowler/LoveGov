@@ -1,0 +1,9 @@
+<a href="{{ user.get_url }}" class="action_name">
+    {% if you and capital%}
+        You
+    {% elif you %}
+        you
+    {% else %}
+        {{ user.get_name }}
+    {% endif %}
+</a>
