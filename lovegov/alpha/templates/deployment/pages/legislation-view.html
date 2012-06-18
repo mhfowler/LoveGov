@@ -88,12 +88,18 @@ Session: {{session}}
 
 {% endfor %}
 
+<p><h3>Amendments</h3>
+
 {% for amendment in leg.legislatationamendment_set %}
 
 <ul>
 	<li>Chamber: {{amendment.chamber}}</li>
 	<li>Number: {{amendment.number}}</li>
 </ul>
+
+{% empty %}
+
+<p>No amendments for this bill.</p>
 
 {% endfor %}
 
