@@ -28,7 +28,7 @@ def userSummary(user, request, days=None):
                 access[page] += 1
             else:
                 access[page] = 1
-        vals = {'access':access, 'pa':pa, 'u':user, 'days':days}
+        vals = {'access':access, 'pa':pa, 'u':user}
         return ajaxRender('analytics/user_summary.html', vals, request)
     else:
         return ""
@@ -41,7 +41,7 @@ def dailyActivity(request, days=1):
     activity = ""
     for u in users:
         activity += userSummary(u, request, days=days)
-    vals = {'activity':activity}
+    vals = {'activity':activity, 'days':days}
     return renderToResponseCSRF('analytics/daily_activity.html', vals, request)
 
 def totalActivity(request, alias=None):
