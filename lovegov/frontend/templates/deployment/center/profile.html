@@ -91,8 +91,8 @@
         {% endfor %}
     </ul>
 
-    {{ user.id }}
-    {{ user_prof.id }}
+    {{ user.get_name }}
+    {{ user_prof.get_name }}
 
     {% if user.id == user_prof.id %}
         <h4>Follow Requests</h4>
