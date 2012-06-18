@@ -99,6 +99,7 @@ urlpatterns += patterns('',
     url(r'^admin/', include(site.urls)),
 
     # analytics
+    (r'^analytics/activity/(\d+)$', analytics.dailyActivity),                   # analytics of daily activity
     (r'^analytics/activity/$', analytics.dailyActivity),                        # analytics of daily activity
     (r'^analytics/total/(\S+)/$', analytics.totalActivity),                     # analytics of total user activity
     (r'^analytics/total/$', analytics.totalActivity),                           # analytics of all activity
