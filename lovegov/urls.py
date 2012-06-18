@@ -1,5 +1,5 @@
 # lovegov
-from lovegov.frontend import views, tests
+from lovegov.frontend import views, tests, analytics
 from lovegov.modernpolitics import actions, lgwidget
 from lovegov.frontend.views import requiresLogin
 from lovegov.frontend import admin_views
@@ -97,6 +97,9 @@ urlpatterns += patterns('',
     (r'^alpha/admin_action/$', requiresLogin(admin_views.adminAction)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(site.urls)),
+
+    # analytics
+    (r'^analytics/activity/$', analytics.dailyActivity),                        # analytics of daily activity
 
     # REDIRECT
     (r'.*/$', views.redirect),
