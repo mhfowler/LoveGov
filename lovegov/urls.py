@@ -100,6 +100,8 @@ urlpatterns += patterns('',
 
     # analytics
     (r'^analytics/activity/$', analytics.dailyActivity),                        # analytics of daily activity
+    (r'^analytics/total/(\S+)/$', analytics.totalActivity),                     # analytics of total user activity
+    (r'^analytics/total/$', analytics.totalActivity),                           # analytics of all activity
 
     # REDIRECT
     (r'.*/$', views.redirect),
