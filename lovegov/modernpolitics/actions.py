@@ -937,7 +937,7 @@ def ajaxThread(request, dict={}):
     return HttpResponse(json.dumps(to_return))
 
 def matchSection(request, dict={}):
-    section = request.GET['section']
+    section = request.POST['section']
     if section == 'election':
         user = dict['user']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
