@@ -693,7 +693,8 @@ def match(request,dict={}):
         return framedResponse(request, html, url, dict)
 
 def matchNew(request, dict={}):
-    def election(request,dict={}):
+    if request.method == 'GET':
+        dict['defaultImage'] = getDefaultImage().image
         user = dict['user']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
@@ -708,51 +709,12 @@ def matchNew(request, dict={}):
 
         # dict['user'] doesn't translate well in the template
         dict['userProfile'] = user
-        setPageTitle("lovegov: match2",dict)
-        html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
-        url = '/match/'
-        return framedResponse(request, html, url, dict)
-
-    def social(request,dict={}):
-        user = dict['user']
-        comparison = getUserUserComparison(user,user)
-        user.compare = comparison.toJSON()
-        user.result = comparison.result
-        dict['c1'] = user
-
-        # friends
-        dict['friends'] = user.getIFollow()[0:5]
-
-        # groups
-        dict['groups'] = user.getGroups()
-
-        # networks
-        lovegov = getLoveGovUser()
-        network = user.getNetwork()
-        congress = getCongressNetwork()
-        dict['networks'] = [network,congress,lovegov]
-
-        dict['userProfile'] = user
-        setPageTitle("lovegov: match2",dict)
-        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+        setPageTitle("lovegov: match",dict)
+        html = ajaxRender('deployment/center/match/match-new.html', dict, request)
         url = '/match/'
         return framedResponse(request, html, url, dict)
 
 
-    if request.method == 'GET':
-        if 'section' in request.GET:
-            dict['defaultImage'] = getDefaultImage().image
-            section = request.GET['section']
-            if section == "social": return social(request,dict)
-            elif section == "election": return election(request,dict)
-            elif section == "cause":
-                pass
-            else:
-                pass
-        else:
-            return election(request,dict)
-    else:
-        pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

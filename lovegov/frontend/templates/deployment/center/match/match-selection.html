@@ -153,11 +153,9 @@
             }
         }
         var getData = new QueryData(link.substring(link.indexOf('?')+1));
-        $.ajax
-        ({
-            url:'/matchNew/',
-            type:'GET',
-            data:{section:getData.section},
+
+        ajaxPost({
+            data: {'action':'matchSection','section':getData.section},
             success: function(data)
             {
                 var returned = eval('(' + data + ')' );
@@ -169,18 +167,15 @@
                         $('#match-ajax-content').html(returned.html);
                     },300);
                     $('#match-ajax-content').show({effect:'slide',speed:2000,direction:directionTo});
-
-
                 }
                 else
                 {
                     $('#match-ajax-content').html(returned.html);
                 }
             },
-            error: function()
-            {
-
-            }
+            error: null
         });
+
+
     }
 </script>
