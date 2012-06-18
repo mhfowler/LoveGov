@@ -938,6 +938,7 @@ def ajaxThread(request, dict={}):
 
 def matchSection(request, dict={}):
     section = request.POST['section']
+    dict['defaultImage'] = getDefaultImage().image
     if section == 'election':
         user = dict['user']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
