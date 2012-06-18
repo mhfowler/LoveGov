@@ -936,6 +936,52 @@ def ajaxThread(request, dict={}):
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
 
+def matchSection(request, dict={}):
+    section = request.GET['section']
+    if section == 'election':
+        user = dict['user']
+        c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
+        c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
+
+        list = [c1,c2]
+        for c in list:
+            comparison = getUserUserComparison(user,c)
+            c.compare = comparison.toJSON()
+            c.result = comparison.result
+        dict['c1'] = c1
+        dict['c2'] = c2
+
+        # dict['user'] doesn't translate well in the template
+        dict['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
+
+    elif section == 'social':
+        user = dict['user']
+        comparison = getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
+
+        # friends
+        dict['friends'] = user.getIFollow()[0:5]
+
+        # groups
+        dict['groups'] = user.getGroups()
+
+        # networks
+        lovegov = getLoveGovUser()
+        network = user.getNetwork()
+        congress = getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
+
+        dict['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
+
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -979,7 +1025,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'feedback': feedback,
             'updateGroupView': updateGroupView,
             'ajaxFeed': ajaxFeed,
-            'ajaxThread': ajaxThread
+            'ajaxThread': ajaxThread,
+            'matchSection': matchSection
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
