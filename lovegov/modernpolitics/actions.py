@@ -11,6 +11,8 @@
 from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
+from lovegov.modernpolitics.images import *
+from haystack.query import SearchQuerySet
 
 # django
 from django.utils import simplejson
@@ -55,11 +57,11 @@ def getLinkInfo(request, dict={}):
                 try:
                     img_url = image_refs[num]['src']
                     if num == 0:
-                        first_image = images.downloadImage(img_url=img_url,url=URL,min_size=1)
+                        first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
                     elif len(list) == 3:
                         break
                     else:
-                        toAdd = images.downloadImage(img_url=img_url,url=URL)
+                        toAdd = downloadImage(img_url=img_url,url=URL)
                         if toAdd: list.append(toAdd)
                 except:
                     continue
@@ -68,12 +70,12 @@ def getLinkInfo(request, dict={}):
 
             try:
                 for imageobj in list:
-                    imageobj['path'] = images.resizeImage(imageobj['path'])
+                    imageobj['path'] = resizeImage(imageobj['path'])
             except:
                 pass
 
             if len(list) == 0 and (first_image is not None or first_image is not False):
-                first_image['path'] = images.resizeImage(first_image['path'])
+                first_image['path'] = resizeImage(first_image['path'])
                 list.append(first_image)
 
             if len(list) == 0:
@@ -958,6 +960,74 @@ def getDropdownNotifications(request, dict={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
+def matchSection(request, dict={}):
+    section = request.POST['section']
+    dict['defaultImage'] = getDefaultImage().image
+    if section == 'election':
+        user = dict['user']
+        c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
+        c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
+
+        list = [c1,c2]
+        for c in list:
+            comparison = getUserUserComparison(user,c)
+            c.compare = comparison.toJSON()
+            c.result = comparison.result
+        dict['c1'] = c1
+        dict['c2'] = c2
+
+        # dict['user'] doesn't translate well in the template
+        dict['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
+
+    elif section == 'social':
+        user = dict['user']
+        comparison = getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
+
+        # friends
+        dict['friends'] = user.getIFollow()[0:5]
+
+        # groups
+        dict['groups'] = user.getGroups()
+
+        # networks
+        lovegov = getLoveGovUser()
+        network = user.getNetwork()
+        congress = getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
+
+        dict['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+
+    elif section == 'cause':
+        user = dict['user']
+        comparison = getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
+
+        # friends
+        dict['friends'] = user.getIFollow()[0:5]
+
+        # groups
+        dict['groups'] = user.getGroups()
+
+        # networks
+        lovegov = getLoveGovUser()
+        network = user.getNetwork()
+        congress = getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
+
+        dict['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1002,7 +1072,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'updateGroupView': updateGroupView,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
-            'dropdownnotifications': getDropdownNotifications
+            'dropdownnotifications': getDropdownNotifications,
+            'matchSection': matchSection
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
