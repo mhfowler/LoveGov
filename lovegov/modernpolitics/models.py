@@ -741,6 +741,12 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
+class Feed(LGModel):
+    alias = models.CharField(max_length=30)
+    items = models.ManyToManyField(FeedItem)
+    def smartClear(self):
+        self.items.all().delete()
+
 #=======================================================================================================================
 # Tuple for quick access to user's debate record.
 #=======================================================================================================================
@@ -805,6 +811,16 @@ class FilterSetting(LGModel):
             return to_return[0].weight
         else:
             return 0
+
+
+class SimpleFilter(LGModel):
+    alias = models.CharField(max_length=200, default="filter")
+    ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
+    topics = models.ManyToManyField(Topic)
+    types = custom_fields.ListField()                  # list of char of included types
+    groups = models.ManyToManyField("Group")
+    just_created_by_group = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
+
 
 #=======================================================================================================================
 # To track promotional codes we advertise to users.
@@ -3832,6 +3848,7 @@ class LGNumber(LGModel):
     alias = models.CharField(max_length=50)
     number = models.IntegerField()
 
+
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
@@ -3939,14 +3956,6 @@ class LoveGovSetting(LGModel):
 class QuestionDiscussed(LGModel):
     question = models.ForeignKey(Question)
     num_comments = models.IntegerField()        # number of comments, including replies
-
-
-# for optimizing feeds, and storing feeds rather than recalculating every page load
-class Feed(LGModel):
-    alias = models.CharField(max_length=30)
-    items = models.ManyToManyField(FeedItem)
-    def smartClear(self):
-        self.items.all().delete()
 
 # for ordering questions
 class qOrdered(LGModel):

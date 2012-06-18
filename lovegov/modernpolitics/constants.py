@@ -295,6 +295,8 @@ BILL_TYPES = {
     'hj': 'House of Representatives Joint Bill',
     }
 
+# types of content that show up in the feed
+FEED_CONTENT_TYPES = ['P','N','L','G']
 
 ###################################### STATIC FILE URLS ################################################################
 

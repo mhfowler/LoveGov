@@ -34,6 +34,9 @@ function rebindFunction()
         case 'home':                                            // /home
             loadFeed();
             break;
+        case 'feed':                                            // /feed
+            loadNewFeed();
+            break;
         case 'about':                                           // /about
             loadAbout();
             break;
@@ -1301,6 +1304,43 @@ function ajaxFeed(feed_type, topics, start, how_many, force_replace)
         });
 }
 
+
+function getFeed()
+{
+
+    var feed_ranking = $(".feed_ranking").val();
+    var feed_topics = $.parseJSON($(".feed_topics").val());
+    var feed_types =  $.parseJSON($(".feed_types").val());
+    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    var feed_just =  $(".feed_just").val();
+    var feed_start = parseInt((".feed_start").val());
+    var feed_end =  feed_start + 5;
+    var feed_display =  $(".feed_display").val();
+
+    feed_topics = JSON.stringify(feed_topics);
+    feed_types = JSON.stringify(feed_types);
+    feed_groups = JSON.stringify(feed_groups);
+
+    ajaxPost({
+        data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
+            'feed_types':feed_types,'feed_groups':feed_groups, 'feed_just':feed_just,
+            'feed_start':feed_start, 'feed_end':feed_end, 'feed_display':feed_display
+        },
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            $(".the_feed").html(returned.html);
+        },
+        error: null
+    });
+
+}
+
+function loadNewFeed() {
+    $(".get_feed").click(function(event) {
+        event.preventDefault();
+        getFeed();
+    });
+}
 
 /***********************************************************************************************************************
  *

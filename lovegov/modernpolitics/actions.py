@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
+from lovegov.modernpolitics.feed import *
 
 # django
 from django.utils import simplejson
@@ -935,6 +936,38 @@ def ajaxThread(request, dict={}):
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets feed using inputted post parameters
+#-----------------------------------------------------------------------------------------------------------------------
+def ajaxGetFeed(request, dict={}):
+
+    feed_ranking = request.POST['feed_ranking']
+    feed_topics = json.loads(request.POST['feed_topics'])
+    feed_types = json.loads(request.POST['feed_types'])
+    feed_groups = json.loads(request.POST['feed_groups'])
+    feed_just = bool(request.POST['feed_just'])
+    feed_start = int(request.POST['feed_start'])
+    feed_end = int(request.POST['feed_end'])
+    feed_display = request.POST['feed_display']
+
+    filter = {
+        'topics': feed_topics,
+        'types': feed_types,
+        'groups': feed_groups,
+        'ranking': feed_ranking,
+        'just_created_by_group': feed_just
+    }
+
+    content = getFeed(filter, start=feed_start, stop=feed_end)
+    vals = {'content':content}
+    if feed_display == 'pinterest':
+        html = ajaxRender('test/pinterest.html', vals, request)
+    elif feed_display == 'linear':
+        html = ajaxRender('test/linear.html', vals, request)
+    to_return = {'html':html}
+    return HttpResponse(json.dumps(to_return))
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -978,7 +1011,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'feedback': feedback,
             'updateGroupView': updateGroupView,
             'ajaxFeed': ajaxFeed,
-            'ajaxThread': ajaxThread
+            'ajaxThread': ajaxThread,
+            'ajaxGetFeed': ajaxGetFeed
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

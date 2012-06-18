@@ -335,6 +335,24 @@ def compareWeb(request,alias=None,dict={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# new feeds page
+#-----------------------------------------------------------------------------------------------------------------------
+def theFeed(request, dict={}):
+
+    rightSideBar(request, dict)
+
+    dict['feed_ranking'] = 'H'
+    dict['feed_topics'] = json.dumps([])
+    dict['feed_types'] = json.dumps(['P'])
+    dict['feed_groups'] = json.dumps([])
+    dict['feed_just'] = 'true'
+    dict['feed_display'] = 'pinterest'
+
+    html = ajaxRender('test/feed.html', dict, request)
+    url = '/feed/'
+    return framedResponse(request, html, url, dict)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, dict={}):
