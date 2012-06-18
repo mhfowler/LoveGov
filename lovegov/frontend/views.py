@@ -345,7 +345,7 @@ def theFeed(request, dict={}):
     dict['feed_topics'] = json.dumps([])
     dict['feed_types'] = json.dumps([])
     dict['feed_groups'] = json.dumps([])
-    dict['feed_just'] = 'true'
+    dict['feed_just'] = 1
     dict['feed_display'] = 'linear'
 
     dict['groups'] = UserGroup.objects.all()
