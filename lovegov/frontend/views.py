@@ -515,8 +515,7 @@ def profile(request, alias=None, vals={}):
                     notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
-            print user_prof.get_name()
-            print user_prof.private_follow
+
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
             html = ajaxRender('deployment/center/profile.html', vals, request)
