@@ -80,10 +80,8 @@ urlpatterns += patterns('',
     # ajax pages
     (r'^logout/$', requiresLogin(views.logout)),                            # logout
     (r'^action/$', requiresLogin(actions.actionPOST)),                      # comment and other actions
-    (r'^fb/action/$', requiresLogin(views.facebookAction) ),
     (r'^answer/$', requiresLogin(views.profile)),                           # comment and other actions
-    (r'^ajax/feed$', requiresLogin(views.ajaxFeed)),                        # ajax get feed
-    (r'^ajax/$', requiresLogin(views.ajaxSwitch)),                          # ajax switcher
+    (r'^fb/action/$', requiresLogin(views.facebookAction) ),
 
     # widget pages
     (r'^widget/about/$', views.widgetAbout),                                    # widget about page

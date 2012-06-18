@@ -325,12 +325,11 @@ function ajaxReload(theurl, loadimg)
         ({
             url:theurl,
             type: 'GET',
-            data: {},
+            data: {'url':window.location.href},
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
                 History.pushState( {k:1}, returned.title, returned.url);
-                rebind = returned.rebind;
                 if (loadimg) { $("#loading").hide(); }
                 replaceCenter(returned.html);
             },
@@ -374,10 +373,7 @@ function loadHeader()
             {
                 isLoading = true;
                 $("#autocomplete-loading-gif").show();
-                $.ajax
-                    ({
-                        type: 'GET',
-                        url:'/actionGET/',
+                ajaxPost({
                         data: {'action':'searchAutoComplete','string':text},
                         success: function(data)
                         {
@@ -688,10 +684,7 @@ function loadLeftSidebar()
                     $('#news-link-generation').show();
                     $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
-                    $.ajax
-                        ({
-                            type: 'GET',
-                            url:'/actionGET/',
+                    ajaxPost({
                             data: {'action':'getLinkInfo','url':text},
                             success: function(data)
                             {
@@ -714,11 +707,14 @@ function loadLeftSidebar()
                                 });
                                 currentURL = text;
                             },
-                            error: function(jqXHR, textStatus, errorThrown)
+                            error: null
+                                /*
+                                function(jqXHR, textStatus, errorThrown)
                             {
+
                                 $('#news-link-generation').hide();
                                 $('#news-summary').hide();
-                            }
+                            } */
                         });
                 }
                 else
@@ -1282,11 +1278,8 @@ function getNew(feed_type)
 function ajaxFeed(feed_type, topics, start, how_many, force_replace)
 {
     var topics_serialized = JSON.stringify(topics);
-    $.ajax
-        ({
-            url:'/ajax/feed',
-            type: 'POST',
-            data: {'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
+    ajaxPost({
+            data: {'action': 'ajaxFeed', 'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
@@ -1560,11 +1553,8 @@ function loadThread()
 // ajax gets thread and replaces old thread
 function ajaxThread()
 {
-    $.ajax
-        ({
-            url:'/ajax/',
-            type: 'POST',
-            data: {'type':'thread', 'c_id':c_id},
+    ajaxPost({
+            data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
@@ -1572,10 +1562,7 @@ function ajaxThread()
                 loadThread();
                 return false;
             },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                alert("Failed to reload thread!  Sorry!")
-            }
+            error: null
         });
 }
 
@@ -1988,10 +1975,7 @@ function loadGroup()
         if (!loadUsersLockout)
         {
             loadUsersLockout = true;
-            $.ajax
-                ({
-                    url:'/actionGET/',
-                    type: 'GET',
+            ajaxPost({
                     data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
                         'histogram_topic':histogram_topic,'histogram_block':histogram_block },
                     success: function(data)
@@ -2024,10 +2008,7 @@ function loadGroup()
         if (!loadHistoLockout)
         {
             loadHistoLockout = true;
-            $.ajax
-                ({
-                    url:'/actionGET/',
-                    type: 'GET',
+            ajaxPost({
                     data: {'action':'loadHistogram','group_id':group_id,
                         'histogram_topic':histogram_topic},
                     success: function(data)

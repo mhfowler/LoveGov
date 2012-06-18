@@ -24,7 +24,7 @@ from googlemaps import GoogleMaps
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
-def getLinkInfo(request):
+def getLinkInfo(request, dict={}):
     url = str(request.POST['url'])
     url.strip()
     # url may not be well formed so try variations until one works
@@ -90,7 +90,7 @@ def getLinkInfo(request):
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
 # generates comparisons, and returns HTML back to user
 #-----------------------------------------------------------------------------------------------------------------------
-def POSTCongressmen(request, dict={}):
+def getCongressmen(request, dict={}):
     # POST variables from POST request and formats data
     user = dict['user']
     address = request.POST['address']
@@ -149,7 +149,7 @@ def POSTCongressmen(request, dict={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def searchAutoComplete(request,dict={},limit=5):
-    string = request.GET['string'].lstrip().rstrip()
+    string = request.POST['string'].lstrip().rstrip()
     userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=string)
     dict['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
     html = ajaxRender('deployment/pieces/autocomplete.html', dict, request)
@@ -161,15 +161,15 @@ def searchAutoComplete(request,dict={},limit=5):
 #-----------------------------------------------------------------------------------------------------------------------
 def loadGroupUsers(request,dict={}):
     user = dict['user']
-    num = int(request.GET['histogram_displayed_num'])
-    histogram_topic = request.GET['histogram_topic']
-    histogram_block = int(request.GET['histogram_block'])
-    group = Group.objects.get(id=request.GET['group_id'])
+    num = int(request.POST['histogram_displayed_num'])
+    histogram_topic = request.POST['histogram_topic']
+    histogram_block = int(request.POST['histogram_block'])
+    group = Group.objects.get(id=request.POST['group_id'])
     print 'topic: ' + histogram_topic
     print 'block: ' + str(histogram_block)
     next_num = num + 25
     all_members = group.getMembers(user, block=histogram_block, topic_alias=histogram_topic)
-    if len(all_members) >= next_num:
+    if len(all_members) >= next_num or not num:
         more_members = all_members[num:next_num]
     else:
         more_members = []
@@ -885,6 +885,55 @@ def matchComparison(request,dict={}):
     html = ajaxRender('deployment/center/match/match-new-box.html',dict,request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# returns more feed items
+#-----------------------------------------------------------------------------------------------------------------------
+def ajaxFeed(request, dict={}):
+    if request.method == 'POST':
+        user = dict['user']
+        feed_type = request.POST['feed_type']
+        start = int(request.POST['start'])
+        how_many = int(request.POST['how_many'])
+        json_data = request.POST['topics']
+        topic_aliases = json.loads(json_data)
+        stop = start + how_many
+        if topic_aliases:
+            topics = Topic.objects.filter(alias__in=topic_aliases)
+            content = Content.objects.filter(Q(type='P') | Q(type='N'))
+            content = content.filter(main_topic__in=topics)
+        else:
+            content = Content.objects.filter(Q(type='P') | Q(type='N'))
+        if feed_type == 'N':
+            feed = latest(user, start, stop, content)
+        elif feed_type == 'B':
+            feed = greatest(user, start, stop, content)
+        else:
+            if not topic_aliases:
+                feed = feedHelper(user, feed_type, start, stop)
+            else:
+                print ("check it: " + str(topics))
+                feed = feedHelper(user, feed_type, start, stop, topics)
+        dict['feed'] = feed
+        position = start + len(feed)
+        dict['defaultImage'] = getDefaultImage().image
+        context = RequestContext(request,dict)
+        template = loader.get_template('deployment/snippets/feed_helper.html')
+        feed_string = template.render(context)  # render comment html
+        to_return = {'feed':feed_string, 'position':position}
+        return HttpResponse(json.dumps(to_return))
+    else:
+        return HttpResponse("not a real page")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# reloads html for thread
+#-----------------------------------------------------------------------------------------------------------------------
+def ajaxThread(request, dict={}):
+    from lovegov.frontend.views import makeThread
+    content = Content.objects.get(id=request.POST['c_id'])
+    user = dict['user']
+    thread = makeThread(request, content, user)
+    to_return = {'html':thread}
+    return HttpResponse(json.dumps(to_return))
 
 ########################################################################################################################
 ########################################################################################################################
@@ -896,7 +945,12 @@ def matchComparison(request,dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Dictionary of callabe functions.
 #-----------------------------------------------------------------------------------------------------------------------
-actions = { 'postcomment': comment,
+actions = { 'getLinkInfo': getLinkInfo,
+            'postCongressmen': getCongressmen,
+            'loadGroupUsers': loadGroupUsers,
+            'loadHistogram': loadHistogram,
+            'searchAutoComplete': searchAutoComplete,
+            'postcomment': comment,
             'create': create,
             'invite': invite,
             'edit': edit,
@@ -923,6 +977,8 @@ actions = { 'postcomment': comment,
             'answerWeb': answerWeb,
             'feedback': feedback,
             'updateGroupView': updateGroupView,
+            'ajaxFeed': ajaxFeed,
+            'ajaxThread': ajaxThread
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

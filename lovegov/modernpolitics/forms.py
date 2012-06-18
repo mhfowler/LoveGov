@@ -254,7 +254,6 @@ class CreateContentForm(forms.ModelForm):
         model = Content
         fields = ('title','topics', 'type')
     def complete(self,request, object=None):
-        from lovegov.old.views import getUserProfile, getPrivacy
         if not object:
             object = self.save(commit=False)
         creator = getUserProfile(request)
@@ -332,7 +331,6 @@ class EditContentForm(forms.ModelForm):
         fields = ('title','topics', 'type')
         # METHODS
     def complete(self,request):
-        from lovegov.old.views import getPrivacy
         to_return = self.save()
         # save edited relationship
         to_return.saveEdited(privacy=getPrivacy(request))

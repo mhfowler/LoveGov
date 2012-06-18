@@ -1,8 +1,0 @@
-<link rel=StyleSheet href="/static/css/{{ form.css }}" type="text/css" media=screen>
-
-<form action='{{ form.action }}' method="post">{% csrf_token %}
-    {% block content %}
-    {% endblock %}
-</form>
-
-<p style="font-size:75%">{{ form.error }}</p>
