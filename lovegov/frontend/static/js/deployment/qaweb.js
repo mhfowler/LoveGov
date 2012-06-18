@@ -151,7 +151,6 @@ var QAWebHover = Class.extend
             $('#question-weight-slider').css('background',color['default']);
             $('#dialogue-main').css("border-color",color['default']);
             $('#dialogue-pointer img').attr('src',color['pointerImage'].src);
-
             $('.dialogue-buttons').css('backgroundColor',color['default']);
             $('.dialogue-buttons').hover
                 (
@@ -208,7 +207,7 @@ var QAWebHover = Class.extend
         {
             $("#question-weight-slider").slider("option","value",value);
             $('#weight-input').val(value);
-            value = 0.5 + (value/20);
+            value = 0.25 + (0.075 * value);
             $('#question-weight-slider').css({opacity:value});
         },
 
@@ -240,14 +239,14 @@ var QAWebHover = Class.extend
                         var data = self._arrayToDictionary(".qaweb-answerform");
                         if (data.hasOwnProperty('choice'))
                         {
-                            $.ajax
-                                ({
-                                    type: 'POST',
-                                    url:'/answer/',
-                                    data: data,
-                                    success: function(data) { },
-                                    error: function(jqXHR, textStatus, errorThrown) { }
-                                });
+                        $.ajax
+                            ({
+                                type: 'POST',
+                                url:'/answer/',
+                                data: data,
+                                success: function(data) { },
+                                error: function(jqXHR, textStatus, errorThrown) { }
+                            });
                         }
                     }
                 }
