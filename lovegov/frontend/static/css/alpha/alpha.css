@@ -1,0 +1,113 @@
+@font-face
+{
+    font-family: "Gill Sans Std Light";
+    src: url("../GillSansStd-Light.otf");
+}
+
+
+.left-pane
+{
+    position:absolute;
+    left:20px;
+    top:50px;
+}
+
+.middle-pane
+{
+    position:absolute;
+    left:300px;
+    top:40px;
+}
+
+.right-pane
+{
+    position:absolute;
+    left:575px;
+    top:50px;
+}
+
+.logout
+{
+    position:absolute;
+    left:600px;
+    top:10px;
+}
+
+
+
+
+.password
+{
+    position:absolute;
+    left:375px;
+    top:10px;
+}
+
+.dialog
+{
+   display:none;
+}
+
+.links
+{
+    color:purple;
+    text-decoration:none;
+}
+.links:hover
+{
+    color:white;
+}
+
+.see-all
+{
+    position:relative;
+    top:-12px;
+    left:10px;
+}
+
+.action:hover
+{
+    text-decoration: underline;
+}
+
+.see-more
+{
+    position:relative;
+    top:-12px;
+    left:30px;
+}
+
+.smallish
+{
+    color: #0f5569;
+    font-family: "Gill Sans Std Light", Gill Sans, Verdana, sans-serif;
+    font-weight: normal;
+    font-size: 20pt;
+}
+
+#match-hover
+{
+    position:relative;
+    z-index:10;
+    visibility:hidden;
+    width:50px;
+    height:30px;
+    padding-top:10px;
+}
+#comparison
+{
+    position:relative;
+    left:-70px;
+    top:-65px;
+}
+.q-dialog
+{
+    position:absolute;
+    left:100px;
+    top:250px;
+}
+.ui-widget-overlay {
+    background: #AAA url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x;
+    opacity: .0;
+    filter: Alpha(Opacity=30);
+}

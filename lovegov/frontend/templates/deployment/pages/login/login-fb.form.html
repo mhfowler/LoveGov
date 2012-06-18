@@ -1,0 +1,38 @@
+<div id="fb-div" class="state-div" {% if state != 'fb' %}style="display:none"{% endif %}>
+
+    {% if toregister > 0 %}
+
+        <div class="form-div">
+            <h1>To get the most out of LoveGov</h1>
+
+            <div style="float:left">
+                <a href="{{ fb_link }}" id="">
+                    <input type="image" id="facebook-button" src="/static/images/login/login_FB.png" />
+                    <input type="hidden" value="{{ request.path }}" name="next" />
+                </a>
+            </div>
+
+            <p>
+                By logging in with Facebook you agree to our <a class="privacy-policy">Privacy Policy</a>
+            </p>
+
+            <p style="margin:0">
+                <a id="no-facebook" class="no-why-facebook">I don’t have a Facebook account</a> - <a id="why-facebook" class="no-why-facebook">Why we ask for Facebook</a>
+            </p>
+
+            <div id="why-facebook-hover" style="display:none">
+                <a>X</a>
+                By logging in with Facebook we are able to better match you with friends and networks giving you a better
+                LoveGov experience.
+            </div>
+        </div>
+
+    {% else %}
+
+        <h2> Our servers are currently overrun! Come back tomorrow to register. </h2>
+
+    {% endif %}
+
+
+
+</div>

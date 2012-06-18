@@ -1,0 +1,13 @@
+<a href="{{ userProfile.getAlphaURL }}">
+    <div class="autocomplete-div">
+        {% load thumbnail %}
+        {% thumbnail userProfile.getProfileImage.image "50x50" crop="center" as im %}
+            <img class="autocomplete-image" src="{{ im.url }}"/>
+        {% empty %}
+            <p> no pic </p>
+        {% endthumbnail %}
+        <div class="autocomplete-name">
+            <span>{{ userProfile.first_name }} {{ userProfile.last_name }}</span>
+        </div>
+    </div>
+</a>

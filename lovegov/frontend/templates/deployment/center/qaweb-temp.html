@@ -1,0 +1,89 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/dialogue_box.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/qaweb.css" />
+
+<div id="qaweb-interactive">
+    <div id="dragger">
+        <!-- QAWeb graphical components go here -->
+    </div>
+</div>
+
+<div id="qawebhover" class="everything" style="cursor:default;position:absolute;display:none;z-index:500;">
+    <div class="dialogue-wrapper">
+        <div id="dialogue-main">
+            <div style="height:10px">
+                <span id="dialogue-exit-span">X</span>
+            </div>
+            <div id="question">
+                <!-- question text goes here -->
+            </div>
+
+            <p id="dialogue-loading" style="display:none">
+                <img src="/static/images/ajax-loader.gif" />
+            </p>
+            <div id="answer-div">
+                <form class="qaweb-answerform" action="" method="post">
+                    <div id="question-weight-div" style="display:none;">
+                        <span style="float:left;margin-right:15px;font-size:13px">Importance</span>
+                        <div id="question-weight-slider" style="width:275px;float:left;"></div>
+                        <span style="margin-left:10px;font-size:13px"></span>
+                        <input id="weight-input" type="hidden" name="weight" value="5"/>
+                    </div>
+                    <div id="answers">
+                        <ul id="answers-ul">
+                            <!-- answer choices go here -->
+                        </ul>
+
+                        <textarea style="width:400px;height:70px;display:none" id="user_explanation" class="explanation" name="explanation"></textarea>
+                        <input type="hidden" name="action" value="answer"/>
+                        <input id="q_id" type="hidden" name="q_id" value=""/>
+
+                    </div>
+
+                    <div id="buttons" style="display:none">
+                        <a id="blah" class="dialogue-buttons cancel" href="somewhere.html">cancel</a>
+                        <a class="discuss dialogue-buttons" href="/alpha/question/">discuss</a>
+                        <a class="submit dialogue-buttons" href="somewhere.html">submit</a>
+                    </div>
+                </form>
+            </div>
+            <div id="answer-reply" style="display:none;">
+                <div id="answer-reply-canvas">
+
+                </div>
+                <div id="answer-reply-text" align="center" style="font-size:14pt;">
+                    <span></span>
+                    <a class="discuss dialogue-buttons" href="/alpha/question/">discuss</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="dialogue-pointer">
+            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+        </div>
+
+    </div>
+</div>
+
+<div id="qawebtopichover" class="everything" style="cursor:default;position:absolute;display:none;z-index:900;">
+    <div id="dialogue-wrapper">
+        <div id="topic-main">
+            <div id="topic-text">
+
+            </div>
+        </div>
+
+        <div id="topic-pointer">
+            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    rebind = 'qaweb';
+    $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20, disabled:true});
+    var questionsArray = eval('(' + "{{ questionsArray|escapejs }}" + ')');
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+</script>
+
+<!-- Web -->
+<script type='text/javascript' src="/static/js/deployment/qaweb-temp.js"></script>

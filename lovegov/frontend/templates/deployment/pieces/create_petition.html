@@ -1,0 +1,77 @@
+<div id="create-petition-div" class="create-main create-main-large create-content-div" style="display:none">
+
+    <div>
+
+        <div id="errors-json"></div>
+
+        <h2>New Petition:</h2>
+
+        <div id="errors-non_field"></div>
+
+        <div class="title">
+
+            <div id="errors-title"></div>
+
+            <span class="sub-title">Title:</span>
+
+            <input id="input-title" type="text" name="title"/>
+
+        </div>
+
+
+
+        <div class="full-text">
+
+            <div id="errors-full_text"></div>
+
+            <div id="full-text-text">
+                <span class="sub-title">Full Text: </span>  <br>
+                write the full text here
+            </div>
+
+            <textarea id="input-full_text" name="full_text" ></textarea>
+
+        </div>
+
+        <!--
+        <div class="link">
+
+            <div id="errors-link"></div>
+
+            <div id="link-text">
+                <span class="sub-title">Link:</span><br />
+                url to petition (optional)
+            </div>
+
+            <input id="input-link" type="text" name="link" />
+
+        </div>
+        -->
+
+        <div class="create-topic-div">
+
+            <div id="errors-topic"></div>
+
+            <div class="create-topic-text">
+                <span class="sub-title">Topic: </span> <br>
+                select which topic your petition falls under
+            </div>
+
+            <div id="petition-topics" class="topic-images">
+                {% include 'deployment/pieces/topic_images.html' %}
+            </div>
+
+        </div>
+
+        <div class="create-submit-div">
+
+            <a href="" id="create-petition" class="left-sidebar-button">create petition</a>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+

@@ -1,0 +1,36 @@
+<div id="dialogue-wrapper">
+
+    <div id="dialogue-main">
+
+        <div id="question">
+
+            {{ question.text }}
+
+        </div>
+
+        <div id="answers">
+
+            <ul>
+                {% for a in question.answers.all %}
+                    <li><img src="env_radiobutton.png"> &nbsp; {{ a.answer_text }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+
+        <div id="buttons">
+
+            <a class="dialogue-buttons" href="somewhere.html" id="cancel">cancel</a>
+            <a class="dialogue-buttons" href="somewhere.html" id="submit">submit</a>
+
+        </div>
+
+    </div>
+
+    <div id="dialogue-pointer">
+
+        <img src="env_dialogue-pointer.png">
+
+    </div>
+
+</div>

@@ -1,0 +1,143 @@
+<link rel="stylesheet" type="text/css" href="/static/css/deployment/profile.css" />
+<script>
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+</script>
+
+<div id="profile-main-div">
+    <!-- Left Block -->
+    <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
+    <div id="middle-left">
+        <div id="profile">
+
+            <div id="profile-img">
+                {% load thumbnail %}
+                {% thumbnail user_prof.getProfileImage.image "175x175" crop="center" as im %}
+                    <img src="{{ im.url }}"/>
+                {% empty %}
+                    <p> no pic </p>
+                {% endthumbnail %}
+            </div>
+
+            <div class="profile-username">
+                {{ user_prof.get_name }}
+            </div>
+
+            <div id="profile-summary">
+
+            </div>
+            <div id="profile-info-stats">
+                <div id="profile-info">
+                    <div class="profile-header">Info</div>
+                    political views: <br />
+                    political role:  <br />
+                    {% with network=user_prof.getNetwork %}
+                        network: <a class="do-ajax-link" href="{{ network.get_url }}">{{ network.name }}</a>
+                    {% endwith %}
+                    <br />
+                    district: <br />
+                </div>
+
+                <div id="profile-stats">
+                    <div class="profile-header">Activity</div>
+                    <ul>
+                        <li><span class="profile-stats-numbers">{{ responses }}</span> question{% if responses > 1 %}s{% endif %}</li>
+                        <li><span class="profile-stats-numbers">0</span> petitions</li>
+                        <li><span class="profile-stats-numbers">0</span> debates</li>
+                        <li><span class="profile-stats-numbers">0</span> articles</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Block -->
+    <div id="middle-right">
+        <div id="matching">
+            <div id="myviews" class="middle-right-head-font">
+                {% if user.id != user_prof.id %}
+                    You & {{ user_prof.get_name }}
+                {% else %}
+                    You
+                {% endif %}
+            </div>
+            <div id="qaweb"></div>
+        </div>
+    </div>
+
+    <h4>Followers</h4>
+    <ul id="followers">
+        {% for follower in prof_follow_me %}
+            <li><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></li>
+        {% empty %}
+            <li>{{ user_prof.get_name }} has no followers! =( </li>
+        {% endfor %}
+    </ul>
+
+    <h4>People I Follow</h4>
+    <ul id="following">
+        {% for follow in prof_i_follow %}
+        <li><a href="{{ follow.get_url }}">{{ follow.get_name }}</a></li>
+        {% empty %}
+        <li>{{ user_prof.get_name }} follows no man. </li>
+        {% endfor %}
+    </ul>
+
+    <h4>Groups</h4>
+    <ul id="groups">
+        {% for group in prof_groups %}
+            <li><a href="{{ group.get_url }}">{{ group.title }}</a></li>
+        {% empty %}
+            <li>{{ user_prof.get_name }} has no groups! =( </li>
+        {% endfor %}
+    </ul>
+
+    {% if user.id == user_prof.id %}
+        <h4>Follow Requests</h4>
+        <div id="follow-requests">
+        {% for req in prof_requests %}
+            <div id="{{ req.getFrom.id }}-request">
+                <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
+                <a href="" class="follow-response-y"> I accept! </a> ||
+                <a href="" class="follow-response-n"> I decline! </a>
+                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+            </div>
+            <br>
+        {% empty %}
+            <div>No follow requests! =( </div><br>
+        {% endfor %}
+
+        Set following privacy to:
+        {% if user.private_follow %}
+            <a href="" id="public-follow">public</a>
+        {% else %}
+            <a href="" id="private-follow">private</a>
+        {% endif %}
+
+    {% elif is_user_rejected or not is_user_confirmed and not is_user_requested %}
+        <a href="" id="user-follow">
+            <h4>follow me!</h4>
+        </a>
+
+    {% elif is_user_confirmed or is_user_requested %}
+        <a href="" id="user-unfollow">
+            {% if is_user_confirmed %}
+                <h4>unfollow me!</h4>
+            {% elif is_user_requested %}
+                <h4>un-request me!</h4>
+            {% endif %}
+        </a>
+
+    {% endif %}
+
+    <h4>Activity</h4>
+        {% for action in actions_text %}
+            {{ action|safe|escape }}<br>
+        {% endfor %}
+
+    <script>
+        var p_id = "{{ user_prof.id }}";
+    </script>
+
+    </div>
+
+</div>
