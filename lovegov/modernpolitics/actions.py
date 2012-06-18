@@ -74,7 +74,7 @@ def getLinkInfo(request, dict={}):
                 pass
 
             if len(list) == 0 and (first_image is not None or first_image is not False):
-                first_image['path'] = images.resizeImage(first_image['path'])
+                first_image['path'] = resizeImage(first_image['path'])
                 list.append(first_image)
 
             if len(list) == 0:
