@@ -343,7 +343,7 @@ def theFeed(request, dict={}):
 
     dict['feed_ranking'] = 'N'
     dict['feed_topics'] = json.dumps([])
-    dict['feed_types'] = json.dumps(['P'])
+    dict['feed_types'] = json.dumps([])
     dict['feed_groups'] = json.dumps([])
     dict['feed_just'] = 'true'
     dict['feed_display'] = 'pinterest'
