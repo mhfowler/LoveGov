@@ -12,6 +12,7 @@ from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.images import *
+from haystack.query import SearchQuerySet
 
 # django
 from django.utils import simplejson
