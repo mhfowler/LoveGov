@@ -457,7 +457,8 @@ function loadHeader()
             event.preventDefault();
             $('#notifications-dropdown').show();
             ajaxPost({
-                'data': {'action':'dropdownnotifications'},
+                'data': {'action':'getnotifications',
+                        'dropdown':'true'},
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
@@ -1744,9 +1745,9 @@ function loadAbout()
  ***********************************************************************************************************************/
 function unbindNotification()
 {
-    $('.notificaiton-user-follow').unbind();
-    $('.notificaiton-follow-response-y').unbind();
-    $(".notification-follow-response-n").unbind();
+    $('.notification-user-follow').unbind();
+    $('.notification-follow-response-y').unbind();
+    $(".notificatton-follow-response-n").unbind();
 }
 
 function loadNotification()
@@ -1790,6 +1791,9 @@ function loadNotification()
  ***********************************************************************************************************************/
 function loadProfile()
 {
+    unbindNotification();
+    loadNotification();
+
     $(".user-follow-button").click( function(event)
     {
         event.preventDefault();
@@ -1838,6 +1842,34 @@ function loadProfile()
         userFollowResponse(event,"N",$(this));
     });
 
+    $('#see-more-notifications').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_notifications = $("#num-notifications").val();
+            ajaxPost({
+                'data': {'action':'getnotifications',
+                        'num_notifications':num_notifications },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#profile-notifications').append(obj.html);
+                    $('#num-notifications').val(obj.num_notifications);
+                    if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
+                    {
+                        $('#see-more-notifications-button').html('No more notifications');
+                    }
+                    unbindNotification();
+                    loadNotification();
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
     $("#public-follow").click( function(event)
     {
         event.preventDefault();
@@ -1845,7 +1877,7 @@ function loadProfile()
                 data: {
                     'action':'followprivacy',
                     'p_id': p_id,
-                    'private_follow': false
+                    'private_follow': 0
                 },
                 success: function(data)
                 {
@@ -1866,7 +1898,7 @@ function loadProfile()
                 data: {
                     'action':'followprivacy',
                     'p_id': p_id,
-                    'private_follow': true
+                    'private_follow': 1
                 },
                 success: function(data)
                 {
@@ -1879,8 +1911,6 @@ function loadProfile()
             }
         )
     });
-    unbindNotification();
-    loadNotification();
 }
 
 

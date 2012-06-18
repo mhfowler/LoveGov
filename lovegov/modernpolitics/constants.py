@@ -79,6 +79,8 @@ STATUS_COMMENT = 0
 STATUS_SHARE = 0
 STATUS_FOLLOW = 0
 
+NOTIFICATION_INCREMENT = 5
+
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
 
 PRESIDENTIAL_IMG_FOLDER = "/static/images/presidential/"
@@ -233,6 +235,7 @@ ACTION_MODIFIERS = (
     ('I','invited'),
     ('X', 'rejected'),
     ('N', 'declined'),
+    ('A', 'accepted'),
     ('S', 'stop'),
     ('L', 'like'),
     ('U', 'unvoted')

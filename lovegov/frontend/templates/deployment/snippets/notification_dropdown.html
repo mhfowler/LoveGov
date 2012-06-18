@@ -1,4 +1,4 @@
-{% for note in notifications_text %}
+{% for note in dropdown_notifications_text %}
     {{ note|safe|escape }}<br>
 {% endfor %}
 <a href="{{ user.getUrl }}">See more notifications</a>
