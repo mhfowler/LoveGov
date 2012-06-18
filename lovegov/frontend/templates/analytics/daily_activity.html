@@ -4,7 +4,13 @@
 </head>
 <body>
 
-<h2> Summary of all user activity today. </h2>
+<h2>
+    {% if days %}
+        Summary of all user activity in the last {{ days }} day{{ days|pluralize }}.
+    {% else %}
+        Summary of all user activity forever.
+    {% endif %}
+</h2>
 
 {% autoescape off %}
 
