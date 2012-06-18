@@ -20,7 +20,7 @@ def userSummary(user, request):
     if pa:
         access = {}
         for x in pa:
-            page = x.pa
+            page = x.page
             if page in access:
                 access['page'] += 1
             else:
