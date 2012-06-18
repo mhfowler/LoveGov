@@ -34,6 +34,9 @@ function rebindFunction()
         case 'home':                                            // /home
             loadFeed();
             break;
+        case 'feed':                                            // /feed
+            loadNewFeed();
+            break;
         case 'about':                                           // /about
             loadAbout();
             break;
@@ -232,7 +235,7 @@ function selectTopicMultiple(div)
     else {
         selected.addClass("chosen");
         div.parent().children(".selected").show();
-        div.parent().children(".normal").normal();
+        div.parent().children(".normal").hide();
     }
 }
 
@@ -402,21 +405,21 @@ function loadHeader()
                 isLoading = true;
                 $("#autocomplete-loading-gif").show();
                 ajaxPost({
-                        data: {'action':'searchAutoComplete','string':text},
-                        success: function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $("#autocomplete-loading-gif").hide();
-                            $('#search-dropdown').html(obj.html);
-                            $('#search-dropdown').fadeIn('fast');
-                        },
-                        error: function(jqXHR, textStatus, errorThrown)
-                        {
-                            $("#autocomplete-loading-gif").hide();
-                            $('#search-dropdown').empty();
-                            $('#search-dropdown').hide();
-                        }
-                    });
+                    data: {'action':'searchAutoComplete','string':text},
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $("#autocomplete-loading-gif").hide();
+                        $('#search-dropdown').html(obj.html);
+                        $('#search-dropdown').fadeIn('fast');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $("#autocomplete-loading-gif").hide();
+                        $('#search-dropdown').empty();
+                        $('#search-dropdown').hide();
+                    }
+                });
                 // Simulate a real ajax call
                 setTimeout(function() { isLoading = false; }, delay);
             }, delay);
@@ -743,37 +746,37 @@ function loadLeftSidebar()
                     $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
                     ajaxPost({
-                            data: {'action':'getLinkInfo','url':text},
-                            success: function(data)
-                            {
-                                returned = eval('(' + data + ')');
-                                $('#news-link-generation').html(returned.html);
-                                $('#cycle-img-left').bind('click',function()
-                                {
-
-                                    if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
-                                    else { currentLink--; }
-                                    $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                    $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                                });
-                                $('#cycle-img-right').bind('click',function()
-                                {
-                                    if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
-                                    else { currentLink++; }
-                                    $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                    $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                                });
-                                currentURL = text;
-                            },
-                            error: null
-                                /*
-                                function(jqXHR, textStatus, errorThrown)
+                        data: {'action':'getLinkInfo','url':text},
+                        success: function(data)
+                        {
+                            returned = eval('(' + data + ')');
+                            $('#news-link-generation').html(returned.html);
+                            $('#cycle-img-left').bind('click',function()
                             {
 
-                                $('#news-link-generation').hide();
-                                $('#news-summary').hide();
-                            } */
-                        });
+                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
+                                else { currentLink--; }
+                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                            });
+                            $('#cycle-img-right').bind('click',function()
+                            {
+                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
+                                else { currentLink++; }
+                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                            });
+                            currentURL = text;
+                        },
+                        error: null
+                        /*
+                         function(jqXHR, textStatus, errorThrown)
+                         {
+
+                         $('#news-link-generation').hide();
+                         $('#news-summary').hide();
+                         } */
+                    });
                 }
                 else
                 {
@@ -827,34 +830,34 @@ function loadLeftSidebar()
         var link = $('#input-link').val();
         var topic = $('input:radio[name=topics]:checked').val();
         ajaxPost({
-                data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-                success: function(data)
+            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
                 {
-                    var returned = eval('(' + data + ')');
-                    if (returned.success == false)
-                    {
-                        $("#errors-title").html(returned.errors.title);
-                        $("#errors-summary").html(returned.errors.summary);
-                        $("#errors-full_text").html(returned.errors.full_text);
-                        $("#errors-topic").html(returned.errors.topics);
-                        $("#errors-non_field").html(returned.errors.non_field_errors);
-                    }
-                    else
-                    {
-                        $('.normal').show();
-                        $('');
-                        clearPetitionErrors();
-                        History.pushState( {k:1}, returned.title, returned.url);
-                        rebind = returned.rebind;
-                        closeLeftSideWrapper($('.create-wrapper.clicked'));
-                        replaceCenter(returned.html);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
+                    $("#errors-title").html(returned.errors.title);
+                    $("#errors-summary").html(returned.errors.summary);
+                    $("#errors-full_text").html(returned.errors.full_text);
+                    $("#errors-topic").html(returned.errors.topics);
+                    $("#errors-non_field").html(returned.errors.non_field_errors);
                 }
-            });
+                else
+                {
+                    $('.normal').show();
+                    $('');
+                    clearPetitionErrors();
+                    History.pushState( {k:1}, returned.title, returned.url);
+                    rebind = returned.rebind;
+                    closeLeftSideWrapper($('.create-wrapper.clicked'));
+                    replaceCenter(returned.html);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
     });
 
     $('#create-group').click(function(event)
@@ -865,35 +868,35 @@ function loadLeftSidebar()
         var privacy = $('input:radio[name=privacy]:checked').val();
         var topic = $('input:radio[name=topics]:checked').val();
         ajaxPost({
-                data: {'action':'create',
-                    'title':title,
-                    'full_text':full_text,
-                    'topics':topic,
-                    'group_type':'U',
-                    'group_privacy':privacy,
-                    'type':'G'
-                },
-                success: function(data)
+            data: {'action':'create',
+                'title':title,
+                'full_text':full_text,
+                'topics':topic,
+                'group_type':'U',
+                'group_privacy':privacy,
+                'type':'G'
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
                 {
-                    var returned = eval('(' + data + ')');
-                    if (returned.success == false)
-                    {
-                        alert('errors')
-                        $("#errors-title").html(returned.errors.title);
-                        $("#errors-full_text").html(returned.errors.full_text);
-                        $("#errors-topic").html(returned.errors.topics);
-                        $("#errors-non_field").html(returned.errors.non_field_errors);
-                    }
-                    else
-                    {
-                        window.location.href = returned.url;
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
+                    alert('errors')
+                    $("#errors-title").html(returned.errors.title);
+                    $("#errors-full_text").html(returned.errors.full_text);
+                    $("#errors-topic").html(returned.errors.topics);
+                    $("#errors-non_field").html(returned.errors.non_field_errors);
                 }
-            });
+                else
+                {
+                    window.location.href = returned.url;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
     });
 
     $('#share-button').click(function(event)
@@ -906,29 +909,29 @@ function loadLeftSidebar()
         var screenshot = $('#news-link-image-src').attr("src");
         var topic = $('input:radio[name=topics]:checked').val();
         ajaxPost({
-                data: {'action':'create','title':title,'summary':summary,'link':link,
-                    'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-                success: function(data)
+            data: {'action':'create','title':title,'summary':summary,'link':link,
+                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
                 {
-                    var returned = eval('(' + data + ')');
-                    if (returned.success == false)
-                    {
-                        $("#news-errors-link").html(returned.errors.link);
-                        $("#news-errors-title").html(returned.errors.title);
-                        $("#news-errors-summary").html(returned.errors.summary);
-                        $("#news-errors-topic").html(returned.errors.topics);
-                        $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                    }
-                    else
-                    {
-                        window.location=returned.url;
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
+                    $("#news-errors-link").html(returned.errors.link);
+                    $("#news-errors-title").html(returned.errors.title);
+                    $("#news-errors-summary").html(returned.errors.summary);
+                    $("#news-errors-topic").html(returned.errors.topics);
+                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
                 }
-            });
+                else
+                {
+                    window.location=returned.url;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
     });
 
     $('#feedback-submit').click(function(event)
@@ -937,19 +940,19 @@ function loadLeftSidebar()
         var text = $('#feedback-text').val();
         var name = $('#feedback-name').val();
         ajaxPost({
-                data: {'action':'feedback','text':text,'path':path,'name':name},
-                success: function(data)
-                {
-                    $('#feedback-name').val("");
-                    $('#feedback-text').val("");
-                    $('#feedback-response').css('display','block');
-                    $('#feedback-response').fadeOut(3000);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    alert("failure");
-                }
-            });
+            data: {'action':'feedback','text':text,'path':path,'name':name},
+            success: function(data)
+            {
+                $('#feedback-name').val("");
+                $('#feedback-text').val("");
+                $('#feedback-response').css('display','block');
+                $('#feedback-response').fadeOut(3000);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                alert("failure");
+            }
+        });
     });
 
     function sendInvitation(event)
@@ -959,18 +962,18 @@ function loadLeftSidebar()
         $("#invite-return-message").text("");
         $("#invite-return-loading-img").show();
         ajaxPost({
-                data: {'action':'invite','email':email},
-                success: function(data)
-                {
-                    $("#invite-return-loading-img").hide();
-                    $("#invite-return-message").text("Invitation Sent!");
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("#invite-return-loading-img").hide();
-                    $("#invite-return-message").text("Server Error, Did Not Send.");
-                }
-            });
+            data: {'action':'invite','email':email},
+            success: function(data)
+            {
+                $("#invite-return-loading-img").hide();
+                $("#invite-return-message").text("Invitation Sent!");
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("#invite-return-loading-img").hide();
+                $("#invite-return-message").text("Server Error, Did Not Send.");
+            }
+        });
     }
 
 
@@ -1250,24 +1253,24 @@ function heartDisplay()
 function vote(div, content_id, v)
 {
     ajaxPost({
-            data: {'action':'vote','c_id':content_id, 'vote':v},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                var my_vote = parseInt(returned.my_vote);
-                var status = returned.status;
-                if (my_vote==1) { like(div); }
-                if (my_vote==0) { neutral(div); }
-                if (my_vote==-1) { dislike(div); }
-                heartDisplay();
-                // change status
-                div.parent().parent().find(".post-score").text(status);
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
+        data: {'action':'vote','c_id':content_id, 'vote':v},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            var my_vote = parseInt(returned.my_vote);
+            var status = returned.status;
+            if (my_vote==1) { like(div); }
+            if (my_vote==0) { neutral(div); }
+            if (my_vote==-1) { dislike(div); }
+            heartDisplay();
+            // change status
+            div.parent().parent().find(".post-score").text(status);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
+    });
 }
 
 function like(div)
@@ -1337,28 +1340,165 @@ function ajaxFeed(feed_type, topics, start, how_many, force_replace)
 {
     var topics_serialized = JSON.stringify(topics);
     ajaxPost({
-            data: {'action': 'ajaxFeed', 'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                // update position in feed
-                $("#length" + feed_type).val(returned.position);
-                // return feed html
-                var feed = returned.feed;
-                if (force_replace) { $("#" + feed_type).html(feed); }
-                else { $("#" + feed_type).append(feed); }
-                heartButtons();
-                heartDisplay();
-                bindFeedItems();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                alert("failure");
-                $("body").html(jqXHR.responseText);
-            }
-        });
+        data: {'action': 'ajaxFeed', 'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            // update position in feed
+            $("#length" + feed_type).val(returned.position);
+            // return feed html
+            var feed = returned.feed;
+            if (force_replace) { $("#" + feed_type).html(feed); }
+            else { $("#" + feed_type).append(feed); }
+            heartButtons();
+            heartDisplay();
+            bindFeedItems();
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            alert("failure");
+            $("body").html(jqXHR.responseText);
+        }
+    });
 }
 
+
+
+////////////////////////////////////////////////////////////
+
+
+function feedTopicSelect(div) {
+    var feed_topics = $.parseJSON($(".feed_topics").val());
+    var wrapper = div.parents(".feed-topic-icon-wrapper");
+    var t_id = parseInt(wrapper.attr("data-id"));
+    var index = $.inArray(t_id, feed_topics);
+    if (index == -1) {
+        feed_topics.push(t_id);
+    }
+    else {
+        feed_topics.splice(index, 1);
+    }
+    $(".feed_topics").val(JSON.stringify(feed_topics));
+}
+
+function feedTypeSelect(div) {
+    var feed_types = $.parseJSON($(".feed_types").val());
+    var type = div.val();
+    var index = $.inArray(type, feed_types);
+    if (index == -1) {
+        feed_types.push(type);
+    }
+    else {
+        feed_types.splice(index, 1);
+    }
+    $(".feed_types").val(JSON.stringify(feed_types));
+}
+
+function feedGroupSelect(div) {
+    var feed_groups = $.parseJSON($(".feed_groups").val());
+    var g_id = div.val();
+    var index = $.inArray(g_id, feed_groups);
+    if (index == -1) {
+        feed_groups.push(g_id);
+    }
+    else {
+        feed_groups.splice(index, 1);
+    }
+    $(".feed_groups").val(JSON.stringify(feed_groups));
+}
+
+function refreshFeed() {
+    $(".feed_start").val(0);
+    getFeed();
+}
+
+function getFeed()
+{
+
+    var feed_ranking = $(".feed_ranking").val();
+    var feed_topics = $.parseJSON($(".feed_topics").val());
+    var feed_types =  $.parseJSON($(".feed_types").val());
+    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    var feed_just =  $(".feed_just").val();
+    var feed_start = parseInt($(".feed_start").val());
+    var feed_end =  feed_start + 10;
+    var feed_display =  $(".feed_display").val();
+
+    var feed_replace;
+    if (feed_start==0) {
+        feed_replace = true;
+    }
+    else {
+        feed_replace = false;
+    }
+
+    feed_topics = JSON.stringify(feed_topics);
+    feed_types = JSON.stringify(feed_types);
+    feed_groups = JSON.stringify(feed_groups);
+
+    ajaxPost({
+        data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
+            'feed_types':feed_types,'feed_groups':feed_groups, 'feed_just':feed_just,
+            'feed_start':feed_start, 'feed_end':feed_end, 'feed_display':feed_display
+        },
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            if (feed_replace == true) {
+                $(".the_feed").html(returned.html);
+            }
+            else {
+                $(".the_feed").append(returned.html);
+            }
+            $(".feed_start").val(feed_start + returned.num);
+        },
+        error: null
+    });
+
+}
+
+function loadNewFeed() {
+    $(".get_feed").click(function(event) {
+        event.preventDefault();
+        getFeed();
+    });
+
+    $(".refresh_feed").click(function(event) {
+        event.preventDefault();
+        refreshFeed();
+    });
+
+    $(".feed-topic-img").click(function(event) {
+        selectTopicMultiple($(this));
+        feedTopicSelect($(this));
+        refreshFeed();
+    });
+
+    $(".feed-ranking-selector").click(function(event) {
+        event.preventDefault();
+        var ranking = $(this).attr("data-ranking");
+        $(".feed_ranking").val(ranking);
+        refreshFeed();
+    });
+
+    $(".feed-display-selector").click(function(event) {
+        event.preventDefault();
+        var display = $(this).attr("data-display");
+        $(".feed_display").val(display);
+        refreshFeed();
+    });
+
+    $(".feed-type-selector").click(function(event) {
+        feedTypeSelect($(this));
+        refreshFeed();
+    });
+
+    $(".feed-group-selector").click(function(event) {
+        feedGroupSelect($(this));
+        refreshFeed();
+    });
+
+    refreshFeed();
+}
 
 /***********************************************************************************************************************
  *
@@ -1440,13 +1580,13 @@ function submitAnswer()
     var weight = 5;
     // var exp = $("#explanation").val();
     ajaxPost({
-            data: {'action':'answer','q_id': q_id,'choice':choice,'weight':weight,'explanation':explanation},
-            success: function(data) {
-            },
-            error: function(jqXHR, textStatus, errorThrown){
-                $('.errors_div').html(jqXHR.responseText);
-            }
-        });
+        data: {'action':'answer','q_id': q_id,'choice':choice,'weight':weight,'explanation':explanation},
+        success: function(data) {
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            $('.errors_div').html(jqXHR.responseText);
+        }
+    });
 }
 
 /***********************************************************************************************************************
@@ -1612,16 +1752,16 @@ function loadThread()
 function ajaxThread()
 {
     ajaxPost({
-            data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                $("#thread").html(returned.html);
-                loadThread();
-                return false;
-            },
-            error: null
-        });
+        data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            $("#thread").html(returned.html);
+            loadThread();
+            return false;
+        },
+        error: null
+    });
 }
 
 /***********************************************************************************************************************
@@ -1926,47 +2066,47 @@ function loadPetition()
     {
         event.preventDefault();
         ajaxPost({
-                data: {'action':'sign','c_id':c_id},
-                success: function(data)
-                {
-                    var returned = eval('(' + data + ')');
-                    if (returned.success==true) {
-                        $("#signer-names").append(returned.signer);
-                        if ($('#be-first-signer-message').length > 0)
-                        {
-                            $('#be-first-signer-message').fadeOut('slow');
-                        }
-                        $('.sign').text("Thank you for signing!");
-                        var num_signers = parseInt($('#num-signers').text().replace('signed',"").replace(/\s/g, ""));
-                        num_signers = num_signers + 1;
-                        $('#num-signers').text(num_signers + " " + "signed");
-                        loadHoverComparison();
+            data: {'action':'sign','c_id':c_id},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success==true) {
+                    $("#signer-names").append(returned.signer);
+                    if ($('#be-first-signer-message').length > 0)
+                    {
+                        $('#be-first-signer-message').fadeOut('slow');
                     }
-                    else {
-                        $('.sign').text(returned.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
+                    $('.sign').text("Thank you for signing!");
+                    var num_signers = parseInt($('#num-signers').text().replace('signed',"").replace(/\s/g, ""));
+                    num_signers = num_signers + 1;
+                    $('#num-signers').text(num_signers + " " + "signed");
+                    loadHoverComparison();
                 }
-            });
+                else {
+                    $('.sign').text(returned.error);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
     });
 
     $("#finalize-button").click(function(event)
     {
         event.preventDefault();
         ajaxPost({
-                data: {'action':'finalize','c_id':c_id},
-                success: function(data)
-                {
-                    location.reload();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $("body").html(jqXHR.responseText);
-                }
-            });
+            data: {'action':'finalize','c_id':c_id},
+            success: function(data)
+            {
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
     });
 
 }
@@ -2087,28 +2227,28 @@ function loadGroup()
         {
             loadUsersLockout = true;
             ajaxPost({
-                    data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
-                        'histogram_topic':histogram_topic,'histogram_block':histogram_block },
-                    success: function(data)
-                    {
-                        var returned = eval('(' + data + ')');
-                        if (replace==true) {
-                            $('#members-list').html(returned.html);
-                        }
-                        else {
-                            $('#members-list').append(returned.html);
-                        }
-                        $('#histogram-displayed-num').val(returned.num);
-                        loadHoverComparison();
-                        loadAjaxifyAnchors();
-                        bindNewDivs();
-                        loadUsersLockout = false;
-                    },
-                    error: function(jqXHR, textStatus, errorThrown)
-                    {
-                        $('body').html(jqXHR.responseText);
+                data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
+                    'histogram_topic':histogram_topic,'histogram_block':histogram_block },
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    if (replace==true) {
+                        $('#members-list').html(returned.html);
                     }
-                });
+                    else {
+                        $('#members-list').append(returned.html);
+                    }
+                    $('#histogram-displayed-num').val(returned.num);
+                    loadHoverComparison();
+                    loadAjaxifyAnchors();
+                    bindNewDivs();
+                    loadUsersLockout = false;
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
         }
     }
 
@@ -2120,19 +2260,19 @@ function loadGroup()
         {
             loadHistoLockout = true;
             ajaxPost({
-                    data: {'action':'loadHistogram','group_id':group_id,
-                        'histogram_topic':histogram_topic},
-                    success: function(data)
-                    {
-                        var returned = eval('(' + data + ')');
-                        $(".histogram-bars").html(returned.html);
-                        loadHistoLockout = false;
-                    },
-                    error: function(jqXHR, textStatus, errorThrown)
-                    {
-                        $('body').html(jqXHR.responseText);
-                    }
-                });
+                data: {'action':'loadHistogram','group_id':group_id,
+                    'histogram_topic':histogram_topic},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    $(".histogram-bars").html(returned.html);
+                    loadHistoLockout = false;
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
         }
     }
 

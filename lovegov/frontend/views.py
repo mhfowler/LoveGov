@@ -99,7 +99,7 @@ def requiresLogin(view):
             else:
                 dict = {'user':user, 'google':GOOGLE_LOVEGOV}
                 rightSideBar(None, dict)
-                # SAVE PAGE ACCESS
+            # SAVE PAGE ACCESS
             if request.method == 'GET':
                 ignore = request.GET.get('log-ignore')
             else:
@@ -333,6 +333,26 @@ def compareWeb(request,alias=None,dict={}):
         else:
             return shortcuts.redirect('/alpha/')
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# new feeds page
+#-----------------------------------------------------------------------------------------------------------------------
+def theFeed(request, dict={}):
+
+    rightSideBar(request, dict)
+
+    dict['feed_ranking'] = 'N'
+    dict['feed_topics'] = json.dumps([])
+    dict['feed_types'] = json.dumps([])
+    dict['feed_groups'] = json.dumps([])
+    dict['feed_just'] = 'true'
+    dict['feed_display'] = 'linear'
+
+    dict['groups'] = UserGroup.objects.all()
+
+    html = ajaxRender('test/feed.html', dict, request)
+    url = '/feed/'
+    return framedResponse(request, html, url, dict)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
@@ -603,8 +623,9 @@ def legislation(request, session=None, type=None, number=None, dict={}):
     if len(legs)==0:
         dict['error'] = "No legislation found with the given parameters."
     else:
-        dict['leg_titles'] = Legislation.legislationtitle_set.all()
-        dict['leg'] = legs[0]
+	leg = legs[0]
+        dict['leg_titles'] = leg.legislationtitle_set.all()
+        dict['leg'] = leg
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', dict=dict, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------

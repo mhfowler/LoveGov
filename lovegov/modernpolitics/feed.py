@@ -13,11 +13,53 @@ from lovegov.modernpolitics.defaults import *
 # python
 from operator import itemgetter
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Takes in a filter object, which has all feeds of SimpleFilter, except m2m as id lists
+#-----------------------------------------------------------------------------------------------------------------------
+def getFeed(filter, start=0, stop=10, saved=False):
+    topics = filter['topics']
+    types = filter['types']
+    groups = filter['groups']
+    ranking = filter['ranking']
+    just_created_by_group = filter['just_created_by_group']
+    content = Content.objects.filter(type__in=FEED_CONTENT_TYPES)
+    if topics:
+        content = content.filter(main_topic__in=topics)
+    if types:
+        content = content.filter(type__in=types)
+    groups = Group.objects.filter(id__in=groups)
+    if groups:
+        u_ids = []
+        for g in groups:
+            u_ids.extend(g.members.all().values_list("id", flat=True))
+        users = UserProfile.objects.filter(id__in=u_ids)
+    else:
+        users = UserProfile.objects.filter(user_type="U")
+    if just_created_by_group:
+        if groups:
+            u_ids = users.values_list("id", flat=True)
+            content = content.filter(creator_id__in=u_ids)
+        return getFeedHelper(content, ranking, start, stop)
+    else:
+        print "complex feed!"
+        return None
+
+def getFeedHelper(content, ranking, start, stop):
+    if ranking == 'N':
+        return content.order_by("-created_when")[start:stop]
+    elif ranking == 'B':
+        return content.order_by("-status")[start:stop]
+    elif ranking == 'H':
+        c_ids = content.values_list("id", flat=True)
+        items = getHotFeed().items.filter(content_id__in=c_ids).order_by("-rank")[start:stop]
+        to_return = []
+        for x in items:
+            to_return.append(x.content)
+        return to_return
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates stati of all content... for viewing how ranking algo works
-# args:
-# tags: USABLE
-# frequency: call once a day?
 #-----------------------------------------------------------------------------------------------------------------------
 def updateRank(debug=True):
     scheduled_logger.debug("UPDATE RANK")
@@ -51,9 +93,6 @@ def updateUserFeeds(debug=False):
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates feeds for all groups
-# args:
-# tags: USABLE
-# frequency: call once a day?
 #-----------------------------------------------------------------------------------------------------------------------
 def updateAllGroupFeeds(debug=False):
     scheduled_logger.debug("UPDATE GROUP FEEDS")

@@ -719,9 +719,9 @@ def initializeContent():
     p2.save()
     p3.save()
     p4.save()
-    p1.topics.add(topic)
-    p2.topics.add(topic2)
-    p3.topics.add(topic2)
+    p1.setMainTopic(topic)
+    p2.setMainTopic(topic2)
+    p3.setMainTopic(topic2)
     randy = UserProfile.objects.get(username='randy')
     p1.autoSave(creator=randy,privacy='PUB')
     p2.autoSave(creator=randy,privacy='PUB')
@@ -731,8 +731,8 @@ def initializeContent():
     n2 = News(type="N", title="LoveGov launches", summary="changed politics forever", link="www.lovegov.com")
     n1.save()
     n2.save()
-    n1.topics.add(topic)
-    n2.topics.add(topic2)
+    n1.setMainTopic(topic)
+    n2.setMainTopic(topic2)
 
     testGroup = Group(type="G", title="SUPER GROUP", summary="group summary", group_type="O", full_text="great group")
 

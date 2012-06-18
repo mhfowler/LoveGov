@@ -32,6 +32,16 @@ GOOGLE_LOVEGOV = 'UA-31122448-1'
 sunlight.config.API_KEY  = '47ec0a395b9241d7902d6c5c896a8167'
 GOOGLEMAPS_API_KEY = 'AIzaSyA_ZfbazhowTs7D4e93YuG6pdLefZIG1gs'
 
+BILL_TYPES = {
+    's': 'Senate Bill',
+    'h': 'House of Representatives Bill',
+    'hr': 'House of Representatives Resolution',
+    'sr': 'Senate Resolution',
+    'hc': 'House of Representatives Concurrent Resolution',
+    'sc': 'Senate Concurrent Resolution',
+    'sj': 'Senate Joint Resolution',
+    'hj': 'House of Representatives Joint Resolution',
+}
 
 ########################################## FOR RANKING & FILTERING #####################################################
 
@@ -298,9 +308,12 @@ BILL_TYPES = {
     'hj': 'House of Representatives Joint Bill',
     }
 
+# types of content that show up in the feed
+FEED_CONTENT_TYPES = ['P','N','L','G']
 
 ###################################### STATIC FILE URLS ################################################################
 
 DEFAULT_IMAGE = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
 
 STATIC_PATH = '/media/'
+

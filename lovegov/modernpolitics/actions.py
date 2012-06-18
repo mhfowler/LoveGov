@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
+from lovegov.modernpolitics.feed import *
 from lovegov.modernpolitics.images import *
 from haystack.query import SearchQuerySet
 
@@ -940,6 +941,37 @@ def ajaxThread(request, dict={}):
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# gets feed using inputted post parameters
+#-----------------------------------------------------------------------------------------------------------------------
+def ajaxGetFeed(request, dict={}):
+
+    feed_ranking = request.POST['feed_ranking']
+    feed_topics = json.loads(request.POST['feed_topics'])
+    feed_types = json.loads(request.POST['feed_types'])
+    feed_groups = json.loads(request.POST['feed_groups'])
+    feed_just = bool(request.POST['feed_just'])
+    feed_start = int(request.POST['feed_start'])
+    feed_end = int(request.POST['feed_end'])
+    feed_display = request.POST['feed_display']
+
+    filter = {
+        'topics': feed_topics,
+        'types': feed_types,
+        'groups': feed_groups,
+        'ranking': feed_ranking,
+        'just_created_by_group': feed_just
+    }
+
+    content = getFeed(filter, start=feed_start, stop=feed_end)
+    vals = {'content':content}
+    if feed_display == 'pinterest':
+        html = ajaxRender('test/pinterest.html', vals, request)
+    else:
+        html = ajaxRender('test/linear.html', vals, request)
+    to_return = {'html':html, 'num':len(content)}
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets dropdown notifications
 #-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, dict={}):
@@ -1031,8 +1063,6 @@ def matchSection(request, dict={}):
 
     return HttpResponse(json.dumps({'html':html}))
 
-
-
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1078,6 +1108,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
+            'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection
         }
 
