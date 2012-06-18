@@ -977,6 +977,28 @@ def matchSection(request, dict={}):
         dict['userProfile'] = user
         html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
 
+    elif section == 'cause':
+        user = dict['user']
+        comparison = getUserUserComparison(user,user)
+        user.compare = comparison.toJSON()
+        user.result = comparison.result
+        dict['c1'] = user
+
+        # friends
+        dict['friends'] = user.getIFollow()[0:5]
+
+        # groups
+        dict['groups'] = user.getGroups()
+
+        # networks
+        lovegov = getLoveGovUser()
+        network = user.getNetwork()
+        congress = getCongressNetwork()
+        dict['networks'] = [network,congress,lovegov]
+
+        dict['userProfile'] = user
+        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+
     return HttpResponse(json.dumps({'html':html}))
 
 
