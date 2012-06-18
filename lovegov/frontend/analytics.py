@@ -16,7 +16,7 @@ ANALYTICS_EMAILS = ['max_fowler@brown.edu']
 #-----------------------------------------------------------------------------------------------------------------------
 def userSummary(user, request, days=None):
     if days:
-        today = datetime.datetime.now() - datetime.timedelta(days=days)
+        today = datetime.datetime.now() - datetime.timedelta(days=int(days))
         pa = PageAccess.objects.filter(user=user, when__gt=today).order_by("when")
     else:
         pa = PageAccess.objects.filter(user=user)
