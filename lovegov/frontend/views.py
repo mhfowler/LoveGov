@@ -99,7 +99,7 @@ def requiresLogin(view):
             else:
                 dict = {'user':user, 'google':GOOGLE_LOVEGOV}
                 rightSideBar(None, dict)
-                # SAVE PAGE ACCESS
+            # SAVE PAGE ACCESS
             if request.method == 'GET':
                 ignore = request.GET.get('log-ignore')
             else:
@@ -341,12 +341,14 @@ def theFeed(request, dict={}):
 
     rightSideBar(request, dict)
 
-    dict['feed_ranking'] = 'H'
+    dict['feed_ranking'] = 'N'
     dict['feed_topics'] = json.dumps([])
     dict['feed_types'] = json.dumps(['P'])
     dict['feed_groups'] = json.dumps([])
     dict['feed_just'] = 'true'
     dict['feed_display'] = 'pinterest'
+
+    dict['groups'] = UserGroup.objects.all()
 
     html = ajaxRender('test/feed.html', dict, request)
     url = '/feed/'
@@ -491,7 +493,7 @@ def profile(request, alias=None, dict={}):
                     dict['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(10)
+            actions = user_prof.getActivity(5)
             actions_text = []
             for action in actions:
                 from_you = False
@@ -506,6 +508,22 @@ def profile(request, alias=None, dict={}):
                 except:
                     actions_text.append( "This action no longer exists" )
             dict['actions_text'] = actions_text
+
+            # Get Notifications
+            if user.id == user_prof.id:
+                notifications = user.getNotifications(5,dropdown=True)
+                notifications_text = []
+                for notification in notifications:
+                    from_you = False
+                    to_you = False
+                    n_action = notification.action
+                    relationship = n_action.relationship
+                    if relationship.getFrom().id == user.id:
+                        from_you = True
+                    elif relationship.getTo().id == user.id:
+                        to_you = True
+                    notifications_text.append( n_action.getVerbose(from_you=from_you,to_you=to_you,notification=True) )
+                dict['notifications_text'] = notifications_text
 
             # get responses
             dict['responses'] = user_prof.getView().responses.count()
@@ -612,8 +630,9 @@ def legislation(request, session=None, type=None, number=None, dict={}):
     if len(legs)==0:
         dict['error'] = "No legislation found with the given parameters."
     else:
-        dict['leg_titles'] = Legislation.legislationtitle_set.all()
-        dict['leg'] = legs[0]
+	leg = legs[0]
+        dict['leg_titles'] = leg.legislationtitle_set.all()
+        dict['leg'] = leg
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', dict=dict, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -710,7 +729,8 @@ def match(request,dict={}):
         return framedResponse(request, html, url, dict)
 
 def matchNew(request, dict={}):
-    def election(request,dict={}):
+    if request.method == 'GET':
+        dict['defaultImage'] = getDefaultImage().image
         user = dict['user']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
@@ -725,51 +745,12 @@ def matchNew(request, dict={}):
 
         # dict['user'] doesn't translate well in the template
         dict['userProfile'] = user
-        setPageTitle("lovegov: match2",dict)
-        html = ajaxRender('deployment/center/match/match-election-center.html', dict, request)
-        url = '/match/'
-        return framedResponse(request, html, url, dict)
-
-    def social(request,dict={}):
-        user = dict['user']
-        comparison = getUserUserComparison(user,user)
-        user.compare = comparison.toJSON()
-        user.result = comparison.result
-        dict['c1'] = user
-
-        # friends
-        dict['friends'] = user.getIFollow()[0:5]
-
-        # groups
-        dict['groups'] = user.getGroups()
-
-        # networks
-        lovegov = getLoveGovUser()
-        network = user.getNetwork()
-        congress = getCongressNetwork()
-        dict['networks'] = [network,congress,lovegov]
-
-        dict['userProfile'] = user
-        setPageTitle("lovegov: match2",dict)
-        html = ajaxRender('deployment/center/match/match-social-network.html', dict, request)
+        setPageTitle("lovegov: match",dict)
+        html = ajaxRender('deployment/center/match/match-new.html', dict, request)
         url = '/match/'
         return framedResponse(request, html, url, dict)
 
 
-    if request.method == 'GET':
-        if 'section' in request.GET:
-            dict['defaultImage'] = getDefaultImage().image
-            section = request.GET['section']
-            if section == "social": return social(request,dict)
-            elif section == "election": return election(request,dict)
-            elif section == "cause":
-                pass
-            else:
-                pass
-        else:
-            return election(request,dict)
-    else:
-        pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

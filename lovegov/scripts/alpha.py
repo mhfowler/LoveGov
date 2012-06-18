@@ -40,7 +40,6 @@ def runScript(operation, args):
     elif operation == "initializeCongress":  # THIS SCRIPT TAKES A VERY LONG TIME TO RUN - DO NOT CALL FREQUENTLY
         initializeCongress()
         scriptCreatePresidentialCandidates()
-        scriptCreateRhodeIsland()
         initializeCommittees()
         initializeLegislation()
         initializeLegislationAmendments()

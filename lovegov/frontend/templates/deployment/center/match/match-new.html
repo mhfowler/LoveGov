@@ -16,13 +16,7 @@
             </div>
 
             <div id="match-ajax-content">
-                {% if section == "election" %}
-                    {% include 'deployment/center/match/match-election-center.html' %}
-                {% elif section == "social" %}
-                    {% include 'deployment/center/match/match-social-network.html' %}
-                {% elif section == "cause" %}
-
-                {% endif %}
+                {% include 'deployment/center/match/match-election-center.html' %}
             </div>
 
             <div id="match-arrow-right" class="match-arrow">
@@ -41,9 +35,6 @@
 </div>
 
 <script type="text/javascript">
-
-
-
     $('.match-arrow img').hover(function()
     {
         $(this).css({'background-color':'#F0F0F0'});

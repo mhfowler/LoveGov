@@ -272,9 +272,14 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Sets main_topic field.
     #-------------------------------------------------------------------------------------------------------------------
-    def setMainTopic(self):
-        self.main_topic = self.getMainTopic()
-        self.save()
+    def setMainTopic(self, topic=None):
+        if not topic:
+            self.main_topic = self.getMainTopic()
+            self.save()
+        else:
+            self.main_topic = topic
+            self.save()
+            self.topics.add(topic)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get vote rating of content.
@@ -1272,6 +1277,9 @@ class UserProfile(FacebookProfileModel, LGModel):
             notifications = Notification.objects.filter( notify_user=self, requires_action=True).order_by('when').reverse()
         if num != -1:
             notifications = notifications[0:num]
+        for note in notifications:
+            note.viewed = True
+            note.save()
         return notifications
 
     def getAllNotifications(self):
@@ -1446,130 +1454,30 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,relationship=None,from_you=False,to_you=False):
+    def getVerbose(self,relationship=None,from_you=False,to_you=False,notification=False):
         if not relationship:
             relationship = self.relationship
         action_verbose = ' no action '
-        if self.type == 'CO':
-            action_verbose = ' commented on '
-        elif self.type == 'VO':
-            if self.modifier == 'L':
-                action_verbose = ' liked '
-            elif self.modifier == 'D':
-                action_verbose = ' disliked '
-            else: #self.modifier == 'U'
-                action_verbose = ' unvoted '
-        #Follow Section
-        elif self.type == 'FO':
-            if self.modifier == 'I':
-                if from_you:
-                    action_verbose = ' were invited to follow '
-                else:
-                    action_verbose = ' was invited to follow '
-            elif self.modifier == 'R':
-                action_verbose = ' requested to follow '
-            elif self.modifier == 'D':
-                if from_you:
-                    action_verbose = ' are following '
-                else:
-                    action_verbose = ' is following '
-            elif self.modifier == 'N':
-                action_verbose = ' declined to follow '
-            elif self.modifier == 'X':
-                if from_you:
-                    action_verbose = ' were rejected from following '
-                else:
-                    action_verbose = ' was rejected from following '
-            elif self.modifier == 'S':
-                action_verbose = ' stopped following '
-        #Event Section
-        elif self.type == 'AE':
-            if self.modifier == 'I':
-                if from_you:
-                    action_verbose = ' were invited to attend '
-                else:
-                    action_verbose = ' was invited to attend '
-            elif self.modifier == 'R':
-                action_verbose = ' requested to attend '
-            elif self.modifier == 'D':
-                if from_you:
-                    action_verbose = ' are attending '
-                else:
-                    action_verbose = ' is attending '
-            elif self.modifier == 'N':
-                action_verbose = ' declined to attend '
-            elif self.modifier == 'X':
-                if from_you:
-                    action_verbose = ' were rejected from attending '
-                else:
-                    action_verbose = ' was rejected from attending '
-        #Debate Section
-        elif self.type == 'JD':
-            if self.modifier == 'I':
-                action_verbose = ' was invited to debate '
-                self.verbose = relationship.getFrom().get_name() + action_verbose  + relationship.getTo().get_name() + " by " + relationship.getInviter().get_name()
-                return  # special case
-            elif self.modifier == 'R':
-                action_verbose = ' requested to debate '
-            elif self.modifier == 'D':
-                action_verbose = ' is debating '
-            elif self.modifier == 'N':
-                action_verbose = ' declined to debate '
-            elif self.modifier == 'X':
-                action_verbose = ' was rejected from debating '
-        elif self.type == 'FC':
-            if from_you:
-                action_verbose = ' are following '
-            else:
-                action_verbose = ' is following '
-        elif self.type == 'MV':
-            action_verbose = ' voted on '
-        elif self.type == 'DV':
-            action_verbose = ' voted on '
-        elif self.type == 'DM':
-            action_verbose = ' responded in '
-        elif self.type == 'SI':
-            action_verbose = ' signed '
-        elif self.type == 'SH':
-            action_verbose = ' shared '
-            #Follow Section
-        elif self.type == 'JO':
-            if self.modifier == 'I':
-                if from_you:
-                    action_verbose = ' were invited to join '
-                else:
-                    action_verbose = ' was invited to join '
-            elif self.modifier == 'R':
-                action_verbose = ' requested to join '
-            elif self.modifier == 'D':
-                action_verbose = ' joined '
-            elif self.modifier == 'N':
-                action_verbose = ' declined to join '
-            elif self.modifier == 'X':
-                if from_you:
-                    action_verbose = ' were rejected from '
-                else:
-                    action_verbose = ' was rejected from '
-            elif self.modifier == 'S':
-                action_verbose = ' left '
-        elif self.type == 'CR':
-            if relationship.getTo().type == 'R':
-                action_verbose = ' answered '
-            else:
-                action_verbose = ' created '
-        elif self.type == 'ED':
-            action_verbose = ' edited '
-        elif self.type == 'XX':
-            action_verbose = ' deleted '
-        # SET VERBOSE
+
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
-        if from_you:
-            action_verbose = 'You' + action_verbose
+        if notification:
+            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',{'to_user':to_user,
+                                                                                         'to_you':to_you,
+                                                                                         'from_user':from_user,
+                                                                                         'from_you':from_you,
+                                                                                         'type':self.type,
+                                                                                         'modifier':self.modifier,
+                                                                                         'true':True})
         else:
-            action_verbose = from_user.get_name() + action_verbose
-        end_string = render_to_string('deployment/snippets/action_verbose.html',{'to_user':to_user,'to_you':to_you})
-        return action_verbose + end_string
+            action_verbose = render_to_string('deployment/snippets/action_verbose.html',{'to_user':to_user,
+                                                                                         'to_you':to_you,
+                                                                                         'from_user':from_user,
+                                                                                         'from_you':from_you,
+                                                                                         'type':self.type,
+                                                                                         'modifier':self.modifier,
+                                                                                         'true':True})
+        return action_verbose
 
 
 #=======================================================================================================================
@@ -1904,7 +1812,7 @@ class Comment(Content):
             self.creator_name = 'Someone'
         elif privacy=='PRI':
             self.creator_name = 'Anonymous'
-        self.title = str(self.on_content.title + " comment by " + self.creator_name)
+        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
         self.type = 'C'
         self.summary = self.text
         self.in_feed = False

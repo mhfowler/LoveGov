@@ -25,7 +25,7 @@ def getFeed(filter, start=0, stop=10, saved=False):
     just_created_by_group = filter['just_created_by_group']
     content = Content.objects.filter(type__in=FEED_CONTENT_TYPES)
     if topics:
-        content = content.filter(main_topic__in=topics.values_list("id", flat=True))
+        content = content.filter(main_topic__in=topics)
     if types:
         content = content.filter(type__in=types)
     groups = Group.objects.filter(id__in=groups)
