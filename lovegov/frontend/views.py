@@ -475,6 +475,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Follow Requests
             vals['prof_requests'] = list(user_prof.getFollowRequests())
+            vals['group_invities'] = list(user_prof.getGroupInvites())
 
             # Is the current user already (requesting to) following this profile?
             vals['is_user_requested'] = False

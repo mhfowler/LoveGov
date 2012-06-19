@@ -93,7 +93,7 @@
 
     {% if viewer.id == user_prof.id %}
 
-        <h4>Follow Requests</h4>
+        <h4>Requests</h4>
         <div id="follow-requests-container">
         {% for req in prof_requests %}
             <div class="follow-request">
@@ -106,6 +106,24 @@
         {% empty %}
             <div>No follow requests! =( </div><br>
         {% endfor %}
+        </div>
+
+        <h4>Invites</h4>
+        <div id='group-invites-container'>
+        {% for invite in group_invites %}
+            <div class="group-invite">
+                <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a>
+                has invited you to join
+                <a href="{{ invite.group.get_url }}">{{ invite.group.get_name }}</a>:
+                <a href="" class="group-invite-response-y"> I accept! </a> ||
+                <a href="" class="group-invite-response-n"> I decline! </a>
+                <input type="hidden" class="group-join-id" value="{{ invite.group.id }}"/>
+            </div>
+            <br>
+        {% empty %}
+            <div>No group invites! =( </div><br>
+        {% endfor %}
+        </div>
 
         Set following privacy to:
         {% if viewer.private_follow %}

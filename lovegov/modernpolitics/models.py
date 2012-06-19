@@ -558,6 +558,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                self.creator.notify(action)
             return my_vote.value
         else:
             # create new vote
@@ -569,6 +570,7 @@ class Content(Privacy, LocationLevel):
             self.save()
             action = Action(relationship=new_vote,modifier='L')
             action.autoSave()
+            self.creator.notify(action)
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -594,6 +596,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                self.creator.notify(action)
             return my_vote.value
         else:
             # create new vote
@@ -605,6 +608,7 @@ class Content(Privacy, LocationLevel):
             self.save()
             action = Action(relationship=new_vote,modifier='D')
             action.autoSave()
+            self.creator.notify(action)
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1207,6 +1211,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
+        relationship = action.relationship
+        if action.type != 'FO' and action.type != 'JO':
+            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+                return False
         if action.type in NOTIFY_TYPES:
             notification = Notification(action=action, notify_user=self)
             notification.autoSave()
@@ -1290,6 +1298,15 @@ class UserProfile(FacebookProfileModel, LGModel):
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
         else:
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getGroupInvites(self, num=-1):
+        if num == -1:
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()
+        else:
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -1544,6 +1561,11 @@ class Notification(Privacy):
 
         notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
         return notification_verbose
+
+    def addAggUser(self,agg_user):
+        self.users.add(agg_user)
+        self.tally += 1
+        self.save()
 
     def autoSave(self):
         self.save()
