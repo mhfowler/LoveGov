@@ -8,7 +8,7 @@ def wsgi(request):
     return HttpResponse("it doesn't work except for new urls.")
 
 def test(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     vals['notifications_dropdown'] = user.getNotifications(num=5, dropdown=True)
     vals['notifications_profile'] = user.getNotifications()
     vals['notifications_all'] = user.getAllNotifications()

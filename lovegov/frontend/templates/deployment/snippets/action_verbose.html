@@ -154,7 +154,7 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% elif type == 'CR' %}
-        {% if to_user.type == 'R' %}
+        {% if to_viewer.type == 'R' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             answered
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}

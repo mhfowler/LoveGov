@@ -31,7 +31,7 @@
                 <div class="notification-follow-response">
                     <a href="" class="notification-follow-response-y"> I accept! </a> ||
                     <a href="" class="notification-follow-response-n"> I decline! </a>
-                    <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+                    <input type="hidden" class="user-follow-id" value="{{ from_viewer.id }}"/>
                 </div>
             {% endif %}
         {% elif modifier == 'D' %}
@@ -43,7 +43,7 @@
                     <a href="" class="notification-user-follow">
                         follow them back!
                     </a>
-                    <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+                    <input type="hidden" class="user-follow-id" value="{{ from_viewer.id }}"/>
                 </div>
             {% endif %}
         {% elif modifier == 'A' %}
@@ -173,7 +173,7 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% elif type == 'CR' %}
-        {% if to_user.type == 'R' %}
+        {% if to_viewer.type == 'R' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             answered
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
