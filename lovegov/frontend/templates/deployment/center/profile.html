@@ -54,7 +54,7 @@
     <div id="middle-right">
         <div id="matching">
             <div id="myviews" class="middle-right-head-font">
-                {% if user.id != user_prof.id %}
+                {% if viewer.id != user_prof.id %}
                     You & {{ user_prof.get_name }}
                 {% else %}
                     You
@@ -91,15 +91,16 @@
         {% endfor %}
     </ul>
 
-    {% if user.id == user_prof.id %}
+    {% if viewer.id == user_prof.id %}
+
         <h4>Follow Requests</h4>
-        <div id="follow-requests">
+        <div id="follow-requests-container">
         {% for req in prof_requests %}
-            <div id="{{ req.getFrom.id }}-request">
+            <div class="follow-request">
                 <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-                <a href="" class="follow-response-y"> I accept! </a> ||
-                <a href="" class="follow-response-n"> I decline! </a>
-                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+                <a href="" class="user-follow-response-y"> I accept! </a> ||
+                <a href="" class="user-follow-response-n"> I decline! </a>
+                <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
             </div>
             <br>
         {% empty %}
@@ -107,19 +108,30 @@
         {% endfor %}
 
         Set following privacy to:
-        {% if user.private_follow %}
+        {% if viewer.private_follow %}
             <a href="" id="public-follow">public</a>
         {% else %}
             <a href="" id="private-follow">private</a>
         {% endif %}
 
+        <h4>Notifications</h4>
+        <div id="profile-notifications">
+            <input type="hidden" id="num-notifications" value="{{ num_notifications }}"/>
+            {% for note in notifications_text %}
+                {{ note|safe|escape }}<br>
+            {% endfor %}
+        </div>
+        <div id="see-more-notifications-button">
+            <a href="" id="see-more-notifications">See more notifications</a>
+        </div>
+
     {% elif is_user_rejected or not is_user_confirmed and not is_user_requested %}
-        <a href="" id="user-follow">
+        <a href="" class="user-follow-button">
             <h4>follow me!</h4>
         </a>
 
     {% elif is_user_confirmed or is_user_requested %}
-        <a href="" id="user-unfollow">
+        <a href="" class="user-unfollow-button">
             {% if is_user_confirmed %}
                 <h4>unfollow me!</h4>
             {% elif is_user_requested %}

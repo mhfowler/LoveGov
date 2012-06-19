@@ -157,8 +157,8 @@ def scriptEmail(args):
                 msg.content_subtype = "html"
                 msg.send()
         elif tag=='test':
-            dict = {'firstname':'clay','email':'clayton_dunwell@brown.edu','password':'qlkqwel23'}
-            send_email.sendTemplateEmail('Welcome to LoveGov Alpha', emailFile, dict, 'info@lovegov.com','clay@lovegov.com')
+            vals = {'firstname':'clay','email':'clayton_dunwell@brown.edu','password':'qlkqwel23'}
+            send_email.sendTemplateEmail('Welcome to LoveGov Alpha', emailFile, vals, 'info@lovegov.com','clay@lovegov.com')
         else:
             print "invalid command: '" + tag + "' is not an accepted tag. try help."
 
@@ -185,8 +185,8 @@ def scriptAddAlphaUser(args):
         print("last: "+last_name)
         print("pass: "+password)
         createUser(name, email, password)
-        dict = {'firstname':first_name,'email':email,'password':password}
-        send_email.sendTemplateEmail("Welcome to LoveGov Alpha",'alphaInvite.html',dict,'team@lovegov.com',email)
+        vals = {'firstname':first_name,'email':email,'password':password}
+        send_email.sendTemplateEmail("Welcome to LoveGov Alpha",'alphaInvite.html',vals,'team@lovegov.com',email)
 
 
 
@@ -322,9 +322,9 @@ def scriptRemoveAlphaUser(args):
 
 def scriptSendAllFeedback(args):
     for feedback in Feedback.objects.all():
-        dict = {'text':feedback.feedback}
+        vals = {'text':feedback.feedback}
         for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',dict,"team@lovegov.com",team_member)
+            send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
 
 ########################################################################################################################
 #

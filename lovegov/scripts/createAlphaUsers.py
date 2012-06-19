@@ -27,8 +27,8 @@ def createAlphaUsers(sheet):
         if not UserProfile.objects.filter(username=email_recipient).exists():
             betabackend.createUser(name, email_recipient, password)
             print name + " successfully added to Alpha users, e-mailing them..."
-            dict = {'firstname':firstname,'email':email_recipient,'password':password}
-            send_email.sendTemplateEmail(EMAIL_SUBJECT,EMAIL_TEMPLATE,dict,EMAIL_SENDER,email_recipient)
+            vals = {'firstname':firstname,'email':email_recipient,'password':password}
+            send_email.sendTemplateEmail(EMAIL_SUBJECT,EMAIL_TEMPLATE,vals,EMAIL_SENDER,email_recipient)
     print "All alpha users were successfully initialized and sent e-mails."
 
 ########################################################################################################################

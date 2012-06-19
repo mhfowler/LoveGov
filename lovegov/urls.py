@@ -69,6 +69,7 @@ urlpatterns += patterns('',
     (r'^network/(\S+)/$', requiresLogin(views.network)),                   # network page
     (r'^network/$', requiresLogin(views.network)),                         # network page
     (r'^group/(\d+)/$', requiresLogin(views.group)),
+    (r'^feed/$', requiresLogin(views.theFeed)),                            # the feed
     (r'^profile/web/(\S+)/$', requiresLogin(views.compareWeb)),            # profile/comparison
     (r'^profile/(\S+)/$', requiresLogin(views.profile)),                   # profile/comparison
     (r'^nextquestion/$', requiresLogin(views.nextQuestion)),               # sensibly redirects to next question

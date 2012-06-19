@@ -1,3 +1,3 @@
-from lovegov.beta.modernpolitics import models
-from lovegov.beta.modernpolitics import backend
-from lovegov.beta.modernpolitics import facebook as fb
+from lovegov.modernpolitics import models
+from lovegov.modernpolitics import backend
+from lovegov.modernpolitics import facebook as fb

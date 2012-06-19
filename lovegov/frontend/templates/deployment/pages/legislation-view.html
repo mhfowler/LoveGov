@@ -32,7 +32,7 @@ Session: {{session}}
 
 <p><h3>Description</h3></p>
 
-<p>{{bill_summary}}
+<p>{{leg.bill_summary}}
 
 <p><h3>Misc Info</h3>
 
@@ -52,7 +52,11 @@ Session: {{session}}
 	<li>State datetime: {{leg.state_datetime}}</li>
 </ul>
 
-<p><h3>Bill Co-sponsors</h3>
+<p><h3>Sponsor</h3>
+
+<a href='{{leg.sponsor.get_url}}'>{{leg.sponsor.get_name}}</a>
+
+<p><h3>Co-sponsors</h3>
 
 <ul>
 	{% for cosponsor in leg.cosponsors.all %}
@@ -69,11 +73,39 @@ Session: {{session}}
 	<li>Code: {{committee.code}}</li>
 	<li>Type: {{committee.type}}</li>
 	<li>Members: <ul>
-		{% for cmember in committee.members.electedofficial.all %}
+		{% for cmember in committee.committemember_set.electedofficial.all %}
 		<li><a href='{{cmember.get_url}}'>{{cmember.get_name}}</a></li>
 		{% endfor %}
 	</ul></li>
 </ul>
+
+{% endfor %}
+
+<p><h3>Legislative Actions</h3></p>
+
+{% for action in leg.legislationaction_set.all %}
+
+<ul>
+	<li>Action: {{action.action_type}}</li>
+	<li>Committee: {{action.refer_committee}}</li>
+	<li>Datetime: {{action.datetime}}</li>
+	<li>Description: {{action.text}}</li>	
+</ul>
+
+{% endfor %}
+
+<p><h3>Amendments</h3>
+
+{% for amendment in leg.legislatationamendment_set %}
+
+<ul>
+	<li>Chamber: {{amendment.chamber}}</li>
+	<li>Number: {{amendment.number}}</li>
+</ul>
+
+{% empty %}
+
+<p>No amendments for this bill.</p>
 
 {% endfor %}
 

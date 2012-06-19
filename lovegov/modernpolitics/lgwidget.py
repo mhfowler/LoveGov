@@ -32,23 +32,23 @@ def access(request):
 #-----------------------------------------------------------------------------------------------------------------------
 # Displays a few lovegov questions.
 #-----------------------------------------------------------------------------------------------------------------------
-def questions(request, dict={}):
+def questions(request, vals={}):
     random = request.GET.get('random')
     if not random:
         random=3
     ids = request.GET.get('selected')
     if not ids:
         ids = []
-    dict['widget_domain'] = 'http://dev.lovegov.com'
+    vals['widget_domain'] = 'http://dev.lovegov.com'
     if random:
         questions = Question.objects.all()
         sample_size = min(random, len(questions))
         random_questions = sample(questions, sample_size)
-        dict['random_questions'] = random_questions
+        vals['random_questions'] = random_questions
     if ids:
         selected_questions = Question.objects.filter(id__in=ids)
-        dict['selected_questions'] = selected_questions
-    html = ajaxRender('widget/questions.html', request=request, dict=dict)
+        vals['selected_questions'] = selected_questions
+    html = ajaxRender('widget/questions.html', request=request, vals=vals)
     to_return = {'html': html}
     callback = request.GET.get('callback', '')
     response = json.dumps(to_return)
