@@ -2042,6 +2042,10 @@ function loadProfile()
                     {
                         $('#see-more-notifications-button').html('No more notifications');
                     }
+                    else if( obj.hasOwnPropery('error') )
+                    {
+                        $('body').html(obj.error);
+                    }
                     unbindNotification();
                     loadNotification();
                 },
