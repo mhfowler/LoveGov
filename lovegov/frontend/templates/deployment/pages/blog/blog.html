@@ -1,0 +1,113 @@
+{% extends 'deployment/templates/no-login-frame.html' %}
+{% block content %}
+
+    <link href="/static/css/deployment/blog.css" rel="stylesheet" type="text/css"/>
+
+    <div id="blog_left">
+        <h4 class="capitalize_text" style="margin-bottom:25px">Blog</h4>
+        <div id="recent_blog_posts" class="blog_left_item">
+            <h5>Recent Blog Posts</h5>
+            <ul>
+                {% for blogPost in blogPosts|slice:":5" %}
+                <li>
+                    <a>{{ blogPost.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="blog_categories" class="blog_left_item">
+            <h5>Categories</h5>
+            <ul>
+                {% for category in categories %}
+                    <li>
+                        <a>{{ category }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div id="blog_right">
+    {% if viewer.isDeveloper %}
+        <div id="blog-submit">
+            <h2>Post New Blog Entry</h2>
+            <form id="blogform" action="" method='post'>
+                <table>
+                    <tr>
+                        <td>
+                            Title:
+                        </td>
+                        <td>
+                            <input class="blog_text_input" name="title" type="text"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Text:
+                        </td>
+                        <td>
+                            <textarea class="blog_textarea_input" name="text"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="submit" value="Submit" name="submitblog" style="float:right"/>
+                            <div style="float:left;">
+                                <input class="blog_checkbox" type="checkbox" name="news"/>
+                                <span class="blog_span">News</span>
+                                <input class="blog_checkbox" type="checkbox" name="general"/>
+                                <span class="blog_span">General</span>
+                                <input class="blog_checkbox" type="checkbox" name="update"/>
+                                <span class="blog_span">Update</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endif %}
+        <div id="blog-entries">
+            {% for blogPost in blogPosts %}
+                {% include 'deployment/pages/blog/blog-item.html' %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        $('#blogform').submit(function(event)
+        {
+            event.preventDefault();
+            var dataArray = $(this).serializeArray();
+            var json = {};
+            for (var i =0; i<dataArray.length; i++)
+            {
+                json[dataArray[i].name] = dataArray[i].value
+            }
+            var data = {'action':'blogPost'};
+            $.extend(data,json);
+            $.ajax
+            ({
+                url:'/action/',
+                type:'POST',
+                data:data,
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    $('#blog-entries').prepend(returned.html);
+                },
+                failure: function(a,b,c)
+                {
+                    alert("Failed to submit!  Talk to Clay/Max");
+                }
+            })
+        });
+
+    </script>
+
+
+
+
+{% endblock %}

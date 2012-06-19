@@ -1,0 +1,16 @@
+<div class="blog_item">
+    <div class="blog_item_left">
+        <h2>{{ blogPost.title }}</h2>
+        <div class="blog_posted">Posted on {{ blogPost.datetime }} in {% for cat in blogPost.category %}{{ cat }} {% endfor %}</div>
+        <p class="blog_text">
+            {{ blogPost.message|linebreaks|striptags }}
+        </p>
+    </div>
+    <div class="blog_item_right">
+        {% load thumbnail %}
+        {% thumbnail blogPost.creator.getProfileImage.image "30x30" format="PNG" as img %}
+            <img src="{{ img.url }}"/>
+        {% endthumbnail %}
+        {{ blogPost.creator }}
+    </div>
+</div>

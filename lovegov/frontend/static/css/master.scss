@@ -1,3 +1,42 @@
+/*
+
+                       8?
+                       8?
+                       8?
+                       8?                                                 ,7777   I7777
+                       8?    88I  888   8       8.  88~  88    I8Z Z8.   7777777+7777777  8       8
+                       8?   8~      O8  OZ     O8  87     ~8   8     8   7777777777777777 88     =8
+                       8?  O8        8:  8     8  $8???????8  $?     ~8  7777777777777777  8     8
+                       8?  8~        88   8   8   88           8     8   777777777777777    8   8,
+                       8?  +8        8    Z8 $8   ,8            I888$     7777777777777     88 88
+                       8?   88      88     8 8     88          8+          .7777777777       8~8
+                       8?    =888888.       8=       8888888   88             77777?          8.
+                                                               8I    88         I                  :=
+                                                              8       88
+                                               :  =           8.      8
+                        +:.:  :, I :  :: ?:: :,: 7, : ~I        88888,
+                         .I~?7,.  +               ?+   .
+                                            ?
+
+                             _______  _______  _______ _________ _______  _______
+                            (       )(  ___  )(  ____ \\__   __/(  ____ \(  ____ )
+                            | () () || (   ) || (    \/   ) (   | (    \/| (    )|
+                            | || || || (___) || (_____    | |   | (__    | (____)|
+                            | |(_)| ||  ___  |(_____  )   | |   |  __)   |     __)
+                            | |   | || (   ) |      ) |   | |   | (      | (\ (
+                            | )   ( || )   ( |/\____) |   | |   | (____/\| ) \ \__
+                            |/     \||/     \|\_______)   )_(   (_______/|/   \__/
+
+                             _______  _______  _______    _______           _______  _______ _________
+                            (  ____ \(  ____ \(  ____ \  (  ____ \|\     /|(  ____ \(  ____ \\__   __/
+                            | (    \/| (    \/| (    \/  | (    \/| )   ( || (    \/| (    \/   ) (
+                            | |      | (_____ | (_____   | (_____ | (___) || (__    | (__       | |
+                            | |      (_____  )(_____  )  (_____  )|  ___  ||  __)   |  __)      | |
+                            | |            ) |      ) |        ) || (   ) || (      | (         | |
+                            | (____/\/\____) |/\____) |  /\____) || )   ( || (____/\| (____/\   | |
+                            (_______/\_______)\_______)  \_______)|/     \|(_______/(_______/   )_(
+
+*/
 @charset "UTF-8";
 
 @font-face
@@ -46,6 +85,15 @@ $body-fonts: Helvetica, Arial, Verdana, sans-serif;
 $gill-light: "Gill Sans Std Light";
 $gill-std: "Gill Sans Std";
 
+/* Mixin */
+@mixin rounded($radius: 20px)
+{
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+}
+
 *
 {
   margin:0;
@@ -77,16 +125,63 @@ p
   margin-bottom: 13px;
 }
 
-p.big
+p.really-big
 {
-  line-height: 18px;
-  margin-bottom: 13px;
+  font-family: $gill-light;
+  color: $dark-gray;
+  font-size:20px;
+  line-height:28px;
+  margin-bottom:20px;
 }
 
-p.small
+p.big
 {
-  line-height: 18px;
-  margin-bottom: 13px;
+  font-family: $gill-light;
+  color: $link-hover;
+  font-size:18px;
+  line-height:26px;
+  margin-bottom:18px;
+}
+
+ol, ul
+{
+  padding-left:30px;
+}
+
+hr
+{
+  height:1px;
+  border:0px;
+  background-color: #ccc;
+  margin-bottom:10px;
+  margin-top:10px;
+}
+
+strong
+{
+  font-weight:bold;
+}
+
+em
+{
+  font-style:italic;
+}
+
+span.bignum
+{
+/* extra big numbers - percents etc */
+  font-size:50px;
+  font-weight:bold;
+  font-family: $body-fonts
+}
+
+blockquote
+{
+  color: #959595;
+  font-style:italic;
+  padding-left:13px;
+  padding-bottom:13px;
+  padding-right:13px;
 }
 
 h1, h2, h3, h4, h5, h6
@@ -141,7 +236,7 @@ input[type="text"], input[type="password"]
 {
   outline:1px solid $gray;
   cursor: text ;
-  color: black;
+  color: $black;
 }
 
 input[type="text"]:focus, input[type="password"]:focus
@@ -149,10 +244,20 @@ input[type="text"]:focus, input[type="password"]:focus
   outline:1px solid $red;
 }
 
-@mixin button
+textarea
 {
-  .button-red, .button-red:link, .button-red:active, .button-red:visited
-  {
+  outline:1px solid $gray;
+  cursor: text ;
+  color: $black;
+}
+
+textarea:focus
+{
+  outline:1px solid $red;
+}
+
+.button
+{
     -moz-border-radius: 9px;
     -webkit-border-radius: 9px;
     -khtml-border-radius: 9px;
@@ -166,68 +271,67 @@ input[type="text"]:focus, input[type="password"]:focus
     text-decoration: none;
     outline: none;
     border: 0;
-  }
 }
 
-.button-red, .button-red:link, .button-red:active, .button-red:visited
+.button_red, .button_red:link, .button_red:active, .button_red:visited
 {
-  @include button;
+  @extend .button;
   background-color:$red;
 }
 
-.button-red:hover
+.button_red:hover
 {
   background-color:$red-light
 }
 
-.button-gray, .button-gray:link, .button-gray:active, .button-gray:visited
+.button_gray, .button_gray:link, .button_gray:active, .button_gray:visited
 {
-  @include button;
+  @extend .button;
   background-color: $dark-gray;
 }
 
-.button-gray:hover
+.button_gray:hover
 {
   background-color: $gray;
 }
 
-img.icon-big
+img.icon_big
 {
   width: 50px;
   height: 50px;
 }
 
-img.icon-med
+img.icon_med
 {
   width: 38px;
   height: 38px;
 }
 
-img.icon-small
+img.icon_small
 {
   width: 10px;
   height: 10px;
 }
 
-.no-margin
+.no_margin
 {
   margin-bottom: 0;
   margin-top: 0;
 }
 
-.small-margin
+.small_margin
 {
   margin-bottom:10px;
   margin-top:10px;
 }
 
-.mid-margin
+.mid_margin
 {
   margin-bottom:25px;
   margin-top:25px;
 }
 
-.big-num
+.big_num
 {
   /*tribute to cs17 project bignum. rest in peace. */
   font-weight:bold;
@@ -235,159 +339,50 @@ img.icon-small
   color:$red;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* LoveGov main stylesheet */
-
-/* COLORS
- *
- * orange: #f0503b;
- * blue: #005468;
- *
- * light orange: #FC8A81;
- * light blue: #0094A3;
- *
- * darkest gray: #353535;
- * dark gray: #4C4C4C;
- * gray: #959595;
- * light gray: #ADADAD;
- * lighter gray: #cccccc;
- * lightest gray: #E0E0E0;
- *
- */
-
-
-/* CSS Document */
-
-
-
-
-
-
-div.container {
-  width:500px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-/*
- * Typography
- */
-
-
-
-
-
-
-
-.small
+.logo
 {
-  font-size:85%;
-  color:#959595;
+  width:425px;
+  height:165px;
 }
 
-p {
-  line-height: 18px;
-  padding-bottom:13px;
+.capitlize_text
+{
+  text-transform:uppercase;
 }
 
-ol, ul {
-  padding-left:30px;
+.float_left
+{
+  float:left;
 }
 
-hr {
-  height:1px;
-  border:0px;
-  background-color: #ccc;
-  margin-bottom:10px;
-  margin-top:10px;
+.float_right
+{
+  float:right;
 }
 
-blockquote {
-  color: #959595;
-  font-style:italic;
-  padding-left:13px;
-  padding-bottom:13px;
-  padding-right:13px;
+.clear_both
+{
+  clear:both;
 }
 
-strong {
-  font-weight:bold;
+div.round_container
+{
+  @include rounded(20px);
 }
 
-em {
-  font-style:italic;
+.tool-tip
+{
+  background-color:#f0503b;
+  color:white;
 }
 
-.bignum
-{ /* extra big numbers - percents etc */
-  font-size:50px;
-  font-weight:bold;
-  font-family: "Helvetica", Verdana, sans-serif;
-
+span.small
+{
+  font-size:12px;
+  font-color: #959595;
 }
 
-/* Button Styles */
-
-a.button {
-  font-family: "Gill Sans Std";
+span.big
+{
+  font-size: 18px;
 }
-
-/* Containers */
-
-div.round-container {
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
-  -khtml-border-radius: 20px;
-  border-radius: 20px;
-
-}
-
-
-
-/* Forms */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

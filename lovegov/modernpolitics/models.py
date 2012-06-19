@@ -254,6 +254,9 @@ class Content(Privacy, LocationLevel):
     def get_name(self):
         return self.getName()
 
+    def getTitle(self):
+        return self.title
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -961,6 +964,8 @@ class UserProfile(FacebookProfileModel, LGModel):
             to_return = "UnicodeEncodeError"
         return to_return
 
+    def isDeveloper(self):
+        return self.developer
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
@@ -3796,28 +3801,12 @@ class ResetPassword(LGModel):
     create = staticmethod(create)
 
 class BlogEntry(LGModel):
-    userProfile = models.ForeignKey(UserProfile)
+    CATEGORY_CHOICES = ['General','Update','News']
+    creator = models.ForeignKey(UserProfile)
     datetime = models.DateTimeField(auto_now_add=True)
+    category = custom_fields.ListField()
+    title = models.CharField(max_length=5000)
     message = models.CharField(max_length=100000)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
