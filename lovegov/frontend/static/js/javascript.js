@@ -1714,11 +1714,7 @@ function loadThread()
                 {
                     ajaxThread();
                 },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    alert("failed to submit");
-                    $('body').replace(jqXHR.responseText);
-                }
+                error: null
             });
         }
         else

@@ -310,6 +310,20 @@ class CreateMotionForm(CreateContentForm):
     topics = SelectTopicsField(content_type=TYPE_DICT['motion'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['motion'])
 
+#=======================================================================================================================
+# Comment Form
+#=======================================================================================================================
+class CommentForm(forms.Form):
+    # FIELDS
+    comment = forms.CharField(max_length=1000)
+    c_id = forms.IntegerField()
+    # SAVE
+    def save(self, creator, privacy):
+        data = self.cleaned_data
+        comment = Comment(text=data['comment'], on_content_id = data['c_id'])
+        comment.autoSave(creator=creator, privacy=privacy)
+        return comment
+
 
 
 
@@ -372,27 +386,6 @@ class EditUserGroupForm(CreateContentForm):
     topics = SelectTopicsField(content_type=TYPE_DICT['group'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['group'])
 
-
-
-
-#=======================================================================================================================
-# Comment Form
-#=======================================================================================================================
-class CommentForm(forms.Form):
-    # FIELDS
-    comment = forms.CharField(max_length=1000)
-    c_id = forms.IntegerField()
-    # SAVE
-    def save(self, creator, privacy):
-        data = self.cleaned_data
-        on_content = Content.objects.get(id=data['c_id'])
-        if on_content.type == 'C':
-            root_content = on_content.root_content
-        else:
-            root_content = on_content
-        comment = Comment(text=data['comment'], root_content=root_content, on_content_id = data['c_id'])
-        comment.autoSave(creator=creator, privacy=privacy)
-        return comment
 
 #=======================================================================================================================
 # Other forms

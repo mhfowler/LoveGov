@@ -1806,6 +1806,7 @@ class PhotoAlbum(Content):
 #
 #=======================================================================================================================
 class Comment(Content):
+
     root_content = models.ForeignKey(Content, related_name='root_content')
     on_content = models.ForeignKey(Content, related_name='comments')
     text = models.TextField(max_length = 1000)
@@ -1822,21 +1823,19 @@ class Comment(Content):
             self.creator_name = 'Someone'
         elif privacy=='PRI':
             self.creator_name = 'Anonymous'
-        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
-        self.type = 'C'
-        self.summary = self.text
-        self.in_feed = False
         # set root content
         if self.on_content.type == 'C':
             self.root_content = self.on_content.downcast().root_content
         else:
             self.root_content = self.on_content
+        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
+        self.type = 'C'
+        self.summary = self.text
+        self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
         # add parent topics
-        topics = self.on_content.topics.all()
-        for t in topics:
-            self.topics.add(t)
+        self.setMainTopic(self.root_content.main_topic)
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
