@@ -512,16 +512,16 @@ def joinGroupRequest(request, vals={}):
     else: #If it doesn't exist, create it
         group_joined = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
         group_joined.autoSave()
+    if group_joined.invited:
+        group_joined.confirm()
+        group.members.add(from_user)
+        action = Action(relationship=group_joined,modifier="D")
+        action.autoSave()
+        for admin in group.admins.all():
+            admin.notify(action)
+        return HttpResponse("joined")
     #If the group is privacy secret...
     if group.group_privacy == 'S':
-        if group_joined.invited:
-            group_joined.confirm()
-            group.members.add(from_user)
-            action = Action(relationship=group_joined,modifier="D")
-            action.autoSave()
-            for admin in group.admins.all():
-                admin.notify(action)
-            return HttpResponse("joined")
         return HttpResponse("cannot request to join secret group")
     #If the group type is open...
     if group.group_privacy == 'O':
@@ -544,10 +544,8 @@ def joinGroupRequest(request, vals={}):
             admin.notify(action)
         return HttpResponse("request to join")
 
-
-
 #----------------------------------------------------------------------------------------------------------------------
-# Confirms or denies GroupJoined, if GroupJoined was requested.
+# Confirms or rejects a user GroupJoined, if GroupJoined was requested.
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, vals={}):
@@ -557,23 +555,52 @@ def joinGroupResponse(request, vals={}):
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_joined = already[0]
-        if group_joined.requested:
+        if group_joined.confirmed:
+            return HttpResponse("This person is already in your group")
+        elif group_joined.requested:
             if response == 'Y':
                 group_joined.confirm()
                 group.members.add(from_user)
                 action = Action(relationship=group_joined,modifier="A")
                 action.autoSave()
                 from_user.notify(action)
-                return HttpResponse("they're now following you")
+                return HttpResponse("they're now in your group")
             elif response == 'N':
                 group_joined.reject()
                 action = Action(relationship=group_joined,modifier="X")
                 action.autoSave()
                 from_user.notify(action)
-                return HttpResponse("you have rejected their follow request")
+                return HttpResponse("you have rejected their join request")
+    return HttpResponse("this person has not requested to join you")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Confirms or declines a group GroupJoined, if GroupJoined was invited.
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def groupInviteResponse(request, vals={}):
+    response = request.POST['response']
+    from_user = vals['viewer']
+    group = Group.objects.get(id=request.POST['g_id'])
+    already = GroupJoined.objects.filter(user=from_user, group=group)
+    if already:
+        group_joined = already[0]
         if group_joined.confirmed:
-            return HttpResponse("This person is already following you")
-    return HttpResponse("this person has not requested to follow you")
+            return HttpResponse("You have already joined that group")
+        if group_joined.invited:
+            if response == 'Y':
+                group_joined.confirm()
+                group.members.add(from_user)
+                action = Action(relationship=group_joined,modifier="D")
+                action.autoSave()
+                from_user.notify(action)
+                return HttpResponse("you have joined this group!")
+            elif response == 'N':
+                group_joined.reject()
+                action = Action(relationship=group_joined,modifier="N")
+                action.autoSave()
+                from_user.notify(action)
+                return HttpResponse("you have rejected this group invitation")
+    return HttpResponse("you were not invitied to join this group")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -658,6 +685,7 @@ def userFollowStop(request, vals={}):
         from_user.unfollow(to_user)
         action = Action(relationship=user_follow,modifier='S')
         action.autoSave()
+        to_user.notify(action)
         # to_user.notify(action)
         return HttpResponse("removed")
     return HttpResponse("To User does not exist")
@@ -976,18 +1004,16 @@ def ajaxGetFeed(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
-    user = vals['viewer']
+    viewer = vals['viewer']
     num_notifications = 0
     if 'num_notifications' in request.POST:
         num_notifications = int(request.POST['num_notifications'])
-    notifications = user.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
+    notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
     if not notifications:
         return HttpResponse(json.dumps({'error':'No more notifications'}))
     notifications_text = []
     for notification in notifications:
-        n_action = notification.action
-        relationship = n_action.relationship
-        notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
+        notifications_text.append( notification.getVerbose(view_user=viewer) )
     vals['dropdown_notifications_text'] = notifications_text
     num_notifications += NOTIFICATION_INCREMENT
     vals['num_notifications'] = num_notifications
@@ -1104,6 +1130,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'answer': answer,
             'joingroup': joinGroupRequest,
             'joinresponse': joinGroupResponse,
+            'groupinviteresponse': groupInviteResponse,
             'leavegroup': leaveGroup,
             'matchComparison': matchComparison,
             'share': share,

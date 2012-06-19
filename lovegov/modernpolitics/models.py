@@ -558,6 +558,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                self.creator.notify(action)
             return my_vote.value
         else:
             # create new vote
@@ -569,6 +570,7 @@ class Content(Privacy, LocationLevel):
             self.save()
             action = Action(relationship=new_vote,modifier='L')
             action.autoSave()
+            self.creator.notify(action)
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -594,6 +596,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                self.creator.notify(action)
             return my_vote.value
         else:
             # create new vote
@@ -605,6 +608,7 @@ class Content(Privacy, LocationLevel):
             self.save()
             action = Action(relationship=new_vote,modifier='D')
             action.autoSave()
+            self.creator.notify(action)
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1207,6 +1211,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
+        relationship = action.relationship
+        if action.type != 'FO' and action.type != 'JO':
+            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+                return False
         if action.type in NOTIFY_TYPES:
             notification = Notification(action=action, notify_user=self)
             notification.autoSave()
@@ -1277,9 +1285,6 @@ class UserProfile(FacebookProfileModel, LGModel):
             notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
         if num != -1:
             notifications = notifications[start:start+num]
-        for note in notifications:
-            note.viewed = True
-            note.save()
         return notifications
 
     def getAllNotifications(self):
@@ -1293,6 +1298,15 @@ class UserProfile(FacebookProfileModel, LGModel):
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
         else:
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getGroupInvites(self, num=-1):
+        if num == -1:
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()
+        else:
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -1454,10 +1468,9 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,view_user,relationship=None,notification=False):
+    def getVerbose(self,view_user):
         #Check for relationship
-        if not relationship:
-            relationship = self.relationship
+        relationship = self.relationship
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1484,10 +1497,7 @@ class Action(Privacy):
             if reverse_follow:
                 action_context['reverse_follow'] = reverse_follow
 
-        if notification:
-            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',action_context)
-        else:
-            action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
+        action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1510,6 +1520,52 @@ class Notification(Privacy):
     # deprecated
     type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+
+    def getVerbose(self,view_user):
+        n_action = self.action
+        relationship = n_action.relationship
+        #Set default local variables
+        notification_verbose = ' no action '
+        from_you = False
+        to_you = False
+        #Set to and from users
+        to_user = relationship.getTo()
+        from_user = relationship.getFrom()
+        #check to see if the viewing user is the to or from user
+        if from_user.id == view_user.id:
+            from_you = True
+        elif to_user.id == view_user.id:
+            to_you = True
+
+        viewed = True
+        if not self.viewed:
+            viewed = False
+            self.viewed = True
+            self.save()
+
+        notification_context = {'to_user':to_user,
+                          'to_you':to_you,
+                          'from_user':from_user,
+                          'from_you':from_you,
+                          'type':n_action.type,
+                          'modifier':n_action.modifier,
+                          'true':True,
+                          'viewed':viewed}
+        if n_action.type == 'FO':
+            notification_context['follow'] = relationship.downcast()
+            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+            if reverse_follow:
+                notification_context['reverse_follow'] = reverse_follow
+        if n_action.type == 'JO':
+            notification_context['group_join'] = relationship.downcast()
+
+        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
+        return notification_verbose
+
+    def addAggUser(self,agg_user):
+        self.users.add(agg_user)
+        self.tally += 1
+        self.save()
 
     def autoSave(self):
         self.save()
@@ -1806,6 +1862,7 @@ class PhotoAlbum(Content):
 #
 #=======================================================================================================================
 class Comment(Content):
+
     root_content = models.ForeignKey(Content, related_name='root_content')
     on_content = models.ForeignKey(Content, related_name='comments')
     text = models.TextField(max_length = 1000)
@@ -1822,21 +1879,19 @@ class Comment(Content):
             self.creator_name = 'Someone'
         elif privacy=='PRI':
             self.creator_name = 'Anonymous'
-        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
-        self.type = 'C'
-        self.summary = self.text
-        self.in_feed = False
         # set root content
         if self.on_content.type == 'C':
             self.root_content = self.on_content.downcast().root_content
         else:
             self.root_content = self.on_content
+        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
+        self.type = 'C'
+        self.summary = self.text
+        self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
         # add parent topics
-        topics = self.on_content.topics.all()
-        for t in topics:
-            self.topics.add(t)
+        self.setMainTopic(self.root_content.main_topic)
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
