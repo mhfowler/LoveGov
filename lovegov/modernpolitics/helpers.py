@@ -17,7 +17,7 @@ from django.template import loader
 
 # python
 import string
-
+import datetime
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
 # is the referer if it is an ajax request.

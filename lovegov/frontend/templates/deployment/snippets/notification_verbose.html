@@ -12,14 +12,29 @@
     {% elif type == 'VO' %}
         {% if modifier == 'L' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
             liked
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% elif modifier == 'D' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
             disliked
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% else %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
             unvoted
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% endif %}
@@ -184,6 +199,11 @@
 
     {% elif type == 'SI' %}
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+        {% if tally == 2 %}
+            and one other person
+        {% elif tally > 2 %}
+            and {{ tally|add:"-1" }} other people
+        {% endif %}
         signed
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 

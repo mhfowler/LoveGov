@@ -22,6 +22,7 @@ import random
 import thread
 import json
 from datetime import timedelta
+from datetime import datetime
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -1215,10 +1216,29 @@ class UserProfile(FacebookProfileModel, LGModel):
         if action.type != 'FO' and action.type != 'JO':
             if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
                 return False
-        if action.type in NOTIFY_TYPES:
+
+        if action.type in AGGREGATE_NOTIFY_TYPES:
+            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+            already = Notification.objects.filter(notify_user=self,
+                                                    when__gte=stale_date,
+                                                    action__modifier=action.modifier,
+                                                    action__type=action.type ).order_by('when').reverse()
+            for notification in already:
+                if notification.action.relationship.getTo().id == relationship.getTo().id:
+                    notification.when = datetime.datetime.today()
+                    if notification.tally == 0:
+                        notification.addAggUser( notification.action.relationship.user )
+                    notification.addAggUser( relationship.user )
+                    return True
+            notification = Notification(action=action, notify_user=self)
+            notification.autoSave()
+            notification.addAggUser( relationship.user )
+
+        elif action.type in NOTIFY_TYPES:
             notification = Notification(action=action, notify_user=self)
             notification.autoSave()
             return True
+
         else:
             return False
 
@@ -1514,6 +1534,7 @@ class Notification(Privacy):
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
+    recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
@@ -1525,12 +1546,13 @@ class Notification(Privacy):
         n_action = self.action
         relationship = n_action.relationship
         #Set default local variables
-        notification_verbose = ' no action '
         from_you = False
         to_you = False
         #Set to and from users
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
+        if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
+            from_user = self.recent_user
         #check to see if the viewing user is the to or from user
         if from_user.id == view_user.id:
             from_you = True
@@ -1549,6 +1571,7 @@ class Notification(Privacy):
                           'from_you':from_you,
                           'type':n_action.type,
                           'modifier':n_action.modifier,
+                          'tally':self.tally,
                           'true':True,
                           'viewed':viewed}
         if n_action.type == 'FO':
@@ -1565,6 +1588,7 @@ class Notification(Privacy):
     def addAggUser(self,agg_user):
         self.users.add(agg_user)
         self.tally += 1
+        self.recent_user = agg_user
         self.save()
 
     def autoSave(self):
@@ -3616,8 +3640,8 @@ class Edited(UCRelationship):
 # inherits from relationship
 #=======================================================================================================================
 class Shared(UCRelationship):
-    share_users = models.ManyToManyField(UserProfile)
-    share_groups = models.ManyToManyField(Group)
+    share_user = models.ManyToManyField(UserProfile)
+    share_group = models.ManyToManyField(Group)
     def autoSave(self):
         self.relationship_type = 'SH'
         self.creator = self.user
