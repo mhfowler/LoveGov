@@ -1277,9 +1277,6 @@ class UserProfile(FacebookProfileModel, LGModel):
             notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
         if num != -1:
             notifications = notifications[start:start+num]
-        for note in notifications:
-            note.viewed = True
-            note.save()
         return notifications
 
     def getAllNotifications(self):
@@ -1454,10 +1451,9 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,view_user,relationship=None,notification=False):
+    def getVerbose(self,view_user):
         #Check for relationship
-        if not relationship:
-            relationship = self.relationship
+        relationship = self.relationship
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1484,10 +1480,7 @@ class Action(Privacy):
             if reverse_follow:
                 action_context['reverse_follow'] = reverse_follow
 
-        if notification:
-            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',action_context)
-        else:
-            action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
+        action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1510,6 +1503,47 @@ class Notification(Privacy):
     # deprecated
     type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+
+    def getVerbose(self,view_user):
+        n_action = self.action
+        relationship = n_action.relationship
+        #Set default local variables
+        notification_verbose = ' no action '
+        from_you = False
+        to_you = False
+        #Set to and from users
+        to_user = relationship.getTo()
+        from_user = relationship.getFrom()
+        #check to see if the viewing user is the to or from user
+        if from_user.id == view_user.id:
+            from_you = True
+        elif to_user.id == view_user.id:
+            to_you = True
+
+        viewed = True
+        if not self.viewed:
+            viewed = False
+            self.viewed = True
+            self.save()
+
+        notification_context = {'to_user':to_user,
+                          'to_you':to_you,
+                          'from_user':from_user,
+                          'from_you':from_you,
+                          'type':n_action.type,
+                          'modifier':n_action.modifier,
+                          'true':True,
+                          'viewed':viewed}
+        if n_action.type == 'FO':
+            notification_context['follow'] = relationship.downcast()
+            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+            if reverse_follow:
+                notification_context['reverse_follow'] = reverse_follow
+        if n_action.type == 'JO':
+            notification_context['group_join'] = relationship.downcast()
+
+        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
+        return notification_verbose
 
     def autoSave(self):
         self.save()

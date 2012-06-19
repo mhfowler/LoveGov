@@ -423,14 +423,14 @@ def feedHelper(user, feed_type='H', start=0, stop=5, topics=None):
 # Profile Link
 #-----------------------------------------------------------------------------------------------------------------------
 def profile(request, alias=None, vals={}):
-    user = vals['viewer']
+    viewer = vals['viewer']
     if request.method == 'GET':
         if alias:
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
             user_prof = UserProfile.objects.get(alias=alias)
-            comparison = getUserUserComparison(user, user_prof)
+            comparison = getUserUserComparison(viewer, user_prof)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
             jsonData = comparison.toJSON()
@@ -480,7 +480,7 @@ def profile(request, alias=None, vals={}):
             vals['is_user_requested'] = False
             vals['is_user_confirmed'] = False
             vals['is_user_rejected'] = False
-            user_follow = UserFollow.lg.get_or_none(user=user,to_user=user_prof)
+            user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_prof)
             if user_follow:
                 if user_follow.requested:
                     vals['is_user_requested'] = True
@@ -493,24 +493,19 @@ def profile(request, alias=None, vals={}):
             actions = user_prof.getActivity(5)
             actions_text = []
             for action in actions:
-                from_you = False
-                to_you = False
                 try:
-                    relationship = action.relationship
-                    actions_text.append( action.getVerbose(view_user=user,relationship=relationship) )
+                    actions_text.append( action.getVerbose(view_user=viewer) )
                 except:
                     actions_text.append( "This action no longer exists" )
             vals['actions_text'] = actions_text
 
             # Get Notifications
-            if user.id == user_prof.id:
+            if viewer.id == user_prof.id:
                 num_notifications = NOTIFICATION_INCREMENT
-                notifications = user.getNotifications(num=num_notifications)
+                notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
                 for notification in notifications:
-                    n_action = notification.action
-                    relationship = n_action.relationship
-                    notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
+                    notifications_text.append( notification.getVerbose(view_user=viewer) )
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 
@@ -520,7 +515,7 @@ def profile(request, alias=None, vals={}):
             url = '/profile/' + alias
             return framedResponse(request, html, url, vals)
         else:
-            return shortcuts.redirect('/profile/' + user.alias)
+            return shortcuts.redirect('/profile/' + viewer.alias)
     else:
         if request.POST['action']:
             return answer(request, vals)

@@ -976,18 +976,16 @@ def ajaxGetFeed(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
-    user = vals['viewer']
+    viewer = vals['viewer']
     num_notifications = 0
     if 'num_notifications' in request.POST:
         num_notifications = int(request.POST['num_notifications'])
-    notifications = user.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
+    notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
     if not notifications:
         return HttpResponse(json.dumps({'error':'No more notifications'}))
     notifications_text = []
     for notification in notifications:
-        n_action = notification.action
-        relationship = n_action.relationship
-        notifications_text.append( n_action.getVerbose(relationship=relationship,view_user=user,notification=True) )
+        notifications_text.append( notification.getVerbose(view_user=viewer) )
     vals['dropdown_notifications_text'] = notifications_text
     num_notifications += NOTIFICATION_INCREMENT
     vals['num_notifications'] = num_notifications
