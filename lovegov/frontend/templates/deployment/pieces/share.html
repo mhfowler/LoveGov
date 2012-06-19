@@ -8,32 +8,46 @@
 <form>
 <p>Share this with:</p>
 <p><select multiple class="share_select">
-	<option id='all_followers'>All my followers</option>
-	<option id='all_groups'>All my groups</option>
-	<option id='all_networks'>All my networks</option>
+	<option value='all_followers'>All my followers</option>
+	<option value='all_groups'>All my groups</option>
+	<option value='all_networks'>All my networks</option>
 	<optgroup label="Followers">
 		{% for follower in my_followers %}
-		<option id='follower_{{folower.id}}'>{{follower.get_name}}</option>
+		<option value='follower_{{follower.id}}'>{{follower.get_name}}</option>
 		{% endfor %}
 	</optgroup>
 	<optgroup label="Groups">
 		{% for follower in my_groups %}
-		<option id='group_{{folower.id}}'>{{follower.get_name}}</option>
+		<option value='group_{{follower.id}}'>{{follower.get_name}}</option>
 		{% endfor %}
 	</optgroup>
 	<optgroup label="Networks">
 		{% for follower in my_networks %}
-		<option id='network_{{folower.id}}'>{{follower.get_name}}</option>
+		<option value='network_{{follower.id}}'>{{follower.get_name}}</option>
 		{% endfor %}
 	</optgroup>
 </select>
 <p>
-<p><input type="submit" value="Submit">
+<p><a href='' id='submit_content' class="button">Submit</a>
 </form>
 </div>
 
 <script>
 $('select.share_select').select2({
     placeholder: "Enter a follower, network, or group name",
+});
+
+// Prevents click being fired twice.
+// This is necessary because share.html gets appended to body
+$('#submit_content').unbind();
+$('#submit_content').click(function(e) {
+	e.preventDefault();
+	var share_with = $('.share_select').select2("val");
+	if (share_with!='') {
+		ajaxPost({
+			data: {'action': 'shareContent', 'share_with': JSON.stringify(share_with)},
+			success: function(data) { alert(data)}
+		});
+	}
 });
 </script>

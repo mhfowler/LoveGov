@@ -1068,9 +1068,8 @@ def matchSection(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def shareContent(request, vals={}):
-    if request.POST:
-        return HttpResponse("oh hai thnx for sharing ur content")
-    
+    share_with = request.POST['share_with'] 
+    return HttpResponse("oh hai thnx for sharing ur content with")
 
 
 ########################################################################################################################
@@ -1119,7 +1118,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
             'ajaxGetFeed': ajaxGetFeed,
-            'matchSection': matchSection
+            'matchSection': matchSection,
+            'shareContent': shareContent
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
