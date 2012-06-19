@@ -27,21 +27,30 @@
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             requested to follow
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-            <div class="notification-follow-response">
-                <a href="" class="notification-follow-response-y"> I accept! </a> ||
-                <a href="" class="notification-follow-response-n"> I decline! </a>
-                <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
-            </div>
+            {% if not follow.rejected and not follow.confirmed and follow.requested %}
+                <div class="notification-follow-response">
+                    <a href="" class="notification-follow-response-y"> I accept! </a> ||
+                    <a href="" class="notification-follow-response-n"> I decline! </a>
+                    <input type="hidden" class="user-follow-id" value="{{ from_viewer.id }}"/>
+                </div>
+            {% endif %}
         {% elif modifier == 'D' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             followed
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-            <div class="notification-follow">
-                <a href="" class="notification-user-follow">
-                    follow them back!
-                </a>
-                <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
-            </div>
+            {% if not reverse_follow.confirmed and not reverse_follow.requested %}
+                <div class="notification-follow">
+                    <a href="" class="notification-user-follow">
+                        follow them back!
+                    </a>
+                    <input type="hidden" class="user-follow-id" value="{{ from_viewer.id }}"/>
+                </div>
+            {% endif %}
+        {% elif modifier == 'A' %}
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true%}
+            accepted
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you possesive=true %}
+            follow request
         {% elif modifier == 'X' %}
             {% if from_you %}
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -69,6 +78,11 @@
             {% endif %}
         {% elif modifier == 'R' %}
             requested to join
+        {% elif modifier == 'A' %}
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true %}
+            accepted
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you possesive=true %}
+            join request
         {% elif modifier == 'D' %}
             joined
         {% elif modifier == 'N' %}
@@ -159,7 +173,7 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% elif type == 'CR' %}
-        {% if to_user.type == 'R' %}
+        {% if to_viewer.type == 'R' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             answered
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}

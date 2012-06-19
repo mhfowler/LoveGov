@@ -272,9 +272,14 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Sets main_topic field.
     #-------------------------------------------------------------------------------------------------------------------
-    def setMainTopic(self):
-        self.main_topic = self.getMainTopic()
-        self.save()
+    def setMainTopic(self, topic=None):
+        if not topic:
+            self.main_topic = self.getMainTopic()
+            self.save()
+        else:
+            self.main_topic = topic
+            self.save()
+            self.topics.add(topic)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get vote rating of content.
@@ -741,6 +746,12 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
+class Feed(LGModel):
+    alias = models.CharField(max_length=30)
+    items = models.ManyToManyField(FeedItem)
+    def smartClear(self):
+        self.items.all().delete()
+
 #=======================================================================================================================
 # Tuple for quick access to user's debate record.
 #=======================================================================================================================
@@ -805,6 +816,16 @@ class FilterSetting(LGModel):
             return to_return[0].weight
         else:
             return 0
+
+
+class SimpleFilter(LGModel):
+    alias = models.CharField(max_length=200, default="filter")
+    ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
+    topics = models.ManyToManyField(Topic)
+    types = custom_fields.ListField()                  # list of char of included types
+    groups = models.ManyToManyField("Group")
+    just_created_by_group = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
+
 
 #=======================================================================================================================
 # To track promotional codes we advertise to users.
@@ -1249,13 +1270,13 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, num=-1, dropdown=False):
-        if dropdown:
+    def getNotifications(self, start=0, num=-1, new=False):
+        if new:
             notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when').reverse()
         else:
-            notifications = Notification.objects.filter( notify_user=self, requires_action=True).order_by('when').reverse()
+            notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
         if num != -1:
-            notifications = notifications[0:num]
+            notifications = notifications[start:start+num]
         for note in notifications:
             note.viewed = True
             note.save()
@@ -1433,29 +1454,40 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,relationship=None,from_you=False,to_you=False,notification=False):
+    def getVerbose(self,view_user,relationship=None,notification=False):
+        #Check for relationship
         if not relationship:
             relationship = self.relationship
+        #Set default local variables
         action_verbose = ' no action '
-
+        from_you = False
+        to_you = False
+        #Set to and from users
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
+        #check to see if the viewing user is the to or from user
+        if from_user.id == view_user.id:
+            from_you = True
+        elif to_user.id == view_user.id:
+            to_you = True
+
+        action_context = {'to_user':to_user,
+                            'to_you':to_you,
+                            'from_user':from_user,
+                            'from_you':from_you,
+                            'type':self.type,
+                            'modifier':self.modifier,
+                            'true':True}
+        if self.type == 'FO' or self.type == 'JO':
+            action_context['follow'] = relationship.downcast()
+            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+            if reverse_follow:
+                action_context['reverse_follow'] = reverse_follow
+
         if notification:
-            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',{'to_user':to_user,
-                                                                                         'to_you':to_you,
-                                                                                         'from_user':from_user,
-                                                                                         'from_you':from_you,
-                                                                                         'type':self.type,
-                                                                                         'modifier':self.modifier,
-                                                                                         'true':True})
+            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',action_context)
         else:
-            action_verbose = render_to_string('deployment/snippets/action_verbose.html',{'to_user':to_user,
-                                                                                         'to_you':to_you,
-                                                                                         'from_user':from_user,
-                                                                                         'from_you':from_you,
-                                                                                         'type':self.type,
-                                                                                         'modifier':self.modifier,
-                                                                                         'true':True})
+            action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1468,7 +1500,6 @@ class Notification(Privacy):
     when = models.DateTimeField(auto_now_add=True)
     viewed = models.BooleanField(default=False)
     ignored = models.BooleanField(default=False)
-    requires_action = models.BooleanField(default=True)
     action = models.ForeignKey(Action, null=True)
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
@@ -2885,11 +2916,11 @@ class ViewComparison(LGModel):
                 topicDict['result'] = comparison.result
                 topicDict['num_q'] = comparison.num_q
             toReturn.append(topicDict)
-        dict = {'topics':toReturn,'main':{'result':self.result,'num_q':self.num_q}}
+        vals = {'topics':toReturn,'main':{'result':self.result,'num_q':self.num_q}}
         user = UserProfile.lg.get_or_none(view_id=self.viewB.id)
-        if user: dict['user_url'] = user.getWebUrl()
-        else: dict['user_url'] = ''
-        return dict
+        if user: vals['user_url'] = user.getWebUrl()
+        else: vals['user_url'] = ''
+        return vals
 
     def toJSON(self):
         return json.dumps(self.toDict())
@@ -3735,6 +3766,7 @@ class LGNumber(LGModel):
     alias = models.CharField(max_length=50)
     number = models.IntegerField()
 
+
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
@@ -3754,8 +3786,8 @@ class ResetPassword(LGModel):
                 reseturl = backend.generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
-                dict = {'firstname':userProfile.first_name, 'url':reseturl}
-                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',dict,'info@lovegov.com',userProfile.username)
+                vals = {'firstname':userProfile.first_name, 'url':reseturl}
+                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',vals,'info@lovegov.com',userProfile.username)
                 return True
             except:
                 return False
@@ -3849,14 +3881,6 @@ class LoveGovSetting(LGModel):
 class QuestionDiscussed(LGModel):
     question = models.ForeignKey(Question)
     num_comments = models.IntegerField()        # number of comments, including replies
-
-
-# for optimizing feeds, and storing feeds rather than recalculating every page load
-class Feed(LGModel):
-    alias = models.CharField(max_length=30)
-    items = models.ManyToManyField(FeedItem)
-    def smartClear(self):
-        self.items.all().delete()
 
 # for ordering questions
 class qOrdered(LGModel):

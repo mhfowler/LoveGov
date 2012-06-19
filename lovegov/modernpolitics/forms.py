@@ -74,8 +74,8 @@ class CreateUserForm(forms.Form):
             controllingUser.user_profile.basicinfo.invite_message = message
             controllingUser.user_profile.basicinfo.invite_subject = subject
             controllingUser.user_profile.basicinfo.save()
-            dict = {'firstname':first_name,'email':email,'password':password,'message':message}
-            send_email.sendTemplateEmail(subject,'alphaInvite.html',dict,'team@lovegov.com',email)
+            vals = {'firstname':first_name,'email':email,'password':password,'message':message}
+            send_email.sendTemplateEmail(subject,'alphaInvite.html',vals,'team@lovegov.com',email)
 
 #=======================================================================================================================
 # Form for search
@@ -154,8 +154,8 @@ class RegisterForm(forms.Form):
         user = createUser(fullname,email,password,active=False)
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()
-        dict = {'firstname':firstname,'link':user.user_profile.confirmation_link}
-        send_email.sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",dict,"info@lovegov.com",user.username)
+        vals = {'firstname':firstname,'link':user.user_profile.confirmation_link}
+        send_email.sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)
 
 #=======================================================================================================================
 # Form for logging in.
@@ -385,7 +385,12 @@ class CommentForm(forms.Form):
     # SAVE
     def save(self, creator, privacy):
         data = self.cleaned_data
-        comment = Comment(text=data['comment'], on_content_id = data['c_id'])
+        on_content = Content.objects.get(id=data['c_id'])
+        if on_content.type == 'C':
+            root_content = on_content.root_content
+        else:
+            root_content = on_content
+        comment = Comment(text=data['comment'], root_content=root_content, on_content_id = data['c_id'])
         comment.autoSave(creator=creator, privacy=privacy)
         return comment
 

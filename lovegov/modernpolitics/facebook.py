@@ -22,8 +22,8 @@ import oauth2 as oauth
 #-----------------------------------------------------------------------------------------------------------------------
 # Save a users facebook friends as lg relationships.
 #-----------------------------------------------------------------------------------------------------------------------
-def fbMakeFriends(request, dict={}):
-    user = dict['user']
+def fbMakeFriends(request, vals={}):
+    user = vals['viewer']
     path = user.getFBAlias() + '/friends'
     response =  fbGet(request, path)
     if response:
@@ -37,7 +37,7 @@ def fbMakeFriends(request, dict={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.
 #-----------------------------------------------------------------------------------------------------------------------
-def fbGetRedirect(request, dict={}, redirect_uri=None, scope="email"):
+def fbGetRedirect(request, vals={}, redirect_uri=None, scope="email"):
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/fb/handle/")
     fb_state = random.randint(0, 1000)
@@ -47,7 +47,7 @@ def fbGetRedirect(request, dict={}, redirect_uri=None, scope="email"):
     url += "&scope=" + scope
     url += "&state=" + str(fb_state)
     url += "&response_type=code"
-    dict['fb_link'] = url
+    vals['fb_link'] = url
     return fb_state
 
 def fbGetAccessToken(request, code, redirect_uri=None):
@@ -82,7 +82,7 @@ def getRedirectURI(request, redirect):
 #-----------------------------------------------------------------------------------------------------------------------
 # Handles access token, and log in, register or deny appropriately
 #-----------------------------------------------------------------------------------------------------------------------
-def fbLogin(request, dict={}):
+def fbLogin(request, vals={}):
     from lovegov.modernpolitics.register import createFBUser
     me = fbGet(request, 'me')
     if me:
@@ -101,8 +101,8 @@ def fbLogin(request, dict={}):
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
                 user_prof.refreshFB(me)
-                dict['user'] = user_prof
-                fbMakeFriends(request, dict)
+                vals['viewer'] = user_prof
+                fbMakeFriends(request, vals)
         user_prof.refreshFB(me)
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -150,16 +150,16 @@ def fbPost(request, path, post_data):
 #-----------------------------------------------------------------------------------------------------------------------
 # Shares LoveGov on a someones wall (Default: user wall)
 #-----------------------------------------------------------------------------------------------------------------------
-def fbWallShare(request, dict={}):
+def fbWallShare(request, vals={}):
     # Get user FB info
     me = fbGet(request, 'me')
     if not me:
-        dict['fb_error'] = "no_response_me"
+        vals['fb_error'] = "no_response_me"
         return False
     if 'error' in me:
         error = me['error']
         if 'code' in error:
-            dict['fb_error'] = error['code']
+            vals['fb_error'] = error['code']
         return False
     # Get Request Data
     fb_share_to = request.GET.get('fb_share_to')
@@ -185,13 +185,13 @@ def fbWallShare(request, dict={}):
     post_response = fbPost( request , share_id + "/feed/" , post_data )
     #Check for fail
     if not post_response:
-        dict['fb_error'] = "no_response_post"
+        vals['fb_error'] = "no_response_post"
         return False
     if 'error' in post_response:
         error = post_response['error']
         pprint.pprint(error)
         if 'code' in error:
-            dict['fb_error'] = error['code']
+            vals['fb_error'] = error['code']
         return False
     return True
 
@@ -268,7 +268,7 @@ def twitterGetAccessToken(request, to_page="/web/"):
 
     return response
 
-def twitterLogin(request, to_page="/web/", dict={}):
+def twitterLogin(request, to_page="/web/", vals={}):
     twitter_access_token = request.COOKIES.get('twitter_access_token')
     if twitter_access_token:
         tat = twitter_access_token.replace('\'','\"')

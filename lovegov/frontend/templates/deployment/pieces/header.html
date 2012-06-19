@@ -29,7 +29,7 @@
 
         <div class="header-notifications" style="float:right">
             <img id="notifications-dropdown-arrow" src="/static/images/user-menu/downarrow.png"/>
-            <div id="notifications-dropdown" style="display:none, width:400px, float:right">
+            <div id="notifications-dropdown" style="display:none; float:right; width:400px">
 
             </div>
         </div>
@@ -38,7 +38,7 @@
         <div id="user-dashboard">
             <div id="user-avatar">
                 {% load thumbnail %}
-                {% thumbnail user.getProfileImage.image "40x40" crop="center" as im %}
+                {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as im %}
                     <img src="{{ im.url }}"/>
                 {% empty %}
                     <p> no pic </p>
@@ -46,7 +46,7 @@
             </div>
             <div id="user-info">
                 <div id="user-name-div">
-                    <span id="user-name-span">{{ user.get_nameShort }}</span>
+                    <span id="user-name-span">{{ viewer.get_nameShort }}</span>
                     <a class="account-logout" href="/logout/">logout</a>
                     <a id="account" href="/alpha/account" class="account-logout">account</a>
                 </div>

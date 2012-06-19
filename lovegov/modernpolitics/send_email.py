@@ -124,5 +124,5 @@ def sendFBRegisterEmail(name, email, password):
 #-----------------------------------------------------------------------------------------------------------------------
 def sendPasswordChangeEmail(django_user, password):
     EMAIL_SENDER = 'info@lovegov.com'
-    dict = {'password':password,"firstname":django_user.first_name}
-    sendTemplateEmail("Password Change Notification","passwordChange.html",dict,EMAIL_SENDER,django_user.email)
+    vals = {'password':password,"firstname":django_user.first_name}
+    sendTemplateEmail("Password Change Notification","passwordChange.html",vals,EMAIL_SENDER,django_user.email)
