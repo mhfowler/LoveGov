@@ -59,6 +59,7 @@ var QAWebHover = Class.extend
             var self = this;
             if (self.node != null && !self.node.clicked)
             {
+                self._toggleButtons('hide');
                 self.node = null;
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
@@ -129,7 +130,7 @@ var QAWebHover = Class.extend
             {
                 this.state = "BOTTOM";
                 $('.dialogue-wrapper').prepend(pointer);
-                $('#dialogue-pointer').css('top','6px');
+                $('#dialogue-pointer').css('top','3px');
                 $('#dialogue-pointer img').css({'-webkit-transform': 'rotate(180deg)','-moz-transform': 'rotate(180deg)','-ms-transform':'rotate(180deg)','-o-transform':'rotate(180deg)'});
                 position.top+=$(this.node.idDivObj).height();
             }
@@ -176,10 +177,10 @@ var QAWebHover = Class.extend
             switch(switchString)
             {
                 case 'hide':
-                    $('#buttons').hide();
+                    $('#qa-buttons').hide();
                     break;
                 case 'show':
-                    $('#buttons').show();
+                    $('#qa-buttons').show();
                     break;
             }
         },
@@ -288,7 +289,10 @@ var QAWebHover = Class.extend
                                 $('#dialogue-loading').hide();
                                 $('#answer-reply-text span').text((dataObj['answer_avg']*100).toFixed() + '%' + " of LoveGov users agree with you.");
 
-                                stage.setSize($('#answer-reply-canvas').width(), $('#answer-reply-canvas').height());
+                                var height = $('#answer-reply-canvas').height();
+                                var width = $('#answer-reply-canvas').width();
+
+                                stage.setSize(width,height);
                                 stage.draw();
                                 $('#answer-reply').css('display','block');
                                 $('#answer-reply-canvas canvas').css('display','block');
@@ -305,9 +309,9 @@ var QAWebHover = Class.extend
                                     if (self.node.answers[i].user_answer) { self.node.answers[i].weight = $("#question-weight-slider").slider("option","value");}
                                 }
 
-                                circle = createWebCircle(200,100,75,dataObj['answer_avg'],self.node.color['default'],self.node.color['hover']);
+                                circle = createWebCircle(width/2,height/2,75,dataObj['answer_avg'],self.node.color['default'],self.node.color['hover']);
                                 shapesLayer.add(circle);
-                                text = createText((dataObj['answer_avg']*100).toFixed() + '%',200,100,14);
+                                text = createText((dataObj['answer_avg']*100).toFixed() + '%',width/2,height/2,14);
                                 shapesLayer.add(text);
                                 shapesLayer.draw();
                                 self.updatePosition();
@@ -337,8 +341,8 @@ var QAWebHover = Class.extend
         _clickQuestion: function(node)
         {
             node.clicked = true;
-
             node.idImgObj.attr("src",node.getImage('answering'));
+            this._toggleButtons('show');
             this.showHover(node);
             this.showAnswers(node);
         },
@@ -364,7 +368,6 @@ var QAWebHover = Class.extend
                 // CASE: user clicks the same question
                 if (this.node == node)
                 {
-                    this._toggleButtons('hide');
                     this.hide();
                 }
                 // CASE: user clicks a different question

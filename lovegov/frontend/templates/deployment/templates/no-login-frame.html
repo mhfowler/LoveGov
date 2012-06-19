@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>lovegov</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/deployment/login-new.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/master.css" />
+    <link rel="icon" type="image/icon" href="/static/images/favicon.ico">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="Lovegov, lovegov, lovegov.com, Government, Politics, Simplified, One Stop Shop, Participate, Informed, Connected, Involved, Social, Social Network, Political Network, Legislation, Democracy, Democracy 2.0, Vote, Advocacy Groups, Coalitions, Change" />
+    <meta name="description" content="We're no-nonsense realists with an itch to fix politics. We believe participating in democracy doesn't need to be difficult — we believe it should be simple and engaging, even a little fun. Lovegov will inform you on the issues, keep you current with legislation that you care about, and connect you with your representatives. We're making it easy to get involved." />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/deployment/submit_mail.js"></script>
+    <script type="text/javascript" src="/static/jquery/js/jquery.ba-outside-events.js"></script>
+</head>
+<body>
+<div id="main">
+    <div id="top">
+        <a href=""><img id="logo" src="/static/images/login/splashlogo.png"></a>
+        <div id="mission-statement">
+            <p>
+                We are committed to non-partisanship,
+                government transparency & the right to
+                personal privacy.
+            </p>
+        </div>
+    </div>
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        // CSRF protection
+        $.ajaxSetup({ data: {csrfmiddlewaretoken: "{{ csrf_token }}" }});
+    });
+</script>
+
+</body>
+</html>

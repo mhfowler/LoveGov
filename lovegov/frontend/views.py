@@ -114,6 +114,15 @@ def requiresLogin(view):
         return view(request, vals=vals, *args, **kwargs)
     return new_view
 
+def blog(request,vals={}):
+    if request.method == 'GET':
+        user = getUserProfile(request)
+        if user: vals['viewer'] = user
+        blogPosts = BlogEntry.objects.all().order_by('-id')
+        vals['blogPosts'] = blogPosts
+        vals['categories'] = BlogEntry.CATEGORY_CHOICES
+        return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Alpha login page.
 #-----------------------------------------------------------------------------------------------------------------------

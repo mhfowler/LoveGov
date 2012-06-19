@@ -1089,6 +1089,28 @@ def matchSection(request, vals={}):
 
     return HttpResponse(json.dumps({'html':html}))
 
+def blogPost(request,vals={}):
+    user = vals['viewer']
+    title = request.POST['title']
+    text = request.POST['text']
+
+    category = []
+    if 'update' in request.POST: category.append('Update')
+    if 'general' in request.POST: category.append('General')
+    if 'news' in request.POST: category.append('News')
+
+    blog = BlogEntry(creator=user,title=title,message=text,category=category)
+    blog.save()
+
+    vals['blogPost'] = blog
+
+    html = ajaxRender('deployment/pages/blog/blog-item.html',vals,request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
+
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1136,7 +1158,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
             'ajaxGetFeed': ajaxGetFeed,
-            'matchSection': matchSection
+            'matchSection': matchSection,
+            'blogPost': blogPost
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
