@@ -11,8 +11,6 @@
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
-# python
-from PIL import Image
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
@@ -212,7 +210,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
     if user:
         user.confirmed = True
         user.save()
-        vals['user'] = user
+        vals['viewer'] = user
         print "user:" + user.get_name()
     if request.method == 'GET':
         # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
@@ -224,7 +222,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
-    userProfile = vals['user']
+    userProfile = vals['viewer']
     vals['all_users'] = UserProfile.objects.filter(confirmed=True).order_by("last_name")
     vals['firstLogin'] = userProfile.checkFirstLogin()
 
@@ -232,7 +230,7 @@ def frame(request, vals):
 # gets values for right side bar and puts in dictionary
 #-----------------------------------------------------------------------------------------------------------------------
 def rightSideBar(request, vals):
-    userProfile = vals['user']
+    userProfile = vals['viewer']
     vals['random_questions'] = userProfile.getQuestions()
     vals['all_questions'] = Question.objects.all().order_by("-rank")
     vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
@@ -242,7 +240,7 @@ def rightSideBar(request, vals):
 # gets the users responses to questions
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserResponses(request,vals={}):
-    userProfile = vals['user']
+    userProfile = vals['viewer']
     vals['qr'] = userProfile.getUserResponses()
 
 def setPageTitle(title,vals={}):
@@ -253,7 +251,7 @@ def setPageTitle(title,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserWebResponsesJSON(request,vals={}):
     questionsArray = {}
-    for (question,response) in vals['user'].getUserResponses():
+    for (question,response) in vals['viewer'].getUserResponses():
         for topic in question.topics.all():
             topic_text = topic.topic_text
             if topic_text not in questionsArray:
@@ -310,11 +308,11 @@ def compareWeb(request,alias=None,vals={}):
     """
     if request.method == 'GET':
         if alias:
-            user = vals['user']
-            vals['user'] = UserProfile.objects.get(alias=alias)
-            comparison = getUserUserComparison(user, vals['user'])
+            user = vals['viewer']
+            vals['viewer'] = UserProfile.objects.get(alias=alias)
+            comparison = getUserUserComparison(user, vals['viewer'])
             getUserWebResponsesJSON(request,vals)
-            vals['user'] = user
+            vals['viewer'] = user
             vals['json'] = comparison.toJSON()
             setPageTitle("lovegov: web2",vals)
             if request.is_ajax():
@@ -359,7 +357,7 @@ def theFeed(request, vals={}):
 def home(request, vals={}):
     rightSideBar(request, vals)             # even though its homesidebar
     # get feed stuff
-    user=vals['user']
+    user=vals['viewer']
     # new
     new = latest(user)
     vals['defaultImage'] = getDefaultImage().image
@@ -534,7 +532,7 @@ def profile(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def network(request, name=None, vals={}):
     if not name:
-        user = vals['user']
+        user = vals['viewer']
         return shortcuts.redirect(user.getNetwork().get_url())
     network = Network.objects.get(name=name)
     return group(request,g_id=network.id,vals=vals)
@@ -543,7 +541,7 @@ def network(request, name=None, vals={}):
 # Group page
 #-----------------------------------------------------------------------------------------------------------------------
 def group(request, g_id=None, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
@@ -630,7 +628,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def match(request,vals={}):
     if request.method == 'GET':
-        user = vals['user']
+        user = vals['viewer']
 
         # Get presidential candidates, do comparison, rank them
         obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
@@ -710,7 +708,7 @@ def match(request,vals={}):
         #my_connections.compare = getUserGroupComparison(user,my_connections).toJSON()
         #vals['my_connections'] = my_connections
 
-        # vals['user'] doesn't translate well in the template
+        # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
 
         setPageTitle("lovegov: match",vals)
@@ -721,7 +719,7 @@ def match(request,vals={}):
 def matchNew(request, vals={}):
     if request.method == 'GET':
         vals['defaultImage'] = getDefaultImage().image
-        user = vals['user']
+        user = vals['viewer']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -733,7 +731,7 @@ def matchNew(request, vals={}):
         vals['c1'] = c1
         vals['c2'] = c2
 
-        # vals['user'] doesn't translate well in the template
+        # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
         setPageTitle("lovegov: match",vals)
         html = ajaxRender('deployment/center/match/match-new.html', vals, request)
@@ -747,12 +745,12 @@ def matchNew(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def contentDetail(request, content, vals):
     rightSideBar(request, vals)
-    vals['thread_html'] = makeThread(request, content, vals['user'])
+    vals['thread_html'] = makeThread(request, content, vals['viewer'])
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
     creator = content.getCreator()
     vals['creator'] = creator
-    vals['iown'] = (creator == vals['user'])
+    vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------
 # displays a list of all questions of that topic, along with attached forum
@@ -777,7 +775,7 @@ def petitionDetail(request, p_id, vals={}):
     vals['petition'] = petition
     signers = petition.getSigners()
     vals['signers'] = signers
-    vals['i_signed'] = (vals['user'] in signers)
+    vals['i_signed'] = (vals['viewer'] in signers)
     contentDetail(request=request, content=petition, vals=vals)
     setPageTitle("lovegov: " + petition.title,vals)
     html = ajaxRender('deployment/center/petition_detail.html', vals, request)
@@ -818,7 +816,7 @@ def questionDetail(request, q_id=-1, vals={}):
     return framedResponse(request, html, url, vals)
 
 def valsQuestion(request, q_id, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     question = Question.objects.filter(id=q_id)[0]
     contentDetail(request=request, content=question, vals=vals)
     vals['question'] = question
@@ -902,7 +900,7 @@ def nextQuestion(request, vals={}):
     return framedResponse(request, html, url, vals)
 
 def getNextQuestion(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     responses = user.getView().responses
     answered_ids = responses.values_list('question__id', flat=True)
     unanswered = Question.objects.exclude(id__in=answered_ids)
@@ -916,7 +914,7 @@ def getNextQuestion(request, vals={}):
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
 def account(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     vals['userProfile'] = user
     vals['uploadform'] = UploadFileForm()
     if request.method == 'GET':

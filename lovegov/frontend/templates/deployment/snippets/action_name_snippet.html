@@ -1,17 +1,17 @@
-<a href="{{ user.get_url }}" class="action_name">
+<a href="{{ viewer.get_url }}" class="action_name">
     {% if possesive %}
         {% if you and capital %}
             Your
         {% elif you %}
             your
         {% else %}
-            {{ user.get_name }}'s
+            {{ viewer.get_name }}'s
         {% endif %}
     {% elif you and capital %}
         You
     {% elif you %}
         you
     {% else %}
-        {{ user.get_name }}
+        {{ viewer.get_name }}
     {% endif %}
 </a>

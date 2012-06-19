@@ -11,7 +11,7 @@ def adminHome(request,vals={}):
         vals['createUserForm'] = CreateUserForm()
         vals['searchUserForm'] = SearchUserForm(auto_id='search_%s')
 
-    userProfile = vals['user']
+    userProfile = vals['viewer']
     if request.method == 'GET' and str(userProfile.username) in TEAM_EMAILS:
         vals['message'] = "Admins can add users here"
         getForms(vals)

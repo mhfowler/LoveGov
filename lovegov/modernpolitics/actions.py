@@ -95,7 +95,7 @@ def getLinkInfo(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getCongressmen(request, vals={}):
     # POST variables from POST request and formats data
-    user = vals['user']
+    user = vals['viewer']
     address = request.POST['address']
     zip = request.POST['zip']
     if zip is None: zip = ""
@@ -163,7 +163,7 @@ def searchAutoComplete(request,vals={},limit=5):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def loadGroupUsers(request,vals={}):
-    user = vals['user']
+    user = vals['viewer']
     num = int(request.POST['histogram_displayed_num'])
     histogram_topic = request.POST['histogram_topic']
     histogram_block = int(request.POST['histogram_block'])
@@ -190,7 +190,7 @@ def loadGroupUsers(request,vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def loadHistogram(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     group = Group.objects.get(id=request.POST['group_id'])
     histogram_topic = request.POST['histogram_topic']
     vals['histogram'] = group.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=HISTOGRAM_RESOLUTION)
@@ -258,7 +258,7 @@ def create(request, val={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def invite(request, vals={}):
     email = request.POST['email']
-    user_name = vals['user'].get_name()
+    user_name = vals['viewer'].get_name()
     description = "invited by: " + user_name
     if not ValidEmail.objects.filter(email=email).exists():
         valid = ValidEmail(email=email, description=description)
@@ -272,7 +272,7 @@ def invite(request, vals={}):
 # Signs a petition.
 #-----------------------------------------------------------------------------------------------------------------------
 def sign(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     privacy = getPrivacy(request)
     if privacy == 'PUB':
         petition = Petition.lg.get_or_none(id=request.POST['c_id'])
@@ -302,7 +302,7 @@ def sign(request, vals={}):
 # Finalizes a petition.
 #-----------------------------------------------------------------------------------------------------------------------
 def finalize(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     petition = Petition.objects.get(id=request.POST['c_id'])
     creator = petition.getCreator()
     if user==creator:
@@ -316,7 +316,7 @@ def finalize(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def edit(request, vals={}):
     """Simple interface for editing content (to be deprecated)"""
-    user = vals['user']
+    user = vals['viewer']
     content = Content.objects.get(id=request.POST['c_id'])
     creator = content.getCreator()
     if creator == user:
@@ -338,7 +338,7 @@ def edit(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def delete(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     content = Content.objects.get(id=request.POST['c_id'])
     if user == content.getCreator():
         content.active = False
@@ -361,7 +361,7 @@ def comment(request, vals={}):
     @param vals
             - user
     """
-    user = vals['user']
+    user = vals['viewer']
     privacy = getPrivacy(request)
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():
@@ -420,7 +420,7 @@ def setFollowPrivacy(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def vote(request, vals):
     """Likes or dislikes content based on post."""
-    user = vals['user']
+    user = vals['viewer']
     privacy = getPrivacy(request)
     content = Content.objects.get(id=request.POST['c_id'])
     vote = request.POST['vote']
@@ -438,7 +438,7 @@ def vote(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def answer(request, vals={}):
     """ Saves a users answer to a question."""
-    user = vals['user']
+    user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = getPrivacy(request)
     my_response = user.getView().responses.filter(question=question)
@@ -498,7 +498,7 @@ def answer(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
-    from_user = vals['user']
+    from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     #Secret groups and System Groups cannot be join requested
     if group.system:
@@ -580,7 +580,7 @@ def joinGroupResponse(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def userFollowRequest(request, vals={}):
-    from_user = vals['user']
+    from_user = vals['viewer']
     to_user = UserProfile.objects.get(id=request.POST['p_id'])
     #No Self Following
     if to_user.id == from_user.id:
@@ -617,7 +617,7 @@ def userFollowRequest(request, vals={}):
 # Confirms or denies user follow, if user follow was requested.
 #-----------------------------------------------------------------------------------------------------------------------
 def userFollowResponse(request, vals={}):
-    to_user = vals['user']
+    to_user = vals['viewer']
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['p_id'])
     already = UserFollow.objects.filter(user=from_user, to_user=to_user)
@@ -646,7 +646,7 @@ def userFollowResponse(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def userFollowStop(request, vals={}):
     """Removes connection between users."""
-    from_user = vals['user']
+    from_user = vals['viewer']
     to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
     if to_user:
         already = UserFollow.objects.filter(user=from_user, to_user=to_user)
@@ -668,7 +668,7 @@ def userFollowStop(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupInvite(request, vals={}):
     """Invites inputted to join group, if inviting user is admin."""
-    user = vals['user']
+    user = vals['viewer']
     to_invite = UserProfile.objects.get(id=request.POST['invited_id'])
     group = Group.objects.get(id=request.POST['g_id'])
     admin = group.admins.filter(id=user.id)
@@ -694,7 +694,7 @@ def joinGroupInvite(request, vals={}):
 def leaveGroup(request, vals={}):
     """Leaves group if user is a member (and does stuff if user would be last admin)"""
     # if not system then remove
-    from_user = vals['user']
+    from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     group_joined = GroupJoined.objects.get(group=group, user=from_user)
     if group_joined:
@@ -723,7 +723,7 @@ def leaveGroup(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def share(request, vals={}):
     # get data
-    user = vals['user']
+    user = vals['viewer']
     content = Content.objects.get(id=request.POST['c_id'])
     # check if already following
     my_share = Shared.objects.filter(user=user,content=content)
@@ -746,7 +746,7 @@ def share(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def follow(request, vals={}):
     # get data
-    user = vals['user']
+    user = vals['viewer']
     content = Content.objects.get(id=request.POST['c_id'])
     # check if already following
     my_follow = Followed.objects.filter(user=user,content=content)
@@ -798,7 +798,7 @@ def viewCompare(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def answerWeb(request, vals={}):
     """ Saves a users answer to a question."""
-    user = vals['user']
+    user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = getPrivacy(request)
     # check if already responded
@@ -835,7 +835,7 @@ def feedback(request,vals={}):
         for team_member in TEAM_EMAILS:
             send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
         return
-    user = vals['user']
+    user = vals['viewer']
     page = request.POST['path']
     text = request.POST['text']
     name = request.POST['name']
@@ -859,7 +859,7 @@ def updateGroupView(request,vals={}):
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def hoverComparison(request,vals={}):
-    user = vals['user']
+    user = vals['viewer']
     alias = request.POST['alias']
     to_compare = UserProfile.objects.get(alias=alias)
     comparison = getUserUserComparison(user, to_compare, force=True)
@@ -879,7 +879,7 @@ def addEmailList(request):
 # returns match of user
 #-----------------------------------------------------------------------------------------------------------------------
 def matchComparison(request,vals={}):
-    user = vals['user']
+    user = vals['viewer']
     object = urlToObject(request.POST['entity_url'])
 
     if object.type == "U": object.compare = getUserUserComparison(user, object).toJSON()
@@ -895,7 +895,7 @@ def matchComparison(request,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def ajaxFeed(request, vals={}):
     if request.method == 'POST':
-        user = vals['user']
+        user = vals['viewer']
         feed_type = request.POST['feed_type']
         start = int(request.POST['start'])
         how_many = int(request.POST['how_many'])
@@ -935,7 +935,7 @@ def ajaxFeed(request, vals={}):
 def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
-    user = vals['user']
+    user = vals['viewer']
     thread = makeThread(request, content, user)
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
@@ -976,7 +976,7 @@ def ajaxGetFeed(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
-    user = vals['user']
+    user = vals['viewer']
     num_notifications = 0
     if 'num_notifications' in request.POST:
         num_notifications = int(request.POST['num_notifications'])
@@ -1001,7 +1001,7 @@ def matchSection(request, vals={}):
     section = request.POST['section']
     vals['defaultImage'] = getDefaultImage().image
     if section == 'election':
-        user = vals['user']
+        user = vals['viewer']
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -1013,12 +1013,12 @@ def matchSection(request, vals={}):
         vals['c1'] = c1
         vals['c2'] = c2
 
-        # vals['user'] doesn't translate well in the template
+        # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
         html = ajaxRender('deployment/center/match/match-election-center.html', vals, request)
 
     elif section == 'social':
-        user = vals['user']
+        user = vals['viewer']
         comparison = getUserUserComparison(user,user)
         user.compare = comparison.toJSON()
         user.result = comparison.result
@@ -1040,7 +1040,7 @@ def matchSection(request, vals={}):
         html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
 
     elif section == 'cause':
-        user = vals['user']
+        user = vals['viewer']
         comparison = getUserUserComparison(user,user)
         user.compare = comparison.toJSON()
         user.result = comparison.result
@@ -1131,6 +1131,6 @@ actions = { 'getLinkInfo': getLinkInfo,
 def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
-        vals['user'] = getUserProfile(request)
+        vals['viewer'] = getUserProfile(request)
     action = request.POST['action']
     return actions[action](request, vals)

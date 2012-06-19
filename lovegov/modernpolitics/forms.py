@@ -385,7 +385,12 @@ class CommentForm(forms.Form):
     # SAVE
     def save(self, creator, privacy):
         data = self.cleaned_data
-        comment = Comment(text=data['comment'], on_content_id = data['c_id'])
+        on_content = Content.objects.get(id=data['c_id'])
+        if on_content.type == 'C':
+            root_content = on_content.root_content
+        else:
+            root_content = on_content
+        comment = Comment(text=data['comment'], root_content=root_content, on_content_id = data['c_id'])
         comment.autoSave(creator=creator, privacy=privacy)
         return comment
 

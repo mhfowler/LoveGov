@@ -23,7 +23,7 @@ import oauth2 as oauth
 # Save a users facebook friends as lg relationships.
 #-----------------------------------------------------------------------------------------------------------------------
 def fbMakeFriends(request, vals={}):
-    user = vals['user']
+    user = vals['viewer']
     path = user.getFBAlias() + '/friends'
     response =  fbGet(request, path)
     if response:
@@ -101,7 +101,7 @@ def fbLogin(request, vals={}):
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
                 user_prof.refreshFB(me)
-                vals['user'] = user_prof
+                vals['viewer'] = user_prof
                 fbMakeFriends(request, vals)
         user_prof.refreshFB(me)
         user = user_prof.user
