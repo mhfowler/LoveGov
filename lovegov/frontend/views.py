@@ -116,6 +116,15 @@ def requiresLogin(view):
         return view(request, dict=dict, *args, **kwargs)
     return new_view
 
+def blog(request,val={},developer=None):
+    if request.method == 'GET':
+        if developer:
+
+
+
+    if developer:
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Alpha login page.
 #-----------------------------------------------------------------------------------------------------------------------

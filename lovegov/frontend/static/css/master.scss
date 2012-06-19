@@ -43,8 +43,8 @@ $orange-light: #F2BEB0;
 
 /* Fonts */
 $body-fonts: Helvetica, Arial, Verdana, sans-serif;
-$header-font-light: "Gill Sans Std Light";
-$header-font-std: "Gill Sans Std";
+$gill-light: "Gill Sans Std Light";
+$gill-std: "Gill Sans Std";
 
 *
 {
@@ -97,52 +97,152 @@ h1, h2, h3, h4, h5, h6
 
 h1
 {
-  font-family:$header-font-light;
+  font-family:$gill-light;
   color:$link-hover;
   font-size: 50px;
 }
 
 h2
 {
-  font-family:$header-font-light;
+  font-family:$gill-light;
   color:$red;
   font-size: 32px;
 }
 
 h3
 {
-  font-family: $header-font-std;
+  font-family:$gill-std;
   color: $link-hover;
   font-size: 26px;
 }
 
 h4
 {
-  font-family: $header-font-std;
+  font-family:$gill-std;
   color: $red;
   font-size: 22px;
 }
 
 h5
 {
-  font-family: $header-font-std;
+  font-family:$gill-std;
   color: $black;
   font-size: 18px;
 }
 
 h6
 {
-  font-family: $header-font-std;
+  font-family:$gill-std;
   color: $link-hover;
   font-size: 13px;
 }
 
+input[type="text"], input[type="password"]
+{
+  outline:1px solid $gray;
+  cursor: text ;
+  color: black;
+}
+
+input[type="text"]:focus, input[type="password"]:focus
+{
+  outline:1px solid $red;
+}
+
+@mixin button
+{
+  .button-red, .button-red:link, .button-red:active, .button-red:visited
+  {
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+    -khtml-border-radius: 9px;
+    border-radius: 9px;
+    padding: 14px;
+    padding-bottom: 8px;
+    letter-spacing: 1px;
+    font-size: 18px;
+    font-family: $gill-std;
+    color: white;
+    text-decoration: none;
+    outline: none;
+    border: 0;
+  }
+}
+
+.button-red, .button-red:link, .button-red:active, .button-red:visited
+{
+  @include button;
+  background-color:$red;
+}
+
+.button-red:hover
+{
+  background-color:$red-light
+}
+
+.button-gray, .button-gray:link, .button-gray:active, .button-gray:visited
+{
+  @include button;
+  background-color: $dark-gray;
+}
+
+.button-gray:hover
+{
+  background-color: $gray;
+}
+
+img.icon-big
+{
+  width: 50px;
+  height: 50px;
+}
+
+img.icon-med
+{
+  width: 38px;
+  height: 38px;
+}
+
+img.icon-small
+{
+  width: 10px;
+  height: 10px;
+}
 
 .no-margin
 {
   margin-bottom: 0;
   margin-top: 0;
 }
+
+.small-margin
+{
+  margin-bottom:10px;
+  margin-top:10px;
+}
+
+.mid-margin
+{
+  margin-bottom:25px;
+  margin-top:25px;
+}
+
+.big-num
+{
+  /*tribute to cs17 project bignum. rest in peace. */
+  font-weight:bold;
+  font-size:170px;
+  color:$red;
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -203,49 +303,10 @@ div.container {
 
 
 
-body a, body a:visited, body a:active, body a:link {
-  color: #0094A3;
-}
 
-body a:hover {
-  color: #005468;
-}
 
-.really-big
+.small
 {
-  font-family:"Gill Sans Std", sans-serif;
-  color:gray;
-  font-size:45px;
-}
-
-h1 {
-  font-family:"Gill Sans Std", sans-serif;
-  font-size:30px;
-  color:#005468;
-}
-
-h1 a, h1 a:link, h1 a:visited, h1 a:active {
-}
-
-h2 {
-  font-family: "Gill Sans Std Light";
-  font-size: 23px;
-  color:#f0503b;
-}
-
-h3 {
-  font-family: "Gill Sans Std";
-  font-size:15px;
-  color:#959595;
-}
-
-h4 {
-  font-family:"Gill Sans Std";
-  color:#005468;
-  font-size:13px;
-}
-
-.small {
   font-size:85%;
   color:#959595;
 }
@@ -283,7 +344,8 @@ em {
   font-style:italic;
 }
 
-.bignum { /* extra big numbers - percents etc */
+.bignum
+{ /* extra big numbers - percents etc */
   font-size:50px;
   font-weight:bold;
   font-family: "Helvetica", Verdana, sans-serif;
@@ -310,115 +372,6 @@ div.round-container {
 
 /* Forms */
 
-form {
-
-}
-
-input {
-  border:1px solid #CCC;
-
-}
-
-input:focus{
-  outline:1px solid #FC8A81;
-}
-
-input[type="text"]{
-  cursor: text ;
-  color: black;
-}
-
-
-textarea {
-
-}
-
-.nav-dropdown {
-
-}
-
-.vertical-rule {
-
-}
-
-.tool-tip {
-  background-color:#f0503b;
-  color:white;
-}
-
-/* Icons Resizing (Last resort) */
-
-  }
-
-img.icon-big {
-  width: 50px;
-  height: 50px;
-}
-
-img.icon-med {
-  width: 38px;
-  height: 38px;
-}
-
-img.icon-small {
-  width: 10px;
-  height: 10px;
-}
-
-a.button, a.button:link, a.button:active, a.button:visited {
-  -moz-border-radius: 9px;
-  -webkit-border-radius: 9px;
-  -khtml-border-radius: 9px;
-  border-radius: 9px;
-  padding: 14px;
-  padding-bottom: 8px;
-  letter-spacing: 1px;
-  font-size: 18px;
-  font-family: "Gill Sans Std", Helvetica, Verdana, sans-serif;
-  background-color: #F0503B;
-  color: #fff;
-  text-decoration: none;
-  outline: none;
-  border: 0;
-  margin:10px;
-}
-
-a.button:hover {
-  text-decoration:none;
-  background-color:#FC8A81;
-  color: white;
-}
-
-a.button-square, a.button-square:link, a.button-square:visited {
-  padding: 14px;
-  padding-bottom: 8px;
-  letter-spacing: 1px;
-  font-size: 18px;
-  font-family: "Gill Sans Std", Helvetica, Verdana, sans-serif;
-  background-color: #fff;
-  color: #FC8A81;
-  text-decoration: none;
-  outline: none;
-  border: 0;
-  margin:10px;
-  border: 1px solid #FC8A81;
-}
-
-a.button-square:hover {
-  text-decoration:none;
-  background-color:#FC8A81;
-  color: white;
-}
-
-a.button-square:active{
-  background-color:#FC8A81;
-  color: white;
-}
-
-a#white:hover {
-  color: #F0503B;
-  background-color: white;
-}
 
 
 
@@ -437,16 +390,4 @@ a#white:hover {
 
 
 
-
-
-
-
-
-
-font-family: Helvetica, Arial, Verdana, sans-serif;
-font-size: 13px;
-h1
-{
-  font-family: “Gill Sans Std Light”;
-  color: #353535;
 

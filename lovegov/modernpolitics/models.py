@@ -3763,6 +3763,13 @@ class ResetPassword(LGModel):
             return False
     create = staticmethod(create)
 
+class BlogEntry(LGModel):
+    userProfile = models.ForeignKey(UserProfile)
+    datetime = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=100000)
+
+
+
 
 
 
