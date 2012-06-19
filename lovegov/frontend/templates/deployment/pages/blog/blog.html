@@ -1,13 +1,13 @@
 {% extends 'deployment/templates/no-login-frame.html' %}
 {% block content %}
 
-    <link href="/static/css/deployment/blog.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/blog.css" rel="stylesheet" type="text/css"/>
 
     <div id="blog_left">
         <h4 class="capitalize_text" style="margin-bottom:25px">Blog</h4>
-        <div id="recent_blog_posts" class="blog_left_item">
-            <h5>Recent Blog Posts</h5>
-            <ul>
+        <div id="recent_blog_posts" class="blog_left_div">
+            <h5 class="color_link-hover">Recent Blog Posts</h5>
+            <ul class="list_none">
                 {% for blogPost in blogPosts|slice:":5" %}
                 <li>
                     <a>{{ blogPost.title }}</a>
@@ -16,9 +16,9 @@
             </ul>
         </div>
 
-        <div id="blog_categories" class="blog_left_item">
-            <h5>Categories</h5>
-            <ul>
+        <div id="blog_categories" class="blog_left_div">
+            <h5 class="color_link-hover">Categories</h5>
+            <ul class="list_none">
                 {% for category in categories %}
                     <li>
                         <a>{{ category }}</a>
@@ -31,29 +31,21 @@
     <div id="blog_right">
     {% if viewer.isDeveloper %}
         <div id="blog-submit">
-            <h2>Post New Blog Entry</h2>
+            <h3 id="postnew">Post New Blog Entry</h3>
             <form id="blogform" action="" method='post'>
                 <table>
                     <tr>
-                        <td>
-                            Title:
-                        </td>
-                        <td>
-                            <input class="blog_text_input" name="title" type="text"/>
-                        </td>
+                        <td>Title:</td>
+                        <td><input class="blog_text_input" name="title" type="text"/></td>
                     </tr>
                     <tr>
-                        <td>
-                            Text:
-                        </td>
-                        <td>
-                            <textarea class="blog_textarea_input" name="text"></textarea>
-                        </td>
+                        <td>Text:</td>
+                        <td><textarea class="blog_textarea_input" name="text"></textarea></td>
                     </tr>
                     <tr>
                         <td></td>
                         <td>
-                            <input type="submit" value="Submit" name="submitblog" style="float:right"/>
+                            <input class="button_red" type="submit" value="Submit" name="submitblog" style="float:right;"/>
                             <div style="float:left;">
                                 <input class="blog_checkbox" type="checkbox" name="news"/>
                                 <span class="blog_span">News</span>
@@ -76,7 +68,6 @@
     </div>
 
     <script type="text/javascript">
-
         $('#blogform').submit(function(event)
         {
             event.preventDefault();

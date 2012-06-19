@@ -50,6 +50,9 @@
 /* Topic Colors */
 /* Fonts */
 /* Mixin */
+.color_link-hover {
+  color: #005468; }
+
 * {
   margin: 0;
   padding: 0; }
@@ -59,16 +62,16 @@ body {
   color: #353535;
   font-size: 13px; }
 
-a, a:visted, a:active, a:link {
+a, a:visited, a:active, a:link {
   text-decoration: none;
   color: #0094a3; }
 
 a:hover {
   text-decoration: none;
+  cursor: pointer;
   color: #005468; }
 
 p {
-  line-height: 18px;
   margin-bottom: 13px; }
 
 p.really-big {
@@ -87,6 +90,10 @@ p.big {
 
 ol, ul {
   padding-left: 30px; }
+
+ul.list_none {
+  list-style-type: none;
+  padding-left: 0; }
 
 hr {
   height: 1px;
@@ -149,28 +156,37 @@ h6 {
   font-size: 13px; }
 
 input[type="text"], input[type="password"] {
-  outline: 1px solid #cccccc;
+  border: 1px solid #cccccc;
+  outline: none;
   cursor: text;
   color: #353535; }
 
 input[type="text"]:focus, input[type="password"]:focus {
-  outline: 1px solid #ef503b; }
+  border: 1px solid #ef503b;
+  outline: none; }
+
+input[type="submit"]:hover {
+  cursor: pointer; }
 
 textarea {
-  outline: 1px solid #cccccc;
+  border: 1px solid #cccccc;
+  outline: none;
+  padding: 0;
   cursor: text;
+  outline-offset: 0;
   color: #353535; }
 
 textarea:focus {
-  outline: 1px solid #ef503b; }
+  border: 1px solid #ef503b;
+  outline: none; }
 
 .button, .button_red, .button_red:link, .button_red:active, .button_red:visited, .button_gray, .button_gray:link, .button_gray:active, .button_gray:visited {
   -moz-border-radius: 9px;
   -webkit-border-radius: 9px;
   -khtml-border-radius: 9px;
   border-radius: 9px;
-  padding: 14px;
-  padding-bottom: 8px;
+  padding: 12px;
+  padding-bottom: 5px;
   letter-spacing: 1px;
   font-size: 18px;
   font-family: "Gill Sans Std";
@@ -225,7 +241,7 @@ img.icon_small {
   width: 425px;
   height: 165px; }
 
-.capitlize_text {
+.capitalize_text {
   text-transform: uppercase; }
 
 .float_left {
