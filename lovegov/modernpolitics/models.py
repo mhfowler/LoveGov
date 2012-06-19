@@ -3645,8 +3645,8 @@ class Edited(UCRelationship):
 # inherits from relationship
 #=======================================================================================================================
 class Shared(UCRelationship):
-    share_user = models.ManyToManyField(UserProfile)
-    share_group = models.ManyToManyField(Group)
+    share_users = models.ManyToManyField(UserProfile)
+    share_groups = models.ManyToManyField(Group)
     def autoSave(self):
         self.relationship_type = 'SH'
         self.creator = self.user
