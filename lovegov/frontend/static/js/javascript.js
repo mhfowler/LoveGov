@@ -57,7 +57,7 @@ function rebindFunction()
             break;
         case 'login':
             loadLogin();
-            break;
+            break
         default:
             break
     }
@@ -974,6 +974,20 @@ function loadRightSideBar()
         $("#topic-all").show();
         topics=[];
 
+    });
+
+    $('div.overdiv').appendTo('body');
+    $('div.shareModal').appendTo('body');
+
+    $('.share-button').click(function(event) {
+        event.preventDefault();
+//        alert('don\'t click me brah');
+        $('div.overdiv').fadeToggle("fast");
+        $('div.shareModal').fadeToggle("fast");
+    });
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.shareModal').hide();
     });
 
 }
@@ -2125,5 +2139,7 @@ function loadGroup()
     bindNewDivs();
 
 }
+
+
 
 
