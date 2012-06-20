@@ -61,16 +61,9 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
-def initCreator():
-    lg = UserProfile.lg.get_or_none(alias="lovegov")
-    if lg:
-        return lg
-    else:
-        return 154        #154 = lovegovuser
-
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=initCreator)
+    creator = models.ForeignKey("UserProfile", default=154)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -950,23 +943,23 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view = models.ForeignKey("WorldView", null=True)
+    view = models.ForeignKey("WorldView", default=initView, null=True)
     network = models.ForeignKey("Network", null=True)
-    #location = models.ForeignKey(PhysicalAddress, null=True)
+    location = models.ForeignKey(PhysicalAddress, null=True)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    #i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
-    #follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
+    i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
+    follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
     private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     # feeds & ranking
-    #my_filters = models.ManyToManyField(SimpleFilter)
+    my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
