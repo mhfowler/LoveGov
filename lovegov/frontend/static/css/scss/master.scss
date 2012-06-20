@@ -1,0 +1,366 @@
+/*
+
+                       8?
+                       8?
+                       8?
+                       8?                                                 ,7777   I7777
+                       8?    88I  888   8       8.  88~  88    I8Z Z8.   7777777+7777777  8       8
+                       8?   8~      O8  OZ     O8  87     ~8   8     8   7777777777777777 88     =8
+                       8?  O8        8:  8     8  $8???????8  $?     ~8  7777777777777777  8     8
+                       8?  8~        88   8   8   88           8     8   777777777777777    8   8,
+                       8?  +8        8    Z8 $8   ,8            I888$     7777777777777     88 88
+                       8?   88      88     8 8     88          8+          .7777777777       8~8
+                       8?    =888888.       8=       8888888   88             77777?          8.
+                                                               8I    88         I                  :=
+                                                              8       88
+                                               :  =           8.      8
+                        +:.:  :, I :  :: ?:: :,: 7, : ~I        88888,
+                         .I~?7,.  +               ?+   .
+                                            ?
+
+                             _______  _______  _______ _________ _______  _______
+                            (       )(  ___  )(  ____ \\__   __/(  ____ \(  ____ )
+                            | () () || (   ) || (    \/   ) (   | (    \/| (    )|
+                            | || || || (___) || (_____    | |   | (__    | (____)|
+                            | |(_)| ||  ___  |(_____  )   | |   |  __)   |     __)
+                            | |   | || (   ) |      ) |   | |   | (      | (\ (
+                            | )   ( || )   ( |/\____) |   | |   | (____/\| ) \ \__
+                            |/     \||/     \|\_______)   )_(   (_______/|/   \__/
+
+                             _______  _______  _______    _______           _______  _______ _________
+                            (  ____ \(  ____ \(  ____ \  (  ____ \|\     /|(  ____ \(  ____ \\__   __/
+                            | (    \/| (    \/| (    \/  | (    \/| )   ( || (    \/| (    \/   ) (
+                            | |      | (_____ | (_____   | (_____ | (___) || (__    | (__       | |
+                            | |      (_____  )(_____  )  (_____  )|  ___  ||  __)   |  __)      | |
+                            | |            ) |      ) |        ) || (   ) || (      | (         | |
+                            | (____/\/\____) |/\____) |  /\____) || )   ( || (____/\| (____/\   | |
+                            (_______/\_______)\_______)  \_______)|/     \|(_______/(_______/   )_(
+
+*/
+@charset "UTF-8";
+@import 'master-variables';
+
+
+/* Mixin */
+@mixin rounded($radius: 20px)
+{
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+}
+
+.color_link-hover
+{
+  color:#005468;
+}
+
+*
+{
+  margin:0;
+  padding:0;
+}
+
+body
+{
+  font-family:$body-fonts;
+  color:$black;
+  font-size:13px;
+}
+
+a, a:visited, a:active, a:link
+{
+  text-decoration:none;
+  color:$link;
+}
+
+a:hover
+{
+  text-decoration:none;
+  cursor:pointer;
+  color:$link-hover;
+}
+
+p
+{
+  margin-bottom: 13px;
+}
+
+p.really-big
+{
+  font-family: $gill-light;
+  color: $dark-gray;
+  font-size:20px;
+  line-height:28px;
+  margin-bottom:20px;
+}
+
+p.big
+{
+  font-family: $gill-light;
+  color: $link-hover;
+  font-size:18px;
+  line-height:26px;
+  margin-bottom:18px;
+}
+
+ol, ul
+{
+  padding-left:30px;
+}
+
+ul.list_none
+{
+  list-style-type: none;
+  padding-left:0;
+}
+
+hr
+{
+  height:1px;
+  border:0px;
+  background-color: #ccc;
+  margin-bottom:10px;
+  margin-top:10px;
+}
+
+strong
+{
+  font-weight:bold;
+}
+
+em
+{
+  font-style:italic;
+}
+
+span.bignum
+{
+/* extra big numbers - percents etc */
+  font-size:50px;
+  font-weight:bold;
+  font-family: $body-fonts
+}
+
+blockquote
+{
+  color: #959595;
+  font-style:italic;
+  padding-left:13px;
+  padding-bottom:13px;
+  padding-right:13px;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+  font-weight:normal;
+  font-style: normal;
+}
+
+h1
+{
+  font-family:$gill-light;
+  color:$link-hover;
+  font-size: 50px;
+}
+
+h2
+{
+  font-family:$gill-light;
+  color:$red;
+  font-size: 32px;
+}
+
+h3
+{
+  font-family:$gill-std;
+  color: $link-hover;
+  font-size: 26px;
+}
+
+h4
+{
+  font-family:$gill-std;
+  color: $red;
+  font-size: 22px;
+}
+
+h5
+{
+  font-family:$gill-std;
+  color: $black;
+  font-size: 18px;
+}
+
+h6
+{
+  font-family:$gill-std;
+  color: $link-hover;
+  font-size: 13px;
+}
+
+input[type="text"], input[type="password"]
+{
+  border:1px solid $gray;
+  outline:none;
+  cursor: text ;
+  color: $black;
+}
+
+input[type="text"]:focus, input[type="password"]:focus
+{
+  border:1px solid $red;
+  outline:none;
+}
+
+input[type="submit"]:hover
+{
+  cursor:pointer;
+}
+
+textarea
+{
+  border:1px solid $gray;
+  outline:none;
+  padding: 0;
+  cursor: text;
+  outline-offset:0;
+  color: $black;
+}
+
+textarea:focus
+{
+  border:1px solid $red;
+  outline:none;
+}
+
+.button
+{
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+    -khtml-border-radius: 9px;
+    border-radius: 9px;
+    padding: 12px;
+    padding-bottom: 5px;
+    letter-spacing: 1px;
+    font-size: 18px;
+    font-family: $gill-std;
+    color: white;
+    text-decoration: none;
+    outline: none;
+    border: 0;
+}
+
+.button_red, .button_red:link, .button_red:active, .button_red:visited
+{
+  @extend .button;
+  background-color:$red;
+}
+
+.button_red:hover
+{
+  background-color:$red-light
+}
+
+.button_gray, .button_gray:link, .button_gray:active, .button_gray:visited
+{
+  @extend .button;
+  background-color: $dark-gray;
+}
+
+.button_gray:hover
+{
+  background-color: $gray;
+}
+
+img.icon_big
+{
+  width: 50px;
+  height: 50px;
+}
+
+img.icon_med
+{
+  width: 38px;
+  height: 38px;
+}
+
+img.icon_small
+{
+  width: 10px;
+  height: 10px;
+}
+
+.no_margin
+{
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.small_margin
+{
+  margin-bottom:10px;
+  margin-top:10px;
+}
+
+.mid_margin
+{
+  margin-bottom:25px;
+  margin-top:25px;
+}
+
+.big_num
+{
+  /*tribute to cs17 project bignum. rest in peace. */
+  font-weight:bold;
+  font-size:170px;
+  color:$red;
+}
+
+.logo
+{
+  width:425px;
+  height:165px;
+}
+
+.capitalize_text
+{
+  text-transform:uppercase;
+}
+
+.float_left
+{
+  float:left;
+}
+
+.float_right
+{
+  float:right;
+}
+
+.clear_both
+{
+  clear:both;
+}
+
+div.round_container
+{
+  @include rounded(20px);
+}
+
+.tool-tip
+{
+  background-color:#f0503b;
+  color:white;
+}
+
+span.small
+{
+  font-size:12px;
+  font-color: #959595;
+}
+
+span.big
+{
+  font-size: 18px;
+}
