@@ -97,6 +97,7 @@ def requiresLogin(view):
             else:
                 vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
                 rightSideBar(None, vals)
+                vals['new_notification_count'] = user.getNumNewNotifications()
             # SAVE PAGE ACCESS
             if request.method == 'GET':
                 ignore = request.GET.get('log-ignore')

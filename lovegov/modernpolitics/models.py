@@ -1341,6 +1341,9 @@ class UserProfile(FacebookProfileModel, LGModel):
             notifications = notifications[start:start+num]
         return notifications
 
+    def getNumNewNotifications(self):
+        return len( Notification.objects.filter(notify_user=self, viewed=False) )
+
     def getAllNotifications(self):
         return Notification.objects.filter(notify_user=self).order_by('when').reverse()
 
@@ -1623,6 +1626,7 @@ class Notification(Privacy):
         self.users.add(agg_user)
         self.tally += 1
         self.recent_user = agg_user
+        self.viewed = False
         self.save()
 
     def autoSave(self):
