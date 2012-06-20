@@ -1,0 +1,17 @@
+<div class="blog_item">
+    <div class="blog_item_left">
+        <h3>{{ blogPost.title }}</h3>
+        <div class="blog_posted">Posted on <strong>{{ blogPost.datetime }}</strong> in {% for cat in blogPost.category %}<a href="/blog/{{ cat|lower }}/">{{ cat }}</a>{% endfor %}</div>
+        {{ blogPost.message|linebreaks }}
+    </div>
+    <div class="blog_item_right">
+        <h6>Author</h6>
+        <div class="blog_creator">
+            {% load thumbnail %}
+            {% thumbnail blogPost.creator.getProfileImage.image "35x35" format="PNG" as img %}
+                <img src="{{ img.url }}"/>
+            {% endthumbnail %}
+                <a href="{{ blogPost.creator.get_url }}">{{ blogPost.creator.get_name }}</a>
+        </div>
+    </div>
+</div>

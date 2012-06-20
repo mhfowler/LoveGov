@@ -22,6 +22,7 @@ import random
 import thread
 import json
 from datetime import timedelta
+from datetime import datetime
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -262,6 +263,9 @@ class Content(Privacy, LocationLevel):
         return self.title
     def get_name(self):
         return self.getName()
+
+    def getTitle(self):
+        return self.title
 
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -567,6 +571,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                self.creator.notify(action)
             return my_vote.value
         else:
             # create new vote
@@ -578,6 +583,7 @@ class Content(Privacy, LocationLevel):
             self.save()
             action = Action(relationship=new_vote,modifier='L')
             action.autoSave()
+            self.creator.notify(action)
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -603,6 +609,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                self.creator.notify(action)
             return my_vote.value
         else:
             # create new vote
@@ -614,6 +621,7 @@ class Content(Privacy, LocationLevel):
             self.save()
             action = Action(relationship=new_vote,modifier='D')
             action.autoSave()
+            self.creator.notify(action)
             return new_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -997,6 +1005,8 @@ class UserProfile(FacebookProfileModel, LGModel):
             to_return = "UnicodeEncodeError"
         return to_return
 
+    def isDeveloper(self):
+        return self.developer
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
@@ -1243,10 +1253,33 @@ class UserProfile(FacebookProfileModel, LGModel):
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
-        if action.type in NOTIFY_TYPES:
+        relationship = action.relationship
+        if action.type != 'FO' and action.type != 'JO':
+            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+                return False
+
+        if action.type in AGGREGATE_NOTIFY_TYPES:
+            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+            already = Notification.objects.filter(notify_user=self,
+                                                    when__gte=stale_date,
+                                                    action__modifier=action.modifier,
+                                                    action__type=action.type ).order_by('when').reverse()
+            for notification in already:
+                if notification.action.relationship.getTo().id == relationship.getTo().id:
+                    notification.when = datetime.datetime.today()
+                    if notification.tally == 0:
+                        notification.addAggUser( notification.action.relationship.user )
+                    notification.addAggUser( relationship.user )
+                    return True
+            notification = Notification(action=action, notify_user=self)
+            notification.autoSave()
+            notification.addAggUser( relationship.user )
+
+        elif action.type in NOTIFY_TYPES:
             notification = Notification(action=action, notify_user=self)
             notification.autoSave()
             return True
+
         else:
             return False
 
@@ -1313,9 +1346,6 @@ class UserProfile(FacebookProfileModel, LGModel):
             notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
         if num != -1:
             notifications = notifications[start:start+num]
-        for note in notifications:
-            note.viewed = True
-            note.save()
         return notifications
 
     def getAllNotifications(self):
@@ -1329,6 +1359,15 @@ class UserProfile(FacebookProfileModel, LGModel):
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
         else:
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getGroupInvites(self, num=-1):
+        if num == -1:
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()
+        else:
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Groups this user has joined and been accepted to.
@@ -1490,10 +1529,9 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,view_user,relationship=None,notification=False):
+    def getVerbose(self,view_user):
         #Check for relationship
-        if not relationship:
-            relationship = self.relationship
+        relationship = self.relationship
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1520,10 +1558,7 @@ class Action(Privacy):
             if reverse_follow:
                 action_context['reverse_follow'] = reverse_follow
 
-        if notification:
-            action_verbose = render_to_string('deployment/snippets/notification_verbose.html',action_context)
-        else:
-            action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
+        action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1540,12 +1575,62 @@ class Notification(Privacy):
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
+    recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
     # deprecated
     type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+
+    def getVerbose(self,view_user):
+        n_action = self.action
+        relationship = n_action.relationship
+        #Set default local variables
+        from_you = False
+        to_you = False
+        #Set to and from users
+        to_user = relationship.getTo()
+        from_user = relationship.getFrom()
+        if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
+            from_user = self.recent_user
+        #check to see if the viewing user is the to or from user
+        if from_user.id == view_user.id:
+            from_you = True
+        elif to_user.id == view_user.id:
+            to_you = True
+
+        viewed = True
+        if not self.viewed:
+            viewed = False
+            self.viewed = True
+            self.save()
+
+        notification_context = {'to_user':to_user,
+                          'to_you':to_you,
+                          'from_user':from_user,
+                          'from_you':from_you,
+                          'type':n_action.type,
+                          'modifier':n_action.modifier,
+                          'tally':self.tally,
+                          'true':True,
+                          'viewed':viewed}
+        if n_action.type == 'FO':
+            notification_context['follow'] = relationship.downcast()
+            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+            if reverse_follow:
+                notification_context['reverse_follow'] = reverse_follow
+        if n_action.type == 'JO':
+            notification_context['group_join'] = relationship.downcast()
+
+        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
+        return notification_verbose
+
+    def addAggUser(self,agg_user):
+        self.users.add(agg_user)
+        self.tally += 1
+        self.recent_user = agg_user
+        self.save()
 
     def autoSave(self):
         self.save()
@@ -3840,22 +3925,13 @@ class ResetPassword(LGModel):
             return False
     create = staticmethod(create)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class BlogEntry(LGModel):
+    CATEGORY_CHOICES = ['General','Update','News']
+    creator = models.ForeignKey(UserProfile)
+    datetime = models.DateTimeField(auto_now_add=True)
+    category = custom_fields.ListField()
+    title = models.CharField(max_length=5000)
+    message = models.CharField(max_length=100000)
 
 
 

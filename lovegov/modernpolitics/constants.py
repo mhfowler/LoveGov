@@ -13,6 +13,7 @@ from django.conf import settings
 # python
 import sunlight
 import os.path
+import datetime
 
 ########################################## EMAIL LISTS #################################################################
 
@@ -258,7 +259,11 @@ ACTION_MODIFIERS = (
         )
 
 # types of action which user should be notified about
-NOTIFY_TYPES = ['FO','SI','JO','CO']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO']
+AGGREGATE_NOTIFY_TYPES = ['SI','VO']
+
+# Timedelta that it takes for aggregate notifications to go stale.
+STALE_TIME_DELTA = datetime.timedelta(14)
 
 # group privacy settings
 GROUP_PRIVACY_CHOICES = (

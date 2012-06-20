@@ -142,7 +142,9 @@ input:focus
 table td
 {
     text-align:right;
-    font-size:28px;
+    font-size:20px;
+    padding-bottom:10px;
+    padding-right:5px;
 }
 
 input[type="submit"]

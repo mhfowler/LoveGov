@@ -75,7 +75,6 @@ function userFollowResponse(event,response,div)
 {
     event.preventDefault();
     var follow_id = div.siblings(".user-follow-id").val();
-    alert( follow_id );
     ajaxPost({
             data: {
                 'action':'followresponse',
@@ -94,6 +93,48 @@ function userFollowResponse(event,response,div)
     );
 }
 
+function groupInviteResponse(event,response,div)
+{
+    event.preventDefault();
+    var g_id = div.siblings(".group-join-id").val();
+    ajaxPost({
+            data: {
+                'action':'groupinviteresponse',
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function setFollowPrivacy(event,private_follow)
+{
+    event.preventDefault();
+    ajaxPost({
+        data: {
+            'action':'followprivacy',
+            'p_id': p_id,
+            'private_follow': private_follow
+        },
+        success: function(data)
+        {
+            alert(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+
+    });
+}
 
 /***********************************************************************************************************************
  *
@@ -1777,8 +1818,6 @@ function loadThread()
         $(this).parent().submit();
     });
 
-
-
     // new comment submit
     $('#commentform').unbind();
     $("#commentform").submit(function(event)
@@ -2128,6 +2167,14 @@ function loadProfile()
         userFollowResponse(event,"N",$(this));
     });
 
+    $(".group-invite-response-y").click( function(event) {
+        groupInviteResponse(event,"Y",$(this));
+    });
+
+    $(".group-invite-response-n").click( function(event) {
+        groupInviteResponse(event,"N",$(this));
+    });
+
     $('#see-more-notifications').click(
         function(event)
         {
@@ -2145,6 +2192,10 @@ function loadProfile()
                     {
                         $('#see-more-notifications-button').html('No more notifications');
                     }
+                    else if( obj.hasOwnPropery('error') )
+                    {
+                        $('body').html(obj.error);
+                    }
                     unbindNotification();
                     loadNotification();
                 },
@@ -2158,44 +2209,12 @@ function loadProfile()
 
     $("#public-follow").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'followprivacy',
-                    'p_id': p_id,
-                    'private_follow': 0
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        )
+        setFollowPrivacy(event,0);
     });
 
     $("#private-follow").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'followprivacy',
-                    'p_id': p_id,
-                    'private_follow': 1
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        )
+        setFollowPrivacy(event,1);
     });
 }
 
