@@ -1,6 +1,6 @@
 /*
 Syntax error: Invalid CSS after "{": expected "}", was "<<<<<<< HEAD"
-        on line 186 of scss/master.scss
+        on line 186 of frontend/static/css/scss/master.scss
 
 181:   color:$text-blue;
 182: }
@@ -15,46 +15,46 @@ Syntax error: Invalid CSS after "{": expected "}", was "<<<<<<< HEAD"
 191: }
 
 Backtrace:
-scss/master.scss:186
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:1010:in `expected'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:956:in `expected'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:951:in `tok!'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:463:in `block'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:456:in `ruleset'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:480:in `block_child'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:473:in `block_contents'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:58:in `stylesheet'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:27:in `parse'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:327:in `_to_tree'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:300:in `_render'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:247:in `render'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:340:in `update_stylesheet'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:202:in `update_stylesheets'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `each'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `update_stylesheets'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:298:in `watch'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:95:in `initialize_adapter'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:55:in `call'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:55:in `poll'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `start'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `initialize'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `new'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `start'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:44:in `start'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:306:in `watch'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `send'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `method_missing'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:431:in `watch_or_update'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:302:in `process_result'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:41:in `parse'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:21:in `parse!'
-/Library/Ruby/Gems/1.8/gems/sass-3.1.19/bin/sass:8
-/usr/bin/sass:19:in `load'
-/usr/bin/sass:19
+frontend/static/css/scss/master.scss:186
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:1010:in `expected'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:956:in `expected'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:951:in `tok!'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:463:in `block'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:456:in `ruleset'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:480:in `block_child'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:473:in `block_contents'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:58:in `stylesheet'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:27:in `parse'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:327:in `_to_tree'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:300:in `_render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:247:in `render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:340:in `update_stylesheet'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:202:in `update_stylesheets'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `each'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `update_stylesheets'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:298:in `watch'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:95:in `initialize_adapter'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:55:in `call'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:55:in `poll'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `initialize'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `new'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:44:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:306:in `watch'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `method_missing'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:431:in `watch_or_update'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:302:in `process_result'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:41:in `parse'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:21:in `parse!'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/scss:8
+/usr/local/bin/scss:19:in `load'
+/usr/local/bin/scss:19
 */
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Invalid CSS after \"{\": expected \"}\", was \"<<<<<<< HEAD\"\A         on line 186 of scss/master.scss\A \A 181:   color:$text-blue;\A 182: }\A 183: \A 184: a.invert_link:hover\A 185: {\A 186: <<<<<<< HEAD\A 187:   color:$text-blue;\A 188: =======\A 189:   color:$text-blue-light;\A 190: >>>>>>> 3aa607b32376dee39dce422e9dd79db74e5b65fa\A 191: }"; }
+  content: "Syntax error: Invalid CSS after \"{\": expected \"}\", was \"<<<<<<< HEAD\"\A         on line 186 of frontend/static/css/scss/master.scss\A \A 181:   color:$text-blue;\A 182: }\A 183: \A 184: a.invert_link:hover\A 185: {\A 186: <<<<<<< HEAD\A 187:   color:$text-blue;\A 188: =======\A 189:   color:$text-blue-light;\A 190: >>>>>>> 3aa607b32376dee39dce422e9dd79db74e5b65fa\A 191: }"; }
