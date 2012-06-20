@@ -388,7 +388,7 @@ def theFeed(request, vals={}):
 
     vals['groups'] = UserGroup.objects.all()
 
-    vals['feed'] = Content.objects.all()
+    vals['feed'] = Content.objects.filter(created_when__gt=(datetime.datetime.now() - datetime.timedelta(days=5)))
 
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
