@@ -960,7 +960,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     debate_record = models.ManyToManyField(DebateResult)
     #i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
     #follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
-    #private_follow = models.BooleanField(default=False)
+    private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
