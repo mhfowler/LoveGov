@@ -499,13 +499,14 @@ function loadHeader()
         function(event)
         {
             event.preventDefault();
-            $('#notifications-dropdown').toggle();
+            $('#notifications-dropdown').toggle('fast');
             ajaxPost({
                 'data': {'action':'getnotifications',
                         'dropdown':'true'},
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
+                    $('#notifications-dropdown').empty();
                     $('#notifications-dropdown').html(obj.html);
                     unbindNotification();
                     loadNotification();

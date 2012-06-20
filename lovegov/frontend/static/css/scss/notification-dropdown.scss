@@ -1,6 +1,12 @@
 @import 'master-variables.scss';
 @import 'master.scss';
 
+@mixin notification-box {
+  border-bottom: solid 1px;
+  border-color: $gray;
+  background-color: white;
+}
+
 #header-notifications
 {
   float: right;
@@ -47,4 +53,17 @@
   width: 279px;
   z-index: 100;
 
+  div.notification {
+    @include notification-box;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
+
+  div.see-more-notifications {
+    @include notification-box;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+  }
 }
