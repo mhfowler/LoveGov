@@ -1,0 +1,43 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master';
+
+div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited
+{
+  @include div-button($radius:10px,$width:250px,$height:50px,$font-size:21px,$color:$black);
+  margin-bottom:12px;
+
+  span
+  {
+    display:inline-block;
+    margin-top:15px;
+    margin-left:10px;
+  }
+
+  &:hover
+  {
+    color:white;
+    background-color:$red;
+    cursor:pointer;
+  }
+}
+
+$nav-margin:30px;
+div.top-nav
+{
+  float:left;
+}
+
+div.top-nav-left
+{
+  @extend .top-nav;
+  margin-right: $nav-margin;
+  width:250px;
+}
+
+div.top-nav-right
+{
+  @extend .top-nav;
+  margin-left: $nav-margin;
+  width:690px;
+}

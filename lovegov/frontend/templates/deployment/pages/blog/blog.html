@@ -1,4 +1,9 @@
 {% extends 'deployment/templates/no-login-frame.html' %}
+
+{% block title %}
+    blog
+{% endblock %}
+
 {% block content %}
 
     <link href="/static/css/compiled/blog.css" rel="stylesheet" type="text/css"/>
@@ -56,7 +61,7 @@
                     <tr>
                         <td></td>
                         <td>
-                            <input class="button_red" type="submit" value="Submit" name="submitblog" style="float:right;"/>
+                            <input class="button-red" type="submit" value="Submit" name="submitblog" style="float:right;"/>
                             <div style="float:left;">
                                 <span id="blog_submit_error" class="blog_span"></span>
                                 <input class="blog_checkbox" type="checkbox" name="news"/>
@@ -82,6 +87,10 @@
             {% endif %}
         </div>
     </div>
+
+    {% if not viewer %}
+        {% include 'deployment/pages/login/login-footer.html' %}
+    {% endif %}
 
     <script type="text/javascript">
 
@@ -196,8 +205,6 @@
         });
 
     </script>
-
-
 
 
 {% endblock %}

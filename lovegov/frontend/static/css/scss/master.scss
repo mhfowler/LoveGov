@@ -50,6 +50,18 @@
   -khtml-border-radius: $radius;
 }
 
+@mixin rounded-bottom($radius: 20px)
+{
+  border-bottom-right-radius: $radius;
+  border-bottom-left-radius: $radius;
+  -moz-border-bottom-right-radius: $radius;
+  -moz-border-bottom-left-radius: $radius;
+  -webkit-border-bottom-right-radius: $radius;
+  -webkit-border-bottom-left-radius: $radius;
+  -khtml-border-bottom-right-radius: $radius;
+  -khtml-border-bottom-left-radius: $radius;
+}
+
 @mixin fontSize($fontSize: 20px)
 {
   font-size:$fontSize;
@@ -63,6 +75,42 @@
   margin-bottom:$margin_bottom;
 }
 
+@mixin verticalSeparator($height,$margin-left,$margin-top)
+{
+  float:left;
+  border-left: 1px solid $red;
+  height:$height;
+  margin-left:$margin-left;
+  margin-top:$margin-top;
+}
+
+
+@mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
+{
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+  border-radius: $radius;
+  width:$width;
+  height:$height;
+  font-size: $font-size;
+  font-family: $gill-light;
+  background-color:$background-color;
+  color: $color;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+}
+
+@mixin horitzontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0)
+{
+  border-bottom: 1px solid $color;
+  width:$width;
+  margin-left:$margin-left;
+  margin-top:$margin-top;
+}
+
 .main-div
 {
   width: 1000px;
@@ -71,7 +119,7 @@
   margin-right: auto;
 }
 
-.color_link-hover
+.color-link-hover
 {
   color:#005468;
 }
@@ -92,27 +140,54 @@ body
 a, a:visited, a:active, a:link
 {
   text-decoration:none;
-  color:$link;
+  color:$text-blue-light;
 }
 
 a:hover
 {
   text-decoration:none;
   cursor:pointer;
-  color:$link-hover;
+  color:$text-blue;
+}
+
+a.red-link, a.red-link:visited, a.red-link:active, a.red-link:link
+{
+  text-decoration:none;
+  color:$red;
+}
+
+a.red-link:hover
+{
+  text-decoration:none;
+  cursor:pointer;
+  color:$red-light;
 }
 
 // Clears the color change for a link so it remains the darker color
-a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link
+a.clear-link, a.clear-link:visited, a.clear-link:active, a.clear-link:link
 {
   text-decoration:none;
-  color:$link-hover;
+  color:$text-blue;
 }
 
 // Clears the color change for a link so it remains the darker color
 a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover
 {
   color:$red;
+}
+
+a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link
+{
+  color:$text-blue;
+}
+
+a.invert_link:hover
+{
+<<<<<<< HEAD
+  color:$text-blue;
+=======
+  color:$text-blue-light;
+>>>>>>> 3aa607b32376dee39dce422e9dd79db74e5b65fa
 }
 
 
@@ -138,7 +213,7 @@ p.really-big
 p.big
 {
   font-family: $gill-light;
-  color: $link-hover;
+  color: $text-blue;
   font-size:18px;
   line-height:26px;
   margin-bottom:18px;
@@ -200,7 +275,7 @@ h1, h2, h3, h4, h5, h6
 h1
 {
   font-family:$gill-light;
-  color:$link-hover;
+  color:$text-blue;
   font-size: 50px;
 }
 
@@ -214,7 +289,7 @@ h2
 h3
 {
   font-family:$gill-std;
-  color: $link-hover;
+  color: $text-blue;
   font-size: 26px;
 }
 
@@ -228,14 +303,14 @@ h4
 h5
 {
   font-family:$gill-std;
-  color: $black;
+  color: $deep-gray;
   font-size: 18px;
 }
 
 h6
 {
   font-family:$gill-std;
-  color: $link-hover;
+  color: $text-blue;
   font-size: 13px;
 }
 
@@ -291,69 +366,75 @@ textarea:focus
     border: 0;
 }
 
-.button_red, .button_red:link, .button_red:active, .button_red:visited
+.button-red, .button-red:link, .button-red:active, .button-red:visited
 {
   @extend .button;
   background-color:$red;
 }
 
-.button_red:hover
+.button-red:hover
 {
   background-color:$red-light
 }
 
-.button_gray, .button_gray:link, .button_gray:active, .button_gray:visited
+.button-gray, .button-gray:link, .button-gray:active, .button-gray:visited
 {
   @extend .button;
   background-color: $dark-gray;
 }
 
-.button_gray:hover
+.button-gray:hover
 {
   background-color: $gray;
 }
 
-img.icon_big
+img.icon-really-big
+{
+  width: 75px;
+  height: 75px;
+}
+
+img.icon-big
 {
   width: 50px;
   height: 50px;
 }
 
-img.icon_med
+img.icon-med
 {
   width: 38px;
   height: 38px;
 }
 
-img.icon_small
+img.icon-small
 {
   width: 10px;
   height: 10px;
 }
 
-.no_margin
+.no-margin
 {
   margin-bottom: 0;
   margin-top: 0;
 }
 
-.small_margin
+.small-margin
 {
   margin-bottom:10px;
   margin-top:10px;
 }
 
-.mid_margin
+.mid-margin
 {
   margin-bottom:25px;
   margin-top:25px;
 }
 
-.big_num
+.big-num
 {
   /*tribute to cs17 project bignum. rest in peace. */
   font-weight:bold;
-  font-size:170px;
+  font-size: 52px;
   color:$red;
 }
 
@@ -363,27 +444,27 @@ img.icon_small
   height:165px;
 }
 
-.capitalize_text
+.capitalize-text
 {
   text-transform:uppercase;
 }
 
-.float_left
+.float-left
 {
   float:left;
 }
 
-.float_right
+.float-right
 {
   float:right;
 }
 
-.clear_both
+.clear-both
 {
   clear:both;
 }
 
-div.round_container
+div.round-container
 {
   @include rounded(20px);
 }

@@ -632,7 +632,7 @@ def group(request, g_id=None, vals={}):
 def about(request, vals={}):
     if request.method == 'GET':
         setPageTitle("lovegov: about",vals)
-        html = ajaxRender('deployment/center/about.html', vals, request)
+        html = ajaxRender('deployment/center/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 
