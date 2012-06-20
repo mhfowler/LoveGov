@@ -80,6 +80,8 @@ def urlToObject(url):
         return Network.lg.get_or_none(name=alias)
     elif type == 'group':
         return Group.lg.get_or_none(id=alias)
+    elif type == 'blog':
+        return BlogEntry.lg.get_or_none(id=int(split[2]))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method for rendering a template to string.

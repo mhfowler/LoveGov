@@ -81,6 +81,13 @@ a:hover
   color:$link-hover;
 }
 
+// Clears the color change for a link so it remains the darker color
+a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link
+{
+  text-decoration:none;
+  color:$link-hover;
+}
+
 p
 {
   margin-bottom: 13px;
@@ -364,3 +371,4 @@ span.big
 {
   font-size: 18px;
 }
+
