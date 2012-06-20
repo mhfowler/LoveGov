@@ -3899,6 +3899,7 @@ class ResetPassword(LGModel):
     email_code = models.CharField(max_length=75)
 
     def create(username):
+        from lovegov.modernpolitics.helpers import generateRandomPassword
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
@@ -3906,7 +3907,7 @@ class ResetPassword(LGModel):
         if userProfile and userProfile.confirmed:
             try:
                 userProfile = UserProfile.objects.get(username=username)
-                reseturl = backend.generateRandomPassword(50)
+                reseturl = generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
                 vals = {'firstname':userProfile.first_name, 'url':reseturl}
@@ -3924,7 +3925,7 @@ class BlogEntry(LGModel):
     datetime = models.DateTimeField(auto_now_add=True)
     category = custom_fields.ListField()
     title = models.CharField(max_length=5000)
-    message = models.CharField(max_length=100000)
+    message = models.TextField()
 
 
 
