@@ -835,21 +835,17 @@ function loadLeftSidebar()
      */
     $(".create-topic-img").click(function(event)
     {
-        // node references
-        var thisNode = $(this);
-        var chosen = $(this).hasClass('chosen');
-        var wrapper = $(this).parent().parent();
-        // clears topic choice by unchecking every radio button
-        wrapper.find('.topic-radio').attr('checked',false);
-        // removes class 'chosen' from current chosen and shows unselected topic image for every topic
-        wrapper.find('.chosen').removeClass('chosen').hide().siblings('.normal').show();
-        // if new topic was selected (or clicked topic image wasn't already chosen)
-        if (!chosen)
+
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        var icons_wrapper = wrapper.parents(".topic-icons-wrapper");
+
+        icons_wrapper.find('.topic-radio').attr('checked',false);
+
+        if (!wrapper.hasClass('chosen'))
         {
-            // handles choosing new topic.
-            thisNode.addClass('chosen');
-            thisNode.siblings(".topic-radio").attr("checked","checked");
+            wrapper.find(".topic-radio").attr("checked",true);
         }
+        selectTopicSingle(wrapper);
     });
 
     function clearPetitionErrors()

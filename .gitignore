@@ -2,8 +2,8 @@
 lovegov/db/local.db
 .idea/
 lovegov/.idea
-lovegov/beta/modernpolitics/migrations
-lovegov/beta/modernpolitics/search_indexes
+lovegov/modernpolitics/search_indexes
+lovegov/frontend/static/css/compiled
 .DS_Store
 lovegov/db/local.db-journal
 .sass-cache

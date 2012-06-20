@@ -12,7 +12,7 @@ from lovegov.modernpolitics.models import *
 
 # django
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext, RenderContext
 from django.template import loader
 
 # python
@@ -64,6 +64,7 @@ def renderToResponseCSRF(template, vals, request):
     except KeyError:
         vals['linkfrom'] = 0
     vals['request'] = request
+    # render template
     return render_to_response(template, vals, context_instance=RequestContext(request))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -79,6 +80,8 @@ def urlToObject(url):
         return Network.lg.get_or_none(name=alias)
     elif type == 'group':
         return Group.lg.get_or_none(id=alias)
+    elif type == 'blog':
+        return BlogEntry.lg.get_or_none(id=int(split[2]))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method for rendering a template to string.

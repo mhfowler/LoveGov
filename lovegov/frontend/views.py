@@ -115,13 +115,38 @@ def requiresLogin(view):
         return view(request, vals=vals, *args, **kwargs)
     return new_view
 
-def blog(request,vals={}):
+def blog(request,category=None,number=None,vals={}):
     if request.method == 'GET':
         user = getUserProfile(request)
         if user: vals['viewer'] = user
+
         blogPosts = BlogEntry.objects.all().order_by('-id')
-        vals['blogPosts'] = blogPosts
+        vals['blogPosts'] = []
+        vals['ownBlog'] = False
         vals['categories'] = BlogEntry.CATEGORY_CHOICES
+        vals['developers'] = UserProfile.objects.filter(developer=True)
+
+
+        if number:
+            blogPost = BlogEntry.lg.get_or_none(id=number)
+            if blogPost:
+                vals['blogPost'] = blogPost
+                vals['blogPosts'] = blogPosts
+                return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
+        elif category:
+            if string.capitalize(category) in BlogEntry.CATEGORY_CHOICES:
+                for blogPost in blogPosts:
+                    if string.capitalize(category) in blogPost.category:
+                        vals['blogPosts'].append(blogPost)
+            else:
+                creator = UserProfile.objects.get(alias=category)
+                vals['ownBlog'] = creator == user
+                vals['blogPosts'] = blogPosts.filter(creator=creator)
+        else:
+            vals['blogPosts'] = blogPosts
+
+        vals['blogPost'] = None
+
         return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------

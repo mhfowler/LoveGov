@@ -78,6 +78,11 @@ li
   border-bottom:1px #CCC dashed;
 }
 
+.blog_creator
+{
+  margin-bottom:5px;
+}
+
 .blog_creator a
 {
   position:relative;
@@ -93,4 +98,15 @@ table td
 #blogform
 {
   margin-bottom:15px;
+}
+
+.blog_posted
+{
+  top:-10px;
+  position:relative;
+}
+
+#postnew
+{
+  cursor:pointer;
 }
