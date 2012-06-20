@@ -1,5 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/static/css/deployment/header.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/notification-dropdown.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/notifications.css" />
 
 <div id="header">
     <!-- Header -->
@@ -26,6 +27,8 @@
             </div>
         </div>
 
+        {% include 'deployment/snippets/user_menu.html' %}
+
         <div id="header-notifications">
             <div id="notifications-dropdown-button">
                 <span id="notifications-number">
@@ -37,9 +40,6 @@
 
             </div>
         </div>
-
-        {% include 'deployment/snippets/user_menu.html' %}
-
 
 
 

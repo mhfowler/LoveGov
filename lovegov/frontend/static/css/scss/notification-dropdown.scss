@@ -1,9 +1,15 @@
 @import 'master-variables.scss';
 @import 'master.scss';
 
+@mixin notification-box {
+  border-bottom: solid 1px;
+  border-color: $gray;
+  background-color: white;
+}
+
 #header-notifications
 {
-  float: left;
+  float: right;
   margin-top: 5px;
 }
 
@@ -29,7 +35,7 @@
   border-top: solid 1px;
   border-left: solid 1px;
   border-color: $gray;
-  width: 40px;
+  width: 30px;
   height: 33px;
   padding-top: 8px;
   margin: 0px;
@@ -44,7 +50,20 @@
   border-color: $gray;
   position: absolute;
   top: 47px;
-  width: 289px;
+  width: 279px;
   z-index: 100;
 
+  div.notification {
+    @include notification-box;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
+
+  div.see-more-notifications {
+    @include notification-box;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+  }
 }
