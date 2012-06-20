@@ -1,89 +1,623 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
 /*
-Syntax error: Undefined variable: "$link-hover".
-        on line 154 of lovegov/frontend/static/css/scss/master.scss
-        from line 3 of lovegov/frontend/static/css/scss/login.scss
 
-149: 
-150: h3
-151: {
-152:   @extend h3;
-153:   font-size:21px;
-154: }
-155: 
-156: #what-is-p
-157: {
-158:   width: 565px;
-159:   font-size: 24px;
+                       8?
+                       8?
+                       8?
+                       8?                                                 ,7777   I7777
+                       8?    88I  888   8       8.  88~  88    I8Z Z8.   7777777+7777777  8       8
+                       8?   8~      O8  OZ     O8  87     ~8   8     8   7777777777777777 88     =8
+                       8?  O8        8:  8     8  $8???????8  $?     ~8  7777777777777777  8     8
+                       8?  8~        88   8   8   88           8     8   777777777777777    8   8,
+                       8?  +8        8    Z8 $8   ,8            I888$     7777777777777     88 88
+                       8?   88      88     8 8     88          8+          .7777777777       8~8
+                       8?    =888888.       8=       8888888   88             77777?          8.
+                                                               8I    88         I                  :=
+                                                              8       88
+                                               :  =           8.      8
+                        +:.:  :, I :  :: ?:: :,: 7, : ~I        88888,
+                         .I~?7,.  +               ?+   .
+                                            ?
 
-Backtrace:
-lovegov/frontend/static/css/scss/master.scss:154
-lovegov/frontend/static/css/scss/login.scss:3
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/script/variable.rb:49:in `_perform'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/script/node.rb:40:in `perform'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:216:in `visit_prop'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `map'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:27:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:39:in `with_environment'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:238:in `visit_rule'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:146:in `visit_import'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:146:in `map'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:146:in `visit_import'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `map'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:27:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:39:in `with_environment'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:47:in `visit_root'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/root_node.rb:20:in `render'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:300:in `_render'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:247:in `render'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:340:in `update_stylesheet'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:202:in `update_stylesheets'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `each'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `update_stylesheets'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:298:in `watch'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:95:in `initialize_adapter'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapter.rb:162:in `call'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapter.rb:162:in `poll_changed_dirs'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `start'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `initialize'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `new'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `start'
-/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:44:in `start'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:306:in `watch'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `method_missing'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:431:in `watch_or_update'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:302:in `process_result'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:41:in `parse'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:21:in `parse!'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/sass:8
-/usr/local/bin/sass:19:in `load'
-/usr/local/bin/sass:19
+                             _______  _______  _______ _________ _______  _______
+                            (       )(  ___  )(  ____ \__   __/(  ____ \(  ____ )
+                            | () () || (   ) || (    \/   ) (   | (    \/| (    )|
+                            | || || || (___) || (_____    | |   | (__    | (____)|
+                            | |(_)| ||  ___  |(_____  )   | |   |  __)   |     __)
+                            | |   | || (   ) |      ) |   | |   | (      | (\ (
+                            | )   ( || )   ( |/\____) |   | |   | (____/\| ) \ \__
+                            |/     \||/     \|\_______)   )_(   (_______/|/   \__/
+
+                             _______  _______  _______    _______           _______  _______ _________
+                            (  ____ \(  ____ \(  ____ \  (  ____ \|\     /|(  ____ \(  ____ \__   __/
+                            | (    \/| (    \/| (    \/  | (    \/| )   ( || (    \/| (    \/   ) (
+                            | |      | (_____ | (_____   | (_____ | (___) || (__    | (__       | |
+                            | |      (_____  )(_____  )  (_____  )|  ___  ||  __)   |  __)      | |
+                            | |            ) |      ) |        ) || (   ) || (      | (         | |
+                            | (____/\/\____) |/\____) |  /\____) || )   ( || (____/\| (____/\   | |
+                            (_______/\_______)\_______)  \_______)|/     \|(_______/(_______/   )_(
+
 */
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$link-hover\".\A         on line 154 of lovegov/frontend/static/css/scss/master.scss\A         from line 3 of lovegov/frontend/static/css/scss/login.scss\A \A 149: \A 150: h3\A 151: {\A 152:   @extend h3;\A 153:   font-size:21px;\A 154: }\A 155: \A 156: #what-is-p\A 157: {\A 158:   width: 565px;\A 159:   font-size: 24px;"; }
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixin */
+.main-div {
+  width: 1000px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto; }
+
+.color-link-hover {
+  color: #005468; }
+
+* {
+  margin: 0;
+  padding: 0; }
+
+body {
+  font-family: Helvetica, Arial, Verdana, sans-serif;
+  color: #353535;
+  font-size: 13px; }
+
+a, a:visited, a:active, a:link {
+  text-decoration: none;
+  color: #0094a3; }
+
+a:hover {
+  text-decoration: none;
+  cursor: pointer;
+  color: #005468; }
+
+a.red-link, a.red-link:visited, a.red-link:active, a.red-link:link {
+  text-decoration: none;
+  color: #ef503b; }
+
+a.red-link:hover {
+  text-decoration: none;
+  cursor: pointer;
+  color: #fc8a81; }
+
+a.clear-link, a.clear-link:visited, a.clear-link:active, a.clear-link:link {
+  text-decoration: none;
+  color: #005468; }
+
+a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover {
+  color: #ef503b; }
+
+a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link {
+  color: #005468; }
+
+a.invert_link:hover {
+  color: #005468; }
+
+a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover {
+  font-size: 20px; }
+
+p {
+  margin-bottom: 13px; }
+
+p.really-big {
+  font-family: "Gill Sans Std Light";
+  color: #adadad;
+  font-size: 20px;
+  line-height: 28px;
+  margin-bottom: 20px; }
+
+p.big {
+  font-family: "Gill Sans Std Light";
+  color: #005468;
+  font-size: 18px;
+  line-height: 26px;
+  margin-bottom: 18px; }
+
+ol, ul {
+  padding-left: 30px; }
+
+ul.list_none {
+  list-style-type: none;
+  padding-left: 0; }
+
+hr {
+  height: 1px;
+  border: 0px;
+  background-color: #ccc;
+  margin-bottom: 10px;
+  margin-top: 10px; }
+
+strong {
+  font-weight: bold; }
+
+em {
+  font-style: italic; }
+
+span.bignum {
+  /* extra big numbers - percents etc */
+  font-size: 50px;
+  font-weight: bold;
+  font-family: Helvetica, Arial, Verdana, sans-serif; }
+
+blockquote {
+  color: #959595;
+  font-style: italic;
+  padding-left: 13px;
+  padding-bottom: 13px;
+  padding-right: 13px; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  font-style: normal; }
+
+h1 {
+  font-family: "Gill Sans Std Light";
+  color: #005468;
+  font-size: 50px; }
+
+h2 {
+  font-family: "Gill Sans Std Light";
+  color: #ef503b;
+  font-size: 32px; }
+
+h3 {
+  font-family: "Gill Sans Std";
+  color: #005468;
+  font-size: 26px; }
+
+h4 {
+  font-family: "Gill Sans Std";
+  color: #ef503b;
+  font-size: 22px; }
+
+h5 {
+  font-family: "Gill Sans Std";
+  color: #959595;
+  font-size: 18px; }
+
+h6 {
+  font-family: "Gill Sans Std";
+  color: #005468;
+  font-size: 13px; }
+
+input[type="text"], input[type="password"] {
+  border: 1px solid #cccccc;
+  outline: none;
+  cursor: text;
+  color: #353535; }
+
+input[type="text"]:focus, input[type="password"]:focus {
+  border: 1px solid #ef503b;
+  outline: none; }
+
+input[type="submit"]:hover {
+  cursor: pointer; }
+
+textarea {
+  border: 1px solid #cccccc;
+  outline: none;
+  padding: 0;
+  cursor: text;
+  outline-offset: 0;
+  color: #353535; }
+
+textarea:focus {
+  border: 1px solid #ef503b;
+  outline: none; }
+
+.button, .button-red, .button-red:link, .button-red:active, .button-red:visited, .button-red:link:active, .button-red:link:visited, .button-red:active:visited, .button-gray, .button-gray:link, .button-gray:active, .button-gray:visited {
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  -khtml-border-radius: 9px;
+  border-radius: 9px;
+  padding: 12px;
+  padding-bottom: 5px;
+  letter-spacing: 1px;
+  font-size: 18px;
+  font-family: "Gill Sans Std";
+  color: white;
+  text-decoration: none;
+  outline: none;
+  border: 0; }
+
+.button-red, .button-red:link, .button-red:active, .button-red:visited, .button-red:link, .button-red:link:active, .button-red:link:visited, .button-red:active, .button-red:active:link, .button-red:active:visited, .button-red:visited, .button-red:visited:link, .button-red:visited:active {
+  background-color: #ef503b; }
+
+.button-red:hover, .button-red:link:hover, .button-red:active:hover, .button-red:visited:hover {
+  background-color: #fc8a81; }
+
+.button-gray, .button-gray:link, .button-gray:active, .button-gray:visited {
+  background-color: #adadad; }
+
+.button-gray:hover {
+  background-color: #cccccc; }
+
+img.icon-really-big {
+  width: 75px;
+  height: 75px; }
+
+img.icon-big {
+  width: 50px;
+  height: 50px; }
+
+img.icon-med {
+  width: 38px;
+  height: 38px; }
+
+img.icon-small {
+  width: 10px;
+  height: 10px; }
+
+.no-margin {
+  margin-bottom: 0;
+  margin-top: 0; }
+
+.small-margin {
+  margin-bottom: 10px;
+  margin-top: 10px; }
+
+.mid-margin {
+  margin-bottom: 25px;
+  margin-top: 25px; }
+
+.big-num {
+  /*tribute to cs17 project bignum. rest in peace. */
+  font-weight: bold;
+  font-size: 52px;
+  color: #ef503b; }
+
+.logo {
+  width: 425px;
+  height: 165px; }
+
+.capitalize-text {
+  text-transform: uppercase; }
+
+.float-left, .team, .team_left, .team_right, .team_center, div.get-started-left, .get-started-right, .get-started-bottom, p.recovery-error {
+  float: left; }
+
+.float-right, .button-red, .button-red:link, .button-red:active, .button-red:visited, .button-red:link:active, .button-red:link:visited, .button-red:active:visited {
+  float: right; }
+
+.clear-both {
+  clear: both; }
+
+div.round-container {
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -khtml-border-radius: 20px; }
+
+.tool-tip {
+  background-color: #f0503b;
+  color: white; }
+
+span.small {
+  font-size: 12px;
+  font-color: #959595; }
+
+span.big {
+  font-size: 18px; }
+
+#main {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 15px; }
+
+input {
+  float: left;
+  border: 1px solid #cccccc; }
+
+div.blocks, div#top, div#middle, div#bottom {
+  width: 1000px;
+  display: inline-block;
+  margin-bottom: 35px; }
+
+div#bottom {
+  border-top: 1px solid #CCC;
+  padding-top: 20px; }
+
+#middle-left {
+  position: relative;
+  float: left;
+  width: 425px;
+  height: 287px;
+  background-image: url(/static/images/login/banner-425x287.png);
+  margin-left: 20px; }
+
+#middle-left a, #middle-left a:link, #middle-left a:active, #middle-left a:visited {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+  text-transform: uppercase;
+  position: absolute;
+  left: 128px;
+  top: 110px;
+  background-color: #f0503b;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  font-size: 17px;
+  border-radius: 10px; }
+
+#middle-left a:hover {
+  left: 123px;
+  top: 105px;
+  cursor: pointer;
+  padding-left: 35px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 35px; }
+
+#middle-right {
+  position: relative;
+  float: right;
+  margin-right: 20px;
+  margin-top: 25px;
+  width: 440px; }
+
+#mission-statement {
+  font-family: "Gill Sans Std Light";
+  color: #959595;
+  float: right;
+  width: 325px;
+  font-size: 20px;
+  text-align: right;
+  margin-top: 45px; }
+
+.developer_title {
+  color: #adadad; }
+
+.developer_names {
+  color: #005468;
+  font-weight: lighter; }
+
+.team_left {
+  margin-left: 0;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.team_right {
+  margin-left: 20px;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.team_center {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+p.fb_login_p {
+  float: left;
+  font-family: "Gill Sans Std Light";
+  color: #959595;
+  font-size: 17px;
+  margin-bottom: 0; }
+
+h1 {
+  margin-top: 15px; }
+
+h3 {
+  font-size: 21px; }
+
+#what-is-p {
+  width: 565px;
+  font-size: 24px;
+  color: #959595;
+  line-height: 150%;
+  float: right;
+  font-family: "Gill Sans Std Light"; }
+
+p.privacy_p {
+  margin-top: 5px;
+  margin-bottom: 25px;
+  margin-left: 25px;
+  margin-right: 25px; }
+
+#loginform {
+  float: left; }
+
+.input-span {
+  position: absolute;
+  left: 6px;
+  color: #959595;
+  cursor: text;
+  font-size: 28px;
+  font-family: "Gill Sans Std Light"; }
+
+#username-span {
+  top: 54px; }
+
+#password-span {
+  top: 120px; }
+
+#fullname-span {
+  top: 54px; }
+
+#email-span {
+  top: 120px; }
+
+#email2-span {
+  top: 186px; }
+
+#password-register-span {
+  top: 252px; }
+
+.login-input {
+  height: 45px;
+  width: 410px;
+  padding: 5px;
+  font-size: 28px;
+  color: #353535;
+  font-family: "Gill Sans Std Light"; }
+
+.button-red, .button-red:link, .button-red:active, .button-red:visited, .button-red:link, .button-red:link:active, .button-red:link:visited, .button-red:active, .button-red:active:link, .button-red:active:visited, .button-red:visited, .button-red:visited:link, .button-red:visited:active {
+  font-size: 23px; }
+
+table td {
+  text-align: right;
+  padding-bottom: 10px;
+  padding-right: 5px; }
+
+.account-actions, .account-actions:link, .account-actions:visited, .account-actions:active {
+  margin-left: 0;
+  margin-right: 15px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-top: 21px;
+  font-size: 15px;
+  color: #959595; }
+
+.account-actions:hover {
+  text-decoration: underline;
+  color: #005468; }
+
+span.privacy_agree {
+  font-size: 18px;
+  font-family: "Gill Sans Std Light"; }
+
+div.get-started-left {
+  /*tribute to cs17 project bignum. rest in peace. */
+  font-weight: bold;
+  font-size: 170px;
+  color: #ef503b;
+  margin-left: 0;
+  margin-right: 15px;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.get-started-right {
+  text-align: center; }
+
+.get-started-paragraph {
+  font-family: "Gill Sans Std Light";
+  font-size: 17px;
+  line-height: 150%;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 10px;
+  margin-bottom: 0; }
+
+p.recovery-error {
+  font-size: 17px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 5px;
+  margin-bottom: 0;
+  width: 260px;
+  text-align: left; }
+
+div.vertical-separator {
+  float: left;
+  border-left: 1px solid #ef503b;
+  height: 70px;
+  margin-left: 25px;
+  margin-top: 5px; }
+
+#why-facebook-hover {
+  position: absolute;
+  width: 250px;
+  height: 135px;
+  border-radius: 5px;
+  padding: 25px;
+  opacity: 0.95;
+  background-color: #f0503b;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  top: -10px;
+  left: 60px;
+  font-size: 19px;
+  font-family: "Gill Sans Std Light"; }
+  #why-facebook-hover a {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    cursor: pointer; }
+  #why-facebook-hover p {
+    padding-top: 10px;
+    padding-bottom: 10px; }
+
+#emailForm {
+  float: left; }
+
+#mailingList {
+  float: left;
+  margin-right: 15px;
+  margin-top: 2px;
+  font-family: "Gill Sans Std Light";
+  font-size: 16px; }
+
+#emailInput {
+  width: 165px; }
+
+#emailSubmit {
+  width: 60px; }
+
+#emailMessage {
+  float: right; }
+
+#facebook-button {
+  border: 0;
+  width: 415px; }
+
+.about-div {
+  width: 1000px;
+  float: left;
+  margin-bottom: 20px; }
+  .about-div h3 {
+    font-size: 24px; }
+
+.get-started-container {
+  padding-top: 15px;
+  width: 320px;
+  float: left;
+  -moz-border-radius: 25px;
+  border-radius: 25px; }
+
+.get-started-container:hover {
+  background-color: #F0F0F0; }
+
+#privacy-div {
+  float: left;
+  margin-top: 50px; }
+
+#privacy-div div {
+  width: 475px;
+  float: left; }
+
+.get-started-container-left {
+  padding-right: 10px; }
+
+.get-started-container-right {
+  padding-left: 10px; }
+
+.get-started-container-center {
+  padding-left: 10px;
+  padding-right: 10px; }
+
+table {
+  border-spacing: 0; }

@@ -104,13 +104,13 @@ div#bottom
 
 .developer_names
 {
-  color: $link-hover;
+  color: $text-blue;
   font-weight:lighter;
 }
 
 .team
 {
-  @extend .float_left;
+  @extend .float-left;
 }
 
 $margin:20px;
@@ -226,16 +226,16 @@ p.privacy_p
   font-family:$gill-light;
 }
 
-.button_red, .button_red:link, .button_red:active, .button_red:visited
+.button-red, .button-red:link, .button-red:active, .button-red:visited
 {
-  @extend .button_red;
-  @extend .float_right;
+  @extend .button-red;
+  @extend .float-right;
   font-size:23px;
 }
 
-.button_red:hover
+.button-red:hover
 {
-  @extend .button_red:hover;
+  @extend .button-red:hover;
 }
 
 table td
@@ -257,7 +257,7 @@ table td
 .account-actions:hover
 {
   text-decoration:underline;
-  color:$link-hover;
+  color:$text-blue;
 }
 
 span.privacy_agree
@@ -272,19 +272,19 @@ div.get-started-left
   font-weight:bold;
   font-size:170px;
   color:$red;
-  @extend .float_left;
+  @extend .float-left;
   @include setMargin(0,15px);
 }
 
 .get-started-right
 {
-  @extend .float_left;
+  @extend .float-left;
   text-align:center;
 }
 
 .get-started-bottom
 {
-  @extend .float_left;
+  @extend .float-left;
 }
 
 .get-started-paragraph
@@ -299,7 +299,7 @@ p.recovery-error
 {
   @include fontSize(17px);
   @include setMargin($margin-top:5px);
-  @extend .float_left;
+  @extend .float-left;
   width:260px;
   text-align:left;
 }

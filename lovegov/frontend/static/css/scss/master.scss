@@ -84,6 +84,24 @@
   margin-top:$margin-top;
 }
 
+@mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
+{
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+  border-radius: $radius;
+  width:$width;
+  height:$height;
+  font-size: $font-size;
+  font-family: $gill-light;
+  background-color:$background-color;
+  color: $color;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+}
+
 .main-div
 {
   width: 1000px;
@@ -151,12 +169,12 @@ a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_lin
 
 a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link
 {
-  color:$link-hover;
+  color:$text-blue;
 }
 
 a.invert_link:hover
 {
-  color:$link;
+  color:$text-blue;
 }
 
 
@@ -193,7 +211,7 @@ ol, ul
   padding-left:30px;
 }
 
-ul.list-none
+ul.list_none
 {
   list-style-type: none;
   padding-left:0;
