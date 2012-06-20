@@ -1,0 +1,178 @@
+#profile-main-div
+{
+  width:1000px;
+  margin-top:50px;
+  margin-left:auto;
+  margin-right:auto
+}
+
+#profile-img
+{
+  float:left;
+  margin-right:20px;
+  height:100px;
+}
+
+/* LEFT MODULE */
+#middle-left
+{
+  position:relative;
+  float:left;
+  width:630px;
+}
+
+#profile
+{
+  position:relative;
+  margin-top:100px;
+  margin-bottom:5px;
+  margin-left:30px;
+  height:235px;
+}
+
+.profile-username
+{
+  position:relative;
+  padding-bottom:5px;
+  font-size:20pt;
+  font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+  color:#0f5569;;
+}
+
+#profile-summary
+{
+  position:relative;
+  width:380px;
+  margin-left:220px;
+  margin-bottom:12px;
+}
+
+#profile-info-stats
+{
+  position:relative;
+  left:10px;
+}
+
+/* RIGHT MODULE */
+#middle-right
+{
+  position:relative;
+  float:left;
+  width:300px;
+  margin-left:40px;
+/*border-left:1px solid #ff886c;*/
+}
+
+
+#matching
+{
+  text-align:center;
+  z-index:0;
+  padding-bottom:20px;
+/*border-bottom:1px solid #ccc;*/
+  position:relative;
+}
+
+#myviews
+{
+  position:relative;
+  padding-bottom:10px;
+}
+
+#qaweb
+{
+  z-index:0;
+  position:relative;
+  width:300px;
+  height:300px;
+  text-align:left;
+}
+
+/* toolbox */
+
+#toolbox
+{
+  height:215px;
+  margin-bottom:20px;
+  border-bottom:1px solid #ccc;
+}
+
+#toolbox p
+{
+  height:8px;
+}
+
+#toolbox ul
+{
+  list-style-type:none;
+}
+
+#toolbox li
+{
+  margin-bottom:25px;
+}
+
+.toolbox-button:link
+{
+  color:#FFFFFF;
+  background-color:#ccc;
+  position:relative;
+  margin-bottom:10px;
+}
+
+.toolbox-button:link, .toolboox-button:visited, .toolbox-button:active
+{
+  text-decoration:none;
+}
+
+.toolbox-button:hover
+{
+  color:#ccc;
+  background-color:#FFFFFF;
+}
+
+/* my reps */
+
+#myreps
+{
+  font-family:"Gill Sans Std Light", Verdana, sans-serif;
+  font-size:18pt;
+  color:#ccc;
+  padding-bottom:30px;
+  border-bottom:1px solid #ccc;
+}
+
+
+.middle-right-head-font
+{
+  text-align:left;
+  font-family:"Gill Sans Std Light", Verdana, sans-serif;
+  font-size:18pt;
+  color:#959595;
+}
+
+.network-member-div
+{
+  float:left;
+  width:205px;
+  margin-bottom:10px;
+}
+
+.network-member-div:hover
+{
+  cursor:pointer;
+}
+
+.network-user-link
+{
+  color:#0F5569;
+  float:left;
+  margin-top:12px;
+  margin-left:10px;
+  width:140px;
+}
+
+.network-user-link:link, .network-user-link:active, .network-user-link:visited
+{
+  color:#0F5569;
+}

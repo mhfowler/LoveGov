@@ -1,17 +1,15 @@
-<link rel="stylesheet" type="text/css" href="/static/css/deployment/profile.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
 
 <div id="profile-main-div">
     <!-- Left Block -->
-    <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
     <div id="middle-left">
         <div id="profile">
-
             <div id="profile-img">
                 {% load thumbnail %}
-                {% thumbnail user_prof.getProfileImage.image "175x175" crop="center" as im %}
+                {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
                     <img src="{{ im.url }}"/>
                 {% empty %}
                     <p> no pic </p>
