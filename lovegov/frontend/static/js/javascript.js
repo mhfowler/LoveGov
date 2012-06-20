@@ -183,61 +183,61 @@ function loadTopicSelect()
         (
             function(event)
             {
-                $(this).parent().children(".normal").hide();
-                $(this).parent().children(".selected").show();
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                wrapper.children(".normal").hide();
+                wrapper.children(".selected").show();
             },
             function(event)
             {
-                var selected = $(this).parent().children(".selected");
-                if (!(selected.hasClass("chosen")))
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                if (!(wrapper.hasClass("chosen")))
                 {
-                    $(this).parent().children(".selected").hide();
-                    $(this).parent().children(".normal").show();
+                    wrapper.children(".selected").hide();
+                    wrapper.children(".normal").show();
                 }
             }
         );
 }
 
-// adjusts icons appropriately for topic selection, only one topic can be chosen at a time
-function selectTopicSingle(div)
+// selects a particular topic icon and deselects all others
+function selectTopicSingle(wrapper)
 {
-    var wrapper = div.closest(".topic-icons-wrapper");
-    // unselect all others
-    wrapper.find(".selected").hide();
-    wrapper.find(".normal").show();
-    // if selected, remove class chosen
-    if (div.hasClass('chosen')) {
-        div.removeClass("chosen");
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    showTopicIcon(wrapper);
+}
+
+// clears all topic icons within an overall topic-icons-wrapper
+function clearTopicIcons(icons_wrapper) {
+    var icons = icons_wrapper.find(".topic-icon-wrapper");
+    icons.each(function(index) {
+        hideTopicIcon($(this));
+    });
+}
+
+// toggles topic icon between being selected and unselected
+function toggleTopicIcon(wrapper)
+{
+    if (wrapper.hasClass("chosen")) {
+        hideTopicIcon(wrapper);
     }
-    // else select
     else {
-        div.parent().children(".normal").hide();
-        div.parent().children(".selected").show();
-        // class chosen
-        wrapper.find(".selected").removeClass("chosen");
-        div.parent().children(".selected").addClass("chosen");
+        showTopicIcon(wrapper);
     }
 }
 
-
-
-// adjusts icons appropriately for topic selection, multiple can be selected
-function selectTopicMultiple(div)
-{
-    var wrapper = div.closest(".topic-icons-wrapper");
-    // if this topic already selected, then remove chosen, else add chosen
-    var selected =  div.parent().children(".selected");
-    if (selected.hasClass("chosen")) {
-        selected.removeClass("chosen");
-        div.parent().children(".selected").hide();
-        div.parent().children(".normal").show();
-    }
-    else {
-        selected.addClass("chosen");
-        div.parent().children(".selected").show();
-        div.parent().children(".normal").hide();
-    }
+function hideTopicIcon(wrapper) {
+    wrapper.removeClass("chosen");
+    wrapper.children(".selected").hide();
+    wrapper.children(".normal").show();
 }
+
+function showTopicIcon(wrapper) {
+    wrapper.addClass("chosen");
+    wrapper.children(".selected").show();
+    wrapper.children(".normal").hide();
+}
+
 
 function loadAjaxifyAnchors()
 {
@@ -1002,7 +1002,8 @@ function loadRightSideBar()
 {
     // select topic click function
     $(".q-topic-img").click(function(event) {
-        selectTopicSingle($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        selectTopicSingle(wrapper);
     });
 
     // sidebar stuff, for question-topic select
@@ -1068,7 +1069,8 @@ function loadFeed()
     // topic filters
     // select topic click function
     $(".filter-topic-img").click(function(event) {
-        selectTopicMultiple($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        toggleTopicIcon(wrapper);
     });
 
     // set heart buttons
@@ -1366,63 +1368,52 @@ function ajaxFeed(feed_type, topics, start, how_many, force_replace)
 
 ////////////////////////////////////////////////////////////
 
-
-function feedTopicSelect(div) {
-    var feed_topics = $.parseJSON($(".feed_topics").val());
-    var wrapper = div.parents(".feed-topic-icon-wrapper");
-    var t_id = parseInt(wrapper.attr("data-id"));
-    var index = $.inArray(t_id, feed_topics);
+/*
+Takes in a a value and the classname of an input which the value should
+either be added to or removed from that list (toggled).
+ */
+function listSelectHelper(value, list_input_name) {
+    var list_input = $("." + list_input_name);
+    var list_values = $.parseJSON(list_input.val());
+    var index = $.inArray(value, list_values);
     if (index == -1) {
-        feed_topics.push(t_id);
+        list_values.push(value);
     }
     else {
-        feed_topics.splice(index, 1);
+        list_values.splice(index, 1);
     }
-    $(".feed_topics").val(JSON.stringify(feed_topics));
+    list_input.val(JSON.stringify(list_values));
 }
 
-function feedTypeSelect(div) {
-    var feed_types = $.parseJSON($(".feed_types").val());
-    var type = div.val();
-    var index = $.inArray(type, feed_types);
-    if (index == -1) {
-        feed_types.push(type);
-    }
-    else {
-        feed_types.splice(index, 1);
-    }
-    $(".feed_types").val(JSON.stringify(feed_types));
-}
-
-function feedGroupSelect(div) {
-    var feed_groups = $.parseJSON($(".feed_groups").val());
-    var g_id = div.val();
-    var index = $.inArray(g_id, feed_groups);
-    if (index == -1) {
-        feed_groups.push(g_id);
-    }
-    else {
-        feed_groups.splice(index, 1);
-    }
-    $(".feed_groups").val(JSON.stringify(feed_groups));
-}
-
+/*
+Replaces feed with all new items based on current parameters.
+*/
 function refreshFeed() {
     $(".feed_start").val(0);
     getFeed();
 }
 
+/*
+if the start value is 0, then replace feed with all new items based on current parameters
+else get new feed items starting at start value and append them to the current feed.
+ */
 function getFeed()
 {
 
     var feed_ranking = $(".feed_ranking").val();
+    var feed_display =  $(".feed_display").val();
+    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
     var feed_topics = $.parseJSON($(".feed_topics").val());
     var feed_types =  $.parseJSON($(".feed_types").val());
+    var feed_levels =  $.parseJSON($(".feed_levels").val());
     var feed_groups =  $.parseJSON($(".feed_groups").val());
-    var feed_just =  $(".feed_just").val();
+    feed_topics = JSON.stringify(feed_topics);
+    feed_types = JSON.stringify(feed_types);
+    feed_levels = JSON.stringify(feed_levels);
+    feed_groups = JSON.stringify(feed_groups);
+
     var feed_start = parseInt($(".feed_start").val());
     var feed_end =  feed_start + 10;
-    var feed_display =  $(".feed_display").val();
 
     var feed_replace;
     if (feed_start==0) {
@@ -1432,14 +1423,11 @@ function getFeed()
         feed_replace = false;
     }
 
-    feed_topics = JSON.stringify(feed_topics);
-    feed_types = JSON.stringify(feed_types);
-    feed_groups = JSON.stringify(feed_groups);
-
     ajaxPost({
         data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
-            'feed_types':feed_types,'feed_groups':feed_groups, 'feed_just':feed_just,
-            'feed_start':feed_start, 'feed_end':feed_end, 'feed_display':feed_display
+            'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
+            'feed_submissions_only':feed_submissions_only,'feed_display':feed_display,
+            'feed_start':feed_start, 'feed_end':feed_end
         },
         success: function(data) {
             var returned = eval('(' + data + ')');
@@ -1456,6 +1444,143 @@ function getFeed()
 
 }
 
+/*
+makes a post to the server to save the current filter setting as the inputted name.
+ */
+function saveFilter() {
+
+    var feed_name = $(".save-filter-name").val();
+
+    var feed_ranking = $(".feed_ranking").val();
+    var feed_display =  $(".feed_display").val();
+    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
+    var feed_topics = $.parseJSON($(".feed_topics").val());
+    var feed_types =  $.parseJSON($(".feed_types").val());
+    var feed_levels =  $.parseJSON($(".feed_levels").val());
+    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    feed_topics = JSON.stringify(feed_topics);
+    feed_types = JSON.stringify(feed_types);
+    feed_levels = JSON.stringify(feed_levels);
+    feed_groups = JSON.stringify(feed_groups);
+
+    ajaxPost({
+        data: {'action':'saveFilter','feed_ranking': feed_ranking,'feed_topics':feed_topics,
+            'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
+            'feed_submissions_only':feed_submissions_only,'feed_display':feed_display,
+            'feed_name': feed_name
+        },
+        success: function(data) {
+            location.reload();
+        },
+        error: null
+    });
+}
+
+/*
+ retrives the filter setting with the inputted id from the server and refreshes feed.
+ */
+function getFilter(f_id) {
+    ajaxPost({
+        data: {'action':'getFilter', filter_id:f_id},
+        success: function(data) {
+
+            alert("success!");
+
+            var returned = eval('(' + data + ')');
+
+            clearFilterParameters();
+
+            setRanking(returned.ranking);
+            setDisplay(returned.display);
+            setSubmissionOnly(returned.submissions_only);
+
+            var feed_topics = $.parseJSON($(".feed_topics").val());
+            var feed_types =  $.parseJSON($(".feed_types").val());
+            var feed_levels =  $.parseJSON($(".feed_levels").val());
+            var feed_groups =  $.parseJSON($(".feed_groups").val());
+
+
+            feed_types.each(function(index) {
+                alert($(this));
+                addType($(this));
+            });
+
+            feed_topics.each(function(index) {
+               addTopic($(this));
+            });
+
+            feed_groups.each(function(index) {
+                addGroup($(this));
+            });
+
+            feed_levels.each(function(index) {
+                addLevel($(this));
+            });
+
+        },
+        error: null
+    })
+}
+
+/*
+visually and in data representation sets all feed parameters to defaults
+ */
+function clearFilterParameters() {
+
+    $(".feed_topics").val(JSON.stringify([]));
+    var topic_icon_wrapper = $(".feed-topic-selector-wrapper");
+    clearTopicIcons(topic_icon_wrapper);
+
+    $(".feed_types").val(JSON.stringify([]));
+    $(".feed-type-selector").attr("checked", false);
+
+    $(".feed_levels").val(JSON.stringify([]));
+    $(".feed-level-selector").attr("checked", false);
+
+    $(".feed_groups").val(JSON.stringify([]));
+    $(".feed-group-selector").attr("checked", false);
+
+}
+
+
+/*
+ the following methods are helpers for get filter which apply the retrieved parameters to the page.
+ */
+function addTopic(t_id) {
+    var t_wrapper = $(".feed-topic-icon-wrapper[data-id=" + t_id + "]");
+    showTopicIcon(t_wrapper);
+    listSelectHelper(t_id, 'feed_topics');
+}
+
+function addType(type) {
+    listSelectHelper(type, 'feed_types');
+    $(".feed-type-selector[value=" + type + "]").attr("checked", true);
+}
+
+function addLevel(level) {
+    listSelectHelper(level, 'feed_levels');
+    $(".feed-level-selector[value=" + level + "]").attr("checked", true);
+}
+
+function addGroup(g_id) {
+    listSelectHelper(g_id, 'feed_groups');
+    $(".feed-group-selector[value=" + g_id + "]").attr("checked", true);
+}
+
+function setSubmissionOnly(value) {
+    $(".feed_submissions_only").val(value);
+}
+
+function setRanking(value) {
+    $(".feed_ranking").val(value);
+}
+
+function setDisplay(value) {
+    $(".feed_display").val(value);
+}
+
+
+/* binds everyting */
 function loadNewFeed() {
     $(".get_feed").click(function(event) {
         event.preventDefault();
@@ -1468,8 +1593,28 @@ function loadNewFeed() {
     });
 
     $(".feed-topic-img").click(function(event) {
-        selectTopicMultiple($(this));
-        feedTopicSelect($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        toggleTopicIcon(wrapper);
+        var value = $(this).parents(".feed-topic-icon-wrapper").attr("data-id");
+        listSelectHelper(value, 'feed_topics');
+        refreshFeed();
+    });
+
+    $(".feed-type-selector").click(function(event) {
+        var value = $(this).val();
+        listSelectHelper(value, 'feed_types');
+        refreshFeed();
+    });
+
+    $(".feed-level-selector").click(function(event) {
+        var value = $(this).val();
+        listSelectHelper(value, 'feed_levels');
+        refreshFeed();
+    });
+
+    $(".feed-group-selector").click(function(event) {
+        var value = $(this).val();
+        listSelectHelper(value, 'feed_groups');
         refreshFeed();
     });
 
@@ -1487,14 +1632,19 @@ function loadNewFeed() {
         refreshFeed();
     });
 
-    $(".feed-type-selector").click(function(event) {
-        feedTypeSelect($(this));
-        refreshFeed();
+    $(".save-filter-button").click(function(event) {
+        event.preventDefault();
+        saveFilter();
     });
 
-    $(".feed-group-selector").click(function(event) {
-        feedGroupSelect($(this));
-        refreshFeed();
+    $(".my-filter-selector").click(function(event) {
+        event.preventDefault();
+        var value = $(this).attr("data-id");
+        getFilter(value);
+    });
+
+    $(".feed-clear").click(function(event) {
+       clearFilterParameters();
     });
 
     refreshFeed();
@@ -2333,7 +2483,8 @@ function loadGroup()
 
     // change histogram topic
     $(".h-topic-img").click(function(event) {
-        selectTopicSingle($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        selectTopicSingle(wrapper);
         var topic = $(this).siblings(".t-alias").val();
         var was = $("#histogram-topic").val();
         if (topic == was) {

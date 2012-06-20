@@ -171,6 +171,12 @@ LEVEL_CHOICES = (
     ('W', 'World')
 )
 
+# feed display types
+FEED_DISPLAY_CHOICES = (
+    ('P', 'pinterest'),
+    ('L', 'linear')
+)
+
 # privacy setting types
 PRIVACY_CHOICES = (
     ('PUB','Public'),

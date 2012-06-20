@@ -20,15 +20,18 @@ from operator import itemgetter
 def getFeed(filter, start=0, stop=10, saved=False):
     topics = filter['topics']
     types = filter['types']
-    groups = filter['groups']
+    levels = filter['levels']
+    g_ids = filter['groups']
+    groups = Group.objects.filter(id__in=g_ids)
     ranking = filter['ranking']
-    just_created_by_group = filter['just_created_by_group']
+    submissions_only = filter['submissions_only']
     content = Content.objects.filter(type__in=FEED_CONTENT_TYPES)
     if topics:
         content = content.filter(main_topic__in=topics)
     if types:
         content = content.filter(type__in=types)
-    groups = Group.objects.filter(id__in=groups)
+    if levels:
+        content = content.filter(level__in=levels)
     if groups:
         u_ids = []
         for g in groups:
@@ -36,7 +39,7 @@ def getFeed(filter, start=0, stop=10, saved=False):
         users = UserProfile.objects.filter(id__in=u_ids)
     else:
         users = UserProfile.objects.filter(user_type="U")
-    if just_created_by_group:
+    if submissions_only:
         if groups:
             u_ids = users.values_list("id", flat=True)
             content = content.filter(creator_id__in=u_ids)
