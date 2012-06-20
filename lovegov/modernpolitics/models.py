@@ -833,7 +833,7 @@ class SimpleFilter(LGModel):
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
     types = custom_fields.ListField()                  # list of char of included types
-    levels = custom_fields.ListField()                 # list of char of included levels
+    levels = custom_fields.ListField(default=[])                 # list of char of included levels
     groups = models.ManyToManyField("Group")
     submissions_only = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
     display = models.CharField(max_length=1, choices=FEED_DISPLAY_CHOICES, default="P")
