@@ -2330,13 +2330,19 @@ function getFeed()
         },
         success: function(data) {
             var returned = eval('(' + data + ')');
+
             if (feed_replace == true) {
-                $(".the_feed").html(returned.html);
+                $(".pinterest-wrapper").html(returned.html);
             }
             else {
-                $(".the_feed").append(returned.html);
+                $(".pinterest-wrapper").append(returned.html);
             }
+
             $(".feed_start").val(feed_start + returned.num);
+
+            if (feed_display == "P") {
+                pinterestRender($(".pinterest_card"));
+            }
         },
         error: null
     });
@@ -2580,7 +2586,5 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
-    //refreshFeed();
-
-    pinterestRender($(".pinterest_card"));
+    refreshFeed();
 }
