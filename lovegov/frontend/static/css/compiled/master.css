@@ -84,6 +84,12 @@ a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link {
 a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover {
   color: #ef503b; }
 
+a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link {
+  color: #005468; }
+
+a.invert_link:hover {
+  color: #0094a3; }
+
 a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover {
   font-size: 20px; }
 

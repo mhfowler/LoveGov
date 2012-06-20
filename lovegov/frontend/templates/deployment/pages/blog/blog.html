@@ -1,4 +1,9 @@
 {% extends 'deployment/templates/no-login-frame.html' %}
+
+{% block title %}
+    blog
+{% endblock %}
+
 {% block content %}
 
     <link href="/static/css/compiled/blog.css" rel="stylesheet" type="text/css"/>
@@ -82,6 +87,10 @@
             {% endif %}
         </div>
     </div>
+
+    {% if not viewer %}
+        {% include 'deployment/pages/login/login-footer.html' %}
+    {% endif %}
 
     <script type="text/javascript">
 
@@ -196,8 +205,6 @@
         });
 
     </script>
-
-
 
 
 {% endblock %}

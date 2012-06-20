@@ -95,6 +95,12 @@ a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link {
 a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover {
   color: #ef503b; }
 
+a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link {
+  color: #005468; }
+
+a.invert_link:hover {
+  color: #0094a3; }
+
 a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover {
   font-size: 20px; }
 
@@ -271,7 +277,7 @@ img.icon_small {
 .capitalize_text {
   text-transform: uppercase; }
 
-.float_left, .team, .team_left, .team_right, .team_center, div.get-started-left, .get-started-right {
+.float_left, .team, .team_left, .team_right, .team_center, div.get-started-left, .get-started-right, .get-started-bottom, p.recovery-error {
   float: left; }
 
 .float_right, .button_red, .button_red:link, .button_red:active, .button_red:visited, .button_red:link:active, .button_red:link:visited, .button_red:active:visited {
@@ -303,9 +309,58 @@ span.big {
   margin-right: auto;
   margin-top: 15px; }
 
-#top {
+input {
+  float: left;
+  border: 1px solid #cccccc; }
+
+div.blocks, div#top, div#middle, div#bottom {
   width: 1000px;
-  margin-bottom: 25px; }
+  display: inline-block;
+  margin-bottom: 35px; }
+
+div#bottom {
+  border-top: 1px solid #CCC;
+  padding-top: 20px; }
+
+#middle-left {
+  position: relative;
+  float: left;
+  width: 425px;
+  height: 287px;
+  background-image: url(/static/images/login/banner-425x287.png);
+  margin-left: 20px; }
+
+#middle-left a, #middle-left a:link, #middle-left a:active, #middle-left a:visited {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+  text-transform: uppercase;
+  position: absolute;
+  left: 128px;
+  top: 110px;
+  background-color: #f0503b;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  font-size: 17px;
+  border-radius: 10px; }
+
+#middle-left a:hover {
+  left: 123px;
+  top: 105px;
+  cursor: pointer;
+  padding-left: 35px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 35px; }
+
+#middle-right {
+  position: relative;
+  float: right;
+  margin-right: 20px;
+  margin-top: 25px;
+  width: 440px; }
 
 #mission-statement {
   font-family: "Gill Sans Std Light";
@@ -325,19 +380,19 @@ span.big {
 
 .team_left {
   margin-left: 0;
-  margin-right: 15px;
+  margin-right: 20px;
   margin-top: 0;
   margin-bottom: 0; }
 
 .team_right {
-  margin-left: 15px;
+  margin-left: 20px;
   margin-right: 0;
   margin-top: 0;
   margin-bottom: 0; }
 
 .team_center {
-  margin-left: 15px;
-  margin-right: 15px;
+  margin-left: 20px;
+  margin-right: 20px;
   margin-top: 0;
   margin-bottom: 0; }
 
@@ -373,29 +428,29 @@ p.privacy_p {
 
 .input-span {
   position: absolute;
-  left: 10px;
+  left: 6px;
   color: #959595;
   cursor: text;
   font-size: 28px;
   font-family: "Gill Sans Std Light"; }
 
 #username-span {
-  top: 61px; }
+  top: 54px; }
 
 #password-span {
-  top: 129px; }
+  top: 120px; }
 
 #fullname-span {
-  top: 60px; }
+  top: 54px; }
 
 #email-span {
-  top: 130px; }
+  top: 120px; }
 
 #email2-span {
-  top: 201px; }
+  top: 186px; }
 
 #password-register-span {
-  top: 272px; }
+  top: 252px; }
 
 .login-input {
   height: 45px;
@@ -432,7 +487,6 @@ span.privacy_agree {
 
 div.get-started-left {
   /*tribute to cs17 project bignum. rest in peace. */
-  font-family: "Helvetica", Verdana, sans-serif;
   font-weight: bold;
   font-size: 170px;
   color: #ef503b;
@@ -452,3 +506,105 @@ div.get-started-left {
   margin-right: 15px;
   margin-top: 10px;
   margin-bottom: 0; }
+
+p.recovery-error {
+  font-size: 17px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 5px;
+  margin-bottom: 0;
+  width: 260px;
+  text-align: left; }
+
+div.vertical-separator {
+  float: left;
+  border-left: 1px solid #ef503b;
+  height: 70px;
+  margin-left: 25px;
+  margin-top: 5px; }
+
+#why-facebook-hover {
+  position: absolute;
+  width: 250px;
+  height: 135px;
+  border-radius: 5px;
+  padding: 25px;
+  opacity: 0.95;
+  background-color: #f0503b;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  top: -10px;
+  left: 60px;
+  font-size: 19px;
+  font-family: "Gill Sans Std Light"; }
+  #why-facebook-hover a {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    cursor: pointer; }
+  #why-facebook-hover p {
+    padding-top: 10px;
+    padding-bottom: 10px; }
+
+#emailForm {
+  float: left; }
+
+#mailingList {
+  float: left;
+  margin-right: 15px;
+  margin-top: 2px;
+  font-family: "Gill Sans Std Light";
+  font-size: 16px; }
+
+#emailInput {
+  width: 165px; }
+
+#emailSubmit {
+  width: 60px; }
+
+#emailMessage {
+  float: right; }
+
+#facebook-button {
+  border: 0;
+  width: 415px; }
+
+.about-div {
+  width: 1000px;
+  float: left;
+  margin-bottom: 20px; }
+  .about-div h3 {
+    font-size: 24px; }
+
+.get-started-container {
+  padding-top: 15px;
+  width: 320px;
+  float: left;
+  -moz-border-radius: 25px;
+  border-radius: 25px; }
+
+.get-started-container:hover {
+  background-color: #F0F0F0; }
+
+#privacy-div {
+  float: left;
+  margin-top: 50px; }
+
+#privacy-div div {
+  width: 475px;
+  float: left; }
+
+.get-started-container-left {
+  padding-right: 10px; }
+
+.get-started-container-right {
+  padding-left: 10px; }
+
+.get-started-container-center {
+  padding-left: 10px;
+  padding-right: 10px; }
+
+table {
+  border-spacing: 0; }
