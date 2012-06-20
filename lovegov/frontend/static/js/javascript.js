@@ -2503,9 +2503,8 @@ function pinterestRender(cards) {
         var top = pinterest[current_col];
         var left = pinterest_width*current_col;
         var height = $(this).find(".pinterest").height() + 20;
-        $(this).css("top", top);
-        $(this).css("left", left);
         $(this).css("position", 'absolute');
+        $(this).animate({"top": top, "left": left}, 1400);
         pinterest[current_col] = (top + height);
         current_col += 1;
     });
