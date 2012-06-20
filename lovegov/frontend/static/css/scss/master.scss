@@ -50,7 +50,21 @@
   -khtml-border-radius: $radius;
 }
 
-.main-div {
+@mixin fontSize($fontSize: 20px)
+{
+  font-size:$fontSize;
+}
+
+@mixin setMargin($margin_left:0,$margin_right:0,$margin_top:0,$margin_bottom:0)
+{
+  margin-left:$margin_left;
+  margin-right:$margin_right;
+  margin-top:$margin_top;
+  margin-bottom:$margin_bottom;
+}
+
+.main-div
+{
   width: 1000px;
   margin-top: 50px;
   margin-left: auto;
@@ -93,6 +107,18 @@ a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link
 {
   text-decoration:none;
   color:$link-hover;
+}
+
+// Clears the color change for a link so it remains the darker color
+a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover
+{
+  color:$red;
+}
+
+
+a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover
+{
+  @include fontSize(20px);
 }
 
 p
