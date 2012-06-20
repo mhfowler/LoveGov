@@ -132,8 +132,7 @@ def blog(request,category=None,number=None,vals={}):
                 vals['blogPost'] = blogPost
                 vals['blogPosts'] = blogPosts
                 return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
-
-        if category:
+        elif category:
             if string.capitalize(category) in BlogEntry.CATEGORY_CHOICES:
                 for blogPost in blogPosts:
                     if string.capitalize(category) in blogPost.category:
@@ -145,7 +144,7 @@ def blog(request,category=None,number=None,vals={}):
         else:
             vals['blogPosts'] = blogPosts
 
-
+        vals['blogPost'] = None
 
         return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
 

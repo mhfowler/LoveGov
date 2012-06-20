@@ -1140,7 +1140,7 @@ def blogAction(request,vals={}):
         from lovegov.modernpolitics.helpers import urlToObject
         blogEntry = urlToObject(request.POST['url'])
         if blogEntry:blogEntry.delete()
-
+        return HttpResponse("+")
     elif 'category' in request.POST:
         category = string.capitalize(request.POST['category'])
         blogPosts = BlogEntry.objects.all().order_by('-id')
