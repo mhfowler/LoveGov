@@ -84,6 +84,7 @@
   margin-top:$margin-top;
 }
 
+
 @mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
 {
   -moz-border-radius: $radius;
@@ -100,6 +101,14 @@
   text-decoration: none;
   outline: none;
   border: 0;
+}
+
+@mixin horitzontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0)
+{
+  border-bottom: 1px solid $color;
+  width:$width;
+  margin-left:$margin-left;
+  margin-top:$margin-top;
 }
 
 .main-div
@@ -174,7 +183,11 @@ a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link
 
 a.invert_link:hover
 {
+<<<<<<< HEAD
   color:$text-blue;
+=======
+  color:$text-blue-light;
+>>>>>>> 3aa607b32376dee39dce422e9dd79db74e5b65fa
 }
 
 

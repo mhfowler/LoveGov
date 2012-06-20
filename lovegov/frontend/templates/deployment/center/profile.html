@@ -145,18 +145,26 @@
 
     <div class="profile-bottom">
         <div class="profile-activity-container">
-            <div class="activity-title">Activity</div>
+            <div class="profile-section-title">Activity</div>
             <div class="profile-activity-feed">
                 {% for action in actions_text %}
-                    {{ action|safe|escape }}<br>
+                    {% if not forloop.last %}
+                        {{ action|safe|escape }}
+                        <div class="action-separator"></div>
+                    {% else %}
+                        {{ action|safe|escape }}
+                    {% endif %}
                 {% empty %}
                     No Activity
                 {% endfor %}
             </div>
+            <div class="see-more-activity">
+                See more activity
+            </div>
         </div>
 
-        <div class="profile-group-container">
-            <h4>Groups</h4>
+        <div class='profile-group-container'>
+            <div class="profile-section-title">Groups</div>
             <ul id="groups">
                 {% for group in prof_groups %}
                     <li><a href="{{ group.get_url }}">{{ group.title }}</a></li>
