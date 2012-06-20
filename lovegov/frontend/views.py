@@ -372,14 +372,19 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def theFeed(request, vals={}):
 
+    viewer = vals['viewer']
+
     rightSideBar(request, vals)
 
     vals['feed_ranking'] = 'N'
+    vals['feed_levels'] = json.dumps([])
     vals['feed_topics'] = json.dumps([])
     vals['feed_types'] = json.dumps([])
     vals['feed_groups'] = json.dumps([])
-    vals['feed_just'] = 1
-    vals['feed_display'] = 'linear'
+    vals['feed_submissions_only'] = 1
+    vals['feed_display'] = 'L'
+
+    vals['my_filters'] = viewer.my_filters.all()
 
     vals['groups'] = UserGroup.objects.all()
 

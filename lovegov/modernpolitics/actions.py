@@ -977,27 +977,71 @@ def ajaxGetFeed(request, vals={}):
     feed_ranking = request.POST['feed_ranking']
     feed_topics = json.loads(request.POST['feed_topics'])
     feed_types = json.loads(request.POST['feed_types'])
+    feed_levels = json.loads(request.POST['feed_levels'])
     feed_groups = json.loads(request.POST['feed_groups'])
-    feed_just = bool(int(request.POST['feed_just']))
+    feed_submissions_only = bool(int(request.POST['feed_submissions_only']))
+    feed_display = request.POST['feed_display']
+
     feed_start = int(request.POST['feed_start'])
     feed_end = int(request.POST['feed_end'])
-    feed_display = request.POST['feed_display']
+
 
     filter = {
         'topics': feed_topics,
         'types': feed_types,
+        'levels': feed_levels,
         'groups': feed_groups,
         'ranking': feed_ranking,
-        'just_created_by_group': feed_just
+        'submissions_only': feed_submissions_only
     }
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
     vals = {'content':content}
-    if feed_display == 'pinterest':
+    if feed_display == 'P':
         html = ajaxRender('test/pinterest.html', vals, request)
     else:
         html = ajaxRender('test/linear.html', vals, request)
     to_return = {'html':html, 'num':len(content)}
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# saves a filter setting
+#-----------------------------------------------------------------------------------------------------------------------
+def saveFilter(request, vals={}):
+
+    name = request.POST['feed_name']
+    ranking = request.POST['feed_ranking']
+    types = json.loads(request.POST['feed_types'])
+    levels = json.loads(request.POST['feed_levels'])
+    topics = json.loads(request.POST['feed_topics'])
+    groups = json.loads(request.POST['feed_groups'])
+    submissions_only = bool(int(request.POST['feed_submissions_only']))
+    display = request.POST['feed_display']
+
+    filter = SimpleFilter(ranking=ranking, types=types,
+        levels=levels, submissions_only=submissions_only,
+    display=display, name=name)
+    filter.save()
+
+    for t in topics:
+        filter.topics.add(t)
+    for g in groups:
+        filter.groups.add(g)
+
+    viewer = vals['viewer']
+    viewer.my_filters.add(filter)
+
+    return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets a filter setting and returns via json dump
+#-----------------------------------------------------------------------------------------------------------------------
+def getFilter(request, vals={}):
+
+    f_id = request.POST['filter_id']
+    filter = SimpleFilter.objects.get(id=f_id)
+    to_return = filter.getDict()
+
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1179,6 +1223,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
             'ajaxGetFeed': ajaxGetFeed,
+            'saveFilter': saveFilter,
+            'getFilter': getFilter,
             'matchSection': matchSection,
             'blogAction': blogAction
         }
