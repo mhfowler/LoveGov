@@ -952,7 +952,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
     view = models.ForeignKey("WorldView", default=initView, null=True)
     network = models.ForeignKey("Network", null=True)
-    location = models.ForeignKey(PhysicalAddress, null=True)
+    #location = models.ForeignKey(PhysicalAddress, null=True)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
