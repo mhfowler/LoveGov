@@ -1,17 +1,69 @@
 <!-- css -->
 <link href="/static/css/compiled/feed.css" rel="stylesheet" type="text/css"/>
 
+<!-- feed metadata -->
+<div class="feed-metadata" data-columns="3">
+
+    <input type="hidden" class="feed_ranking" value="{{ feed_ranking }}"/>
+    <input type="hidden" class="feed_topics" value="{{feed_topics}}"/>
+    <input type="hidden" class="feed_types" value="{{feed_types}}"/>
+    <input type="hidden" class="feed_levels" value="{{feed_levels}}"/>
+    <input type="hidden" class="feed_groups" value="{{feed_groups}}"/>
+    <input type="hidden" class="feed_display" value="{{ feed_display }}"/>
+    <input type="hidden" class="feed_submissions_only" value="{{feed_submissions_only}}"/>
+    <input type="hidden" class="feed_start" value="0"/>
+
+</div>
+
+
 <!-- center wrapper -->
 <div class="feed-main-div">
 
     <!-- feed header -->
-    <div class="feed-header border">
+    <div class="feed-header">
 
         <p class="your-feed"> Your Feed </p>
+
+        <div class="options-box">
+            <p class="options-title">
+                More Options
+            </p>
+        </div>
+
+        <div class="options-box">
+            <p class="options-title">
+                Saved Filters
+            </p>
+        </div>
+
+        <div class="display-box">
+            <div> P </div>
+            <div> L </div>
+        </div>
+
+        <div class="create-box">
+            <p class="options-title"> create </p>
+        </div>
+
+        <p class="how-does"> how does this work? </p>
 
     </div>
 
     <!-- feed body -->
-    <div class="feed-body border"> </div>
+    <div class="feed-body">
+
+        <div class="pinterest-wrapper">
+            {% for x in feed %}
+
+                <div class="pinterest_card" data-rank="{{ forloop.counter }}">
+                    {% include 'deployment/center/feed/pinterest.html' %}
+                </div>
+
+            {% endfor %}
+        </div>
+
+    </div>
 
 </div>
+
+<script> rebind = 'feed'; </script>

@@ -388,6 +388,8 @@ def theFeed(request, vals={}):
 
     vals['groups'] = UserGroup.objects.all()
 
+    vals['feed'] = Petition.objects.all()
+
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
