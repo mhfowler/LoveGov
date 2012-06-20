@@ -1,4 +1,7 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/notifications.css" />
 {% for note in dropdown_notifications_text %}
-    {{ note|safe|escape }}<br>
+    {{ note|safe|escape }}
 {% endfor %}
-<a href="{{ viewer.getUrl }}">See more notifications</a>
+<div class="see-more-notifications">
+    <a href="{{ viewer.get_url }}">See more notifications</a>
+</div>

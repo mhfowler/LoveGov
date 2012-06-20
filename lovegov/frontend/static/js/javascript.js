@@ -495,11 +495,11 @@ function loadHeader()
         $(this).blur();
     });
 
-    $('#notifications-dropdown-arrow').click(
+    $('#notifications-dropdown-button').click(
         function(event)
         {
             event.preventDefault();
-            $('#notifications-dropdown').show();
+            $('#notifications-dropdown').toggle();
             ajaxPost({
                 'data': {'action':'getnotifications',
                         'dropdown':'true'},
@@ -507,7 +507,6 @@ function loadHeader()
                 {
                     var obj = eval('(' + data + ')');
                     $('#notifications-dropdown').html(obj.html);
-                    $('#notifications-dropdown').fadeIn('fast');
                     unbindNotification();
                     loadNotification();
                 },
@@ -516,6 +515,7 @@ function loadHeader()
                     $('body').html(jqXHR.responseText);
                 }
             });
+            return false;
         }
     );
 
