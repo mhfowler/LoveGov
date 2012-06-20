@@ -90,9 +90,9 @@ div.feed-body {
 }
 
 div.pinterest-wrapper {
-  position:absolute;
-  top:80px;
-  left:150px;
+  position:relative;
+  top:20px;
+  left:0px;
 }
 
 div.pinterest-card {
@@ -104,7 +104,7 @@ div.pinterest-card {
 div.pinterest {
   @extend .box;
   position:absolute;
-  width:300px;
+  width:320px;
 }
 
 div.pinterest-main {

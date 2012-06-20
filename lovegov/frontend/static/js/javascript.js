@@ -2488,7 +2488,7 @@ function pinterestRender(cards) {
         // initialize variables
         var current_col=0;
         var total_cols=3;
-        var pinterest_width=330;
+        var pinterest_width=(1000/total_cols)+8;
         var i = 0;
         while (i < total_cols) {
             pinterest.push(0);
