@@ -950,7 +950,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view = models.ForeignKey("WorldView", default=initView)
+    view = models.ForeignKey("WorldView", default=initView, null=True)
     network = models.ForeignKey("Network", null=True)
     location = models.ForeignKey(PhysicalAddress, null=True)
     # old address
