@@ -10,7 +10,7 @@
             <ul class="list_none">
                 {% for blogPost in blogPosts|slice:":5" %}
                 <li>
-                    <a>{{ blogPost.title }}</a>
+                    <a href="{{ blogPost.getURL }}">{{ blogPost.title }}</a>
                 </li>
                 {% endfor %}
             </ul>
@@ -135,20 +135,20 @@
                 var thisEntry = $(this);
                 var href = thisEntry.attr('href');
                 $.ajax
-                        ({
-                            url:'/action/',
-                            type:'POST',
-                            data:{'action':'blogAction','url':href},
-                            success: function(data)
-                            {
-                                thisEntry.closest('.blog_item').remove();
-                                alert("Success");
-                            },
-                            failure: function(a,b,c)
-                            {
+                ({
+                    url:'/action/',
+                    type:'POST',
+                    data:{'action':'blogAction','url':href},
+                    success: function(data)
+                    {
+                        thisEntry.closest('.blog_item').remove();
+                        alert("Success");
+                    },
+                    failure: function(a,b,c)
+                    {
 
-                            }
-                        })
+                    }
+                })
 
             });
         {% endif %}
