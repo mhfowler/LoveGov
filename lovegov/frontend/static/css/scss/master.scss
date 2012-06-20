@@ -55,10 +55,12 @@
   font-size:$fontSize;
 }
 
-@mixin setMargin($margin_left,$margin_right)
+@mixin setMargin($margin_left:0,$margin_right:0,$margin_top:0,$margin_bottom:0)
 {
   margin-left:$margin_left;
-  margin-right:$margin-right;
+  margin-right:$margin_right;
+  margin-top:$margin_top;
+  margin-bottom:$margin_bottom;
 }
 
 .color_link-hover

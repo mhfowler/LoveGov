@@ -83,8 +83,9 @@
                 $(id_span).focus();
             });
 
-            $('#create-account').click(function()
+            $('#create-account').click(function(event)
             {
+                event.preventDefault();
                 $('#login-div').hide();
                 $('#register-div').show();
             });

@@ -260,7 +260,7 @@ ACTION_MODIFIERS = (
 
 # types of action which user should be notified about
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO']
-AGGREGATE_NOTIFY_TYPES = ['SI','VO']
+AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO']
 
 # Timedelta that it takes for aggregate notifications to go stale.
 STALE_TIME_DELTA = datetime.timedelta(14)

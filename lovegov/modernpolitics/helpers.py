@@ -12,7 +12,7 @@ from lovegov.modernpolitics.models import *
 
 # django
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext, RenderContext
 from django.template import loader
 
 # python
@@ -64,6 +64,7 @@ def renderToResponseCSRF(template, vals, request):
     except KeyError:
         vals['linkfrom'] = 0
     vals['request'] = request
+    # render template
     return render_to_response(template, vals, context_instance=RequestContext(request))
 
 #-----------------------------------------------------------------------------------------------------------------------
