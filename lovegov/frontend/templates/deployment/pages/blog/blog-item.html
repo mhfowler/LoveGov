@@ -1,6 +1,6 @@
 <div class="blog_item">
     <div class="blog_item_left">
-        <h3>{{ blogPost.title }}</h3>
+        <h3><a class="clear_link" href="{{ blogPost.getURL }}">{{ blogPost.title }}</a></h3>
         <div class="blog_posted">Posted on <strong>{{ blogPost.datetime }}</strong> in {% for cat in blogPost.category %}<a class="category_blog" href="/blog/{{ cat|lower }}">{{ cat }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</div>
         {{ blogPost.message|linebreaks }}
     </div>
@@ -8,7 +8,7 @@
         <h6>Author</h6>
         <div class="blog_creator">
             {% load thumbnail %}
-            {% thumbnail blogPost.creator.getProfileImage.image "35x35" format="PNG" as img %}
+            {% thumbnail blogPost.creator.getProfileImage.image "35x35" crop="center" format="PNG" as img %}
                 <img src="{{ img.url }}"/>
             {% endthumbnail %}
                 <a href="{{ blogPost.creator.get_url }}">{{ blogPost.creator.get_name }}</a>

@@ -49,8 +49,10 @@ urlpatterns += patterns('',
     (r'^passwordRecovery/(\S*)$', views.passwordRecovery),
     (r'^twitter/redirect/$', views.twitterRedirect),
     (r'^twitter/handle/$', views.twitterHandle),
+
     (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$',views.blog),
-    (r'^blog/(?P<category>\S*)/$',views.blog),
+    (r'^blog/(?P<category>\S+)/$',views.blog),
+    (r'^blog/$',views.blog),
 
 
     # under construction

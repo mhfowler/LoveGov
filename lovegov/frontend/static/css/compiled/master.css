@@ -71,6 +71,10 @@ a:hover {
   cursor: pointer;
   color: #005468; }
 
+a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link {
+  text-decoration: none;
+  color: #005468; }
+
 p {
   margin-bottom: 13px; }
 
