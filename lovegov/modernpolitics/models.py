@@ -3919,6 +3919,7 @@ class ResetPassword(LGModel):
             return False
     create = staticmethod(create)
 
+"""
 class BlogEntry(LGModel):
     CATEGORY_CHOICES = ['General','Update','News']
     creator = models.ForeignKey(UserProfile)
@@ -3926,7 +3927,7 @@ class BlogEntry(LGModel):
     category = custom_fields.ListField()
     title = models.CharField(max_length=5000)
     message = models.TextField()
-
+"""
 
 
 
