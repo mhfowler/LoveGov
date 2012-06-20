@@ -3888,6 +3888,10 @@ class BlogEntry(LGModel):
     message = models.CharField(max_length=100000)
 
 
+    def getURL(self):
+        return '/blog/' + self.creator.alias + '/' + str(self.id)
+
+
 
 
 ########################################################################################################################

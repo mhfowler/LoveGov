@@ -13,6 +13,7 @@ from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
 from lovegov.modernpolitics.images import *
+
 from haystack.query import SearchQuerySet
 
 # django
@@ -1089,26 +1090,46 @@ def matchSection(request, vals={}):
 
     return HttpResponse(json.dumps({'html':html}))
 
-def blogPost(request,vals={}):
+def blogAction(request,vals={}):
     user = vals['viewer']
-    title = request.POST['title']
-    text = request.POST['text']
+    if 'url' in request.POST:
+        from lovegov.modernpolitics.helpers import urlToObject
+        blogEntry = urlToObject(request.POST['url'])
+        if blogEntry:blogEntry.delete()
 
-    category = []
-    if 'update' in request.POST: category.append('Update')
-    if 'general' in request.POST: category.append('General')
-    if 'news' in request.POST: category.append('News')
+    elif 'category' in request.POST:
+        category = string.capitalize(request.POST['category'])
+        blogPosts = BlogEntry.objects.all().order_by('-id')
+        blogList = []
 
-    blog = BlogEntry(creator=user,title=title,message=text,category=category)
-    blog.save()
+        for blogPost in blogPosts:
+            if category in blogPost.category: blogList.append(blogPost)
 
-    vals['blogPost'] = blog
+        html = ''
+        for blogPost in blogList:
+            html += ajaxRender('deployment/pages/blog/blog-item.html',{'blogPost':blogPost},request)
 
-    html = ajaxRender('deployment/pages/blog/blog-item.html',vals,request)
+    else:
+        if user.isDeveloper():
+            title = request.POST['title']
+            text = request.POST['text']
+
+            category = []
+            if 'update' in request.POST: category.append('Update')
+            if 'general' in request.POST: category.append('General')
+            if 'news' in request.POST: category.append('News')
+            if not category: return HttpResponse(json.dumps({'error':" < Select a Category"}))
+
+            blog = BlogEntry(creator=user,title=title,message=text,category=category)
+            blog.save()
+
+            vals['blogPost'] = blog
+
+            html = ajaxRender('deployment/pages/blog/blog-item.html',vals,request)
+        else:
+            html = ''
 
     return HttpResponse(json.dumps({'html':html}))
-
-
 
 
 ########################################################################################################################
@@ -1159,7 +1180,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getnotifications': getNotifications,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
-            'blogPost': blogPost
+            'blogAction': blogAction
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

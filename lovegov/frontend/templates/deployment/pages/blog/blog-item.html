@@ -1,7 +1,7 @@
 <div class="blog_item">
     <div class="blog_item_left">
         <h3>{{ blogPost.title }}</h3>
-        <div class="blog_posted">Posted on <strong>{{ blogPost.datetime }}</strong> in {% for cat in blogPost.category %}<a href="/blog/{{ cat|lower }}/">{{ cat }}</a>{% endfor %}</div>
+        <div class="blog_posted">Posted on <strong>{{ blogPost.datetime }}</strong> in {% for cat in blogPost.category %}<a class="category_blog" href="/blog/{{ cat|lower }}">{{ cat }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</div>
         {{ blogPost.message|linebreaks }}
     </div>
     <div class="blog_item_right">
@@ -13,5 +13,35 @@
             {% endthumbnail %}
                 <a href="{{ blogPost.creator.get_url }}">{{ blogPost.creator.get_name }}</a>
         </div>
+        <div class="blog_options">
+            {% if viewer == blogPost.creator %}<a class="delete_blog_post" href="{{ blogPost.getURL }}">Delete</a>{% endif %}
+        </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    /*
+    $('.category_blog').unbind();
+    $('.category_blog').click(function(event)
+    {
+        event.preventDefault();
+        var category = $(this).attr('href').replace('/blog/','');
+        $.ajax
+        ({
+            url:'/action/',
+            type:'POST',
+            data:{'action':'getBlogPosts','category':category},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                $('#blog-entries').html(returned.html);
+            },
+            failure: function(a,b,c)
+            {
+
+            }
+        })
+    });
+    */
+
+</script>
