@@ -1,0 +1,81 @@
+/*
+Syntax error: Undefined variable: "$link-hover".
+        on line 154 of lovegov/frontend/static/css/scss/master.scss
+
+149:   color:$red;
+150: }
+151: 
+152: a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link
+153: {
+154:   color:$link-hover;
+155: }
+156: 
+157: a.invert_link:hover
+158: {
+159:   color:$link;
+
+Backtrace:
+lovegov/frontend/static/css/scss/master.scss:154
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/script/variable.rb:49:in `_perform'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/script/node.rb:40:in `perform'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:216:in `visit_prop'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `map'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:27:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:39:in `with_environment'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:238:in `visit_rule'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `map'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:27:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:39:in `with_environment'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:47:in `visit_root'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/root_node.rb:20:in `render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:300:in `_render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:247:in `render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:340:in `update_stylesheet'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:202:in `update_stylesheets'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `each'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `update_stylesheets'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:298:in `watch'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:95:in `initialize_adapter'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapter.rb:162:in `call'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapter.rb:162:in `poll_changed_dirs'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `initialize'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `new'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/linux.rb:44:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:44:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:306:in `watch'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `method_missing'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:431:in `watch_or_update'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:302:in `process_result'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:41:in `parse'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:21:in `parse!'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/sass:8
+/usr/local/bin/sass:19:in `load'
+/usr/local/bin/sass:19
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$link-hover\".\A         on line 154 of lovegov/frontend/static/css/scss/master.scss\A \A 149:   color:$red;\A 150: }\A 151: \A 152: a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link\A 153: {\A 154:   color:$link-hover;\A 155: }\A 156: \A 157: a.invert_link:hover\A 158: {\A 159:   color:$link;"; }

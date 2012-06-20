@@ -1,10 +1,15 @@
 {% extends 'deployment/templates/no-login-frame.html' %}
+
+{% block title %}
+    blog
+{% endblock %}
+
 {% block content %}
 
     <link href="/static/css/compiled/blog.css" rel="stylesheet" type="text/css"/>
 
     <div id="blog_left">
-        <h4 class="capitalize_text" style="margin-bottom:25px">Blog</h4>
+        <h4 class="capitalize_text" style="margin-bottom:25px"><a class="clear_link_red" href="/blog/">Blog</a></h4>
         <div id="recent_blog_posts" class="blog_left_div">
             <h5 class="color_link-hover">Recent Blog Posts</h5>
             <ul class="list_none">
@@ -82,6 +87,10 @@
             {% endif %}
         </div>
     </div>
+
+    {% if not viewer %}
+        {% include 'deployment/pages/login/login-footer.html' %}
+    {% endif %}
 
     <script type="text/javascript">
 
@@ -196,8 +205,6 @@
         });
 
     </script>
-
-
 
 
 {% endblock %}

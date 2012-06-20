@@ -1,4 +1,6 @@
+@charset "UTF-8";
 @import 'master-variables';
+@import 'master';
 
 #main
 {
@@ -8,10 +10,80 @@
   margin-top:15px;
 }
 
-#top
+input
+{
+  float: left;
+  border:1px solid #CCC
+}
+
+div.blocks
 {
   width:1000px;
-  margin-bottom:25px;
+  display:inline-block;
+  margin-bottom:35px;;
+}
+div#top
+{
+  @extend .blocks;
+}
+div#middle
+{
+  @extend .blocks;
+}
+div#bottom
+{
+  @extend .blocks;
+  border-top:1px solid #CCC;
+  padding-top:20px;
+}
+
+#middle-left
+{
+  position:relative;
+  float:left;
+  width:425px;
+  height:287px;
+  background-image:url(/static/images/login/banner-425x287.png);
+  margin-left:20px;
+}
+
+#middle-left a, #middle-left a:link, #middle-left a:active, #middle-left a:visited
+{
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left:30px;
+  padding-right:30px;
+  text-transform:uppercase;
+  position:absolute;
+  left:128px;
+  top:110px;
+  background-color:#f0503b;
+  color:white;
+  font-weight:bold;
+  text-align:center;
+  font-size:17px;
+  border-radius:10px;
+}
+
+#middle-left a:hover
+{
+  left:123px;
+  top:105px;
+  cursor:pointer;
+  padding-left:35px;
+  padding-top:15px;
+  padding-bottom:15px;
+  padding-right:35px;
+
+}
+
+#middle-right
+{
+  position:relative;
+  float:right;
+  margin-right:20px;
+  margin-top:25px;
+  width:440px;
 }
 
 #mission-statement
@@ -23,4 +95,343 @@
   font-size:20px;
   text-align:right;
   margin-top:45px;
+}
+
+.developer_title
+{
+  color: $dark-gray;
+}
+
+.developer_names
+{
+  color: $link-hover;
+  font-weight:lighter;
+}
+
+.team
+{
+  @extend .float_left;
+}
+
+$margin:20px;
+.team_left
+{
+  @extend .team;
+  @include setMargin(0,$margin);
+}
+
+.team_right
+{
+  @extend .team;
+  @include setMargin($margin,0);
+}
+
+.team_center
+{
+  @extend .team;
+  @include setMargin($margin,$margin);
+}
+
+p.fb_login_p
+{
+  float:left;
+  font-family: $gill-light;
+  color:$deep-gray;
+  font-size:17px;
+  margin-bottom:0;
+}
+
+h1
+{
+  @extend h1;
+  margin-top:15px;
+}
+
+h3
+{
+  @extend h3;
+  font-size:21px;
+}
+
+#what-is-p
+{
+  width: 565px;
+  font-size: 24px;
+  color: $deep-gray;
+  line-height: 150%;
+  float: right;
+  font-family: $gill-light;
+}
+
+p.privacy_p
+{
+  margin-top:5px;
+  margin-bottom:25px;
+  margin-left:25px;
+  margin-right:25px;
+}
+
+#loginform
+{
+  float:left;
+}
+
+.input-span
+{
+  position:absolute;
+  left:6px;
+  color:$deep-gray;
+  cursor:text;
+  font-size:28px;
+  font-family:$gill-light;
+}
+
+#username-span
+{
+  top:54px;
+}
+
+#password-span
+{
+  top:120px;
+}
+
+#fullname-span
+{
+  top:54px;
+}
+
+#email-span
+{
+  top:120px;
+}
+
+#email2-span
+{
+  top:186px;
+}
+
+#password-register-span
+{
+  top:252px;
+}
+
+.login-input
+{
+  height:45px;
+  width:410px;
+  padding:5px;
+  font-size:28px;
+  color:$black;
+  font-family:$gill-light;
+}
+
+.button_red, .button_red:link, .button_red:active, .button_red:visited
+{
+  @extend .button_red;
+  @extend .float_right;
+  font-size:23px;
+}
+
+.button_red:hover
+{
+  @extend .button_red:hover;
+}
+
+table td
+{
+  text-align:right;
+  padding-bottom:10px;
+  padding-right:5px;
+}
+
+.account-actions, .account-actions:link, .account-actions:visited, .account-actions:active
+{
+  @include setMargin(0,15px);
+  margin-top: 21px;
+  font-size: 15px;
+  color:$deep-gray;
+
+}
+
+.account-actions:hover
+{
+  text-decoration:underline;
+  color:$link-hover;
+}
+
+span.privacy_agree
+{
+  font-size:18px;
+  font-family:$gill-light;
+}
+
+div.get-started-left
+{
+  /*tribute to cs17 project bignum. rest in peace. */
+  font-weight:bold;
+  font-size:170px;
+  color:$red;
+  @extend .float_left;
+  @include setMargin(0,15px);
+}
+
+.get-started-right
+{
+  @extend .float_left;
+  text-align:center;
+}
+
+.get-started-bottom
+{
+  @extend .float_left;
+}
+
+.get-started-paragraph
+{
+  font-family:$gill-light;
+  font-size:17px;
+  line-height:150%;
+  @include setMargin(15px,15px,10px);
+}
+
+p.recovery-error
+{
+  @include fontSize(17px);
+  @include setMargin($margin-top:5px);
+  @extend .float_left;
+  width:260px;
+  text-align:left;
+}
+
+div.vertical-separator
+{
+  @include verticalSeparator($height:70px,$margin-left:25px,$margin-top:5px);
+}
+
+#why-facebook-hover
+{
+  position:absolute;
+  width:250px;
+  height:135px;
+  border-radius:5px;
+  padding:25px;
+  opacity:0.95;
+  background-color:#f0503b;
+  color:white;
+  font-weight:bold;
+  text-align:center;
+  top:-10px;
+  left:60px;
+  font-size:19px;
+  font-family:$gill-light;
+
+  a
+  {
+    position:absolute;
+    top:10px;
+    right:10px;
+    color:white;
+    cursor:pointer;
+  }
+
+  p
+  {
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+}
+
+#emailForm
+{
+  float:left;
+}
+
+#mailingList
+{
+  float:left;
+  margin-right:15px;
+  margin-top:2px;
+  font-family:$gill-light;
+  font-size:16px;
+}
+
+#emailInput
+{
+  width:165px;
+}
+
+#emailSubmit
+{
+  width:60px;
+}
+
+#emailMessage
+{
+  float:right;
+}
+
+#facebook-button
+{
+  border:0;
+  width:415px;
+}
+
+.about-div
+{
+  width:1000px;
+  float:left;
+  margin-bottom:20px;
+
+  h3
+  {
+    @include fontSize(24px);
+  }
+}
+
+.get-started-container
+{
+  padding-top:15px;
+  width:320px;
+  float:left;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+}
+
+.get-started-container:hover
+{
+  background-color:#F0F0F0;
+}
+
+#privacy-div
+{
+  float:left;
+  margin-top:50px;
+}
+
+#privacy-div div
+{
+  width:475px;
+  float:left;
+}
+
+.get-started-container-left
+{
+  padding-right:10px;
+}
+
+.get-started-container-right
+{
+  padding-left:10px;
+}
+
+.get-started-container-center
+{
+  padding-left:10px;
+  padding-right:10px;
+}
+
+table
+{
+  border-spacing:0;
 }

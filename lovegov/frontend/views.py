@@ -119,13 +119,13 @@ def blog(request,category=None,number=None,vals={}):
     if request.method == 'GET':
         user = getUserProfile(request)
         if user: vals['viewer'] = user
+        else: vals['viewer'] = None
 
         blogPosts = BlogEntry.objects.all().order_by('-id')
         vals['blogPosts'] = []
         vals['ownBlog'] = False
         vals['categories'] = BlogEntry.CATEGORY_CHOICES
         vals['developers'] = UserProfile.objects.filter(developer=True)
-
 
         if number:
             blogPost = BlogEntry.lg.get_or_none(id=number)

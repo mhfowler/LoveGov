@@ -1,60 +1,13 @@
 {% extends 'deployment/templates/no-login-frame.html' %}
 {% block content %}
 
-    <link rel="stylesheet" type="text/css" href="/static/css/deployment/login-new.css" />
-
     <div id="middle">
         {% block middle %}
 
         {% endblock %}
     </div>
 
-    <div id="bottom">
-        <div id="footer">
-            <div style="float:left;margin-top:5px;">
-                <span id="mailingList" class="dark">Join our mailing list:</span>
-                <form id='emailForm' action="" method='post'>
-                    <input id="emailInput" name="email" type="text" value=""/>
-                    <input id="emailSubmit" type="submit" value="Submit" name="submitemail"/>
-                </form>
-                <div style="clear:both;padding-top:15px;">
-                    <a href="http://www.facebook.com/pages/Lovegov/368496463180373" target="_blank"><img src="/static/images/facebook.png" ></a>
-                    <a href="http://twitter.com/welovegov" target="_blank"><img src="/static/images/twitter.png"/></a>
-                    <span id="emailMessage" class="dark">{{ emailMessage }}</span>
-                </div>
-            </div>
-
-            <div style="float:left;border-left: 1px solid #F0503B;height: 65px;margin-left: 20px;margin-top: 10px;"></div>
-
-            <div style="float:right">
-                <div class="footer-title">
-                    development team
-                </div>
-                <div>
-                    <div class="team team-left">
-                        <div class="dark">Joschka Tryba</div>
-                        <div class="light">Chief Executive Officer</div>
-                        <a class="light" href="mailto:joschka@lovegov.com">joschka@lovegov.com</a>
-                    </div>
-                    <div class="team team-center">
-                        <div class="dark">Clayton Dunwell</div>
-                        <div class="light">Product Developer</div>
-                        <a class="light" href="mailto:clay@lovegov.com">clay@lovegov.com</a>
-                    </div>
-                    <div class="team team-center">
-                        <div class="dark">Maximus Fowler</div>
-                        <div class="light">Product Developer</div>
-                        <a class="light" href="mailto:max@lovegov.com">max@lovegov.com</a>
-                    </div>
-                    <div class="team team-right">
-                        <div class="dark">Catherine Schmidt</div>
-                        <div class="light">Lead Designer</div>
-                        <a class="light" href="mailto:cat@lovegov.com">cat@lovegov.com</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include 'deployment/pages/login/login-footer.html' %}
 
     <div id="fb-root"></div>
     <div id="default_variables" style="display:none">
