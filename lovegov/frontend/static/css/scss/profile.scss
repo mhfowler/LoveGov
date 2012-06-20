@@ -1,92 +1,197 @@
-#profile-main-div
-{
-  width:1000px;
-  margin-top:50px;
-  margin-left:auto;
-  margin-right:auto
-}
-
-#profile-img
-{
-  float:left;
-  margin-right:20px;
-  height:100px;
-}
+@import 'master.scss';
 
 /* LEFT MODULE */
-#middle-left
+div.middle-left
 {
   position:relative;
   float:left;
   width:630px;
-}
 
-#profile
-{
-  position:relative;
-  margin-top:100px;
-  margin-bottom:5px;
-  margin-left:30px;
-  height:235px;
-}
+  /* Basic Info */
+  div.basic-info
+  {
+    position:relative;
+    margin-bottom:5px;
+    margin-left:30px;
+    height:235px;
 
-.profile-username
-{
-  position:relative;
-  padding-bottom:5px;
-  font-size:20pt;
-  font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
-  color:#0f5569;;
-}
+    /* Info Left Side */
+    div.basic-info-left
+    {
+      @extend .float-left;
+      margin-right: 20px;
 
-#profile-summary
-{
-  position:relative;
-  width:380px;
-  margin-left:220px;
-  margin-bottom:12px;
-}
+      div.profile-follows-you
+      {
+        font-size: 9px;
+        margin-top: 2px;
+        text-align: center;
+        color: $deep-gray;
+      }
+    }
 
-#profile-info-stats
-{
-  position:relative;
-  left:10px;
+    /* Info Main Contents */
+    div.basic-info-main
+    {
+      @extend .float-left;
+
+      div.profile-username
+      {
+        @extend h2;
+        margin-bottom:5px;
+      }
+
+      div.profile-location
+      {
+        @extend h5;
+        color: $text-blue;
+        margin-left: 2px;
+      }
+
+      div.profile-network
+      {
+        @extend h5;
+        margin-left: 2px;
+      }
+
+      div.profile-summary
+      {
+        color: $deep-gray;
+        font-style: italic;
+        width: 380px;
+      }
+
+      /* Profile Stat Boxes */
+      div.profile-stats
+      {
+        margin-top: 20px;
+        height: 80px;
+
+        div.stat-box
+        {
+          @extend .float-left;
+          @include rounded();
+          border-width: 2px;
+          border-color: $gray;
+          border-style: solid;
+          background-color: $gray;
+          height: 70px;
+          width: 70px;
+          margin-right: 10px;
+          display: block;
+          text-align: center;
+
+          span.profile-stats-number
+          {
+            @extend .big-num;
+            color: white;
+            position: relative;
+            line-height: 52px;
+          }
+
+          span.profile-stats-title
+          {
+            color: $deep-gray;
+            position: relative;
+            top: -3px;
+          }
+        }
+
+        div.followers-stat
+        {
+          background-color: white;
+
+          span.followers-number
+          {
+            color: $red;
+          }
+        }
+      }
+
+      /* Profile Buttons */
+      div.profile-buttons
+      {
+        margin-top: 10px;
+        height: 50px;
+      }
+    }
+  }
 }
 
 /* RIGHT MODULE */
-#middle-right
+div.middle-right
 {
-  position:relative;
   float:left;
   width:300px;
   margin-left:40px;
-/*border-left:1px solid #ff886c;*/
+
+  div.matching
+  {
+    @include rounded();
+    border-width: 3px;
+    border-color: $gray;
+    border-style: solid;
+    text-align:center;
+    position: relative;
+    top: -20px;
+    z-index:0;
+
+    div#qaweb
+    {
+      z-index:0;
+      position:relative;
+      width:300px;
+      height:300px;
+      text-align:left;
+    }
+
+    div#qaweb-title
+    {
+      @include rounded-bottom(10px);
+      position:relative;
+      background-color: $gray;
+      padding-top:10px;
+      padding-bottom:2px;
+      @extend h5;
+      color: white;
+    }
+  }
 }
 
 
-#matching
+/* Profile Bottom */
+div.profile-bottom
 {
-  text-align:center;
-  z-index:0;
-  padding-bottom:20px;
-/*border-bottom:1px solid #ccc;*/
-  position:relative;
+  @extend .float-left;
+  display: block;
+  margin-top: 20px;
+
+  /* Activity Feed */
+  div.profile-activity-container
+  {
+    @extend .float-left;
+    display: block;
+    width: 450px;
+    margin-right: 50px;
+
+    div.activity-title
+    {
+      @extend h4;
+      color: $text-blue;
+      margin-bottom: 15px;
+    }
+
+    div.profile-activity-feed
+    {
+      display: block;
+      margin-left: 10px;
+    }
+  }
 }
 
-#myviews
-{
-  position:relative;
-  padding-bottom:10px;
-}
 
-#qaweb
-{
-  z-index:0;
-  position:relative;
-  width:300px;
-  height:300px;
-  text-align:left;
-}
+
+
 
 /* toolbox */
 

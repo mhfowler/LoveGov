@@ -1,173 +1,173 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css" />
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
 
-<div id="profile-main-div">
+<div class="main-div">
     <!-- Left Block -->
-    <div id="middle-left">
-        <div id="profile">
-            <div id="profile-img">
-                {% load thumbnail %}
-                {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
-                    <img src="{{ im.url }}"/>
-                {% empty %}
-                    <p> no pic </p>
-                {% endthumbnail %}
+    <div class="middle-left">
+        <div class="basic-info">
+            <div class="basic-info-left">
+                <div class="profile-img">
+                    {% load thumbnail %}
+                    {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
+                        <img src="{{ im.url }}" class="icon-really-big"/>
+                    {% empty %}
+                        <p> no pic </p>
+                    {% endthumbnail %}
+                </div>
+                <div class="profile-follows-you">
+                    FOLLOWS YOU
+                </div>
             </div>
-
-            <div class="profile-username">
-                {{ user_prof.get_name }}
-            </div>
-
-            <div id="profile-summary">
-
-            </div>
-            <div id="profile-info-stats">
-                <div id="profile-info">
-                    <div class="profile-header">Info</div>
-                    political views: <br />
-                    political role:  <br />
-                    {% with network=user_prof.getNetwork %}
-                        network: <a class="do-ajax-link" href="{{ network.get_url }}">{{ network.name }}</a>
-                    {% endwith %}
-                    <br />
-                    district: <br />
+            <div class="basic-info-main">
+                <div class="profile-username">
+                    {{ user_prof.get_name }}
                 </div>
 
-                <div id="profile-stats">
-                    <div class="profile-header">Activity</div>
-                    <ul>
-                        <li><span class="profile-stats-numbers">{{ responses }}</span> question{% if responses > 1 %}s{% endif %}</li>
-                        <li><span class="profile-stats-numbers">0</span> petitions</li>
-                        <li><span class="profile-stats-numbers">0</span> debates</li>
-                        <li><span class="profile-stats-numbers">0</span> articles</li>
-                    </ul>
+                <div class="profile-location">
+                    Providence, RI
+                </div>
+
+                <div class="profile-network">
+                    {% with network=user_prof.getNetwork %}
+                        <a class="do-ajax-link red-link" href="{{ network.get_url }}">{{ network.name }}</a>
+                    {% endwith %}
+                </div>
+
+                <div class="profile-summary">
+                    This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-box followers-stat">
+                        <span class="profile-stats-number followers-number">{{ prof_follow_me|length }}</span>
+                        <span class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="profile-stats-number">{{ responses }}</span>
+                        <span class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="profile-stats-number">0</span>
+                        <span class="profile-stats-title">petition{% if responses != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="profile-stats-number">0</span>
+                        <span class="profile-stats-title">article{% if responses != 1 %}s{% endif %}</span>
+                    </div>
+                </div>
+                <div class="profile-buttons">
+                    {% if viewer.id != user_prof.id %}
+                        {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                            <a href="" class="button-red float-left user-follow-button">
+                                follow
+                            </a>
+                        {% else %}
+                            <a href="" class="button-red float-left user-unfollow-button">
+                                {% if is_user_confirmed %}
+                                    unfollow
+                                {% elif is_user_requested %}
+                                    un-request
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Right Block -->
-    <div id="middle-right">
-        <div id="matching">
-            <div id="myviews" class="middle-right-head-font">
-                {% if viewer.id != user_prof.id %}
-                    You & {{ user_prof.get_name }}
-                {% else %}
-                    You
-                {% endif %}
+    <div class="middle-right">
+
+        {% if viewer.id == user_prof.id %}
+            <h4>Requests</h4>
+            <div class="follow-requests-container">
+                {% for req in prof_requests %}
+                    <div class="follow-request">
+                        <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
+                        <a href="" class="user-follow-response-y"> I accept! </a> ||
+                        <a href="" class="user-follow-response-n"> I decline! </a>
+                        <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
+                    </div>
+                    <br>
+                {% empty %}
+                    <div>No follow requests! =( </div><br>
+                {% endfor %}
             </div>
-            <div id="qaweb"></div>
-        </div>
+
+            <h4>Invites</h4>
+            <div class='group-invites-container'>
+                {% for invite in group_invites %}
+                    <div class="group-invite">
+                        <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a>
+                        has invited you to join
+                        <a href="{{ invite.group.get_url }}">{{ invite.group.get_name }}</a>:
+                        <a href="" class="group-invite-response-y"> I accept! </a> ||
+                        <a href="" class="group-invite-response-n"> I decline! </a>
+                        <input type="hidden" class="group-join-id" value="{{ invite.group.id }}"/>
+                    </div>
+                    <br>
+                {% empty %}
+                    <div>No group invites! =( </div><br>
+                {% endfor %}
+            </div>
+
+            Set following privacy to:
+            {% if viewer.private_follow %}
+                <a href="" class="public-follow">public</a>
+            {% else %}
+                <a href="" class="private-follow">private</a>
+            {% endif %}
+
+            <h4>Notifications</h4>
+            <div class="profile-notifications">
+                <input type="hidden" class="num-notifications" value="{{ num_notifications }}"/>
+                {% for note in notifications_text %}
+                    {{ note|safe|escape }}<br>
+                {% endfor %}
+            </div>
+            <div class="see-more-notifications-button">
+                <a href="" class="see-more-notifications">See more notifications</a>
+            </div>
+
+        {% else %}
+            <div class="matching">
+                <div id="qaweb"></div>
+                <div id="qaweb-title">
+                    You & {{ user_prof.get_name }}
+                </div>
+            </div>
+        {% endif %}
     </div>
 
-    <h4>Followers</h4>
-    <ul id="followers">
-        {% for follower in prof_follow_me %}
-            <li><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></li>
-        {% empty %}
-            <li>{{ user_prof.get_name }} has no followers! =( </li>
-        {% endfor %}
-    </ul>
-
-    <h4>People I Follow</h4>
-    <ul id="following">
-        {% for follow in prof_i_follow %}
-        <li><a href="{{ follow.get_url }}">{{ follow.get_name }}</a></li>
-        {% empty %}
-        <li>{{ user_prof.get_name }} follows no man. </li>
-        {% endfor %}
-    </ul>
-
-    <h4>Groups</h4>
-    <ul id="groups">
-        {% for group in prof_groups %}
-            <li><a href="{{ group.get_url }}">{{ group.title }}</a></li>
-        {% empty %}
-            <li>{{ user_prof.get_name }} has no groups! =( </li>
-        {% endfor %}
-    </ul>
-
-    {% if viewer.id == user_prof.id %}
-
-        <h4>Requests</h4>
-        <div id="follow-requests-container">
-        {% for req in prof_requests %}
-            <div class="follow-request">
-                <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-                <a href="" class="user-follow-response-y"> I accept! </a> ||
-                <a href="" class="user-follow-response-n"> I decline! </a>
-                <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
+    <div class="profile-bottom">
+        <div class="profile-activity-container">
+            <div class="activity-title">Activity</div>
+            <div class="profile-activity-feed">
+                {% for action in actions_text %}
+                    {{ action|safe|escape }}<br>
+                {% empty %}
+                    No Activity
+                {% endfor %}
             </div>
-            <br>
-        {% empty %}
-            <div>No follow requests! =( </div><br>
-        {% endfor %}
         </div>
 
-        <h4>Invites</h4>
-        <div id='group-invites-container'>
-        {% for invite in group_invites %}
-            <div class="group-invite">
-                <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a>
-                has invited you to join
-                <a href="{{ invite.group.get_url }}">{{ invite.group.get_name }}</a>:
-                <a href="" class="group-invite-response-y"> I accept! </a> ||
-                <a href="" class="group-invite-response-n"> I decline! </a>
-                <input type="hidden" class="group-join-id" value="{{ invite.group.id }}"/>
-            </div>
-            <br>
-        {% empty %}
-            <div>No group invites! =( </div><br>
-        {% endfor %}
+        <div class="profile-group-container">
+            <h4>Groups</h4>
+            <ul id="groups">
+                {% for group in prof_groups %}
+                    <li><a href="{{ group.get_url }}">{{ group.title }}</a></li>
+                {% empty %}
+                    <li>{{ user_prof.get_name }} has no groups! =( </li>
+                {% endfor %}
+            </ul>
         </div>
-
-        Set following privacy to:
-        {% if viewer.private_follow %}
-            <a href="" id="public-follow">public</a>
-        {% else %}
-            <a href="" id="private-follow">private</a>
-        {% endif %}
-
-        <h4>Notifications</h4>
-        <div id="profile-notifications">
-            <input type="hidden" id="num-notifications" value="{{ num_notifications }}"/>
-            {% for note in notifications_text %}
-                {{ note|safe|escape }}<br>
-            {% endfor %}
-        </div>
-        <div id="see-more-notifications-button">
-            <a href="" id="see-more-notifications">See more notifications</a>
-        </div>
-
-    {% elif is_user_rejected or not is_user_confirmed and not is_user_requested %}
-        <a href="" class="user-follow-button">
-            <h4>follow me!</h4>
-        </a>
-
-    {% elif is_user_confirmed or is_user_requested %}
-        <a href="" class="user-unfollow-button">
-            {% if is_user_confirmed %}
-                <h4>unfollow me!</h4>
-            {% elif is_user_requested %}
-                <h4>un-request me!</h4>
-            {% endif %}
-        </a>
-
-    {% endif %}
-
-    <h4>Activity</h4>
-        {% for action in actions_text %}
-            {{ action|safe|escape }}<br>
-        {% endfor %}
-
-    <script>
-        var p_id = "{{ user_prof.id }}";
-    </script>
-
     </div>
 
 </div>
 
+<script> var p_id = "{{ user_prof.id }}"; </script>
 <script> rebind='profile'; </script>
