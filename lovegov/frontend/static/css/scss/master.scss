@@ -84,6 +84,14 @@
   margin-top:$margin-top;
 }
 
+@mixin horitzontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0)
+{
+  border-bottom: 1px solid $color;
+  width:$width;
+  margin-left:$margin-left;
+  margin-top:$margin-top;
+}
+
 .main-div
 {
   width: 1000px;
@@ -151,12 +159,12 @@ a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_lin
 
 a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link
 {
-  color:$link-hover;
+  color:$text-blue;
 }
 
 a.invert_link:hover
 {
-  color:$link;
+  color:$text-blue-light;
 }
 
 

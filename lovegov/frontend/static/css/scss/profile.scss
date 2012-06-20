@@ -166,6 +166,12 @@ div.profile-bottom
   display: block;
   margin-top: 20px;
 
+  div.profile-section-title
+  {
+    @extend h4;
+    color: $text-blue;
+  }
+
   /* Activity Feed */
   div.profile-activity-container
   {
@@ -174,18 +180,29 @@ div.profile-bottom
     width: 450px;
     margin-right: 50px;
 
-    div.activity-title
-    {
-      @extend h4;
-      color: $text-blue;
-      margin-bottom: 15px;
-    }
-
     div.profile-activity-feed
     {
       display: block;
-      margin-left: 10px;
+
+      div.action-separator
+      {
+        @include horitzontalSeparator(450px);
+      }
     }
+
+    div.see-more-activity
+    {
+      background-color: $gray;
+      @include rounded(5px);
+      text-align: center;
+      font-style: italic;
+      padding: 2px 0 2px 0;
+    }
+  }
+
+  div.profile-group-container
+  {
+    @extend .float-left;
   }
 }
 

@@ -1,23 +1,21 @@
 /*
 Syntax error: Undefined variable: "$link-hover".
-        on line 154 of lovegov/frontend/static/css/scss/master.scss
-        from line 3 of lovegov/frontend/static/css/scss/login.scss
+        on line 107 of lovegov/frontend/static/css/scss/login.scss
 
-149: 
-150: h3
-151: {
-152:   @extend h3;
-153:   font-size:21px;
-154: }
-155: 
-156: #what-is-p
-157: {
-158:   width: 565px;
-159:   font-size: 24px;
+102:   color: $dark-gray;
+103: }
+104: 
+105: .developer_names
+106: {
+107:   color: $link-hover;
+108:   font-weight:lighter;
+109: }
+110: 
+111: .team
+112: {
 
 Backtrace:
-lovegov/frontend/static/css/scss/master.scss:154
-lovegov/frontend/static/css/scss/login.scss:3
+lovegov/frontend/static/css/scss/login.scss:107
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/script/variable.rb:49:in `_perform'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/script/node.rb:40:in `perform'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:216:in `visit_prop'
@@ -32,12 +30,6 @@ lovegov/frontend/static/css/scss/login.scss:3
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:238:in `visit_rule'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:146:in `visit_import'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:146:in `map'
-/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:146:in `visit_import'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
 /var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
@@ -86,4 +78,4 @@ lovegov/frontend/static/css/scss/login.scss:3
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$link-hover\".\A         on line 154 of lovegov/frontend/static/css/scss/master.scss\A         from line 3 of lovegov/frontend/static/css/scss/login.scss\A \A 149: \A 150: h3\A 151: {\A 152:   @extend h3;\A 153:   font-size:21px;\A 154: }\A 155: \A 156: #what-is-p\A 157: {\A 158:   width: 565px;\A 159:   font-size: 24px;"; }
+  content: "Syntax error: Undefined variable: \"$link-hover\".\A         on line 107 of lovegov/frontend/static/css/scss/login.scss\A \A 102:   color: $dark-gray;\A 103: }\A 104: \A 105: .developer_names\A 106: {\A 107:   color: $link-hover;\A 108:   font-weight:lighter;\A 109: }\A 110: \A 111: .team\A 112: {"; }
