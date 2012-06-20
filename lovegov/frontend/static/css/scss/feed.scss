@@ -1,0 +1,22 @@
+@import 'master-variables';
+@import 'master';
+
+.border {
+  border:solid;
+  border-color:red;
+  border-width:1px;
+}
+
+.feed-header {
+  height:70px;
+}
+
+.feed-main-div {
+  @extend .main-div;
+  margin-top:20px;
+}
+
+.your-feed {
+  @extend .really-big;
+  font-size:100px;
+}

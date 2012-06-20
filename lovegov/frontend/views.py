@@ -388,7 +388,7 @@ def theFeed(request, vals={}):
 
     vals['groups'] = UserGroup.objects.all()
 
-    html = ajaxRender('test/feed.html', vals, request)
+    html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
