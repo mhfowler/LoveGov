@@ -1,0 +1,81 @@
+/*
+Syntax error: Invalid CSS after "...gray: #E0E0E0;5": expected "{", was "$white-gray: #F..."
+        on line 26 of scss/master-variables.scss
+        from line 41 of scss/master.scss
+
+21: $black-gray: #4C4C4C;
+22: $deep-gray: #959595;
+23: $dark-gray: #ADADAD;
+24: $gray: #CCCCCC;
+25: $light-gray: #E0E0E0;5
+26: $white-gray: #F0F0F0;
+27: 
+28: /* Topic Colors */
+29: $green: #92B76C;
+30: $green-light: #BED4A7;
+31: $purple: #9797C6;
+
+Backtrace:
+scss/master-variables.scss:26
+scss/master.scss:41
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:1010:in `expected'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:956:in `expected'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:951:in `tok!'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:461:in `block'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:456:in `ruleset'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:480:in `block_child'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:473:in `block_contents'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:58:in `stylesheet'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/scss/parser.rb:27:in `parse'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:327:in `_to_tree'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:259:in `to_tree'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:144:in `visit_import'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `map'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:27:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:39:in `with_environment'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:47:in `visit_root'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `visit'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/tree/root_node.rb:20:in `render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:300:in `_render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/engine.rb:247:in `render'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:340:in `update_stylesheet'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:202:in `update_stylesheets'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `each'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `update_stylesheets'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:298:in `watch'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `call'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:86:in `on_change'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:95:in `initialize_adapter'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:55:in `call'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:55:in `poll'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `initialize'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `new'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/adapters/polling.rb:31:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/vendor/listen/lib/listen/multi_listener.rb:44:in `start'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin/compiler.rb:306:in `watch'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `send'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/plugin.rb:107:in `method_missing'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:431:in `watch_or_update'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:302:in `process_result'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:41:in `parse'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/../lib/sass/../sass/exec.rb:21:in `parse!'
+/var/lib/gems/1.8/gems/sass-3.1.19/bin/scss:8
+/usr/local/bin/scss:19:in `load'
+/usr/local/bin/scss:19
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Invalid CSS after \"...gray: #E0E0E0;5\": expected \"{\", was \"$white-gray: #F...\"\A         on line 26 of scss/master-variables.scss\A         from line 41 of scss/master.scss\A \A 21: $black-gray: #4C4C4C;\A 22: $deep-gray: #959595;\A 23: $dark-gray: #ADADAD;\A 24: $gray: #CCCCCC;\A 25: $light-gray: #E0E0E0;5\A 26: $white-gray: #F0F0F0;\A 27: \A 28: /* Topic Colors */\A 29: $green: #92B76C;\A 30: $green-light: #BED4A7;\A 31: $purple: #9797C6;"; }
