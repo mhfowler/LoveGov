@@ -952,21 +952,21 @@ class UserProfile(FacebookProfileModel, LGModel):
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
     view = models.ForeignKey("WorldView", default=initView, null=True)
     network = models.ForeignKey("Network", null=True)
-    location = models.ForeignKey(PhysicalAddress, null=True)
+    #location = models.ForeignKey(PhysicalAddress, null=True)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     debate_record = models.ManyToManyField(DebateResult)
-    i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
-    follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
-    private_follow = models.BooleanField(default=False)
+    #i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
+    #follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
+    #private_follow = models.BooleanField(default=False)
     my_involvement = models.ManyToManyField(Involved)       # deprecated
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     # feeds & ranking
-    my_filters = models.ManyToManyField(SimpleFilter)
+    #my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
