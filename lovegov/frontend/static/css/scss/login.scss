@@ -1,4 +1,5 @@
 @import 'master-variables';
+@import 'master';
 
 #main
 {
@@ -23,4 +24,34 @@
   font-size:20px;
   text-align:right;
   margin-top:45px;
+}
+
+.developer_names
+{
+  color: $link-hover;
+  font-weight:lighter;
+}
+
+.team
+{
+  @extend .float_left;
+}
+
+$margin:20px;
+.team_left
+{
+  @extend .team;
+  @include setMargin(0,$margin);
+}
+
+.team_right
+{
+  @extend .team;
+  @include setMargin($margin,0);
+}
+
+.team_center
+{
+  @extend .team;
+  @include setMargin($margin,$margin);
 }

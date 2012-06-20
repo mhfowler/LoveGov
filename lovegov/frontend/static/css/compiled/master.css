@@ -75,6 +75,12 @@ a.clear_link, a.clear_link:visited, a.clear_link:active, a.clear_link:link {
   text-decoration: none;
   color: #005468; }
 
+a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover {
+  color: #ef503b; }
+
+a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover {
+  font-size: 20px; }
+
 p {
   margin-bottom: 13px; }
 
