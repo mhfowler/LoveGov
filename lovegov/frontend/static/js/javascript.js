@@ -48,8 +48,11 @@ function rebindFunction()
             loadQAWeb();
             break;
         case 'profile':                                         // /profile/<alias>
-            loadProfileComparison();
             loadProfile();
+            if( p_id != view_id )
+            {
+                loadProfileComparison();
+            }
             break;
         case 'group':
             loadProfileComparison();
@@ -1891,22 +1894,27 @@ function loadProfile()
         groupInviteResponse(event,"N",$(this));
     });
 
-    $('.more-notifications').click(
+    $('#see_more_notifications').click(
         function(event)
         {
             event.preventDefault();
-            var num_notifications = $("#num-notifications").val();
+            var num_notifications = $("#num_notifications").val();
             ajaxPost({
                 'data': {'action':'getnotifications',
                         'num_notifications':num_notifications },
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
-                    $('#profile-notifications').append(obj.html);
-                    $('#num-notifications').val(obj.num_notifications);
+                    $('#profile_notifications').append(obj.html);
+                    $('#num_notifications').val(obj.num_notifications);
                     if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
                     {
-                        $('#more-notifications-button').html('No more notifications');
+                        $('#see_more_notifications').html('No more notifications');
+                        $('#see_more_notifications').unbind();
+                        $('#see_more_notifications').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
                     }
                     else if( obj.hasOwnPropery('error') )
                     {
@@ -1927,8 +1935,7 @@ function loadProfile()
         function(event)
         {
             event.preventDefault();
-            var num_actions = $(".num_actions").val();
-            alert(num_actions);
+            var num_actions = $("#num_actions").val();
             ajaxPost({
                 'data': {'action':'getactions',
                     'num_actions':num_actions,
@@ -1937,11 +1944,15 @@ function loadProfile()
                 {
                     var obj = eval('(' + data + ')');
                     $('#profile_activity_feed').append(obj.html);
-                    $('.num_actions').val(obj.num_actions);
+                    $('#num_actions').val(obj.num_actions);
                     if( 'error' in obj && obj.error == 'No more actions' )
                     {
                         $('#see_more_actions').html('No more actions')
                         $('#see_more_actions').unbind();
+                        $('#see_more_actions').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
                     }
                     else if( 'error' in obj )
                     {

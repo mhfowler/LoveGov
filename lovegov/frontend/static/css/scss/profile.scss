@@ -1,11 +1,48 @@
 @import 'master.scss';
 
+div.profile-section-title
+{
+  @extend h4;
+  color: $text-blue;
+}
+
+@mixin long-gray-box
+{
+  @include rounded(5px);
+  display: block;
+  text-align: center;
+  font-style: italic;
+  padding: 2px 0 2px 0;
+  color: $black;
+}
+
+@mixin rounded-box
+{
+  @include rounded();
+  height: 70px;
+  width: 70px;
+  display: block;
+  text-align: center;
+}
+
+a.long-button-gray, a.long-button-gray:link, a.long-button-gray:active, a.long-button-gray:visited
+{
+  @include long-gray-box;
+  background-color: $gray;
+}
+
+a.long-button-gray:hover
+{
+  @include long-gray-box;
+  background-color: $light-gray;
+}
+
 /* LEFT MODULE */
 div.middle-left
 {
   position:relative;
   float:left;
-  width:630px;
+  width:650px;
 
   /* Basic Info */
   div.basic-info
@@ -69,17 +106,13 @@ div.middle-left
 
         div.stat-box
         {
+          @include rounded-box;
           @extend .float-left;
-          @include rounded();
           border-width: 2px;
           border-color: $gray;
           border-style: solid;
           background-color: $gray;
-          height: 70px;
-          width: 70px;
           margin-right: 10px;
-          display: block;
-          text-align: center;
 
           span.profile-stats-number
           {
@@ -116,6 +149,57 @@ div.middle-left
       }
     }
   }
+
+  /* Profile Bottom */
+  div.profile-bottom
+  {
+    @extend .float-left;
+    display: block;
+    margin-top: 50px;
+
+    /* Activity Feed */
+    div.profile-activity-container
+    {
+      @extend .float-left;
+      display: block;
+      width: 400px;
+      margin-right: 50px;
+
+      div.profile-activity-feed
+      {
+        display: block;
+
+        div.action-separator
+        {
+          @include horitzontalSeparator(400px);
+        }
+      }
+    }
+
+  /* Groups Container */
+    div.profile-group-container
+    {
+      @extend .float-left;
+      width: 200px;
+      $linkborder: 3px;
+
+      a.profile-group-link, a.profile-group-link:link, a.profile-group-link:active, a.profile-group-link:visited
+      {
+        @include rounded-box;
+        @extend .float-left;
+        margin: $linkborder 10+$linkborder 10+$linkborder $linkborder;
+        border: hidden $linkborder $gray;
+      }
+
+      a.profile-group-link:hover
+      {
+        @include rounded-box;
+        @extend .float-left;
+        margin: 0px 10px 10px 0px;
+        border-style: solid;
+      }
+    }
+  }
 }
 
 /* RIGHT MODULE */
@@ -124,6 +208,21 @@ div.middle-right
   float:left;
   width:300px;
   margin-left:40px;
+
+  div.right-separator
+  {
+    @include horitzontalSeparator(300px);
+  }
+
+  div.follow-requests-container
+  {
+    width: 300px;
+
+    div.follow-request
+    {
+      padding: 15px 0px 15px 10px;
+    }
+  }
 
   div.matching
   {
@@ -158,66 +257,6 @@ div.middle-right
   }
 }
 
-
-/* Profile Bottom */
-div.profile-bottom
-{
-  @extend .float-left;
-  display: block;
-  margin-top: 20px;
-
-  div.profile-section-title
-  {
-    @extend h4;
-    color: $text-blue;
-  }
-
-  /* Activity Feed */
-  div.profile-activity-container
-  {
-    @extend .float-left;
-    display: block;
-    width: 450px;
-    margin-right: 50px;
-
-    div.profile-activity-feed
-    {
-      display: block;
-
-      div.action-separator
-      {
-        @include horitzontalSeparator(450px);
-      }
-    }
-  }
-
-  .long-button-gray
-  {
-    @include rounded(5px);
-    display: block;
-    text-align: center;
-    font-style: italic;
-    padding: 2px 0 2px 0;
-    color: $black;
-  }
-
-  a.see-more-activity, a.see-more-activity:link, a.see-more-activity:active, a.see-more-activity:visited
-  {
-    @extend .long-button-gray;
-    background-color: $gray;
-  }
-
-  a.see-more-activity:hover
-  {
-    @extend .long-button-gray;
-    background-color: $light-gray;
-  }
-
-  div.profile-group-container
-  {
-    @extend .float-left;
-  }
-}
 
 
 

@@ -1,5 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/notification.css" />
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
@@ -77,13 +78,46 @@
                 </div>
             </div>
         </div>
+
+        <div class="profile-bottom">
+            <div class="profile-activity-container">
+                <div class="profile-section-title">Activity</div>
+                <div class="profile-activity-feed" id="profile_activity_feed">
+                    {% for action in actions_text %}
+                        {{ action|safe|escape }}
+                        {% if not forloop.last %}
+                            <div class="action-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a href="" class="long-button-gray" id="see_more_actions">
+                    See more activity
+                </a>
+                <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
+                <br>
+            </div>
+
+            <div class='profile-group-container'>
+                <div class="profile-section-title">Groups</div>
+                {% for group in prof_groups %}
+                    <a class="profile-group-link" href="{{ group.get_url }}"></a>
+                {% empty %}
+                    <a class="profile-group-link" href="" style="background-color: greenyellow"></a>
+                    <a class="profile-group-link" href="" style="background-color: #0066ee"></a>
+                    <a class="profile-group-link" href="" style="background-color: #ffb6c1;"></a>
+                    <a class="profile-group-link" href="" style="background-color: #ffa07a;"></a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
     <!-- Right Block -->
     <div class="middle-right">
 
         {% if viewer.id == user_prof.id %}
-            <h4>Requests</h4>
+            {% if prof_requests %}
+                <div class="profile-section-title">Follow Requests</div>
+            {% endif %}
             <div class="follow-requests-container">
                 {% for req in prof_requests %}
                     <div class="follow-request">
@@ -92,9 +126,11 @@
                         <a href="" class="user-follow-response-n"> I decline! </a>
                         <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
                     </div>
-                    <br>
-                {% empty %}
-                    <div>No follow requests! =( </div><br>
+
+                    {% if not forloop.last %}
+                        <div class="right-separator"></div>
+                    {% endif %}
+
                 {% endfor %}
             </div>
 
@@ -115,7 +151,7 @@
                     <div>No group invites! =( </div><br>
                 {% endfor %}
             </div>
-            {% endcomment %}
+
 
             Set following privacy to:
             {% if viewer.private_follow %}
@@ -123,17 +159,20 @@
             {% else %}
                 <a href="" class="private-follow">private</a>
             {% endif %}
+            {% endcomment %}
 
-            <h4>Notifications</h4>
-            <div id="profile-notifications">
+        <div class="profile-section-title">Notifications</div>
+            <div id="profile_notifications" class="profile-notifications-container">
                 {% for note in notifications_text %}
-                    {{ note|safe|escape }}<br>
+                    {{ note|safe|escape }}
+                    {% if not forloop.last %}
+                        <div class="right-separator"></div>
+                    {% endif %}
                 {% endfor %}
             </div>
-            <div id="more-notifications-button">
-                <input type="hidden" id="num-notifications" value="{{ num_notifications }}"/>
-                <a href="" class="more-notifications">See more notifications</a>
-            </div>
+            <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
+            <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
+        </div>
 
         {% else %}
             <div class="matching">
@@ -144,35 +183,8 @@
             </div>
         {% endif %}
     </div>
-
-    <div class="profile-bottom">
-        <div class="profile-activity-container">
-            <div class="profile-section-title">Activity</div>
-            <div class="profile-activity-feed" id="profile_activity_feed">
-                {% include 'deployment/snippets/action_snippet.html' %}
-            </div>
-            <div id="see_more_actions_button">
-                <a href="#" class="see-more-activity" id="see_more_actions">
-                    See more activity
-                </a>
-                <input type="hidden" class="num_actions" value="{{ num_actions }}"/>
-            </div>
-            <br>
-        </div>
-
-        <div class='profile-group-container'>
-            <div class="profile-section-title">Groups</div>
-            <ul id="groups">
-                {% for group in prof_groups %}
-                    <li><a href="{{ group.get_url }}">{{ group.title }}</a></li>
-                {% empty %}
-                    <li>{{ user_prof.get_name }} has no groups! =( </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-
 </div>
 
 <script> var p_id = "{{ user_prof.id }}"; </script>
+<script> var view_id = "{{ viewer.id }}"; </script>
 <script> rebind='profile'; </script>
