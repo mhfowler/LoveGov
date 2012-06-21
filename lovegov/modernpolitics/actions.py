@@ -410,8 +410,6 @@ def setFollowPrivacy(request, vals={}):
         return HttpResponse("No user follow privacy specified")
     user.private_follow = bool(int(request.POST['private_follow']))
     user.save()
-    print user.get_name()
-    print user.private_follow
     return HttpResponse("follow privacy set")
 
 

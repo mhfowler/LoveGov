@@ -127,6 +127,12 @@ div.middle-left
           }
         }
 
+        div.stat-box:hover
+        {
+          background-color: $light-gray;
+          border-color: $light-gray;
+        }
+
         div.followers-stat
         {
           background-color: white;
@@ -134,6 +140,17 @@ div.middle-left
           span.followers-number
           {
             color: $red;
+          }
+        }
+
+        div.followers-stat:hover
+        {
+          background-color: white;
+          border-color: $gray;
+
+          span.followers-number
+          {
+            color: $red-light;
           }
         }
       }
