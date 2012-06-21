@@ -74,6 +74,65 @@ function rebindFunction()
  *      ~Auxiliary
  *
  ***********************************************************************************************************************/
+function userFollow(event,div,follow)
+{
+    event.preventDefault();
+    div.unbind();
+    var action = 'userfollow';
+    if( !follow )
+    {
+        action = 'stopfollow';
+    }
+    ajaxPost({
+            data: {
+                'action': action,
+                'p_id': p_id
+            },
+            success: function(data)
+            {
+                if( data == "now following this person")
+                {
+                    div.html("unfollow");
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),false);
+                        }
+                    );
+                }
+                else if( data == "requested to follow this person")
+                {
+                    div.html("un-request");
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),false);
+                        }
+                    );
+                }
+                else if( data == "removed")
+                {
+                    div.html("follow");
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),true);
+                        }
+                    );
+                }
+                else
+                {
+                    alert(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        }
+    );
+}
+
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
@@ -118,9 +177,10 @@ function groupInviteResponse(event,response,div)
     );
 }
 
-function setFollowPrivacy(event,private_follow)
+function setFollowPrivacy(event,private_follow,div)
 {
     event.preventDefault();
+    div.unbind();
     ajaxPost({
         data: {
             'action':'followprivacy',
@@ -129,7 +189,34 @@ function setFollowPrivacy(event,private_follow)
         },
         success: function(data)
         {
-            alert(data);
+            if( data == "follow privacy set")
+            {
+                if( private_follow )
+                {
+                    div.html("private");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,0,$(this));
+                        }
+                    );
+                }
+                else
+                {
+                    div.html("public");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,1,$(this));
+                        }
+                    );
+                }
+            }
+            else
+            {
+                alert(data);
+            }
+
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -503,22 +590,29 @@ function loadHeader()
         {
             event.preventDefault();
             $('#notifications-dropdown').toggle('fast');
-            ajaxPost({
-                'data': {'action':'getnotifications',
-                        'dropdown':'true'},
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#notifications-dropdown').empty();
-                    $('#notifications-dropdown').html(obj.html);
-                    unbindNotification();
-                    loadNotification();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            if( $('#notifications-dropdown').is(':visible') )
+            {
+                ajaxPost({
+                    'data': {'action':'getnotifications',
+                            'dropdown':'true'},
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $('#notifications-dropdown').empty();
+                        $('#notifications-dropdown').html(obj.html);
+                        unbindNotification();
+                        loadNotification();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('body').html(jqXHR.responseText);
+                    }
+                });
+            }
+            else
+            {
+                $('#notifications-dropdown').empty();
+            }
             return false;
         }
     );
@@ -1724,44 +1818,14 @@ function loadProfile()
     unbindNotification();
     loadNotification();
 
-    $(".user-follow-button").click( function(event)
+    $("#user_follow_button").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'userfollow',
-                    'p_id': p_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+        userFollow(event,$(this),true);
     });
 
     $(".user-unfollow-button").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'stopfollow',
-                    'p_id': p_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+        userFollow(event,$(this),false);
     });
 
     $(".user-follow-response-y").click( function(event) {
@@ -1855,12 +1919,12 @@ function loadProfile()
 
     $(".public-follow").click( function(event)
     {
-        setFollowPrivacy(event,0);
+        setFollowPrivacy(event,0,$(this));
     });
 
     $(".private-follow").click( function(event)
     {
-        setFollowPrivacy(event,1);
+        setFollowPrivacy(event,1,$(this));
     });
 }
 

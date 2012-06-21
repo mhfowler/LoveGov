@@ -46,11 +46,16 @@
   {
     border-left: solid 1px;
     border-right: solid 1px;
+    border-bottom: solid 1px;
     border-color: $gray;
     position: absolute;
+    color: $black;
+    font-size: 13px;
     top: 47px;
     width: 279px;
+    min-height: 200px;
     z-index: 100;
+    background-color: white;
 
     div.notification {
       @include notification-box;
@@ -59,11 +64,19 @@
       padding-left: 10px;
     }
 
+    div.notification:hover {
+      background-color: $light-gray;
+    }
+
     div.see-more-notifications {
       @include notification-box;
       padding-top: 5px;
       padding-bottom: 5px;
       text-align: center;
+    }
+
+    div.see-more-notifications:hover {
+      background-color: $light-gray;
     }
   }
 }
