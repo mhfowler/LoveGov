@@ -52,10 +52,10 @@
 
             {% if item.type == 'N' %}
                 <div class="pinterest-image">
-                    {% thumbnail item.link_screenshot "100x50" as im %}
+                    {% thumbnail item.link_screenshot "250x150" as im %}
                         <img src="{{ im.url }}"/>
                     {% empty %}
-                        <img src="/static/images/logo.png" width="250px" height="100px" />
+                        <img src="/static/images/logo.png" width="250px" height="150px" />
                     {% endthumbnail %}
                 </div>
             {% endif %}
