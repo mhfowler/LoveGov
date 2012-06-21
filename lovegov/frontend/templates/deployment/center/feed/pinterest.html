@@ -1,69 +1,131 @@
 
 {% load thumbnail %}
 
-<div class="pinterest">
+{% with creator=item.getCreator %}
 
-    <div class="pinterest-main">
+    <div class="pinterest">
 
-        <div class="pinterest-header">
-            <div class="prof-image">
-                {% if x.getPublic %}
-                    {% with creator=x.getCreator %}
+        <div class="pinterest-main">
+
+            <div class="pinterest-header">
+                <div class="prof-image">
+                    {% if item.getPublic %}
                         <a href="{{ creator.get_url }}">
                             {% thumbnail creator.getProfileImage.image "50x50" crop="center" as im %}
                                 <img src="{{ im.url }}"/>
                             {% empty %}
-                                <p> {{ creator.get_name }} </p>
+                                <p> <img src="/static/images/obama.jpg" width="50px" height="50px">  </p>
                             {% endthumbnail %}
                         </a>
-                    {% endwith %}
-                {% else %}
-                    {% thumbnail defaultImage "50x50" format="PNG" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% empty %}
-                        <p> ? </p>
-                    {% endthumbnail %}
-                {% endif %}
-            </div>
-            <div class="header-middle">
-                <p class="submitted" id="cman">
-                    submitted at {{ x.created_when|date:"h:m"}}
-                </p>
-                <div class="user-name">
-                    John Dandy
+                    {% else %}
+                        {% thumbnail defaultImage "50x50" format="PNG" as im %}
+                            <img src="{{ im.url }}"/>
+                        {% empty %}
+                            <p>   <img src="/static/images/obama.jpg" width="50px" height="50px"> </p>
+                        {% endthumbnail %}
+                    {% endif %}
+                </div>
+                <div class="header-middle">
+                    <p class="submitted" id="cman">
+                        submitted at {{ item.created_when|date:"h:m"}}
+                    </p>
+                    <div class="user-name">
+                        {% if item.getPublic %}
+                            <a href="{{ creator.get_url }}">
+                                {{ creator.get_name }}
+                            </a>
+                        {% else %}
+                            <a href=""> Anonymous </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="header-topic">
+                    <a href="{{ item.getMainTopic.get_url }}">
+                        {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
+                            <img src="{{ im.url }}"/>
+                        {% empty %}
+                            <p> ? </p>
+                        {% endthumbnail %}
+                    </a>
                 </div>
             </div>
-            <div class="header-topic">
-                <a href="{{ x.getMainTopic.get_url }}">
-                    {% thumbnail x.getMainTopic.image "50x50" format="PNG" as im %}
+
+            {% if item.type == 'N' %}
+                <div class="pinterest-image">
+                    {% thumbnail item.getImage "100x50" as im %}
                         <img src="{{ im.url }}"/>
                     {% empty %}
-                        <p> ? </p>
+                        <img src="/static/images/logo.png" width="250px" height="100px" />
                     {% endthumbnail %}
+                </div>
+            {% endif %}
+
+            <div class="pinterest-title">
+                <a href="{{ item.get_url }}">
+                    {% if item.type == 'N' %}
+                        <h2 class="title-text"> {{ item.title }} </h2>
+                    {% elif item.type == 'P' %}
+                        <h3 class="title-text"> PETITION: {{ item.title }} </h3>
+                    {% else %}
+                        <h4 class="title-text"> {{ item.title }} </h4>
+                    {% endif %}
                 </a>
             </div>
-        </div>
 
-        <div class="pinterest-image">
+            <div class="pinterest-summary">
+                <p class="summary-text"> {{ item.summary }} </p>
+            </div>
 
-        </div>
+            {% with top_comment=item.getTopComment %}
+                {% if top_comment %}
 
-        <div class="pinterest-title">
-            <h4 class="title-text"> {{ x.title }} </h4>
-        </div>
+                    <div class="pinterest-top-comment">
 
-        <div class="pinterest-summary">
-            <p class="summary-text"> {{ x.summary }} </p>
-        </div>
+                        <div class="comment-header">
+                            {% with creator=top_comment.getCreator %}
+                                <div class="comment-image">
+                                    {% if top_comment.getPublic %}
+                                        <a href="{{ creator.get_url }}">
+                                            {% thumbnail creator.getProfileImage.image "20x20" crop="center" as im %}
+                                                <img src="{{ im.url }}"/>
+                                            {% empty %}
+                                                <p> <img src="/static/images/obama.jpg" width="20px" height="20px">  </p>
+                                            {% endthumbnail %}
+                                        </a>
+                                    {% else %}
+                                        {% thumbnail defaultImage "20x20" format="PNG" as im %}
+                                            <img src="{{ im.url }}"/>
+                                        {% empty %}
+                                            <p>   <img src="/static/images/obama.jpg" width="20px" height="20px"> </p>
+                                        {% endthumbnail %}
+                                    {% endif %}
+                                </div>
 
-        <div class="pinterest-top-comment">
-            <p class="summary-text"> my comment as;dlfkjas;ldkfjas;dlkfjaj  mbabasdbabsdfsd fasdfasdfasd </p>
+                                <div class="comment-creator">
+                                    {% if top_comment.getPublic %}
+                                        <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said:
+                                    {% else %}
+                                        Anonymous said:
+                                    {% endif %}
+                                </div>
+                            {% endwith %}
+                        </div>
+
+                        <div class="comment-text">
+                            "{{ top_comment.text }}"
+                        </div>
+
+                    </div>
+
+                {% endif %}
+            {% endwith %}
+
+            <div class="pinterest-footer">
+                <h2> footer </h2>
+            </div>
+
         </div>
 
     </div>
 
-    <div class="pinterest-footer">
-        <h2> footer </h2>
-    </div>
-
-</div>
+{% endwith %}

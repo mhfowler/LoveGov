@@ -1,28 +1,13 @@
 @import 'master-variables';
 @import 'master';
 
+
 .border {
   border:solid;
   border-color:red;
   border-width:1px;
 }
 
-.feed-header {
-  height:50px;
-  margin-bottom:5px;
-}
-
-.feed-main-div {
-  @extend .main-div;
-  margin-top:20px;
-}
-
-p.your-feed {
-  @extend .really-big;
-  margin-top:10px;
-  float:left;
-  @include fontSize(25px);
-}
 
 .box {
   border:solid;
@@ -30,56 +15,111 @@ p.your-feed {
   border-width:1px;
 }
 
-div.options-box {
-  @extend .box;
-  float:left;
-  margin-left:20px;
-  width:140px;
-  height:35px;
-  @include fontSize(18px);
 
-  p.options-title {
-    margin-top:5px;
+.feed-main-div {
+  @extend .main-div;
+  margin-top:20px;
+}
+
+
+.feed-header {
+
+  @extend .box;
+
+  p.your-feed {
+    @extend .really-big;
+    margin-top:15px;
+    float:left;
+    @include fontSize(25px);
+  }
+
+  div.options-box {
+    @extend .box;
+    width:140px;
+    height:35px;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:left;
+    margin-left:20px;
+
+    @include fontSize(18px);
+
+    p.options-title {
+      margin-top:5px;
+      margin-left:10px;
+    }
+  }
+
+  div.saved-filters-box {
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:left;
+    margin-left:30px;
+  }
+
+  a.more-feed-button {
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:left;
     margin-left:10px;
   }
-}
 
-div.saved-filters-box {
-  float:left;
-  margin-left:30px;
-}
-
-
-div.display-box {
-  @extend div.options-box;
-  width:70px;
-  height:35px;
-  float:right;
-  div {
-    float:left;
-    margin-left:15px;
-    margin-top:5px;
+  p.how-does {
+    float:right;
+    margin-top:15px;
+    margin-right:10px;
   }
-}
 
-div.create-box {
-  @extend div.options-box;
-  border-color:red;
-  width:110px;
-  float:right;
-  margin-right:10px;
-  p.options-title {
-    margin-top:5px;
-    margin-left:0px;
-    margin-right:0px;
-    text-align:center
+  div.create-box {
+
+    @extend div.options-box;
+    border-color:red;
+    width:110px;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:right;
+    margin-right:10px;
+
+    p.options-title {
+      margin-top:5px;
+      margin-left:0px;
+      margin-right:0px;
+      text-align:center
+    }
   }
+
+
+  div.display-box {
+    @extend div.options-box;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    width:70px;
+    height:35px;
+    float:right;
+    div {
+      float:left;
+      margin-left:15px;
+      margin-top:5px;
+    }
+  }
+
 }
 
-p.how-does {
-  float:right;
-  margin-right:10px;
-  margin-top:15px;
+div.more-options-wrapper {
+  margin-top:0px;
+  width:1000px;
+  height:100px;
+  overflow:hidden;
+  @extend .box;
 }
 
 
@@ -87,84 +127,140 @@ div.feed-body {
   border-top:solid;
   border-color:gray;
   border-width:1px;
+
+  background-color:blue;
 }
 
+
 div.pinterest-wrapper {
+
   position:relative;
   top:20px;
   left:0px;
 }
 
-div.pinterest-card {
+/* positioning */
+div.pinterest_card {
   position:absolute;
   top:0px;
   left:0px;
-}
 
-div.pinterest {
-  @extend .box;
-  box-shadow: 3px 3px 3px #f0f0f0;
-  position:absolute;
-  width:320px;
-}
+  div.pinterest {
 
+    @extend .box;
+    box-shadow: 3px 3px 3px #f0f0f0;
+    position:absolute;
+    width:320px;
 
-div.pinterest-main {
-  padding:15px;
-  margin-bottom:0px;
-  padding-bottom:0px;
-  background-color:white;
+    div.pinterest-main {
 
-  div.pinterest-header {
-    height:40px;
-
-    div.prof-image{
-      float:left;
-    }
-
-    div.header-middle {
-      float:left;
-      margin-left:10px;
-      width:180px;
-
-      p.submitted {
-        color:$light-gray;
-        text-decoration: underline;
-      }
-
-      div.user-name {
-      }
-
-    }
-
-    div.header-topic {
-      float:left;
-      margin-left:8px;
-    }
-  }
-
-  div.pinterest-image {
-    margin-top:15px;
-    margin-left:20px;
-  }
-
-  div.pinterest-title {
-    margin-top:15px;
-  }
-
-  div.pinterest-summary {
-    @extend p.really-big;
-    @include fontSize(18px);
-    margin-top:15px;
-    padding:0px;
-    p {
+      padding:15px;
       margin-bottom:0px;
+      padding-bottom:0px;
+      background-color:white;
+
+      div.pinterest-header {
+        height:40px;
+
+        div.prof-image{
+          float:left;
+        }
+
+        div.header-middle {
+          float:left;
+          margin-left:12px;
+          width:150px;
+
+          p.submitted {
+            margin-bottom:0px;
+          }
+
+          div.user-name {
+            margin-top:6px;
+            font-size:20px;
+          }
+        }
+
+        div.header-topic {
+          float:left;
+          margin-left:20px;
+        }
+      }
+
+      div.pinterest-image {
+        margin-top:15px;
+        margin-left:20px;
+      }
+
+      div.pinterest-title {
+        clear:both;
+        margin-top:15px;
+      }
+
+      div.pinterest-summary {
+        margin-top:15px;
+        padding:0px;
+        p {
+          margin-bottom:0px;
+        }
+      }
+
+      div.pinterest-top-comment {
+        margin-bottom:15px;
+      }
+
+    }
+
+    div.pinterest-footer {
+      height:50px;
+      border-top: 1px solid $light-gray;
+    }
+  }
+}
+
+/* styling */
+div.pinterest-title {
+  h2.title-text {
+    @include fontSize(20px);
+  }
+}
+
+div.pinterest-summary {
+  @extend p.really-big;
+  @include fontSize(18px);
+}
+
+p.submitted {
+  color:$light-gray;
+  text-decoration: underline;
+}
+
+div.linear-wrapper {
+  width:1000px;
+}
+
+div.pinterest-top-comment {
+  @extend .box;
+  @include rounded(10px);
+  padding:15px;
+
+  div.comment-header {
+    height:20px;
+
+    div.comment-image{
+      float:left;
+    }
+
+    div.comment-creator {
+      float:left;
+      margin-top:3px;
+      margin-left:10px;
     }
   }
 
-}
-
-div.pinterest-footer {
-  height:50px;
-  border-top: 1px solid $light-gray;
+  div.comment-text {
+    @include fontSize(12px);
+    clear:both;
+    color:$light-gray;
+  }
 }

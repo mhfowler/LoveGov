@@ -336,6 +336,9 @@ class Content(Privacy, LocationLevel):
         else:
             return self.getMainTopic().getUserImage()
 
+    def getImage(self):
+        return self.getMainImage().image
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -692,6 +695,16 @@ class Content(Privacy, LocationLevel):
         for c in comments:
             num += c.getNumComments()
         return num
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the top comment.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getTopComment(self):
+        comments = Comment.objects.filter(on_content=self).order_by('-status')
+        if comments:
+            return comments[0]
+        else:
+            return None
 
 #=======================================================================================================================
 # UserImage
@@ -1897,6 +1910,9 @@ class News(Content):
     def getAbsoluteLink(self):
         link = str.replace(str(self.link), 'http://', '')
         return "http://" + link
+
+    def getImage(self):
+        return self.link_screenshot
 
     # takes in a lovegov.com url and saves image file from that location
     def saveScreenShot(self, ref):
