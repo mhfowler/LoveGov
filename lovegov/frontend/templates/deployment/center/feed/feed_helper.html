@@ -1,6 +1,6 @@
 {% for x in items %}
 
-    {% with item=x.0 my_vote=x.1 %}
+    {% with item=x.0.downcast my_vote=x.1 %}
 
         {% if display == 'P' %}
 
@@ -13,11 +13,11 @@
             <div class="linear-wrapper">
                 {% if item.type == "N" %}
 
-                    {% include 'deployment/center/feed/linear_news.html' with news=item.downcast %}
+                    {% include 'deployment/center/feed/linear_news.html' with news=item %}
 
                 {% elif item.type == "P" %}
 
-                    {% include 'deployment/center/feed/linear_petition.html' with petition=item.downcast %}
+                    {% include 'deployment/center/feed/linear_petition.html' with petition=item %}
 
                 {% endif %}
             </div>
