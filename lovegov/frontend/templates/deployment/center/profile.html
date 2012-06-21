@@ -98,6 +98,7 @@
                 {% endfor %}
             </div>
 
+            {% comment %}
             <h4>Invites</h4>
             <div class='group-invites-container'>
                 {% for invite in group_invites %}
@@ -114,6 +115,7 @@
                     <div>No group invites! =( </div><br>
                 {% endfor %}
             </div>
+            {% endcomment %}
 
             Set following privacy to:
             {% if viewer.private_follow %}
@@ -123,14 +125,14 @@
             {% endif %}
 
             <h4>Notifications</h4>
-            <div class="profile-notifications">
-                <input type="hidden" class="num-notifications" value="{{ num_notifications }}"/>
+            <div id="profile-notifications">
                 {% for note in notifications_text %}
                     {{ note|safe|escape }}<br>
                 {% endfor %}
             </div>
-            <div class="see-more-notifications-button">
-                <a href="" class="see-more-notifications">See more notifications</a>
+            <div id="more-notifications-button">
+                <input type="hidden" id="num-notifications" value="{{ num_notifications }}"/>
+                <a href="" class="more-notifications">See more notifications</a>
             </div>
 
         {% else %}
@@ -146,21 +148,16 @@
     <div class="profile-bottom">
         <div class="profile-activity-container">
             <div class="profile-section-title">Activity</div>
-            <div class="profile-activity-feed">
-                {% for action in actions_text %}
-                    {% if not forloop.last %}
-                        {{ action|safe|escape }}
-                        <div class="action-separator"></div>
-                    {% else %}
-                        {{ action|safe|escape }}
-                    {% endif %}
-                {% empty %}
-                    No Activity
-                {% endfor %}
+            <div class="profile-activity-feed" id="profile_activity_feed">
+                {% include 'deployment/snippets/action_snippet.html' %}
             </div>
-            <div class="see-more-activity">
-                See more activity
+            <div id="see_more_actions_button">
+                <a href="#" class="see-more-activity" id="see_more_actions">
+                    See more activity
+                </a>
+                <input type="hidden" class="num_actions" value="{{ num_actions }}"/>
             </div>
+            <br>
         </div>
 
         <div class='profile-group-container'>

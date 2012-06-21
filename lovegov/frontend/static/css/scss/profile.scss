@@ -189,15 +189,28 @@ div.profile-bottom
         @include horitzontalSeparator(450px);
       }
     }
+  }
 
-    div.see-more-activity
-    {
-      background-color: $gray;
-      @include rounded(5px);
-      text-align: center;
-      font-style: italic;
-      padding: 2px 0 2px 0;
-    }
+  .long-button-gray
+  {
+    @include rounded(5px);
+    display: block;
+    text-align: center;
+    font-style: italic;
+    padding: 2px 0 2px 0;
+    color: $black;
+  }
+
+  a.see-more-activity, a.see-more-activity:link, a.see-more-activity:active, a.see-more-activity:visited
+  {
+    @extend .long-button-gray;
+    background-color: $gray;
+  }
+
+  a.see-more-activity:hover
+  {
+    @extend .long-button-gray;
+    background-color: $light-gray;
   }
 
   div.profile-group-container
@@ -205,7 +218,6 @@ div.profile-bottom
     @extend .float-left;
   }
 }
-
 
 
 

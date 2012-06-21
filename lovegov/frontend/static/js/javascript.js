@@ -2172,7 +2172,7 @@ function loadProfile()
         groupInviteResponse(event,"N",$(this));
     });
 
-    $('#see-more-notifications').click(
+    $('.more-notifications').click(
         function(event)
         {
             event.preventDefault();
@@ -2187,7 +2187,7 @@ function loadProfile()
                     $('#num-notifications').val(obj.num_notifications);
                     if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
                     {
-                        $('#see-more-notifications-button').html('No more notifications');
+                        $('#more-notifications-button').html('No more notifications');
                     }
                     else if( obj.hasOwnPropery('error') )
                     {
@@ -2204,12 +2204,45 @@ function loadProfile()
         }
     );
 
-    $("#public-follow").click( function(event)
+    $('#see_more_actions').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_actions = $(".num_actions").val();
+            alert(num_actions);
+            ajaxPost({
+                'data': {'action':'getactions',
+                    'num_actions':num_actions,
+                    'p_id':p_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#profile_activity_feed').append(obj.html);
+                    $('.num_actions').val(obj.num_actions);
+                    if( 'error' in obj && obj.error == 'No more actions' )
+                    {
+                        $('#see_more_actions').html('No more actions')
+                        $('#see_more_actions').unbind();
+                    }
+                    else if( 'error' in obj )
+                    {
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
+    $(".public-follow").click( function(event)
     {
         setFollowPrivacy(event,0);
     });
 
-    $("#private-follow").click( function(event)
+    $(".private-follow").click( function(event)
     {
         setFollowPrivacy(event,1);
     });

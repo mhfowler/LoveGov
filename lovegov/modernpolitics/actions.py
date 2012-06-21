@@ -1045,7 +1045,7 @@ def getFilter(request, vals={}):
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets dropdown notifications
+# gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
@@ -1066,6 +1066,33 @@ def getNotifications(request, vals={}):
     if 'dropdown' in request.POST:
         html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets activity feed
+#-----------------------------------------------------------------------------------------------------------------------
+def getActions(request, vals={}):
+    # Get Actions
+    viewer = vals['viewer']
+    if not 'p_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No profile id given'}))
+    user_prof = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if not user_prof:
+        return HttpResponse(json.dumps({'error':'Invalid profile id'}))
+    num_actions = 0
+    if 'num_actions' in request.POST:
+        num_actions = int(request.POST['num_actions'])
+    actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
+    if len(actions) == 0:
+        print 'no more actions'
+        return HttpResponse(json.dumps({'error':'No more actions'}))
+    actions_text = []
+    for action in actions:
+        actions_text.append( action.getVerbose(view_user=viewer) )
+    vals['actions_text'] = actions_text
+    num_actions += NOTIFICATION_INCREMENT
+    vals['num_actions'] = num_actions
+    html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 
 def matchSection(request, vals={}):
@@ -1222,6 +1249,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
+            'getactions': getActions,
             'ajaxGetFeed': ajaxGetFeed,
             'saveFilter': saveFilter,
             'getFilter': getFilter,

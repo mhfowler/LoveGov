@@ -1348,6 +1348,17 @@ class UserProfile(FacebookProfileModel, LGModel):
         return Notification.objects.filter(notify_user=self).order_by('when').reverse()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Returns a users recent activity.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getActivity(self, start=0, num=-1):
+        actions = Action.objects.filter(relationship__user=self).order_by('when').reverse()
+        print len( actions )
+        if num != 1:
+            actions = actions[start:start+num]
+        print len( actions )
+        return actions
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
@@ -1446,15 +1457,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         questions_ids = random.sample(unanswered_ids, sample_size)
         questions = unanswered.filter(id__in=questions_ids)
         return questions
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a users recent activity.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getActivity(self, num=-1):
-        if num == -1:
-            return Action.objects.filter(relationship__user=self).order_by('when').reverse()
-        else:
-            return Action.objects.filter(relationship__user=self).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
