@@ -77,6 +77,7 @@ function rebindFunction()
 function userFollow(event,div,follow)
 {
     event.preventDefault();
+    div.unbind();
     var action = 'userfollow';
     if( !follow )
     {
@@ -92,7 +93,6 @@ function userFollow(event,div,follow)
                 if( data == "now following this person")
                 {
                     div.html("unfollow");
-                    div.unbind();
                     div.click(
                         function(event)
                         {
@@ -103,7 +103,6 @@ function userFollow(event,div,follow)
                 else if( data == "requested to follow this person")
                 {
                     div.html("un-request");
-                    div.unbind();
                     div.click(
                         function(event)
                         {
@@ -114,7 +113,6 @@ function userFollow(event,div,follow)
                 else if( data == "removed")
                 {
                     div.html("follow");
-                    div.unbind();
                     div.click(
                         function(event)
                         {
@@ -179,9 +177,10 @@ function groupInviteResponse(event,response,div)
     );
 }
 
-function setFollowPrivacy(event,private_follow)
+function setFollowPrivacy(event,private_follow,div)
 {
     event.preventDefault();
+    div.unbind();
     ajaxPost({
         data: {
             'action':'followprivacy',
@@ -190,7 +189,34 @@ function setFollowPrivacy(event,private_follow)
         },
         success: function(data)
         {
-            alert(data);
+            if( data == "follow privacy set")
+            {
+                if( private_follow )
+                {
+                    div.html("private");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,0,$(this));
+                        }
+                    );
+                }
+                else
+                {
+                    div.html("public");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,1,$(this));
+                        }
+                    );
+                }
+            }
+            else
+            {
+                alert(data);
+            }
+
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -564,22 +590,29 @@ function loadHeader()
         {
             event.preventDefault();
             $('#notifications-dropdown').toggle('fast');
-            ajaxPost({
-                'data': {'action':'getnotifications',
-                        'dropdown':'true'},
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#notifications-dropdown').empty();
-                    $('#notifications-dropdown').html(obj.html);
-                    unbindNotification();
-                    loadNotification();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            if( $('#notifications-dropdown').is(':visible') )
+            {
+                ajaxPost({
+                    'data': {'action':'getnotifications',
+                            'dropdown':'true'},
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $('#notifications-dropdown').empty();
+                        $('#notifications-dropdown').html(obj.html);
+                        unbindNotification();
+                        loadNotification();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('body').html(jqXHR.responseText);
+                    }
+                });
+            }
+            else
+            {
+                $('#notifications-dropdown').empty();
+            }
             return false;
         }
     );
@@ -1886,12 +1919,12 @@ function loadProfile()
 
     $(".public-follow").click( function(event)
     {
-        setFollowPrivacy(event,0);
+        setFollowPrivacy(event,0,$(this));
     });
 
     $(".private-follow").click( function(event)
     {
-        setFollowPrivacy(event,1);
+        setFollowPrivacy(event,1,$(this));
     });
 }
 

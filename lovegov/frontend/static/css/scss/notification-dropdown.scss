@@ -46,13 +46,16 @@
   {
     border-left: solid 1px;
     border-right: solid 1px;
+    border-bottom: solid 1px;
     border-color: $gray;
     position: absolute;
     color: $black;
     font-size: 13px;
     top: 47px;
     width: 279px;
+    min-height: 200px;
     z-index: 100;
+    background-color: white;
 
     div.notification {
       @include notification-box;

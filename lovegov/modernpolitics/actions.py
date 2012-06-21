@@ -412,7 +412,7 @@ def setFollowPrivacy(request, vals={}):
     user.save()
     print user.get_name()
     print user.private_follow
-    return HttpResponse("Follow privacy set")
+    return HttpResponse("follow privacy set")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
