@@ -6,7 +6,7 @@
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="action-thumbnail">
-            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+            {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
@@ -44,7 +44,7 @@
     <!-- Followed -->
     {% elif type == 'FO' %}
         <td class="action-thumbnail">
-            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+            {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
