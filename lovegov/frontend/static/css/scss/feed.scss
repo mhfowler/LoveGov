@@ -61,6 +61,7 @@
   }
 
   div.saved-filters-box {
+    position:relative;
 
     margin-top:15px;
     margin-bottom:0px;
@@ -128,7 +129,6 @@ div.more-options-wrapper {
   padding:15px;
   width:970px;
   height:100px;
-  overflow:hidden;
   @extend .box;
 
   div.more-options-selector {
@@ -140,6 +140,7 @@ div.more-options-wrapper {
       float:left;
     }
     div.sort-by-choice {
+      position:relative;
       float:left;
       width:40px;
       height:30px;
@@ -155,6 +156,7 @@ div.more-options-wrapper {
       margin-left:10px;
     }
     div.filter-by-group {
+      position:relative;
       float:left;
       margin-left:10px;
       width:60px;
@@ -162,8 +164,10 @@ div.more-options-wrapper {
       padding-top:10px;
       padding-left:25px;
       @extend .box;
+
     }
     div.filter-by-network {
+      position:relative;
       float:left;
       width:60px;
       height:30px;
@@ -172,6 +176,7 @@ div.more-options-wrapper {
       @extend .box;
     }
     div.filter-by-political {
+      position:relative;
       float:left;
       width:60px;
       height:30px;
@@ -180,6 +185,7 @@ div.more-options-wrapper {
       @extend .box;
     }
     div.filter-by-content {
+      position:relative;
       float:left;
       width:60px;
       height:30px;
@@ -220,6 +226,30 @@ div.more-options-wrapper {
 
   }
 
+}
+
+
+div.group-box {
+  @extend .box;
+  background-color: blue;
+  @include rounded(10px);
+  width:20px;
+  height:20px;
+  margin-left:10px;
+}
+
+
+div.menu {
+  position:absolute;
+  top:40px;
+  left:0px;
+  background-color:white;
+  @extend .box;
+  width:85px;
+  height:130px;
+  z-index:20;
+  padding-top:10px;
+  padding-bottom:10px;
 }
 
 

@@ -2671,7 +2671,7 @@ function visualDisplayWrapperHide(wrapper) {
 /* binds everyting */
 function loadNewFeed() {
 
-    $(".more-options-wrapper").hide();
+    //$(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
         event.preventDefault();
         $(".more-options-wrapper").toggle();
@@ -2689,6 +2689,11 @@ function loadNewFeed() {
             num = already;
         }
         refreshFeed(num);
+    });
+
+    $(".menu").hide();
+    $(".menu-toggle").click(function(event) {
+        $(this).find(".menu").toggle();
     });
 
 
