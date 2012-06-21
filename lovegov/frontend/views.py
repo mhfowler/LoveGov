@@ -382,13 +382,11 @@ def theFeed(request, vals={}):
     vals['feed_types'] = json.dumps([])
     vals['feed_groups'] = json.dumps([])
     vals['feed_submissions_only'] = 1
-    vals['feed_display'] = 'L'
+    vals['feed_display'] = 'P'
 
     vals['my_filters'] = viewer.my_filters.all()
 
     vals['groups'] = UserGroup.objects.all()
-
-    vals['feed'] = Petition.objects.all()
 
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'

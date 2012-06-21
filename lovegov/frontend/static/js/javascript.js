@@ -2330,13 +2330,19 @@ function getFeed()
         },
         success: function(data) {
             var returned = eval('(' + data + ')');
+
             if (feed_replace == true) {
-                $(".the_feed").html(returned.html);
+                $(".pinterest-wrapper").html(returned.html);
             }
             else {
-                $(".the_feed").append(returned.html);
+                $(".pinterest-wrapper").append(returned.html);
             }
+
             $(".feed_start").val(feed_start + returned.num);
+
+            if (feed_display == "P") {
+                pinterestRender($(".pinterest_card"));
+            }
         },
         error: null
     });
@@ -2503,9 +2509,8 @@ function pinterestRender(cards) {
         var top = pinterest[current_col];
         var left = pinterest_width*current_col;
         var height = $(this).find(".pinterest").height() + 20;
-        $(this).css("top", top);
-        $(this).css("left", left);
         $(this).css("position", 'absolute');
+        $(this).animate({"top": top, "left": left}, 1400);
         pinterest[current_col] = (top + height);
         current_col += 1;
     });
@@ -2581,7 +2586,5 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
-    //refreshFeed();
-
-    pinterestRender($(".pinterest_card"));
+    refreshFeed();
 }

@@ -985,7 +985,6 @@ def ajaxGetFeed(request, vals={}):
     feed_start = int(request.POST['feed_start'])
     feed_end = int(request.POST['feed_end'])
 
-
     filter = {
         'topics': feed_topics,
         'types': feed_types,
@@ -998,9 +997,9 @@ def ajaxGetFeed(request, vals={}):
     content = getFeed(filter, start=feed_start, stop=feed_end)
     vals = {'content':content}
     if feed_display == 'P':
-        html = ajaxRender('test/pinterest.html', vals, request)
+        html = ajaxRender('deployment/center/feed/pinterest_helper.html', vals, request)
     else:
-        html = ajaxRender('test/linear.html', vals, request)
+        html = ajaxRender('deployment/snippets/feed_helper.html', vals, request)
     to_return = {'html':html, 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
 
