@@ -103,12 +103,13 @@ div.pinterest-card {
 
 div.pinterest {
   @extend .box;
+  box-shadow: 3px 3px 3px #f0f0f0;
   position:absolute;
   width:320px;
 }
 
-div.pinterest-main {
 
+div.pinterest-main {
   padding:15px;
   margin-bottom:0px;
   padding-bottom:0px;
@@ -122,12 +123,13 @@ div.pinterest-main {
     }
 
     div.header-middle {
-      @extend .box;
       float:left;
       margin-left:10px;
       width:180px;
 
-      div.submitted {
+      p.submitted {
+        color:$light-gray;
+        text-decoration: underline;
       }
 
       div.user-name {
@@ -137,7 +139,7 @@ div.pinterest-main {
 
     div.header-topic {
       float:left;
-      margin-left:5px;
+      margin-left:8px;
     }
   }
 

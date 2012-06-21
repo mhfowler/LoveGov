@@ -2287,17 +2287,21 @@ function listSelectHelper(value, list_input_name) {
 /*
  Replaces feed with all new items based on current parameters.
  */
-function refreshFeed() {
+function refreshFeed(num) {
     $(".feed_start").val(0);
-    getFeed();
+    getFeed(num);
 }
 
 /*
  if the start value is 0, then replace feed with all new items based on current parameters
  else get new feed items starting at start value and append them to the current feed.
  */
-function getFeed()
+function getFeed(num)
 {
+
+    if (num==-1) {
+        num = 3;
+    }
 
     var feed_ranking = $(".feed_ranking").val();
     var feed_display =  $(".feed_display").val();
@@ -2312,7 +2316,7 @@ function getFeed()
     feed_groups = JSON.stringify(feed_groups);
 
     var feed_start = parseInt($(".feed_start").val());
-    var feed_end =  feed_start + 10;
+    var feed_end =  feed_start + num;
 
     var feed_replace;
     if (feed_start==0) {
@@ -2341,7 +2345,7 @@ function getFeed()
             $(".feed_start").val(feed_start + returned.num);
 
             if (feed_display == "P") {
-                pinterestRender($(".pinterest_card"));
+                pinterestRender($(".pinterest_unrendered"));
             }
         },
         error: null
@@ -2486,15 +2490,15 @@ function setDisplay(value) {
 
 
 var pinterest = [];
+var current_col=0;
+var total_cols=3;
+var pinterest_width=(1000/total_cols)+8;
 /* returns a list of pinterest cards, sorted by rank */
 function pinterestRender(cards) {
 
     // if pinterest is empty, initialize it with as many elements as there are columns
     if (pinterest.length == 0) {
         // initialize variables
-        var current_col=0;
-        var total_cols=3;
-        var pinterest_width=(1000/total_cols)+8;
         var i = 0;
         while (i < total_cols) {
             pinterest.push(0);
@@ -2510,12 +2514,25 @@ function pinterestRender(cards) {
         var left = pinterest_width*current_col;
         var height = $(this).find(".pinterest").height() + 20;
         $(this).css("position", 'absolute');
-        $(this).animate({"top": top, "left": left}, 1400);
+        $(this).css("left", left);
+        $(this).animate({"top": top}, 1400);
         pinterest[current_col] = (top + height);
         current_col += 1;
+        $(this).removeClass("pinterest_unrendered");
     });
 }
 
+
+var scrollLoadLockout=false;
+function scrollFeed() {
+    if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
+        if (scrollLoadLockout==false) {
+            getFeed(-1);
+            scrollLoadLockout=true;
+            setTimeout(function() { scrollLoadLockout=false}, 500);
+        }
+    }
+}
 
 
 /* binds everyting */
@@ -2523,12 +2540,12 @@ function loadNewFeed() {
 
     $(".get_feed").click(function(event) {
         event.preventDefault();
-        getFeed();
+        getFeed(-1);
     });
 
     $(".refresh_feed").click(function(event) {
         event.preventDefault();
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".feed-topic-img").click(function(event) {
@@ -2536,39 +2553,39 @@ function loadNewFeed() {
         toggleTopicIcon(wrapper);
         var value = $(this).parents(".feed-topic-icon-wrapper").attr("data-id");
         listSelectHelper(value, 'feed_topics');
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".feed-type-selector").click(function(event) {
         var value = $(this).val();
         listSelectHelper(value, 'feed_types');
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".feed-level-selector").click(function(event) {
         var value = $(this).val();
         listSelectHelper(value, 'feed_levels');
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".feed-group-selector").click(function(event) {
         var value = $(this).val();
         listSelectHelper(value, 'feed_groups');
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".feed-ranking-selector").click(function(event) {
         event.preventDefault();
         var ranking = $(this).attr("data-ranking");
         $(".feed_ranking").val(ranking);
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".feed-display-selector").click(function(event) {
         event.preventDefault();
         var display = $(this).attr("data-display");
         $(".feed_display").val(display);
-        refreshFeed();
+        refreshFeed(-1);
     });
 
     $(".save-filter-button").click(function(event) {
@@ -2586,5 +2603,9 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
-    refreshFeed();
+    refreshFeed(6);
+
+    $(window).scroll(scrollFeed);
+
+
 }
