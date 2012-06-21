@@ -1240,120 +1240,6 @@ function bindFeedItems()
     loadAjaxifyAnchors();
 }
 
-
-/* heart stuff */
-function heartButtons()
-{
-    var container = $(".not-processed");
-    container.hide();
-
-    container.find(".heart").hover
-        (
-            function()
-            {
-                $(this).parent().children(".grey").hide();
-                $(this).parent().children(".blue").show();
-
-            },
-            function()
-            {
-                var blue = $(this).parent().children(".blue");
-                if (blue.hasClass("hide"))
-                {
-                    blue.hide();
-                    $(this).parent().children(".grey").show();
-                }
-            }
-        );
-
-    container.find(".plus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='L';
-        vote($(this),content_id, v);
-    });
-
-    container.find(".minus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='D';
-        vote($(this),content_id, v);
-    });
-
-    container.removeClass("not-processed");
-    container.show();
-}
-
-function heartDisplay()
-{
-    $(".hide").hide();
-    $(".show").show();
-}
-
-function vote(div, content_id, v)
-{
-    ajaxPost({
-        data: {'action':'vote','c_id':content_id, 'vote':v},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            var my_vote = parseInt(returned.my_vote);
-            var status = returned.status;
-            if (my_vote==1) { like(div); }
-            if (my_vote==0) { neutral(div); }
-            if (my_vote==-1) { dislike(div); }
-            heartDisplay();
-            // change status
-            div.parent().parent().find(".post-score").text(status);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $("body").html(jqXHR.responseText);
-        }
-    });
-}
-
-function like(div)
-{
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    show(plus_blue);
-    hide(plus_grey);
-    hide(minus_blue);
-    show(minus_grey);
-}
-function dislike(div)
-{
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    hide(plus_blue);
-    show(plus_grey);
-    show(minus_blue);
-    hide(minus_grey);
-}
-function neutral(div)
-{
-    var blue = div.parent().parent().find(".blue");
-    var grey = div.parent().parent().find(".grey");
-    hide(blue);
-    show(grey);
-}
-
-function show(div)
-{
-    div.addClass("show");
-    div.removeClass("hide");
-}
-function hide(div)
-{
-    div.addClass("hide");
-    div.removeClass("show");
-}
-
 /* feed stuff */
 function clearButtons()
 {
@@ -2347,6 +2233,10 @@ function getFeed(num)
             if (feed_display == "P") {
                 pinterestRender($(".pinterest_unrendered"));
             }
+
+            heartButtons();
+            heartDisplay();
+
         },
         error: null
     });
@@ -2429,6 +2319,119 @@ function getFilter(f_id) {
         },
         error: null
     })
+}
+
+/* heart stuff */
+function heartButtons()
+{
+    var container = $(".not-processed");
+    container.hide();
+
+    container.find(".heart").hover
+        (
+            function()
+            {
+                $(this).parent().children(".grey").hide();
+                $(this).parent().children(".blue").show();
+
+            },
+            function()
+            {
+                var blue = $(this).parent().children(".blue");
+                if (blue.hasClass("hide"))
+                {
+                    blue.hide();
+                    $(this).parent().children(".grey").show();
+                }
+            }
+        );
+
+    container.find(".plus").click(function()
+    {
+        var content_id = $(this).parent().siblings(".c_id").val();
+        var v='L';
+        vote($(this),content_id, v);
+    });
+
+    container.find(".minus").click(function()
+    {
+        var content_id = $(this).parent().siblings(".c_id").val();
+        var v='D';
+        vote($(this),content_id, v);
+    });
+
+    container.removeClass("not-processed");
+    container.show();
+}
+
+function heartDisplay()
+{
+    $(".hide").hide();
+    $(".show").show();
+}
+
+function vote(div, content_id, v)
+{
+    ajaxPost({
+        data: {'action':'vote','c_id':content_id, 'vote':v},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            var my_vote = parseInt(returned.my_vote);
+            var status = returned.status;
+            if (my_vote==1) { like(div); }
+            if (my_vote==0) { neutral(div); }
+            if (my_vote==-1) { dislike(div); }
+            heartDisplay();
+            // change status
+            div.parent().parent().find(".post-score").text(status);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
+    });
+}
+
+function like(div)
+{
+    var plus_blue = div.parent().parent().find(".plus.blue");
+    var plus_grey = div.parent().parent().find(".plus.grey");
+    var minus_blue = div.parent().parent().find(".minus.blue");
+    var minus_grey = div.parent().parent().find(".minus.grey");
+    show(plus_blue);
+    hide(plus_grey);
+    hide(minus_blue);
+    show(minus_grey);
+}
+function dislike(div)
+{
+    var plus_blue = div.parent().parent().find(".plus.blue");
+    var plus_grey = div.parent().parent().find(".plus.grey");
+    var minus_blue = div.parent().parent().find(".minus.blue");
+    var minus_grey = div.parent().parent().find(".minus.grey");
+    hide(plus_blue);
+    show(plus_grey);
+    show(minus_blue);
+    hide(minus_grey);
+}
+function neutral(div)
+{
+    var blue = div.parent().parent().find(".blue");
+    var grey = div.parent().parent().find(".grey");
+    hide(blue);
+    show(grey);
+}
+
+function show(div)
+{
+    div.addClass("show");
+    div.removeClass("hide");
+}
+function hide(div)
+{
+    div.addClass("hide");
+    div.removeClass("show");
 }
 
 /*
@@ -2605,7 +2608,7 @@ function loadNewFeed() {
 
     refreshFeed(6);
 
-    $(window).scroll(scrollFeed);
+    //$(window).scroll(scrollFeed);
 
 
 }

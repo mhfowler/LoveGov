@@ -995,13 +995,24 @@ def ajaxGetFeed(request, vals={}):
     }
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
-    vals = {'content':content}
-    if feed_display == 'P':
-        html = ajaxRender('deployment/center/feed/pinterest_helper.html', vals, request)
-    else:
-        html = ajaxRender('deployment/snippets/feed_helper.html', vals, request)
+    items = ajaxFeedHelper(content, vals['viewer'])
+    to_render = {'items':items, 'display':feed_display}
+
+    html = ajaxRender('deployment/center/feed/feed_helper.html', to_render, request)
     to_return = {'html':html, 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
+
+def ajaxFeedHelper(content, user):
+    list = []
+    user_votes = Voted.objects.filter(user=user)
+    for c in content:
+        vote = user_votes.filter(content=c)
+        if vote:
+            my_vote=vote[0].value
+        else:
+            my_vote=0
+        list.append((c,my_vote))    # content, my_vote
+    return list
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
