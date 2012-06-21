@@ -13,6 +13,22 @@ from lovegov.modernpolitics.defaults import *
 # python
 from operator import itemgetter
 
+#-----------------------------------------------------------------------------------------------------------------------
+# sets all content to have in_feed values appropriately.
+#-----------------------------------------------------------------------------------------------------------------------
+def setInFeed():
+    p = Petition.objects.all()
+    for x in p:
+        x.in_feed = True
+        x.save()
+    n = News.objects.all()
+    for x in n:
+        x.in_feed = True
+        x.save()
+    g = Group.objects.filter(system=False)
+    for x in g:
+        x.in_feed = True
+        x.save()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a filter object, which has all feeds of SimpleFilter, except m2m as id lists
@@ -25,7 +41,7 @@ def getFeed(filter, start=0, stop=10, saved=False):
     groups = Group.objects.filter(id__in=g_ids)
     ranking = filter['ranking']
     submissions_only = filter['submissions_only']
-    content = Content.objects.filter(type__in=FEED_CONTENT_TYPES)
+    content = Content.objects.filter(in_feed=True)
     if topics:
         content = content.filter(main_topic__in=topics)
     if types:
