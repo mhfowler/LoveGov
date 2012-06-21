@@ -382,13 +382,13 @@ def theFeed(request, vals={}):
     vals['feed_types'] = json.dumps([])
     vals['feed_groups'] = json.dumps([])
     vals['feed_submissions_only'] = 1
-    vals['feed_display'] = 'L'
+    vals['feed_display'] = 'P'
 
     vals['my_filters'] = viewer.my_filters.all()
 
     vals['groups'] = UserGroup.objects.all()
 
-    html = ajaxRender('test/feed.html', vals, request)
+    html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
@@ -629,7 +629,7 @@ def group(request, g_id=None, vals={}):
 def about(request, vals={}):
     if request.method == 'GET':
         setPageTitle("lovegov: about",vals)
-        html = ajaxRender('deployment/center/about.html', vals, request)
+        html = ajaxRender('deployment/center/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 

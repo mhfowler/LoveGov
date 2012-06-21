@@ -1,0 +1,69 @@
+
+{% load thumbnail %}
+
+<div class="pinterest">
+
+    <div class="pinterest-main">
+
+        <div class="pinterest-header">
+            <div class="prof-image">
+                {% if x.getPublic %}
+                    {% with creator=x.getCreator %}
+                        <a href="{{ creator.get_url }}">
+                            {% thumbnail creator.getProfileImage.image "50x50" crop="center" as im %}
+                                <img src="{{ im.url }}"/>
+                            {% empty %}
+                                <p> {{ creator.get_name }} </p>
+                            {% endthumbnail %}
+                        </a>
+                    {% endwith %}
+                {% else %}
+                    {% thumbnail defaultImage "50x50" format="PNG" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% empty %}
+                        <p> ? </p>
+                    {% endthumbnail %}
+                {% endif %}
+            </div>
+            <div class="header-middle">
+                <p class="submitted" id="cman">
+                    submitted at {{ x.created_when|date:"h:m"}}
+                </p>
+                <div class="user-name">
+                    John Dandy
+                </div>
+            </div>
+            <div class="header-topic">
+                <a href="{{ x.getMainTopic.get_url }}">
+                    {% thumbnail x.getMainTopic.image "50x50" format="PNG" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% empty %}
+                        <p> ? </p>
+                    {% endthumbnail %}
+                </a>
+            </div>
+        </div>
+
+        <div class="pinterest-image">
+
+        </div>
+
+        <div class="pinterest-title">
+            <h4 class="title-text"> {{ x.title }} </h4>
+        </div>
+
+        <div class="pinterest-summary">
+            <p class="summary-text"> {{ x.summary }} </p>
+        </div>
+
+        <div class="pinterest-top-comment">
+            <p class="summary-text"> my comment as;dlfkjas;ldkfjas;dlkfjaj  mbabasdbabsdfsd fasdfasdfasd </p>
+        </div>
+
+    </div>
+
+    <div class="pinterest-footer">
+        <h2> footer </h2>
+    </div>
+
+</div>
