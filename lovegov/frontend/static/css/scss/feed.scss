@@ -23,12 +23,12 @@
 
 
 .feed-header {
-
   @extend .box;
 
   p.your-feed {
     @extend .really-big;
-    margin-top:15px;
+    margin-top:20px;
+    margin-bottom:0px;
     float:left;
     @include fontSize(25px);
   }
@@ -48,7 +48,15 @@
 
     p.options-title {
       margin-top:5px;
-      margin-left:10px;
+      margin-left:6px;
+      margin-bottom:0px;
+      float:left;
+    }
+
+    div.triangle-selector {
+      float:left;
+      margin-left:4px;
+      margin-top:13px;
     }
   }
 
@@ -62,16 +70,16 @@
   }
 
   a.more-feed-button {
-    margin-top:15px;
+    margin-top:24px;
     margin-bottom:0px;
 
     float:left;
-    margin-left:10px;
+    margin-left:18px;
   }
 
-  p.how-does {
+  a.how-does {
     float:right;
-    margin-top:15px;
+    margin-top:24px;
     margin-right:10px;
   }
 
@@ -91,6 +99,7 @@
       margin-top:5px;
       margin-left:0px;
       margin-right:0px;
+      margin-bottom:0px;
       text-align:center
     }
   }
@@ -111,29 +120,117 @@
       margin-top:5px;
     }
   }
-
 }
 
 div.more-options-wrapper {
+
   margin-top:0px;
-  width:1000px;
+  padding:15px;
+  width:970px;
   height:100px;
   overflow:hidden;
   @extend .box;
+
+  div.more-options-selector {
+    height:50px;
+    width:980px;
+
+    div.sort-by {
+      margin-top:10px;
+      float:left;
+    }
+    div.sort-by-choice {
+      float:left;
+      width:40px;
+      height:30px;
+      padding-top:10px;
+      padding-left:20px;
+      margin-left:10px;
+      @extend .box;
+    }
+
+    div.filter-by {
+      float:left;
+      margin-top:10px;
+      margin-left:10px;
+    }
+    div.filter-by-group {
+      float:left;
+      margin-left:10px;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-by-network {
+      float:left;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-by-political {
+      float:left;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-by-content {
+      float:left;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-topic {
+      margin-top:10px;
+      float:right;
+    }
+
+  }
+
+  div.current-selection {
+    height:35px;
+    width:950px;
+    margin-left:10px;
+    padding:10px;
+    @extend .box;
+
+    div.current-filter {
+      float:left;
+    }
+
+    div.current-options {
+      float:right;
+
+      a.feed-clear {
+        display:block;
+      }
+
+      a.feed-save {
+        display:block;
+      }
+
+    }
+
+  }
+
 }
 
 
 div.feed-body {
-  border-top:solid;
-  border-color:gray;
-  border-width:1px;
 
-  background-color:blue;
 }
 
 
 div.pinterest-wrapper {
 
+  display: block;
   position:relative;
   top:20px;
   left:0px;
@@ -149,7 +246,6 @@ div.pinterest_card {
 
     @extend .box;
     box-shadow: 3px 3px 3px #f0f0f0;
-    position:absolute;
     width:320px;
 
     div.pinterest-main {
@@ -218,6 +314,12 @@ div.pinterest_card {
   }
 }
 
+div.feed-topic-icon-wrapper {
+  float:right;
+  margin-left:10px;
+  margin-bottom:10px;
+}
+
 /* styling */
 div.pinterest-title {
   h2.title-text {
@@ -263,4 +365,8 @@ div.pinterest-top-comment {
     clear:both;
     color:$light-gray;
   }
+}
+
+.mini {
+  @include fontSize(20px);
 }

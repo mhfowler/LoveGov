@@ -2219,6 +2219,12 @@ function listSelectHelper(value, list_input_name) {
  */
 function refreshFeed(num) {
     $(".feed_start").val(0);
+    // pinterest reset positioning
+    var i =0;
+    while (i < pinterest.length) {
+        pinterest[i] = 0;
+        i += 1;
+    }
     getFeed(num);
 }
 
@@ -2533,6 +2539,8 @@ function setRanking(value) {
 
 function setDisplay(value) {
     $(".feed_display").val(value);
+    var visual_wrapper = $("div[data-display=" + value + "]");
+    visualSelectDisplayWrapper(visual_wrapper);
 }
 
 
@@ -2559,7 +2567,7 @@ function pinterestRender(cards) {
         }
         var top = pinterest[current_col];
         var left = pinterest_width*current_col;
-        var height = $(this).find(".pinterest").height() + 20;
+        var height = $(this).height() + 20;
         $(this).css("position", 'absolute');
         $(this).css("left", left);
         $(this).animate({"top": top}, 1400);
@@ -2581,9 +2589,44 @@ function scrollFeed() {
     }
 }
 
+/* shows display select appropriately */
+function visualSelectDisplayWrapper(wrapper) {
+    $(".display-red").hide();
+    $(".display-gray").show();
+    visualDisplayWrapperShow(wrapper);
+}
+function visualDisplayWrapperShow(wrapper) {
+    wrapper.find(".display-gray").hide();
+    wrapper.find(".display-red").show();
+}
+function visualDisplayWrapperHide(wrapper) {
+    wrapper.find(".display-gray").show();
+    wrapper.find(".display-red").hide();
+}
 
 /* binds everyting */
 function loadNewFeed() {
+
+    $(".more-options-wrapper").hide();
+    $(".more_options").click(function(event) {
+        event.preventDefault();
+        $(".more-options-wrapper").toggle();
+    });
+
+    /* set initial display value */
+    $(".display-red").hide();
+    setDisplay($(".feed_display").val());
+
+    $(".display-choice").click(function(event) {
+        setDisplay($(this).attr("data-display"));
+        var num = 6;
+        var already = $(".feed_start").val();
+        if (already > num) {
+            num = already;
+        }
+        refreshFeed(num);
+    });
+
 
     $(".get_feed").click(function(event) {
         event.preventDefault();
@@ -2650,7 +2693,7 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
-    refreshFeed(6);
+    getFeed(6);
 
     //$(window).scroll(scrollFeed);
 
