@@ -1,89 +1,144 @@
+{% load thumbnail %}
 <div class="notification">
+<table>
+<tr>
 {% if not viewed %}
 <b>
 {% endif %}
     <!-- Commented -->
     {% if type == 'CO' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        commented on
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        <td class="notification-thumbnail">
+            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                <img src="{{ im.url }}" class="icon-small"/>
+            {% endthumbnail %}
+        </td>
+        <td class="notification-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            commented on
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     <!-- Voted -->
     {% elif type == 'VO' %}
-        <img src="/static/images/feed/heart-small.png"/>
         {% if modifier == 'L' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            {% if tally == 2 %}
-                and one other person
-            {% elif tally > 2 %}
-                and {{ tally|add:"-1" }} other people
-            {% endif %}
-            liked
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <td class="notification-thumbnail">
+                <img src="/static/images/feed/heart-small.png"/>
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                {% if tally == 2 %}
+                    and one other person
+                {% elif tally > 2 %}
+                    and {{ tally|add:"-1" }} other people
+                {% endif %}
+                liked
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+            <td class="clear-both"></td>
         {% elif modifier == 'D' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            {% if tally == 2 %}
-                and one other person
-            {% elif tally > 2 %}
-                and {{ tally|add:"-1" }} other people
-            {% endif %}
-            disliked
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                {% if tally == 2 %}
+                    and one other person
+                {% elif tally > 2 %}
+                    and {{ tally|add:"-1" }} other people
+                {% endif %}
+                disliked
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+            <td class="clear-both"></td>
         {% else %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            {% if tally == 2 %}
-                and one other person
-            {% elif tally > 2 %}
-                and {{ tally|add:"-1" }} other people
-            {% endif %}
-            unvoted
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                {% if tally == 2 %}
+                    and one other person
+                {% elif tally > 2 %}
+                    and {{ tally|add:"-1" }} other people
+                {% endif %}
+                unvoted
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% endif %}
 
     <!-- Followed -->
     {% elif type == 'FO' %}
         {% if modifier == 'R' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            requested to follow
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-            {% if not follow.rejected and not follow.confirmed and follow.requested %}
-                <div class="notification-follow-response">
-                    <a href="" class="notification-follow-response-y"> I accept! </a> ||
-                    <a href="" class="notification-follow-response-n"> I decline! </a>
-                    <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
-                </div>
-            {% endif %}
+            <td class="notification-thumbnail">
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                requested to follow
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+                {% if not follow.rejected and not follow.confirmed and follow.requested %}
+                    <div class="notification-follow-response">
+                        <a href="" class="notification-follow-response-y"> I accept! </a> ||
+                        <a href="" class="notification-follow-response-n"> I decline! </a>
+                        <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+                    </div>
+                {% endif %}
+            </td>
         {% elif modifier == 'D' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            followed
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-            {% if not reverse_follow.confirmed and not reverse_follow.requested %}
-                <div class="notification-follow">
-                    <a href="" class="notification-user-follow">
-                        follow them back!
-                    </a>
-                    <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
-                </div>
-            {% endif %}
+            <td class="notification-thumbnail">
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                followed
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+                {% if not reverse_follow.confirmed and not reverse_follow.requested %}
+                    <div class="notification-follow">
+                        <a href="" class="notification-user-follow">
+                            follow them back!
+                        </a>
+                        <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+                    </div>
+                {% endif %}
+            </td>
         {% elif modifier == 'A' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true%}
-            accepted
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you possesive=true %}
-            follow request
+            <td class="notification-thumbnail">
+                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true%}
+                accepted
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you possesive=true %}
+                follow request
+            </td>
         {% elif modifier == 'X' %}
-            {% if from_you %}
+            <td class="notification-thumbnail">
+                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-                were rejected from following
+                {% if from_you %}
+                    were rejected from following
+                {% else %}
+                    was rejected from following
+                {% endif %}
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-            {% else %}
-                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-                was rejected from following
-                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-            {% endif %}
+            </td>
         {% elif modifier == 'S' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            stopped following
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <td class="notification-thumbnail">
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                stopped following
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% endif %}
 
     <!-- Group Follow -->
@@ -199,14 +254,19 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% elif type == 'SI' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        {% if tally == 2 %}
-            and one other person
-        {% elif tally > 2 %}
-            and {{ tally|add:"-1" }} other people
-        {% endif %}
-        signed
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        <td class="notification-thumbnail">
+            <img src="/static/images/feed/check-small.png"/>
+        </td>
+        <td class="notification-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
+            signed
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     {% elif type == 'SH' %}
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -218,10 +278,20 @@
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             answered
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-        {% else %}
+        {% elif to_user.type == 'P' %}
+            <td class="notification-thumbnail"><img src="/static/images/feed/petition-small.png"/></td>
+            <td class="notification-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            answered
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+        {% elif to_user.type == 'N' %}
+            <td class="notification-thumbnail"><img src="/static/images/feed/news-small.png"/></td>
+            <td class="notification-text">
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             created
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% endif %}
 
     {% elif type == 'ED' %}
@@ -238,4 +308,6 @@
 {% if not viewed %}
 </b>
 {% endif %}
+</tr>
+</table>
 </div>

@@ -222,6 +222,8 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
+        action = Action(relationship=c.getCreatedRelationship())
+        action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
@@ -236,8 +238,6 @@ def create(request, val={}):
                 group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
-                action = Action(relationship=c.getCreatedRelationship())
-                action.autoSave()
                 return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
