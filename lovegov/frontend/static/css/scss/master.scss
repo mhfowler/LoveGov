@@ -362,6 +362,26 @@ textarea:focus
     border: 0;
 }
 
+.button-small
+{
+  @include rounded(5px);
+  text-align: center;
+  padding: 3px;
+}
+
+.button-small-red, .button-small-red:link, .button-small-red:active, .button-small-red:visited
+{
+  @extend .button-small;
+  font-weight: bold;
+  color: white;
+  background-color:$red;
+}
+
+.button-small-red:hover
+{
+  background-color:$red-light
+}
+
 .button-red, .button-red:link, .button-red:active, .button-red:visited
 {
   @extend .button;

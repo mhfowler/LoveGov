@@ -74,6 +74,67 @@ function rebindFunction()
  *      ~Auxiliary
  *
  ***********************************************************************************************************************/
+function userFollow(event,div,follow)
+{
+    event.preventDefault();
+    var action = 'userfollow';
+    if( !follow )
+    {
+        action = 'stopfollow';
+    }
+    ajaxPost({
+            data: {
+                'action': action,
+                'p_id': p_id
+            },
+            success: function(data)
+            {
+                if( data == "now following this person")
+                {
+                    div.html("unfollow");
+                    div.unbind();
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),false);
+                        }
+                    );
+                }
+                else if( data == "requested to follow this person")
+                {
+                    div.html("un-request");
+                    div.unbind();
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),false);
+                        }
+                    );
+                }
+                else if( data == "removed")
+                {
+                    div.html("follow");
+                    div.unbind();
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),true);
+                        }
+                    );
+                }
+                else
+                {
+                    alert(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        }
+    );
+}
+
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
@@ -1724,44 +1785,14 @@ function loadProfile()
     unbindNotification();
     loadNotification();
 
-    $(".user-follow-button").click( function(event)
+    $("#user_follow_button").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'userfollow',
-                    'p_id': p_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+        userFollow(event,$(this),true);
     });
 
     $(".user-unfollow-button").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'stopfollow',
-                    'p_id': p_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+        userFollow(event,$(this),false);
     });
 
     $(".user-follow-response-y").click( function(event) {

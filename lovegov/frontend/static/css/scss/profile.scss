@@ -1,19 +1,9 @@
-@import 'master.scss';
+@import 'master';
 
 div.profile-section-title
 {
   @extend h4;
   color: $text-blue;
-}
-
-@mixin long-gray-box
-{
-  @include rounded(5px);
-  display: block;
-  text-align: center;
-  font-style: italic;
-  padding: 2px 0 2px 0;
-  color: $black;
 }
 
 @mixin rounded-box
@@ -25,15 +15,22 @@ div.profile-section-title
   text-align: center;
 }
 
+a.long-box
+{
+  @extend .button-small;
+  display: block;
+  font-style: italic;
+  color: $black;
+}
+
 a.long-button-gray, a.long-button-gray:link, a.long-button-gray:active, a.long-button-gray:visited
 {
-  @include long-gray-box;
+  @extend a.long-box;
   background-color: $gray;
 }
 
 a.long-button-gray:hover
 {
-  @include long-gray-box;
   background-color: $light-gray;
 }
 

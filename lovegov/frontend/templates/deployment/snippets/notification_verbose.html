@@ -76,8 +76,8 @@
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
                 {% if not follow.rejected and not follow.confirmed and follow.requested %}
                     <div class="notification-follow-response">
-                        <a href="" class="notification-follow-response-y"> I accept! </a> ||
-                        <a href="" class="notification-follow-response-n"> I decline! </a>
+                        <a href="" class="notification-follow-response-y button-small-red">accept</a>
+                        <a href="" class="notification-follow-response-n button-small-red">decline</a>
                         <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
                     </div>
                 {% endif %}
@@ -94,8 +94,8 @@
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
                 {% if not reverse_follow.confirmed and not reverse_follow.requested %}
                     <div class="notification-follow">
-                        <a href="" class="notification-user-follow">
-                            follow them back!
+                        <a href="" class="button-small-red notification-user-follow">
+                            follow
                         </a>
                         <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
                     </div>

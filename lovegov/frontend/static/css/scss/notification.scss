@@ -5,6 +5,11 @@ div.notification
   padding: 15px 0px 15px 10px;
 }
 
+div.notification:hover
+{
+  background-color: $light-gray;
+}
+
 td.notification-thumbnail
 {
   padding-right: 10px;
