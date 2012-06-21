@@ -1,3 +1,4 @@
+{% load thumbnail %}
 <div class="action">
     <!-- Commented -->
     {% if type == 'CO' %}
@@ -7,6 +8,9 @@
 
     <!-- Voted -->
     {% elif type == 'VO' %}
+        {% thumbnail "/static/images/feed/heart-small.png" "17x17" crop="center" as im %}
+            <img src="{{ im.url }}"/>
+        {% endthumbnail %}
         {% if modifier == 'L' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             liked

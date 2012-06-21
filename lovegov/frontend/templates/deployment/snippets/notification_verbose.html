@@ -1,3 +1,4 @@
+{% load thumbnail %}
 <div class="notification">
 {% if not viewed %}
 <b>
@@ -10,6 +11,9 @@
 
     <!-- Voted -->
     {% elif type == 'VO' %}
+        {% thumbnail "/static/images/feed/heart-small.png" "17x17" crop="center" as im %}
+            <img src="{{ im.url }}" class="icon-really-big"/>
+        {% endthumbnail %}
         {% if modifier == 'L' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             {% if tally == 2 %}
