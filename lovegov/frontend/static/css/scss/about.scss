@@ -4,13 +4,13 @@
 
 div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited
 {
-  @include div-button($radius:10px,$width:250px,$height:50px,$font-size:21px,$color:$black);
-  margin-bottom:12px;
+  @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
+  margin-bottom:15px;
 
   span
   {
     display:inline-block;
-    margin-top:15px;
+    margin-top:16px;
     margin-left:10px;
   }
 
@@ -28,6 +28,13 @@ div.top-nav
   float:left;
 }
 
+div.nav-top-div
+{
+  padding-bottom:15px;
+  border-bottom:1px solid $gray;
+  display:inline-block;
+}
+
 div.top-nav-left
 {
   @extend .top-nav;
@@ -40,4 +47,58 @@ div.top-nav-right
   @extend .top-nav;
   margin-left: $nav-margin;
   width:690px;
+
+  h1
+  {
+    float:left;
+    margin-top:35px;
+  }
+
+  div
+  {
+    width:690px;
+    float:left;
+  }
+
+  img
+  {
+    float:left;
+    width:200px;
+    margin-left:65px;
+  }
+
+  p
+  {
+    font-size:24px;
+    color:$deep-gray;
+    font-family:$gill-light;
+    float:left;
+    margin-top:25px;
+
+  }
+}
+
+div#about-content
+{
+  margin-top:25px;
+  display:inline-block;
+
+  p.privacy_p
+  {
+    margin-top:5px;
+    margin-bottom:25px;
+    margin-left:25px;
+    margin-right:25px;
+  }
+
+  div.privacy-column
+  {
+    width:475px;
+    float:left;
+  }
+
+  h3
+  {
+    font-size:21px;
+  }
 }

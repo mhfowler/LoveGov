@@ -11,7 +11,7 @@
     <div id="blog_left">
         <h4 class="capitalize_text" style="margin-bottom:25px"><a class="clear_link_red" href="/blog/">Blog</a></h4>
         <div id="recent_blog_posts" class="blog_left_div">
-            <h5 class="color_link-hover">Recent Blog Posts</h5>
+            <h5 class="text-blue">Recent Blog Posts</h5>
             <ul class="list_none">
                 {% for blogPost in blogPosts|slice:":5" %}
                 <li>
@@ -22,7 +22,7 @@
         </div>
 
         <div id="blog_categories" class="blog_left_div">
-            <h5 class="color_link-hover">Categories</h5>
+            <h5 class="text-blue">Categories</h5>
             <ul class="list_none">
                 {% for category in categories %}
                     <li>
@@ -33,7 +33,7 @@
         </div>
 
         <div class="blog_left_div">
-            <h5 class="color_link-hover">Developers</h5>
+            <h5 class="text-blue">Developers</h5>
             <ul class="list_none">
                 {% for developer in developers %}
                     <li>

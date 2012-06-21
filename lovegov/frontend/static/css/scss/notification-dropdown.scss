@@ -1,5 +1,5 @@
-@import 'master-variables.scss';
-@import 'master.scss';
+@import 'master-variables';
+@import 'master';
 
 @mixin notification-box {
   border-bottom: solid 1px;

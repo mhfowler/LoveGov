@@ -1,6 +1,6 @@
 <div class="blog_item">
     <div class="blog_item_left">
-        <h3><a class="clear_link" href="{{ blogPost.getURL }}">{{ blogPost.title }}</a></h3>
+        <h3><a class="clear-link" href="{{ blogPost.getURL }}">{{ blogPost.title }}</a></h3>
         <div class="blog_posted">Posted on <strong>{{ blogPost.datetime }}</strong> in {% for cat in blogPost.category %}<a class="category_blog" href="/blog/{{ cat|lower }}">{{ cat }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</div>
         {{ blogPost.message|linebreaks }}
     </div>
