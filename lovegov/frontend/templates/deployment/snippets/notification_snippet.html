@@ -1,3 +1,9 @@
 {% for note in dropdown_notifications_text %}
+    {% if forloop.first %}
+        <div class="right-separator"></div>
+    {% endif %}
     {{ note|safe|escape }}
+    {% if not forloop.last %}
+        <div class="right-separator"></div>
+    {% endif %}
 {% endfor %}

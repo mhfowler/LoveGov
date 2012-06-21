@@ -487,13 +487,13 @@ def profile(request, alias=None, vals={}):
             vals['prof_follow_me'] = prof_follow_me[0:5]
 
             # Get user's top 5 similar follows
-            prof_i_follow = list(user_prof.getIFollow())
-            for i_follow in prof_i_follow:
-                comparison = getUserUserComparison(user_prof, i_follow)
-                i_follow.compare = comparison.toJSON()
-                i_follow.result = comparison.result
-            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_i_follow'] = prof_i_follow[0:5]
+#            prof_i_follow = list(user_prof.getIFollow())
+#            for i_follow in prof_i_follow:
+#                comparison = getUserUserComparison(user_prof, i_follow)
+#                i_follow.compare = comparison.toJSON()
+#                i_follow.result = comparison.result
+#            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
+#            vals['prof_i_follow'] = prof_i_follow[0:5]
 
             # Get user's random 5 followers
             #vals['prof_follow_me'] = user_prof.getFollowMe(5)
@@ -508,7 +508,7 @@ def profile(request, alias=None, vals={}):
                 group.compare = comparison.toJSON()
                 group.result = comparison.result
             prof_groups.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_groups'] = prof_groups[0:5]
+            vals['prof_groups'] = prof_groups[0:4]
 
             # Get user's random 5 groups
             #vals['prof_groups'] = user_prof.getGroups(5)
@@ -531,14 +531,13 @@ def profile(request, alias=None, vals={}):
                     vals['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(5)
+            num_actions = NOTIFICATION_INCREMENT
+            actions = user_prof.getActivity(num=num_actions)
             actions_text = []
             for action in actions:
-                try:
-                    actions_text.append( action.getVerbose(view_user=viewer) )
-                except:
-                    actions_text.append( "This action no longer exists" )
+                actions_text.append( action.getVerbose(view_user=viewer) )
             vals['actions_text'] = actions_text
+            vals['num_actions'] = num_actions
 
             # Get Notifications
             if viewer.id == user_prof.id:
