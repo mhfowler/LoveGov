@@ -1,0 +1,9 @@
+{% for x in content %}
+
+    <div class="pinterest_card pinterest_unrendered" data-rank="{{ forloop.counter }}">
+        {% include 'deployment/center/feed/pinterest.html' %}
+    </div>
+
+{% endfor %}
+
+

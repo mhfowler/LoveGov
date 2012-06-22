@@ -256,32 +256,6 @@ a, a:link, a:visited, a:active
     height:235px;
 }
 
-.profile-username
-{
-    position:relative;
-    padding-bottom:5px;
-    font-size:20pt;
-    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
-    color:#0f5569;;
-}
-
-#profile-img
-{
-    float:left;
-    margin-right:20px;
-    padding: 6px;
-    border: 1px solid #F0503B;
-    height:175px;
-}
-
-#profile-summary
-{
-    position:relative;
-    width:380px;
-    margin-left:220px;
-    margin-bottom:12px;
-}
-
 #profile-info-stats
 {
     position:relative;
@@ -294,35 +268,6 @@ a, a:link, a:visited, a:active
     float:left;
     width:200px;
     margin-bottom:15px;
-}
-
-.profile-header
-{
-    font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif;
-    color:#959595;
-    font-size:14pt;
-    margin-bottom:3px;
-}
-
-#profile-stats
-{
-    position:relative;
-    left:65px;
-    margin-bottom:15px;
-    float:left;
-    width:150px;
-}
-
-#profile-stats ul
-{
-    margin-top:0;
-    list-style-type:circle;
-    margin-left:-15px;
-}
-
-.profile-stats-numbers
-{
-    color:#f0503b;
 }
 
 .feed-item-text-expanded

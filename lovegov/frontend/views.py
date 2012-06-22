@@ -96,6 +96,7 @@ def requiresLogin(view):
             else:
                 vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
                 rightSideBar(None, vals)
+                vals['new_notification_count'] = user.getNumNewNotifications()
             # SAVE PAGE ACCESS
             if request.method == 'GET':
                 ignore = request.GET.get('log-ignore')
@@ -112,6 +113,40 @@ def requiresLogin(view):
             return response
         return view(request, vals=vals, *args, **kwargs)
     return new_view
+
+def blog(request,category=None,number=None,vals={}):
+    if request.method == 'GET':
+        user = getUserProfile(request)
+        if user: vals['viewer'] = user
+        else: vals['viewer'] = None
+
+        blogPosts = BlogEntry.objects.all().order_by('-id')
+        vals['blogPosts'] = []
+        vals['ownBlog'] = False
+        vals['categories'] = BlogEntry.CATEGORY_CHOICES
+        vals['developers'] = UserProfile.objects.filter(developer=True)
+
+        if number:
+            blogPost = BlogEntry.lg.get_or_none(id=number)
+            if blogPost:
+                vals['blogPost'] = blogPost
+                vals['blogPosts'] = blogPosts
+                return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
+        elif category:
+            if string.capitalize(category) in BlogEntry.CATEGORY_CHOICES:
+                for blogPost in blogPosts:
+                    if string.capitalize(category) in blogPost.category:
+                        vals['blogPosts'].append(blogPost)
+            else:
+                creator = UserProfile.objects.get(alias=category)
+                vals['ownBlog'] = creator == user
+                vals['blogPosts'] = blogPosts.filter(creator=creator)
+        else:
+            vals['blogPosts'] = blogPosts
+
+        vals['blogPost'] = None
+
+        return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Alpha login page.
@@ -336,18 +371,23 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def theFeed(request, vals={}):
 
+    viewer = vals['viewer']
+
     rightSideBar(request, vals)
 
     vals['feed_ranking'] = 'N'
+    vals['feed_levels'] = json.dumps([])
     vals['feed_topics'] = json.dumps([])
     vals['feed_types'] = json.dumps([])
     vals['feed_groups'] = json.dumps([])
-    vals['feed_just'] = 1
-    vals['feed_display'] = 'linear'
+    vals['feed_submissions_only'] = 1
+    vals['feed_display'] = 'P'
+
+    vals['my_filters'] = viewer.my_filters.all()
 
     vals['groups'] = UserGroup.objects.all()
 
-    html = ajaxRender('test/feed.html', vals, request)
+    html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
@@ -589,7 +629,7 @@ def group(request, g_id=None, vals={}):
 def about(request, vals={}):
     if request.method == 'GET':
         setPageTitle("lovegov: about",vals)
-        html = ajaxRender('deployment/center/about.html', vals, request)
+        html = ajaxRender('deployment/center/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 

@@ -178,7 +178,7 @@ for x in sys.argv:
     command += x + ' '
 to_save = Script(command=command, user=getpass.getuser())
 to_save.save()
-time = datetime.datetime.now()
+time = datetime.now()
 
 # check at least one tag
 if len(sys.argv) < 3:

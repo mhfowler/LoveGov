@@ -1,6 +1,6 @@
 <div id="login-div" class="state-div" {% if state != "login" %}style="display:none"{% endif %}>
     <div class="form-div">
-        <h1>Log in to LoveGov</h1>
+        <h2>Log in to LoveGov</h2>
         <form action="" method="post" id="loginform"> {% csrf_token %}
             <table id="logintable">
                 <tr>
@@ -18,15 +18,15 @@
                 <tr>
                     <td colspan=2>
                         <input type="hidden" name="button" value="login"/>
-                        <input class="submit-button" id="submit-login" type="submit" value="log in"/>
-                        <p>
+                        <input class="button-red" id="submit-login" type="submit" value="log in"/>
+                        <span style="float:left">
                             {{ error }}
-                        </p>
-                        <div style="height:25px">
+                        </span>
+                        <div style="margin-top:7px;margin-bottom:7px;">
                             <a class="account-actions" id="forgot-password" href="/passwordRecovery/">forgot password?</a>
                         </div>
                         <div>
-                            <a class="account-actions" id="create-account">create account</a>
+                            <a class="account-actions" id="create-account" href="">create account</a>
                         </div>
                     </td>
                     <td></td>

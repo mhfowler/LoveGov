@@ -30,15 +30,12 @@
     -moz-user-select:none;
 }
 
-#answer-reply
-{
-    height:225px;
-}
+
 
 #answer-reply-canvas
 {
     height:200px;
-    width:400px;
+    width:200px;
 }
 
 #answer-reply-text span
@@ -91,4 +88,9 @@
     margin-left:30px;
     margin-top:10px;
     margin-bottom:10px;
+}
+
+#qa-buttons
+{
+    text-align:right;
 }

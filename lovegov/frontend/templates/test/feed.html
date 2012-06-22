@@ -9,7 +9,7 @@
         <!-- topics -->
         <div class="feed-topic-selector-wrapper topic-icons-wrapper" style="float:left;">
             {% for t in main_topics %}
-                <div class="feed-topic-icon-wrapper" data-id="{{ t.id }}">
+                <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-id="{{ t.id }}">
                     {% thumbnail t.image "50x50" format="PNG" as im %}
                         <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
                     {% endthumbnail %}
@@ -20,27 +20,46 @@
             {% endfor %}
         </div>
 
+        <!-- my filters -->
+        <div class="my-filters-wrapper" style="float:left;margin-left:100px;">
+            <h4> saved filters </h4>
+            {% for x in my_filters %}
+                <a href="" class="my-filter-selector" data-id="{{ x.id }}"> {{ x.name }} </a>
+                <br>
+            {% empty %}
+                .. no saved filters
+            {% endfor %}
+        </div>
+
         <!-- ranking -->
         <div style="float:left;margin-left:100px;">
             <div class="feed-ranking-selector" data-ranking="B">
-                <a href=""> B </a>
+                <a href=""> Best </a>
             </div>
             /
             <div class="feed-ranking-selector" data-ranking="H">
-                <a href=""> H </a>
+                <a href=""> Hot </a>
             </div>
             /
             <div class="feed-ranking-selector" data-ranking="N">
-                <a href=""> N </a>
+                <a href=""> New </a>
             </div>
         </div>
 
         <!-- type -->
         <div style="float:left;margin-left:100px;">
-            P <input type="checkbox" class="feed-type-selector" value="P"/>
-            N <input type="checkbox" class="feed-type-selector" value="N"/>
-            G <input type="checkbox" class="feed-type-selector" value="G"/>
-            L <input type="checkbox" class="feed-type-selector" value="L"/>
+            Petition <input type="checkbox" class="feed-type-selector" value="P"/>
+            News <input type="checkbox" class="feed-type-selector" value="N"/>
+            Groups <input type="checkbox" class="feed-type-selector" value="G"/>
+            Legislation <input type="checkbox" class="feed-type-selector" value="L"/>
+        </div>
+
+        <!-- level -->
+        <div style="float:left;margin-left:100px;margin-top:20px;">
+            Local <input type="checkbox" class="feed-level-selector" value="L"/>
+            State <input type="checkbox" class="feed-level-selector" value="S"/>
+            Federal <input type="checkbox" class="feed-level-selector" value="F"/>
+            World <input type="checkbox" class="feed-level-selector" value="W"/>
         </div>
 
         <!-- groups -->
@@ -50,16 +69,25 @@
             {% endfor %}
         </div>
 
+        <!-- save -->
+        <div class="save-filter-wrapper" style="float:left;margin-left:20px;margin-top:100px;">
+            <input type="text" class="save-filter-name"/>
+            <input type="button" class="save-filter-button" value="save"/>
+        </div>
+
         <!-- display -->
-        <div style="float:left;margin-left:100px;">
-            <div class="feed-display-selector" data-display="pinterest">
-                <a href=""> P </a>
+        <div style="float:left;margin-left:100px;margin-top:100px;">
+            <div class="feed-display-selector" data-display="P">
+                <a href=""> Pinterest </a>
             </div>
             /
-            <div class="feed-display-selector" data-ranking="linear">
-                <a href=""> L </a>
+            <div class="feed-display-selector" data-ranking="L">
+                <a href=""> Linear </a>
             </div>
         </div>
+
+        <!-- clear -->
+        <a href="" class="feed-clear" style="float:left;margin-left:100px;margin-top:100px;"> clear </a>
 
     </div>
 
@@ -67,13 +95,14 @@
         <input type="hidden" class="feed_ranking" value="{{ feed_ranking }}"/>
         <input type="hidden" class="feed_topics" value="{{feed_topics}}"/>
         <input type="hidden" class="feed_types" value="{{feed_types}}"/>
+        <input type="hidden" class="feed_levels" value="{{feed_levels}}"/>
         <input type="hidden" class="feed_groups" value="{{feed_groups}}"/>
-        <input type="hidden" class="feed_just" value="{{feed_just}}"/>
-        <input type="hidden" class="feed_start" value="0"/>
         <input type="hidden" class="feed_display" value="{{ feed_display }}"/>
+        <input type="hidden" class="feed_submissions_only" value="{{feed_submissions_only}}"/>
+        <input type="hidden" class="feed_start" value="0"/>
     </div>
 
-    <div class="the_feed" style="clear:both;">
+    <div class="the_feed" style="clear:both;margin-left:100px;margin-top:100px;">
         ...
     </div>
 

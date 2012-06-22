@@ -1,4 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/static/css/deployment/header.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/notification-dropdown.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/notifications.css" />
 
 <div id="header">
     <!-- Header -->
@@ -27,12 +29,20 @@
 
         {% include 'deployment/snippets/user_menu.html' %}
 
-        <div class="header-notifications" style="float:right">
-            <img id="notifications-dropdown-arrow" src="/static/images/user-menu/downarrow.png"/>
-            <div id="notifications-dropdown" style="display:none; float:right; width:400px">
+        <div id="header-notifications">
+            <div id="notifications-dropdown-button">
+                <span id="notifications-number">
+                    {{ new_notification_count }}
+                    <div id="notifications-dropdown-arrow"></div>
+                </span>
+            </div>
+            <div id="notifications-dropdown" style="display:none">
 
             </div>
         </div>
+
+
+
     <!--
 
         <div id="user-dashboard">

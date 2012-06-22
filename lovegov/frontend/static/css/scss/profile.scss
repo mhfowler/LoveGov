@@ -1,0 +1,300 @@
+@import 'master.scss';
+
+/* LEFT MODULE */
+div.middle-left
+{
+  position:relative;
+  float:left;
+  width:630px;
+
+  /* Basic Info */
+  div.basic-info
+  {
+    position:relative;
+    margin-bottom:5px;
+    margin-left:30px;
+    height:235px;
+
+    /* Info Left Side */
+    div.basic-info-left
+    {
+      @extend .float-left;
+      margin-right: 20px;
+
+      div.profile-follows-you
+      {
+        font-size: 9px;
+        margin-top: 2px;
+        text-align: center;
+        color: $deep-gray;
+      }
+    }
+
+    /* Info Main Contents */
+    div.basic-info-main
+    {
+      @extend .float-left;
+
+      div.profile-username
+      {
+        @extend h2;
+        margin-bottom:5px;
+      }
+
+      div.profile-location
+      {
+        @extend h5;
+        color: $text-blue;
+        margin-left: 2px;
+      }
+
+      div.profile-network
+      {
+        @extend h5;
+        margin-left: 2px;
+      }
+
+      div.profile-summary
+      {
+        color: $deep-gray;
+        font-style: italic;
+        width: 380px;
+      }
+
+      /* Profile Stat Boxes */
+      div.profile-stats
+      {
+        margin-top: 20px;
+        height: 80px;
+
+        div.stat-box
+        {
+          @extend .float-left;
+          @include rounded();
+          border-width: 2px;
+          border-color: $gray;
+          border-style: solid;
+          background-color: $gray;
+          height: 70px;
+          width: 70px;
+          margin-right: 10px;
+          display: block;
+          text-align: center;
+
+          span.profile-stats-number
+          {
+            @extend .big-num;
+            color: white;
+            position: relative;
+            line-height: 52px;
+          }
+
+          span.profile-stats-title
+          {
+            color: $deep-gray;
+            position: relative;
+            top: -3px;
+          }
+        }
+
+        div.followers-stat
+        {
+          background-color: white;
+
+          span.followers-number
+          {
+            color: $red;
+          }
+        }
+      }
+
+      /* Profile Buttons */
+      div.profile-buttons
+      {
+        margin-top: 10px;
+        height: 50px;
+      }
+    }
+  }
+}
+
+/* RIGHT MODULE */
+div.middle-right
+{
+  float:left;
+  width:300px;
+  margin-left:40px;
+
+  div.matching
+  {
+    @include rounded();
+    border-width: 3px;
+    border-color: $gray;
+    border-style: solid;
+    text-align:center;
+    position: relative;
+    top: -20px;
+    z-index:0;
+
+    div#qaweb
+    {
+      z-index:0;
+      position:relative;
+      width:300px;
+      height:300px;
+      text-align:left;
+    }
+
+    div#qaweb-title
+    {
+      @include rounded-bottom(10px);
+      position:relative;
+      background-color: $gray;
+      padding-top:10px;
+      padding-bottom:2px;
+      @extend h5;
+      color: white;
+    }
+  }
+}
+
+
+/* Profile Bottom */
+div.profile-bottom
+{
+  @extend .float-left;
+  display: block;
+  margin-top: 20px;
+
+  div.profile-section-title
+  {
+    @extend h4;
+    color: $text-blue;
+  }
+
+  /* Activity Feed */
+  div.profile-activity-container
+  {
+    @extend .float-left;
+    display: block;
+    width: 450px;
+    margin-right: 50px;
+
+    div.profile-activity-feed
+    {
+      display: block;
+
+      div.action-separator
+      {
+        @include horitzontalSeparator(450px);
+      }
+    }
+
+    div.see-more-activity
+    {
+      background-color: $gray;
+      @include rounded(5px);
+      text-align: center;
+      font-style: italic;
+      padding: 2px 0 2px 0;
+    }
+  }
+
+  div.profile-group-container
+  {
+    @extend .float-left;
+  }
+}
+
+
+
+
+
+/* toolbox */
+
+#toolbox
+{
+  height:215px;
+  margin-bottom:20px;
+  border-bottom:1px solid #ccc;
+}
+
+#toolbox p
+{
+  height:8px;
+}
+
+#toolbox ul
+{
+  list-style-type:none;
+}
+
+#toolbox li
+{
+  margin-bottom:25px;
+}
+
+.toolbox-button:link
+{
+  color:#FFFFFF;
+  background-color:#ccc;
+  position:relative;
+  margin-bottom:10px;
+}
+
+.toolbox-button:link, .toolboox-button:visited, .toolbox-button:active
+{
+  text-decoration:none;
+}
+
+.toolbox-button:hover
+{
+  color:#ccc;
+  background-color:#FFFFFF;
+}
+
+/* my reps */
+
+#myreps
+{
+  font-family:"Gill Sans Std Light", Verdana, sans-serif;
+  font-size:18pt;
+  color:#ccc;
+  padding-bottom:30px;
+  border-bottom:1px solid #ccc;
+}
+
+
+.middle-right-head-font
+{
+  text-align:left;
+  font-family:"Gill Sans Std Light", Verdana, sans-serif;
+  font-size:18pt;
+  color:#959595;
+}
+
+.network-member-div
+{
+  float:left;
+  width:205px;
+  margin-bottom:10px;
+}
+
+.network-member-div:hover
+{
+  cursor:pointer;
+}
+
+.network-user-link
+{
+  color:#0F5569;
+  float:left;
+  margin-top:12px;
+  margin-left:10px;
+  width:140px;
+}
+
+.network-user-link:link, .network-user-link:active, .network-user-link:visited
+{
+  color:#0F5569;
+}

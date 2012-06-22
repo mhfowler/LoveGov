@@ -224,61 +224,61 @@ function loadTopicSelect()
         (
             function(event)
             {
-                $(this).parent().children(".normal").hide();
-                $(this).parent().children(".selected").show();
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                wrapper.children(".normal").hide();
+                wrapper.children(".selected").show();
             },
             function(event)
             {
-                var selected = $(this).parent().children(".selected");
-                if (!(selected.hasClass("chosen")))
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                if (!(wrapper.hasClass("chosen")))
                 {
-                    $(this).parent().children(".selected").hide();
-                    $(this).parent().children(".normal").show();
+                    wrapper.children(".selected").hide();
+                    wrapper.children(".normal").show();
                 }
             }
         );
 }
 
-// adjusts icons appropriately for topic selection, only one topic can be chosen at a time
-function selectTopicSingle(div)
+// selects a particular topic icon and deselects all others
+function selectTopicSingle(wrapper)
 {
-    var wrapper = div.closest(".topic-icons-wrapper");
-    // unselect all others
-    wrapper.find(".selected").hide();
-    wrapper.find(".normal").show();
-    // if selected, remove class chosen
-    if (div.hasClass('chosen')) {
-        div.removeClass("chosen");
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    showTopicIcon(wrapper);
+}
+
+// clears all topic icons within an overall topic-icons-wrapper
+function clearTopicIcons(icons_wrapper) {
+    var icons = icons_wrapper.find(".topic-icon-wrapper");
+    icons.each(function(index) {
+        hideTopicIcon($(this));
+    });
+}
+
+// toggles topic icon between being selected and unselected
+function toggleTopicIcon(wrapper)
+{
+    if (wrapper.hasClass("chosen")) {
+        hideTopicIcon(wrapper);
     }
-    // else select
     else {
-        div.parent().children(".normal").hide();
-        div.parent().children(".selected").show();
-        // class chosen
-        wrapper.find(".selected").removeClass("chosen");
-        div.parent().children(".selected").addClass("chosen");
+        showTopicIcon(wrapper);
     }
 }
 
-
-
-// adjusts icons appropriately for topic selection, multiple can be selected
-function selectTopicMultiple(div)
-{
-    var wrapper = div.closest(".topic-icons-wrapper");
-    // if this topic already selected, then remove chosen, else add chosen
-    var selected =  div.parent().children(".selected");
-    if (selected.hasClass("chosen")) {
-        selected.removeClass("chosen");
-        div.parent().children(".selected").hide();
-        div.parent().children(".normal").show();
-    }
-    else {
-        selected.addClass("chosen");
-        div.parent().children(".selected").show();
-        div.parent().children(".normal").hide();
-    }
+function hideTopicIcon(wrapper) {
+    wrapper.removeClass("chosen");
+    wrapper.children(".selected").hide();
+    wrapper.children(".normal").show();
 }
+
+function showTopicIcon(wrapper) {
+    wrapper.addClass("chosen");
+    wrapper.children(".selected").show();
+    wrapper.children(".normal").hide();
+}
+
 
 function loadAjaxifyAnchors()
 {
@@ -495,19 +495,19 @@ function loadHeader()
         $(this).blur();
     });
 
-    $('#notifications-dropdown-arrow').click(
+    $('#notifications-dropdown-button').click(
         function(event)
         {
             event.preventDefault();
-            $('#notifications-dropdown').show();
+            $('#notifications-dropdown').toggle('fast');
             ajaxPost({
                 'data': {'action':'getnotifications',
                         'dropdown':'true'},
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
+                    $('#notifications-dropdown').empty();
                     $('#notifications-dropdown').html(obj.html);
-                    $('#notifications-dropdown').fadeIn('fast');
                     unbindNotification();
                     loadNotification();
                 },
@@ -516,6 +516,7 @@ function loadHeader()
                     $('body').html(jqXHR.responseText);
                 }
             });
+            return false;
         }
     );
 
@@ -835,21 +836,17 @@ function loadLeftSidebar()
      */
     $(".create-topic-img").click(function(event)
     {
-        // node references
-        var thisNode = $(this);
-        var chosen = $(this).hasClass('chosen');
-        var wrapper = $(this).parent().parent();
-        // clears topic choice by unchecking every radio button
-        wrapper.find('.topic-radio').attr('checked',false);
-        // removes class 'chosen' from current chosen and shows unselected topic image for every topic
-        wrapper.find('.chosen').removeClass('chosen').hide().siblings('.normal').show();
-        // if new topic was selected (or clicked topic image wasn't already chosen)
-        if (!chosen)
+
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        var icons_wrapper = wrapper.parents(".topic-icons-wrapper");
+
+        icons_wrapper.find('.topic-radio').attr('checked',false);
+
+        if (!wrapper.hasClass('chosen'))
         {
-            // handles choosing new topic.
-            thisNode.addClass('chosen');
-            thisNode.siblings(".topic-radio").attr("checked","checked");
+            wrapper.find(".topic-radio").attr("checked",true);
         }
+        selectTopicSingle(wrapper);
     });
 
     function clearPetitionErrors()
@@ -1043,7 +1040,8 @@ function loadRightSideBar()
 {
     // select topic click function
     $(".q-topic-img").click(function(event) {
-        selectTopicSingle($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        selectTopicSingle(wrapper);
     });
 
     // sidebar stuff, for question-topic select
@@ -1123,7 +1121,8 @@ function loadFeed()
     // topic filters
     // select topic click function
     $(".filter-topic-img").click(function(event) {
-        selectTopicMultiple($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        toggleTopicIcon(wrapper);
     });
 
     // set heart buttons
@@ -1421,139 +1420,6 @@ function ajaxFeed(feed_type, topics, start, how_many, force_replace)
 
 ////////////////////////////////////////////////////////////
 
-
-function feedTopicSelect(div) {
-    var feed_topics = $.parseJSON($(".feed_topics").val());
-    var wrapper = div.parents(".feed-topic-icon-wrapper");
-    var t_id = parseInt(wrapper.attr("data-id"));
-    var index = $.inArray(t_id, feed_topics);
-    if (index == -1) {
-        feed_topics.push(t_id);
-    }
-    else {
-        feed_topics.splice(index, 1);
-    }
-    $(".feed_topics").val(JSON.stringify(feed_topics));
-}
-
-function feedTypeSelect(div) {
-    var feed_types = $.parseJSON($(".feed_types").val());
-    var type = div.val();
-    var index = $.inArray(type, feed_types);
-    if (index == -1) {
-        feed_types.push(type);
-    }
-    else {
-        feed_types.splice(index, 1);
-    }
-    $(".feed_types").val(JSON.stringify(feed_types));
-}
-
-function feedGroupSelect(div) {
-    var feed_groups = $.parseJSON($(".feed_groups").val());
-    var g_id = div.val();
-    var index = $.inArray(g_id, feed_groups);
-    if (index == -1) {
-        feed_groups.push(g_id);
-    }
-    else {
-        feed_groups.splice(index, 1);
-    }
-    $(".feed_groups").val(JSON.stringify(feed_groups));
-}
-
-function refreshFeed() {
-    $(".feed_start").val(0);
-    getFeed();
-}
-
-function getFeed()
-{
-
-    var feed_ranking = $(".feed_ranking").val();
-    var feed_topics = $.parseJSON($(".feed_topics").val());
-    var feed_types =  $.parseJSON($(".feed_types").val());
-    var feed_groups =  $.parseJSON($(".feed_groups").val());
-    var feed_just =  $(".feed_just").val();
-    var feed_start = parseInt($(".feed_start").val());
-    var feed_end =  feed_start + 10;
-    var feed_display =  $(".feed_display").val();
-
-    var feed_replace;
-    if (feed_start==0) {
-        feed_replace = true;
-    }
-    else {
-        feed_replace = false;
-    }
-
-    feed_topics = JSON.stringify(feed_topics);
-    feed_types = JSON.stringify(feed_types);
-    feed_groups = JSON.stringify(feed_groups);
-
-    ajaxPost({
-        data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
-            'feed_types':feed_types,'feed_groups':feed_groups, 'feed_just':feed_just,
-            'feed_start':feed_start, 'feed_end':feed_end, 'feed_display':feed_display
-        },
-        success: function(data) {
-            var returned = eval('(' + data + ')');
-            if (feed_replace == true) {
-                $(".the_feed").html(returned.html);
-            }
-            else {
-                $(".the_feed").append(returned.html);
-            }
-            $(".feed_start").val(feed_start + returned.num);
-        },
-        error: null
-    });
-
-}
-
-function loadNewFeed() {
-    $(".get_feed").click(function(event) {
-        event.preventDefault();
-        getFeed();
-    });
-
-    $(".refresh_feed").click(function(event) {
-        event.preventDefault();
-        refreshFeed();
-    });
-
-    $(".feed-topic-img").click(function(event) {
-        selectTopicMultiple($(this));
-        feedTopicSelect($(this));
-        refreshFeed();
-    });
-
-    $(".feed-ranking-selector").click(function(event) {
-        event.preventDefault();
-        var ranking = $(this).attr("data-ranking");
-        $(".feed_ranking").val(ranking);
-        refreshFeed();
-    });
-
-    $(".feed-display-selector").click(function(event) {
-        event.preventDefault();
-        var display = $(this).attr("data-display");
-        $(".feed_display").val(display);
-        refreshFeed();
-    });
-
-    $(".feed-type-selector").click(function(event) {
-        feedTypeSelect($(this));
-        refreshFeed();
-    });
-
-    $(".feed-group-selector").click(function(event) {
-        feedGroupSelect($(this));
-        refreshFeed();
-    });
-
-    refreshFeed();
-}
 
 /***********************************************************************************************************************
  *
@@ -2056,6 +1922,10 @@ function loadProfile()
                     {
                         $('#see-more-notifications-button').html('No more notifications');
                     }
+                    else if( obj.hasOwnPropery('error') )
+                    {
+                        $('body').html(obj.error);
+                    }
                     unbindNotification();
                     loadNotification();
                 },
@@ -2362,7 +2232,8 @@ function loadGroup()
 
     // change histogram topic
     $(".h-topic-img").click(function(event) {
-        selectTopicSingle($(this));
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        selectTopicSingle(wrapper);
         var topic = $(this).siblings(".t-alias").val();
         var was = $("#histogram-topic").val();
         if (topic == was) {
@@ -2402,6 +2273,352 @@ function loadGroup()
 
 }
 
+/***********************************************************************************************************************
+ *
+ *      ~NewFeed
+ *
+ **********************************************************************************************************************/
 
 
+/*
+ Takes in a a value and the classname of an input which the value should
+ either be added to or removed from that list (toggled).
+ */
+function listSelectHelper(value, list_input_name) {
+    var list_input = $("." + list_input_name);
+    var list_values = $.parseJSON(list_input.val());
+    var index = $.inArray(value, list_values);
+    if (index == -1) {
+        list_values.push(value);
+    }
+    else {
+        list_values.splice(index, 1);
+    }
+    list_input.val(JSON.stringify(list_values));
+}
 
+/*
+ Replaces feed with all new items based on current parameters.
+ */
+function refreshFeed(num) {
+    $(".feed_start").val(0);
+    getFeed(num);
+}
+
+/*
+ if the start value is 0, then replace feed with all new items based on current parameters
+ else get new feed items starting at start value and append them to the current feed.
+ */
+function getFeed(num)
+{
+
+    if (num==-1) {
+        num = 3;
+    }
+
+    var feed_ranking = $(".feed_ranking").val();
+    var feed_display =  $(".feed_display").val();
+    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
+    var feed_topics = $.parseJSON($(".feed_topics").val());
+    var feed_types =  $.parseJSON($(".feed_types").val());
+    var feed_levels =  $.parseJSON($(".feed_levels").val());
+    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    feed_topics = JSON.stringify(feed_topics);
+    feed_types = JSON.stringify(feed_types);
+    feed_levels = JSON.stringify(feed_levels);
+    feed_groups = JSON.stringify(feed_groups);
+
+    var feed_start = parseInt($(".feed_start").val());
+    var feed_end =  feed_start + num;
+
+    var feed_replace;
+    if (feed_start==0) {
+        feed_replace = true;
+    }
+    else {
+        feed_replace = false;
+    }
+
+    ajaxPost({
+        data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
+            'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
+            'feed_submissions_only':feed_submissions_only,'feed_display':feed_display,
+            'feed_start':feed_start, 'feed_end':feed_end
+        },
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+
+            if (feed_replace == true) {
+                $(".pinterest-wrapper").html(returned.html);
+            }
+            else {
+                $(".pinterest-wrapper").append(returned.html);
+            }
+
+            $(".feed_start").val(feed_start + returned.num);
+
+            if (feed_display == "P") {
+                pinterestRender($(".pinterest_unrendered"));
+            }
+        },
+        error: null
+    });
+
+}
+
+/*
+ makes a post to the server to save the current filter setting as the inputted name.
+ */
+function saveFilter() {
+
+    var feed_name = $(".save-filter-name").val();
+
+    var feed_ranking = $(".feed_ranking").val();
+    var feed_display =  $(".feed_display").val();
+    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
+    var feed_topics = $.parseJSON($(".feed_topics").val());
+    var feed_types =  $.parseJSON($(".feed_types").val());
+    var feed_levels =  $.parseJSON($(".feed_levels").val());
+    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    feed_topics = JSON.stringify(feed_topics);
+    feed_types = JSON.stringify(feed_types);
+    feed_levels = JSON.stringify(feed_levels);
+    feed_groups = JSON.stringify(feed_groups);
+
+    ajaxPost({
+        data: {'action':'saveFilter','feed_ranking': feed_ranking,'feed_topics':feed_topics,
+            'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
+            'feed_submissions_only':feed_submissions_only,'feed_display':feed_display,
+            'feed_name': feed_name
+        },
+        success: function(data) {
+            location.reload();
+        },
+        error: null
+    });
+}
+
+/*
+ retrives the filter setting with the inputted id from the server and refreshes feed.
+ */
+function getFilter(f_id) {
+    ajaxPost({
+        data: {'action':'getFilter', filter_id:f_id},
+        success: function(data) {
+
+            alert("success!");
+
+            var returned = eval('(' + data + ')');
+
+            clearFilterParameters();
+
+            setRanking(returned.ranking);
+            setDisplay(returned.display);
+            setSubmissionOnly(returned.submissions_only);
+
+            var feed_topics = $.parseJSON($(".feed_topics").val());
+            var feed_types =  $.parseJSON($(".feed_types").val());
+            var feed_levels =  $.parseJSON($(".feed_levels").val());
+            var feed_groups =  $.parseJSON($(".feed_groups").val());
+
+
+            feed_types.each(function(index) {
+                alert($(this));
+                addType($(this));
+            });
+
+            feed_topics.each(function(index) {
+                addTopic($(this));
+            });
+
+            feed_groups.each(function(index) {
+                addGroup($(this));
+            });
+
+            feed_levels.each(function(index) {
+                addLevel($(this));
+            });
+
+        },
+        error: null
+    })
+}
+
+/*
+ visually and in data representation sets all feed parameters to defaults
+ */
+function clearFilterParameters() {
+
+    $(".feed_topics").val(JSON.stringify([]));
+    var topic_icon_wrapper = $(".feed-topic-selector-wrapper");
+    clearTopicIcons(topic_icon_wrapper);
+
+    $(".feed_types").val(JSON.stringify([]));
+    $(".feed-type-selector").attr("checked", false);
+
+    $(".feed_levels").val(JSON.stringify([]));
+    $(".feed-level-selector").attr("checked", false);
+
+    $(".feed_groups").val(JSON.stringify([]));
+    $(".feed-group-selector").attr("checked", false);
+
+}
+
+
+/*
+ the following methods are helpers for get filter which apply the retrieved parameters to the page.
+ */
+function addTopic(t_id) {
+    var t_wrapper = $(".feed-topic-icon-wrapper[data-id=" + t_id + "]");
+    showTopicIcon(t_wrapper);
+    listSelectHelper(t_id, 'feed_topics');
+}
+
+function addType(type) {
+    listSelectHelper(type, 'feed_types');
+    $(".feed-type-selector[value=" + type + "]").attr("checked", true);
+}
+
+function addLevel(level) {
+    listSelectHelper(level, 'feed_levels');
+    $(".feed-level-selector[value=" + level + "]").attr("checked", true);
+}
+
+function addGroup(g_id) {
+    listSelectHelper(g_id, 'feed_groups');
+    $(".feed-group-selector[value=" + g_id + "]").attr("checked", true);
+}
+
+function setSubmissionOnly(value) {
+    $(".feed_submissions_only").val(value);
+}
+
+function setRanking(value) {
+    $(".feed_ranking").val(value);
+}
+
+function setDisplay(value) {
+    $(".feed_display").val(value);
+}
+
+
+var pinterest = [];
+var current_col=0;
+var total_cols=3;
+var pinterest_width=(1000/total_cols)+8;
+/* returns a list of pinterest cards, sorted by rank */
+function pinterestRender(cards) {
+
+    // if pinterest is empty, initialize it with as many elements as there are columns
+    if (pinterest.length == 0) {
+        // initialize variables
+        var i = 0;
+        while (i < total_cols) {
+            pinterest.push(0);
+            i += 1;
+        }
+    }
+
+    cards.each(function(index) {
+        if (current_col == total_cols) {
+            current_col = 0;
+        }
+        var top = pinterest[current_col];
+        var left = pinterest_width*current_col;
+        var height = $(this).find(".pinterest").height() + 20;
+        $(this).css("position", 'absolute');
+        $(this).css("left", left);
+        $(this).animate({"top": top}, 1400);
+        pinterest[current_col] = (top + height);
+        current_col += 1;
+        $(this).removeClass("pinterest_unrendered");
+    });
+}
+
+
+var scrollLoadLockout=false;
+function scrollFeed() {
+    if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
+        if (scrollLoadLockout==false) {
+            getFeed(-1);
+            scrollLoadLockout=true;
+            setTimeout(function() { scrollLoadLockout=false}, 500);
+        }
+    }
+}
+
+
+/* binds everyting */
+function loadNewFeed() {
+
+    $(".get_feed").click(function(event) {
+        event.preventDefault();
+        getFeed(-1);
+    });
+
+    $(".refresh_feed").click(function(event) {
+        event.preventDefault();
+        refreshFeed(-1);
+    });
+
+    $(".feed-topic-img").click(function(event) {
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        toggleTopicIcon(wrapper);
+        var value = $(this).parents(".feed-topic-icon-wrapper").attr("data-id");
+        listSelectHelper(value, 'feed_topics');
+        refreshFeed(-1);
+    });
+
+    $(".feed-type-selector").click(function(event) {
+        var value = $(this).val();
+        listSelectHelper(value, 'feed_types');
+        refreshFeed(-1);
+    });
+
+    $(".feed-level-selector").click(function(event) {
+        var value = $(this).val();
+        listSelectHelper(value, 'feed_levels');
+        refreshFeed(-1);
+    });
+
+    $(".feed-group-selector").click(function(event) {
+        var value = $(this).val();
+        listSelectHelper(value, 'feed_groups');
+        refreshFeed(-1);
+    });
+
+    $(".feed-ranking-selector").click(function(event) {
+        event.preventDefault();
+        var ranking = $(this).attr("data-ranking");
+        $(".feed_ranking").val(ranking);
+        refreshFeed(-1);
+    });
+
+    $(".feed-display-selector").click(function(event) {
+        event.preventDefault();
+        var display = $(this).attr("data-display");
+        $(".feed_display").val(display);
+        refreshFeed(-1);
+    });
+
+    $(".save-filter-button").click(function(event) {
+        event.preventDefault();
+        saveFilter();
+    });
+
+    $(".my-filter-selector").click(function(event) {
+        event.preventDefault();
+        var value = $(this).attr("data-id");
+        getFilter(value);
+    });
+
+    $(".feed-clear").click(function(event) {
+        clearFilterParameters();
+    });
+
+    refreshFeed(6);
+
+    $(window).scroll(scrollFeed);
+
+
+}

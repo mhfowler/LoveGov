@@ -22,6 +22,7 @@ import random
 import thread
 import json
 from datetime import timedelta
+from datetime import datetime
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -60,16 +61,9 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
-def initCreator():
-    lg = UserProfile.lg.get_or_none(alias="lovegov")
-    if lg:
-        return lg
-    else:
-        return 154        #154 = lovegovuser
-
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=initCreator)
+    creator = models.ForeignKey("UserProfile", default=154)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -116,12 +110,21 @@ class UserPhysicalAddress(LGModel):
     state = models.CharField(max_length=2)
     district = models.IntegerField()
 
+
+class PhysicalAddress(LGModel):
+    address_string = models.CharField(max_length=500, null=True)
+    zip = models.CharField(max_length=20, null=True)
+    longitude = models.DecimalField(max_digits=30, decimal_places=15)
+    latitude = models.DecimalField(max_digits=30, decimal_places=15)
+    state = models.CharField(max_length=2)
+    district = models.IntegerField()
+
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
 class LocationLevel(models.Model):
-    location = models.ForeignKey(UserPhysicalAddress, null=True)
-    level = models.CharField(max_length=1, choices=LEVEL_CHOICES, default='F')
+    location = models.ForeignKey(PhysicalAddress, null=True)
+    level = models.CharField(max_length=1, choices=LEVEL_CHOICES, default='W')
     class Meta:
         abstract = True
 
@@ -253,6 +256,9 @@ class Content(Privacy, LocationLevel):
         return self.title
     def get_name(self):
         return self.getName()
+
+    def getTitle(self):
+        return self.title
 
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -823,12 +829,35 @@ class FilterSetting(LGModel):
 
 
 class SimpleFilter(LGModel):
-    alias = models.CharField(max_length=200, default="filter")
+    name = models.CharField(max_length=200, default="filter")
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
     types = custom_fields.ListField()                  # list of char of included types
+    levels = custom_fields.ListField(default=[])                 # list of char of included levels
     groups = models.ManyToManyField("Group")
-    just_created_by_group = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
+    submissions_only = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
+    display = models.CharField(max_length=1, choices=FEED_DISPLAY_CHOICES, default="P")
+    # which location
+    location = models.ForeignKey("PhysicalAddress", null=True)
+
+    def getDict(self):
+        if self.submissions_only:
+            submissions_only = 1
+        else:
+            submissions_only = 0
+        topics = list(self.topics.all().values_list("id", flat=True))
+        groups = list(self.groups.all().values_list("id", flat=True))
+        to_return = {
+            'name': self.name,
+            'ranking': self.ranking,
+            'types': json.dumps(self.types),
+            'levels': json.dumps(self.levels),
+            'topics': json.dumps(topics),
+            'groups': json.dumps(groups),
+            'submissions_only': submissions_only,
+            'display': self.display
+        }
+        return to_return
 
 
 #=======================================================================================================================
@@ -914,8 +943,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
-    view = models.ForeignKey("WorldView", default=initView)        # foreign key to worldview
-    network = models.ForeignKey("Network", null=True)    # foreign key to network group
+    view = models.ForeignKey("WorldView", default=initView)
+    network = models.ForeignKey("Network", null=True)
+    location = models.ForeignKey(PhysicalAddress, null=True)
+    # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
@@ -928,9 +959,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     # feeds & ranking
-    my_feed = models.ManyToManyField(FeedItem, related_name="newfeed")  # for storing feed based on my custom setting below
-    filter_setting = models.ForeignKey(FilterSetting, null=True)
-    evolve = models.BooleanField(default=False)     # boolean as to whether their filter setting should learn from them and evolve
+    my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
@@ -939,6 +968,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     type = models.CharField(max_length=1,default="U")
+    # deprecated
+    my_feed = models.ManyToManyField(FeedItem, related_name="newfeed")  # for storing feed based on my custom setting below
+    filter_setting = models.ForeignKey(FilterSetting, null=True)
+    evolve = models.BooleanField(default=False)     # boolean as to whether their filter setting should learn from them and evolve
 
     def __unicode__(self):
         return self.first_name
@@ -965,6 +998,8 @@ class UserProfile(FacebookProfileModel, LGModel):
             to_return = "UnicodeEncodeError"
         return to_return
 
+    def isDeveloper(self):
+        return self.developer
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
@@ -1215,10 +1250,29 @@ class UserProfile(FacebookProfileModel, LGModel):
         if action.type != 'FO' and action.type != 'JO':
             if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
                 return False
-        if action.type in NOTIFY_TYPES:
+
+        if action.type in AGGREGATE_NOTIFY_TYPES:
+            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+            already = Notification.objects.filter(notify_user=self,
+                                                    when__gte=stale_date,
+                                                    action__modifier=action.modifier,
+                                                    action__type=action.type ).order_by('when').reverse()
+            for notification in already:
+                if notification.action.relationship.getTo().id == relationship.getTo().id:
+                    notification.when = datetime.datetime.today()
+                    if notification.tally == 0:
+                        notification.addAggUser( notification.action.relationship.user )
+                    notification.addAggUser( relationship.user )
+                    return True
+            notification = Notification(action=action, notify_user=self)
+            notification.autoSave()
+            notification.addAggUser( relationship.user )
+
+        elif action.type in NOTIFY_TYPES:
             notification = Notification(action=action, notify_user=self)
             notification.autoSave()
             return True
+
         else:
             return False
 
@@ -1286,6 +1340,9 @@ class UserProfile(FacebookProfileModel, LGModel):
         if num != -1:
             notifications = notifications[start:start+num]
         return notifications
+
+    def getNumNewNotifications(self):
+        return len( Notification.objects.filter(notify_user=self, viewed=False) )
 
     def getAllNotifications(self):
         return Notification.objects.filter(notify_user=self).order_by('when').reverse()
@@ -1514,6 +1571,7 @@ class Notification(Privacy):
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
+    recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
     trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
@@ -1525,12 +1583,13 @@ class Notification(Privacy):
         n_action = self.action
         relationship = n_action.relationship
         #Set default local variables
-        notification_verbose = ' no action '
         from_you = False
         to_you = False
         #Set to and from users
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
+        if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
+            from_user = self.recent_user
         #check to see if the viewing user is the to or from user
         if from_user.id == view_user.id:
             from_you = True
@@ -1549,6 +1608,7 @@ class Notification(Privacy):
                           'from_you':from_you,
                           'type':n_action.type,
                           'modifier':n_action.modifier,
+                          'tally':self.tally,
                           'true':True,
                           'viewed':viewed}
         if n_action.type == 'FO':
@@ -1565,6 +1625,8 @@ class Notification(Privacy):
     def addAggUser(self,agg_user):
         self.users.add(agg_user)
         self.tally += 1
+        self.recent_user = agg_user
+        self.viewed = False
         self.save()
 
     def autoSave(self):
@@ -3623,6 +3685,16 @@ class Shared(UCRelationship):
         self.creator = self.user
         self.save()
 
+    def addUser(self, user):
+        if not user in self.share_users:
+            self.share_users.add(user)
+            # follow notification flow
+
+    def addGroup(self, group):
+        if not group in self.share_groups:
+            self.share_groups.add(group)
+            # follow notification flow
+
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
 # inherits from relationship
@@ -3831,6 +3903,7 @@ class ResetPassword(LGModel):
     email_code = models.CharField(max_length=75)
 
     def create(username):
+        from lovegov.modernpolitics.helpers import generateRandomPassword
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
@@ -3838,7 +3911,7 @@ class ResetPassword(LGModel):
         if userProfile and userProfile.confirmed:
             try:
                 userProfile = UserProfile.objects.get(username=username)
-                reseturl = backend.generateRandomPassword(50)
+                reseturl = generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
                 vals = {'firstname':userProfile.first_name, 'url':reseturl}
@@ -3851,20 +3924,16 @@ class ResetPassword(LGModel):
     create = staticmethod(create)
 
 
+class BlogEntry(LGModel):
+    CATEGORY_CHOICES = ['General','Update','News']
+    creator = models.ForeignKey(UserProfile)
+    datetime = models.DateTimeField(auto_now_add=True)
+    category = custom_fields.ListField()
+    title = models.CharField(max_length=5000)
+    message = models.TextField()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def getURL(self):
+        return '/blog/' + self.creator.alias + '/' + str(self.id)
 
 
 

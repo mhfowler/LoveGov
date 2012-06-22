@@ -13,6 +13,7 @@ from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
 from lovegov.modernpolitics.images import *
+
 from haystack.query import SearchQuerySet
 
 # django
@@ -976,27 +977,70 @@ def ajaxGetFeed(request, vals={}):
     feed_ranking = request.POST['feed_ranking']
     feed_topics = json.loads(request.POST['feed_topics'])
     feed_types = json.loads(request.POST['feed_types'])
+    feed_levels = json.loads(request.POST['feed_levels'])
     feed_groups = json.loads(request.POST['feed_groups'])
-    feed_just = bool(int(request.POST['feed_just']))
+    feed_submissions_only = bool(int(request.POST['feed_submissions_only']))
+    feed_display = request.POST['feed_display']
+
     feed_start = int(request.POST['feed_start'])
     feed_end = int(request.POST['feed_end'])
-    feed_display = request.POST['feed_display']
 
     filter = {
         'topics': feed_topics,
         'types': feed_types,
+        'levels': feed_levels,
         'groups': feed_groups,
         'ranking': feed_ranking,
-        'just_created_by_group': feed_just
+        'submissions_only': feed_submissions_only
     }
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
     vals = {'content':content}
-    if feed_display == 'pinterest':
-        html = ajaxRender('test/pinterest.html', vals, request)
+    if feed_display == 'P':
+        html = ajaxRender('deployment/center/feed/pinterest_helper.html', vals, request)
     else:
-        html = ajaxRender('test/linear.html', vals, request)
+        html = ajaxRender('deployment/snippets/feed_helper.html', vals, request)
     to_return = {'html':html, 'num':len(content)}
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# saves a filter setting
+#-----------------------------------------------------------------------------------------------------------------------
+def saveFilter(request, vals={}):
+
+    name = request.POST['feed_name']
+    ranking = request.POST['feed_ranking']
+    types = json.loads(request.POST['feed_types'])
+    levels = json.loads(request.POST['feed_levels'])
+    topics = json.loads(request.POST['feed_topics'])
+    groups = json.loads(request.POST['feed_groups'])
+    submissions_only = bool(int(request.POST['feed_submissions_only']))
+    display = request.POST['feed_display']
+
+    filter = SimpleFilter(ranking=ranking, types=types,
+        levels=levels, submissions_only=submissions_only,
+    display=display, name=name)
+    filter.save()
+
+    for t in topics:
+        filter.topics.add(t)
+    for g in groups:
+        filter.groups.add(g)
+
+    viewer = vals['viewer']
+    viewer.my_filters.add(filter)
+
+    return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets a filter setting and returns via json dump
+#-----------------------------------------------------------------------------------------------------------------------
+def getFilter(request, vals={}):
+
+    f_id = request.POST['filter_id']
+    filter = SimpleFilter.objects.get(id=f_id)
+    to_return = filter.getDict()
+
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1097,6 +1141,48 @@ def shareContent(request, vals={}):
     share_with = request.POST['share_with'] 
     return HttpResponse("oh hai thnx for sharing ur content with")
 
+def blogAction(request,vals={}):
+    user = vals['viewer']
+    if 'url' in request.POST:
+        from lovegov.modernpolitics.helpers import urlToObject
+        blogEntry = urlToObject(request.POST['url'])
+        if blogEntry:blogEntry.delete()
+        return HttpResponse("+")
+    elif 'category' in request.POST:
+        category = string.capitalize(request.POST['category'])
+        blogPosts = BlogEntry.objects.all().order_by('-id')
+        blogList = []
+
+        for blogPost in blogPosts:
+            if category in blogPost.category: blogList.append(blogPost)
+
+        html = ''
+        for blogPost in blogList:
+            html += ajaxRender('deployment/pages/blog/blog-item.html',{'blogPost':blogPost},request)
+
+    else:
+        if user.isDeveloper():
+            title = request.POST['title']
+            text = request.POST['text']
+
+            category = []
+            if 'update' in request.POST: category.append('Update')
+            if 'general' in request.POST: category.append('General')
+            if 'news' in request.POST: category.append('News')
+            if not category: return HttpResponse(json.dumps({'error':" < Select a Category"}))
+
+            blog = BlogEntry(creator=user,title=title,message=text,category=category)
+            blog.save()
+
+            vals['blogPost'] = blog
+
+            html = ajaxRender('deployment/pages/blog/blog-item.html',vals,request)
+        else:
+            html = ''
+
+    return HttpResponse(json.dumps({'html':html}))
+
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1146,7 +1232,11 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getnotifications': getNotifications,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
+            'saveFilter': saveFilter,
+            'getFilter': getFilter,
+            'matchSection': matchSection,
             'shareContent': shareContent
+            'blogAction': blogAction
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

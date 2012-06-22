@@ -2,17 +2,15 @@
 
 {% block middle %}
 
-    <div>
-        <div id="middle-left">
-            <a id="what-is-lovegov">what is<br> lovegov?</a>
-        </div>
+    <div id="middle-left">
+        <a id="what-is-lovegov">what is<br> lovegov?</a>
+    </div>
 
-        <div id="middle-right">
-            <!-- Forms -->
-            {% include 'deployment/pages/login/login-fb.form.html' %}
-            {% include 'deployment/pages/login/login-login.form.html' %}
-            {% include 'deployment/pages/login/login-register.form.html' %}
-        </div>
+    <div id="middle-right">
+        <!-- Forms -->
+        {% include 'deployment/pages/login/login-fb.form.html' %}
+        {% include 'deployment/pages/login/login-login.form.html' %}
+        {% include 'deployment/pages/login/login-register.form.html' %}
     </div>
 
     <!-- Fade-in Divs -->
@@ -28,7 +26,7 @@
                 $('.about-div').fadeToggle(300);
             });
 
-            $('.privacy-policy').click(function()
+            $('.privacy_policy').click(function()
             {
                 $('.fade').fadeOut(300);
                 $('#privacy-div').fadeToggle(300);
@@ -85,8 +83,9 @@
                 $(id_span).focus();
             });
 
-            $('#create-account').click(function()
+            $('#create-account').click(function(event)
             {
+                event.preventDefault();
                 $('#login-div').hide();
                 $('#register-div').show();
             });
