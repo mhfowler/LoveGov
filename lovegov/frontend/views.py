@@ -517,6 +517,12 @@ def profile(request, alias=None, vals={}):
             vals['prof_requests'] = list(user_prof.getFollowRequests())
             vals['group_invities'] = list(user_prof.getGroupInvites())
 
+            vals['is_following_you'] = False
+            if viewer.id != user_prof.id:
+                following_you = UserFollow.lg.get_or_none( user=user_prof, to_user=viewer )
+                if following_you and following_you.confirmed:
+                    vals['is_following_you'] = True
+
             # Is the current user already (requesting to) following this profile?
             vals['is_user_requested'] = False
             vals['is_user_confirmed'] = False

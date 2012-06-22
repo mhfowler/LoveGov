@@ -222,6 +222,8 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
+        action = Action(relationship=c.getCreatedRelationship())
+        action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
@@ -236,8 +238,6 @@ def create(request, val={}):
                 group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
-                action = Action(relationship=c.getCreatedRelationship())
-                action.autoSave()
                 return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
@@ -410,9 +410,7 @@ def setFollowPrivacy(request, vals={}):
         return HttpResponse("No user follow privacy specified")
     user.private_follow = bool(int(request.POST['private_follow']))
     user.save()
-    print user.get_name()
-    print user.private_follow
-    return HttpResponse("Follow privacy set")
+    return HttpResponse("follow privacy set")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -612,13 +610,13 @@ def userFollowRequest(request, vals={}):
     to_user = UserProfile.objects.get(id=request.POST['p_id'])
     #No Self Following
     if to_user.id == from_user.id:
-        return HttpResponse("you cannot follow yourself")
+        return HttpResponse("cannot follow yourself")
     already = UserFollow.objects.filter(user=from_user, to_user=to_user)
     #If there's already a follow relationship
     if already: #If it exists, get it
         user_follow = already[0]
         if user_follow.confirmed: #If you're confirmed following already, you're done
-            return HttpResponse("you are already following this person")
+            return HttpResponse("already following this person")
     else: #If there's no follow relationship, make one
         user_follow = UserFollow(user=from_user, to_user=to_user)
         user_follow.autoSave()
@@ -628,10 +626,10 @@ def userFollowRequest(request, vals={}):
         action = Action(relationship=user_follow,modifier='D')
         action.autoSave()
         to_user.notify(action)
-        return HttpResponse("you are now following this person")
+        return HttpResponse("now following this person")
     #otherwise, if you've already requested to follow this user, you're done
     elif user_follow.requested and not user_follow.rejected:
-        return HttpResponse("you have already requested to follow this person")
+        return HttpResponse("already requested to follow this person")
     #Otherwise, make the request to follow this user
     else:
         user_follow.clear()
@@ -639,7 +637,7 @@ def userFollowRequest(request, vals={}):
         action = Action(relationship=user_follow,modifier='R')
         action.autoSave()
         to_user.notify(action)
-        return HttpResponse("you have requested to follow this person")
+        return HttpResponse("requested to follow this person")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or denies user follow, if user follow was requested.

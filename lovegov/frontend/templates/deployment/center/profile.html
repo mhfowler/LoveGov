@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/notification.css" />
+
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
@@ -18,9 +18,11 @@
                         <p> no pic </p>
                     {% endthumbnail %}
                 </div>
-                <div class="profile-follows-you">
-                    FOLLOWS YOU
-                </div>
+                {% if viewer.id != user_prof.id and is_following_you%}
+                    <div class="profile-follows-you">
+                        FOLLOWS YOU
+                    </div>
+                {% endif %}
             </div>
             <div class="basic-info-main">
                 <div class="profile-username">
@@ -62,7 +64,7 @@
                 <div class="profile-buttons">
                     {% if viewer.id != user_prof.id %}
                         {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
-                            <a href="" class="button-red float-left user-follow-button">
+                            <a href="" class="button-red float-left" id="user_follow_button">
                                 follow
                             </a>
                         {% else %}
@@ -115,25 +117,6 @@
     <div class="middle-right">
 
         {% if viewer.id == user_prof.id %}
-            {% if prof_requests %}
-                <div class="profile-section-title">Follow Requests</div>
-            {% endif %}
-            <div class="follow-requests-container">
-                {% for req in prof_requests %}
-                    <div class="follow-request">
-                        <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-                        <a href="" class="user-follow-response-y"> I accept! </a> ||
-                        <a href="" class="user-follow-response-n"> I decline! </a>
-                        <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
-                    </div>
-
-                    {% if not forloop.last %}
-                        <div class="right-separator"></div>
-                    {% endif %}
-
-                {% endfor %}
-            </div>
-
             {% comment %}
             <h4>Invites</h4>
             <div class='group-invites-container'>
@@ -151,15 +134,51 @@
                     <div>No group invites! =( </div><br>
                 {% endfor %}
             </div>
-
-
-            Set following privacy to:
-            {% if viewer.private_follow %}
-                <a href="" class="public-follow">public</a>
-            {% else %}
-                <a href="" class="private-follow">private</a>
-            {% endif %}
             {% endcomment %}
+
+        <div class="profile-section-title">
+            Follow privacy:
+            {% if viewer.private_follow %}
+                <a href="" class="button-red public-follow">private</a>
+            {% else %}
+                <a href="" class="button-red private-follow">public</a>
+            {% endif %}
+        </div>
+        <br>
+        <div class="right-separator"></div>
+        <br>
+        {% if prof_requests %}
+            <div class="profile-section-title">Follow Requests</div>
+
+        <div class="follow-requests-container">
+            {% for req in prof_requests %}
+                <div class="notification">
+                <table><tr>
+                    <td class="notification-thumbnail">
+                        {% thumbnail req.getFrom.getProfileImage.image "25x25" crop="center" as im %}
+                            <img src="{{ im.url }}" class="icon-small"/>
+                        {% endthumbnail %}
+                    </td>
+                    <td class="notification-text">
+                        <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> requested to follow you
+                        <a href="" class="user-follow-response-y button-small-red">accept</a>
+                        <a href="" class="user-follow-response-n button-small-red">decline</a>
+                        <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
+                    </td>
+
+                    {% if not forloop.last %}
+                        <div class="right-separator"></div>
+                    {% endif %}
+                </tr></table>
+                </div>
+
+            {% endfor %}
+        </div>
+
+        <br>
+        <div class="right-separator"></div>
+        <br>
+        {% endif %}
 
         <div class="profile-section-title">Notifications</div>
             <div id="profile_notifications" class="profile-notifications-container">

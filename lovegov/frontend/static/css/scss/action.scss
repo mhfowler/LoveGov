@@ -1,6 +1,27 @@
-@import 'master.scss';
+@import 'master';
 
 div.action
 {
   padding: 15px 0px 15px 10px;
+}
+
+div.action:hover
+{
+  padding: 15px 0px 15px 10px;
+  background-color: $light-gray;
+}
+
+td.action-thumbnail
+{
+  padding-right: 10px;
+  width: 25px;
+  text-align: center;
+  height: 25px;
+  vertical-align: middle;
+}
+
+td.action-text
+{
+  width: 350px;
+  vertical-align: middle;
 }

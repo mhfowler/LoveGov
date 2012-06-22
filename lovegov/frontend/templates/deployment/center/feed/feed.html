@@ -1,5 +1,6 @@
 <!-- css -->
 <link href="/static/css/compiled/feed.css" rel="stylesheet" type="text/css"/>
+{% load thumbnail %}
 
 <!-- feed metadata -->
 <div class="feed-metadata" data-columns="3">
@@ -24,39 +25,126 @@
 
         <p class="your-feed"> Your Feed </p>
 
-        <div class="options-box">
+        <div class="options-box more-options more_options red-hover">
             <p class="options-title">
                 More Options
             </p>
+            <div class="triangle-selector"></div>
         </div>
 
-        <div class="options-box">
+        <div class="options-box saved-filters-box red-hover menu-toggle">
             <p class="options-title">
                 Saved Filters
             </p>
+            <div class="saved-menu menu">
+                <div class="group-box"> </div>
+            </div>
         </div>
 
         <!-- get more -->
         <a class="get_feed more-feed-button" href="">
-            more
+            load
         </a>
 
+        <!-- display choice -->
         <div class="display-box">
-            <div> P </div>
-            <div> L </div>
+            <div class="display-choice" data-display="P">
+                <img src="/static/images/card-view.png" width="15px" height="15px" class="display-gray"/>
+                <img src="/static/images/card-view-red.png" width="15px" height="15px" class="display-red"/>
+            </div>
+            <div class="display-choice" data-display="L">
+                <img src="/static/images/list-view.png" width="15px" height="15px" class="display-gray"/>
+                <img src="/static/images/list-view-red.png" width="15px" height="15px" class="display-red"/>
+            </div>
         </div>
 
-        <div class="create-box">
+        <div class="create-box red-hover">
             <p class="options-title"> create </p>
         </div>
 
-        <p class="how-does"> how does this work? </p>
+        <a href="" class="how-does"> how does this work? </a>
 
+        <div class="clear-both"></div>
     </div>
 
     <!-- more options box -->
     <div class="more-options-wrapper">
 
+
+        <div class="more-options-selector">
+
+            <div class="sort-by">
+                <h2 class="mini"> Sort by: </h2>
+            </div>
+            <div class="sort-by-choice red-hover menu-toggle">
+                Hot
+                <div class="sort-menu menu">
+                    <div class="group-box"> </div>
+                </div>
+            </div>
+
+            <div class="filter-by">
+                <h2 class="mini"> Filter by: </h2>
+            </div>
+
+            <div class="filter-by-group red-hover menu-toggle">
+                Groups
+                <div class="group-menu menu">
+                   <div class="group-box"> </div>
+                </div>
+            </div>
+
+            <div class="filter-by-network red-hover menu-toggle">
+                Networks
+                <div class="network-menu menu">
+                    <div class="group-box"> </div>
+                </div>
+            </div>
+
+            <div class="filter-by-political red-hover menu-toggle">
+                Local
+                <div class="political-menu menu">
+                    <div class="group-box"> </div>
+                </div>
+            </div>
+
+            <div class="filter-by-content red-hover menu-toggle">
+                Type
+                <div class="type-menu menu">
+                    <div class="group-box"> </div>
+                </div>
+            </div>
+
+            <div class="feed-topic-selector-wrapper topic-icons-wrapper">
+                {% for t in main_topics %}
+                    <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-id="{{ t.id }}">
+                        {% thumbnail t.image "40x40" format="PNG" as im %}
+                            <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
+                        {% endthumbnail %}
+                        {% thumbnail t.selected "40x40" format="PNG" as im %}
+                            <img class="topic-img selected feed-topic-img" src="{{ im.url }}"/>
+                        {% endthumbnail %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="filter-topic">
+                <h2 class="mini"> Topics: </h2>
+            </div>
+
+        </div>
+
+        <div class="current-selection">
+                <div class="current-filter"> Current Filters: </div>
+                <div class="current-options">
+                    <a href="" class="feed-clear">
+                        clear
+                    </a>
+                    <a href="" class="feed-save">
+                        save
+                    </a>
+                </div>
+        </div>
 
     </div>
 
