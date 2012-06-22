@@ -1272,7 +1272,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'saveFilter': saveFilter,
             'getFilter': getFilter,
             'matchSection': matchSection,
-            'shareContent': shareContent
+            'shareContent': shareContent,
             'blogAction': blogAction
         }
 
