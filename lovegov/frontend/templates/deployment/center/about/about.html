@@ -22,32 +22,96 @@
         </div>
     </div>
 
+    <div class="nav-top-div-border"></div>
+
     <div id="about-content">
 
         {% include 'deployment/pages/login/login-privacy.html' %}
         {% include 'deployment/center/about/who-are-we.html' %}
 
-
     </div>
-
-
-
-
 
 </div>
 
 <script type="text/javascript">
-    $('.div-button').click(function()
+    function textFadeIn(ele,text,spd)
     {
-        $('.fade').hide();
-        var div = '#' + $(this).attr('id').replace('button','div');
-        $(div).show();
-    });
+        var size = 0;
+        var speed = spd;
+        function countdown()
+        {
+            if(size < text.length)
+            {
+                ele.append(text[size++]);
+                setTimeout(countdown, speed);
+            }
+        }
+        countdown();
+    }
+
+    function aboutPage()
+    {
+        var center_x = {{ x|add:side_half }};
+        var center_y = {{ y|add:side_half }};
+
+        var developerDivs = $('.who-are-we-circle-div');
+        var h3 = $('.who-are-we-circle-div-center h3');
 
 
+        developerDivs.each(function()
+        {
+            $(this).hover
+            (
+                function()
+                {
+                    var json = $(this).data('json');
+                    $(this).addClass($(this).attr("class") + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','white');
+                    $('.who-are-we-circle-div-center div').show();
+                    $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
+                    $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
+                    h3.hide();
+                },
+                function()
+                {
+                    $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','');
+                    $('.who-are-we-circle-div-center div').hide();
+                    h3.show();
+            });
 
+        });
 
+        $('.div-button').click(function()
+        {
+            $('.fade').hide();
+            var div = '#' + $(this).attr('id').replace('button','div');
+            $(div).show();
+            if (div=='#who-are-we-div')
+            {
+                developerDivs.each(function()
+                {
+                    var json = $(this).data('json');
+                    $(this).animate({'left':json.x,'top':json.y});
+                });
 
+                $('.mission p').each(function()
+                {
+                    var text = $(this).text().split('');
+                    $(this).empty();
+                    textFadeIn($(this),text,25);
+                });
+            }
+            else
+            {
+                developerDivs.each(function()
+                {
+                    $(this).css({'left':center_x,'top':center_y});
+                });
+            }
+        });
+    }
 
+    aboutPage();
 
 </script>

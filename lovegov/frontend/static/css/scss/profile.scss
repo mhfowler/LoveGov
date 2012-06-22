@@ -185,7 +185,7 @@ div.middle-left
 
         div.action-separator
         {
-          @include horitzontalSeparator(400px);
+          @include horizontalSeparator(400px);
         }
       }
     }
@@ -225,7 +225,7 @@ div.middle-right
 
   div.right-separator
   {
-    @include horitzontalSeparator(300px);
+    @include horizontalSeparator(300px);
   }
 
   div.follow-requests-container
