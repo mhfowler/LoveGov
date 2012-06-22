@@ -548,17 +548,20 @@ div.triangle-selector {
 .bold
 {
   font-weight:bold;
+}
 
 div.triangle-selector.highlighted
 {
   border-top-color: white;
 }
 
-div.menu_toggle:hover {
+div.menu_toggle:hover
+{
   background-color:$red;
 }
 
-div.menu_toggle.clicked {
+div.menu_toggle.clicked
+{
   background-color:$red;
 }
 
