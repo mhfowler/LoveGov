@@ -607,6 +607,15 @@ def group(request, g_id=None, vals={}):
     # Get Follow Requests
     vals['prof_requests'] = list(group.getFollowRequests())
 
+    # Get Activity
+    num_actions = NOTIFICATION_INCREMENT
+    actions = group.getActivity(num=num_actions)
+    actions_text = []
+    for action in actions:
+        actions_text.append( action.getVerbose(view_user=user) )
+    vals['actions_text'] = actions_text
+    vals['num_actions'] = num_actions
+
     # Is the current user already (requesting to) following this group?
     vals['is_user_follow'] = False
     vals['is_user_confirmed'] = False
