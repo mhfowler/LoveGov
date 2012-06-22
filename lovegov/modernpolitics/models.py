@@ -1364,7 +1364,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self).order_by('when').reverse()
+        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('when').reverse()
         print len( actions )
         if num != 1:
             actions = actions[start:start+num]
@@ -3269,6 +3269,16 @@ class Group(Content):
         else:
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
 
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getActivity(self, start=0, num=-1):
+        gmembers = self.members.all()
+        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
+        if num != 1:
+            actions = actions[start:start+num]
+        return actions
 
 
 #=======================================================================================================================

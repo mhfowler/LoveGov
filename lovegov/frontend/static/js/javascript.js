@@ -90,33 +90,92 @@ function userFollow(event,div,follow)
             },
             success: function(data)
             {
-                if( data == "now following this person")
+                if( data == "follow success")
                 {
                     div.html("unfollow");
                     div.click(
                         function(event)
                         {
-                            userFollow(event,$(this),false);
+                            userFollow(event,div,false);
                         }
                     );
                 }
-                else if( data == "requested to follow this person")
+                else if( data == "follow request")
                 {
                     div.html("un-request");
                     div.click(
                         function(event)
                         {
-                            userFollow(event,$(this),false);
+                            userFollow(event,div,false);
                         }
                     );
                 }
-                else if( data == "removed")
+                else if( data == "follow removed")
                 {
                     div.html("follow");
                     div.click(
                         function(event)
                         {
-                            userFollow(event,$(this),true);
+                            userFollow(event,div,true);
+                        }
+                    );
+                }
+                else
+                {
+                    alert(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        }
+    );
+}
+
+function groupFollow(event,div,follow)
+{
+    event.preventDefault();
+    div.unbind();
+    var action = 'joingroup';
+    if( !follow )
+    {
+        action = 'leavegroup';
+    }
+    ajaxPost({
+            data: {
+                'action': action,
+                'g_id': g_id,
+            },
+            success: function(data)
+            {
+                if( data == "follow success")
+                {
+                    div.html("unfollow");
+                    div.click(
+                        function(event)
+                        {
+                            groupFollow(event,div,false);
+                        }
+                    );
+                }
+                else if( data == "follow request")
+                {
+                    div.html("un-request");
+                    div.click(
+                        function(event)
+                        {
+                            groupFollow(event,div,false);
+                        }
+                    );
+                }
+                else if( data == "follow removed")
+                {
+                    div.html("follow");
+                    div.click(
+                        function(event)
+                        {
+                            groupFollow(event,div,true);
                         }
                     );
                 }
@@ -1881,13 +1940,13 @@ function loadProfile()
         }
     );
 
-    $('#see_more_actions').click(
+    $('#profile_more_actions').click(
         function(event)
         {
             event.preventDefault();
             var num_actions = $("#num_actions").val();
             ajaxPost({
-                'data': {'action':'getactions',
+                'data': {'action':'getuseractions',
                     'num_actions':num_actions,
                     'p_id':p_id },
                 success: function(data)
@@ -1897,9 +1956,9 @@ function loadProfile()
                     $('#num_actions').val(obj.num_actions);
                     if( 'error' in obj && obj.error == 'No more actions' )
                     {
-                        $('#see_more_actions').html('No more actions')
-                        $('#see_more_actions').unbind();
-                        $('#see_more_actions').click( function(event)
+                        $('#profile_more_actions').html('No more actions')
+                        $('#profile_more_actions').unbind();
+                        $('#profile_more_actions').click( function(event)
                         {
                             event.preventDefault();
                         });
@@ -2159,41 +2218,11 @@ function loadGroup()
         groupFollowResponse(event,"N",$(this),g_id);
     });
 
-    $("#group-follow").click( function(event) {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'joingroup',
-                    'g_id': g_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+    $("#group_follow").click( function(event) {
+        groupFollow(event,$(this),true);
     });
-    $("#group-unfollow").click( function(event) {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'leavegroup',
-                    'g_id': g_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+    $("#group_unfollow").click( function(event) {
+        groupFollow(event,$(this),false);
     });
 
     // select histogram block
@@ -2236,6 +2265,41 @@ function loadGroup()
 
     }
 
+    $('#group_more_actions').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_actions = $("#num_actions").val();
+            ajaxPost({
+                'data': {'action':'getgroupactions',
+                    'num_actions':num_actions,
+                    'g_id':g_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#group_activity_feed').append(obj.html);
+                    $('#num_actions').val(obj.num_actions);
+                    if( 'error' in obj && obj.error == 'No more actions' )
+                    {
+                        $('#group_more_actions').html('No more actions')
+                        $('#group_more_actions').unbind();
+                        $('#group_more_actions').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
+                    }
+                    else if( 'error' in obj )
+                    {
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
 
     /*
      $(window).scroll(function(event)
