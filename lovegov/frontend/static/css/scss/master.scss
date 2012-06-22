@@ -123,6 +123,7 @@
 {
   @if $color-name == 'blue'
   {
+    return: $blue;
     border:$border-width $blue solid;
   }
   @else if $color-name == 'teal'
