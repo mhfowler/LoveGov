@@ -376,6 +376,17 @@ def theFeed(request, vals={}):
     vals['feed_submissions_only'] = 1
     vals['feed_display'] = 'P'
 
+    feed_json = {'ranking': 'N',
+                 'levels':[],
+                 'topics':[],
+                 'types':[],
+                 'groups':[],
+                 'submissions_only': 1,
+                 'display': 'P',
+                 'feed_start': 0}
+
+    vals['feed_json'] = json.dumps(feed_json)
+
     vals['my_filters'] = viewer.my_filters.all()
 
     vals['my_groups'] = viewer.getGroups()

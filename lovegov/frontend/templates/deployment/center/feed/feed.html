@@ -3,17 +3,7 @@
 {% load thumbnail %}
 
 <!-- feed metadata -->
-<div id="feed_metadata"
-     data-columns="3"
-     data-ranking="{{ feed_ranking }}"
-     data-topics="{{ feed_topics }}"
-     data-types="{{ feed_types }}"
-     data-levels="{{ feed_levels }}"
-     data-groups="{{ feed_groups }}"
-     data-display="{{ feed_display }}"
-     data-submissions_only="{{ feed_submissions_only }}"
-     data-start="0"
-></div>
+<div id="feed_metadata" data-json="{{ feed_json }}"></div>
 
 <!-- center wrapper -->
 <div class="feed-main-div">

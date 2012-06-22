@@ -115,6 +115,29 @@ function loadHoverClick(div) {
     );
 }
 
+function loadHoverClickSingle(div) {
+    div.click(function(event) {
+        var already = $(this).hasClass("clicked");
+        div.removeClass("clicked");
+        div.removeClass("highlighted");
+        if (!already) {
+            $(this).addClass("clicked");
+            $(this).addClass("highlighted");
+        }
+    });
+    div.hover(
+        function(event) {
+            $(this).addClass("highlighted");
+        },
+        function(event) {
+            if (!$(this).hasClass("clicked")) {
+                $(this).removeClass("highlighted");
+            }
+        }
+    );
+}
+
+
 function userFollow(event,div,follow)
 {
     event.preventDefault();
@@ -635,7 +658,7 @@ function loadHeader()
             {
                 ajaxPost({
                     'data': {'action':'getnotifications',
-                            'dropdown':'true'},
+                        'dropdown':'true'},
                     success: function(data)
                     {
                         var obj = eval('(' + data + ')');
@@ -1892,7 +1915,7 @@ function loadProfile()
             var num_notifications = $("#num_notifications").val();
             ajaxPost({
                 'data': {'action':'getnotifications',
-                        'num_notifications':num_notifications },
+                    'num_notifications':num_notifications },
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
@@ -2306,8 +2329,7 @@ function loadGroup()
  Takes in a a value and the classname of an input which the value should
  either be added to or removed from that list (toggled).
  */
-function listSelectHelper(metadata, key, value) {
-    var list_values = $.parseJSON(metadata.data(key));
+function listToggleHelper(list_values, value) {
     var index = $.inArray(value, list_values);
     if (index == -1) {
         list_values.push(value);
@@ -2315,15 +2337,14 @@ function listSelectHelper(metadata, key, value) {
     else {
         list_values.splice(index, 1);
     }
-    list_input.val(JSON.stringify(list_values));
+    return list_values
 }
 
 /*
  Replaces feed with all new items based on current parameters.
  */
 function refreshFeed(num) {
-    $(".feed_start").val(0);
-    // pinterest reset positioning
+    feed_metadata.feed_start = 0;
     var i =0;
     while (i < pinterest.length) {
         pinterest[i] = 0;
@@ -2343,19 +2364,19 @@ function getFeed(num)
         num = 3;
     }
 
-    var feed_ranking = $(".feed_ranking").val();
-    var feed_display =  $(".feed_display").val();
-    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
-    var feed_topics = $.parseJSON($(".feed_topics").val());
-    var feed_types =  $.parseJSON($(".feed_types").val());
-    var feed_levels =  $.parseJSON($(".feed_levels").val());
-    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    var feed_ranking = feed_metadata.ranking;
+    var feed_display =  feed_metadata.display;
+    var feed_submissions_only =  feed_metadata.submissions_only;
+    var feed_topics = feed_metadata.topics;
+    var feed_types =  feed_metadata.types;
+    var feed_levels =  feed_metadata.levels;
+    var feed_groups =  feed_metadata.groups;
+    var feed_start = feed_metadata.feed_start;
     feed_topics = JSON.stringify(feed_topics);
     feed_types = JSON.stringify(feed_types);
     feed_levels = JSON.stringify(feed_levels);
     feed_groups = JSON.stringify(feed_groups);
 
-    var feed_start = parseInt($(".feed_start").val());
     var feed_end =  feed_start + num;
 
     var feed_replace;
@@ -2382,7 +2403,7 @@ function getFeed(num)
                 $(".pinterest-wrapper").append(returned.html);
             }
 
-            $(".feed_start").val(feed_start + returned.num);
+            feed_metadata.feed_start = feed_start + returned.num;
 
             if (feed_display == "P") {
                 pinterestRender($(".pinterest_unrendered"));
@@ -2593,19 +2614,17 @@ function hide(div)
  */
 function clearFilterParameters() {
 
-    var metadata = $("#feed_metadata");
-
-    metadata.data('topics', JSON.stringify([]));
+    feed_metadata.topics =  JSON.stringify([]);
     var topic_icon_wrapper = $(".feed-topic-selector-wrapper");
     clearTopicIcons(topic_icon_wrapper);
 
-    metadata.data('types', JSON.stringify([]));
+    feed_metadata.types =  JSON.stringify([]);
     $(".feed-type-selector").attr("checked", false);
 
-    metadata.data('levels', JSON.stringify([]));
+    feed_metadata.levels =  JSON.stringify([]);
     $(".feed-level-selector").attr("checked", false);
 
-    metadata.data('groups', JSON.stringify([]));
+    feed_metadata.groups =  JSON.stringify([]);
     $(".feed-group-selector").attr("checked", false);
 
 }
@@ -2617,34 +2636,34 @@ function clearFilterParameters() {
 function addTopic(t_id) {
     var t_wrapper = $(".feed-topic-icon-wrapper[data-id=" + t_id + "]");
     showTopicIcon(t_wrapper);
-    listSelectHelper(t_id, 'feed_topics');
+    listToggleHelper(feed_metadata.topics, t_id);
 }
 
 function addType(type) {
-    listSelectHelper(type, 'feed_types');
+    listToggleHelper(feed_metadata.types, type);
     $(".feed-type-selector[value=" + type + "]").attr("checked", true);
 }
 
 function addLevel(level) {
-    listSelectHelper(level, 'feed_levels');
+    listToggleHelper(feed_metadata.levels, level);
     $(".feed-level-selector[value=" + level + "]").attr("checked", true);
 }
 
 function addGroup(g_id) {
-    listSelectHelper(g_id, 'feed_groups');
+    listToggleHelper(feed_metadata.groups, g_id);
     $(".feed-group-selector[value=" + g_id + "]").attr("checked", true);
 }
 
 function setSubmissionOnly(value) {
-    $(".feed_submissions_only").val(value);
+    feed_metadata.submissions_only = value;
 }
 
 function setRanking(value) {
-    $(".feed_ranking").val(value);
+    feed_metadata.ranking = value;
 }
 
 function setDisplay(value) {
-    $(".feed_display").val(value);
+    feed_metadata.display = value;
     var visual_wrapper = $("div[data-display=" + value + "]");
     visualSelectDisplayWrapper(visual_wrapper);
 }
@@ -2711,7 +2730,11 @@ function visualDisplayWrapperHide(wrapper) {
 }
 
 /* binds everyting */
+var feed_metadata;
 function loadNewFeed() {
+
+    // parse json for metadata
+    feed_metadata = $("#feed_metadata").data('json');
 
     //$(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
@@ -2721,11 +2744,10 @@ function loadNewFeed() {
 
     /* set initial display value */
     $(".display-red").hide();
-    setDisplay($(".feed_display").val());
 
 
     $(".get_feed").click(function(event) {
-        event.preventDefault();
+        event.preventDefault();;
         getFeed(-1);
     });
 
@@ -2738,32 +2760,32 @@ function loadNewFeed() {
         var wrapper = $(this).parents(".topic-icon-wrapper");
         toggleTopicIcon(wrapper);
         var value = $(this).parents(".feed-topic-icon-wrapper").attr("data-id");
-        listSelectHelper(value, 'feed_topics');
+        listToggleHelper(feed_metadata.topics, value);
         refreshFeed(-1);
     });
 
     $(".feed-type-selector").click(function(event) {
         var value = $(this).val();
-        listSelectHelper(value, 'feed_types');
+        listToggleHelper(feed_metadata.types, value);
         refreshFeed(-1);
     });
 
     $(".feed-level-selector").click(function(event) {
         var value = $(this).val();
-        listSelectHelper(value, 'feed_levels');
+        listToggleHelper(feed_metadata.levels, value);
         refreshFeed(-1);
     });
 
     $(".feed-group-selector").click(function(event) {
         var value = $(this).val();
-        listSelectHelper(value, 'feed_groups');
+        listToggleHelper(feed_metadata.groups, value);
         refreshFeed(-1);
     });
 
     $(".feed-display-selector").click(function(event) {
         event.preventDefault();
         var display = $(this).attr("data-display");
-        $(".feed_display").val(display);
+        feed_metadata.display = display;
         refreshFeed(-1);
     });
 
@@ -2786,7 +2808,7 @@ function loadNewFeed() {
     $(".display-choice").click(function(event) {
         setDisplay($(this).attr("data-display"));
         var num = 6;
-        var already = $(".feed_start").val();
+        var already = feed_metadata.start;
         if (already > num) {
             num = already;
         }
@@ -2796,18 +2818,26 @@ function loadNewFeed() {
     /* sort-by menu */
     $(".feed-ranking-selector").click(function(event) {
         var data = $(this).data();
-        var ranking = data.ranking;
         $(".ranking_menu_title").text(data.verbose);
-        $(".feed_ranking").val(ranking);
+        feed_metadata.ranking = data.ranking;
+        $(this).parents(".menu_toggle").removeClass("highlighted");
         refreshFeed(-1);
     });
 
     /* gray hover for all dropdown menu options */
-    loadHoverClick($(".menu-option"));
+    loadHoverClickSingle($(".menu-option"));
 
     $(".menu-option").click(function(event) {
-        event.stopPropagation();
+        //event.stopPropagation();
     });
+
+    $(".menu-option").hover(
+        function(event) {
+            event.stopPropagation();
+        },
+        function(event) {
+            event.stopPropogation();
+        });
 
     getFeed(6);
 
