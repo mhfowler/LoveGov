@@ -382,6 +382,7 @@ def theFeed(request, vals={}):
     vals['my_groups'] = viewer.getGroups()
     vals['my_networks'] = Network.objects.all()
 
+    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
