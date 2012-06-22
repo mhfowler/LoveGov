@@ -1,0 +1,26 @@
+@import 'master.scss';
+@import 'master-variables.scss';
+
+div.group-section-title
+{
+  @extend h4;
+  color: $text-blue;
+}
+
+/* Activity Feed */
+div.group-activity-container
+{
+  @extend .float-left;
+  width: 400px;
+  margin-right: 50px;
+
+  div.group-activity-feed
+  {
+    display: block;
+
+    div.action-separator
+    {
+      @include horitzontalSeparator(400px);
+    }
+  }
+}

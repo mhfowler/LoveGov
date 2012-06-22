@@ -368,18 +368,21 @@ def theFeed(request, vals={}):
 
     rightSideBar(request, vals)
 
-    vals['feed_ranking'] = 'N'
-    vals['feed_levels'] = json.dumps([])
-    vals['feed_topics'] = json.dumps([])
-    vals['feed_types'] = json.dumps([])
-    vals['feed_groups'] = json.dumps([])
-    vals['feed_submissions_only'] = 1
-    vals['feed_display'] = 'P'
+    feed_json = {'ranking': 'N',
+                 'levels':[],
+                 'topics':[],
+                 'types':[],
+                 'groups':[],
+                 'submissions_only': 1,
+                 'display': 'P',
+                 'feed_start': 0}
 
+    vals['feed_json'] = json.dumps(feed_json)
     vals['my_filters'] = viewer.my_filters.all()
+    vals['my_groups'] = viewer.getGroups()
+    vals['my_networks'] = Network.objects.all()
 
-    vals['groups'] = UserGroup.objects.all()
-
+    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
@@ -509,6 +512,11 @@ def profile(request, alias=None, vals={}):
             vals['prof_requests'] = list(user_prof.getFollowRequests())
             vals['group_invities'] = list(user_prof.getGroupInvites())
 
+            # Get Schools and Locations:
+            networks = user_prof.networks.all()
+            vals['prof_locations'] = networks.filter(network_type='L')
+            vals['prof_schools'] = networks.filter(network_type='S')
+
             vals['is_following_you'] = False
             if viewer.id != user_prof.id:
                 following_you = UserFollow.lg.get_or_none( user=user_prof, to_user=viewer )
@@ -595,6 +603,15 @@ def group(request, g_id=None, vals={}):
 
     # Get Follow Requests
     vals['prof_requests'] = list(group.getFollowRequests())
+
+    # Get Activity
+    num_actions = NOTIFICATION_INCREMENT
+    actions = group.getActivity(num=num_actions)
+    actions_text = []
+    for action in actions:
+        actions_text.append( action.getVerbose(view_user=user) )
+    vals['actions_text'] = actions_text
+    vals['num_actions'] = num_actions
 
     # Is the current user already (requesting to) following this group?
     vals['is_user_follow'] = False

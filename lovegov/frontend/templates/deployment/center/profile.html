@@ -30,13 +30,21 @@
                 </div>
 
                 <div class="profile-location">
-                    Providence, RI
+                    {% for location in prof_locations %}
+                        {% if not forloop.first %}
+                            <span class="plus-color">+</span>
+                        {% endif %}
+                        <a class="do-ajax-link invert_link" href="{{ location.get_url }}">{{ location.get_name }}</a>
+                    {% endfor %}
                 </div>
 
-                <div class="profile-network">
-                    {% with network=user_prof.getNetwork %}
-                        <a class="do-ajax-link red-link" href="{{ network.get_url }}">{{ network.name }}</a>
-                    {% endwith %}
+                <div class="profile-school">
+                    {% for school in prof_schools %}
+                        {% if not forloop.first %}
+                            <span class="plus-color">+</span>
+                        {% endif %}
+                        <a class="do-ajax-link red-link" href="{{ school.get_url }}">{{ school.get_name }}</a>
+                    {% endfor %}
                 </div>
 
                 <div class="profile-summary">
@@ -92,7 +100,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <a href="" class="long-button-gray" id="see_more_actions">
+                <a href="" class="long-button-gray" id="profile_more_actions">
                     See more activity
                 </a>
                 <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
@@ -102,12 +110,12 @@
             <div class='profile-group-container'>
                 <div class="profile-section-title">Groups</div>
                 {% for group in prof_groups %}
-                    <a class="profile-group-link" href="{{ group.get_url }}"></a>
+                    <a class="profile-group-link" href="{{ group.get_url }}">{{ group.get_name }}</a>
                 {% empty %}
-                    <a class="profile-group-link" href="" style="background-color: greenyellow"></a>
-                    <a class="profile-group-link" href="" style="background-color: #0066ee"></a>
-                    <a class="profile-group-link" href="" style="background-color: #ffb6c1;"></a>
-                    <a class="profile-group-link" href="" style="background-color: #ffa07a;"></a>
+                    <a class="profile-group-link" href="" ></a>
+                    <a class="profile-group-link" href="" ></a>
+                    <a class="profile-group-link" href="" ></a>
+                    <a class="profile-group-link" href="" ></a>
                 {% endfor %}
             </div>
         </div>

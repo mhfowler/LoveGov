@@ -39,7 +39,6 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
-
     # outside of login
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                             # login
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm
@@ -58,7 +57,7 @@ urlpatterns += patterns('',
     (r'^underconstruction/$', views.underConstruction),
 
     # main pages
-    (r'^home/$', viewWrapper(views.home, requires_login=True)),                               # home page with feeds
+    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                           # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                         # account/change password

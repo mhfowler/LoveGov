@@ -958,7 +958,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
     view = models.ForeignKey("WorldView", default=initView)
-    network = models.ForeignKey("Network", null=True)
+    networks = models.ManyToManyField("Network", related_name='networks')
     location = models.ForeignKey(PhysicalAddress, null=True)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
@@ -1098,6 +1098,45 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.facebook_profile_url = fb_data['link']
         # self.gender = fb_data['gender']
         self.confirmed = True
+
+        if 'education' in fb_data:
+            education = fb_data['education']
+            for edu in education:
+                school = edu['school']
+                name = school['name']
+                alias = name.replace(" ","")
+                alias = alias.replace(",","")
+                alias = alias.replace(".","")
+                alias = alias.lower()
+                school_networks = Network.objects.filter(alias=alias,network_type='S')
+                if not school_networks:
+                    school_network = Network(alias=alias,title=name,network_type='S')
+                    school_network.autoSave()
+                    school_network.members.add(self)
+                    self.networks.add(school_network)
+                else:
+                    school_networks[0].members.add(self)
+                    self.networks.add(school_networks[0])
+
+
+        if 'location' in fb_data:
+            location = fb_data['location']
+            name = location['name']
+            alias = name.replace(" ","")
+            alias = alias.replace(",","")
+            alias = alias.replace(".","")
+            alias = alias.lower()
+            location_networks = Network.objects.filter(alias=alias,network_type='L')
+            if not location_networks:
+                location_network = Network(alias=alias,title=name,network_type='L')
+                location_network.autoSave()
+                location_network.members.add(self)
+                self.networks.add(location_network)
+            else:
+                location_networks[0].members.add(self)
+                self.networks.add(location_networks[0])
+
+
         self.setUsername(fb_data['email'])
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1365,7 +1404,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self).order_by('when').reverse()
+        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('when').reverse()
         print len( actions )
         if num != 1:
             actions = actions[start:start+num]
@@ -3271,6 +3310,16 @@ class Group(Content):
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
 
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns a query set of all unconfirmed requests.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getActivity(self, start=0, num=-1):
+        gmembers = self.members.all()
+        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
+        if num != 1:
+            actions = actions[start:start+num]
+        return actions
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -3296,12 +3345,13 @@ class Motion(Content):
 #=======================================================================================================================
 class Network(Group):
     name = models.CharField(max_length=50)                  # for email networks, "email:<extension>"
+    network_type = models.CharField(max_length=1, choices=NETWORK_TYPE, default='D')
     extension = models.CharField(max_length=50, null=True)
 
     # autosave email network group
     def autoSaveEmailNetwork(self, extension):
         self.name=extension
-        self.extension=extension
+        self.extension=extensionclass
         self.title = "@" + extension + " Network"
         self.summary = "Group of all users with @" + extension + " email extension."
         self.autoSave()

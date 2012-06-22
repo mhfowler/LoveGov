@@ -6,34 +6,6 @@ div.profile-section-title
   color: $text-blue;
 }
 
-@mixin rounded-box
-{
-  @include rounded();
-  height: 70px;
-  width: 70px;
-  display: block;
-  text-align: center;
-}
-
-a.long-box
-{
-  @extend .button-small;
-  display: block;
-  font-style: italic;
-  color: $black;
-}
-
-a.long-button-gray, a.long-button-gray:link, a.long-button-gray:active, a.long-button-gray:visited
-{
-  @extend a.long-box;
-  background-color: $gray;
-}
-
-a.long-button-gray:hover
-{
-  background-color: $light-gray;
-}
-
 /* LEFT MODULE */
 div.middle-left
 {
@@ -69,6 +41,12 @@ div.middle-left
     {
       @extend .float-left;
 
+      span.plus-color
+      {
+        color: $deep-gray;
+        font-weight: bold;
+      }
+
       div.profile-username
       {
         @extend h2;
@@ -82,7 +60,7 @@ div.middle-left
         margin-left: 2px;
       }
 
-      div.profile-network
+      div.profile-school
       {
         @extend h5;
         margin-left: 2px;
@@ -201,8 +179,11 @@ div.middle-left
       {
         @include rounded-box;
         @extend .float-left;
+        padding: 5px;
         margin: $linkborder 10+$linkborder 10+$linkborder $linkborder;
         border: hidden $linkborder $gray;
+        background-color: $red; //temporary
+        color: white; //temporary
       }
 
       a.profile-group-link:hover
@@ -212,6 +193,25 @@ div.middle-left
         margin: 0px 10px 10px 0px;
         border-style: solid;
       }
+    }
+  }
+}
+
+/* Activity Feed */
+div.profile-activity-container
+{
+  @extend .float-left;
+  display: block;
+  width: 400px;
+  margin-right: 50px;
+
+  div.profile-activity-feed
+  {
+    display: block;
+
+    div.action-separator
+    {
+      @include horitzontalSeparator(400px);
     }
   }
 }

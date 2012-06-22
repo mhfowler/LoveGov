@@ -11,6 +11,7 @@ function rebindFunction()
     loadTopicSelect();                                          // topic select image functionality
     loadHoverComparison();                                      // hover comparison functionality
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
+    loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -74,6 +75,70 @@ function rebindFunction()
  *      ~Auxiliary
  *
  ***********************************************************************************************************************/
+function loadMenuToggles() {
+
+    $(".menu").hide();
+    $(".menu_toggle").click(function(event) {
+        $(this).children(".menu").toggle();
+        if ($(this).hasClass("clicked")) {
+            $(this).children(".triangle-selector").removeClass("highlighted");
+        } else {
+            $(this).children(".triangle-selector").addClass("highlighted");
+        }
+    });
+    $(".menu_toggle").hover(
+        function(event) {
+            $(this).children(".triangle-selector").addClass("highlighted");
+        },
+        function(event) {
+            if (!$(this).hasClass("clicked")) {
+                $(this).children(".triangle-selector").removeClass("highlighted");
+            }
+        }
+    );
+    defaultHoverClick($(".menu_toggle"));
+}
+
+function defaultHoverClick(div) {
+    div.click(function(event) {
+        defaultClick($(this));
+    });
+    defaultHover(div);
+}
+
+function defaultHoverClickSingle(div) {
+    div.click(function(event) {
+        defaultClickSingle($(this), div);
+    });
+    defaultHover(div);
+}
+
+function defaultClickSingle(this_div, all_div) {
+    var already = $(this).hasClass("clicked");
+    all_div.removeClass("clicked");
+    if (!already) {
+        this_div.addClass("clicked");
+    }
+}
+
+function defaultClick(this_div) {
+    this_div.toggleClass("clicked");
+}
+
+function defaultHover(all_div) {
+    all_div.hover(
+        function(event) {
+            $(this).addClass("hovered");
+        },
+        function(event) {
+            $(this).removeClass("hovered");
+        }
+    );
+}
+
+
+
+/* user follower */
 function userFollow(event,div,follow)
 {
     event.preventDefault();
@@ -90,33 +155,92 @@ function userFollow(event,div,follow)
             },
             success: function(data)
             {
-                if( data == "now following this person")
+                if( data == "follow success")
                 {
                     div.html("unfollow");
                     div.click(
                         function(event)
                         {
-                            userFollow(event,$(this),false);
+                            userFollow(event,div,false);
                         }
                     );
                 }
-                else if( data == "requested to follow this person")
+                else if( data == "follow request")
                 {
                     div.html("un-request");
                     div.click(
                         function(event)
                         {
-                            userFollow(event,$(this),false);
+                            userFollow(event,div,false);
                         }
                     );
                 }
-                else if( data == "removed")
+                else if( data == "follow removed")
                 {
                     div.html("follow");
                     div.click(
                         function(event)
                         {
-                            userFollow(event,$(this),true);
+                            userFollow(event,div,true);
+                        }
+                    );
+                }
+                else
+                {
+                    alert(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        }
+    );
+}
+
+function groupFollow(event,div,follow)
+{
+    event.preventDefault();
+    div.unbind();
+    var action = 'joingroup';
+    if( !follow )
+    {
+        action = 'leavegroup';
+    }
+    ajaxPost({
+            data: {
+                'action': action,
+                'g_id': g_id,
+            },
+            success: function(data)
+            {
+                if( data == "follow success")
+                {
+                    div.html("unfollow");
+                    div.click(
+                        function(event)
+                        {
+                            groupFollow(event,div,false);
+                        }
+                    );
+                }
+                else if( data == "follow request")
+                {
+                    div.html("un-request");
+                    div.click(
+                        function(event)
+                        {
+                            groupFollow(event,div,false);
+                        }
+                    );
+                }
+                else if( data == "follow removed")
+                {
+                    div.html("follow");
+                    div.click(
+                        function(event)
+                        {
+                            groupFollow(event,div,true);
                         }
                     );
                 }
@@ -594,7 +718,7 @@ function loadHeader()
             {
                 ajaxPost({
                     'data': {'action':'getnotifications',
-                            'dropdown':'true'},
+                        'dropdown':'true'},
                     success: function(data)
                     {
                         var obj = eval('(' + data + ')');
@@ -1851,7 +1975,7 @@ function loadProfile()
             var num_notifications = $("#num_notifications").val();
             ajaxPost({
                 'data': {'action':'getnotifications',
-                        'num_notifications':num_notifications },
+                    'num_notifications':num_notifications },
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
@@ -1866,7 +1990,7 @@ function loadProfile()
                             event.preventDefault();
                         });
                     }
-                    else if( obj.hasOwnPropery('error') )
+                    else if( obj.hasOwnProperty('error') )
                     {
                         $('body').html(obj.error);
                     }
@@ -1881,13 +2005,13 @@ function loadProfile()
         }
     );
 
-    $('#see_more_actions').click(
+    $('#profile_more_actions').click(
         function(event)
         {
             event.preventDefault();
             var num_actions = $("#num_actions").val();
             ajaxPost({
-                'data': {'action':'getactions',
+                'data': {'action':'getuseractions',
                     'num_actions':num_actions,
                     'p_id':p_id },
                 success: function(data)
@@ -1895,17 +2019,18 @@ function loadProfile()
                     var obj = eval('(' + data + ')');
                     $('#profile_activity_feed').append(obj.html);
                     $('#num_actions').val(obj.num_actions);
-                    if( 'error' in obj && obj.error == 'No more actions' )
+                    if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
                     {
-                        $('#see_more_actions').html('No more actions')
-                        $('#see_more_actions').unbind();
-                        $('#see_more_actions').click( function(event)
+                        $('#profile_more_actions').html('No more actions')
+                        $('#profile_more_actions').unbind();
+                        $('#profile_more_actions').click( function(event)
                         {
                             event.preventDefault();
                         });
                     }
-                    else if( 'error' in obj )
+                    else if( obj.hasOwnProperty('error') )
                     {
+                        alert(obj.error);
                         $('body').html(obj.error);
                     }
                 },
@@ -2159,41 +2284,11 @@ function loadGroup()
         groupFollowResponse(event,"N",$(this),g_id);
     });
 
-    $("#group-follow").click( function(event) {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'joingroup',
-                    'g_id': g_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+    $("#group_follow").click( function(event) {
+        groupFollow(event,$(this),true);
     });
-    $("#group-unfollow").click( function(event) {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'leavegroup',
-                    'g_id': g_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+    $("#group_unfollow").click( function(event) {
+        groupFollow(event,$(this),false);
     });
 
     // select histogram block
@@ -2236,6 +2331,41 @@ function loadGroup()
 
     }
 
+    $('#group_more_actions').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_actions = $("#num_actions").val();
+            ajaxPost({
+                'data': {'action':'getgroupactions',
+                    'num_actions':num_actions,
+                    'g_id':g_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#group_activity_feed').append(obj.html);
+                    $('#num_actions').val(obj.num_actions);
+                    if( 'error' in obj && obj.error == 'No more actions' )
+                    {
+                        $('#group_more_actions').html('No more actions')
+                        $('#group_more_actions').unbind();
+                        $('#group_more_actions').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
+                    }
+                    else if( 'error' in obj )
+                    {
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
 
     /*
      $(window).scroll(function(event)
@@ -2265,9 +2395,7 @@ function loadGroup()
  Takes in a a value and the classname of an input which the value should
  either be added to or removed from that list (toggled).
  */
-function listSelectHelper(value, list_input_name) {
-    var list_input = $("." + list_input_name);
-    var list_values = $.parseJSON(list_input.val());
+function listToggleHelper(list_values, value) {
     var index = $.inArray(value, list_values);
     if (index == -1) {
         list_values.push(value);
@@ -2275,15 +2403,15 @@ function listSelectHelper(value, list_input_name) {
     else {
         list_values.splice(index, 1);
     }
-    list_input.val(JSON.stringify(list_values));
+    return list_values
 }
 
 /*
  Replaces feed with all new items based on current parameters.
  */
 function refreshFeed(num) {
-    $(".feed_start").val(0);
-    // pinterest reset positioning
+
+    feed_metadata.feed_start = 0;
     var i =0;
     while (i < pinterest.length) {
         pinterest[i] = 0;
@@ -2300,22 +2428,22 @@ function getFeed(num)
 {
 
     if (num==-1) {
-        num = 3;
+        num = 18;
     }
 
-    var feed_ranking = $(".feed_ranking").val();
-    var feed_display =  $(".feed_display").val();
-    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
-    var feed_topics = $.parseJSON($(".feed_topics").val());
-    var feed_types =  $.parseJSON($(".feed_types").val());
-    var feed_levels =  $.parseJSON($(".feed_levels").val());
-    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    var feed_ranking = feed_metadata.ranking;
+    var feed_display =  feed_metadata.display;
+    var feed_submissions_only =  feed_metadata.submissions_only;
+    var feed_topics = feed_metadata.topics;
+    var feed_types =  feed_metadata.types;
+    var feed_levels =  feed_metadata.levels;
+    var feed_groups =  feed_metadata.groups;
+    var feed_start = feed_metadata.feed_start;
     feed_topics = JSON.stringify(feed_topics);
     feed_types = JSON.stringify(feed_types);
     feed_levels = JSON.stringify(feed_levels);
     feed_groups = JSON.stringify(feed_groups);
 
-    var feed_start = parseInt($(".feed_start").val());
     var feed_end =  feed_start + num;
 
     var feed_replace;
@@ -2342,7 +2470,7 @@ function getFeed(num)
                 $(".pinterest-wrapper").append(returned.html);
             }
 
-            $(".feed_start").val(feed_start + returned.num);
+            feed_metadata.feed_start = feed_start + returned.num;
 
             if (feed_display == "P") {
                 pinterestRender($(".pinterest_unrendered"));
@@ -2553,17 +2681,17 @@ function hide(div)
  */
 function clearFilterParameters() {
 
-    $(".feed_topics").val(JSON.stringify([]));
+    feed_metadata.topics =  JSON.stringify([]);
     var topic_icon_wrapper = $(".feed-topic-selector-wrapper");
     clearTopicIcons(topic_icon_wrapper);
 
-    $(".feed_types").val(JSON.stringify([]));
+    feed_metadata.types =  JSON.stringify([]);
     $(".feed-type-selector").attr("checked", false);
 
-    $(".feed_levels").val(JSON.stringify([]));
+    feed_metadata.levels =  JSON.stringify([]);
     $(".feed-level-selector").attr("checked", false);
 
-    $(".feed_groups").val(JSON.stringify([]));
+    feed_metadata.groups =  JSON.stringify([]);
     $(".feed-group-selector").attr("checked", false);
 
 }
@@ -2575,34 +2703,34 @@ function clearFilterParameters() {
 function addTopic(t_id) {
     var t_wrapper = $(".feed-topic-icon-wrapper[data-id=" + t_id + "]");
     showTopicIcon(t_wrapper);
-    listSelectHelper(t_id, 'feed_topics');
+    listToggleHelper(feed_metadata.topics, t_id);
 }
 
 function addType(type) {
-    listSelectHelper(type, 'feed_types');
+    listToggleHelper(feed_metadata.types, type);
     $(".feed-type-selector[value=" + type + "]").attr("checked", true);
 }
 
 function addLevel(level) {
-    listSelectHelper(level, 'feed_levels');
+    listToggleHelper(feed_metadata.levels, level);
     $(".feed-level-selector[value=" + level + "]").attr("checked", true);
 }
 
 function addGroup(g_id) {
-    listSelectHelper(g_id, 'feed_groups');
+    listToggleHelper(feed_metadata.groups, g_id);
     $(".feed-group-selector[value=" + g_id + "]").attr("checked", true);
 }
 
 function setSubmissionOnly(value) {
-    $(".feed_submissions_only").val(value);
+    feed_metadata.submissions_only = value;
 }
 
 function setRanking(value) {
-    $(".feed_ranking").val(value);
+    feed_metadata.ranking = value;
 }
 
 function setDisplay(value) {
-    $(".feed_display").val(value);
+    feed_metadata.display = value;
     var visual_wrapper = $("div[data-display=" + value + "]");
     visualSelectDisplayWrapper(visual_wrapper);
 }
@@ -2634,7 +2762,7 @@ function pinterestRender(cards) {
         var height = $(this).height() + 20;
         $(this).css("position", 'absolute');
         $(this).css("left", left);
-        $(this).animate({"top": top}, 1400);
+        $(this).css({"top": top}, 1400);
         pinterest[current_col] = (top + height);
         current_col += 1;
         $(this).removeClass("pinterest_unrendered");
@@ -2669,7 +2797,11 @@ function visualDisplayWrapperHide(wrapper) {
 }
 
 /* binds everyting */
+var feed_metadata;
 function loadNewFeed() {
+
+    // parse json for metadata
+    feed_metadata = $("#feed_metadata").data('json');
 
     //$(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
@@ -2679,26 +2811,10 @@ function loadNewFeed() {
 
     /* set initial display value */
     $(".display-red").hide();
-    setDisplay($(".feed_display").val());
-
-    $(".display-choice").click(function(event) {
-        setDisplay($(this).attr("data-display"));
-        var num = 6;
-        var already = $(".feed_start").val();
-        if (already > num) {
-            num = already;
-        }
-        refreshFeed(num);
-    });
-
-    $(".menu").hide();
-    $(".menu-toggle").click(function(event) {
-        $(this).find(".menu").toggle();
-    });
 
 
     $(".get_feed").click(function(event) {
-        event.preventDefault();
+        event.preventDefault();;
         getFeed(-1);
     });
 
@@ -2711,39 +2827,14 @@ function loadNewFeed() {
         var wrapper = $(this).parents(".topic-icon-wrapper");
         toggleTopicIcon(wrapper);
         var value = $(this).parents(".feed-topic-icon-wrapper").attr("data-id");
-        listSelectHelper(value, 'feed_topics');
-        refreshFeed(-1);
-    });
-
-    $(".feed-type-selector").click(function(event) {
-        var value = $(this).val();
-        listSelectHelper(value, 'feed_types');
-        refreshFeed(-1);
-    });
-
-    $(".feed-level-selector").click(function(event) {
-        var value = $(this).val();
-        listSelectHelper(value, 'feed_levels');
-        refreshFeed(-1);
-    });
-
-    $(".feed-group-selector").click(function(event) {
-        var value = $(this).val();
-        listSelectHelper(value, 'feed_groups');
-        refreshFeed(-1);
-    });
-
-    $(".feed-ranking-selector").click(function(event) {
-        event.preventDefault();
-        var ranking = $(this).attr("data-ranking");
-        $(".feed_ranking").val(ranking);
+        listToggleHelper(feed_metadata.topics, value);
         refreshFeed(-1);
     });
 
     $(".feed-display-selector").click(function(event) {
         event.preventDefault();
         var display = $(this).attr("data-display");
-        $(".feed_display").val(display);
+        feed_metadata.display = display;
         refreshFeed(-1);
     });
 
@@ -2762,9 +2853,69 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
-    getFeed(6);
+    /* display menu */
+    $(".display-choice").click(function(event) {
+        setDisplay($(this).attr("data-display"));
+        var num = 6;
+        var already = feed_metadata.start;
+        if (already > num) {
+            num = already;
+        }
+        refreshFeed(num);
+    });
 
-    //$(window).scroll(scrollFeed);
+    /* sort-by menu */
+    $(".feed-ranking-selector").click(function(event) {
+        var data = $(this).data();
+        $(".ranking_menu_title").text(data.verbose);
+        feed_metadata.ranking = data.ranking;
+        $(this).parents(".menu_toggle").removeClass("highlighted");
+        refreshFeed(-1);
+    });
 
+    /* group menu  visual */
+    defaultHover($(".group-box"));
+    $(".group-box").click(function(event) {
+        event.preventDefault();
+        defaultClick($(this));
+        event.stopPropagation();
+    });
+    /* group menu  functional */
+    $(".feed_group_selector").click(function(event) {
+        var value = $(this).data('g_id');
+        listToggleHelper(feed_metadata.groups, value);
+        refreshFeed(-1);
+    });
+
+    /* levels menu */
+    $(".feed-level-selector").click(function(event) {
+        var value = $(this).data('level');
+        listToggleHelper(feed_metadata.levels, value);
+        refreshFeed(-1);
+    });
+
+    /* types menu */
+    $(".feed-type-selector").click(function(event) {
+        var value = $(this).data('type');
+        listToggleHelper(feed_metadata.types, value);
+        refreshFeed(-1);
+    });
+
+    /* gray hover for all dropdown menu options */
+    defaultHoverClickSingle($(".menu-option.single"));
+    defaultHoverClick($(".menu-option.multi"));
+
+
+    $(".menu-option").hover(
+        function(event) {
+            event.stopPropagation();
+        },
+        function(event) {
+            event.stopPropagation();
+        });
+
+    getFeed(27);
+
+    $(window).scroll(scrollFeed);
 
 }

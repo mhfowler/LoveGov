@@ -1,4 +1,5 @@
-<link rel="stylesheet" type="text/css" href="/static/css/deployment/profile.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css" />
 
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
@@ -6,10 +7,10 @@
 
 {% if group.active %}
 <!-- Middle Container -->
-<div id="profile-main-div">
+<div class="main-div">
     <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
     <!-- Left Block -->
-    <div id="middle-left">
+    <div class="middle-left">
         <h1> {{ group.title }} </h1>
 
         <p>
@@ -110,25 +111,44 @@
     </ul>
     {% endif %}
 
+    <br>
     {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
-    <a href="" id="group-follow">
-        follow me!
+    <a href="" class="button-red" id="group_follow">
+        follow
     </a>
     {% else %}
-    <a href="" id="group-unfollow">
+    <a href="" class="button-red" id="group_unfollow">
         {% if is_user_confirmed %}
-        unfollow me!
+        unfollow
         {% elif is_user_follow %}
-        un-request me!
+        un-request
         {% endif %}
     </a>
     {% endif %}
+
+    <div class="profile-activity-container">
+        <div class="profile-section-title">Activity</div>
+        <div class="profile-activity-feed" id="group_activity_feed">
+            {% for action in actions_text %}
+                {{ action|safe|escape }}
+                {% if not forloop.last %}
+                    <div class="action-separator"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <a href="" class="long-button-gray" id="group_more_actions">
+            See more activity
+        </a>
+        <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
+        <br>
+    </div>
 
     <script>
         var g_id = "{{ group.id }}";
     </script>
 
 </div>
+
 
 {% else %}
     This group has been deleted.

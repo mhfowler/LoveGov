@@ -365,39 +365,19 @@ textarea:focus
 
 .button
 {
-    -moz-border-radius: 9px;
-    -webkit-border-radius: 9px;
-    -khtml-border-radius: 9px;
-    border-radius: 9px;
-    padding: 12px;
-    padding-bottom: 5px;
-    letter-spacing: 1px;
-    font-size: 18px;
-    font-family: $gill-std;
-    color: white;
-    text-decoration: none;
-    outline: none;
-    border: 0;
-}
-
-.button-small
-{
-  @include rounded(5px);
-  text-align: center;
-  padding: 3px;
-}
-
-.button-small-red, .button-small-red:link, .button-small-red:active, .button-small-red:visited
-{
-  @extend .button-small;
-  font-weight: bold;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  -khtml-border-radius: 9px;
+  border-radius: 9px;
+  padding: 12px;
+  padding-bottom: 5px;
+  letter-spacing: 1px;
+  font-size: 18px;
+  font-family: $gill-std;
   color: white;
-  background-color:$red;
-}
-
-.button-small-red:hover
-{
-  background-color:$red-light
+  text-decoration: none;
+  outline: none;
+  border: 0;
 }
 
 .button-red, .button-red:link, .button-red:active, .button-red:visited
@@ -420,6 +400,45 @@ textarea:focus
 .button-gray:hover
 {
   background-color: $gray;
+}
+
+.button-small
+{
+  @include rounded(5px);
+  text-align: center;
+  padding: 3px;
+}
+
+.button-small-red, .button-small-red:link, .button-small-red:active, .button-small-red:visited
+{
+  @extend .button-small;
+  font-weight: bold;
+  color: white;
+  background-color:$red;
+}
+
+.button-small-red:hover
+{
+  background-color:$red-light
+}
+
+a.long-box
+{
+  @extend .button-small;
+  display: block;
+  font-style: italic;
+  color: $black;
+}
+
+a.long-button-gray, a.long-button-gray:link, a.long-button-gray:active, a.long-button-gray:visited
+{
+  @extend a.long-box;
+  background-color: $gray;
+}
+
+a.long-button-gray:hover
+{
+  background-color: $light-gray;
 }
 
 img.icon-really-big
@@ -521,20 +540,35 @@ span.big
 }
 
 
-div.red-hover:hover
-{
-  background-color:#f0503b;
-  color:white;
-}
-
 div.triangle-selector {
-  &:hover { border-top-color: white}
   @include triangle-down(6px);
 }
+
 
 .bold
 {
   font-weight:bold;
+
+div.triangle-selector.highlighted
+{
+  border-top-color: white;
+}
+
+div.menu_toggle:hover {
+  background-color:$red;
+}
+
+div.menu_toggle.clicked {
+  background-color:$red;
+}
+
+@mixin rounded-box
+{
+  @include rounded();
+  height: 70px;
+  width: 70px;
+  display: block;
+  text-align: center;
 }
 
 

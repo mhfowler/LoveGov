@@ -108,7 +108,6 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.createIFollowGroup()
     userProfile.createFollowMeGroup()
     userProfile.joinLoveGovGroup()
-    userProfile.joinNetwork()
     # associate with control
     userProfile.user = control
     userProfile.save()
