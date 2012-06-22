@@ -96,48 +96,49 @@ function loadMenuToggles() {
             }
         }
     );
-    loadHoverClick($(".menu_toggle"));
+    defaultHoverClick($(".menu_toggle"));
 }
 
-function loadHoverClick(div) {
+function defaultHoverClick(div) {
     div.click(function(event) {
-        $(this).toggleClass("clicked");
+        defaultClick($(this));
     });
-    div.hover(
+    defaultHover(div);
+}
+
+function defaultHoverClickSingle(div) {
+    div.click(function(event) {
+        defaultClickSingle($(this), div);
+    });
+    defaultHover(div);
+}
+
+function defaultClickSingle(this_div, all_div) {
+    var already = $(this).hasClass("clicked");
+    all_div.removeClass("clicked");
+    if (!already) {
+        this_div.addClass("clicked");
+    }
+}
+
+function defaultClick(this_div) {
+    this_div.toggleClass("clicked");
+}
+
+function defaultHover(all_div) {
+    all_div.hover(
         function(event) {
-            $(this).addClass("highlighted");
+            $(this).addClass("hovered");
         },
         function(event) {
-            if (!$(this).hasClass("clicked")) {
-                $(this).removeClass("highlighted");
-            }
+            $(this).removeClass("hovered");
         }
     );
 }
 
-function loadHoverClickSingle(div) {
-    div.click(function(event) {
-        var already = $(this).hasClass("clicked");
-        div.removeClass("clicked");
-        div.removeClass("highlighted");
-        if (!already) {
-            $(this).addClass("clicked");
-            $(this).addClass("highlighted");
-        }
-    });
-    div.hover(
-        function(event) {
-            $(this).addClass("highlighted");
-        },
-        function(event) {
-            if (!$(this).hasClass("clicked")) {
-                $(this).removeClass("highlighted");
-            }
-        }
-    );
-}
 
 
+/* user follower */
 function userFollow(event,div,follow)
 {
     event.preventDefault();
@@ -2409,6 +2410,7 @@ function listToggleHelper(list_values, value) {
  Replaces feed with all new items based on current parameters.
  */
 function refreshFeed(num) {
+
     feed_metadata.feed_start = 0;
     var i =0;
     while (i < pinterest.length) {
@@ -2829,24 +2831,6 @@ function loadNewFeed() {
         refreshFeed(-1);
     });
 
-    $(".feed-type-selector").click(function(event) {
-        var value = $(this).val();
-        listToggleHelper(feed_metadata.types, value);
-        refreshFeed(-1);
-    });
-
-    $(".feed-level-selector").click(function(event) {
-        var value = $(this).val();
-        listToggleHelper(feed_metadata.levels, value);
-        refreshFeed(-1);
-    });
-
-    $(".feed-group-selector").click(function(event) {
-        var value = $(this).val();
-        listToggleHelper(feed_metadata.groups, value);
-        refreshFeed(-1);
-    });
-
     $(".feed-display-selector").click(function(event) {
         event.preventDefault();
         var display = $(this).attr("data-display");
@@ -2889,19 +2873,45 @@ function loadNewFeed() {
         refreshFeed(-1);
     });
 
-    /* gray hover for all dropdown menu options */
-    loadHoverClickSingle($(".menu-option"));
-
-    $(".menu-option").click(function(event) {
-        //event.stopPropagation();
+    /* group menu  visual */
+    defaultHover($(".group-box"));
+    $(".group-box").click(function(event) {
+        event.preventDefault();
+        defaultClick($(this));
+        event.stopPropagation();
     });
+    /* group menu  functional */
+    $(".feed_group_selector").click(function(event) {
+        var value = $(this).data('g_id');
+        listToggleHelper(feed_metadata.groups, value);
+        refreshFeed(-1);
+    });
+
+    /* levels menu */
+    $(".feed-level-selector").click(function(event) {
+        var value = $(this).data('level');
+        listToggleHelper(feed_metadata.levels, value);
+        refreshFeed(-1);
+    });
+
+    /* types menu */
+    $(".feed-type-selector").click(function(event) {
+        var value = $(this).data('type');
+        listToggleHelper(feed_metadata.types, value);
+        refreshFeed(-1);
+    });
+
+    /* gray hover for all dropdown menu options */
+    defaultHoverClickSingle($(".menu-option.single"));
+    defaultHoverClick($(".menu-option.multi"));
+
 
     $(".menu-option").hover(
         function(event) {
             event.stopPropagation();
         },
         function(event) {
-            event.stopPropogation();
+            event.stopPropagation();
         });
 
     getFeed(6);

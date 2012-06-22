@@ -6,17 +6,6 @@ div.profile-section-title
   color: $text-blue;
 }
 
-@mixin rounded-box
-{
-  @include rounded();
-  height: 70px;
-  width: 70px;
-  display: block;
-  text-align: center;
-}
-
-
-
 /* LEFT MODULE */
 div.middle-left
 {

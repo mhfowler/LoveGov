@@ -281,14 +281,35 @@ div.more-options-wrapper {
 
 }
 
+div.group-menu {
+  width:120px;
+  padding-bottom:10px;
+}
 
+$linkborder: 2px;
 div.group-box {
-  @extend .box;
-  background-color: blue;
   @include rounded(10px);
-  width:20px;
-  height:20px;
-  margin-left:10px;
+  @extend .box;
+  border:hidden;
+  margin: 10+$linkborder $linkborder $linkborder 10+$linkborder;
+  width:40px;
+  height:40px;
+  overflow:hidden;
+  float:left;
+}
+
+div.group-box:hover {
+  border:solid;
+  border-color:$gray;
+  border-width:$linkborder;
+  margin: 10px 0 0 10px;
+}
+
+div.group-box.clicked {
+  border:solid;
+  margin: 10px 0 0 10px;
+  border-width:$linkborder;
+  border-color:$red;
 }
 
 div.menu-option {
@@ -299,7 +320,11 @@ div.menu-option {
   margin:0px;
 }
 
-div.menu-option.highlighted {
+div.menu-option:hover {
+  background-color: $light-gray;
+}
+
+div.menu-option.clicked {
   background-color: $light-gray;
 }
 
@@ -312,11 +337,9 @@ div.menu {
   z-index:20;
 }
 
-
 div.feed-body {
 
 }
-
 
 div.pinterest-wrapper {
 

@@ -368,14 +368,6 @@ def theFeed(request, vals={}):
 
     rightSideBar(request, vals)
 
-    vals['feed_ranking'] = 'N'
-    vals['feed_levels'] = json.dumps([])
-    vals['feed_topics'] = json.dumps([])
-    vals['feed_types'] = json.dumps([])
-    vals['feed_groups'] = json.dumps([])
-    vals['feed_submissions_only'] = 1
-    vals['feed_display'] = 'P'
-
     feed_json = {'ranking': 'N',
                  'levels':[],
                  'topics':[],
@@ -386,10 +378,9 @@ def theFeed(request, vals={}):
                  'feed_start': 0}
 
     vals['feed_json'] = json.dumps(feed_json)
-
     vals['my_filters'] = viewer.my_filters.all()
-
     vals['my_groups'] = viewer.getGroups()
+    vals['my_networks'] = Network.objects.all()
 
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
