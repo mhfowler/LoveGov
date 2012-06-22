@@ -84,7 +84,7 @@
         <div class="profile-bottom">
             <div class="profile-activity-container">
                 <div class="profile-section-title">Activity</div>
-                <div class="profile-activity-feed" id="group_activity_feed">
+                <div class="profile-activity-feed" id="profile_activity_feed">
                     {% for action in actions_text %}
                         {{ action|safe|escape }}
                         {% if not forloop.last %}

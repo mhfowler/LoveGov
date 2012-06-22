@@ -1925,7 +1925,7 @@ function loadProfile()
                             event.preventDefault();
                         });
                     }
-                    else if( obj.hasOwnPropery('error') )
+                    else if( obj.hasOwnProperty('error') )
                     {
                         $('body').html(obj.error);
                     }
@@ -1954,7 +1954,7 @@ function loadProfile()
                     var obj = eval('(' + data + ')');
                     $('#profile_activity_feed').append(obj.html);
                     $('#num_actions').val(obj.num_actions);
-                    if( 'error' in obj && obj.error == 'No more actions' )
+                    if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
                     {
                         $('#profile_more_actions').html('No more actions')
                         $('#profile_more_actions').unbind();
@@ -1963,8 +1963,9 @@ function loadProfile()
                             event.preventDefault();
                         });
                     }
-                    else if( 'error' in obj )
+                    else if( obj.hasOwnProperty('error') )
                     {
+                        alert(obj.error);
                         $('body').html(obj.error);
                     }
                 },
