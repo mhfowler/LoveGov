@@ -1,28 +1,13 @@
 @import 'master-variables';
 @import 'master';
 
+
 .border {
   border:solid;
   border-color:red;
   border-width:1px;
 }
 
-.feed-header {
-  height:50px;
-  margin-bottom:5px;
-}
-
-.feed-main-div {
-  @extend .main-div;
-  margin-top:20px;
-}
-
-p.your-feed {
-  @extend .really-big;
-  margin-top:10px;
-  float:left;
-  @include fontSize(25px);
-}
 
 .box {
   border:solid;
@@ -30,141 +15,388 @@ p.your-feed {
   border-width:1px;
 }
 
-div.options-box {
+
+.feed-main-div {
+  @extend .main-div;
+  margin-top:20px;
+}
+
+
+.feed-header {
   @extend .box;
-  float:left;
-  margin-left:20px;
-  width:140px;
-  height:35px;
-  @include fontSize(18px);
 
-  p.options-title {
-    margin-top:5px;
-    margin-left:10px;
-  }
-}
-
-div.saved-filters-box {
-  float:left;
-  margin-left:30px;
-}
-
-
-div.display-box {
-  @extend div.options-box;
-  width:70px;
-  height:35px;
-  float:right;
-  div {
+  p.your-feed {
+    @extend .really-big;
+    margin-top:20px;
+    margin-bottom:0px;
     float:left;
-    margin-left:15px;
-    margin-top:5px;
+    @include fontSize(25px);
+  }
+
+  div.options-box {
+    @extend .box;
+    width:140px;
+    height:35px;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:left;
+    margin-left:20px;
+
+    @include fontSize(18px);
+
+    p.options-title {
+      margin-top:5px;
+      margin-left:6px;
+      margin-bottom:0px;
+      float:left;
+    }
+
+    div.triangle-selector {
+      float:left;
+      margin-left:4px;
+      margin-top:13px;
+    }
+  }
+
+  div.saved-filters-box {
+    position:relative;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:left;
+    margin-left:30px;
+  }
+
+  a.more-feed-button {
+    margin-top:24px;
+    margin-bottom:0px;
+
+    float:left;
+    margin-left:18px;
+  }
+
+  a.how-does {
+    float:right;
+    margin-top:24px;
+    margin-right:10px;
+  }
+
+  div.create-box {
+
+    @extend div.options-box;
+    border-color:red;
+    width:110px;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    float:right;
+    margin-right:10px;
+
+    p.options-title {
+      margin-top:5px;
+      margin-left:0px;
+      margin-right:0px;
+      margin-bottom:0px;
+      text-align:center
+    }
+  }
+
+
+  div.display-box {
+    @extend div.options-box;
+
+    margin-top:15px;
+    margin-bottom:0px;
+
+    width:70px;
+    height:35px;
+    float:right;
+    div {
+      float:left;
+      margin-left:15px;
+      margin-top:5px;
+    }
   }
 }
 
-div.create-box {
-  @extend div.options-box;
-  border-color:red;
-  width:110px;
-  float:right;
-  margin-right:10px;
-  p.options-title {
-    margin-top:5px;
-    margin-left:0px;
-    margin-right:0px;
-    text-align:center
+div.more-options-wrapper {
+
+  margin-top:0px;
+  padding:15px;
+  width:970px;
+  height:100px;
+  @extend .box;
+
+  div.more-options-selector {
+    height:50px;
+    width:980px;
+
+    div.sort-by {
+      margin-top:10px;
+      float:left;
+    }
+    div.sort-by-choice {
+      position:relative;
+      float:left;
+      width:40px;
+      height:30px;
+      padding-top:10px;
+      padding-left:20px;
+      margin-left:10px;
+      @extend .box;
+    }
+
+    div.filter-by {
+      float:left;
+      margin-top:10px;
+      margin-left:10px;
+    }
+    div.filter-by-group {
+      position:relative;
+      float:left;
+      margin-left:10px;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+
+    }
+    div.filter-by-network {
+      position:relative;
+      float:left;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-by-political {
+      position:relative;
+      float:left;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-by-content {
+      position:relative;
+      float:left;
+      width:60px;
+      height:30px;
+      padding-top:10px;
+      padding-left:25px;
+      @extend .box;
+    }
+    div.filter-topic {
+      margin-top:10px;
+      float:right;
+    }
+
   }
+
+  div.current-selection {
+    height:35px;
+    width:950px;
+    margin-left:10px;
+    padding:10px;
+    @extend .box;
+
+    div.current-filter {
+      float:left;
+    }
+
+    div.current-options {
+      float:right;
+
+      a.feed-clear {
+        display:block;
+      }
+
+      a.feed-save {
+        display:block;
+      }
+
+    }
+
+  }
+
 }
 
-p.how-does {
-  float:right;
-  margin-right:10px;
-  margin-top:15px;
+
+div.group-box {
+  @extend .box;
+  background-color: blue;
+  @include rounded(10px);
+  width:20px;
+  height:20px;
+  margin-left:10px;
+}
+
+
+div.menu {
+  position:absolute;
+  top:40px;
+  left:0px;
+  background-color:white;
+  @extend .box;
+  width:85px;
+  height:130px;
+  z-index:20;
+  padding-top:10px;
+  padding-bottom:10px;
 }
 
 
 div.feed-body {
-  border-top:solid;
-  border-color:gray;
-  border-width:1px;
+
 }
 
+
 div.pinterest-wrapper {
+
+  display: block;
   position:relative;
   top:20px;
   left:0px;
 }
 
-div.pinterest-card {
+/* positioning */
+div.pinterest_card {
   position:absolute;
   top:0px;
   left:0px;
-}
 
-div.pinterest {
-  @extend .box;
-  box-shadow: 3px 3px 3px #f0f0f0;
-  position:absolute;
-  width:320px;
-}
+  div.pinterest {
 
+    @extend .box;
+    box-shadow: 3px 3px 3px #f0f0f0;
+    width:320px;
 
-div.pinterest-main {
-  padding:15px;
-  margin-bottom:0px;
-  padding-bottom:0px;
-  background-color:white;
+    div.pinterest-main {
 
-  div.pinterest-header {
-    height:40px;
-
-    div.prof-image{
-      float:left;
-    }
-
-    div.header-middle {
-      float:left;
-      margin-left:10px;
-      width:180px;
-
-      p.submitted {
-        color:$light-gray;
-        text-decoration: underline;
-      }
-
-      div.user-name {
-      }
-
-    }
-
-    div.header-topic {
-      float:left;
-      margin-left:8px;
-    }
-  }
-
-  div.pinterest-image {
-    margin-top:15px;
-    margin-left:20px;
-  }
-
-  div.pinterest-title {
-    margin-top:15px;
-  }
-
-  div.pinterest-summary {
-    @extend p.really-big;
-    @include fontSize(18px);
-    margin-top:15px;
-    padding:0px;
-    p {
+      padding:15px;
       margin-bottom:0px;
+      padding-bottom:0px;
+      background-color:white;
+
+      div.pinterest-header {
+        height:40px;
+
+        div.prof-image{
+          float:left;
+        }
+
+        div.header-middle {
+          float:left;
+          margin-left:12px;
+          width:150px;
+
+          p.submitted {
+            margin-bottom:0px;
+          }
+
+          div.user-name {
+            margin-top:6px;
+            font-size:20px;
+          }
+        }
+
+        div.header-topic {
+          float:left;
+          margin-left:20px;
+        }
+      }
+
+      div.pinterest-image {
+        margin-top:15px;
+        margin-left:20px;
+      }
+
+      div.pinterest-title {
+        clear:both;
+        margin-top:15px;
+      }
+
+      div.pinterest-summary {
+        margin-top:15px;
+        padding:0px;
+        p {
+          margin-bottom:0px;
+        }
+      }
+
+      div.pinterest-top-comment {
+        margin-bottom:15px;
+      }
+
+    }
+
+    div.pinterest-footer {
+      height:50px;
+      border-top: 1px solid $light-gray;
+    }
+  }
+}
+
+div.feed-topic-icon-wrapper {
+  float:right;
+  margin-left:10px;
+  margin-bottom:10px;
+}
+
+/* styling */
+div.pinterest-title {
+  h2.title-text {
+    @include fontSize(20px);
+  }
+}
+
+div.pinterest-summary {
+  @extend p.really-big;
+  @include fontSize(18px);
+}
+
+p.submitted {
+  color:$light-gray;
+  text-decoration: underline;
+}
+
+div.linear-wrapper {
+  width:1000px;
+}
+
+div.pinterest-top-comment {
+  @extend .box;
+  @include rounded(10px);
+  padding:15px;
+
+  div.comment-header {
+    height:20px;
+
+    div.comment-image{
+      float:left;
+    }
+
+    div.comment-creator {
+      float:left;
+      margin-top:3px;
+      margin-left:10px;
     }
   }
 
+  div.comment-text {
+    @include fontSize(12px);
+    clear:both;
+    color:$light-gray;
+  }
 }
 
-div.pinterest-footer {
-  height:50px;
-  border-top: 1px solid $light-gray;
+.mini {
+  @include fontSize(20px);
 }

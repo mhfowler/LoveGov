@@ -125,7 +125,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE' : 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'beta/modernpolitics/search_indexes')
+        'PATH': os.path.join(os.path.dirname(__file__), 'modernpolitics/search_indexes')
     }
 }
 

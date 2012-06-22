@@ -1,6 +1,19 @@
-<div class="about-content-left">
+{% load customtags %}
+{% load thumbnail %}
+<div id="who-are-we-div" class="fade" style="display:none">
+
+    <div class="who-are-we-circle" id="who_are_we_circle">
+        {% for developer in developers %}
+            <div class="who-are-we-circle-div {% cycle_list colors_cycle as color %}{{ color }}" style="left:{{ developer.x }}px;top:{{ developer.y }}px;width:{{ side }}px;height:{{ side }}px;border-radius:{{ side_half }}px">
+                {% thumbnail developer.getProfileImage.image "300x300" crop="center" format="PNG" as img %}
+                    <img src="{{ img.url }}" style="border-radius:{{ side_half }}px;width:{{ side }}px"/>
+                {% endthumbnail %}
+            </div>
+        {% endfor %}
+            <div class="who-are-we-circle-div-center" style="left:{{ x }}px;top:{{ y }}px;width:{{ main_side }}px;height:{{ main_side }}px;border-radius:{{ main_side_half }}px">
+                <h1 class="capitalize-text" style="position:relative;color:white;text-align:center;top:125px">The Team</h1>
+            </div>
+    </div>
 
 </div>
-<div class="about-content-right">
 
-</div>

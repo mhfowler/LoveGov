@@ -222,6 +222,8 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
+        action = Action(relationship=c.getCreatedRelationship())
+        action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
             if formtype == "P":
@@ -236,8 +238,6 @@ def create(request, val={}):
                 group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
-                action = Action(relationship=c.getCreatedRelationship())
-                action.autoSave()
                 return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             return shortcuts.redirect('/display/' + str(c.id))
@@ -410,9 +410,7 @@ def setFollowPrivacy(request, vals={}):
         return HttpResponse("No user follow privacy specified")
     user.private_follow = bool(int(request.POST['private_follow']))
     user.save()
-    print user.get_name()
-    print user.private_follow
-    return HttpResponse("Follow privacy set")
+    return HttpResponse("follow privacy set")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -612,13 +610,13 @@ def userFollowRequest(request, vals={}):
     to_user = UserProfile.objects.get(id=request.POST['p_id'])
     #No Self Following
     if to_user.id == from_user.id:
-        return HttpResponse("you cannot follow yourself")
+        return HttpResponse("cannot follow yourself")
     already = UserFollow.objects.filter(user=from_user, to_user=to_user)
     #If there's already a follow relationship
     if already: #If it exists, get it
         user_follow = already[0]
         if user_follow.confirmed: #If you're confirmed following already, you're done
-            return HttpResponse("you are already following this person")
+            return HttpResponse("already following this person")
     else: #If there's no follow relationship, make one
         user_follow = UserFollow(user=from_user, to_user=to_user)
         user_follow.autoSave()
@@ -628,10 +626,10 @@ def userFollowRequest(request, vals={}):
         action = Action(relationship=user_follow,modifier='D')
         action.autoSave()
         to_user.notify(action)
-        return HttpResponse("you are now following this person")
+        return HttpResponse("now following this person")
     #otherwise, if you've already requested to follow this user, you're done
     elif user_follow.requested and not user_follow.rejected:
-        return HttpResponse("you have already requested to follow this person")
+        return HttpResponse("already requested to follow this person")
     #Otherwise, make the request to follow this user
     else:
         user_follow.clear()
@@ -639,7 +637,7 @@ def userFollowRequest(request, vals={}):
         action = Action(relationship=user_follow,modifier='R')
         action.autoSave()
         to_user.notify(action)
-        return HttpResponse("you have requested to follow this person")
+        return HttpResponse("requested to follow this person")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or denies user follow, if user follow was requested.
@@ -995,13 +993,24 @@ def ajaxGetFeed(request, vals={}):
     }
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
-    vals = {'content':content}
-    if feed_display == 'P':
-        html = ajaxRender('deployment/center/feed/pinterest_helper.html', vals, request)
-    else:
-        html = ajaxRender('deployment/snippets/feed_helper.html', vals, request)
+    items = ajaxFeedHelper(content, vals['viewer'])
+    to_render = {'items':items, 'display':feed_display}
+
+    html = ajaxRender('deployment/center/feed/feed_helper.html', to_render, request)
     to_return = {'html':html, 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
+
+def ajaxFeedHelper(content, user):
+    list = []
+    user_votes = Voted.objects.filter(user=user)
+    for c in content:
+        vote = user_votes.filter(content=c)
+        if vote:
+            my_vote=vote[0].value
+        else:
+            my_vote=0
+        list.append((c,my_vote))    # content, my_vote
+    return list
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
@@ -1044,7 +1053,7 @@ def getFilter(request, vals={}):
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets dropdown notifications
+# gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
@@ -1065,6 +1074,33 @@ def getNotifications(request, vals={}):
     if 'dropdown' in request.POST:
         html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets activity feed
+#-----------------------------------------------------------------------------------------------------------------------
+def getActions(request, vals={}):
+    # Get Actions
+    viewer = vals['viewer']
+    if not 'p_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No profile id given'}))
+    user_prof = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if not user_prof:
+        return HttpResponse(json.dumps({'error':'Invalid profile id'}))
+    num_actions = 0
+    if 'num_actions' in request.POST:
+        num_actions = int(request.POST['num_actions'])
+    actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
+    if len(actions) == 0:
+        print 'no more actions'
+        return HttpResponse(json.dumps({'error':'No more actions'}))
+    actions_text = []
+    for action in actions:
+        actions_text.append( action.getVerbose(view_user=viewer) )
+    vals['actions_text'] = actions_text
+    num_actions += NOTIFICATION_INCREMENT
+    vals['num_actions'] = num_actions
+    html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 
 def matchSection(request, vals={}):
@@ -1230,6 +1266,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
+            'getactions': getActions,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
             'saveFilter': saveFilter,

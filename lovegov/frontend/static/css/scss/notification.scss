@@ -1,17 +1,16 @@
-@import 'master';
+@import 'master.scss';
 
-div.action
+div.notification
 {
   padding: 15px 0px 15px 10px;
 }
 
-div.action:hover
+div.notification:hover
 {
-  padding: 15px 0px 15px 10px;
   background-color: $light-gray;
 }
 
-td.action-thumbnail
+td.notification-thumbnail
 {
   padding-right: 10px;
   width: 25px;
@@ -20,8 +19,8 @@ td.action-thumbnail
   vertical-align: middle;
 }
 
-td.action-text
+td.notification-text
 {
-  width: 350px;
+  width: 250px;
   vertical-align: middle;
 }

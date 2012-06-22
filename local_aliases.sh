@@ -21,6 +21,7 @@ alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migra
 alias lgresetdb='$LG/local_reset.sh'
 alias lgserver="$LG/local_server.sh"
 alias jserver="jpermission && lgserver"
+alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/frontend/static/css/compiled"
 
 # permission
 alias projectpermission="sudo chmod -R 770 $LG"

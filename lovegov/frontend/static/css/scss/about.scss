@@ -2,6 +2,19 @@
 @import 'master-variables';
 @import 'master';
 
+@mixin circleDiv($side)
+{
+  width:$side;
+  height:$side;
+  position:absolute;
+  border-radius:$side/2;
+
+  img
+  {
+    border-radius:$side/2;
+  }
+}
+
 div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited
 {
   @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
@@ -100,5 +113,50 @@ div#about-content
   h3
   {
     font-size:21px;
+  }
+
+  div.about-content-block
+  {
+    display:inline-block
+  }
+
+  div.about-content-left
+  {
+    @extend .about-content-block;
+    width:475px;
+    margin-right:25px;
+  }
+
+  div.who-are-we-circle
+  {
+    position:relative;
+  }
+
+  div.who-are-we-circle-div
+  {
+    @include circleDiv(200px)
+  }
+
+  @each $color-name in $color-name-list
+  {
+    div.who-are-we-circle-div-#{$color-name}
+    {
+      @include getBorderColor($color-name,2px);
+    }
+  }
+
+  div.who-are-we-circle-div-center
+  {
+    @include circleDiv(250px);
+    background-color:$red;
+  }
+
+  div.about-content-right
+  {
+    @extend .about-content-block;
+    width:475px;
+    margin-left:25px;
+
+
   }
 }

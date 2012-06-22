@@ -336,6 +336,9 @@ class Content(Privacy, LocationLevel):
         else:
             return self.getMainTopic().getUserImage()
 
+    def getImage(self):
+        return self.getMainImage().image
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -692,6 +695,16 @@ class Content(Privacy, LocationLevel):
         for c in comments:
             num += c.getNumComments()
         return num
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the top comment.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getTopComment(self):
+        comments = Comment.objects.filter(on_content=self).order_by('-status')
+        if comments:
+            return comments[0]
+        else:
+            return None
 
 #=======================================================================================================================
 # UserImage
@@ -1348,6 +1361,17 @@ class UserProfile(FacebookProfileModel, LGModel):
         return Notification.objects.filter(notify_user=self).order_by('when').reverse()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Returns a users recent activity.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getActivity(self, start=0, num=-1):
+        actions = Action.objects.filter(relationship__user=self).order_by('when').reverse()
+        print len( actions )
+        if num != 1:
+            actions = actions[start:start+num]
+        print len( actions )
+        return actions
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
@@ -1446,15 +1470,6 @@ class UserProfile(FacebookProfileModel, LGModel):
         questions_ids = random.sample(unanswered_ids, sample_size)
         questions = unanswered.filter(id__in=questions_ids)
         return questions
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns a users recent activity.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getActivity(self, num=-1):
-        if num == -1:
-            return Action.objects.filter(relationship__user=self).order_by('when').reverse()
-        else:
-            return Action.objects.filter(relationship__user=self).order_by('when').reverse()[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Checks if this is the first time the user has logged in.
@@ -1895,6 +1910,9 @@ class News(Content):
     def getAbsoluteLink(self):
         link = str.replace(str(self.link), 'http://', '')
         return "http://" + link
+
+    def getImage(self):
+        return self.link_screenshot
 
     # takes in a lovegov.com url and saves image file from that location
     def saveScreenShot(self, ref):

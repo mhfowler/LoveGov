@@ -11,7 +11,6 @@
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -23,6 +22,53 @@ def framedResponse(request, html, url, vals):
         vals['center'] = html
         frame(request, vals)
         return renderToResponseCSRF(template='deployment/templates/frame.html', vals=vals, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Wrapper for all alpha views which require login.
+#-----------------------------------------------------------------------------------------------------------------------
+def viewWrapper(view):
+    """Outer wrapper for all views"""
+    def new_view(request,vals=None,*args,**kwargs):
+        if vals is None: return view(request,vals={},*args,**kwargs)
+        else:return view(request,vals,*args,**kwargs)
+    return new_view
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Wrapper for all alpha views which require login.
+#-----------------------------------------------------------------------------------------------------------------------
+def requiresLogin(view):
+    """Wrapper for all views which require login."""
+    def new_view(request, *args, **kwargs):
+        try:
+            user = getUserProfile(request)
+            # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
+            if UPDATE and not user.developer and not LOCAL:
+                return shortcuts.redirect("/underconstruction/")
+            # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
+            elif not request.user.is_authenticated():
+                print request.path
+                return HttpResponseRedirect('/login' + request.path)
+            # ELSE AUTHENTICATED
+            else:
+                vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
+                rightSideBar(None, vals)
+                vals['new_notification_count'] = user.getNumNewNotifications()
+                # SAVE PAGE ACCESS
+            if request.method == 'GET':
+                ignore = request.GET.get('log-ignore')
+            else:
+                ignore = request.POST.get('log-ignore')
+            if not ignore:
+                page = PageAccess()
+                page.autoSave(request)
+        # exception if user has old cookie
+        except ImproperlyConfigured:
+            response = shortcuts.redirect('/login' + request.path)
+            response.delete_cookie('sessionid')
+            logger.debug('deleted cookie')
+            return response
+        return view(request, vals=vals, *args, **kwargs)
+    return new_view
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
@@ -68,54 +114,9 @@ def postEmail(request):
     else:
         return shortcuts.redirect('/comingsoon/')
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Privacy policy page.
-#-----------------------------------------------------------------------------------------------------------------------
-def privacyPolicy(request,vals={}):
-    if request.method == 'POST' and 'button' in request.POST:
-        return loginPOST(request,vals={})
-    else:
-        return renderToResponseCSRF(template='deployment/pages/login-privacy-policy.html', vals=vals, request=request)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Wrapper for all alpha views which require login.
-#-----------------------------------------------------------------------------------------------------------------------
-def requiresLogin(view):
-    """Wrapper for all views which require login."""
-    def new_view(request, *args, **kwargs):
-        try:
-            user = getUserProfile(request)
-            # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-            if UPDATE and not user.developer and not LOCAL:
-                return shortcuts.redirect("/underconstruction/")
-            # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
-            elif not request.user.is_authenticated():
-                print request.path
-                return HttpResponseRedirect('/login' + request.path)
-            # ELSE AUTHENTICATED
-            else:
-                vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
-                rightSideBar(None, vals)
-                vals['new_notification_count'] = user.getNumNewNotifications()
-            # SAVE PAGE ACCESS
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
-            if not ignore:
-                page = PageAccess()
-                page.autoSave(request)
-        # exception if user has old cookie
-        except ImproperlyConfigured:
-            response = shortcuts.redirect('/login' + request.path)
-            response.delete_cookie('sessionid')
-            logger.debug('deleted cookie')
-            return response
-        return view(request, vals=vals, *args, **kwargs)
-    return new_view
-
-def blog(request,category=None,number=None,vals={}):
+def blog(request,category=None,number=None,vals=None):
     if request.method == 'GET':
+
         user = getUserProfile(request)
         if user: vals['viewer'] = user
         else: vals['viewer'] = None
@@ -143,8 +144,6 @@ def blog(request,category=None,number=None,vals={}):
                 vals['blogPosts'] = blogPosts.filter(creator=creator)
         else:
             vals['blogPosts'] = blogPosts
-
-        vals['blogPost'] = None
 
         return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
 
@@ -486,13 +485,13 @@ def profile(request, alias=None, vals={}):
             vals['prof_follow_me'] = prof_follow_me[0:5]
 
             # Get user's top 5 similar follows
-            prof_i_follow = list(user_prof.getIFollow())
-            for i_follow in prof_i_follow:
-                comparison = getUserUserComparison(user_prof, i_follow)
-                i_follow.compare = comparison.toJSON()
-                i_follow.result = comparison.result
-            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_i_follow'] = prof_i_follow[0:5]
+#            prof_i_follow = list(user_prof.getIFollow())
+#            for i_follow in prof_i_follow:
+#                comparison = getUserUserComparison(user_prof, i_follow)
+#                i_follow.compare = comparison.toJSON()
+#                i_follow.result = comparison.result
+#            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
+#            vals['prof_i_follow'] = prof_i_follow[0:5]
 
             # Get user's random 5 followers
             #vals['prof_follow_me'] = user_prof.getFollowMe(5)
@@ -507,7 +506,7 @@ def profile(request, alias=None, vals={}):
                 group.compare = comparison.toJSON()
                 group.result = comparison.result
             prof_groups.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_groups'] = prof_groups[0:5]
+            vals['prof_groups'] = prof_groups[0:4]
 
             # Get user's random 5 groups
             #vals['prof_groups'] = user_prof.getGroups(5)
@@ -515,6 +514,12 @@ def profile(request, alias=None, vals={}):
             # Get Follow Requests
             vals['prof_requests'] = list(user_prof.getFollowRequests())
             vals['group_invities'] = list(user_prof.getGroupInvites())
+
+            vals['is_following_you'] = False
+            if viewer.id != user_prof.id:
+                following_you = UserFollow.lg.get_or_none( user=user_prof, to_user=viewer )
+                if following_you and following_you.confirmed:
+                    vals['is_following_you'] = True
 
             # Is the current user already (requesting to) following this profile?
             vals['is_user_requested'] = False
@@ -530,14 +535,13 @@ def profile(request, alias=None, vals={}):
                     vals['is_user_rejected'] = True
 
             # Get Activity
-            actions = user_prof.getActivity(5)
+            num_actions = NOTIFICATION_INCREMENT
+            actions = user_prof.getActivity(num=num_actions)
             actions_text = []
             for action in actions:
-                try:
-                    actions_text.append( action.getVerbose(view_user=viewer) )
-                except:
-                    actions_text.append( "This action no longer exists" )
+                actions_text.append( action.getVerbose(view_user=viewer) )
             vals['actions_text'] = actions_text
+            vals['num_actions'] = num_actions
 
             # Get Notifications
             if viewer.id == user_prof.id:
@@ -623,12 +627,34 @@ def group(request, g_id=None, vals={}):
     return framedResponse(request, html, url, vals)
 
 
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
 #-----------------------------------------------------------------------------------------------------------------------
 def about(request, vals={}):
     if request.method == 'GET':
+
+        developers = UserProfile.objects.filter(developer=True)
+        skew = 375
+        side = 225
+        main_side = 300
+        angle_offset = math.pi/3
+        for num in range(0,len(developers)):
+            cosine = math.cos(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
+            sine = math.sin(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
+            developers[num].x = int(cosine*skew)+500-(side/2)
+            developers[num].y = int(sine*skew)+skew
+        vals['developers'] = developers
+        vals['side'] = side
+        vals['side_half'] = side/2
+        vals['main_side'] = main_side
+        vals['main_side_half'] = main_side/2
+        vals['x'] = (1000-main_side)/2
+        vals['y'] = skew - ((main_side-side)/2)
+        vals['colors_cycle'] = ["who-are-we-circle-div-blue", "who-are-we-circle-div-teal", "who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-orange", "who-are-we-circle-div-green", "who-are-we-circle-div-pink"]
         setPageTitle("lovegov: about",vals)
+
         html = ajaxRender('deployment/center/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)

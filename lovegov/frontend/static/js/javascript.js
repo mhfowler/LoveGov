@@ -48,8 +48,11 @@ function rebindFunction()
             loadQAWeb();
             break;
         case 'profile':                                         // /profile/<alias>
-            loadProfileComparison();
             loadProfile();
+            if( p_id != view_id )
+            {
+                loadProfileComparison();
+            }
             break;
         case 'group':
             loadProfileComparison();
@@ -71,6 +74,65 @@ function rebindFunction()
  *      ~Auxiliary
  *
  ***********************************************************************************************************************/
+function userFollow(event,div,follow)
+{
+    event.preventDefault();
+    div.unbind();
+    var action = 'userfollow';
+    if( !follow )
+    {
+        action = 'stopfollow';
+    }
+    ajaxPost({
+            data: {
+                'action': action,
+                'p_id': p_id
+            },
+            success: function(data)
+            {
+                if( data == "now following this person")
+                {
+                    div.html("unfollow");
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),false);
+                        }
+                    );
+                }
+                else if( data == "requested to follow this person")
+                {
+                    div.html("un-request");
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),false);
+                        }
+                    );
+                }
+                else if( data == "removed")
+                {
+                    div.html("follow");
+                    div.click(
+                        function(event)
+                        {
+                            userFollow(event,$(this),true);
+                        }
+                    );
+                }
+                else
+                {
+                    alert(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        }
+    );
+}
+
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
@@ -115,9 +177,10 @@ function groupInviteResponse(event,response,div)
     );
 }
 
-function setFollowPrivacy(event,private_follow)
+function setFollowPrivacy(event,private_follow,div)
 {
     event.preventDefault();
+    div.unbind();
     ajaxPost({
         data: {
             'action':'followprivacy',
@@ -126,7 +189,34 @@ function setFollowPrivacy(event,private_follow)
         },
         success: function(data)
         {
-            alert(data);
+            if( data == "follow privacy set")
+            {
+                if( private_follow )
+                {
+                    div.html("private");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,0,$(this));
+                        }
+                    );
+                }
+                else
+                {
+                    div.html("public");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,1,$(this));
+                        }
+                    );
+                }
+            }
+            else
+            {
+                alert(data);
+            }
+
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -500,22 +590,29 @@ function loadHeader()
         {
             event.preventDefault();
             $('#notifications-dropdown').toggle('fast');
-            ajaxPost({
-                'data': {'action':'getnotifications',
-                        'dropdown':'true'},
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#notifications-dropdown').empty();
-                    $('#notifications-dropdown').html(obj.html);
-                    unbindNotification();
-                    loadNotification();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            if( $('#notifications-dropdown').is(':visible') )
+            {
+                ajaxPost({
+                    'data': {'action':'getnotifications',
+                            'dropdown':'true'},
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $('#notifications-dropdown').empty();
+                        $('#notifications-dropdown').html(obj.html);
+                        unbindNotification();
+                        loadNotification();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('body').html(jqXHR.responseText);
+                    }
+                });
+            }
+            else
+            {
+                $('#notifications-dropdown').empty();
+            }
             return false;
         }
     );
@@ -1254,120 +1351,6 @@ function bindFeedItems()
     loadAjaxifyAnchors();
 }
 
-
-/* heart stuff */
-function heartButtons()
-{
-    var container = $(".not-processed");
-    container.hide();
-
-    container.find(".heart").hover
-        (
-            function()
-            {
-                $(this).parent().children(".grey").hide();
-                $(this).parent().children(".blue").show();
-
-            },
-            function()
-            {
-                var blue = $(this).parent().children(".blue");
-                if (blue.hasClass("hide"))
-                {
-                    blue.hide();
-                    $(this).parent().children(".grey").show();
-                }
-            }
-        );
-
-    container.find(".plus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='L';
-        vote($(this),content_id, v);
-    });
-
-    container.find(".minus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='D';
-        vote($(this),content_id, v);
-    });
-
-    container.removeClass("not-processed");
-    container.show();
-}
-
-function heartDisplay()
-{
-    $(".hide").hide();
-    $(".show").show();
-}
-
-function vote(div, content_id, v)
-{
-    ajaxPost({
-        data: {'action':'vote','c_id':content_id, 'vote':v},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            var my_vote = parseInt(returned.my_vote);
-            var status = returned.status;
-            if (my_vote==1) { like(div); }
-            if (my_vote==0) { neutral(div); }
-            if (my_vote==-1) { dislike(div); }
-            heartDisplay();
-            // change status
-            div.parent().parent().find(".post-score").text(status);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $("body").html(jqXHR.responseText);
-        }
-    });
-}
-
-function like(div)
-{
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    show(plus_blue);
-    hide(plus_grey);
-    hide(minus_blue);
-    show(minus_grey);
-}
-function dislike(div)
-{
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    hide(plus_blue);
-    show(plus_grey);
-    show(minus_blue);
-    hide(minus_grey);
-}
-function neutral(div)
-{
-    var blue = div.parent().parent().find(".blue");
-    var grey = div.parent().parent().find(".grey");
-    hide(blue);
-    show(grey);
-}
-
-function show(div)
-{
-    div.addClass("show");
-    div.removeClass("hide");
-}
-function hide(div)
-{
-    div.addClass("hide");
-    div.removeClass("show");
-}
-
 /* feed stuff */
 function clearButtons()
 {
@@ -1849,44 +1832,14 @@ function loadProfile()
     unbindNotification();
     loadNotification();
 
-    $(".user-follow-button").click( function(event)
+    $("#user_follow_button").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'userfollow',
-                    'p_id': p_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+        userFollow(event,$(this),true);
     });
 
     $(".user-unfollow-button").click( function(event)
     {
-        event.preventDefault();
-        ajaxPost({
-                data: {
-                    'action':'stopfollow',
-                    'p_id': p_id
-                },
-                success: function(data)
-                {
-                    alert(data);
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        );
+        userFollow(event,$(this),false);
     });
 
     $(".user-follow-response-y").click( function(event) {
@@ -1905,22 +1858,27 @@ function loadProfile()
         groupInviteResponse(event,"N",$(this));
     });
 
-    $('#see-more-notifications').click(
+    $('#see_more_notifications').click(
         function(event)
         {
             event.preventDefault();
-            var num_notifications = $("#num-notifications").val();
+            var num_notifications = $("#num_notifications").val();
             ajaxPost({
                 'data': {'action':'getnotifications',
                         'num_notifications':num_notifications },
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
-                    $('#profile-notifications').append(obj.html);
-                    $('#num-notifications').val(obj.num_notifications);
+                    $('#profile_notifications').append(obj.html);
+                    $('#num_notifications').val(obj.num_notifications);
                     if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
                     {
-                        $('#see-more-notifications-button').html('No more notifications');
+                        $('#see_more_notifications').html('No more notifications');
+                        $('#see_more_notifications').unbind();
+                        $('#see_more_notifications').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
                     }
                     else if( obj.hasOwnPropery('error') )
                     {
@@ -1937,14 +1895,50 @@ function loadProfile()
         }
     );
 
-    $("#public-follow").click( function(event)
+    $('#see_more_actions').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_actions = $("#num_actions").val();
+            ajaxPost({
+                'data': {'action':'getactions',
+                    'num_actions':num_actions,
+                    'p_id':p_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#profile_activity_feed').append(obj.html);
+                    $('#num_actions').val(obj.num_actions);
+                    if( 'error' in obj && obj.error == 'No more actions' )
+                    {
+                        $('#see_more_actions').html('No more actions')
+                        $('#see_more_actions').unbind();
+                        $('#see_more_actions').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
+                    }
+                    else if( 'error' in obj )
+                    {
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
+    $(".public-follow").click( function(event)
     {
-        setFollowPrivacy(event,0);
+        setFollowPrivacy(event,0,$(this));
     });
 
-    $("#private-follow").click( function(event)
+    $(".private-follow").click( function(event)
     {
-        setFollowPrivacy(event,1);
+        setFollowPrivacy(event,1,$(this));
     });
 }
 
@@ -2302,6 +2296,12 @@ function listSelectHelper(value, list_input_name) {
  */
 function refreshFeed(num) {
     $(".feed_start").val(0);
+    // pinterest reset positioning
+    var i =0;
+    while (i < pinterest.length) {
+        pinterest[i] = 0;
+        i += 1;
+    }
     getFeed(num);
 }
 
@@ -2360,6 +2360,10 @@ function getFeed(num)
             if (feed_display == "P") {
                 pinterestRender($(".pinterest_unrendered"));
             }
+
+            heartButtons();
+            heartDisplay();
+
         },
         error: null
     });
@@ -2444,6 +2448,119 @@ function getFilter(f_id) {
     })
 }
 
+/* heart stuff */
+function heartButtons()
+{
+    var container = $(".not-processed");
+    container.hide();
+
+    container.find(".heart").hover
+        (
+            function()
+            {
+                $(this).parent().children(".grey").hide();
+                $(this).parent().children(".blue").show();
+
+            },
+            function()
+            {
+                var blue = $(this).parent().children(".blue");
+                if (blue.hasClass("hide"))
+                {
+                    blue.hide();
+                    $(this).parent().children(".grey").show();
+                }
+            }
+        );
+
+    container.find(".plus").click(function()
+    {
+        var content_id = $(this).parent().siblings(".c_id").val();
+        var v='L';
+        vote($(this),content_id, v);
+    });
+
+    container.find(".minus").click(function()
+    {
+        var content_id = $(this).parent().siblings(".c_id").val();
+        var v='D';
+        vote($(this),content_id, v);
+    });
+
+    container.removeClass("not-processed");
+    container.show();
+}
+
+function heartDisplay()
+{
+    $(".hide").hide();
+    $(".show").show();
+}
+
+function vote(div, content_id, v)
+{
+    ajaxPost({
+        data: {'action':'vote','c_id':content_id, 'vote':v},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            var my_vote = parseInt(returned.my_vote);
+            var status = returned.status;
+            if (my_vote==1) { like(div); }
+            if (my_vote==0) { neutral(div); }
+            if (my_vote==-1) { dislike(div); }
+            heartDisplay();
+            // change status
+            div.parent().parent().find(".post-score").text(status);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
+    });
+}
+
+function like(div)
+{
+    var plus_blue = div.parent().parent().find(".plus.blue");
+    var plus_grey = div.parent().parent().find(".plus.grey");
+    var minus_blue = div.parent().parent().find(".minus.blue");
+    var minus_grey = div.parent().parent().find(".minus.grey");
+    show(plus_blue);
+    hide(plus_grey);
+    hide(minus_blue);
+    show(minus_grey);
+}
+function dislike(div)
+{
+    var plus_blue = div.parent().parent().find(".plus.blue");
+    var plus_grey = div.parent().parent().find(".plus.grey");
+    var minus_blue = div.parent().parent().find(".minus.blue");
+    var minus_grey = div.parent().parent().find(".minus.grey");
+    hide(plus_blue);
+    show(plus_grey);
+    show(minus_blue);
+    hide(minus_grey);
+}
+function neutral(div)
+{
+    var blue = div.parent().parent().find(".blue");
+    var grey = div.parent().parent().find(".grey");
+    hide(blue);
+    show(grey);
+}
+
+function show(div)
+{
+    div.addClass("show");
+    div.removeClass("hide");
+}
+function hide(div)
+{
+    div.addClass("hide");
+    div.removeClass("show");
+}
+
 /*
  visually and in data representation sets all feed parameters to defaults
  */
@@ -2499,6 +2616,8 @@ function setRanking(value) {
 
 function setDisplay(value) {
     $(".feed_display").val(value);
+    var visual_wrapper = $("div[data-display=" + value + "]");
+    visualSelectDisplayWrapper(visual_wrapper);
 }
 
 
@@ -2525,7 +2644,7 @@ function pinterestRender(cards) {
         }
         var top = pinterest[current_col];
         var left = pinterest_width*current_col;
-        var height = $(this).find(".pinterest").height() + 20;
+        var height = $(this).height() + 20;
         $(this).css("position", 'absolute');
         $(this).css("left", left);
         $(this).animate({"top": top}, 1400);
@@ -2547,9 +2666,49 @@ function scrollFeed() {
     }
 }
 
+/* shows display select appropriately */
+function visualSelectDisplayWrapper(wrapper) {
+    $(".display-red").hide();
+    $(".display-gray").show();
+    visualDisplayWrapperShow(wrapper);
+}
+function visualDisplayWrapperShow(wrapper) {
+    wrapper.find(".display-gray").hide();
+    wrapper.find(".display-red").show();
+}
+function visualDisplayWrapperHide(wrapper) {
+    wrapper.find(".display-gray").show();
+    wrapper.find(".display-red").hide();
+}
 
 /* binds everyting */
 function loadNewFeed() {
+
+    //$(".more-options-wrapper").hide();
+    $(".more_options").click(function(event) {
+        event.preventDefault();
+        $(".more-options-wrapper").toggle();
+    });
+
+    /* set initial display value */
+    $(".display-red").hide();
+    setDisplay($(".feed_display").val());
+
+    $(".display-choice").click(function(event) {
+        setDisplay($(this).attr("data-display"));
+        var num = 6;
+        var already = $(".feed_start").val();
+        if (already > num) {
+            num = already;
+        }
+        refreshFeed(num);
+    });
+
+    $(".menu").hide();
+    $(".menu-toggle").click(function(event) {
+        $(this).find(".menu").toggle();
+    });
+
 
     $(".get_feed").click(function(event) {
         event.preventDefault();
@@ -2616,9 +2775,9 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
-    refreshFeed(6);
+    getFeed(6);
 
-    $(window).scroll(scrollFeed);
+    //$(window).scroll(scrollFeed);
 
 
 }

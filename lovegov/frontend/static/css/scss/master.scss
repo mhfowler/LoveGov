@@ -84,6 +84,14 @@
   margin-top:$margin-top;
 }
 
+@mixin triangle-down($size: 5px, $color: $red) {
+  width: 0;
+  height: 0;
+  border-left: $size solid transparent;
+  border-right: $size solid transparent;
+  border-top: $size*2 solid $color;
+}
+
 
 @mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
 {
@@ -109,6 +117,38 @@
   width:$width;
   margin-left:$margin-left;
   margin-top:$margin-top;
+}
+
+@mixin getBorderColor($color-name, $border-width:1px)
+{
+  @if $color-name == 'blue'
+  {
+    border:$border-width $blue solid;
+  }
+  @else if $color-name == 'teal'
+  {
+    border:$border-width $teal solid;
+  }
+  @else if $color-name == 'green'
+  {
+    border:$border-width $green solid;
+  }
+  @else if $color-name == 'purple'
+  {
+    border:$border-width $purple solid;
+  }
+  @else if $color-name == 'orange'
+  {
+    border:$border-width $orange solid;
+  }
+  @else if $color-name == 'pink'
+  {
+    border:$border-width $pink solid;
+  }
+  @else if $color-name == 'yellow'
+  {
+    border:$border-width $yellow solid;
+  }
 }
 
 .main-div
@@ -362,6 +402,26 @@ textarea:focus
     border: 0;
 }
 
+.button-small
+{
+  @include rounded(5px);
+  text-align: center;
+  padding: 3px;
+}
+
+.button-small-red, .button-small-red:link, .button-small-red:active, .button-small-red:visited
+{
+  @extend .button-small;
+  font-weight: bold;
+  color: white;
+  background-color:$red;
+}
+
+.button-small-red:hover
+{
+  background-color:$red-light
+}
+
 .button-red, .button-red:link, .button-red:active, .button-red:visited
 {
   @extend .button;
@@ -404,8 +464,8 @@ img.icon-med
 
 img.icon-small
 {
-  width: 10px;
-  height: 10px;
+  width: 25px;
+  height: 25px;
 }
 
 .no-margin
@@ -481,4 +541,17 @@ span.big
 {
   font-size: 18px;
 }
+
+
+div.red-hover:hover
+{
+  background-color:#f0503b;
+  color:white;
+}
+
+div.triangle-selector {
+  &:hover { border-top-color: white}
+  @include triangle-down(6px);
+}
+
 

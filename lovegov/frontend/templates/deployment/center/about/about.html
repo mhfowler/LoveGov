@@ -5,7 +5,7 @@
     <div class="nav-top-div">
         <div class="top-nav-left">
             <div class="div-button"><span>How it works?</span></div>
-            <div class="div-button"><span>Who are we?</span></div>
+            <div id="who-are-we-button" class="div-button"><span>Who are we?</span></div>
             <div class="div-button"><span>Contact</span></div>
             <div id="privacy-button" class="div-button"><span>Privacy</span></div>
         </div>
@@ -25,6 +25,8 @@
     <div id="about-content">
 
         {% include 'deployment/pages/login/login-privacy.html' %}
+        {% include 'deployment/center/about/who-are-we.html' %}
+
 
     </div>
 
@@ -41,4 +43,11 @@
         var div = '#' + $(this).attr('id').replace('button','div');
         $(div).show();
     });
+
+
+
+
+
+
+
 </script>
