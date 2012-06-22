@@ -24,50 +24,43 @@ def framedResponse(request, html, url, vals):
         return renderToResponseCSRF(template='deployment/templates/frame.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Wrapper for all alpha views which require login.
+# Wrapper for all views. Requires_login=True if requires login.
 #-----------------------------------------------------------------------------------------------------------------------
-def viewWrapper(view):
+def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
-    def new_view(request,vals=None,*args,**kwargs):
-        if vals is None: return view(request,vals={},*args,**kwargs)
-        else:return view(request,vals,*args,**kwargs)
-    return new_view
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Wrapper for all alpha views which require login.
-#-----------------------------------------------------------------------------------------------------------------------
-def requiresLogin(view):
-    """Wrapper for all views which require login."""
     def new_view(request, *args, **kwargs):
-        try:
-            user = getUserProfile(request)
-            # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-            if UPDATE and not user.developer and not LOCAL:
-                return shortcuts.redirect("/underconstruction/")
-            # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
-            elif not request.user.is_authenticated():
-                print request.path
-                return HttpResponseRedirect('/login' + request.path)
-            # ELSE AUTHENTICATED
-            else:
-                vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
-                rightSideBar(None, vals)
-                vals['new_notification_count'] = user.getNumNewNotifications()
-                # SAVE PAGE ACCESS
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
-            if not ignore:
-                page = PageAccess()
-                page.autoSave(request)
-        # exception if user has old cookie
-        except ImproperlyConfigured:
-            response = shortcuts.redirect('/login' + request.path)
-            response.delete_cookie('sessionid')
-            logger.debug('deleted cookie')
-            return response
-        return view(request, vals=vals, *args, **kwargs)
+        vals = {}
+        if requires_login:
+            try:
+                user = getUserProfile(request)
+                # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
+                if UPDATE and not user.developer and not LOCAL:
+                    return shortcuts.redirect("/underconstruction/")
+                # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
+                elif not request.user.is_authenticated():
+                    print request.path
+                    return HttpResponseRedirect('/login' + request.path)
+                # ELSE AUTHENTICATED
+                else:
+                    vals['user'] = user
+                    vals['viewer'] = user
+                    rightSideBar(None, vals)
+                    vals['new_notification_count'] = user.getNumNewNotifications()
+            except ImproperlyConfigured:
+                response = shortcuts.redirect('/login' + request.path)
+                response.delete_cookie('sessionid')
+                logger.debug('deleted cookie')
+                return response
+        vals['google'] = GOOGLE_LOVEGOV
+        # SAVE PAGE ACCESS
+        if request.method == 'GET':
+            ignore = request.GET.get('log-ignore')
+        else:
+            ignore = request.POST.get('log-ignore')
+        if not ignore:
+            page = PageAccess()
+            page.autoSave(request)
+        return view(request,vals=vals,*args,**kwargs)
     return new_view
 
 #-----------------------------------------------------------------------------------------------------------------------
