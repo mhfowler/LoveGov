@@ -203,7 +203,7 @@ class Topic(LGModel):
 #=======================================================================================================================
 class Content(Privacy, LocationLevel):
     # unique identifier
-    alias = models.CharField(max_length=30, default="default")
+    alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
     in_feed = models.BooleanField(default=True)
     in_search = models.BooleanField(default=True)
