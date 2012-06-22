@@ -623,12 +623,34 @@ def group(request, g_id=None, vals={}):
     return framedResponse(request, html, url, vals)
 
 
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
 #-----------------------------------------------------------------------------------------------------------------------
 def about(request, vals={}):
     if request.method == 'GET':
+
+        developers = UserProfile.objects.filter(developer=True)
+        skew = 375
+        side = 225
+        main_side = 300
+        angle_offset = math.pi/3
+        for num in range(0,len(developers)):
+            cosine = math.cos(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
+            sine = math.sin(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
+            developers[num].x = int(cosine*skew)+500-(side/2)
+            developers[num].y = int(sine*skew)+skew
+        vals['developers'] = developers
+        vals['side'] = side
+        vals['side_half'] = side/2
+        vals['main_side'] = main_side
+        vals['main_side_half'] = main_side/2
+        vals['x'] = (1000-main_side)/2
+        vals['y'] = skew - ((main_side-side)/2)
+        vals['colors_cycle'] = ["who-are-we-circle-div-blue", "who-are-we-circle-div-teal", "who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-orange", "who-are-we-circle-div-green", "who-are-we-circle-div-pink"]
         setPageTitle("lovegov: about",vals)
+
         html = ajaxRender('deployment/center/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)

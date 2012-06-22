@@ -30,8 +30,8 @@ $green: #92B76C;
 $green-light: #BED4A7;
 $purple: #9797C6;
 $purple-light: #C0C0C0;
-$orange: #F9D180;
-$orange-light: #FBE3B3;
+$yellow: #F9D180;
+$yellow-light: #FBE3B3;
 $blue: #93CAD8;
 $blue-light: #C4DCDE;
 $teal: #639E9B;
@@ -40,6 +40,8 @@ $pink: #EA7D95;
 $pink-light: #FBCCD6;
 $orange: #EA947D;
 $orange-light: #F2BEB0;
+$color-name-list:'green','purple','orange','blue','teal','pink','yellow';
+$color-list:$green,$purple,$orange,$blue,$teal,$pink,$yellow;
 
 /* Fonts */
 $body-fonts: Helvetica, Arial, Verdana, sans-serif;
