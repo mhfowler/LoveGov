@@ -30,13 +30,21 @@
                 </div>
 
                 <div class="profile-location">
-                    Providence, RI
+                    {% for location in prof_locations %}
+                        {% if not forloop.first %}
+                            <span class="plus-color">+</span>
+                        {% endif %}
+                        <a class="do-ajax-link invert_link" href="{{ location.get_url }}">{{ location.get_name }}</a>
+                    {% endfor %}
                 </div>
 
-                <div class="profile-network">
-                    {% with network=user_prof.getNetwork %}
-                        <a class="do-ajax-link red-link" href="{{ network.get_url }}">{{ network.name }}</a>
-                    {% endwith %}
+                <div class="profile-school">
+                    {% for school in prof_schools %}
+                        {% if not forloop.first %}
+                            <span class="plus-color">+</span>
+                        {% endif %}
+                        <a class="do-ajax-link red-link" href="{{ school.get_url }}">{{ school.get_name }}</a>
+                    {% endfor %}
                 </div>
 
                 <div class="profile-summary">

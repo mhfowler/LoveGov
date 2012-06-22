@@ -278,6 +278,11 @@ GROUP_TYPE_CHOICES = (
     ('U','user'),
 )
 
+NETWORK_TYPE = (
+    ('D','default'),
+    ('S','school'),
+    ('L','location')
+)
 
 # types of users
 USER_CHOICES =  (

@@ -509,6 +509,11 @@ def profile(request, alias=None, vals={}):
             vals['prof_requests'] = list(user_prof.getFollowRequests())
             vals['group_invities'] = list(user_prof.getGroupInvites())
 
+            # Get Schools and Locations:
+            networks = user_prof.networks.all()
+            vals['prof_locations'] = networks.filter(network_type='L')
+            vals['prof_schools'] = networks.filter(network_type='S')
+
             vals['is_following_you'] = False
             if viewer.id != user_prof.id:
                 following_you = UserFollow.lg.get_or_none( user=user_prof, to_user=viewer )

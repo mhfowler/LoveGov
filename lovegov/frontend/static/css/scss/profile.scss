@@ -52,6 +52,12 @@ div.middle-left
     {
       @extend .float-left;
 
+      span.plus-color
+      {
+        color: $deep-gray;
+        font-weight: bold;
+      }
+
       div.profile-username
       {
         @extend h2;
@@ -65,7 +71,7 @@ div.middle-left
         margin-left: 2px;
       }
 
-      div.profile-network
+      div.profile-school
       {
         @extend h5;
         margin-left: 2px;
