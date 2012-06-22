@@ -563,15 +563,29 @@ span.big
 }
 
 
-div.red-hover:hover
-{
-  background-color:#f0503b;
-  color:white;
+div.triangle-selector {
+  @include triangle-down(6px);
 }
 
-div.triangle-selector {
-  &:hover { border-top-color: white}
-  @include triangle-down(6px);
+div.triangle-selector.highlighted {
+  border-top-color: white;
+}
+
+div.menu_toggle:hover {
+  background-color:$red;
+}
+
+div.menu_toggle.clicked {
+  background-color:$red;
+}
+
+@mixin rounded-box
+{
+  @include rounded();
+  height: 70px;
+  width: 70px;
+  display: block;
+  text-align: center;
 }
 
 

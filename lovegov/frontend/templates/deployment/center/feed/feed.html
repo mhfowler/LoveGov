@@ -3,19 +3,7 @@
 {% load thumbnail %}
 
 <!-- feed metadata -->
-<div class="feed-metadata" data-columns="3">
-
-    <input type="hidden" class="feed_ranking" value="{{ feed_ranking }}"/>
-    <input type="hidden" class="feed_topics" value="{{feed_topics}}"/>
-    <input type="hidden" class="feed_types" value="{{feed_types}}"/>
-    <input type="hidden" class="feed_levels" value="{{feed_levels}}"/>
-    <input type="hidden" class="feed_groups" value="{{feed_groups}}"/>
-    <input type="hidden" class="feed_display" value="{{ feed_display }}"/>
-    <input type="hidden" class="feed_submissions_only" value="{{feed_submissions_only}}"/>
-    <input type="hidden" class="feed_start" value="0"/>
-
-</div>
-
+<div id="feed_metadata" data-json="{{ feed_json }}"></div>
 
 <!-- center wrapper -->
 <div class="feed-main-div">
@@ -25,17 +13,18 @@
 
         <p class="your-feed"> Your Feed </p>
 
-        <div class="options-box more-options more_options red-hover">
+        <div class="options-box more-options more_options menu_toggle">
             <p class="options-title">
                 More Options
             </p>
             <div class="triangle-selector"></div>
         </div>
 
-        <div class="options-box saved-filters-box red-hover menu-toggle">
+        <div class="options-box saved-filters-box  menu_toggle">
             <p class="options-title">
                 Saved Filters
             </p>
+            <div class="triangle-selector"></div>
             <div class="saved-menu menu">
                 <div class="group-box"> </div>
             </div>
@@ -58,9 +47,11 @@
             </div>
         </div>
 
-        <div class="create-box red-hover">
+        <!--
+        <div class="create-box ">
             <p class="options-title"> create </p>
         </div>
+        -->
 
         <a href="" class="how-does"> how does this work? </a>
 
@@ -76,10 +67,27 @@
             <div class="sort-by">
                 <h2 class="mini"> Sort by: </h2>
             </div>
-            <div class="sort-by-choice red-hover menu-toggle">
-                Hot
+            <div class="sort-by-choice  menu_toggle">
+                <p class="feed-menu-title ranking_menu_title">
+                    Hot
+                </p>
+                <div class="triangle-selector"></div>
                 <div class="sort-menu menu">
-                    <div class="group-box"> </div>
+                    <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
+                        <p class="ranking-choice-title">
+                            New
+                        </p>
+                    </div>
+                    <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
+                        <p class="ranking-choice-title">
+                            Hot
+                        </p>
+                    </div>
+                    <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
+                        <p class="ranking-choice-title">
+                            Best
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -87,32 +95,80 @@
                 <h2 class="mini"> Filter by: </h2>
             </div>
 
-            <div class="filter-by-group red-hover menu-toggle">
-                Groups
+            <div class="filter-by-group  menu_toggle">
+                <p class="feed-menu-title">
+                    Groups
+                </p>
+                <div class="triangle-selector"></div>
                 <div class="group-menu menu">
-                   <div class="group-box"> </div>
+                    {% for g in my_groups %}
+                        <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
+                            {% include 'deployment/snippets/group_box.html' with group=g %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
 
-            <div class="filter-by-network red-hover menu-toggle">
-                Networks
-                <div class="network-menu menu">
-                    <div class="group-box"> </div>
+            <div class="filter-by-network  menu_toggle">
+                <p class="feed-menu-title">
+                    Networks
+                </p>
+                <div class="triangle-selector"></div>
+                <div class="group-menu menu">
+                    {% for g in my_networks %}
+                        <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
+                            {% include 'deployment/snippets/group_box.html' with group=g %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
 
-            <div class="filter-by-political red-hover menu-toggle">
-                Local
+            <div class="filter-by-political  menu_toggle">
+                <p class="feed-menu-title political_menu_title">
+                    Scale
+                </p>
+                <div class="triangle-selector"></div>
                 <div class="political-menu menu">
-                    <div class="group-box"> </div>
+                    <div class="menu-option multi feed-level-selector" data-level="L">
+                        <p class="levels-choice-title">
+                            Local
+                        </p>
+                    </div>
+                    <div class="menu-option multi feed-level-selector" data-level="F">
+                        <p class="levels-choice-title">
+                            Federal
+                        </p>
+                    </div>
+                    <div class="menu-option multi feed-level-selector" data-level="W">
+                        <p class="levels-choice-title">
+                            World
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="filter-by-content red-hover menu-toggle">
-                Type
+            <div class="filter-by-content  menu_toggle">
+                <p class="feed-menu-title">
+                    Type
+                </p>
+                <div class="triangle-selector"></div>
                 <div class="type-menu menu">
-                    <div class="group-box"> </div>
-                </div>
+                    <div class="menu-option multi feed-type-selector" data-type="N">
+                        <p class="type-choice-title">
+                            News
+                        </p>
+                    </div>
+                    <div class="menu-option multi feed-type-selector" data-type="P">
+                        <p class="type-choice-title">
+                            Petitions
+                        </p>
+                    </div>
+                    <div class="menu-option multi feed-type-selector" data-type="G">
+                        <p class="type-choice-title">
+                            Groups
+                        </p>
+                    </div>
+                 </div>
             </div>
 
             <div class="feed-topic-selector-wrapper topic-icons-wrapper">
@@ -135,15 +191,15 @@
         </div>
 
         <div class="current-selection">
-                <div class="current-filter"> Current Filters: </div>
-                <div class="current-options">
-                    <a href="" class="feed-clear">
-                        clear
-                    </a>
-                    <a href="" class="feed-save">
-                        save
-                    </a>
-                </div>
+            <div class="current-filter"> Current Filters: </div>
+            <div class="current-options">
+                <a href="" class="feed-clear">
+                    clear
+                </a>
+                <a href="" class="feed-save">
+                    save
+                </a>
+            </div>
         </div>
 
     </div>
