@@ -20,7 +20,7 @@ div.group-activity-container
 
     div.action-separator
     {
-      @include horitzontalSeparator(400px);
+      @include horizontalSeparator(400px);
     }
   }
 }
