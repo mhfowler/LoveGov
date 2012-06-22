@@ -37,7 +37,7 @@ def fbMakeFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.
 #-----------------------------------------------------------------------------------------------------------------------
-def fbGetRedirect(request, vals={}, redirect_uri=None, scope="email"):
+def fbGetRedirect(request, vals={}, redirect_uri=None, scope="email,user_education_history,user_location"):
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/fb/handle/")
     fb_state = random.randint(0, 1000)

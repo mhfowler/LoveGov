@@ -41,6 +41,12 @@ div.middle-left
     {
       @extend .float-left;
 
+      span.plus-color
+      {
+        color: $deep-gray;
+        font-weight: bold;
+      }
+
       div.profile-username
       {
         @extend h2;
@@ -54,7 +60,7 @@ div.middle-left
         margin-left: 2px;
       }
 
-      div.profile-network
+      div.profile-school
       {
         @extend h5;
         margin-left: 2px;
@@ -143,6 +149,25 @@ div.middle-left
     display: block;
     margin-top: 50px;
 
+    /* Activity Feed */
+    div.profile-activity-container
+    {
+      @extend .float-left;
+      display: block;
+      width: 400px;
+      margin-right: 50px;
+
+      div.profile-activity-feed
+      {
+        display: block;
+
+        div.action-separator
+        {
+          @include horizontalSeparator(400px);
+        }
+      }
+    }
+
   /* Groups Container */
     div.profile-group-container
     {
@@ -186,7 +211,7 @@ div.profile-activity-container
 
     div.action-separator
     {
-      @include horitzontalSeparator(400px);
+      @include horizontalSeparator(400px);
     }
   }
 }
@@ -200,7 +225,7 @@ div.middle-right
 
   div.right-separator
   {
-    @include horitzontalSeparator(300px);
+    @include horizontalSeparator(300px);
   }
 
   div.follow-requests-container

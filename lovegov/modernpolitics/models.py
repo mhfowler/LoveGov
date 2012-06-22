@@ -954,10 +954,11 @@ class UserProfile(FacebookProfileModel, LGModel):
     confirmation_link = models.CharField(max_length=500)
     first_login = models.BooleanField(default=True) # for special case for first login
     developer = models.BooleanField(default=False)  # for developmentWrapper
+    user_title = models.CharField(max_length=200,null=True)
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
     view = models.ForeignKey("WorldView", default=initView)
-    network = models.ForeignKey("Network", null=True)
+    networks = models.ManyToManyField("Network", related_name='networks')
     location = models.ForeignKey(PhysicalAddress, null=True)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
@@ -1097,6 +1098,45 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.facebook_profile_url = fb_data['link']
         # self.gender = fb_data['gender']
         self.confirmed = True
+
+        if 'education' in fb_data:
+            education = fb_data['education']
+            for edu in education:
+                school = edu['school']
+                name = school['name']
+                alias = name.replace(" ","")
+                alias = alias.replace(",","")
+                alias = alias.replace(".","")
+                alias = alias.lower()
+                school_networks = Network.objects.filter(alias=alias,network_type='S')
+                if not school_networks:
+                    school_network = Network(alias=alias,title=name,network_type='S')
+                    school_network.autoSave()
+                    school_network.members.add(self)
+                    self.networks.add(school_network)
+                else:
+                    school_networks[0].members.add(self)
+                    self.networks.add(school_networks[0])
+
+
+        if 'location' in fb_data:
+            location = fb_data['location']
+            name = location['name']
+            alias = name.replace(" ","")
+            alias = alias.replace(",","")
+            alias = alias.replace(".","")
+            alias = alias.lower()
+            location_networks = Network.objects.filter(alias=alias,network_type='L')
+            if not location_networks:
+                location_network = Network(alias=alias,title=name,network_type='L')
+                location_network.autoSave()
+                location_network.members.add(self)
+                self.networks.add(location_network)
+            else:
+                location_networks[0].members.add(self)
+                self.networks.add(location_networks[0])
+
+
         self.setUsername(fb_data['email'])
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3305,12 +3345,13 @@ class Motion(Content):
 #=======================================================================================================================
 class Network(Group):
     name = models.CharField(max_length=50)                  # for email networks, "email:<extension>"
+    network_type = models.CharField(max_length=1, choices=NETWORK_TYPE, default='D')
     extension = models.CharField(max_length=50, null=True)
 
     # autosave email network group
     def autoSaveEmailNetwork(self, extension):
         self.name=extension
-        self.extension=extension
+        self.extension=extensionclass
         self.title = "@" + extension + " Network"
         self.summary = "Group of all users with @" + extension + " email extension."
         self.autoSave()
@@ -3375,24 +3416,26 @@ class PageAccess(LGModel):
 
     def autoSave(self, request):
         if not LOCAL:
-            user_prof = ControllingUser.objects.get(id=request.user.id).user_profile
-            self.user = user_prof
-            self.page = request.path
-            self.ipaddress = request.META['REMOTE_ADDR']
-            if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
-                newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
-                newUserIPAddress.autoSave()
-            if request.method == "POST":
-                self.type = 'POST'
-                if 'action' in request.POST:
-                    self.action = request.POST['action']
-            else:
-                self.type = 'GET'
-                if 'action' in request.GET:
-                    self.action = request.GET['action']
-            self.save()
-            user_prof.last_page_access = self.id
-            user_prof.save()
+            user_prof = ControllingUser.lg.get_or_none(id=request.user.id)
+            if user_prof:
+                user_prof = user_prof.user_profile
+                self.user = user_prof
+                self.page = request.path
+                self.ipaddress = request.META['REMOTE_ADDR']
+                if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
+                    newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
+                    newUserIPAddress.autoSave()
+                if request.method == "POST":
+                    self.type = 'POST'
+                    if 'action' in request.POST:
+                        self.action = request.POST['action']
+                else:
+                    self.type = 'GET'
+                    if 'action' in request.GET:
+                        self.action = request.GET['action']
+                self.save()
+                user_prof.last_page_access = self.id
+                user_prof.save()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

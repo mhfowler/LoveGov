@@ -111,45 +111,13 @@
   border: 0;
 }
 
-@mixin horitzontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0)
+@mixin horizontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
 {
   border-bottom: 1px solid $color;
   width:$width;
   margin-left:$margin-left;
   margin-top:$margin-top;
-}
-
-@mixin getBorderColor($color-name, $border-width:1px)
-{
-  @if $color-name == 'blue'
-  {
-    return: $blue;
-    border:$border-width $blue solid;
-  }
-  @else if $color-name == 'teal'
-  {
-    border:$border-width $teal solid;
-  }
-  @else if $color-name == 'green'
-  {
-    border:$border-width $green solid;
-  }
-  @else if $color-name == 'purple'
-  {
-    border:$border-width $purple solid;
-  }
-  @else if $color-name == 'orange'
-  {
-    border:$border-width $orange solid;
-  }
-  @else if $color-name == 'pink'
-  {
-    border:$border-width $pink solid;
-  }
-  @else if $color-name == 'yellow'
-  {
-    border:$border-width $yellow solid;
-  }
+  margin-bottom:$margin-bottom;
 }
 
 .main-div
@@ -238,10 +206,19 @@ p
   margin-bottom: 13px;
 }
 
+p.huge
+{
+  font-family: $gill-light;
+  color: $black;
+  font-size:24px;
+  line-height:30px;
+  margin-bottom:25px;
+}
+
 p.really-big
 {
   font-family: $gill-light;
-  color: $dark-gray;
+  color: $deep-gray;
   font-size:20px;
   line-height:28px;
   margin-bottom:20px;
@@ -567,15 +544,24 @@ div.triangle-selector {
   @include triangle-down(6px);
 }
 
-div.triangle-selector.highlighted {
+
+.bold
+{
+  font-weight:bold;
+}
+
+div.triangle-selector.highlighted
+{
   border-top-color: white;
 }
 
-div.menu_toggle:hover {
+div.menu_toggle:hover
+{
   background-color:$red;
 }
 
-div.menu_toggle.clicked {
+div.menu_toggle.clicked
+{
   background-color:$red;
 }
 
