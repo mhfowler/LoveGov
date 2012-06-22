@@ -2,6 +2,7 @@
 from lovegov.frontend import views, tests, analytics
 from lovegov.modernpolitics import actions, lgwidget
 from lovegov.frontend.views import requiresLogin
+from lovegov.frontend.views import viewWrapper
 from lovegov.frontend import admin_views
 from lovegov.local_manage import LOCAL
 
@@ -41,53 +42,52 @@ urlpatterns += patterns('',
 
 
     # outside of login
-    (r'^login/(?P<to_page>\S*)/$',views.login),                             # login
-    (r'^confirm/(?P<confirm_link>\S+)/$', views.confirm),                   # confirm
-    (r'^privacypolicy/$', views.privacyPolicy),                             # privacy
+    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                             # login
+    (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm
     (r'^fb/authorize/$', views.facebookAuthorize ),
-    (r'^fb/handle/$', views.facebookHandle),
-    (r'^passwordRecovery/(\S*)$', views.passwordRecovery),
-    (r'^twitter/redirect/$', views.twitterRedirect),
-    (r'^twitter/handle/$', views.twitterHandle),
+    (r'^fb/handle/$', viewWrapper(views.facebookHandle)),
+    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
+    (r'^twitter/redirect/$', viewWrapper(views.twitterRedirect)),
+    (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
 
-    (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$',views.blog),
-    (r'^blog/(?P<category>\S+)/$',views.blog),
-    (r'^blog/$',views.blog),
+    (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$', viewWrapper(views.blog)),
+    (r'^blog/(?P<category>\S+)/$', viewWrapper(views.blog)),
+    (r'^blog/$', viewWrapper(views.blog)),
 
 
     # under construction
     (r'^underconstruction/$', views.underConstruction),
 
     # main pages
-    (r'^home/$', requiresLogin(views.home)),                               # home page with feeds
-    (r'^web/$', requiresLogin(views.web)),                                 # big look at web
-    (r'^about/$', requiresLogin(views.about)),                             # about
-    (r'^account/$', requiresLogin(views.account)),                         # account/change password
-    (r'^match/$', requiresLogin(views.match)),                             # match page
-    (r'^matchNew/$', requiresLogin(views.matchNew)),
+    (r'^home/$', requiresLogin(viewWrapper(views.home))),                               # home page with feeds
+    (r'^web/$', requiresLogin(viewWrapper(views.web))),                                 # big look at web
+    (r'^about/$', requiresLogin(viewWrapper(views.about))),                             # about
+    (r'^account/$', requiresLogin(viewWrapper(views.account))),                         # account/change password
+    (r'^match/$', requiresLogin(viewWrapper(views.match))),                             # match page
+    (r'^matchNew/$', requiresLogin(viewWrapper(views.matchNew))),
 
     # content pages
-    (r'^question/(\d+)/$', requiresLogin(views.questionDetail)),           # question detail
-    (r'^topic/(\S+)/$', requiresLogin(views.topicDetail)),                 # topic detail
-    (r'^petition/(\d+)/$', requiresLogin(views.petitionDetail)),           # petition detail
-    (r'^news/(\d+)/$', requiresLogin(views.newsDetail)),                   # news detail
-    (r'^network/(\S+)/$', requiresLogin(views.network)),                   # network page
-    (r'^network/$', requiresLogin(views.network)),                         # network page
-    (r'^group/(\d+)/$', requiresLogin(views.group)),
-    (r'^feed/$', requiresLogin(views.theFeed)),                            # the feed
-    (r'^profile/web/(\S+)/$', requiresLogin(views.compareWeb)),            # profile/comparison
-    (r'^profile/(\S+)/$', requiresLogin(views.profile)),                   # profile/comparison
-    (r'^nextquestion/$', requiresLogin(views.nextQuestion)),               # sensibly redirects to next question
-    (r'^legislation/$', requiresLogin(views.legislation)),
-    (r'^legislation/(?P<session>\d+)/$', requiresLogin(views.legislation)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', requiresLogin(views.legislation)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', requiresLogin(views.legislation)),
+    (r'^question/(\d+)/$', requiresLogin(viewWrapper(views.questionDetail))),           # question detail
+    (r'^topic/(\S+)/$', requiresLogin(viewWrapper(views.topicDetail))),                 # topic detail
+    (r'^petition/(\d+)/$', requiresLogin(viewWrapper(views.petitionDetail))),           # petition detail
+    (r'^news/(\d+)/$', requiresLogin(viewWrapper(views.newsDetail))),                   # news detail
+    (r'^network/(\S+)/$', requiresLogin(viewWrapper(views.network))),                   # network page
+    (r'^network/$', requiresLogin(viewWrapper(views.network))),                         # network page
+    (r'^group/(\d+)/$', requiresLogin(viewWrapper(views.group))),
+    (r'^feed/$', requiresLogin(viewWrapper(views.theFeed))),                            # the feed
+    (r'^profile/web/(\S+)/$', requiresLogin(viewWrapper(views.compareWeb))),            # profile/comparison
+    (r'^profile/(\S+)/$', requiresLogin(viewWrapper(views.profile))),                   # profile/comparison
+    (r'^nextquestion/$', requiresLogin(viewWrapper(views.nextQuestion))),               # sensibly redirects to next question
+    (r'^legislation/$', requiresLogin(viewWrapper(views.legislation))),
+    (r'^legislation/(?P<session>\d+)/$', requiresLogin(viewWrapper(views.legislation))),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', requiresLogin(viewWrapper(views.legislation))),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', requiresLogin(viewWrapper(views.legislation))),
 
     # ajax pages
-    (r'^logout/$', requiresLogin(views.logout)),                            # logout
-    (r'^action/$', requiresLogin(actions.actionPOST)),                      # comment and other actions
-    (r'^answer/$', requiresLogin(views.profile)),                           # comment and other actions
-    (r'^fb/action/$', requiresLogin(views.facebookAction) ),
+    (r'^logout/$', requiresLogin(viewWrapper(views.logout))),                            # logout
+    (r'^action/$', requiresLogin(viewWrapper(actions.actionPOST))),                      # comment and other actions
+    (r'^answer/$', requiresLogin(viewWrapper(views.profile))),                           # comment and other actions
+    (r'^fb/action/$', requiresLogin(viewWrapper(views.facebookAction)) ),
 
     # widget pages
     (r'^widget/about/$', views.widgetAbout),                                    # widget about page
@@ -95,12 +95,12 @@ urlpatterns += patterns('',
     (r'^widget/access/$', lgwidget.access),                                     # widget api access
 
     # test pages
-    (r'^test/$', requiresLogin(tests.test)),                                    # test page, for whatever you want!
+    (r'^test/$', requiresLogin(viewWrapper(tests.test))),                                    # test page, for whatever you want!
     (r'^test2/$', tests.test2 ),                                                # for testing logging
 
     #admin
-    (r'^developer/$', requiresLogin(admin_views.adminHome)),
-    (r'^alpha/admin_action/$', requiresLogin(admin_views.adminAction)),
+    (r'^developer/$', requiresLogin(viewWrapper(admin_views.adminHome))),
+    (r'^alpha/admin_action/$', requiresLogin(viewWrapper(admin_views.adminAction))),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(site.urls)),
 

@@ -12,7 +12,6 @@ from modernpolitics import actions
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -24,6 +23,53 @@ def framedResponse(request, html, url, vals):
         vals['center'] = html
         frame(request, vals)
         return renderToResponseCSRF(template='deployment/templates/frame.html', vals=vals, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Wrapper for all alpha views which require login.
+#-----------------------------------------------------------------------------------------------------------------------
+def viewWrapper(view):
+    """Outer wrapper for all views"""
+    def new_view(request,vals=None,*args,**kwargs):
+        if vals is None: return view(request,vals={},*args,**kwargs)
+        else:return view(request,vals,*args,**kwargs)
+    return new_view
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Wrapper for all alpha views which require login.
+#-----------------------------------------------------------------------------------------------------------------------
+def requiresLogin(view):
+    """Wrapper for all views which require login."""
+    def new_view(request, *args, **kwargs):
+        try:
+            user = getUserProfile(request)
+            # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
+            if UPDATE and not user.developer and not LOCAL:
+                return shortcuts.redirect("/underconstruction/")
+            # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
+            elif not request.user.is_authenticated():
+                print request.path
+                return HttpResponseRedirect('/login' + request.path)
+            # ELSE AUTHENTICATED
+            else:
+                vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
+                rightSideBar(None, vals)
+                vals['new_notification_count'] = user.getNumNewNotifications()
+                # SAVE PAGE ACCESS
+            if request.method == 'GET':
+                ignore = request.GET.get('log-ignore')
+            else:
+                ignore = request.POST.get('log-ignore')
+            if not ignore:
+                page = PageAccess()
+                page.autoSave(request)
+        # exception if user has old cookie
+        except ImproperlyConfigured:
+            response = shortcuts.redirect('/login' + request.path)
+            response.delete_cookie('sessionid')
+            logger.debug('deleted cookie')
+            return response
+        return view(request, vals=vals, *args, **kwargs)
+    return new_view
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
@@ -69,54 +115,9 @@ def postEmail(request):
     else:
         return shortcuts.redirect('/comingsoon/')
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Privacy policy page.
-#-----------------------------------------------------------------------------------------------------------------------
-def privacyPolicy(request,vals={}):
-    if request.method == 'POST' and 'button' in request.POST:
-        return loginPOST(request,vals={})
-    else:
-        return renderToResponseCSRF(template='deployment/pages/login-privacy-policy.html', vals=vals, request=request)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Wrapper for all alpha views which require login.
-#-----------------------------------------------------------------------------------------------------------------------
-def requiresLogin(view):
-    """Wrapper for all views which require login."""
-    def new_view(request, *args, **kwargs):
-        try:
-            user = getUserProfile(request)
-            # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-            if UPDATE and not user.developer and not LOCAL:
-                return shortcuts.redirect("/underconstruction/")
-            # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
-            elif not request.user.is_authenticated():
-                print request.path
-                return HttpResponseRedirect('/login' + request.path)
-            # ELSE AUTHENTICATED
-            else:
-                vals = {'user':user, 'viewer':user, 'google':GOOGLE_LOVEGOV}
-                rightSideBar(None, vals)
-                vals['new_notification_count'] = user.getNumNewNotifications()
-            # SAVE PAGE ACCESS
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
-            if not ignore:
-                page = PageAccess()
-                page.autoSave(request)
-        # exception if user has old cookie
-        except ImproperlyConfigured:
-            response = shortcuts.redirect('/login' + request.path)
-            response.delete_cookie('sessionid')
-            logger.debug('deleted cookie')
-            return response
-        return view(request, vals=vals, *args, **kwargs)
-    return new_view
-
-def blog(request,category=None,number=None,vals={}):
+def blog(request,category=None,number=None,vals=None):
     if request.method == 'GET':
+
         user = getUserProfile(request)
         if user: vals['viewer'] = user
         else: vals['viewer'] = None
@@ -144,8 +145,6 @@ def blog(request,category=None,number=None,vals={}):
                 vals['blogPosts'] = blogPosts.filter(creator=creator)
         else:
             vals['blogPosts'] = blogPosts
-
-        vals['blogPost'] = None
 
         return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
 
