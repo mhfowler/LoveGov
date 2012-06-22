@@ -11,6 +11,7 @@ function rebindFunction()
     loadTopicSelect();                                          // topic select image functionality
     loadHoverComparison();                                      // hover comparison functionality
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
+    loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -74,6 +75,46 @@ function rebindFunction()
  *      ~Auxiliary
  *
  ***********************************************************************************************************************/
+function loadMenuToggles() {
+
+    $(".menu").hide();
+    $(".menu_toggle").click(function(event) {
+        $(this).children(".menu").toggle();
+        if ($(this).hasClass("clicked")) {
+            $(this).children(".triangle-selector").removeClass("highlighted");
+        } else {
+            $(this).children(".triangle-selector").addClass("highlighted");
+        }
+    });
+    $(".menu_toggle").hover(
+        function(event) {
+            $(this).children(".triangle-selector").addClass("highlighted");
+        },
+        function(event) {
+            if (!$(this).hasClass("clicked")) {
+                $(this).children(".triangle-selector").removeClass("highlighted");
+            }
+        }
+    );
+    loadHoverClick($(".menu_toggle"));
+}
+
+function loadHoverClick(div) {
+    div.click(function(event) {
+        $(this).toggleClass("clicked");
+    });
+    div.hover(
+        function(event) {
+            $(this).addClass("highlighted");
+        },
+        function(event) {
+            if (!$(this).hasClass("clicked")) {
+                $(this).removeClass("highlighted");
+            }
+        }
+    );
+}
+
 function userFollow(event,div,follow)
 {
     event.preventDefault();
@@ -2265,9 +2306,8 @@ function loadGroup()
  Takes in a a value and the classname of an input which the value should
  either be added to or removed from that list (toggled).
  */
-function listSelectHelper(value, list_input_name) {
-    var list_input = $("." + list_input_name);
-    var list_values = $.parseJSON(list_input.val());
+function listSelectHelper(metadata, key, value) {
+    var list_values = $.parseJSON(metadata.data(key));
     var index = $.inArray(value, list_values);
     if (index == -1) {
         list_values.push(value);
@@ -2553,17 +2593,19 @@ function hide(div)
  */
 function clearFilterParameters() {
 
-    $(".feed_topics").val(JSON.stringify([]));
+    var metadata = $("#feed_metadata");
+
+    metadata.data('topics', JSON.stringify([]));
     var topic_icon_wrapper = $(".feed-topic-selector-wrapper");
     clearTopicIcons(topic_icon_wrapper);
 
-    $(".feed_types").val(JSON.stringify([]));
+    metadata.data('types', JSON.stringify([]));
     $(".feed-type-selector").attr("checked", false);
 
-    $(".feed_levels").val(JSON.stringify([]));
+    metadata.data('levels', JSON.stringify([]));
     $(".feed-level-selector").attr("checked", false);
 
-    $(".feed_groups").val(JSON.stringify([]));
+    metadata.data('groups', JSON.stringify([]));
     $(".feed-group-selector").attr("checked", false);
 
 }
@@ -2634,7 +2676,7 @@ function pinterestRender(cards) {
         var height = $(this).height() + 20;
         $(this).css("position", 'absolute');
         $(this).css("left", left);
-        $(this).animate({"top": top}, 1400);
+        $(this).css({"top": top}, 1400);
         pinterest[current_col] = (top + height);
         current_col += 1;
         $(this).removeClass("pinterest_unrendered");
@@ -2681,21 +2723,6 @@ function loadNewFeed() {
     $(".display-red").hide();
     setDisplay($(".feed_display").val());
 
-    $(".display-choice").click(function(event) {
-        setDisplay($(this).attr("data-display"));
-        var num = 6;
-        var already = $(".feed_start").val();
-        if (already > num) {
-            num = already;
-        }
-        refreshFeed(num);
-    });
-
-    $(".menu").hide();
-    $(".menu-toggle").click(function(event) {
-        $(this).find(".menu").toggle();
-    });
-
 
     $(".get_feed").click(function(event) {
         event.preventDefault();
@@ -2733,13 +2760,6 @@ function loadNewFeed() {
         refreshFeed(-1);
     });
 
-    $(".feed-ranking-selector").click(function(event) {
-        event.preventDefault();
-        var ranking = $(this).attr("data-ranking");
-        $(".feed_ranking").val(ranking);
-        refreshFeed(-1);
-    });
-
     $(".feed-display-selector").click(function(event) {
         event.preventDefault();
         var display = $(this).attr("data-display");
@@ -2762,9 +2782,35 @@ function loadNewFeed() {
         clearFilterParameters();
     });
 
+    /* display menu */
+    $(".display-choice").click(function(event) {
+        setDisplay($(this).attr("data-display"));
+        var num = 6;
+        var already = $(".feed_start").val();
+        if (already > num) {
+            num = already;
+        }
+        refreshFeed(num);
+    });
+
+    /* sort-by menu */
+    $(".feed-ranking-selector").click(function(event) {
+        var data = $(this).data();
+        var ranking = data.ranking;
+        $(".ranking_menu_title").text(data.verbose);
+        $(".feed_ranking").val(ranking);
+        refreshFeed(-1);
+    });
+
+    /* gray hover for all dropdown menu options */
+    loadHoverClick($(".menu-option"));
+
+    $(".menu-option").click(function(event) {
+        event.stopPropagation();
+    });
+
     getFeed(6);
 
-    //$(window).scroll(scrollFeed);
-
+    $(window).scroll(scrollFeed);
 
 }

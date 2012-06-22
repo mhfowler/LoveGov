@@ -39,7 +39,6 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
-
     # outside of login
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                             # login
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm

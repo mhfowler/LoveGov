@@ -378,7 +378,7 @@ def theFeed(request, vals={}):
 
     vals['my_filters'] = viewer.my_filters.all()
 
-    vals['groups'] = UserGroup.objects.all()
+    vals['my_groups'] = viewer.getGroups()
 
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'

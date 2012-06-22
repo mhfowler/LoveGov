@@ -18,16 +18,15 @@
 
 .feed-main-div {
   @extend .main-div;
-  margin-top:20px;
+  margin-top:5px;
 }
 
 
 .feed-header {
-  @extend .box;
 
   p.your-feed {
     @extend .really-big;
-    margin-top:20px;
+    margin-top:25px;
     margin-bottom:0px;
     float:left;
     @include fontSize(25px);
@@ -71,7 +70,7 @@
   }
 
   a.more-feed-button {
-    margin-top:24px;
+    margin-top:26px;
     margin-bottom:0px;
 
     float:left;
@@ -80,7 +79,7 @@
 
   a.how-does {
     float:right;
-    margin-top:24px;
+    margin-top:26px;
     margin-right:10px;
   }
 
@@ -132,6 +131,7 @@ div.more-options-wrapper {
   @extend .box;
 
   div.more-options-selector {
+
     height:50px;
     width:980px;
 
@@ -139,15 +139,25 @@ div.more-options-wrapper {
       margin-top:10px;
       float:left;
     }
+
     div.sort-by-choice {
       position:relative;
       float:left;
-      width:40px;
       height:30px;
       padding-top:10px;
-      padding-left:20px;
       margin-left:10px;
       @extend .box;
+
+      p.feed-menu-title {
+        float:left;
+        margin-left:10px;
+      }
+
+      div.triangle-selector {
+        float:left;
+        margin-left:4px;
+        margin-top:13px;
+      }
     }
 
     div.filter-by {
@@ -155,25 +165,45 @@ div.more-options-wrapper {
       margin-top:10px;
       margin-left:10px;
     }
+
     div.filter-by-group {
       position:relative;
       float:left;
       margin-left:10px;
-      width:60px;
       height:30px;
       padding-top:10px;
-      padding-left:25px;
       @extend .box;
+
+      p.feed-menu-title {
+        float:left;
+        margin-left:10px;
+      }
+
+      div.triangle-selector {
+        float:left;
+        margin-left:4px;
+        margin-top:13px;
+      }
 
     }
     div.filter-by-network {
       position:relative;
       float:left;
-      width:60px;
       height:30px;
       padding-top:10px;
-      padding-left:25px;
       @extend .box;
+
+      p.feed-menu-title {
+        float:left;
+        margin-left:10px;
+      }
+
+      div.triangle-selector {
+        float:left;
+        margin-left:4px;
+        margin-top:13px;
+      }
+
     }
     div.filter-by-political {
       position:relative;
@@ -181,8 +211,19 @@ div.more-options-wrapper {
       width:60px;
       height:30px;
       padding-top:10px;
-      padding-left:25px;
       @extend .box;
+
+      p.feed-menu-title {
+        float:left;
+        margin-left:10px;
+      }
+
+      div.triangle-selector {
+        float:left;
+        margin-left:4px;
+        margin-top:13px;
+      }
+
     }
     div.filter-by-content {
       position:relative;
@@ -190,9 +231,21 @@ div.more-options-wrapper {
       width:60px;
       height:30px;
       padding-top:10px;
-      padding-left:25px;
       @extend .box;
+
+      p.feed-menu-title {
+        float:left;
+        margin-left:10px;
+      }
+
+      div.triangle-selector {
+        float:left;
+        margin-left:4px;
+        margin-top:13px;
+      }
+
     }
+
     div.filter-topic {
       margin-top:10px;
       float:right;
@@ -238,6 +291,17 @@ div.group-box {
   margin-left:10px;
 }
 
+div.menu-option {
+  @extend .box;
+  background-color: white;
+  width:85px;
+  height:40px;
+  margin:0px;
+}
+
+div.menu-option.highlighted {
+  background-color: $light-gray;
+}
 
 div.menu {
   position:absolute;
@@ -245,11 +309,7 @@ div.menu {
   left:0px;
   background-color:white;
   @extend .box;
-  width:85px;
-  height:130px;
   z-index:20;
-  padding-top:10px;
-  padding-bottom:10px;
 }
 
 
@@ -344,6 +404,7 @@ div.pinterest_card {
   }
 }
 
+
 div.feed-topic-icon-wrapper {
   float:right;
   margin-left:10px;
@@ -400,3 +461,6 @@ div.pinterest-top-comment {
 .mini {
   @include fontSize(20px);
 }
+
+
+
