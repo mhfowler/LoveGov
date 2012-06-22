@@ -2428,7 +2428,7 @@ function getFeed(num)
 {
 
     if (num==-1) {
-        num = 3;
+        num = 18;
     }
 
     var feed_ranking = feed_metadata.ranking;
@@ -2914,7 +2914,7 @@ function loadNewFeed() {
             event.stopPropagation();
         });
 
-    getFeed(6);
+    getFeed(27);
 
     $(window).scroll(scrollFeed);
 
