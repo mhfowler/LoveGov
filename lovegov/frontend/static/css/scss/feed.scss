@@ -24,6 +24,8 @@
 
 .feed-header {
 
+  margin-bottom:10px;
+
   p.your-feed {
     @extend .really-big;
     margin-top:25px;
@@ -67,6 +69,16 @@
 
     float:left;
     margin-left:30px;
+
+    div.saved-filter-selector {
+      margin-top:0px;
+      width:200px;
+
+      p.saved-filter-title {
+        margin-left:10px;
+        margin-top:5px;
+      }
+    }
   }
 
   a.more-feed-button {
@@ -125,15 +137,18 @@
 div.more-options-wrapper {
 
   margin-top:0px;
-  padding:15px;
-  width:970px;
-  height:100px;
+  padding:0px;
+  width:1000px;
+  height:120px;
   @extend .box;
+  overflow:hidden;
 
   div.more-options-selector {
 
     height:50px;
     width:980px;
+    margin-left:10px;
+    margin-top:10px;
 
     div.sort-by {
       margin-top:10px;
@@ -208,7 +223,7 @@ div.more-options-wrapper {
     div.filter-by-political {
       position:relative;
       float:left;
-      width:60px;
+      width:80px;
       height:30px;
       padding-top:10px;
       @extend .box;
@@ -228,7 +243,7 @@ div.more-options-wrapper {
     div.filter-by-content {
       position:relative;
       float:left;
-      width:60px;
+      width:80px;
       height:30px;
       padding-top:10px;
       @extend .box;
@@ -254,18 +269,36 @@ div.more-options-wrapper {
   }
 
   div.current-selection {
-    height:35px;
+    height:50px;
     width:950px;
-    margin-left:10px;
-    padding:10px;
+    margin-left:20px;
     @extend .box;
 
     div.current-filter {
+      margin-top:0px;
+      margin-left:12px;
+      height:50px;
+      width:130px;
       float:left;
+      border-right: 1px solid $light-gray;
+      p.current-filter-text {
+        @extend .really-big;
+        margin-top:12px;
+      }
+    }
+
+    input.save_filter_input {
+      float:right;
+      margin-right:15px;
+      margin-top:10px;
+      height:30px;
+      color:blue;
     }
 
     div.current-options {
       float:right;
+      margin-top:8px;
+      margin-right:12px;
 
       a.feed-clear {
         display:block;
@@ -318,6 +351,7 @@ div.menu-option {
   width:85px;
   height:40px;
   margin:0px;
+  z-index:20;
 }
 
 div.menu-option:hover {
