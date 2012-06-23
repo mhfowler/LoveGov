@@ -1193,6 +1193,14 @@ def matchSection(request, vals={}):
 
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Shares a piece of content
+#-----------------------------------------------------------------------------------------------------------------------
+
+def shareContent(request, vals={}):
+    share_with = request.POST['share_with'] 
+    return HttpResponse("oh hai thnx for sharing ur content with")
+
 def blogAction(request,vals={}):
     user = vals['viewer']
     if 'url' in request.POST:
@@ -1233,6 +1241,7 @@ def blogAction(request,vals={}):
             html = ''
 
     return HttpResponse(json.dumps({'html':html}))
+
 
 
 ########################################################################################################################
@@ -1284,9 +1293,11 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getuseractions': getUserActions,
             'getgroupactions': getGroupActions,
             'ajaxGetFeed': ajaxGetFeed,
+            'matchSection': matchSection,
             'saveFilter': saveFilter,
             'getFilter': getFilter,
             'matchSection': matchSection,
+            'shareContent': shareContent,
             'blogAction': blogAction
         }
 

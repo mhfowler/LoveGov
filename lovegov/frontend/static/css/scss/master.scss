@@ -126,6 +126,17 @@
   margin-bottom:$margin-bottom;
 }
 
+@mixin gillLight
+{
+  font-family: $gill-light, $body-fonts;
+}
+
+@mixin gillStd
+{
+  font-family: $gill-std, $body-fonts;
+  margin-bottom:$margin-bottom;
+}
+
 .main-div
 {
   width: 1000px;

@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 # lovegov
-from modernpolitics import actions
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
@@ -299,7 +298,7 @@ def getUserWebResponsesJSON(request,vals={}):
     vals['questionsArray'] = json.dumps(questionsArray)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# This is the view that generates hte QAWeb
+# This is the view that generates the QAWeb
 #-----------------------------------------------------------------------------------------------------------------------
 def web(request, vals={}):
     """
@@ -885,7 +884,11 @@ def questionDetail(request, q_id=-1, vals={}):
         else:
             return HttpResponse("Congratulations, you have answered every question!")
     valsQuestion(request, q_id, vals)
+    user = vals['user']
     vals['pageTitle'] = "lovegov: " + vals['question'].question_text
+    vals['my_followers'] = user.getFollowMe()
+    vals['my_groups'] = user.getGroups()
+    vals['my_networks'] = [user.getNetwork()]
     html = ajaxRender('deployment/center/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
@@ -1104,5 +1107,11 @@ def facebookAction(request, to_page="/web/", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def widgetAbout(request, vals={}):
     return HttpResponse("Get our widget!")
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# LoveGov API
+#-----------------------------------------------------------------------------------------------------------------------
 
 

@@ -64,7 +64,7 @@ function rebindFunction()
             break;
         case 'login':
             loadLogin();
-            break;
+            break
         default:
             break
     }
@@ -1297,6 +1297,20 @@ function loadRightSideBar()
 
     });
 
+    $('div.overdiv').appendTo('body');
+    $('div.shareModal').appendTo('body');
+
+    $('.share-button').click(function(event) {
+        event.preventDefault();
+//        alert('don\'t click me brah');
+        $('div.overdiv').fadeToggle("fast");
+        $('div.shareModal').fadeToggle("fast");
+    });
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.shareModal').hide();
+    });
+
 }
 
 // shows questions from the selected topic and calls select topic to adjust icons appropriately
@@ -2382,7 +2396,6 @@ function loadGroup()
     bindNewDivs();
 
 }
-
 
 /***********************************************************************************************************************
  *
