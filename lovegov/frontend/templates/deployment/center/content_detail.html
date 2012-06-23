@@ -3,22 +3,23 @@
 <div id="content">
     <div id="content-left">
     {% if content.active %}
-        <div style="margin-bottom:25px;">
-            <a href='/feed'><span class='back-to-feed'>Back to Your Feed</span></a>
-            <p>
-            {% with topic=content.getMainTopic %}
-                <a href="{{topic.get_url}}">
-                    <div id="content-topic-img">
-                        <img src="{{ topic.getImageRef }}"/>
-                    </div>
-                </a>
-            {% endwith %}
-
-            <div id="content-div">
-                {% block content_detail %}
-                    <!-- content detail -->
-                {% endblock %}
+        <a href='/feed'><span class='back-to-feed'>Back to Your Feed</span></a>
+        <div class="content-left-side">
+            <div class="content-image-area">
+                {% with topic=content.getMainTopic %}
+                    <a href="{{topic.get_url}}">
+                        <div id="content-topic-img">
+                            <img src="{{ topic.getImageRef }}"/>
+                        </div>
+                    </a>
+                {% endwith %}
             </div>
+        </div>
+
+        <div id="content-div">
+            {% block content_detail %}
+                <!-- content detail -->
+            {% endblock %}
         </div>
 
 

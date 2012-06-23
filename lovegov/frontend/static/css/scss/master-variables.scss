@@ -12,6 +12,12 @@
   src: url(../GillSansStd.otf);
 }
 
+@font-face
+{
+	font-family: "Sonus Light";
+	src: url(../SonusLig.otf);
+}
+
 /* Main Colors */
 $text-blue-light: #0094A3;
 $text-blue: #005468;
@@ -79,3 +85,4 @@ $color-list:$green,$purple,$orange,$blue,$teal,$pink,$yellow;
 $body-fonts: Helvetica, Arial, Verdana, sans-serif;
 $gill-light: "Gill Sans Std Light";
 $gill-std: "Gill Sans Std";
+$title-font: "Sonus Light";
