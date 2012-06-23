@@ -109,6 +109,12 @@
   text-decoration: none;
   outline: none;
   border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 @mixin horizontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
@@ -117,6 +123,17 @@
   width:$width;
   margin-left:$margin-left;
   margin-top:$margin-top;
+  margin-bottom:$margin-bottom;
+}
+
+@mixin gillLight
+{
+  font-family: $gill-light, $body-fonts;
+}
+
+@mixin gillStd
+{
+  font-family: $gill-std, $body-fonts;
   margin-bottom:$margin-bottom;
 }
 

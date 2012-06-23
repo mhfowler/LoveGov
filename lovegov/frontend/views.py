@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 # lovegov
-from modernpolitics import actions
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
@@ -299,7 +298,7 @@ def getUserWebResponsesJSON(request,vals={}):
     vals['questionsArray'] = json.dumps(questionsArray)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# This is the view that generates hte QAWeb
+# This is the view that generates the QAWeb
 #-----------------------------------------------------------------------------------------------------------------------
 def web(request, vals={}):
     """
@@ -652,18 +651,24 @@ def about(request, vals={}):
         offset = 450
         angle_offset = math.pi/3
         for num in range(0,len(developers)):
-            cosine = math.cos(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
-            sine = math.sin(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
+            angle = 2.0*math.pi*(float(num)/float(len(developers)))+angle_offset
+            cosine = math.cos(angle)
+            sine = math.sin(angle)
             developers[num].x = int(cosine*skew)+(offset/2)-(side/2)
             developers[num].y = int(sine*skew)+skew
+            developers[num].angle = math.degrees(angle)-180
+            developers[num].x2 = int(cosine*skew/2)+(offset/2)-(side/2)
+            developers[num].y2 =  int(sine*skew/2)+(offset/2)-(side/2)
         vals['developers'] = developers
         vals['side'] = side
+        vals['skew'] = skew
         vals['side_half'] = side/2
         vals['main_side'] = main_side
         vals['main_side_half'] = main_side/2
         vals['x'] = (offset-main_side)/2
         vals['y'] = skew - ((main_side-side)/2)
-        vals['colors_cycle'] = ["who-are-we-circle-div-blue", "who-are-we-circle-div-teal", "who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-orange", "who-are-we-circle-div-green", "who-are-we-circle-div-pink"]
+        vals['colors'] = MAIN_TOPIC_COLORS_LIST
+        vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
         setPageTitle("lovegov: about",vals)
 
         html = ajaxRender('deployment/center/about/about.html', vals, request)
@@ -879,7 +884,11 @@ def questionDetail(request, q_id=-1, vals={}):
         else:
             return HttpResponse("Congratulations, you have answered every question!")
     valsQuestion(request, q_id, vals)
+    user = vals['user']
     vals['pageTitle'] = "lovegov: " + vals['question'].question_text
+    vals['my_followers'] = user.getFollowMe()
+    vals['my_groups'] = user.getGroups()
+    vals['my_networks'] = [user.getNetwork()]
     html = ajaxRender('deployment/center/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
@@ -1098,5 +1107,11 @@ def facebookAction(request, to_page="/web/", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def widgetAbout(request, vals={}):
     return HttpResponse("Get our widget!")
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# LoveGov API
+#-----------------------------------------------------------------------------------------------------------------------
 
 

@@ -1,7 +1,8 @@
 @import 'master-variables';
 @import 'master';
 
-@mixin notification-box {
+@mixin notification-box
+{
   border-bottom: solid 1px;
   border-color: $gray;
   background-color: white;
@@ -57,25 +58,29 @@
     z-index: 100;
     background-color: white;
 
-    div.notification {
+    div.notification
+    {
       @include notification-box;
       padding-top: 10px;
       padding-bottom: 10px;
       padding-left: 10px;
     }
 
-    div.notification:hover {
+    div.notification:hover
+    {
       background-color: $light-gray;
     }
 
-    div.see-more-notifications {
+    div.see-more-notifications
+    {
       @include notification-box;
       padding-top: 5px;
       padding-bottom: 5px;
       text-align: center;
     }
 
-    div.see-more-notifications:hover {
+    div.see-more-notifications:hover
+    {
       background-color: $light-gray;
     }
   }

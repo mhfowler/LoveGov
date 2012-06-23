@@ -2,6 +2,10 @@
 @import 'master-variables';
 @import 'master';
 
+.test {
+	color:blue;
+}
+
 @mixin circleDiv($side)
 {
   width:$side;
@@ -19,6 +23,8 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
 {
   @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
   margin-bottom:15px;
+
+
 
   span
   {
@@ -190,3 +196,4 @@ div#about-content
     margin-left:25px;
   }
 }
+
