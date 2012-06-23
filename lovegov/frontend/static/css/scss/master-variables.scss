@@ -43,6 +43,38 @@ $orange-light: #F2BEB0;
 $color-name-list:'green','purple','orange','blue','teal','pink','yellow';
 $color-list:$green,$purple,$orange,$blue,$teal,$pink,$yellow;
 
+@function colorMap($color-name)
+{
+  @if $color-name == 'blue'
+  {
+    @return $blue;
+  }
+  @else if $color-name == 'teal'
+  {
+    @return $teal;
+  }
+  @else if $color-name == 'green'
+  {
+    @return $green;
+  }
+  @else if $color-name == 'purple'
+  {
+    @return $purple;
+  }
+  @else if $color-name == 'orange'
+  {
+    @return $orange;
+  }
+  @else if $color-name == 'pink'
+  {
+    @return $pink;
+  }
+  @else if $color-name == 'yellow'
+  {
+    @return $yellow;
+  }
+}
+
 /* Fonts */
 $body-fonts: Helvetica, Arial, Verdana, sans-serif;
 $gill-light: "Gill Sans Std Light";

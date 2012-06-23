@@ -518,7 +518,7 @@ def joinGroupRequest(request, vals={}):
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
-        return HttpResponse("joined")
+        return HttpResponse("follow success")
     #If the group is privacy secret...
     if group.group_privacy == 'S':
         return HttpResponse("cannot request to join secret group")
@@ -530,7 +530,7 @@ def joinGroupRequest(request, vals={}):
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
-        return HttpResponse("joined")
+        return HttpResponse("follow success")
     #If the group type is private and not requested yet
     else: # group.group_privacy == 'P'
         if group_joined.requested and not group_joined.rejected:
@@ -541,7 +541,7 @@ def joinGroupRequest(request, vals={}):
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
-        return HttpResponse("request to join")
+        return HttpResponse("follow request")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or rejects a user GroupJoined, if GroupJoined was requested.
@@ -626,7 +626,7 @@ def userFollowRequest(request, vals={}):
         action = Action(relationship=user_follow,modifier='D')
         action.autoSave()
         to_user.notify(action)
-        return HttpResponse("now following this person")
+        return HttpResponse("follow success")
     #otherwise, if you've already requested to follow this user, you're done
     elif user_follow.requested and not user_follow.rejected:
         return HttpResponse("already requested to follow this person")
@@ -637,7 +637,7 @@ def userFollowRequest(request, vals={}):
         action = Action(relationship=user_follow,modifier='R')
         action.autoSave()
         to_user.notify(action)
-        return HttpResponse("requested to follow this person")
+        return HttpResponse("follow request")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or denies user follow, if user follow was requested.
@@ -686,7 +686,7 @@ def userFollowStop(request, vals={}):
         action.autoSave()
         to_user.notify(action)
         # to_user.notify(action)
-        return HttpResponse("removed")
+        return HttpResponse("follow removed")
     return HttpResponse("To User does not exist")
 
 
@@ -740,7 +740,7 @@ def leaveGroup(request, vals={}):
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
-        return HttpResponse("left")
+        return HttpResponse("follow removed")
     else:
         return HttpResponse("system group")
 
@@ -1078,7 +1078,7 @@ def getNotifications(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets activity feed
 #-----------------------------------------------------------------------------------------------------------------------
-def getActions(request, vals={}):
+def getUserActions(request, vals={}):
     # Get Actions
     viewer = vals['viewer']
     if not 'p_id' in request.POST:
@@ -1090,6 +1090,30 @@ def getActions(request, vals={}):
     if 'num_actions' in request.POST:
         num_actions = int(request.POST['num_actions'])
     actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
+    if len(actions) == 0:
+        print 'no more actions'
+        return HttpResponse(json.dumps({'error':'No more actions'}))
+    actions_text = []
+    for action in actions:
+        actions_text.append( action.getVerbose(view_user=viewer) )
+    vals['actions_text'] = actions_text
+    num_actions += NOTIFICATION_INCREMENT
+    vals['num_actions'] = num_actions
+    html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
+
+def getGroupActions(request, vals={}):
+    # Get Actions
+    viewer = vals['viewer']
+    if not 'g_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No group id given'}))
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        return HttpResponse(json.dumps({'error':'Invalid group id'}))
+    num_actions = 0
+    if 'num_actions' in request.POST:
+        num_actions = int(request.POST['num_actions'])
+    actions = group.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
     if len(actions) == 0:
         print 'no more actions'
         return HttpResponse(json.dumps({'error':'No more actions'}))
@@ -1266,7 +1290,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
-            'getactions': getActions,
+            'getuseractions': getUserActions,
+            'getgroupactions': getGroupActions,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
             'saveFilter': saveFilter,
