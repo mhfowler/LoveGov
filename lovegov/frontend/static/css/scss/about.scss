@@ -2,6 +2,10 @@
 @import 'master-variables';
 @import 'master';
 
+.test {
+	color:blue;
+}
+
 @mixin circleDiv($side)
 {
   width:$side;
@@ -137,12 +141,13 @@ div#about-content
     @include circleDiv(200px)
   }
 
-  @each $color-name in $color-name-list
-  {
-    div.who-are-we-circle-div-#{$color-name}
+  $i: length($color-name-list);
+  @while $i > 0 {
+    div.who-are-we-circle-div-#{nth($color-name-list, $i)}
     {
-      @include getBorderColor($color-name,2px);
+      border:1px nth($color-list, $i) solid;
     }
+    $i: $i - 1;
   }
 
   div.who-are-we-circle-div-center

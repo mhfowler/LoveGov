@@ -111,7 +111,7 @@
   border: 0;
 }
 
-@mixin horitzontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0)
+@mixin horizontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0)
 {
   border-bottom: 1px solid $color;
   width:$width;
@@ -119,36 +119,14 @@
   margin-top:$margin-top;
 }
 
-@mixin getBorderColor($color-name, $border-width:1px)
+@mixin gillLight
 {
-  @if $color-name == 'blue'
-  {
-    border:$border-width $blue solid;
-  }
-  @else if $color-name == 'teal'
-  {
-    border:$border-width $teal solid;
-  }
-  @else if $color-name == 'green'
-  {
-    border:$border-width $green solid;
-  }
-  @else if $color-name == 'purple'
-  {
-    border:$border-width $purple solid;
-  }
-  @else if $color-name == 'orange'
-  {
-    border:$border-width $orange solid;
-  }
-  @else if $color-name == 'pink'
-  {
-    border:$border-width $pink solid;
-  }
-  @else if $color-name == 'yellow'
-  {
-    border:$border-width $yellow solid;
-  }
+  font-family: $gill-light, $body-fonts;
+}
+
+@mixin gillStd
+{
+  font-family: $gill-std, $body-fonts;
 }
 
 .main-div

@@ -1,10 +1,11 @@
-<link rel="stylesheet" type="text/css" href="/static/css/deployment/content_detail.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/deployment/cath_comment.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/content_detail.css" />
 
 <div id="content">
     <div id="content-left">
     {% if content.active %}
         <div style="margin-bottom:25px;">
+            <a href='/feed'><span class='back-to-feed'>Back to Your Feed</span></a>
+            <p>
             {% with topic=content.getMainTopic %}
                 <a href="{{topic.get_url}}">
                     <div id="content-topic-img">
@@ -20,9 +21,11 @@
             </div>
         </div>
 
+
+
         <div id="comment-thread">
 
-            <h2> DISCUSS </h2>
+            <span class="discuss">Discuss</span>
 
             <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
                 <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment">what's your opinion?</textarea>
