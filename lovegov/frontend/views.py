@@ -651,18 +651,24 @@ def about(request, vals={}):
         offset = 450
         angle_offset = math.pi/3
         for num in range(0,len(developers)):
-            cosine = math.cos(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
-            sine = math.sin(2.0*math.pi*(float(num)/float(len(developers)))+angle_offset)
+            angle = 2.0*math.pi*(float(num)/float(len(developers)))+angle_offset
+            cosine = math.cos(angle)
+            sine = math.sin(angle)
             developers[num].x = int(cosine*skew)+(offset/2)-(side/2)
             developers[num].y = int(sine*skew)+skew
+            developers[num].angle = math.degrees(angle)-180
+            developers[num].x2 = int(cosine*skew/2)+(offset/2)-(side/2)
+            developers[num].y2 =  int(sine*skew/2)+(offset/2)-(side/2)
         vals['developers'] = developers
         vals['side'] = side
+        vals['skew'] = skew
         vals['side_half'] = side/2
         vals['main_side'] = main_side
         vals['main_side_half'] = main_side/2
         vals['x'] = (offset-main_side)/2
         vals['y'] = skew - ((main_side-side)/2)
-        vals['colors_cycle'] = ["who-are-we-circle-div-blue", "who-are-we-circle-div-teal", "who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-orange", "who-are-we-circle-div-green", "who-are-we-circle-div-pink"]
+        vals['colors'] = MAIN_TOPIC_COLORS_LIST
+        vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
         setPageTitle("lovegov: about",vals)
 
         html = ajaxRender('deployment/center/about/about.html', vals, request)

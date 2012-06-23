@@ -24,6 +24,8 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
   @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
   margin-bottom:15px;
 
+
+
   span
   {
     display:inline-block;
@@ -194,3 +196,4 @@ div#about-content
     margin-left:25px;
   }
 }
+

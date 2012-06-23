@@ -26,7 +26,13 @@
             </p>
             <div class="triangle-selector"></div>
             <div class="saved-menu menu">
-                <div class="group-box"> </div>
+                {% for x in my_filters %}
+                    <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
+                        <p class="saved-filter-title">
+                            {{ x.name }}
+                        </p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
 
@@ -105,6 +111,8 @@
                         <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
                             {% include 'deployment/snippets/group_box.html' with group=g %}
                         </div>
+                    {% empty %}
+                        You are not a member of any groups.
                     {% endfor %}
                 </div>
             </div>
@@ -119,13 +127,15 @@
                         <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
                             {% include 'deployment/snippets/group_box.html' with group=g %}
                         </div>
+                    {% empty %}
+                        You are not a member of any networks.
                     {% endfor %}
                 </div>
             </div>
 
             <div class="filter-by-political  menu_toggle">
                 <p class="feed-menu-title political_menu_title">
-                    Scale
+                    Political
                 </p>
                 <div class="triangle-selector"></div>
                 <div class="political-menu menu">
@@ -149,7 +159,7 @@
 
             <div class="filter-by-content  menu_toggle">
                 <p class="feed-menu-title">
-                    Type
+                    Content
                 </p>
                 <div class="triangle-selector"></div>
                 <div class="type-menu menu">
@@ -173,7 +183,7 @@
 
             <div class="feed-topic-selector-wrapper topic-icons-wrapper">
                 {% for t in main_topics %}
-                    <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-id="{{ t.id }}">
+                    <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}">
                         {% thumbnail t.image "40x40" format="PNG" as im %}
                             <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
                         {% endthumbnail %}
@@ -191,15 +201,18 @@
         </div>
 
         <div class="current-selection">
-            <div class="current-filter"> Current Filters: </div>
+            <div class="current-filter">
+                <p class="current-filter-text"> Current Filters: </p>
+            </div>
             <div class="current-options">
-                <a href="" class="feed-clear">
+                <a href="" class="feed-clear feed_clear">
                     clear
                 </a>
-                <a href="" class="feed-save">
+                <a href="" class="feed-save save_filter_button">
                     save
                 </a>
             </div>
+            <input type="text" name="filter-name" id="some_id" class="save_filter_input"/>
         </div>
 
     </div>

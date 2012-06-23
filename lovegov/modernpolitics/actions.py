@@ -918,45 +918,6 @@ def matchComparison(request,vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# returns more feed items
-#-----------------------------------------------------------------------------------------------------------------------
-def ajaxFeed(request, vals={}):
-    if request.method == 'POST':
-        user = vals['viewer']
-        feed_type = request.POST['feed_type']
-        start = int(request.POST['start'])
-        how_many = int(request.POST['how_many'])
-        json_data = request.POST['topics']
-        topic_aliases = json.loads(json_data)
-        stop = start + how_many
-        if topic_aliases:
-            topics = Topic.objects.filter(alias__in=topic_aliases)
-            content = Content.objects.filter(Q(type='P') | Q(type='N'))
-            content = content.filter(main_topic__in=topics)
-        else:
-            content = Content.objects.filter(Q(type='P') | Q(type='N'))
-        if feed_type == 'N':
-            feed = latest(user, start, stop, content)
-        elif feed_type == 'B':
-            feed = greatest(user, start, stop, content)
-        else:
-            if not topic_aliases:
-                feed = feedHelper(user, feed_type, start, stop)
-            else:
-                print ("check it: " + str(topics))
-                feed = feedHelper(user, feed_type, start, stop, topics)
-        vals['feed'] = feed
-        position = start + len(feed)
-        vals['defaultImage'] = getDefaultImage().image
-        context = RequestContext(request,vals)
-        template = loader.get_template('deployment/snippets/feed_helper.html')
-        feed_string = template.render(context)  # render comment html
-        to_return = {'feed':feed_string, 'position':position}
-        return HttpResponse(json.dumps(to_return))
-    else:
-        return HttpResponse("not a real page")
-
-#-----------------------------------------------------------------------------------------------------------------------
 # reloads html for thread
 #-----------------------------------------------------------------------------------------------------------------------
 def ajaxThread(request, vals={}):
@@ -1037,6 +998,11 @@ def saveFilter(request, vals={}):
         filter.groups.add(g)
 
     viewer = vals['viewer']
+
+    already = viewer.my_filters.filter(name=name)
+    if already:
+        viewer.my_filters.remove(already[0])
+
     viewer.my_filters.add(filter)
 
     return HttpResponse("success")
@@ -1287,7 +1253,6 @@ actions = { 'getLinkInfo': getLinkInfo,
             'answerWeb': answerWeb,
             'feedback': feedback,
             'updateGroupView': updateGroupView,
-            'ajaxFeed': ajaxFeed,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
             'getuseractions': getUserActions,

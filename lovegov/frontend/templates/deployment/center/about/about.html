@@ -34,20 +34,49 @@
 </div>
 
 <script type="text/javascript">
-    function textFadeIn(ele,text,spd)
+
+    (function( $ )
     {
-        var size = 0;
-        var speed = spd;
-        function countdown()
+        $.fn.textFadeIn = function(options)
         {
-            if(size < text.length)
+            var settings = $.extend({
+                'speed'         : 25
+            }, options);
+
+            var self = this;
+            var full_text = self.data('full_text');
+            var timeouts = self.data("timeouts");
+
+            if (!full_text) { self.data('full_text', self.text()); }
+
+            if (timeouts)
             {
-                ele.append(text[size++]);
-                setTimeout(countdown, speed);
+                for (var j=0;j<self.data('timeouts').length;j++)
+                {
+                    clearTimeout(self.data('timeouts')[j]);
+                }
             }
-        }
-        countdown();
-    }
+            else { self.data('timeouts',new Array()); }
+
+            var textSplit = self.data('full_text').split('');
+            var counter = 0;
+            this.empty();
+
+            function countdown()
+            {
+                if(counter < textSplit.length)
+                {
+                    self.append('<span style="display:none" id="fadespan' + counter + '">' + textSplit[counter] + '</span');
+                    $('#fadespan' + counter).fadeIn('slow').replaceWith(function(){return this.innerHTML;});
+                    self.text(self.text());
+                    counter++;
+                    var t = setTimeout(countdown, settings.speed);
+                    self.data('timeouts').push(t);
+                }
+            }
+            countdown();
+        };
+    })( jQuery );
 
     function aboutPage()
     {
@@ -57,6 +86,7 @@
         var developerDivs = $('.who-are-we-circle-div');
         var h3 = $('.who-are-we-circle-div-center h3');
 
+        var text = $('.mission p').text();
 
         developerDivs.each(function()
         {
@@ -89,18 +119,15 @@
             $(div).show();
             if (div=='#who-are-we-div')
             {
+
                 developerDivs.each(function()
                 {
                     var json = $(this).data('json');
                     $(this).animate({'left':json.x,'top':json.y});
                 });
 
-                $('.mission p').each(function()
-                {
-                    var text = $(this).text().split('');
-                    $(this).empty();
-                    textFadeIn($(this),text,25);
-                });
+                $('.mission p').textFadeIn({'speed':10});
+
             }
             else
             {

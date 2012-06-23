@@ -2501,17 +2501,17 @@ function getFeed(num)
 /*
  makes a post to the server to save the current filter setting as the inputted name.
  */
-function saveFilter() {
+function saveFilter(name, f_id) {
 
-    var feed_name = $(".save-filter-name").val();
-
-    var feed_ranking = $(".feed_ranking").val();
-    var feed_display =  $(".feed_display").val();
-    var feed_submissions_only =  $(".feed_submissions_only").val();     // limit to content created by members of selected groups
-    var feed_topics = $.parseJSON($(".feed_topics").val());
-    var feed_types =  $.parseJSON($(".feed_types").val());
-    var feed_levels =  $.parseJSON($(".feed_levels").val());
-    var feed_groups =  $.parseJSON($(".feed_groups").val());
+    var feed_id = f_id;
+    var feed_name = name;
+    var feed_ranking = feed_metadata.ranking;
+    var feed_display =  feed_metadata.display;
+    var feed_submissions_only =  feed_metadata.submissions_only;
+    var feed_topics = feed_metadata.topics;
+    var feed_types =  feed_metadata.types;
+    var feed_levels =  feed_metadata.levels;
+    var feed_groups =  feed_metadata.groups;
     feed_topics = JSON.stringify(feed_topics);
     feed_types = JSON.stringify(feed_types);
     feed_levels = JSON.stringify(feed_levels);
@@ -2524,7 +2524,7 @@ function saveFilter() {
             'feed_name': feed_name
         },
         success: function(data) {
-            location.reload();
+            $(".save_filter_input").val("saved.");
         },
         error: null
     });
@@ -2538,38 +2538,19 @@ function getFilter(f_id) {
         data: {'action':'getFilter', filter_id:f_id},
         success: function(data) {
 
-            alert("success!");
+            var returned = eval('('+data+')');
 
-            var returned = eval('(' + data + ')');
+            feed_metadata.ranking = returned.ranking;
+            feed_metadata.display = returned.display;
+            feed_metadata.submissions_only = returned.submissions_only;
+            feed_metadata.topics = $.parseJSON(returned.topics);
+            feed_metadata.levels = $.parseJSON(returned.levels);
+            feed_metadata.groups = $.parseJSON(returned.groups);
+            feed_metadata.types = $.parseJSON(returned.types);
 
-            clearFilterParameters();
+            updateFeedVisual();
 
-            setRanking(returned.ranking);
-            setDisplay(returned.display);
-            setSubmissionOnly(returned.submissions_only);
-
-            var feed_topics = $.parseJSON($(".feed_topics").val());
-            var feed_types =  $.parseJSON($(".feed_types").val());
-            var feed_levels =  $.parseJSON($(".feed_levels").val());
-            var feed_groups =  $.parseJSON($(".feed_groups").val());
-
-
-            feed_types.each(function(index) {
-                alert($(this));
-                addType($(this));
-            });
-
-            feed_topics.each(function(index) {
-                addTopic($(this));
-            });
-
-            feed_groups.each(function(index) {
-                addGroup($(this));
-            });
-
-            feed_levels.each(function(index) {
-                addLevel($(this));
-            });
+            refreshFeed(-1);
 
         },
         error: null
@@ -2694,58 +2675,85 @@ function hide(div)
  */
 function clearFilterParameters() {
 
-    feed_metadata.topics =  JSON.stringify([]);
-    var topic_icon_wrapper = $(".feed-topic-selector-wrapper");
-    clearTopicIcons(topic_icon_wrapper);
+    feed_metadata.topics =  [];
+    feed_metadata.types =  [];
+    feed_metadata.levels =  [];
+    feed_metadata.groups =  [];
+    feed_metadata.ranking = 'N';
+    updateFeedVisual();
 
-    feed_metadata.types =  JSON.stringify([]);
-    $(".feed-type-selector").attr("checked", false);
-
-    feed_metadata.levels =  JSON.stringify([]);
-    $(".feed-level-selector").attr("checked", false);
-
-    feed_metadata.groups =  JSON.stringify([]);
-    $(".feed-group-selector").attr("checked", false);
+    refreshFeed(-1);
 
 }
 
+/* updates the visual display of feed parameters based on javascript object representation */
+function updateFeedVisual() {
 
-/*
- the following methods are helpers for get filter which apply the retrieved parameters to the page.
- */
-function addTopic(t_id) {
-    var t_wrapper = $(".feed-topic-icon-wrapper[data-id=" + t_id + "]");
-    showTopicIcon(t_wrapper);
-    listToggleHelper(feed_metadata.topics, t_id);
-}
+    var feed_types = $(".feed-type-selector");
+    feed_types.each(function(index) {
+        var this_type = $(this).data('type');
+        var i = $.inArray(this_type, feed_metadata.types);
+        if (i != -1) {
+            $(this).addClass("clicked");
+        }
+        else {
+            $(this).removeClass("clicked");
+        }
+    });
 
-function addType(type) {
-    listToggleHelper(feed_metadata.types, type);
-    $(".feed-type-selector[value=" + type + "]").attr("checked", true);
-}
+    var feed_levels = $(".feed-level-selector");
+    feed_levels.each(function(index) {
+        var this_level = $(this).data('level');
+        var i = $.inArray(this_level, feed_metadata.levels);
+        if (i != -1) {
+            $(this).addClass("clicked");
+        }
+        else {
+            $(this).removeClass("clicked");
+        }
+    });
 
-function addLevel(level) {
-    listToggleHelper(feed_metadata.levels, level);
-    $(".feed-level-selector[value=" + level + "]").attr("checked", true);
-}
+    var feed_groups = $(".feed_group_selector");
+    feed_groups.each(function(index) {
+        var this_group = $(this).data('level');
+        var i = $.inArray(this_group, feed_metadata.groups);
+        if (i != -1) {
+            $(this).addClass("clicked");
+        }
+        else {
+            $(this).removeClass("clicked");
+        }
+    });
 
-function addGroup(g_id) {
-    listToggleHelper(feed_metadata.groups, g_id);
-    $(".feed-group-selector[value=" + g_id + "]").attr("checked", true);
-}
+    var feed_topics = $(".feed-topic-icon-wrapper");
+    feed_topics.each(function(index) {
+        var this_topic = $(this).data('t_id');
+        var i = $.inArray(this_topic, feed_metadata.topics);
+        if (i != -1) {
+            showTopicIcon($(this));
+        }
+        else {
+            hideTopicIcon($(this));
+        }
+    });
 
-function setSubmissionOnly(value) {
-    feed_metadata.submissions_only = value;
-}
+    setDisplay(feed_metadata.display);
 
-function setRanking(value) {
-    feed_metadata.ranking = value;
+    setRanking(feed_metadata.ranking);
 }
 
 function setDisplay(value) {
     feed_metadata.display = value;
     var visual_wrapper = $("div[data-display=" + value + "]");
     visualSelectDisplayWrapper(visual_wrapper);
+}
+
+function setRanking(value) {
+    $(".feed-ranking-selector").removeClass("clicked");
+    var ranking_wrapper = $(".feed-ranking-selector[data-ranking=" + value + "]");
+    ranking_wrapper.addClass("clicked");
+    $(".ranking_menu_title").text(ranking_wrapper.data('verbose'));
+    feed_metadata.ranking = value;
 }
 
 
@@ -2815,15 +2823,24 @@ function loadNewFeed() {
 
     // parse json for metadata
     feed_metadata = $("#feed_metadata").data('json');
+    updateFeedVisual();
 
-    //$(".more-options-wrapper").hide();
+    $(".more-options-wrapper").css('height', '0px');
+    $(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
         event.preventDefault();
-        $(".more-options-wrapper").toggle();
+        var wrapper = $(".more-options-wrapper");
+        if (wrapper.hasClass("out")) {
+            wrapper.css("overflow", "hidden");
+            wrapper.animate({"height": '0px'}, 1000);
+            wrapper.removeClass("out");
+        }
+        else {
+            wrapper.show();
+            wrapper.animate({"height": '120px'}, 1000, function() { wrapper.css('overflow', 'visible')});
+            wrapper.addClass("out");
+        }
     });
-
-    /* set initial display value */
-    $(".display-red").hide();
 
 
     $(".get_feed").click(function(event) {
@@ -2839,36 +2856,44 @@ function loadNewFeed() {
     $(".feed-topic-img").click(function(event) {
         var wrapper = $(this).parents(".topic-icon-wrapper");
         toggleTopicIcon(wrapper);
-        var value = $(this).parents(".feed-topic-icon-wrapper").attr("data-id");
+        var value = $(this).parents(".feed-topic-icon-wrapper").data('t_id');
         listToggleHelper(feed_metadata.topics, value);
         refreshFeed(-1);
     });
 
     $(".feed-display-selector").click(function(event) {
         event.preventDefault();
-        var display = $(this).attr("data-display");
+        var display = $(this).data("display");
         feed_metadata.display = display;
         refreshFeed(-1);
     });
 
-    $(".save-filter-button").click(function(event) {
+    $(".save_filter_button").click(function(event) {
         event.preventDefault();
-        saveFilter();
+        var name = $(".save_filter_input").val();
+        if (name!='' && name!='enter a name for your filter.') {
+            saveFilter(name);
+        }
+        else {
+            $(".save_filter_input").val('enter a name for your filter.');
+        }
     });
 
-    $(".my-filter-selector").click(function(event) {
+    $(".saved-filter-selector").click(function(event) {
         event.preventDefault();
-        var value = $(this).attr("data-id");
+        var value = $(this).data("f_id");
         getFilter(value);
+        $(".save_filter_input").val($(this).data('f_name'));
     });
 
-    $(".feed-clear").click(function(event) {
+    $(".feed_clear").click(function(event) {
+        event.preventDefault();
         clearFilterParameters();
     });
 
     /* display menu */
     $(".display-choice").click(function(event) {
-        setDisplay($(this).attr("data-display"));
+        setDisplay($(this).data('display'));
         var num = 6;
         var already = feed_metadata.start;
         if (already > num) {
@@ -2879,14 +2904,11 @@ function loadNewFeed() {
 
     /* sort-by menu */
     $(".feed-ranking-selector").click(function(event) {
-        var data = $(this).data();
-        $(".ranking_menu_title").text(data.verbose);
-        feed_metadata.ranking = data.ranking;
-        $(this).parents(".menu_toggle").removeClass("highlighted");
+        setRanking($(this).data('ranking'));
         refreshFeed(-1);
     });
 
-    /* group menu  visual */
+    /* group and network menu  visual */
     defaultHover($(".group-box"));
     $(".group-box").click(function(event) {
         event.preventDefault();
@@ -2905,6 +2927,7 @@ function loadNewFeed() {
         var value = $(this).data('level');
         listToggleHelper(feed_metadata.levels, value);
         refreshFeed(-1);
+        event.stopPropagation();
     });
 
     /* types menu */
@@ -2912,6 +2935,7 @@ function loadNewFeed() {
         var value = $(this).data('type');
         listToggleHelper(feed_metadata.types, value);
         refreshFeed(-1);
+        event.stopPropagation();
     });
 
     /* gray hover for all dropdown menu options */
