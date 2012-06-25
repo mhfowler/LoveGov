@@ -1,0 +1,39 @@
+{% load thumbnail %}
+
+<div class="pinterest-top-comment">
+
+    <div class="comment-header">
+        {% with creator=top_comment.getCreator %}
+            <div class="comment-image">
+                {% if top_comment.getPublic %}
+                    <a href="{{ creator.get_url }}">
+                        {% thumbnail creator.getProfileImage.image "20x20" crop="center" as im %}
+                            <img src="{{ im.url }}"/>
+                        {% empty %}
+                            <img src="/static/images/obama.jpg" width="20px" height="20px">
+                        {% endthumbnail %}
+                    </a>
+                {% else %}
+                    {% thumbnail defaultImage "20x20" format="PNG" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% empty %}
+                        <img src="/static/images/obama.jpg" width="20px" height="20px">
+                    {% endthumbnail %}
+                {% endif %}
+            </div>
+
+            <div class="comment-creator">
+                {% if top_comment.getPublic %}
+                    <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said:
+                {% else %}
+                    Anonymous said:
+                {% endif %}
+            </div>
+        {% endwith %}
+    </div>
+
+    <div class="comment-text">
+        "{{ top_comment.text }}"
+    </div>
+
+</div>

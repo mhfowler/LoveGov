@@ -612,6 +612,7 @@ div.linear-wrapper {
 
   div.linear {
     width:750px;
+    height:250px;
     overflow:hidden;
     border-bottom: 1px solid $light-gray;
     margin-bottom:40px;
@@ -623,10 +624,17 @@ div.linear-wrapper {
 
       div.linear-picture {
         height:100px;
-      }
 
-      div.pinterest-image {
-        width:200px;
+        div.pinterest-image {
+          width:250px;
+        }
+
+        div.header-topic {
+          position:absolute;
+          top:10px;
+          left:20px;
+        }
+
       }
     }
 

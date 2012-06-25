@@ -1,0 +1,66 @@
+{% load thumbnail %}
+
+{% with creator=item.getCreator %}
+
+    <div class="linear">
+
+        <div class="linear-main">
+
+            <div class="linear-left">
+
+                <div class="linear-picture">
+
+                    {% include 'deployment/center/feed/feed_image.html' %}
+
+                    <div class="header-topic">
+                        <a href="{{ item.getMainTopic.get_url }}">
+                            {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
+                                <img src="{{ im.url }}"/>
+                            {% empty %}
+                                <p> ? </p>
+                            {% endthumbnail %}
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- footer -->
+                {% include 'deployment/center/feed/feed_footer.html' %}
+
+                <div style="clear:both"></div>
+
+            </div>
+
+
+            <div class="linear-right">
+
+                <!-- title -->
+                {% include 'deployment/center/feed/feed_title.html' %}
+
+                <!-- summary -->
+                {% include 'deployment/center/feed/feed_summary.html' %}
+
+                <!-- top-comment -->
+                {% with top_comment=item.getTopComment %}
+                    {% if top_comment %}
+
+                        {% include 'deployment/center/feed/top_comment.html' %}
+
+                    {% endif %}
+                {% endwith %}
+
+                <!-- avatar -->
+                {% include 'deployment/center/feed/feed_avatar.html' %}
+
+            </div>
+
+            <div style="clear:both"></div>
+
+        </div>
+
+    </div>
+
+{% endwith %}
+
+
+
