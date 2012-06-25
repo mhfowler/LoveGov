@@ -495,12 +495,30 @@ div.pinterest_card {
         div.hearts-wrapper {
           margin: 15px 0 0 15px;
 
+          div.heart {
+            width:20px;
+            height:18px;
+            background:contain;
+          }
+
           span.status {
+            width:12px;
+            overflow:hidden;
             margin: 0px 5px 0px 5px;
             @include fontSize(20px);
           }
+
         }
 
+      }
+
+      div.share {
+        a.share_button {
+          @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
+          position:relative;
+          top:17px;
+          margin-left:20px;
+        }
       }
 
       div.comments {
@@ -515,6 +533,14 @@ div.pinterest_card {
           height:25px;
           @include rounded(10px);
           @extend .box;
+
+          span.comments-text {
+            margin: 3px 0 3px 0;
+          }
+
+          span.comments-num {
+            color:$red;
+          }
         }
 
       }
@@ -602,3 +628,4 @@ div.create-modal {
   width: 60%;
   height: 60%;
 }
+
