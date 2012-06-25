@@ -115,3 +115,11 @@
   border-color: $gray;
   background-color: white;
 }
+
+@mixin round-rectangle($width,$height,$radius,$background-color)
+{
+  width:$width;
+  height:$height;
+  @include rounded($radius);
+  background-color:$background-color;
+}
