@@ -561,7 +561,7 @@ $(document).ready(function()
 // load universal frame
 function rebindUniversalFrame()
 {
-    loadHeader();
+    //loadHeader();
     loadLeftSidebar();
 }
 
