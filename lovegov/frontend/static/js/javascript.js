@@ -755,9 +755,10 @@ function loadHeader()
 
     function toggleUserMenu()
     {
-        $('#user-menu').toggleClass("user-menu-unselected");
-        $('#user-menu').toggleClass("user-menu-selected");
+        $('.user-menu').toggleClass("user-menu-unselected");
+        $('.user-menu').toggleClass("user-menu-selected");
         $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
+        $('.user-menu-pointer').css('left',$('#user-menu-dropdown').width()-$('.user-menu').width()+($('.user-menu-pointer').width()/2));
     }
 
     $('#user-menu-container').bind("clickoutside",function(event)
@@ -770,7 +771,7 @@ function loadHeader()
         }
     });
 
-    $('#down-arrow').click(toggleUserMenu);
+    $('#menu-down-arrow').click(toggleUserMenu);
 
     $('#user-menu-account').click(function(event)
     {

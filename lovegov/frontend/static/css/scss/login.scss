@@ -110,10 +110,11 @@ div#bottom
 
 .team
 {
-  @extend .float-left;
+  float:left;
 }
 
 $margin:20px;
+
 .team_left
 {
   @extend .team;
@@ -229,7 +230,7 @@ p.privacy_p
 .button-red, .button-red:link, .button-red:active, .button-red:visited
 {
   @extend .button-red;
-  @extend .float-right;
+  float:right;
   font-size:23px;
 }
 
@@ -272,19 +273,19 @@ div.get-started-left
   font-weight:bold;
   font-size:170px;
   color:$red;
-  @extend .float-left;
+  float:left;
   @include setMargin(0,15px);
 }
 
 .get-started-right
 {
-  @extend .float-left;
+  float:left;
   text-align:center;
 }
 
 .get-started-bottom
 {
-  @extend .float-left;
+  float:left;
 }
 
 .get-started-paragraph
@@ -299,7 +300,7 @@ p.recovery-error
 {
   @include fontSize(17px);
   @include setMargin($margin-top:5px);
-  @extend .float-left;
+  float:left;
   width:260px;
   text-align:left;
 }

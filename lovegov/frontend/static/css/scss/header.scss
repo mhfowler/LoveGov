@@ -1,6 +1,6 @@
 @charset "UTF-8";
 @import 'master-variables';
-@import 'master';
+@import 'master-mixins';
 
 
 div#top
@@ -9,25 +9,25 @@ div#top
   position:relative;
   width:1000px;
   height:45px;
-  padding-bottom:5px;
+  padding-bottom:6px;
   background-color:white;
   margin-left:auto;
   margin-right:auto;
   margin-top:5px;
-  $shadow:0 1px 10px $light-gray;
-  -moz-box-shadow: $shadow;
-  -webkit-box-shadow: $shadow;
+  $shadow:0 1px 8px $light-gray;
+
   box-shadow: $shadow;
 
   div.top-div
   {
-    @extend .float-left;
+    float:left;
   }
 
   div.top-logo
   {
     @extend .top-div;
-    padding-right:10px;
+    padding-left:5px;
+    padding-right:5px;
   }
 
   div.link-wrapper
@@ -46,7 +46,7 @@ div#top
 
     div.top-links
     {
-      margin-right:6px;
+      margin-right:5px;
 
       a, a:link, a:active,a:visited
       {
@@ -71,7 +71,7 @@ div#top
   {
     float:left;
     position:relative;
-    margin-left:15px;
+    margin-left:10px;
     margin-top:7px;
 
     $width: 325px;
@@ -95,10 +95,10 @@ div#top
       width:$width + (2*$width-padding);
       height:320px;
       top:$search-height + (2*$width-padding);
-      border-left:1px solid $red;
-      border-right:1px solid $red;
-      border-bottom:1px solid $red;
-      border-top:1px solid $gray;
+      border-left:1px solid $gray;
+      border-right:1px solid $gray;
+      border-bottom:1px solid $gray;
+      border-top:1px solid $red;
       background-color:white;
     }
 
@@ -113,101 +113,115 @@ div#top
 
   div#user-menu-container
   {
-    margin-left:15px;
     float:right;
     margin-top:5px;
+    height:40px;
 
-    div.user-menu-options
+    div.user-menu-options-wrapper
     {
       float:left;
       margin-top:5px;
+      padding-left:8px;
+      padding-right:8px;
+      margin-right:10px;
+      border-left:1px $gray solid;
+      border-right:1px $gray solid;
       $width:30px;
       $height:30px;
+      height:$height;
 
-      img.security-mode
-      {
-        width:$width;
-        height:$height;
-        float:left;
-        margin-left:10px;
-      }
-
-      div.header-notifications
+      div.user-menu-options
       {
         float:left;
-        cursor:pointer;
-        @include round-rectangle($width:$width,$height:$height,$radius:5px,$background-color:$red);
+        margin-top:3px;
 
-        div#notifications-dropdown-button
+
+        img.security-mode
         {
-          width:$width;
-          height:$height;
-          margin: 0px;
-          display: block;
-          text-align: center;
-
-          div#notifications-number
-          {
-            @extend h4;
-            color:white;
-            padding-top:5px;
-          }
-
-          #notifications-dropdown-arrow
-          {
-            background-image: url(/static/images/user-menu/downarrow.png);
-            display: block;
-            width: 12px;
-            height: 8px;
-            margin-left: auto;
-            margin-right: auto;
-            top: -5px;
-          }
+          width:$width+-5;
+          height:$height+-5;
+          float:left;
+          margin-left:10px;
         }
 
-        #notifications-dropdown
+        div.header-notifications
         {
-          border-left: solid 1px;
-          border-right: solid 1px;
-          border-bottom: solid 1px;
-          border-color: $gray;
-          position: absolute;
-          color: $black;
-          font-size: 13px;
-          top: 47px;
-          width: 279px;
-          min-height: 200px;
-          z-index: 100;
-          background-color: white;
+          float:left;
+          cursor:pointer;
+          @include round-rectangle($width:$width+-5,$height:$height+-5 ,$radius:5px,$background-color:$red);
 
-          div.notification
+          div#notifications-dropdown-button
           {
-            @include notification-box;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            padding-left: 10px;
-          }
-
-          div.notification:hover
-          {
-            background-color: $light-gray;
-          }
-
-          div.see-more-notifications
-          {
-            @include notification-box;
-            padding-top: 5px;
-            padding-bottom: 5px;
+            width:$width - 5;
+            height:$height - 5;
+            margin: 0px;
+            display: block;
             text-align: center;
+
+            div#notifications-number h5
+            {
+              color:white;
+              padding-top:5px;
+            }
+
+            #notifications-dropdown-arrow
+            {
+              background-image: url(/static/images/user-menu/downarrow.png);
+              display: block;
+              width: 12px;
+              height: 8px;
+              margin-left: auto;
+              margin-right: auto;
+              top: -5px;
+            }
           }
 
-          div.see-more-notifications:hover
+          #notifications-dropdown
           {
-            background-color: $light-gray;
+            border-left: solid 1px;
+            border-right: solid 1px;
+            border-bottom: solid 1px;
+            border-color: $gray;
+            position: absolute;
+            color: $black;
+            font-size: 13px;
+            top: 47px;
+            width: 279px;
+            min-height: 200px;
+            z-index: 100;
+            background-color: white;
+
+            div.notification
+            {
+              @include notification-box;
+              padding-top: 10px;
+              padding-bottom: 10px;
+              padding-left: 10px;
+            }
+
+            div.notification:hover
+            {
+              background-color: $light-gray;
+            }
+
+            div.see-more-notifications
+            {
+              @include notification-box;
+              padding-top: 5px;
+              padding-bottom: 5px;
+              text-align: center;
+            }
+
+            div.see-more-notifications:hover
+            {
+              background-color: $light-gray;
+            }
           }
         }
       }
     }
+
+
 
     div.user-menu
     {
@@ -218,9 +232,10 @@ div#top
       div#menu-down-arrow
       {
         float:left;
-        margin-left:5px;
-        margin-top:15px;
-        @include triangle-down($size: 5px, $color: $red)
+        margin-left:10px;
+        margin-top:19px;
+        margin-right:5px;
+        @include triangle-down($size: 4px, $color: $red)
       }
 
 
@@ -234,12 +249,9 @@ div#top
         color:#0F5569;
       }
 
-
-
     }
 
-
-
+  }
 
 
   }
@@ -260,17 +272,7 @@ div#top
   /* box-shadow: 0 0 5px 1px #CCC;*/
   }
 
-  .user-menu-unselected
-  {
-    border: 1px solid #CCC;
-  }
 
-  .user-menu-selected
-  {
-    border-top: 1px solid #CCC;
-    border-right: 1px solid #CCC;
-    border-left: 1px solid #CCC;
-  }
 
   .user-img
   {
@@ -293,11 +295,18 @@ div#top
     background-position:center;
   }
 
-  #user-menu-dropdown
+  div#user-menu-dropdown
   {
     position:absolute;
-    width:250px;
+    right:0;
+    top:51px;
     z-index:1000;
+
+    div.user-menu-pointer
+    {
+      @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:30px);
+    }
+
   }
 
   .user-menu-dropdown-div-top
@@ -308,6 +317,7 @@ div#top
   .user-menu-dropdown-div
   {
     height:50px;
+    width:260px;
     border-left: 1px solid #CCC;
     border-right: 1px solid #CCC;
     border-bottom: 1px solid #CCC;
@@ -352,7 +362,7 @@ div#top
   }
 
 
-}
+
 
 
 
