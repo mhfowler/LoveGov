@@ -40,8 +40,10 @@
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
         {% elif modifier == 'D' %}
+            <td class="notification-thumbnail">
+                <img src="/static/images/feed/heart-small.png"/>
+            </td>
             <td class="notification-text">
-                <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
                     and one other person
@@ -52,8 +54,10 @@
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
         {% else %}
+            <td class="notification-thumbnail">
+                <img src="/static/images/feed/heart-small.png"/>
+            </td>
             <td class="notification-text">
-                <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
                     and one other person
