@@ -123,10 +123,13 @@
 
             <div class="pinterest-footer">
                 <div class="hearts">
-                    {% include 'deployment/snippets/hearts.html' with x=20 y=20 content=item %}
+                    {% include 'deployment/snippets/hearts.html' with content=item %}
                 </div>
                 <div class="comments">
-                    comments
+                    <div class="comments-wrapper">
+                        <span class="comments-text"> comments </span>
+                        <span class="comments-num"> 7 </span>
+                    </div>
                 </div>
                 <div class="share">
                     share

@@ -1,3 +1,5 @@
-<div class="hearts_wrapper" data-c_id="{{ content.id }}">
-    <div class="heart_plus heart"></div> <span class="status">{{ content.status }}</span> <div class="heart_minus heart"></div>
+<div class="hearts_wrapper hearts-wrapper" data-c_id="{{ content.id }}">
+    <div class="heart_minus heart {% if my_vote == -1 %} clicked {% endif %}"> </div>
+    <span class="status">{{ content.status }} </span>
+    <div class="heart_plus heart  {% if my_vote == 1 %} clicked {% endif %}"> <a href=""></a> </div>
 </div>​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​

@@ -422,11 +422,11 @@ def vote(request, vals):
     user = vals['viewer']
     privacy = getPrivacy(request)
     content = Content.objects.get(id=request.POST['c_id'])
-    vote = request.POST['vote']
+    vote = int(request.POST['vote'])
     # save vote
-    if vote == 'L':
+    if vote == 1:
         value = content.like(user=user, privacy=privacy)
-    elif vote == 'D':
+    elif vote == -1:
         value = content.dislike(user=user, privacy=privacy)
     to_return = {'my_vote':value, 'status':content.status}
     return HttpResponse(json.dumps(to_return))

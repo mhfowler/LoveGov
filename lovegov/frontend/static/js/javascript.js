@@ -2559,53 +2559,21 @@ function getFilter(f_id) {
 /* heart stuff */
 function heartButtons()
 {
-    var container = $(".not-processed");
-    container.hide();
-
-    container.find(".heart").hover
-        (
-            function()
-            {
-                $(this).parent().children(".grey").hide();
-                $(this).parent().children(".blue").show();
-
-            },
-            function()
-            {
-                var blue = $(this).parent().children(".blue");
-                if (blue.hasClass("hide"))
-                {
-                    blue.hide();
-                    $(this).parent().children(".grey").show();
-                }
-            }
-        );
-
-    container.find(".plus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='L';
-        vote($(this),content_id, v);
+    $(".heart_minus").click(function(event) {
+        var wrapper = $(this).parents(".hearts-wrapper");
+        event.preventDefault();
+        vote(wrapper, wrapper.data('c_id'), -1);
     });
 
-    container.find(".minus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='D';
-        vote($(this),content_id, v);
+    $(".heart_plus").click(function(event) {
+        var wrapper = $(this).parents(".hearts-wrapper");
+        event.preventDefault();
+        vote(wrapper, wrapper.data('c_id'), 1);
     });
-
-    container.removeClass("not-processed");
-    container.show();
 }
 
-function heartDisplay()
-{
-    $(".hide").hide();
-    $(".show").show();
-}
 
-function vote(div, content_id, v)
+function vote(wrapper, content_id, v)
 {
     ajaxPost({
         data: {'action':'vote','c_id':content_id, 'vote':v},
@@ -2614,12 +2582,10 @@ function vote(div, content_id, v)
             var returned = eval('(' + data + ')');
             var my_vote = parseInt(returned.my_vote);
             var status = returned.status;
-            if (my_vote==1) { like(div); }
-            if (my_vote==0) { neutral(div); }
-            if (my_vote==-1) { dislike(div); }
-            heartDisplay();
-            // change status
-            div.parent().parent().find(".post-score").text(status);
+            if (my_vote==1) { like(wrapper); }
+            if (my_vote==0) { neutral(wrapper); }
+            if (my_vote==-1) { dislike(wrapper); }
+            wrapper.find(".status").text(status);
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -2630,43 +2596,18 @@ function vote(div, content_id, v)
 
 function like(div)
 {
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    show(plus_blue);
-    hide(plus_grey);
-    hide(minus_blue);
-    show(minus_grey);
+    div.find(".heart_plus").addClass("clicked");
+    div.find(".heart_minus").removeClass("clicked");
 }
 function dislike(div)
 {
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    hide(plus_blue);
-    show(plus_grey);
-    show(minus_blue);
-    hide(minus_grey);
+    div.find(".heart_plus").removeClass("clicked");
+    div.find(".heart_minus").addClass("clicked");
 }
 function neutral(div)
 {
-    var blue = div.parent().parent().find(".blue");
-    var grey = div.parent().parent().find(".grey");
-    hide(blue);
-    show(grey);
-}
-
-function show(div)
-{
-    div.addClass("show");
-    div.removeClass("hide");
-}
-function hide(div)
-{
-    div.addClass("hide");
-    div.removeClass("show");
+    div.find(".heart_plus").removeClass("clicked");
+    div.find(".heart_minus").removeClass("clicked");
 }
 
 /*
@@ -2825,7 +2766,6 @@ function loadNewFeed() {
     updateFeedVisual();
 
     $(".more-options-wrapper").css('height', '0px');
-    //$(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
         event.preventDefault();
         var wrapper = $(".more-options-wrapper");

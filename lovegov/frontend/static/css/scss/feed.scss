@@ -1,6 +1,5 @@
 @import 'master-variables';
 @import 'master-mixins';
-@import 'master-classes';
 
 .border {
   border:solid;
@@ -17,7 +16,7 @@
 
 
 .feed-main-div {
-  @extend .main-div;
+  @include main-div();
   margin-top:5px;
 }
 
@@ -492,6 +491,16 @@ div.pinterest_card {
         width:100px;
         height:50px;
         border-right: 1px solid $light-gray;
+
+        div.hearts-wrapper {
+          margin: 15px 0 0 15px;
+
+          span.status {
+            margin: 0px 5px 0px 5px;
+            @include fontSize(20px);
+          }
+        }
+
       }
 
       div.comments {
@@ -499,6 +508,15 @@ div.pinterest_card {
         width:100px;
         height:50px;
         border-right: 1px solid $light-gray;
+
+        div.comments-wrapper {
+          margin: 10px 0 0 5px;
+          width:90px;
+          height:25px;
+          @include rounded(10px);
+          @extend .box;
+        }
+
       }
 
       div.share {
@@ -570,29 +588,8 @@ div.pinterest-top-comment {
   @include fontSize(20px);
 }
 
-
 div.heart {
   width:20px;
-  height:20px;
-}
-
-div.heart {
-  display: inline-block;
-  background-size: 100%;
-}
-
-​div.heart_plus {
-  background-image: url('/static/images/heart_plus.png');
-}​
-
-div.heart_plus.red {
-   background-image: url('/static/images/heart_plus_hover.png');
- }
-
-div.heart_minus {
-  background-image: url('/static/images/heart_minus.png');
-}
-
-div.heart_minus.red {
-  background-image: url('/static/images/heart_minus_hover.png');
+  height:18px;
+  background:contain;
 }
