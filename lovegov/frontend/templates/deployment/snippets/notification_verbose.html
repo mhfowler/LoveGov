@@ -39,10 +39,9 @@
                 liked
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
-            <td class="clear-both"></td>
         {% elif modifier == 'D' %}
-            <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
             <td class="notification-text">
+                <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
                     and one other person
@@ -52,10 +51,9 @@
                 disliked
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
-            <td class="clear-both"></td>
         {% else %}
-            <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
             <td class="notification-text">
+                <img class="notification-thumbnail" src="/static/images/feed/heart-small.png"/>
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
                     and one other person

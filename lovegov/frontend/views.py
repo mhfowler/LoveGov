@@ -1024,7 +1024,11 @@ def account(request, vals={}):
                 vals['uploadform'] = UploadFileForm(request.POST)
         else:
             pass
-        return renderToResponseCSRF('deployment/pages/account.html', vals, request)
+
+
+        html = ajaxRender('deployment/center/account.html', vals, request)
+        url = '/account/'
+        return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

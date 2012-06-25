@@ -2547,22 +2547,28 @@ function bindCreateButton() {
 
 function loadCreate()
 {
-    $('#create-petition-button').click(function()
+    $('div.create-submit-div').click( function(event)
     {
-        $('.create-content-div').hide();
-        $('#create-petition-div').show();
+        event.preventDefault();
+        $('div.overdiv').hide();
     });
 
-    $('#create-news-button').click(function()
+    $('#create_petition_button').click(function()
     {
-        $('.create-content-div').hide();
-        $('#create-news-div').show();
+        $('.create_content_div').hide();
+        $('#create_petition_div').show();
     });
 
-    $('#create-group-button').click(function()
+    $('#create_news_button').click(function()
     {
-        $('.create-content-div').hide();
-        $('#create-group-div').show();
+        $('.create_content_div').hide();
+        $('#create_news_div').show();
+    });
+
+    $('#create_group_button').click(function()
+    {
+        $('.create_content_div').hide();
+        $('#create_group_div').show();
     });
 
     var timeout;
