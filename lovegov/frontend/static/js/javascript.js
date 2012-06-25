@@ -939,7 +939,7 @@ function closeLeftSideWrapper(wrapper)
 function loadLeftSidebar()
 {
 
-    $('.create-img').click(function()
+    $('.left-side-img').click(function()
     {
         var parent = $(this).parent();
         if (parent.hasClass('clicked'))
@@ -955,238 +955,10 @@ function loadLeftSidebar()
         }
     });
 
-    $('.create-wrapper').bind('clickoutside',function()
+    $('.left-side-wrapper').bind('clickoutside',function()
     {
         var wrapper = $(this);
         if (wrapper.hasClass('clicked')) { closeLeftSideWrapper(wrapper); }
-    });
-
-    $('#create-petition-button').click(function()
-    {
-        $('.create-content-div').hide();
-        $('#create-petition-div').show();
-    });
-
-    $('#create-news-button').click(function()
-    {
-        $('.create-content-div').hide();
-        $('#create-news-div').show();
-    });
-
-    $('#create-group-button').click(function()
-    {
-        $('.create-content-div').hide();
-        $('#create-group-div').show();
-    });
-
-    var timeout;
-    var delay = 750;
-    var isLoading = false;
-    var currentURL;
-    var currentLink = 0;
-    var returned;
-    $('#news-input-link').bind('keyup',function()
-    {
-        var text = $(this).val();
-        if (timeout)
-        {
-            clearTimeout(timeout);
-        }
-
-        if (!isLoading && text != currentURL)
-        {
-            timeout = setTimeout(function()
-            {
-                isLoading = true;
-                if (regUrl.test(text))
-                {
-                    $('#news-link-generation').empty();
-                    $('#news-link-generation').show();
-                    $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
-                    $('#news-summary').show();
-                    ajaxPost({
-                        data: {'action':'getLinkInfo','url':text},
-                        success: function(data)
-                        {
-                            returned = eval('(' + data + ')');
-                            $('#news-link-generation').html(returned.html);
-                            $('#cycle-img-left').bind('click',function()
-                            {
-
-                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
-                                else { currentLink--; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                            });
-                            $('#cycle-img-right').bind('click',function()
-                            {
-                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
-                                else { currentLink++; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                            });
-                            currentURL = text;
-                        },
-                        error: null
-                        /*
-                         function(jqXHR, textStatus, errorThrown)
-                         {
-
-                         $('#news-link-generation').hide();
-                         $('#news-summary').hide();
-                         } */
-                    });
-                }
-                else
-                {
-                    $('#news-link-generation').hide();
-                    $('#news-summary').hide();
-                }
-                // Simulate a real ajax call
-                setTimeout(function() { isLoading = false; }, delay);
-            }, delay);
-        }
-    });
-
-    /**
-     * Handles selecting topic image for content creation
-     */
-    $(".create-topic-img").click(function(event)
-    {
-
-        var wrapper = $(this).parents(".topic-icon-wrapper");
-        var icons_wrapper = wrapper.parents(".topic-icons-wrapper");
-
-        icons_wrapper.find('.topic-radio').attr('checked',false);
-
-        if (!wrapper.hasClass('chosen'))
-        {
-            wrapper.find(".topic-radio").attr("checked",true);
-        }
-        selectTopicSingle(wrapper);
-    });
-
-    function clearPetitionErrors()
-    {
-        $("#errors-title").empty();
-        $("#errors-summary").empty();
-        $("#errors-full_text").empty();
-        $("#errors-topic").empty();
-        $("#errors-non_field").empty();
-    }
-
-
-    $('#create-petition').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#input-title').val();
-        var summary = $('#input-summary').val();
-        var full_text = $('#input-full_text').val();
-        var link = $('#input-link').val();
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-summary").html(returned.errors.summary);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    $('.normal').show();
-                    $('');
-                    clearPetitionErrors();
-                    History.pushState( {k:1}, returned.title, returned.url);
-                    rebind = returned.rebind;
-                    closeLeftSideWrapper($('.create-wrapper.clicked'));
-                    replaceCenter(returned.html);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
-
-    $('#create-group').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#group-input-title').val();
-        var full_text = $('#group-input-full_text').val();
-        var privacy = $('input:radio[name=privacy]:checked').val();
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create',
-                'title':title,
-                'full_text':full_text,
-                'topics':topic,
-                'group_type':'U',
-                'group_privacy':privacy,
-                'type':'G'
-            },
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    alert('errors')
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location.href = returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
-
-    $('#share-button').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#news-input-title').val();
-        var summary = $('#news-input-summary').val();
-        var link = $('#news-input-link').val();
-        var description = $('#news-link-generation-description').text();
-        var screenshot = $('#news-link-image-src').attr("src");
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary,'link':link,
-                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#news-errors-link").html(returned.errors.link);
-                    $("#news-errors-title").html(returned.errors.title);
-                    $("#news-errors-summary").html(returned.errors.summary);
-                    $("#news-errors-topic").html(returned.errors.topics);
-                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location=returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
     });
 
     $('#feedback-submit').click(function(event)
@@ -2744,4 +2516,254 @@ function loadNewFeed() {
 
     $(window).scroll(scrollFeed);
 
+    bindCreateButton();
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~CreatePopUp
+ *
+ **********************************************************************************************************************/
+function bindCreateButton() {
+    $('.create_button').click( function(event) {
+        event.preventDefault();
+        $('div.create_overdiv').fadeToggle("fast");
+        $('div.create_modal').fadeToggle("fast");
+    });
+
+    $('div.create_overdiv').click(function() {
+        $('div.create_overdiv').hide();
+        $('div.create_modal').hide();
+    });
+}
+
+function loadCreate()
+{
+    $('#create-petition-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-petition-div').show();
+    });
+
+    $('#create-news-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-news-div').show();
+    });
+
+    $('#create-group-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-group-div').show();
+    });
+
+    var timeout;
+    var delay = 750;
+    var isLoading = false;
+    var currentURL;
+    var currentLink = 0;
+    var returned;
+    $('#news-input-link').bind('keyup',function()
+    {
+        var text = $(this).val();
+        if (timeout)
+        {
+            clearTimeout(timeout);
+        }
+
+        if (!isLoading && text != currentURL)
+        {
+            timeout = setTimeout(function()
+            {
+                isLoading = true;
+                if (regUrl.test(text))
+                {
+                    $('#news-link-generation').empty();
+                    $('#news-link-generation').show();
+                    $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
+                    $('#news-summary').show();
+                    ajaxPost({
+                        data: {'action':'getLinkInfo','url':text},
+                        success: function(data)
+                        {
+                            returned = eval('(' + data + ')');
+                            $('#news-link-generation').html(returned.html);
+                            $('#cycle-img-left').bind('click',function()
+                            {
+
+                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
+                                else { currentLink--; }
+                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                            });
+                            $('#cycle-img-right').bind('click',function()
+                            {
+                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
+                                else { currentLink++; }
+                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                            });
+                            currentURL = text;
+                        },
+                        error: null
+                        /*
+                         function(jqXHR, textStatus, errorThrown)
+                         {
+
+                         $('#news-link-generation').hide();
+                         $('#news-summary').hide();
+                         } */
+                    });
+                }
+                else
+                {
+                    $('#news-link-generation').hide();
+                    $('#news-summary').hide();
+                }
+                // Simulate a real ajax call
+                setTimeout(function() { isLoading = false; }, delay);
+            }, delay);
+        }
+    });
+
+    /**
+     * Handles selecting topic image for content creation
+     */
+    $(".create-topic-img").click(function(event)
+    {
+
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        var icons_wrapper = wrapper.parents(".topic-icons-wrapper");
+
+        icons_wrapper.find('.topic-radio').attr('checked',false);
+
+        if (!wrapper.hasClass('chosen'))
+        {
+            wrapper.find(".topic-radio").attr("checked",true);
+        }
+        selectTopicSingle(wrapper);
+    });
+
+    function clearPetitionErrors()
+    {
+        $("#errors-title").empty();
+        $("#errors-summary").empty();
+        $("#errors-full_text").empty();
+        $("#errors-topic").empty();
+        $("#errors-non_field").empty();
+    }
+
+
+    $('#create-petition').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#input-title').val();
+        var summary = $('#input-summary').val();
+        var full_text = $('#input-full_text').val();
+        var link = $('#input-link').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        ajaxPost({
+            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
+                {
+                    $("#errors-title").html(returned.errors.title);
+                    $("#errors-summary").html(returned.errors.summary);
+                    $("#errors-full_text").html(returned.errors.full_text);
+                    $("#errors-topic").html(returned.errors.topics);
+                    $("#errors-non_field").html(returned.errors.non_field_errors);
+                }
+                else
+                {
+                    $('.normal').show();
+                    $('');
+                    clearPetitionErrors();
+                    History.pushState( {k:1}, returned.title, returned.url);
+                    rebind = returned.rebind;
+                    closeLeftSideWrapper($('.create-wrapper.clicked'));
+                    replaceCenter(returned.html);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
+    $('#create-group').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#group-input-title').val();
+        var full_text = $('#group-input-full_text').val();
+        var privacy = $('input:radio[name=privacy]:checked').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        ajaxPost({
+            data: {'action':'create',
+                'title':title,
+                'full_text':full_text,
+                'topics':topic,
+                'group_type':'U',
+                'group_privacy':privacy,
+                'type':'G'
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
+                {
+                    alert('errors')
+                    $("#errors-title").html(returned.errors.title);
+                    $("#errors-full_text").html(returned.errors.full_text);
+                    $("#errors-topic").html(returned.errors.topics);
+                    $("#errors-non_field").html(returned.errors.non_field_errors);
+                }
+                else
+                {
+                    window.location.href = returned.url;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
+    $('#share-button').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#news-input-title').val();
+        var summary = $('#news-input-summary').val();
+        var link = $('#news-input-link').val();
+        var description = $('#news-link-generation-description').text();
+        var screenshot = $('#news-link-image-src').attr("src");
+        var topic = $('input:radio[name=topics]:checked').val();
+        ajaxPost({
+            data: {'action':'create','title':title,'summary':summary,'link':link,
+                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
+                {
+                    $("#news-errors-link").html(returned.errors.link);
+                    $("#news-errors-title").html(returned.errors.title);
+                    $("#news-errors-summary").html(returned.errors.summary);
+                    $("#news-errors-topic").html(returned.errors.topics);
+                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
+                }
+                else
+                {
+                    window.location=returned.url;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
 }
