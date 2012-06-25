@@ -185,6 +185,12 @@ div#top
             min-height: 200px;
             z-index: 100;
             background-color: white;
+            text-align:center;
+
+            h5
+            {
+              margin-top:10px;
+            }
 
             div.notifications-pointer
             {
