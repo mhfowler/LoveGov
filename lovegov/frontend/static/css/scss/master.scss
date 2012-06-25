@@ -41,14 +41,6 @@
 @import 'master-variables';
 @import 'master-mixins';
 
-.main-div
-{
-  width: 1000px;
-  margin-top: 50px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .text-blue
 {
   color: $text-blue;
@@ -485,7 +477,6 @@ div.menu_toggle.clicked
 {
   background-color:$red;
 }
-
 
 
 div.heart {
