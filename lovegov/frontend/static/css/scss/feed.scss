@@ -593,3 +593,12 @@ div.heart {
   height:18px;
   background:contain;
 }
+
+div.create-modal {
+  @include modal;
+  border:1px solid $red;
+  margin-left: 20%;
+  margin-right: 20%;
+  width: 60%;
+  height: 60%;
+}
