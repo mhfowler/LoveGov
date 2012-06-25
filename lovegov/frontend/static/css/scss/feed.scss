@@ -513,8 +513,11 @@ div.pinterest_card {
       }
 
       div.share {
-        div.share_button {
-          @include grayButton();
+        a.share_button {
+          @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
+          position:relative;
+          top:17px;
+          margin-left:20px;
         }
       }
 
