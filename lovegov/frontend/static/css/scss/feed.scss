@@ -1,5 +1,5 @@
 @import 'master-variables';
-@import 'master';
+@import 'master-mixins';
 
 
 .border {
@@ -33,6 +33,29 @@
     float:left;
     @include fontSize(25px);
   }
+
+  div.sorting-buttons {
+    float:left;
+    margin: 15px 0px 0px 20px;
+
+    div.sorting-button {
+      @extend .button-gray;
+      background-color:$light-gray;
+      float:left;
+      width:40px;
+      height:20px;
+      margin: 0 0 0 15px;
+
+      p.sorting-text {
+        margin: 0 0 7px 1px;
+      }
+    }
+    div.sorting-button.clicked {
+      background-color:$red;
+
+    }
+  }
+
 
   div.options-box {
     @extend .box;
@@ -397,16 +420,17 @@ div.pinterest_card {
 
     div.pinterest-main {
 
-      padding:15px;
+      padding: 15px 0px 0px 0px;
       margin-bottom:0px;
       padding-bottom:0px;
       background-color:white;
 
       div.pinterest-header {
-        height:40px;
+        margin-left:20px;
 
         div.prof-image{
           float:left;
+          margin-bottom:0px;
         }
 
         div.header-middle {
@@ -431,17 +455,22 @@ div.pinterest_card {
       }
 
       div.pinterest-image {
-        margin-top:15px;
-        margin-left:20px;
+        margin: 15px 0 0 20px;
+
+        div.img-wrapper {
+          float:left;
+        }
       }
 
       div.pinterest-title {
         clear:both;
         margin-top:15px;
+        margin-left:20px;
       }
 
       div.pinterest-summary {
         margin-top:15px;
+        margin-left:20px;
         padding:0px;
         p {
           margin-bottom:0px;
@@ -449,7 +478,7 @@ div.pinterest_card {
       }
 
       div.pinterest-top-comment {
-        margin-bottom:15px;
+        margin: 0 20px 15px 20px;
       }
 
     }
@@ -457,6 +486,28 @@ div.pinterest_card {
     div.pinterest-footer {
       height:50px;
       border-top: 1px solid $light-gray;
+
+      div.hearts {
+        float:left;
+        width:100px;
+        height:50px;
+        border-right: 1px solid $light-gray;
+      }
+
+      div.comments {
+        float:left;
+        width:100px;
+        height:50px;
+        border-right: 1px solid $light-gray;
+      }
+
+      div.share {
+        float:left;
+        width:100px;
+        height:50px;
+        border-left: 1px solid $light-gray;
+      }
+
     }
   }
 }

@@ -1,10 +1,6 @@
 @charset "UTF-8";
 @import 'master-variables';
-@import 'master';
-
-.test {
-	color:blue;
-}
+@import 'master-mixins';
 
 @mixin circleDiv($side)
 {

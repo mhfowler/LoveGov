@@ -39,122 +39,8 @@
 */
 @charset "UTF-8";
 @import 'master-variables';
+@import 'master-mixins';
 
-
-/* Mixin */
-@mixin rounded($radius: 20px)
-{
-  border-radius: $radius;
-  -moz-border-radius: $radius;
-  -webkit-border-radius: $radius;
-  -khtml-border-radius: $radius;
-}
-
-@mixin rounded-bottom($radius: 20px)
-{
-  border-bottom-right-radius: $radius;
-  border-bottom-left-radius: $radius;
-  -moz-border-bottom-right-radius: $radius;
-  -moz-border-bottom-left-radius: $radius;
-  -webkit-border-bottom-right-radius: $radius;
-  -webkit-border-bottom-left-radius: $radius;
-  -khtml-border-bottom-right-radius: $radius;
-  -khtml-border-bottom-left-radius: $radius;
-}
-
-@mixin fontSize($fontSize: 20px)
-{
-  font-size:$fontSize;
-}
-
-@mixin setMargin($margin_left:0,$margin_right:0,$margin_top:0,$margin_bottom:0)
-{
-  margin-left:$margin_left;
-  margin-right:$margin_right;
-  margin-top:$margin_top;
-  margin-bottom:$margin_bottom;
-}
-
-@mixin verticalSeparator($height,$margin-left,$margin-top)
-{
-  float:left;
-  border-left: 1px solid $red;
-  height:$height;
-  margin-left:$margin-left;
-  margin-top:$margin-top;
-}
-
-@mixin triangle-down($size: 5px, $color: $red) {
-  width: 0;
-  height: 0;
-  border-left: $size solid transparent;
-  border-right: $size solid transparent;
-  border-top: $size*2 solid $color;
-}
-
-@mixin round-rectangle($width,$height,$radius,$background-color)
-{
-  background-color:$background-color;
-  width:$width;
-  height:$height;
-  @include rounded($radius);
-}
-
-
-@mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
-{
-  -moz-border-radius: $radius;
-  -webkit-border-radius: $radius;
-  -khtml-border-radius: $radius;
-  border-radius: $radius;
-  width:$width;
-  height:$height;
-  font-size: $font-size;
-  font-family: $gill-light;
-  background-color:$background-color;
-  color: $color;
-  letter-spacing: 1px;
-  text-decoration: none;
-  outline: none;
-  border: 0;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-@mixin horizontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
-{
-  border-bottom: 1px solid $color;
-  width:$width;
-  margin-left:$margin-left;
-  margin-top:$margin-top;
-  margin-bottom:$margin-bottom;
-}
-
-@mixin gillLight
-{
-  font-family: $gill-light, $body-fonts;
-}
-
-@mixin gillStd
-{
-  font-family: $gill-std, $body-fonts;
-}
-
-@mixin titleFont
-{
-  font-family: $title-font, $body-fonts;
-}
-
-@mixin notification-box
-{
-  border-bottom: solid 1px;
-  border-color: $gray;
-  background-color: white;
-}
 
 .main-div
 {
@@ -599,15 +485,6 @@ div.menu_toggle:hover
 div.menu_toggle.clicked
 {
   background-color:$red;
-}
-
-@mixin rounded-box
-{
-  @include rounded();
-  height: 70px;
-  width: 70px;
-  display: block;
-  text-align: center;
 }
 
 

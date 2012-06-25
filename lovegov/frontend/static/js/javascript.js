@@ -2501,9 +2501,8 @@ function getFeed(num)
 /*
  makes a post to the server to save the current filter setting as the inputted name.
  */
-function saveFilter(name, f_id) {
+function saveFilter(name) {
 
-    var feed_id = f_id;
     var feed_name = name;
     var feed_ranking = feed_metadata.ranking;
     var feed_display =  feed_metadata.display;
@@ -2904,6 +2903,7 @@ function loadNewFeed() {
 
     /* sort-by menu */
     $(".feed-ranking-selector").click(function(event) {
+        event.preventDefault();
         setRanking($(this).data('ranking'));
         refreshFeed(-1);
     });

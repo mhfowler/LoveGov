@@ -1,0 +1,154 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+span.back-to-feed {
+    color: $gray;
+    font-size: 32px;
+    @include titleFont;
+    padding-bottom: 20px;
+    display: block;
+}
+
+
+div#content
+{
+    width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:40px;
+}
+
+div#content-left
+{
+    width:700px;
+    float:left;
+}
+
+div.content-left-side {
+    width:150px;
+    float:left;
+}
+
+div.content-image-area {
+    background-image: url('http://www.summarynewspaper.com/wp-content/uploads/2011/04/terrorist-in-marocco.jpg');
+}
+
+div#content-div
+{
+    width:575px;
+    margin-left:25px;
+    @include horizontalSeparator(100%);
+}
+
+div#content-topic-img
+{
+    float:left;
+    img {
+        height: 30px;
+        width: 30px;
+    }
+}
+
+
+div#thread
+{
+    position:relative;
+    padding-top:20px;
+    left:-20px;
+}
+
+span.discuss
+{
+    font-size: 18px;
+    color: $red;
+    @include titleFont;
+    margin: 10px;
+}
+
+div.comment
+{
+    position:relative;
+    border-bottom:1px solid #ccc;
+    padding-bottom:20px;
+    margin-bottom:45px;
+    margin-left:30px;
+}
+
+.comment-username
+{
+    padding-bottom:2px;
+    font-size:14pt;
+    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    color:#0f5569;
+    margin-bottom:10px;
+    float:left;
+    cursor:pointer;
+}
+
+.comment-username a, .comment-username a:hover, .comment-username a:link, .comment-username a:visited, .comment-username a:active
+{
+    color:#0f5569;
+    float:left;
+    margin-top:15px;
+    margin-left:5px;
+}
+
+.comment-reply
+{
+    position:relative;
+    margin-top:10px;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    color: #f0503b;
+    font-size:13pt;
+    cursor:pointer;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+
+.comment-metadata
+{
+    position:relative;
+    float:right;
+    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    color: #ccc;
+    font-size:10pt;
+    padding-left:10px;
+    cursor:pointer;
+}
+
+.comment-textarea
+{
+    font-family:"Gill Sans Std", Verdana, sans-serif;
+    font-size:11pt;
+    border: 1px solid #ccc;
+    height:100px;
+}
+
+.comment-text
+{
+    clear:both;
+}
+
+#comment-text:focus
+{
+    outline:none;
+}
+
+#comment-thread
+{
+    margin-top:0px;
+    position:relative;
+    float:left;
+    width:700px;
+}
+
+.replyform
+{
+    display:none
+}
+
+.commentdelete
+{
+    margin-left:20px;
+}

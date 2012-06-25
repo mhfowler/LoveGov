@@ -211,6 +211,7 @@ div#top
     div.user-menu
     {
       float:left;
+      font-family:$title-font;
 
 
       div#menu-down-arrow
@@ -218,6 +219,18 @@ div#top
         float:left;
         @include triangle-down($size: 5px, $color: $red)
       }
+
+
+      #user-name
+      {
+        position:relative;
+        float:left;
+        margin-left:5px;
+        margin-top:13px;
+        font-size:16px;
+        color:#0F5569;
+      }
+
 
 
     }
@@ -263,16 +276,6 @@ div#top
     padding:1px;
     vertical-align: middle;
     float:left
-  }
-
-  #user-name
-  {
-    position:relative;
-    float:left;
-    margin-left:5px;
-    margin-top:13px;
-    font-size:19px;
-    color:#0F5569;
   }
 
   #down-arrow:hover

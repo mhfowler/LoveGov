@@ -7,16 +7,25 @@ div.heart {
     background-size: 100%;
 }
 
-​div.heart_plus, div.heart_minus {
+​div.heart_plus {
     background-image: url('/static/images/hearts_plus.png');
 }​
+
+div.heart_plus.red {
+
+ }
 
 div.heart_minus {
 	background-image: url('/static/images/hearts_minus.png');
 }
+
+div.heart_minus.red {
+
+}
+
 </style>
 
 
-<div>
-    <div class="heart_plus heart"></div> <span>120</span> <div class="heart_minus heart"></div>
+<div class="hearts_wrapper" data-c_id="{{ content.id }}">
+    <div class="heart_plus heart"></div> <span class="status">{{ content.status }}</span> <div class="heart_minus heart"></div>
 </div>​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
