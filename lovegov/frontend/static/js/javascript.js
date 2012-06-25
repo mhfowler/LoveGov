@@ -2517,22 +2517,23 @@ function loadNewFeed() {
     $(window).scroll(scrollFeed);
 
     bindCreateButton();
+    loadCreate();
 }
 
 /***********************************************************************************************************************
  *
- *      ~CreatePopUp
+ *      ~CreateModal
  *
  **********************************************************************************************************************/
 function bindCreateButton() {
     $('.create_button').click( function(event) {
         event.preventDefault();
-        $('div.create_overdiv').fadeToggle("fast");
+        $('div.overdiv').fadeToggle("fast");
         $('div.create_modal').fadeToggle("fast");
     });
 
-    $('div.create_overdiv').click(function() {
-        $('div.create_overdiv').hide();
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
         $('div.create_modal').hide();
     });
 }
