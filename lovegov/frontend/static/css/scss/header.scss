@@ -195,6 +195,11 @@ div#top
                 margin-top:10px;
               }
 
+              div.notifications-header-border
+              {
+                @include horizontalSeparator($width:250px,$color:$gray,$margin-left:25px,$margin-top:0,$margin-bottom:0)
+              }
+
               div.notifications-pointer
               {
                 @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
@@ -217,6 +222,7 @@ div#top
             div.see-more-notifications
             {
               @include notification-box;
+              border-bottom:0;
               padding-top: 5px;
               padding-bottom: 5px;
               text-align: center;
