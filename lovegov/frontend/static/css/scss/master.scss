@@ -92,6 +92,14 @@
   border-top: $size*2 solid $color;
 }
 
+@mixin round-rectangle($width,$height,$radius,$background-color)
+{
+  background-color:$background-color;
+  width:$width;
+  height:$height;
+  @include rounded($radius);
+}
+
 
 @mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
 {
@@ -139,6 +147,13 @@
 @mixin titleFont
 {
   font-family: $title-font, $body-fonts;
+}
+
+@mixin notification-box
+{
+  border-bottom: solid 1px;
+  border-color: $gray;
+  background-color: white;
 }
 
 .main-div
@@ -593,6 +608,21 @@ div.menu_toggle.clicked
   width: 70px;
   display: block;
   text-align: center;
+}
+
+
+.preload-images
+{
+  display:none;
+}
+
+.select-none
+{
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 
 
