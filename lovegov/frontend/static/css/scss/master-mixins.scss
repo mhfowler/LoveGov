@@ -200,3 +200,31 @@
   border-radius: 5px;
   display: none;
 }
+
+
+@mixin huge
+{
+  font-family: $gill-light;
+  color: $black;
+  font-size:24px;
+  line-height:30px;
+  margin-bottom:25px;
+}
+
+@mixin really-big
+{
+  font-family: $gill-light;
+  color: $deep-gray;
+  font-size:20px;
+  line-height:28px;
+  margin-bottom:20px;
+}
+
+@mixin big
+{
+  font-family: $gill-light;
+  color: $text-blue;
+  font-size:18px;
+  line-height:26px;
+  margin-bottom:18px;
+}
