@@ -709,6 +709,7 @@ function loadHeader()
     $('#notifications-dropdown-button').click(
         function(event)
         {
+            $('.notifications-ajax-load').show();
             event.preventDefault();
             var pos = $(this).offset();
             var dropdown = $('#notifications-dropdown');
@@ -725,6 +726,7 @@ function loadHeader()
                     success: function(data)
                     {
                         var obj = eval('(' + data + ')');
+                        $('.notifications-ajax-load').hide();
                         $('#notifications-dropdown').empty().append(tempDropDownDiv).append(obj.html);
                         unbindNotification();
                         loadNotification();
