@@ -97,33 +97,35 @@
         Privacy: {{ group.group_privacy }}
     </div>
 
-    {% if is_user_admin %}
-    <ul id="group-requests">
-        {% for req in prof_requests %}
-        <li><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-            <a href="" class="group-response-y"> I accept! </a> ||
-            <a href="" class="group-response-n"> I decline! </a>
-            <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-        </li>
-        {% empty %}
-        <li>No follow requests! =( </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
-    <br>
-    {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
-    <a href="" class="button-red" id="group_follow">
-        follow
-    </a>
-    {% else %}
-    <a href="" class="button-red" id="group_unfollow">
-        {% if is_user_confirmed %}
-        unfollow
-        {% elif is_user_follow %}
-        un-request
+    {% if not group.system %}
+        {% if is_user_admin %}
+        <ul id="group-requests">
+            {% for req in prof_requests %}
+            <li><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
+                <a href="" class="group-response-y"> I accept! </a> ||
+                <a href="" class="group-response-n"> I decline! </a>
+                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+            </li>
+            {% empty %}
+            <li>No follow requests! =( </li>
+            {% endfor %}
+        </ul>
         {% endif %}
-    </a>
+
+        <br>
+        {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
+        <a href="" class="button-red" id="group_follow">
+            follow
+        </a>
+        {% else %}
+        <a href="" class="button-red" id="group_unfollow">
+            {% if is_user_confirmed %}
+            unfollow
+            {% elif is_user_follow %}
+            un-request
+            {% endif %}
+        </a>
+        {% endif %}
     {% endif %}
 
     <div class="profile-activity-container">

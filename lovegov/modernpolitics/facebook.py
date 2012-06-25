@@ -100,10 +100,11 @@ def fbLogin(request, vals={}):
                 name = me['first_name'] + " " + me['last_name']
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
-                user_prof.refreshFB(me)
                 vals['viewer'] = user_prof
-                fbMakeFriends(request, vals)
-        user_prof.refreshFB(me)
+            user_prof.facebook_id = fb_id
+            fbMakeFriends(request, vals)
+            user_prof.refreshFB(me)
+            user_prof.save()
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
