@@ -810,6 +810,8 @@ function loadHeader()
         div$.children('a').css("color",hexColor)
     }
 
+
+
     $('.user-menu-dropdown-div').hover
         (
             function()
@@ -833,16 +835,16 @@ function loadHeader()
      * Handles style change for selecting a security mode.
      *
      * @param security$     jQuery object for user-menu-security-<mode> div objects
-     */
+    */
     function selectSecuritySetting(security$)
     {
         $('.user-menu-security').each(function()
         {
             $(this).removeClass('user-menu-dropdown-div-selected');
             $(this).removeClass('user-menu-dropdown-div-hover');
-            userMenuDropDownColors($(this),'gray');
+            //userMenuDropDownColors($(this),'gray');
         });
-        userMenuDropDownColors(security$,'white');
+        //userMenuDropDownColors(security$,'white');
         security$.addClass("user-menu-dropdown-div-selected");
     }
 
