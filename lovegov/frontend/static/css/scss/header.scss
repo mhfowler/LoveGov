@@ -185,18 +185,21 @@ div#top
             min-height: 200px;
             z-index: 100;
             background-color: white;
-            text-align:center;
 
-            h5
+            div.notifications-dropdown-static-div
             {
-              margin-top:10px;
-            }
+              text-align:center;
 
-            div.notifications-pointer
-            {
-              @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
-            }
+              h5
+              {
+                margin-top:10px;
+              }
 
+              div.notifications-pointer
+              {
+                @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
+              }
+            }
 
             div.notification
             {
