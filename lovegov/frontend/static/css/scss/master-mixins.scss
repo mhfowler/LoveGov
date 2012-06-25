@@ -126,7 +126,6 @@
   background-color:$background-color;
 }
 
-
 @mixin box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
 {
   -moz-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
