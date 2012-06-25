@@ -34,7 +34,7 @@
 
 <script>
 $('select.share_select').select2({
-    placeholder: "Enter a follower, network, or group name",
+    placeholder: "Enter a follower, network, or group name"
 });
 
 // Prevents click being fired twice.
@@ -42,6 +42,8 @@ $('select.share_select').select2({
 $('#submit_content').unbind();
 $('#submit_content').click(function(e) {
 	e.preventDefault();
+    var share_this = $("#share_id").data('share_id');
+    alert("sharethis: " + share_this);
 	var share_with = $('.share_select').select2("val");
 	if (share_with!='') {
 		ajaxPost({
