@@ -17,6 +17,10 @@ from operator import itemgetter
 # sets all content to have in_feed values appropriately.
 #-----------------------------------------------------------------------------------------------------------------------
 def setInFeed():
+    c = Content.objects.all()
+    for x in c:
+        x.in_feed = False
+        x.save()
     p = Petition.objects.all()
     for x in p:
         x.in_feed = True
@@ -25,7 +29,7 @@ def setInFeed():
     for x in n:
         x.in_feed = True
         x.save()
-    g = Group.objects.filter(system=False)
+    g = UserGroup.objects.all()
     for x in g:
         x.in_feed = True
         x.save()

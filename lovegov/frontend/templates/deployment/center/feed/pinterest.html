@@ -90,14 +90,14 @@
                                             {% thumbnail creator.getProfileImage.image "20x20" crop="center" as im %}
                                                 <img src="{{ im.url }}"/>
                                             {% empty %}
-                                                <p> <img src="/static/images/obama.jpg" width="20px" height="20px">  </p>
+                                                 <img src="/static/images/obama.jpg" width="20px" height="20px">
                                             {% endthumbnail %}
                                         </a>
                                     {% else %}
                                         {% thumbnail defaultImage "20x20" format="PNG" as im %}
                                             <img src="{{ im.url }}"/>
                                         {% empty %}
-                                            <p>   <img src="/static/images/obama.jpg" width="20px" height="20px"> </p>
+                                             <img src="/static/images/obama.jpg" width="20px" height="20px">
                                         {% endthumbnail %}
                                     {% endif %}
                                 </div>
@@ -127,8 +127,10 @@
                 </div>
                 <div class="comments">
                     <div class="comments-wrapper">
-                        <span class="comments-text"> comments </span>
-                        <span class="comments-num"> {{ item.num_comments }} </span>
+                        <div class="text-wrapper">
+                            <span class="comments-text"> comments </span>
+                            <span class="comments-num"> {{ item.num_comments }} </span>
+                        </div>
                     </div>
                 </div>
                 <div class="share">

@@ -424,8 +424,10 @@ div.pinterest_card {
       padding-bottom:0px;
       background-color:white;
 
+      // header
       div.pinterest-header {
         margin-left:20px;
+        height:50px;
 
         div.prof-image{
           float:left;
@@ -434,16 +436,28 @@ div.pinterest_card {
 
         div.header-middle {
           float:left;
-          margin-left:12px;
+          margin: 7px 0 0px 12px;
           width:150px;
+          height:50px;
+          overflow:hidden;
 
           p.submitted {
-            margin-bottom:0px;
+            color:$light-gray;
+            text-decoration: underline;
+            margin: 0 0 5px 0;
           }
 
           div.user-name {
-            margin-top:6px;
-            font-size:20px;
+            @include really-big();
+            margin: 0 0 0 0;
+
+            a {
+              color:$black;
+            }
+
+            a:hover {
+              color:black;
+            }
           }
         }
 
@@ -453,8 +467,9 @@ div.pinterest_card {
         }
       }
 
+      // below header
       div.pinterest-image {
-        margin: 15px 0 0 20px;
+        margin: 15px 0px 0px 20px;
 
         div.img-wrapper {
           float:left;
@@ -463,28 +478,54 @@ div.pinterest_card {
 
       div.pinterest-title {
         clear:both;
-        margin-top:15px;
-        margin-left:20px;
+        margin: 12px 0px 0px 18px;
+
       }
 
       div.pinterest-summary {
-        margin-top:15px;
-        margin-left:20px;
-        padding:0px;
+        margin: 5px 0px 0px 20px;
         p {
-          margin-bottom:0px;
+          @include really-big();
+          line-height: 18px;
+          margin: 0 0 0 0;
         }
       }
 
       div.pinterest-top-comment {
-        margin: 0 20px 15px 20px;
+        @extend .box;
+        @include rounded(10px);
+        padding: 12px 12px 15px 15px;
+        margin: 10px 20px 0px 20px;
+
+        div.comment-header {
+          height:20px;
+
+          div.comment-image{
+            float:left;
+            margin-bottom:0px;
+          }
+
+          div.comment-creator {
+            float:left;
+            margin: 2px 0px 0px 10px;
+          }
+        }
+
+        div.comment-text {
+          @include fontSize(12px);
+          clear:both;
+          margin: 5px 0px 0px 0px;
+          color:$light-gray;
+        }
       }
 
     }
 
+    // footer
     div.pinterest-footer {
       height:50px;
       border-top: 1px solid $light-gray;
+      margin: 15px 0px 0px 0px;
 
       div.hearts {
         float:left;
@@ -530,16 +571,19 @@ div.pinterest_card {
         div.comments-wrapper {
           margin: 10px 0 0 5px;
           width:90px;
-          height:25px;
+          height:30px;
           @include rounded(10px);
           @extend .box;
 
-          span.comments-text {
-            margin: 3px 0 3px 0;
-          }
+          div.text-wrapper {
+            margin: 5px 0px 0 0;
+            span.comments-text {
+                margin-left:8px
+            }
 
-          span.comments-num {
-            color:$red;
+            span.comments-num {
+              color:$red;
+            }
           }
         }
 
@@ -563,52 +607,11 @@ div.feed-topic-icon-wrapper {
   margin-bottom:10px;
 }
 
-/* styling */
-div.pinterest-title {
-  h2.title-text {
-    @include fontSize(20px);
-  }
-}
-
-div.pinterest-summary {
-  @extend p.really-big;
-  @include fontSize(18px);
-}
-
-p.submitted {
-  color:$light-gray;
-  text-decoration: underline;
-}
 
 div.linear-wrapper {
   width:1000px;
 }
 
-div.pinterest-top-comment {
-  @extend .box;
-  @include rounded(10px);
-  padding:15px;
-
-  div.comment-header {
-    height:20px;
-
-    div.comment-image{
-      float:left;
-    }
-
-    div.comment-creator {
-      float:left;
-      margin-top:3px;
-      margin-left:10px;
-    }
-  }
-
-  div.comment-text {
-    @include fontSize(12px);
-    clear:both;
-    color:$light-gray;
-  }
-}
 
 .mini {
   @include fontSize(20px);

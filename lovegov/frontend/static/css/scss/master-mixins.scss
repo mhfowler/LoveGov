@@ -52,6 +52,8 @@
 }
 
 
+
+
 @mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
 {
   -moz-border-radius: $radius;
@@ -122,6 +124,73 @@
   height:$height;
   @include rounded($radius);
   background-color:$background-color;
+}
+
+@mixin box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
+{
+  -moz-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
+  -webkit-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
+  box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
+}
+
+@mixin trianglePointer($test)
+{
+  div.#{$test}
+  {
+    height:50px;
+    width:50px;
+    background-color:$red;
+  }
+}
+
+@mixin trianglePointer($direction,$width,$color-inner,$color-border,$horizontal-pos)
+{
+  width:$width * 2;
+  height:$width * 2;
+  position:absolute;
+  left:$horizontal-pos;
+  $border-color-inner:'null';
+  $border-color-border:'null';
+
+  @if $direction == 'down'
+  {
+    $border-color-border: $color-border transparent transparent transparent;
+    $border-color-inner: $color-inner transparent transparent transparent;
+    bottom:($width*-2);
+  }
+  @else
+  {
+    $border-color-border: transparent transparent $color-border transparent;
+    $border-color-inner: transparent transparent $color-inner transparent;
+    top:($width*-2);
+  }
+
+  div.border
+  {
+    position:absolute;
+    border-style: solid;
+    border-width: $width;
+    border-color: $border-color-border;
+  }
+
+  div.inner
+  {
+    position:absolute;
+    border-style: solid;
+    border-width: $width;
+    border-color:$border-color-inner;
+    top:1px;
+  }
+}
+
+
+
+
+
+
+@function box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
+{
+  @return $horizontal-offset $vertical-offset $optional-blur $color;
 }
 
 
@@ -199,4 +268,32 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
   display: none;
+}
+
+
+@mixin huge
+{
+  font-family: $gill-light;
+  color: $black;
+  font-size:24px;
+  line-height:30px;
+  margin-bottom:25px;
+}
+
+@mixin really-big
+{
+  font-family: $gill-light;
+  color: $deep-gray;
+  font-size:20px;
+  line-height:28px;
+  margin-bottom:20px;
+}
+
+@mixin big
+{
+  font-family: $gill-light;
+  color: $text-blue;
+  font-size:18px;
+  line-height:26px;
+  margin-bottom:18px;
 }

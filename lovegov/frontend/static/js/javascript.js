@@ -705,11 +705,18 @@ function loadHeader()
         $(this).blur();
     });
 
+    var tempDropDownDiv = $('.notifications-dropdown-static-div');
     $('#notifications-dropdown-button').click(
         function(event)
         {
             event.preventDefault();
-            $('#notifications-dropdown').toggle('fast');
+            var pos = $(this).offset();
+            var dropdown = $('#notifications-dropdown');
+            dropdown.toggle();
+            pos.left = (pos.left-dropdown.width()/2)+($(this).width()/2);
+            pos.top = dropdown.offset().top;
+            $('#notifications-dropdown').offset(pos);
+
             if( $('#notifications-dropdown').is(':visible') )
             {
                 ajaxPost({
@@ -718,8 +725,7 @@ function loadHeader()
                     success: function(data)
                     {
                         var obj = eval('(' + data + ')');
-                        $('#notifications-dropdown').empty();
-                        $('#notifications-dropdown').html(obj.html);
+                        $('#notifications-dropdown').empty().append(tempDropDownDiv).append(obj.html);
                         unbindNotification();
                         loadNotification();
                     },
@@ -731,7 +737,7 @@ function loadHeader()
             }
             else
             {
-                $('#notifications-dropdown').empty();
+                $('#notifications-dropdown').empty().append(tempDropDownDiv);
             }
             return false;
         }
@@ -739,7 +745,7 @@ function loadHeader()
 
     $('#notifications-dropdown').bind('clickoutside',function(event)
     {
-        $(this).empty();
+        $('#notifications-dropdown').empty().append(tempDropDownDiv);
         $(this).hide();
     });
 
@@ -751,9 +757,10 @@ function loadHeader()
 
     function toggleUserMenu()
     {
-        $('#user-menu').toggleClass("user-menu-unselected");
-        $('#user-menu').toggleClass("user-menu-selected");
+        $('.user-menu').toggleClass("user-menu-unselected");
+        $('.user-menu').toggleClass("user-menu-selected");
         $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
+        $('.user-menu-pointer').css('left',$('#user-menu-dropdown').width()-$('.user-menu').width()+($('.user-menu-pointer').width()/2));
     }
 
     $('#user-menu-container').bind("clickoutside",function(event)
@@ -766,7 +773,7 @@ function loadHeader()
         }
     });
 
-    $('#down-arrow').click(toggleUserMenu);
+    $('#menu-down-arrow').click(toggleUserMenu);
 
     $('#user-menu-account').click(function(event)
     {
