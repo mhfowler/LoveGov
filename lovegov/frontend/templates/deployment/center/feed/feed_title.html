@@ -1,0 +1,11 @@
+<div class="pinterest-title">
+    <a href="{{ item.get_url }}">
+        {% if item.type == 'N' %}
+            <h2 class="title-text"> {{ item.title }} </h2>
+        {% elif item.type == 'P' %}
+            <h3 class="title-text"> PETITION: {{ item.title }} </h3>
+        {% else %}
+            <h4 class="title-text"> {{ item.title }} </h4>
+        {% endif %}
+    </a>
+</div>

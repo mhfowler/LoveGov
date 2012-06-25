@@ -1,0 +1,9 @@
+{% load thumbnail %}
+
+<div class="pinterest-image">
+    {% thumbnail item.link_screenshot "250x150" as im %}
+        <img src="{{ im.url }}"/>
+    {% empty %}
+        <img src="/static/images/logo.png" width="250px" height="150px" />
+    {% endthumbnail %}
+</div>
