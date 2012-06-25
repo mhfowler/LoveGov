@@ -1,9 +1,8 @@
 @import 'master-mixins';
-@import '_master-classes.scss';
 
 div.profile-section-title
 {
-  @extend h4;
+  @include h4;
   color: $text-blue;
 }
 
@@ -25,7 +24,7 @@ div.middle-left
     /* Info Left Side */
     div.basic-info-left
     {
-      @extend .float-left;
+      @include float-left;
       margin-right: 20px;
 
       div.profile-follows-you
@@ -40,7 +39,7 @@ div.middle-left
     /* Info Main Contents */
     div.basic-info-main
     {
-      @extend .float-left;
+      @include float-left;
 
       span.plus-color
       {
@@ -50,20 +49,20 @@ div.middle-left
 
       div.profile-username
       {
-        @extend h2;
+        @include h2;
         margin-bottom:5px;
       }
 
       div.profile-location
       {
-        @extend h5;
+        @include h5;
         color: $text-blue;
         margin-left: 2px;
       }
 
       div.profile-school
       {
-        @extend h5;
+        @include h5;
         margin-left: 2px;
       }
 
@@ -83,7 +82,7 @@ div.middle-left
         div.stat-box
         {
           @include rounded-box;
-          @extend .float-left;
+          @include float-left;
           border-width: 2px;
           border-color: $gray;
           border-style: solid;
@@ -92,7 +91,7 @@ div.middle-left
 
           span.profile-stats-number
           {
-            @extend .big-num;
+            @include big-num;
             color: white;
             position: relative;
             line-height: 52px;
@@ -146,14 +145,14 @@ div.middle-left
   /* Profile Bottom */
   div.profile-bottom
   {
-    @extend .float-left;
+    @include float-left;
     display: block;
     margin-top: 50px;
 
     /* Activity Feed */
     div.profile-activity-container
     {
-      @extend .float-left;
+      @include float-left;
       display: block;
       width: 400px;
       margin-right: 50px;
@@ -172,14 +171,14 @@ div.middle-left
   /* Groups Container */
     div.profile-group-container
     {
-      @extend .float-left;
+      @include float-left;
       width: 200px;
       $linkborder: 3px;
 
       a.profile-group-link, a.profile-group-link:link, a.profile-group-link:active, a.profile-group-link:visited
       {
         @include rounded-box;
-        @extend .float-left;
+        @include float-left;
         padding: 5px;
         margin: $linkborder 10+$linkborder 10+$linkborder $linkborder;
         border: hidden $linkborder $gray;
@@ -190,7 +189,7 @@ div.middle-left
       a.profile-group-link:hover
       {
         @include rounded-box;
-        @extend .float-left;
+        @include float-left;
         margin: 0px 10px 10px 0px;
         border-style: solid;
       }
@@ -201,7 +200,7 @@ div.middle-left
 /* Activity Feed */
 div.profile-activity-container
 {
-  @extend .float-left;
+  @include float-left;
   display: block;
   width: 400px;
   margin-right: 50px;
@@ -266,7 +265,7 @@ div.middle-right
       background-color: $gray;
       padding-top:10px;
       padding-bottom:2px;
-      @extend h5;
+      @include h5;
       color: white;
     }
   }
