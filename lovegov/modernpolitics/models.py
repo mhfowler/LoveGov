@@ -1659,8 +1659,10 @@ class Notification(Privacy):
         return notification_verbose
 
     def addAggUser(self,agg_user):
-        self.users.add(agg_user)
-        self.tally += 1
+        already = self.users.filter(alias=agg_user.alias)
+        if not already:
+            self.users.add(agg_user)
+            self.tally += 1
         self.recent_user = agg_user
         self.viewed = False
         self.save()

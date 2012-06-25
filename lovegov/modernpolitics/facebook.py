@@ -26,13 +26,15 @@ def fbMakeFriends(request, vals={}):
     user = vals['viewer']
     path = user.getFBAlias() + '/friends'
     response =  fbGet(request, path)
-    if response:
+    if 'data' in response:
         friends = response['data']
         for f in friends:
             friend = UserProfile.lg.get_or_none( facebook_id=f['id'] )
             if friend:
                 user.follow( friend , fb=True )
                 friend.follow( user , fb=True )
+    else:
+        print 'data'
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.
@@ -100,10 +102,10 @@ def fbLogin(request, vals={}):
                 name = me['first_name'] + " " + me['last_name']
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
-                vals['viewer'] = user_prof
+            vals['viewer'] = user_prof
             user_prof.facebook_id = fb_id
-            fbMakeFriends(request, vals)
             user_prof.refreshFB(me)
+            fbMakeFriends(request, vals)
             user_prof.save()
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
