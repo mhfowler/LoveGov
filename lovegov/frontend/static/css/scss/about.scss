@@ -2,6 +2,10 @@
 @import 'master-variables';
 @import 'master';
 
+.test {
+	color:blue;
+}
+
 @mixin circleDiv($side)
 {
   width:$side;
@@ -19,6 +23,8 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
 {
   @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
   margin-bottom:15px;
+
+
 
   span
   {
@@ -44,8 +50,12 @@ div.top-nav
 div.nav-top-div
 {
   padding-bottom:15px;
-  border-bottom:1px solid $gray;
   display:inline-block;
+}
+
+div.nav-top-div-border
+{
+  @include horizontalSeparator($width:800px,$color:$gray,$margin-left:100px,$margin-top:10px,$margin-bottom:10px);
 }
 
 div.top-nav-left
@@ -87,8 +97,8 @@ div.top-nav-right
     font-family:$gill-light;
     float:left;
     margin-top:25px;
-
   }
+
 }
 
 div#about-content
@@ -110,9 +120,14 @@ div#about-content
     float:left;
   }
 
-  h3
+  h4
   {
-    font-size:21px;
+    font-size:18px;
+  }
+
+  h6
+  {
+    color:$deep-gray;
   }
 
   div.about-content-block
@@ -130,6 +145,18 @@ div#about-content
   div.who-are-we-circle
   {
     position:relative;
+    min-width:475px;
+    margin-right:25px;
+    float:left;
+  }
+
+  div.mission
+  {
+    margin-top:25px;
+    position:relative;
+    width:475px;
+    margin-left:25px;
+    float:left;
   }
 
   div.who-are-we-circle-div
@@ -139,9 +166,19 @@ div#about-content
 
   @each $color-name in $color-name-list
   {
+    $color:colorMap($color-name);
+
     div.who-are-we-circle-div-#{$color-name}
     {
-      @include getBorderColor($color-name,2px);
+
+      border: 2px $color solid;
+    }
+
+    div.who-are-we-circle-div-#{$color-name}-hover
+    {
+      -moz-box-shadow: 0 0 40px 5px $color;
+      -webkit-box-shadow: 0 0 40px 5px $color;
+      box-shadow: 0 0 40px 5px $color;
     }
   }
 
@@ -149,6 +186,7 @@ div#about-content
   {
     @include circleDiv(250px);
     background-color:$red;
+    border: 2px $red solid;
   }
 
   div.about-content-right
@@ -156,7 +194,6 @@ div#about-content
     @extend .about-content-block;
     width:475px;
     margin-left:25px;
-
-
   }
 }
+

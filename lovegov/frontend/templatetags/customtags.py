@@ -26,3 +26,7 @@ def cycle_list(parser, token):
     if len(args) != 4 or args[-2] != 'as':
         raise TemplateSyntaxError(u"Cycle_list tag should be in the format {% cycle_list list as variable %}")
     return CycleListNode(args[1], args[3])
+
+@register.filter
+def subtract(value, arg):
+    return int(value) - int(arg)

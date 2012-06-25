@@ -155,6 +155,13 @@ MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Energy':2,
                                'Health Care':4}
 
+MAIN_TOPIC_COLORS_LIST = []
+
+for topic in MAIN_TOPICS:
+    MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
+
+
+
 
 ########################################### PROCESS PATHS ##############################################################
 

@@ -203,7 +203,7 @@ class Topic(LGModel):
 #=======================================================================================================================
 class Content(Privacy, LocationLevel):
     # unique identifier
-    alias = models.CharField(max_length=30, default="default")
+    alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
     in_feed = models.BooleanField(default=True)
     in_search = models.BooleanField(default=True)
@@ -954,6 +954,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     confirmation_link = models.CharField(max_length=500)
     first_login = models.BooleanField(default=True) # for special case for first login
     developer = models.BooleanField(default=False)  # for developmentWrapper
+    user_title = models.CharField(max_length=200,null=True)
     # INFO
     basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
     view = models.ForeignKey("WorldView", default=initView)
@@ -3388,24 +3389,26 @@ class PageAccess(LGModel):
 
     def autoSave(self, request):
         if not LOCAL:
-            user_prof = ControllingUser.objects.get(id=request.user.id).user_profile
-            self.user = user_prof
-            self.page = request.path
-            self.ipaddress = request.META['REMOTE_ADDR']
-            if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
-                newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
-                newUserIPAddress.autoSave()
-            if request.method == "POST":
-                self.type = 'POST'
-                if 'action' in request.POST:
-                    self.action = request.POST['action']
-            else:
-                self.type = 'GET'
-                if 'action' in request.GET:
-                    self.action = request.GET['action']
-            self.save()
-            user_prof.last_page_access = self.id
-            user_prof.save()
+            user_prof = ControllingUser.lg.get_or_none(id=request.user.id)
+            if user_prof:
+                user_prof = user_prof.user_profile
+                self.user = user_prof
+                self.page = request.path
+                self.ipaddress = request.META['REMOTE_ADDR']
+                if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
+                    newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
+                    newUserIPAddress.autoSave()
+                if request.method == "POST":
+                    self.type = 'POST'
+                    if 'action' in request.POST:
+                        self.action = request.POST['action']
+                else:
+                    self.type = 'GET'
+                    if 'action' in request.GET:
+                        self.action = request.GET['action']
+                self.save()
+                user_prof.last_page_access = self.id
+                user_prof.save()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
