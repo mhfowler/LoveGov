@@ -190,9 +190,9 @@
 
 @mixin modal {
   display: block;
+  float: left;
   background-color: white;
   z-index: 103;
-  position: absolute;
   -moz-box-shadow: 10px 10px 5px $deep-gray;
   -webkit-box-shadow: 10px 10px 5px $deep-gray;
   box-shadow: 10px 10px 5px $deep-gray;
