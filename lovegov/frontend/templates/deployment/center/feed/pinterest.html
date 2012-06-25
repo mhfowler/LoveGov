@@ -90,14 +90,14 @@
                                             {% thumbnail creator.getProfileImage.image "20x20" crop="center" as im %}
                                                 <img src="{{ im.url }}"/>
                                             {% empty %}
-                                                <p> <img src="/static/images/obama.jpg" width="20px" height="20px">  </p>
+                                                 <img src="/static/images/obama.jpg" width="20px" height="20px">
                                             {% endthumbnail %}
                                         </a>
                                     {% else %}
                                         {% thumbnail defaultImage "20x20" format="PNG" as im %}
                                             <img src="{{ im.url }}"/>
                                         {% empty %}
-                                            <p>   <img src="/static/images/obama.jpg" width="20px" height="20px"> </p>
+                                             <img src="/static/images/obama.jpg" width="20px" height="20px">
                                         {% endthumbnail %}
                                     {% endif %}
                                 </div>
@@ -123,13 +123,19 @@
 
             <div class="pinterest-footer">
                 <div class="hearts">
-                    {% include 'deployment/snippets/hearts.html' with x=10 y=10 content=item %}
+                    {% include 'deployment/snippets/hearts.html' with content=item %}
                 </div>
                 <div class="comments">
-                    comments
+                    <div class="comments-wrapper">
+                        <div class="text-wrapper">
+                            <span class="comments-text"> comments </span>
+                            <span class="comments-num"> {{ item.num_comments }} </span>
+                        </div>
+                    </div>
                 </div>
                 <div class="share">
-                    share
+                    <div style="clear:both;"></div>
+                    <a href="" class="share_button button" data-share_id="{{ item.id }}"> Share </a>
                 </div>
             </div>
 

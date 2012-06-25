@@ -32,9 +32,6 @@ function rebindFunction()
             loadRightSideBar();
             loadThread();
             break;
-        case 'home':                                            // /home
-            loadFeed();
-            break;
         case 'feed':                                            // /feed
             loadNewFeed();
             break;
@@ -62,9 +59,6 @@ function rebindFunction()
         case 'account':                                         // /account
             loadAccount();
             break;
-        case 'login':
-            loadLogin();
-            break
         default:
             break
     }
@@ -72,7 +66,7 @@ function rebindFunction()
 
 /***********************************************************************************************************************
  *
- *      ~Auxiliary
+ *      ~Menu and Icon Display
  *
  ***********************************************************************************************************************/
 function loadMenuToggles() {
@@ -137,7 +131,11 @@ function defaultHover(all_div) {
 }
 
 
-
+/***********************************************************************************************************************
+ *
+ *      ~Following
+ *
+ ***********************************************************************************************************************/
 /* user follower */
 function userFollow(event,div,follow)
 {
@@ -210,7 +208,7 @@ function groupFollow(event,div,follow)
     ajaxPost({
             data: {
                 'action': action,
-                'g_id': g_id,
+                'g_id': g_id
             },
             success: function(data)
             {
@@ -497,8 +495,7 @@ function showTopicIcon(wrapper) {
 function loadAjaxifyAnchors()
 {
     $('.do-ajax-link').off('click',  ajaxClicked);
-    var ajaxClicked = function(event)
-    {
+    var ajaxClicked = function(event) {
         var elem = event.target;
         var href = $(elem).attr('href');
         if (
@@ -516,7 +513,6 @@ function loadAjaxifyAnchors()
         }
     }
     $('.do-ajax-link').on('click',  ajaxClicked);
-
 }
 /***********************************************************************************************************************
  *
@@ -944,7 +940,7 @@ function closeLeftSideWrapper(wrapper)
 function loadLeftSidebar()
 {
 
-    $('.create-img').click(function()
+    $('.left-side-img').click(function()
     {
         var parent = $(this).parent();
         if (parent.hasClass('clicked'))
@@ -960,238 +956,10 @@ function loadLeftSidebar()
         }
     });
 
-    $('.create-wrapper').bind('clickoutside',function()
+    $('.left-side-wrapper').bind('clickoutside',function()
     {
         var wrapper = $(this);
         if (wrapper.hasClass('clicked')) { closeLeftSideWrapper(wrapper); }
-    });
-
-    $('#create-petition-button').click(function()
-    {
-        $('.create-content-div').hide();
-        $('#create-petition-div').show();
-    });
-
-    $('#create-news-button').click(function()
-    {
-        $('.create-content-div').hide();
-        $('#create-news-div').show();
-    });
-
-    $('#create-group-button').click(function()
-    {
-        $('.create-content-div').hide();
-        $('#create-group-div').show();
-    });
-
-    var timeout;
-    var delay = 750;
-    var isLoading = false;
-    var currentURL;
-    var currentLink = 0;
-    var returned;
-    $('#news-input-link').bind('keyup',function()
-    {
-        var text = $(this).val();
-        if (timeout)
-        {
-            clearTimeout(timeout);
-        }
-
-        if (!isLoading && text != currentURL)
-        {
-            timeout = setTimeout(function()
-            {
-                isLoading = true;
-                if (regUrl.test(text))
-                {
-                    $('#news-link-generation').empty();
-                    $('#news-link-generation').show();
-                    $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
-                    $('#news-summary').show();
-                    ajaxPost({
-                        data: {'action':'getLinkInfo','url':text},
-                        success: function(data)
-                        {
-                            returned = eval('(' + data + ')');
-                            $('#news-link-generation').html(returned.html);
-                            $('#cycle-img-left').bind('click',function()
-                            {
-
-                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
-                                else { currentLink--; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                            });
-                            $('#cycle-img-right').bind('click',function()
-                            {
-                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
-                                else { currentLink++; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
-                            });
-                            currentURL = text;
-                        },
-                        error: null
-                        /*
-                         function(jqXHR, textStatus, errorThrown)
-                         {
-
-                         $('#news-link-generation').hide();
-                         $('#news-summary').hide();
-                         } */
-                    });
-                }
-                else
-                {
-                    $('#news-link-generation').hide();
-                    $('#news-summary').hide();
-                }
-                // Simulate a real ajax call
-                setTimeout(function() { isLoading = false; }, delay);
-            }, delay);
-        }
-    });
-
-    /**
-     * Handles selecting topic image for content creation
-     */
-    $(".create-topic-img").click(function(event)
-    {
-
-        var wrapper = $(this).parents(".topic-icon-wrapper");
-        var icons_wrapper = wrapper.parents(".topic-icons-wrapper");
-
-        icons_wrapper.find('.topic-radio').attr('checked',false);
-
-        if (!wrapper.hasClass('chosen'))
-        {
-            wrapper.find(".topic-radio").attr("checked",true);
-        }
-        selectTopicSingle(wrapper);
-    });
-
-    function clearPetitionErrors()
-    {
-        $("#errors-title").empty();
-        $("#errors-summary").empty();
-        $("#errors-full_text").empty();
-        $("#errors-topic").empty();
-        $("#errors-non_field").empty();
-    }
-
-
-    $('#create-petition').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#input-title').val();
-        var summary = $('#input-summary').val();
-        var full_text = $('#input-full_text').val();
-        var link = $('#input-link').val();
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-summary").html(returned.errors.summary);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    $('.normal').show();
-                    $('');
-                    clearPetitionErrors();
-                    History.pushState( {k:1}, returned.title, returned.url);
-                    rebind = returned.rebind;
-                    closeLeftSideWrapper($('.create-wrapper.clicked'));
-                    replaceCenter(returned.html);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
-
-    $('#create-group').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#group-input-title').val();
-        var full_text = $('#group-input-full_text').val();
-        var privacy = $('input:radio[name=privacy]:checked').val();
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create',
-                'title':title,
-                'full_text':full_text,
-                'topics':topic,
-                'group_type':'U',
-                'group_privacy':privacy,
-                'type':'G'
-            },
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    alert('errors')
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location.href = returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
-
-    $('#share-button').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#news-input-title').val();
-        var summary = $('#news-input-summary').val();
-        var link = $('#news-input-link').val();
-        var description = $('#news-link-generation-description').text();
-        var screenshot = $('#news-link-image-src').attr("src");
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary,'link':link,
-                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#news-errors-link").html(returned.errors.link);
-                    $("#news-errors-title").html(returned.errors.title);
-                    $("#news-errors-summary").html(returned.errors.summary);
-                    $("#news-errors-topic").html(returned.errors.topics);
-                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location=returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
     });
 
     $('#feedback-submit').click(function(event)
@@ -1253,6 +1021,27 @@ function loadLeftSidebar()
 
 /***********************************************************************************************************************
  *
+ *     ~Share Button
+ *
+ **********************************************************************************************************************/
+function loadShareButton() {
+    $('div.overdiv').appendTo('body');
+    $('div.shareModal').appendTo('body');
+
+    $('.share_button').click(function(event) {
+        event.preventDefault();
+        $("#share_id").data('share_id', $(this).data('share_id'));
+        $('div.overdiv').fadeToggle("fast");
+        $('div.shareModal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.shareModal').hide();
+    });
+}
+/***********************************************************************************************************************
+ *
  *     ~RightSidebar
  *
  **********************************************************************************************************************/
@@ -1297,21 +1086,6 @@ function loadRightSideBar()
         topics=[];
 
     });
-
-    $('div.overdiv').appendTo('body');
-    $('div.shareModal').appendTo('body');
-
-    $('.share-button').click(function(event) {
-        event.preventDefault();
-//        alert('don\'t click me brah');
-        $('div.overdiv').fadeToggle("fast");
-        $('div.shareModal').fadeToggle("fast");
-    });
-    $('div.overdiv').click(function() {
-        $('div.overdiv').hide();
-        $('div.shareModal').hide();
-    });
-
 }
 
 // shows questions from the selected topic and calls select topic to adjust icons appropriately
@@ -1322,211 +1096,6 @@ function selectQuestionTopic(div)
     $("#topic-"+t).fadeIn();
 }
 
-/***********************************************************************************************************************
- *
- *      ~Feeds
- *
- ***********************************************************************************************************************/
-/* feed buttons */
-var feed_type = 'H';
-var topics = [];
-function scrollLoadFeed() { if  ($(window).scrollTop() == $(document).height() - $(window).height()) { getMore(feed_type);}}
-
-function loadFeed()
-{
-
-    // feed
-    $(".feed").hide();
-    $("#hotfeed").show();
-    $("#hot_button").css('background-color','#f0503b');
-
-    // topic filters
-    // select topic click function
-    $(".filter-topic-img").click(function(event) {
-        var wrapper = $(this).parents(".topic-icon-wrapper");
-        toggleTopicIcon(wrapper);
-    });
-
-    // set heart buttons
-    heartButtons();
-    // heart display
-    heartDisplay();
-
-    /* set feed buttons */
-    $('#new_button').click(function()
-    {
-        clearButtons();
-        $("#newfeed").show();
-        $("#new_button").css('background-color','#f0503b');
-        feed_type = 'N';
-    });
-
-    $('#hot_button').click(function()
-    {
-        clearButtons();
-        $("#hotfeed").show();
-        $("#hot_button").css('background-color','#f0503b');
-        feed_type = 'H';
-    });
-
-    $('#best_button').click(function() {
-        clearButtons();
-        $("#bestfeed").show();
-        $("#best_button").css('background-color','#f0503b');
-        feed_type = 'B';
-    });
-
-    // click topic icons to filter by topic (and get new feeds)
-    $(".topic-filter").click(function() {
-        var t = $(this).children(".t-alias").val();
-        var index = $.inArray(t, topics);
-        // if not in array, then append
-        if (index == -1) {
-            topics.push(t);
-        }
-        // else remove found item
-        else {
-            topics.splice(index, 1);
-        }
-        refreshFeeds();
-    });
-
-    // all topics button, refresh feeds
-    $("#all-topics-button").click(function(event) {
-        var wrapper = $(this).parent();
-        wrapper.find(".chosen").removeClass("chosen");
-        wrapper.find(".selected").hide();
-        wrapper.find(".normal").show();
-        topics = ["all"];
-        refreshFeeds();
-    });
-
-    bindFeedItems();
-
-    $(window).scroll(scrollLoadFeed);
-
-    // more button
-    $(".more-button").click(function(event)
-    {
-        event.preventDefault();
-        getMore(feed_type);
-    });
-}
-
-/**
- * Refreshes all feeds.
- */
-function refreshFeeds()
-{
-    getNew('N');
-    getNew('H');
-    getNew('B');
-}
-
-/**
- * Binds feed items with UI functionality
- */
-function bindFeedItems()
-{
-    /**
-     * Binds link of news URL to the image for the URL
-     */
-    $('.link-img img').unbind();
-    $('.link-img img').click(function(event)
-    {
-        var url = $(this).siblings('a').attr('href');
-        // middle mouse button or control + leftclick will open new tab for link
-        if(event.ctrlKey || (!$.browser.msie && event.button == 1) || ($.browser.msie && event.button == 4))
-        {
-            window.open(url, '_blank');
-        }
-        // normal leftclick on link
-        else
-        {
-            window.location = url;
-        }
-    });
-
-    /**
-     * Adds border on hover to image
-     */
-    $('.link-img img').hover
-        (
-            function(event) { $(this).css("border-color","#f0503b"); }, // hover over
-            function(event) { $(this).css('border-color','#FFFFFF'); }  // hover out
-        );
-
-    $('.feed-username').click(function(event)
-    {
-        var url = $(this).children('a').attr('href');
-        // middle mouse button or control + leftclick will open new tab for link
-        if(event.ctrlKey || (!$.browser.msie && event.button == 1) || ($.browser.msie && event.button == 4))
-        {
-            window.open(url, '_blank');
-        }
-        // normal leftclick on link
-        else
-        {
-            ajaxLink(url,true);
-        }
-    });
-
-    // bind newly loaded feed items with comparison hover over
-    loadHoverComparison();
-    loadAjaxifyAnchors();
-}
-
-/* feed stuff */
-function clearButtons()
-{
-    $(".feed").hide();
-    $(".dialogue-buttons").css('background-color','#ccc');
-}
-
-
-// append more items to the feed list
-function getMore(feed_type)
-{
-    var s= parseInt($("#length" + feed_type).val());
-    ajaxFeed(feed_type, topics, s, 5, false);
-}
-
-// refresh and replace the feed list
-function getNew(feed_type)
-{
-    ajaxFeed(feed_type, topics, 0, 10, true);
-}
-
-
-function ajaxFeed(feed_type, topics, start, how_many, force_replace)
-{
-    var topics_serialized = JSON.stringify(topics);
-    ajaxPost({
-        data: {'action': 'ajaxFeed', 'feed_type':feed_type, 'topics':topics_serialized, 'start':start, 'how_many':how_many},
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            // update position in feed
-            $("#length" + feed_type).val(returned.position);
-            // return feed html
-            var feed = returned.feed;
-            if (force_replace) { $("#" + feed_type).html(feed); }
-            else { $("#" + feed_type).append(feed); }
-            heartButtons();
-            heartDisplay();
-            bindFeedItems();
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            alert("failure");
-            $("body").html(jqXHR.responseText);
-        }
-    });
-}
-
-
-
-////////////////////////////////////////////////////////////
 
 
 /***********************************************************************************************************************
@@ -1626,7 +1195,6 @@ function submitAnswer()
 // binding for thread
 function loadThread()
 {
-
     $('.heart').hover
         (
             function(event)
@@ -2491,7 +2059,7 @@ function getFeed(num)
             }
 
             heartButtons();
-            heartDisplay();
+            loadShareButton();
 
         },
         error: null
@@ -2560,53 +2128,21 @@ function getFilter(f_id) {
 /* heart stuff */
 function heartButtons()
 {
-    var container = $(".not-processed");
-    container.hide();
-
-    container.find(".heart").hover
-        (
-            function()
-            {
-                $(this).parent().children(".grey").hide();
-                $(this).parent().children(".blue").show();
-
-            },
-            function()
-            {
-                var blue = $(this).parent().children(".blue");
-                if (blue.hasClass("hide"))
-                {
-                    blue.hide();
-                    $(this).parent().children(".grey").show();
-                }
-            }
-        );
-
-    container.find(".plus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='L';
-        vote($(this),content_id, v);
+    $(".heart_minus").click(function(event) {
+        var wrapper = $(this).parents(".hearts-wrapper");
+        event.preventDefault();
+        vote(wrapper, wrapper.data('c_id'), -1);
     });
 
-    container.find(".minus").click(function()
-    {
-        var content_id = $(this).parent().siblings(".c_id").val();
-        var v='D';
-        vote($(this),content_id, v);
+    $(".heart_plus").click(function(event) {
+        var wrapper = $(this).parents(".hearts-wrapper");
+        event.preventDefault();
+        vote(wrapper, wrapper.data('c_id'), 1);
     });
-
-    container.removeClass("not-processed");
-    container.show();
 }
 
-function heartDisplay()
-{
-    $(".hide").hide();
-    $(".show").show();
-}
 
-function vote(div, content_id, v)
+function vote(wrapper, content_id, v)
 {
     ajaxPost({
         data: {'action':'vote','c_id':content_id, 'vote':v},
@@ -2615,12 +2151,10 @@ function vote(div, content_id, v)
             var returned = eval('(' + data + ')');
             var my_vote = parseInt(returned.my_vote);
             var status = returned.status;
-            if (my_vote==1) { like(div); }
-            if (my_vote==0) { neutral(div); }
-            if (my_vote==-1) { dislike(div); }
-            heartDisplay();
-            // change status
-            div.parent().parent().find(".post-score").text(status);
+            if (my_vote==1) { like(wrapper); }
+            if (my_vote==0) { neutral(wrapper); }
+            if (my_vote==-1) { dislike(wrapper); }
+            wrapper.find(".status").text(status);
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -2631,43 +2165,18 @@ function vote(div, content_id, v)
 
 function like(div)
 {
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    show(plus_blue);
-    hide(plus_grey);
-    hide(minus_blue);
-    show(minus_grey);
+    div.find(".heart_plus").addClass("clicked");
+    div.find(".heart_minus").removeClass("clicked");
 }
 function dislike(div)
 {
-    var plus_blue = div.parent().parent().find(".plus.blue");
-    var plus_grey = div.parent().parent().find(".plus.grey");
-    var minus_blue = div.parent().parent().find(".minus.blue");
-    var minus_grey = div.parent().parent().find(".minus.grey");
-    hide(plus_blue);
-    show(plus_grey);
-    show(minus_blue);
-    hide(minus_grey);
+    div.find(".heart_plus").removeClass("clicked");
+    div.find(".heart_minus").addClass("clicked");
 }
 function neutral(div)
 {
-    var blue = div.parent().parent().find(".blue");
-    var grey = div.parent().parent().find(".grey");
-    hide(blue);
-    show(grey);
-}
-
-function show(div)
-{
-    div.addClass("show");
-    div.removeClass("hide");
-}
-function hide(div)
-{
-    div.addClass("hide");
-    div.removeClass("show");
+    div.find(".heart_plus").removeClass("clicked");
+    div.find(".heart_minus").removeClass("clicked");
 }
 
 /*
@@ -2817,6 +2326,59 @@ function visualDisplayWrapperHide(wrapper) {
     wrapper.find(".display-red").hide();
 }
 
+/**
+ * Binds feed items with UI functionality
+ */
+function bindFeedItems()
+{
+    /**
+     * Binds link of news URL to the image for the URL
+     */
+    $('.link-img img').unbind();
+    $('.link-img img').click(function(event)
+    {
+        var url = $(this).siblings('a').attr('href');
+        // middle mouse button or control + leftclick will open new tab for link
+        if(event.ctrlKey || (!$.browser.msie && event.button == 1) || ($.browser.msie && event.button == 4))
+        {
+            window.open(url, '_blank');
+        }
+        // normal leftclick on link
+        else
+        {
+            window.location = url;
+        }
+    });
+
+    /**
+     * Adds border on hover to image
+     */
+    $('.link-img img').hover
+        (
+            function(event) { $(this).css("border-color","#f0503b"); }, // hover over
+            function(event) { $(this).css('border-color','#FFFFFF'); }  // hover out
+        );
+
+    $('.feed-username').click(function(event)
+    {
+        var url = $(this).children('a').attr('href');
+        // middle mouse button or control + leftclick will open new tab for link
+        if(event.ctrlKey || (!$.browser.msie && event.button == 1) || ($.browser.msie && event.button == 4))
+        {
+            window.open(url, '_blank');
+        }
+        // normal leftclick on link
+        else
+        {
+            ajaxLink(url,true);
+        }
+    });
+
+    // bind newly loaded feed items with comparison hover over
+    loadHoverComparison();
+    loadAjaxifyAnchors();
+}
+
 /* binds everyting */
 var feed_metadata;
 function loadNewFeed() {
@@ -2826,7 +2388,6 @@ function loadNewFeed() {
     updateFeedVisual();
 
     $(".more-options-wrapper").css('height', '0px');
-    $(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
         event.preventDefault();
         var wrapper = $(".more-options-wrapper");
@@ -2956,4 +2517,255 @@ function loadNewFeed() {
 
     $(window).scroll(scrollFeed);
 
+    bindCreateButton();
+    loadCreate();
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~CreateModal
+ *
+ **********************************************************************************************************************/
+function bindCreateButton() {
+    $('.create_button').click( function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div.create_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.create_modal').hide();
+    });
+}
+
+function loadCreate()
+{
+    $('#create-petition-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-petition-div').show();
+    });
+
+    $('#create-news-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-news-div').show();
+    });
+
+    $('#create-group-button').click(function()
+    {
+        $('.create-content-div').hide();
+        $('#create-group-div').show();
+    });
+
+    var timeout;
+    var delay = 750;
+    var isLoading = false;
+    var currentURL;
+    var currentLink = 0;
+    var returned;
+    $('#news-input-link').bind('keyup',function()
+    {
+        var text = $(this).val();
+        if (timeout)
+        {
+            clearTimeout(timeout);
+        }
+
+        if (!isLoading && text != currentURL)
+        {
+            timeout = setTimeout(function()
+            {
+                isLoading = true;
+                if (regUrl.test(text))
+                {
+                    $('#news-link-generation').empty();
+                    $('#news-link-generation').show();
+                    $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
+                    $('#news-summary').show();
+                    ajaxPost({
+                        data: {'action':'getLinkInfo','url':text},
+                        success: function(data)
+                        {
+                            returned = eval('(' + data + ')');
+                            $('#news-link-generation').html(returned.html);
+                            $('#cycle-img-left').bind('click',function()
+                            {
+
+                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
+                                else { currentLink--; }
+                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                            });
+                            $('#cycle-img-right').bind('click',function()
+                            {
+                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
+                                else { currentLink++; }
+                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
+                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                            });
+                            currentURL = text;
+                        },
+                        error: null
+                        /*
+                         function(jqXHR, textStatus, errorThrown)
+                         {
+
+                         $('#news-link-generation').hide();
+                         $('#news-summary').hide();
+                         } */
+                    });
+                }
+                else
+                {
+                    $('#news-link-generation').hide();
+                    $('#news-summary').hide();
+                }
+                // Simulate a real ajax call
+                setTimeout(function() { isLoading = false; }, delay);
+            }, delay);
+        }
+    });
+
+    /**
+     * Handles selecting topic image for content creation
+     */
+    $(".create-topic-img").click(function(event)
+    {
+
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        var icons_wrapper = wrapper.parents(".topic-icons-wrapper");
+
+        icons_wrapper.find('.topic-radio').attr('checked',false);
+
+        if (!wrapper.hasClass('chosen'))
+        {
+            wrapper.find(".topic-radio").attr("checked",true);
+        }
+        selectTopicSingle(wrapper);
+    });
+
+    function clearPetitionErrors()
+    {
+        $("#errors-title").empty();
+        $("#errors-summary").empty();
+        $("#errors-full_text").empty();
+        $("#errors-topic").empty();
+        $("#errors-non_field").empty();
+    }
+
+
+    $('#create-petition').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#input-title').val();
+        var summary = $('#input-summary').val();
+        var full_text = $('#input-full_text').val();
+        var link = $('#input-link').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        ajaxPost({
+            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
+                {
+                    $("#errors-title").html(returned.errors.title);
+                    $("#errors-summary").html(returned.errors.summary);
+                    $("#errors-full_text").html(returned.errors.full_text);
+                    $("#errors-topic").html(returned.errors.topics);
+                    $("#errors-non_field").html(returned.errors.non_field_errors);
+                }
+                else
+                {
+                    $('.normal').show();
+                    $('');
+                    clearPetitionErrors();
+                    History.pushState( {k:1}, returned.title, returned.url);
+                    rebind = returned.rebind;
+                    closeLeftSideWrapper($('.create-wrapper.clicked'));
+                    replaceCenter(returned.html);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
+    $('#create-group').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#group-input-title').val();
+        var full_text = $('#group-input-full_text').val();
+        var privacy = $('input:radio[name=privacy]:checked').val();
+        var topic = $('input:radio[name=topics]:checked').val();
+        ajaxPost({
+            data: {'action':'create',
+                'title':title,
+                'full_text':full_text,
+                'topics':topic,
+                'group_type':'U',
+                'group_privacy':privacy,
+                'type':'G'
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
+                {
+                    alert('errors')
+                    $("#errors-title").html(returned.errors.title);
+                    $("#errors-full_text").html(returned.errors.full_text);
+                    $("#errors-topic").html(returned.errors.topics);
+                    $("#errors-non_field").html(returned.errors.non_field_errors);
+                }
+                else
+                {
+                    window.location.href = returned.url;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
+    $('#share-button').click(function(event)
+    {
+        event.preventDefault();
+        var title = $('#news-input-title').val();
+        var summary = $('#news-input-summary').val();
+        var link = $('#news-input-link').val();
+        var description = $('#news-link-generation-description').text();
+        var screenshot = $('#news-link-image-src').attr("src");
+        var topic = $('input:radio[name=topics]:checked').val();
+        ajaxPost({
+            data: {'action':'create','title':title,'summary':summary,'link':link,
+                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success == false)
+                {
+                    $("#news-errors-link").html(returned.errors.link);
+                    $("#news-errors-title").html(returned.errors.title);
+                    $("#news-errors-summary").html(returned.errors.summary);
+                    $("#news-errors-topic").html(returned.errors.topics);
+                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
+                }
+                else
+                {
+                    window.location=returned.url;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
 }

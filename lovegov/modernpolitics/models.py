@@ -205,7 +205,7 @@ class Content(Privacy, LocationLevel):
     # unique identifier
     alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
-    in_feed = models.BooleanField(default=True)
+    in_feed = models.BooleanField(default=False)
     in_search = models.BooleanField(default=True)
     in_calc = models.BooleanField(default=True)
     # FIELDS
@@ -1859,6 +1859,7 @@ class Petition(Content):
         if not self.summary:
             self.summary = self.full_text[:400]
         self.type = 'P'
+        self.in_feed = True
         self.save()
         super(Petition, self).autoSave(creator=creator, privacy=privacy)
 
@@ -1927,6 +1928,7 @@ class News(Content):
     link_screenshot = models.ImageField(upload_to='screenshots/')
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
+        self.in_feed = True
         self.save()
         super(News, self).autoSave(creator=creator, privacy=privacy)
 
@@ -3346,6 +3348,9 @@ class Network(Group):
 #
 #=======================================================================================================================
 class UserGroup(Group):
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.in_feed = True
+        super(UserGroup, self).autoSave()
     pass
 
 ########################################################################################################################
@@ -3707,6 +3712,9 @@ class Commented(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CO'
         self.creator = self.user
+        content = self.comment.root_content
+        content.num_comments += 1
+        content.save()
         self.save()
 
 #=======================================================================================================================

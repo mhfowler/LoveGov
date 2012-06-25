@@ -41,7 +41,7 @@
        load
    </a> -->
 
-    <!-- sorting buttons -->
+    <!-- sorting buttons
     <div class="sorting-buttons">
         <a href="">
             <div class="sorting-button feed-ranking-selector" data-ranking="N" data-verbose="New">
@@ -58,6 +58,34 @@
                 <p class="sorting-text">Best</p>
             </div>
         </a>
+    </div> -->
+
+    <!-- sorting dropdown -->
+    <div class="sort-by">
+        <h2 class="mini"> Sort by: </h2>
+    </div>
+    <div class="sort-by-choice  menu_toggle">
+        <p class="feed-menu-title ranking_menu_title">
+            Hot
+        </p>
+        <div class="triangle-selector"></div>
+        <div class="sort-menu menu">
+            <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
+                <p class="ranking-choice-title">
+                    New
+                </p>
+            </div>
+            <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
+                <p class="ranking-choice-title">
+                    Hot
+                </p>
+            </div>
+            <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
+                <p class="ranking-choice-title">
+                    Best
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- display choice -->
@@ -73,10 +101,10 @@
     </div>
 
 
-    <div class="create-box ">
+    <div class="create-box create_button">
         <p class="options-title"> create </p>
     </div>
-   
+
 
     <a href="" class="how-does"> how does this work? </a>
 
@@ -88,35 +116,6 @@
 
 
     <div class="more-options-selector">
-
-        <!--
-        <div class="sort-by">
-            <h2 class="mini"> Sort by: </h2>
-        </div>
-        <div class="sort-by-choice  menu_toggle">
-            <p class="feed-menu-title ranking_menu_title">
-                Hot
-            </p>
-            <div class="triangle-selector"></div>
-            <div class="sort-menu menu">
-                <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
-                    <p class="ranking-choice-title">
-                        New
-                    </p>
-                </div>
-                <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
-                    <p class="ranking-choice-title">
-                        Hot
-                    </p>
-                </div>
-                <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
-                    <p class="ranking-choice-title">
-                        Best
-                    </p>
-                </div>
-            </div>
-        </div>
-        -->
 
         <div class="filter-by">
             <h2 class="mini"> Filter by: </h2>
@@ -247,6 +246,10 @@
 
 </div>
 
+</div>
+
+<div class="create-modal create_modal">
+    {% include 'deployment/pieces/create_modal.html' %}
 </div>
 
 <script> rebind = 'feed'; </script>

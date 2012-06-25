@@ -3,7 +3,7 @@
 {% block body %}
     <body>
     <!-- Header -->
-    {% include 'deployment/pieces/new-header.html' %}
+    {% include 'deployment/pieces/header.html' %}
     <!-- End Header -->
 
     <!-- Left Side Bar -->
@@ -25,6 +25,13 @@
     <!-- Comparison Hover -->
     {% include "deployment/snippets/comparison_hover.html" %}
     <!-- End Comparison Hover -->
+
+    <!-- share -->
+    <div id="share_id" data-share_id=""></div>
+    <div class="overdiv"></div>
+    <div class="shareModal">
+        {% include 'deployment/pieces/share.html' %}
+    </div>
 
     <div id="dev-debug"></div>
 

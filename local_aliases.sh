@@ -20,7 +20,6 @@ alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
 alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/frontend/scripts.py initialize testdata'
 alias lgresetdb='$LG/local_reset.sh'
 alias lgserver="$LG/local_server.sh"
-alias jserver="jpermission && lgserver"
 alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/frontend/static/css/compiled"
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
 
@@ -28,6 +27,8 @@ alias lgshell="python $LG/lovegov/local_manage.py shell"
 alias projectpermission="sudo chmod -R 770 $LG"
 alias jpermission="sudo chown jvkoh -R $LG && sudo chmod -R 770 $LG"
 alias mpermission="sudo chown -R maxfowler $LG && sudo chmod -R 770 $LG"
+alias jserver="jpermission && lgserver"
+alias jsass="jpermission && lgsass"
 
 # python environment
 export PYTHONSTARTUP=$LG/autopython.py
