@@ -123,3 +123,58 @@
   @include rounded($radius);
   background-color:$background-color;
 }
+
+@mixin float-left
+{
+  float:left;
+}
+
+@mixin h1
+{
+  font-family:$gill-light;
+  color:$text-blue;
+  font-size: 50px;
+}
+
+@mixin h2
+{
+  font-family:$gill-light;
+  color:$red;
+  font-size: 32px;
+}
+
+@mixin h3
+{
+  font-family:$gill-std;
+  color: $text-blue;
+  font-size: 26px;
+}
+
+@mixin h4
+{
+  font-family:$gill-std;
+  color: $red;
+  font-size: 22px;
+}
+
+@mixin h5
+{
+  font-family:$gill-std;
+  color: $deep-gray;
+  font-size: 18px;
+}
+
+@mixin h6
+{
+  font-family:$gill-std;
+  color: $text-blue;
+  font-size: 13px;
+}
+
+@mixin big-num
+{
+/* extra big numbers - percents etc */
+  font-size:50px;
+  font-weight:bold;
+  font-family: $body-fonts
+}
