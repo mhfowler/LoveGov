@@ -1,0 +1,489 @@
+/*
+
+                       8?
+                       8?
+                       8?
+                       8?                                                 ,7777   I7777
+                       8?    88I  888   8       8.  88~  88    I8Z Z8.   7777777+7777777  8       8
+                       8?   8~      O8  OZ     O8  87     ~8   8     8   7777777777777777 88     =8
+                       8?  O8        8:  8     8  $8???????8  $?     ~8  7777777777777777  8     8
+                       8?  8~        88   8   8   88           8     8   777777777777777    8   8,
+                       8?  +8        8    Z8 $8   ,8            I888$     7777777777777     88 88
+                       8?   88      88     8 8     88          8+          .7777777777       8~8
+                       8?    =888888.       8=       8888888   88             77777?          8.
+                                                               8I    88         I                  :=
+                                                              8       88
+                                               :  =           8.      8
+                        +:.:  :, I :  :: ?:: :,: 7, : ~I        88888,
+                         .I~?7,.  +               ?+   .
+                                            ?
+
+                             _______  _______  _______ _________ _______  _______
+                            (       )(  ___  )(  ____ \\__   __/(  ____ \(  ____ )
+                            | () () || (   ) || (    \/   ) (   | (    \/| (    )|
+                            | || || || (___) || (_____    | |   | (__    | (____)|
+                            | |(_)| ||  ___  |(_____  )   | |   |  __)   |     __)
+                            | |   | || (   ) |      ) |   | |   | (      | (\ (
+                            | )   ( || )   ( |/\____) |   | |   | (____/\| ) \ \__
+                            |/     \||/     \|\_______)   )_(   (_______/|/   \__/
+
+                             _______  _______  _______    _______           _______  _______ _________
+                            (  ____ \(  ____ \(  ____ \  (  ____ \|\     /|(  ____ \(  ____ \\__   __/
+                            | (    \/| (    \/| (    \/  | (    \/| )   ( || (    \/| (    \/   ) (
+                            | |      | (_____ | (_____   | (_____ | (___) || (__    | (__       | |
+                            | |      (_____  )(_____  )  (_____  )|  ___  ||  __)   |  __)      | |
+                            | |            ) |      ) |        ) || (   ) || (      | (         | |
+                            | (____/\/\____) |/\____) |  /\____) || )   ( || (____/\| (____/\   | |
+                            (_______/\_______)\_______)  \_______)|/     \|(_______/(_______/   )_(
+
+*/
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+.main-div
+{
+  width: 1000px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-blue
+{
+  color: $text-blue;
+}
+
+*
+{
+  margin:0;
+  padding:0;
+}
+
+body
+{
+  font-family:$body-fonts;
+  color:$black;
+  font-size:13px;
+}
+
+a, a:visited, a:active, a:link
+{
+  text-decoration:none;
+  color:$text-blue-light;
+}
+
+a:hover
+{
+  text-decoration:none;
+  cursor:pointer;
+  color:$text-blue;
+}
+
+a.red-link, a.red-link:visited, a.red-link:active, a.red-link:link
+{
+  text-decoration:none;
+  color:$red;
+}
+
+a.red-link:hover
+{
+  text-decoration:none;
+  cursor:pointer;
+  color:$red-light;
+}
+
+// Clears the color change for a link so it remains the darker color
+a.clear-link, a.clear-link:visited, a.clear-link:active, a.clear-link:link
+{
+  text-decoration:none;
+  color:$text-blue;
+}
+
+// Clears the color change for a link so it remains the darker color
+a.clear_link_red, a.clear_link_red:visited, a.clear_link_red:active, a.clear_link_red:link, a.clear_link_red:hover
+{
+  color:$red;
+}
+
+a.invert_link, a.invert_link:visited, a.invert_link:active, a.invert_link:link
+{
+  color:$text-blue;
+}
+
+a.invert_link:hover
+{
+  color:$text-blue-light;
+}
+
+
+a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover
+{
+  @include fontSize(20px);
+}
+
+p
+{
+  margin-bottom: 13px;
+}
+
+p.huge
+{
+  font-family: $gill-light;
+  color: $black;
+  font-size:24px;
+  line-height:30px;
+  margin-bottom:25px;
+}
+
+p.really-big
+{
+  font-family: $gill-light;
+  color: $deep-gray;
+  font-size:20px;
+  line-height:28px;
+  margin-bottom:20px;
+}
+
+p.big
+{
+  font-family: $gill-light;
+  color: $text-blue;
+  font-size:18px;
+  line-height:26px;
+  margin-bottom:18px;
+}
+
+ol, ul
+{
+  padding-left:30px;
+}
+
+ul.list_none
+{
+  list-style-type: none;
+  padding-left:0;
+}
+
+hr
+{
+  height:1px;
+  border:0px;
+  background-color: #ccc;
+  margin-bottom:10px;
+  margin-top:10px;
+}
+
+strong
+{
+  font-weight:bold;
+}
+
+em
+{
+  font-style:italic;
+}
+
+span.bignum
+{
+/* extra big numbers - percents etc */
+  font-size:50px;
+  font-weight:bold;
+  font-family: $body-fonts
+}
+
+blockquote
+{
+  color: #959595;
+  font-style:italic;
+  padding-left:13px;
+  padding-bottom:13px;
+  padding-right:13px;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+  font-weight:normal;
+  font-style: normal;
+}
+
+h1
+{
+  font-family:$gill-light;
+  color:$text-blue;
+  font-size: 50px;
+}
+
+h2
+{
+  font-family:$gill-light;
+  color:$red;
+  font-size: 32px;
+}
+
+h3
+{
+  font-family:$gill-std;
+  color: $text-blue;
+  font-size: 26px;
+}
+
+h4
+{
+  font-family:$gill-std;
+  color: $red;
+  font-size: 22px;
+}
+
+h5
+{
+  font-family:$gill-std;
+  color: $deep-gray;
+  font-size: 18px;
+}
+
+h6
+{
+  font-family:$gill-std;
+  color: $text-blue;
+  font-size: 13px;
+}
+
+input[type="text"], input[type="password"]
+{
+  border:1px solid $gray;
+  outline:none;
+  cursor: text ;
+  color: $black;
+}
+
+input[type="text"]:focus, input[type="password"]:focus
+{
+  border:1px solid $red;
+  outline:none;
+}
+
+input[type="submit"]:hover
+{
+  cursor:pointer;
+}
+
+textarea
+{
+  border:1px solid $gray;
+  outline:none;
+  padding: 0;
+  cursor: text;
+  outline-offset:0;
+  color: $black;
+}
+
+textarea:focus
+{
+  border:1px solid $red;
+  outline:none;
+}
+
+.button
+{
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  -khtml-border-radius: 9px;
+  border-radius: 9px;
+  padding: 12px;
+  padding-bottom: 5px;
+  letter-spacing: 1px;
+  font-size: 18px;
+  font-family: $gill-std;
+  color: white;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+}
+
+.button-red, .button-red:link, .button-red:active, .button-red:visited
+{
+  @extend .button;
+  background-color:$red;
+}
+
+.button-red:hover
+{
+  background-color:$red-light
+}
+
+.button-gray, .button-gray:link, .button-gray:active, .button-gray:visited
+{
+  @extend .button;
+  background-color: $dark-gray;
+}
+
+.button-gray:hover
+{
+  background-color: $gray;
+}
+
+.button-small
+{
+  @include rounded(5px);
+  text-align: center;
+  padding: 3px;
+}
+
+.button-small-red, .button-small-red:link, .button-small-red:active, .button-small-red:visited
+{
+  @extend .button-small;
+  font-weight: bold;
+  color: white;
+  background-color:$red;
+}
+
+.button-small-red:hover
+{
+  background-color:$red-light
+}
+
+a.long-box
+{
+  @extend .button-small;
+  display: block;
+  font-style: italic;
+  color: $black;
+}
+
+a.long-button-gray, a.long-button-gray:link, a.long-button-gray:active, a.long-button-gray:visited
+{
+  @extend a.long-box;
+  background-color: $gray;
+}
+
+a.long-button-gray:hover
+{
+  background-color: $light-gray;
+}
+
+img.icon-really-big
+{
+  width: 75px;
+  height: 75px;
+}
+
+img.icon-big
+{
+  width: 50px;
+  height: 50px;
+}
+
+img.icon-med
+{
+  width: 38px;
+  height: 38px;
+}
+
+img.icon-small
+{
+  width: 25px;
+  height: 25px;
+}
+
+.no-margin
+{
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.small-margin
+{
+  margin-bottom:10px;
+  margin-top:10px;
+}
+
+.mid-margin
+{
+  margin-bottom:25px;
+  margin-top:25px;
+}
+
+.big-num
+{
+  /*tribute to cs17 project bignum. rest in peace. */
+  font-weight:bold;
+  font-size: 52px;
+  color:$red;
+}
+
+.logo
+{
+  width:425px;
+  height:165px;
+}
+
+.capitalize-text
+{
+  text-transform:uppercase;
+}
+
+.float-left
+{
+  float:left;
+}
+
+.float-right
+{
+  float:right;
+}
+
+.clear-both
+{
+  clear:both;
+}
+
+div.round-container
+{
+  @include rounded(20px);
+}
+
+.tool-tip
+{
+  background-color:#f0503b;
+  color:white;
+}
+
+span.small
+{
+  font-size:12px;
+  font-color: #959595;
+}
+
+span.big
+{
+  font-size: 18px;
+}
+
+
+div.triangle-selector {
+  @include triangle-down(6px);
+}
+
+
+.bold
+{
+  font-weight:bold;
+}
+
+div.triangle-selector.highlighted
+{
+  border-top-color: white;
+}
+
+div.menu_toggle:hover
+{
+  background-color:$red;
+}
+
+div.menu_toggle.clicked
+{
+  background-color:$red;
+}
+
+
