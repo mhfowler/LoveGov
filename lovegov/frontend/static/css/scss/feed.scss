@@ -439,6 +439,7 @@ div.pinterest_card {
           margin: 7px 0 0px 12px;
           width:150px;
           height:50px;
+          overflow:hidden;
 
           p.submitted {
             color:$light-gray;
