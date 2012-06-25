@@ -434,7 +434,7 @@ div.pinterest_card {
 
         div.header-middle {
           float:left;
-          margin-left:12px;
+          margin: 7px 0 0px 12px;
           width:150px;
 
           p.submitted {
@@ -443,7 +443,15 @@ div.pinterest_card {
 
           div.user-name {
             margin-top:6px;
-            font-size:20px;
+            @include fontSize(16px);
+
+            a {
+              color:$black;
+            }
+
+            a:hover {
+              color:black;
+            }
           }
         }
 
