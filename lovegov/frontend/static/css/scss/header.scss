@@ -114,7 +114,7 @@ div#top
   div#user-menu-container
   {
     margin-left:15px;
-    float:left;
+    float:right;
     margin-top:5px;
 
     div.user-menu-options
@@ -135,6 +135,7 @@ div#top
       div.header-notifications
       {
         float:left;
+        cursor:pointer;
         @include round-rectangle($width:$width,$height:$height,$radius:5px,$background-color:$red);
 
         div#notifications-dropdown-button
@@ -210,13 +211,15 @@ div#top
 
     div.user-menu
     {
-      float:left;
+      float:right;
       font-family:$title-font;
 
 
       div#menu-down-arrow
       {
         float:left;
+        margin-left:5px;
+        margin-top:15px;
         @include triangle-down($size: 5px, $color: $red)
       }
 

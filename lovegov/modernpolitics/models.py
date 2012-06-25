@@ -1004,7 +1004,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     def get_nameShort(self):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
-            if len(fullname) > 14:
+            if len(fullname) > 19:
                 to_return = unicode(str(self.first_name)).encode("UTF-8")
             else:
                 to_return = unicode(str(self.first_name) + " " + str(self.last_name)).encode("UTF-8")
