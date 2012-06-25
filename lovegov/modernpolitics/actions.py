@@ -50,45 +50,41 @@ def getLinkInfo(request, vals={}):
             vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
         except:
             vals['description'] = "No Description"
-        try:
-            image_refs = soup.findAll("img")
-            list = []
-            first_image = None
+        image_refs = soup.findAll("img")
+        list = []
+        first_image = None
 
-            for num in range(0,len(image_refs)):
-                try:
-                    img_url = image_refs[num]['src']
-                    if num == 0:
-                        first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
-                    elif len(list) == 3:
-                        break
-                    else:
-                        toAdd = downloadImage(img_url=img_url,url=URL)
-                        if toAdd: list.append(toAdd)
-                except:
-                    continue
-
-            list.sort(key=lambda img:img['size'],reverse=True)
-
+        for num in range(0,len(image_refs)):
             try:
-                for imageobj in list:
-                    imageobj['path'] = resizeImage(imageobj['path'])
+                img_url = image_refs[num]['src']
+                if num == 0:
+                    first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
+                elif len(list) == 3:
+                    break
+                else:
+                    toAdd = downloadImage(img_url=img_url,url=URL)
+                    if toAdd: list.append(toAdd)
             except:
-                pass
+                continue
 
-            if len(list) == 0 and (first_image is not None or first_image is not False):
-                first_image['path'] = resizeImage(first_image['path'])
-                list.append(first_image)
+        list.sort(key=lambda img:img['size'],reverse=True)
 
-            if len(list) == 0:
-                list.append({'path':"/static/images/top-logo-default.png"})
-
-            vals['imglink'] = list
-            html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
-            return HttpResponse(json.dumps({'html':html,'imglink':list}))
-
+        try:
+            for imageobj in list:
+                imageobj['path'] = resizeImage(imageobj['path'])
         except:
-            return HttpResponse(json.dumps({'html':"exception",'imglink':[{'path':"/static/images/top-logo-default.png"}]}))
+            pass
+
+        if len(list) == 0 and (first_image is not None and first_image is not False):
+            first_image['path'] = resizeImage(first_image['path'])
+            list.append(first_image)
+
+        if len(list) == 0:
+            list.append({'path':"/static/images/top-logo-default.png"})
+
+        vals['imglink'] = list
+        html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
+        return HttpResponse(json.dumps({'html':html,'imglink':list}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
