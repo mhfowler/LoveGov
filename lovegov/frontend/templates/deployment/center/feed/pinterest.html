@@ -7,37 +7,10 @@
         <div class="pinterest-main">
 
             <div class="pinterest-header">
-                <div class="prof-image">
-                    {% if item.getPublic %}
-                        <a href="{{ creator.get_url }}">
-                            {% thumbnail creator.getProfileImage.image "50x50" crop="center" as im %}
-                                <img src="{{ im.url }}"/>
-                            {% empty %}
-                                <img src="/static/images/obama.jpg" width="50px" height="50px">
-                            {% endthumbnail %}
-                        </a>
-                    {% else %}
-                        {% thumbnail defaultImage "50x50" format="PNG" as im %}
-                            <img src="{{ im.url }}"/>
-                        {% empty %}
-                            <img src="/static/images/obama.jpg" width="50px" height="50px">
-                        {% endthumbnail %}
-                    {% endif %}
-                </div>
-                <div class="header-middle">
-                    <p class="submitted" id="cman">
-                        submitted at {{ item.created_when|date:"h:m"}}
-                    </p>
-                    <div class="user-name">
-                        {% if item.getPublic %}
-                            <a href="{{ creator.get_url }}">
-                                {{ creator.get_name }}
-                            </a>
-                        {% else %}
-                            <a href=""> Anonymous </a>
-                        {% endif %}
-                    </div>
-                </div>
+
+                <!-- avatar -->
+                {% include 'deployment/center/feed/feed_avatar.html' %}
+
                 <div class="header-topic">
                     <a href="{{ item.getMainTopic.get_url }}">
                         {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
@@ -51,93 +24,28 @@
                 <div style="clear:both"></div>
             </div>
 
+            <!-- image -->
             {% if item.type == 'N' %}
-                <div class="pinterest-image">
-                    {% thumbnail item.link_screenshot "250x150" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% empty %}
-                        <img src="/static/images/logo.png" width="250px" height="150px" />
-                    {% endthumbnail %}
-                </div>
+                {% include 'deployment/center/feed/feed_image.html' %}
             {% endif %}
 
-            <div class="pinterest-title">
-                <a href="{{ item.get_url }}">
-                    {% if item.type == 'N' %}
-                        <h2 class="title-text"> {{ item.title }} </h2>
-                    {% elif item.type == 'P' %}
-                        <h3 class="title-text"> PETITION: {{ item.title }} </h3>
-                    {% else %}
-                        <h4 class="title-text"> {{ item.title }} </h4>
-                    {% endif %}
-                </a>
-            </div>
+            <!-- title -->
+            {% include 'deployment/center/feed/feed_title.html' %}
 
-            <div class="pinterest-summary">
-                <p class="summary-text"> {{ item.summary }} </p>
-            </div>
+            <!-- summary -->
+            {% include 'deployment/center/feed/feed_summary.html' %}
 
+            <!-- top-comment -->
             {% with top_comment=item.getTopComment %}
                 {% if top_comment %}
 
-                    <div class="pinterest-top-comment">
-
-                        <div class="comment-header">
-                            {% with creator=top_comment.getCreator %}
-                                <div class="comment-image">
-                                    {% if top_comment.getPublic %}
-                                        <a href="{{ creator.get_url }}">
-                                            {% thumbnail creator.getProfileImage.image "20x20" crop="center" as im %}
-                                                <img src="{{ im.url }}"/>
-                                            {% empty %}
-                                                 <img src="/static/images/obama.jpg" width="20px" height="20px">
-                                            {% endthumbnail %}
-                                        </a>
-                                    {% else %}
-                                        {% thumbnail defaultImage "20x20" format="PNG" as im %}
-                                            <img src="{{ im.url }}"/>
-                                        {% empty %}
-                                             <img src="/static/images/obama.jpg" width="20px" height="20px">
-                                        {% endthumbnail %}
-                                    {% endif %}
-                                </div>
-
-                                <div class="comment-creator">
-                                    {% if top_comment.getPublic %}
-                                        <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said:
-                                    {% else %}
-                                        Anonymous said:
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
-                        </div>
-
-                        <div class="comment-text">
-                            "{{ top_comment.text }}"
-                        </div>
-
-                    </div>
+                    {% include 'deployment/center/feed/top_comment.html' %}
 
                 {% endif %}
             {% endwith %}
 
-            <div class="pinterest-footer">
-                <div class="hearts">
-                    {% include 'deployment/snippets/hearts.html' with content=item %}
-                </div>
-                <div class="comments">
-                    <div class="comments-wrapper">
-                        <div class="text-wrapper">
-                            <span class="comments-text"> comments </span>
-                            <span class="comments-num"> {{ item.num_comments }} </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="share">
-                    <div style="clear:both;"></div>
-                    <a href="" class="share_button button" data-share_id="{{ item.id }}"> Share </a>
-                </div>
-            </div>
+            <!-- footer -->
+            {% include 'deployment/center/feed/feed_footer.html' %}
 
         </div>
 

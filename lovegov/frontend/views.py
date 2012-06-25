@@ -374,7 +374,7 @@ def theFeed(request, vals={}):
                  'types':[],
                  'groups':[],
                  'submissions_only': 1,
-                 'display': 'P',
+                 'display': 'L',
                  'feed_start': 0}
 
     vals['feed_json'] = json.dumps(feed_json)

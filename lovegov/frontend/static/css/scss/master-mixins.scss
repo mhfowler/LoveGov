@@ -228,3 +228,9 @@
   line-height:26px;
   margin-bottom:18px;
 }
+
+@mixin vertically-centered($h) {
+  position: relative;
+  top:50%;
+  margin-top:-$h*1/2;
+}

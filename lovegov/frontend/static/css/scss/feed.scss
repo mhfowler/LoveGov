@@ -529,12 +529,13 @@ div.pinterest_card {
 
       div.hearts {
         float:left;
-        width:100px;
+        width:90px;
         height:50px;
         border-right: 1px solid $light-gray;
 
         div.hearts-wrapper {
-          margin: 15px 0 0 15px;
+          margin-left:10px;
+          margin-top: 15px;
 
           div.heart {
             width:20px;
@@ -543,33 +544,25 @@ div.pinterest_card {
           }
 
           span.status {
-            width:12px;
-            overflow:hidden;
-            margin: 0px 5px 0px 5px;
             @include fontSize(20px);
+            width:20px;
+            overflow:hidden;
+            margin:auto;
           }
 
         }
 
       }
 
-      div.share {
-        a.share_button {
-          @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
-          position:relative;
-          top:17px;
-          margin-left:20px;
-        }
-      }
-
       div.comments {
         float:left;
-        width:100px;
+        width:130px;
         height:50px;
         border-right: 1px solid $light-gray;
 
         div.comments-wrapper {
-          margin: 10px 0 0 5px;
+          margin:auto;
+          margin-top:10px;
           width:90px;
           height:30px;
           @include rounded(10px);
@@ -591,15 +584,21 @@ div.pinterest_card {
 
       div.share {
         float:left;
-        width:100px;
+        width:80px;
         height:50px;
         border-left: 1px solid $light-gray;
-      }
 
+        a.share_button {
+          @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
+          position:relative;
+          top:17px;
+          margin: 10px;
+
+        }
+      }
     }
   }
 }
-
 
 div.feed-topic-icon-wrapper {
   float:right;
@@ -610,6 +609,35 @@ div.feed-topic-icon-wrapper {
 
 div.linear-wrapper {
   width:1000px;
+
+  div.linear {
+    width:750px;
+    overflow:hidden;
+    border-bottom: 1px solid $light-gray;
+    margin-bottom:40px;
+
+    div.linear-left {
+      width:250px;
+      float:left;
+      background-color:green;
+
+      div.linear-picture {
+        height:100px;
+      }
+
+      div.pinterest-image {
+        width:200px;
+      }
+    }
+
+    div.linear-right {
+      float:left;
+      margin: 0px 0px 0px 20px;
+      width:400px;
+    }
+
+  }
+
 }
 
 

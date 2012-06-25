@@ -20,3 +20,6 @@ def test2(request, vals={}):
         return HttpResponse("oh baby")
     return HttpResponse("fuck")
 
+def css(request, vals={}):
+    return renderToResponseCSRF('test/css.html', vals, request)
+

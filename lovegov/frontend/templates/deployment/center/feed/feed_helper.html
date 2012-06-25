@@ -11,15 +11,7 @@
         {% else %}
 
             <div class="linear-wrapper">
-                {% if item.type == "N" %}
-
-                    {% include 'deployment/center/feed/linear_news.html' with news=item %}
-
-                {% elif item.type == "P" %}
-
-                    {% include 'deployment/center/feed/linear_petition.html' with petition=item %}
-
-                {% endif %}
+                {% include 'deployment/center/feed/linear.html' %}
             </div>
 
         {% endif %}
