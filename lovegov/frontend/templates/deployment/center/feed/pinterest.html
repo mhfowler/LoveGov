@@ -1,4 +1,3 @@
-
 {% load thumbnail %}
 
 {% with creator=item.getCreator %}
@@ -14,14 +13,14 @@
                             {% thumbnail creator.getProfileImage.image "50x50" crop="center" as im %}
                                 <img src="{{ im.url }}"/>
                             {% empty %}
-                                <p> <img src="/static/images/obama.jpg" width="50px" height="50px">  </p>
+                                <img src="/static/images/obama.jpg" width="50px" height="50px">
                             {% endthumbnail %}
                         </a>
                     {% else %}
                         {% thumbnail defaultImage "50x50" format="PNG" as im %}
                             <img src="{{ im.url }}"/>
                         {% empty %}
-                            <p>   <img src="/static/images/obama.jpg" width="50px" height="50px"> </p>
+                            <img src="/static/images/obama.jpg" width="50px" height="50px">
                         {% endthumbnail %}
                     {% endif %}
                 </div>
@@ -48,6 +47,8 @@
                         {% endthumbnail %}
                     </a>
                 </div>
+
+                <div style="clear:both"></div>
             </div>
 
             {% if item.type == 'N' %}
@@ -121,7 +122,15 @@
             {% endwith %}
 
             <div class="pinterest-footer">
-                <h2> footer </h2>
+                <div class="hearts">
+                    {% include 'deployment/snippets/hearts.html' with x=10 y=10 content=item %}
+                </div>
+                <div class="comments">
+                    comments
+                </div>
+                <div class="share">
+                    share
+                </div>
             </div>
 
         </div>

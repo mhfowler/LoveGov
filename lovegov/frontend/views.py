@@ -571,11 +571,11 @@ def profile(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Network page
 #-----------------------------------------------------------------------------------------------------------------------
-def network(request, name=None, vals={}):
-    if not name:
+def network(request, alias=None, vals={}):
+    if not alias:
         user = vals['viewer']
         return shortcuts.redirect(user.getNetwork().get_url())
-    network = Network.objects.get(name=name)
+    network = Network.objects.get(alias=alias)
     return group(request,g_id=network.id,vals=vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

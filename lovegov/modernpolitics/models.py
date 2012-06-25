@@ -1174,29 +1174,10 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getNetwork(self):
         from modernpolitics.backend import getOtherNetwork
-        if self.network_id != -1:
-            return Network.objects.get(id=self.network_id)
+        if len( self.networks.all() ) != 0:
+            return self.networks.all()[0]
         else: return getOtherNetwork()
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Joins network group based on user email, or creates network group then joins.
-    #-------------------------------------------------------------------------------------------------------------------
-    def joinNetwork(self):
-        from modernpolitics.backend import getOtherNetwork
-        extension = self.getEmailExtension()
-        edu = extension.find(".edu")
-        if edu == -1:
-            network = getOtherNetwork()
-        else:
-            network = Network.objects.filter(extension=extension)
-            if network:
-                network = network[0]
-            else:
-                network = Network()
-                network.autoSaveEmailNetwork(extension=extension)
-        self.network_id = network.id
-        network.members.add(self)
-        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
@@ -1678,8 +1659,10 @@ class Notification(Privacy):
         return notification_verbose
 
     def addAggUser(self,agg_user):
-        self.users.add(agg_user)
-        self.tally += 1
+        already = self.users.filter(alias=agg_user.alias)
+        if not already:
+            self.users.add(agg_user)
+            self.tally += 1
         self.recent_user = agg_user
         self.viewed = False
         self.save()
@@ -3344,17 +3327,9 @@ class Motion(Content):
 #
 #=======================================================================================================================
 class Network(Group):
-    name = models.CharField(max_length=50)                  # for email networks, "email:<extension>"
+    name = models.CharField(max_length=50)                  # DEPRECATED
     network_type = models.CharField(max_length=1, choices=NETWORK_TYPE, default='D')
     extension = models.CharField(max_length=50, null=True)
-
-    # autosave email network group
-    def autoSaveEmailNetwork(self, extension):
-        self.name=extension
-        self.extension=extensionclass
-        self.title = "@" + extension + " Network"
-        self.summary = "Group of all users with @" + extension + " email extension."
-        self.autoSave()
 
     # autosave any network
     def autoSave(self, creator=None, privacy="PUB"):
@@ -3364,7 +3339,7 @@ class Network(Group):
         super(Network, self).autoSave()
 
     def get_url(self):
-        return '/network/' + self.name + '/'
+        return '/network/' + self.alias + '/'
 
 #=======================================================================================================================
 # User Group
