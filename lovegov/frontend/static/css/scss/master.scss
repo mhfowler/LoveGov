@@ -596,3 +596,24 @@ div.menu_toggle.clicked
 }
 
 
+
+div.heart {
+  display: inline-block;
+  background-size: 100%;
+}
+
+​div.heart_plus {
+  background-image: url('/static/images/heart_plus.png');
+}​
+
+div.heart_plus.red {
+   background-image: url('/static/images/heart_plus_hover.png');
+}
+
+div.heart_minus {
+  background-image: url('/static/images/heart_minus.png');
+}
+
+div.heart_minus.red {
+  background-image: url('/static/images/heart_minus_hover.png');
+}

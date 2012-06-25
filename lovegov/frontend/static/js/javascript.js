@@ -2825,7 +2825,7 @@ function loadNewFeed() {
     updateFeedVisual();
 
     $(".more-options-wrapper").css('height', '0px');
-    $(".more-options-wrapper").hide();
+    //$(".more-options-wrapper").hide();
     $(".more_options").click(function(event) {
         event.preventDefault();
         var wrapper = $(".more-options-wrapper");

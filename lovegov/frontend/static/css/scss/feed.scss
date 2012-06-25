@@ -50,9 +50,33 @@
         margin: 0 0 7px 1px;
       }
     }
+
     div.sorting-button.clicked {
       background-color:$red;
+    }
+  }
 
+  div.sort-by {
+    margin: 20px 0 0 15px;
+    float:left;
+  }
+
+  div.sort-by-choice {
+    position:relative;
+    float:left;
+    height:30px;
+    padding-top:10px;
+    margin: 10px 0 0 15px;
+    @extend .box;
+
+    p.feed-menu-title {
+      float:left;
+      margin: 2px 0 0 10px;
+    }
+
+    div.triangle-selector {
+      float:left;
+      margin: 6px 8px 0 7px;
     }
   }
 
@@ -131,14 +155,15 @@
     margin-right:10px;
 
     p.options-title {
-      margin-top:5px;
-      margin-left:0px;
-      margin-right:0px;
-      margin-bottom:0px;
+      margin: 5px 0 0 28px;
       text-align:center
     }
   }
 
+  div.create-box:hover {
+    color:white;
+    background-color:$red;
+  }
 
   div.display-box {
     @extend div.options-box;
@@ -172,31 +197,6 @@ div.more-options-wrapper {
     width:980px;
     margin-left:10px;
     margin-top:10px;
-
-    div.sort-by {
-      margin-top:10px;
-      float:left;
-    }
-
-    div.sort-by-choice {
-      position:relative;
-      float:left;
-      height:30px;
-      padding-top:10px;
-      margin-left:10px;
-      @extend .box;
-
-      p.feed-menu-title {
-        float:left;
-        margin-left:10px;
-      }
-
-      div.triangle-selector {
-        float:left;
-        margin-left:4px;
-        margin-top:13px;
-      }
-    }
 
     div.filter-by {
       float:left;
@@ -571,4 +571,7 @@ div.pinterest-top-comment {
 }
 
 
-
+div.heart {
+  width:20px;
+  height:20px;
+}
