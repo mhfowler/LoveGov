@@ -28,6 +28,7 @@
         </div>
 
         <div id="user-menu-container">
+
             <div class="user-menu-options-wrapper">
                 <div class="user-menu-options">
                     <div class="header-notifications">
@@ -35,12 +36,17 @@
                             <div id="notifications-number"><h5>{{ new_notification_count }}</h5></div>
                         </div>
                         <div id="notifications-dropdown" style="display:none">
+                            <div class="notifications-pointer">
+                                <div class="border"></div>
+                                <div class="inner"></div>
+                            </div>
                             <!-- For Notifications -->
                         </div>
                     </div>
                     <img class="security-mode" src="/static/images/public.png"/>
                 </div>
             </div>
+
             <div class="user-menu user-menu-unselected">
                 {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as img %}
                     <img class="user-img" class="user-menu-pointer" src="{{ img.url }}"/>
@@ -56,7 +62,6 @@
                     <div class="border"></div>
                     <div class="inner"></div>
                 </div>
-
                 <div id="user-menu-account" class="user-menu-dropdown-div user-menu-dropdown-div-top">
                     <img src="/static/images/user-menu/geargray.png"/><a href="/account/" class="do-ajax-link">account settings</a>
                 </div>

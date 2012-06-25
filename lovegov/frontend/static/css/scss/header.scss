@@ -135,7 +135,6 @@ div#top
         float:left;
         margin-top:3px;
 
-
         img.security-mode
         {
           width:$width+-5;
@@ -178,18 +177,20 @@ div#top
 
           #notifications-dropdown
           {
-            border-left: solid 1px;
-            border-right: solid 1px;
-            border-bottom: solid 1px;
-            border-color: $gray;
+            border: solid $gray 1px;
             position: absolute;
-            color: $black;
             font-size: 13px;
-            top: 47px;
-            width: 279px;
+            top: 51px;
+            width: 300px;
             min-height: 200px;
             z-index: 100;
             background-color: white;
+
+            div.notifications-pointer
+            {
+              @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
+            }
+
 
             div.notification
             {
@@ -221,13 +222,10 @@ div#top
       }
     }
 
-
-
     div.user-menu
     {
       float:right;
       font-family:$title-font;
-
 
       div#menu-down-arrow
       {
@@ -237,7 +235,6 @@ div#top
         margin-right:5px;
         @include triangle-down($size: 4px, $color: $red)
       }
-
 
       #user-name
       {
@@ -249,119 +246,79 @@ div#top
         color:#0F5569;
       }
 
+      .user-img
+      {
+        width:38px;
+        height:38px;
+        padding:1px;
+        vertical-align: middle;
+        float:left
+      }
     }
 
-  }
-
-
-  }
-
-  #header-notifications
-  {
-
-  }
-
-  .user-menu-pointer
-  {
-    cursor:pointer;
-  }
-
-  #user-menu
-  {
-    height:40px;
-  /* box-shadow: 0 0 5px 1px #CCC;*/
-  }
-
-
-
-  .user-img
-  {
-    width:38px;
-    height:38px;
-    padding:1px;
-    vertical-align: middle;
-    float:left
-  }
-
-  #down-arrow:hover
-  {
-    height:40px;
-    width:40px;
-    float:right;
-    position:relative;
-    background-color:#F0503B;
-    background-image:url(/static/images/user-menu/downarrow-invert.png);
-    background-repeat:no-repeat;
-    background-position:center;
-  }
-
-  div#user-menu-dropdown
-  {
-    position:absolute;
-    right:0;
-    top:51px;
-    z-index:1000;
-
-    div.user-menu-pointer
+    div#user-menu-dropdown
     {
-      @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:30px);
+      position:absolute;
+      right:0;
+      top:51px;
+      z-index:1000;
+
+      div.user-menu-pointer
+      {
+        @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:30px);
+      }
+
+    }
+
+    .user-menu-dropdown-div-top
+    {
+      border-top:1px solid #CCC;
+    }
+
+    .user-menu-dropdown-div
+    {
+      height:50px;
+      width:260px;
+      border-left: 1px solid #CCC;
+      border-right: 1px solid #CCC;
+      border-bottom: 1px solid #CCC;
+      font-size:15px;
+      background-color:#FFFFFF;
+      cursor:pointer;
+    }
+
+    .user-menu-dropdown-div-hover
+    {
+      background-color:#F0503B;
+      color:#FFFFFF;
+    }
+
+    .user-menu-dropdown-div-selected
+    {
+      background-color:#F0503B;
+      color:#FFFFFF;
+    }
+
+    .user-menu-dropdown-div img
+    {
+      float:right;
+      padding-top:12px;
+      padding-bottom:12px;
+      padding-right:8px;
+      margin-left:20px;
+
+    }
+
+    .user-menu-dropdown-div a
+    {
+      text-decoration:none;
+      float:right;
+      margin-top:18px;
+      color:#000000;
     }
 
   }
-
-  .user-menu-dropdown-div-top
-  {
-    border-top:1px solid #CCC;
-  }
-
-  .user-menu-dropdown-div
-  {
-    height:50px;
-    width:260px;
-    border-left: 1px solid #CCC;
-    border-right: 1px solid #CCC;
-    border-bottom: 1px solid #CCC;
-    font-size:15px;
-    background-color:#FFFFFF;
-    cursor:pointer;
-  }
-
-  .user-menu-dropdown-div-hover
-  {
-    background-color:#F0503B;
-    color:#FFFFFF;
-  }
-
-  .user-menu-dropdown-div-selected
-  {
-    background-color:#F0503B;
-    color:#FFFFFF;
-  }
-
-  .user-menu-dropdown-div img
-  {
-    float:right;
-    padding-top:12px;
-    padding-bottom:12px;
-    padding-right:8px;
-    margin-left:20px;
-
-  }
-
-  .user-menu-dropdown-div a
-  {
-    text-decoration:none;
-    float:right;
-    margin-top:18px;
-    color:#000000;
-  }
-
-  .preloadImages
-  {
-    display:none;
-  }
-
-
+}
 
 
 
