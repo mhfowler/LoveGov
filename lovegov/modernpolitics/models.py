@@ -850,7 +850,7 @@ class FilterSetting(LGModel):
 
 class SimpleFilter(LGModel):
     name = models.CharField(max_length=200, default="default")
-    created_when = models.DateTimeField(auto_now_add=True)
+    created_when = models.DateTimeField(auto_now_add=True, null=True)
     creator = models.ForeignKey("UserProfile", null=True)
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
