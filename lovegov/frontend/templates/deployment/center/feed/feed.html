@@ -2,6 +2,8 @@
 <link href="/static/css/compiled/feed.css" rel="stylesheet" type="text/css"/>
 {% load thumbnail %}
 
+
+
 <div class="create-modal create_modal">
     {% include 'deployment/pieces/create_modal.html' %}
 </div>
@@ -12,246 +14,246 @@
 <!-- center wrapper -->
 <div class="feed-main-div">
 
-    <!-- feed header -->
-    <div class="feed-header">
+<!-- feed header -->
+<div class="feed-header">
 
-        <p class="your-feed"> Your Feed </p>
+    <p class="your-feed"> Your Feed </p>
 
-        <div class="options-box more-options more_options menu-toggle">
-            <p class="options-title menu-title">
-                More Options
-            </p>
-            <div class="triangle-selector"></div>
-        </div>
-
-        <div class="options-box saved-filters-box  menu_toggle menu-toggle">
-            <p class="options-title menu-title">
-                Saved Filters
-            </p>
-            <div class="triangle-selector"></div>
-            <div class="saved-menu menu">
-                {% for x in my_filters %}
-                    <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
-                        <p class="saved-filter-title">
-                            {{ x.name }}
-                        </p>
-                        {% if x.name != 'default' %}
-                            <div class="x-button delete_saved_filter"></div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- get more
-       <a class="get_feed more-feed-button" href="">
-           load
-       </a> -->
-
-        <!-- sorting buttons
-        <div class="sorting-buttons">
-            <a href="">
-                <div class="sorting-button feed-ranking-selector" data-ranking="N" data-verbose="New">
-                    <p class="sorting-text">New</p>
-                </div>
-            </a>
-            <a href="">
-                <div class="sorting-button feed-ranking-selector" data-ranking="H" data-verbose="Hot">
-                    <p class="sorting-text">Hot</p>
-                </div>
-            </a>
-            <a href="">
-                <div class="sorting-button feed-ranking-selector" data-ranking="B" data-verbose="Best">
-                    <p class="sorting-text">Best</p>
-                </div>
-            </a>
-        </div> -->
-
-        <!-- sorting dropdown -->
-        <div class="sort-by">
-            <h2 class="mini"> Sort by: </h2>
-        </div>
-        <div class="sort-by-choice  menu_toggle menu-toggle">
-            <p class="feed-menu-title ranking_menu_title menu-title">
-                Hot
-            </p>
-            <div class="triangle-selector"></div>
-            <div class="sort-menu menu">
-                <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
-                    <p class="ranking-choice-title menu-option-title">
-                        New
-                    </p>
-                </div>
-                <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
-                    <p class="ranking-choice-title menu-option-title">
-                        Hot
-                    </p>
-                </div>
-                <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
-                    <p class="ranking-choice-title menu-option-title">
-                        Best
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- display choice -->
-        <div class="display-box">
-            <div class="display-choice" data-display="P">
-                <img src="/static/images/card-view.png" width="15px" height="15px" class="display-gray"/>
-                <img src="/static/images/card-view-red.png" width="15px" height="15px" class="display-red"/>
-            </div>
-            <div class="display-choice" data-display="L">
-                <img src="/static/images/list-view.png" width="15px" height="15px" class="display-gray"/>
-                <img src="/static/images/list-view-red.png" width="15px" height="15px" class="display-red"/>
-            </div>
-        </div>
-
-
-        <div class="create-box create_button">
-            <p class="options-title create-title"> create </p>
-        </div>
-
-        <a href="" class="how-does"> how does this work? </a>
-
-        <div class="clear-both"></div>
+    <div class="options-box more-options more_options menu-toggle">
+        <p class="options-title menu-title">
+            More Options
+        </p>
+        <div class="triangle-selector"></div>
     </div>
+
+    <div class="options-box saved-filters-box  menu_toggle menu-toggle">
+        <p class="options-title menu-title">
+            Saved Filters
+        </p>
+        <div class="triangle-selector"></div>
+        <div class="saved-menu menu">
+            {% for x in my_filters %}
+                <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
+                    <p class="saved-filter-title">
+                        {{ x.name }}
+                    </p>
+                    {% if x.name != 'default' %}
+                        <div class="x-button delete_saved_filter"></div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- get more
+   <a class="get_feed more-feed-button" href="">
+       load
+   </a> -->
+
+    <!-- sorting buttons
+    <div class="sorting-buttons">
+        <a href="">
+            <div class="sorting-button feed-ranking-selector" data-ranking="N" data-verbose="New">
+                <p class="sorting-text">New</p>
+            </div>
+        </a>
+        <a href="">
+            <div class="sorting-button feed-ranking-selector" data-ranking="H" data-verbose="Hot">
+                <p class="sorting-text">Hot</p>
+            </div>
+        </a>
+        <a href="">
+            <div class="sorting-button feed-ranking-selector" data-ranking="B" data-verbose="Best">
+                <p class="sorting-text">Best</p>
+            </div>
+        </a>
+    </div> -->
+
+    <!-- sorting dropdown -->
+    <div class="sort-by">
+        <h2 class="mini"> Sort by: </h2>
+    </div>
+    <div class="sort-by-choice  menu_toggle menu-toggle">
+        <p class="feed-menu-title ranking_menu_title menu-title">
+            Hot
+        </p>
+        <div class="triangle-selector"></div>
+        <div class="sort-menu menu">
+            <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
+                <p class="ranking-choice-title menu-option-title">
+                    New
+                </p>
+            </div>
+            <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
+                <p class="ranking-choice-title menu-option-title">
+                    Hot
+                </p>
+            </div>
+            <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
+                <p class="ranking-choice-title menu-option-title">
+                    Best
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- display choice -->
+    <div class="display-box">
+        <div class="display-choice" data-display="P">
+            <img src="/static/images/card-view.png" width="15px" height="15px" class="display-gray"/>
+            <img src="/static/images/card-view-red.png" width="15px" height="15px" class="display-red"/>
+        </div>
+        <div class="display-choice" data-display="L">
+            <img src="/static/images/list-view.png" width="15px" height="15px" class="display-gray"/>
+            <img src="/static/images/list-view-red.png" width="15px" height="15px" class="display-red"/>
+        </div>
+    </div>
+
+
+    <div class="create-box create_button">
+        <p class="options-title create-title"> create </p>
+    </div>
+
+    <a href="" class="how-does"> how does this work? </a>
+
+    <div class="clear-both"></div>
+</div>
 
 <!-- more options box -->
-    <div class="more-options-wrapper">
+<div class="more-options-wrapper">
 
 
-        <div class="more-options-selector">
+    <div class="more-options-selector">
 
-            <div class="filter-by">
-                <h2 class="mini"> Filter by: </h2>
-            </div>
+        <div class="filter-by">
+            <h2 class="mini"> Filter by: </h2>
+        </div>
 
-            <div class="filter-by-group  menu_toggle menu-toggle">
-                <p class="feed-menu-title menu-title">
-                    Groups
-                </p>
-                <div class="triangle-selector"></div>
-                <div class="group-menu menu">
-                    {% for g in my_groups %}
-                        <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
-                            {% include 'deployment/snippets/group_box.html' with group=g %}
-                        </div>
-                    {% empty %}
-                        You are not a member of any groups.
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="filter-by-network  menu_toggle menu-toggle">
-                <p class="feed-menu-title menu-title">
-                    Networks
-                </p>
-                <div class="triangle-selector"></div>
-                <div class="group-menu menu">
-                    {% for g in my_networks %}
-                        <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
-                            {% include 'deployment/snippets/group_box.html' with group=g %}
-                        </div>
-                    {% empty %}
-                        You are not a member of any networks.
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="filter-by-political  menu_toggle menu-toggle">
-                <p class="feed-menu-title political_menu_title menu-title">
-                    Political
-                </p>
-                <div class="triangle-selector"></div>
-                <div class="political-menu menu">
-                    <div class="menu-option multi feed-level-selector" data-level="L">
-                        <p class="levels-choice-title menu-option-title">
-                            Local
-                        </p>
+        <div class="filter-by-group  menu_toggle menu-toggle">
+            <p class="feed-menu-title menu-title">
+                Groups
+            </p>
+            <div class="triangle-selector"></div>
+            <div class="group-menu menu">
+                {% for g in my_groups %}
+                    <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
+                        {% include 'deployment/snippets/group_box.html' with group=g %}
                     </div>
-                    <div class="menu-option multi feed-level-selector" data-level="S">
-                        <p class="levels-choice-title menu-option-title">
-                            State
-                        </p>
-                    </div>
-                    <div class="menu-option multi feed-level-selector" data-level="F">
-                        <p class="levels-choice-title menu-option-title">
-                            Federal
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-by-content  menu_toggle menu-toggle">
-                <p class="feed-menu-title menu-title">
-                    Content
-                </p>
-                <div class="triangle-selector"></div>
-                <div class="type-menu menu">
-                    <div class="menu-option multi feed-type-selector" data-type="N">
-                        <p class="type-choice-title menu-option-title">
-                            News
-                        </p>
-                    </div>
-                    <div class="menu-option multi feed-type-selector" data-type="P">
-                        <p class="type-choice-title menu-option-title">
-                            Petitions
-                        </p>
-                    </div>
-                    <div class="menu-option multi feed-type-selector" data-type="G">
-                        <p class="type-choice-title menu-option-title">
-                            Groups
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feed-topic-selector-wrapper topic-icons-wrapper">
-                {% for t in main_topics %}
-                    <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}">
-                        {% thumbnail t.image "40x40" format="PNG" as im %}
-                            <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
-                        {% endthumbnail %}
-                        {% thumbnail t.selected "40x40" format="PNG" as im %}
-                            <img class="topic-img selected feed-topic-img" src="{{ im.url }}"/>
-                        {% endthumbnail %}
-                    </div>
+                {% empty %}
+                    You are not a member of any groups.
                 {% endfor %}
             </div>
-
-            <div class="filter-topic">
-                <h2 class="mini"> Topics: </h2>
-            </div>
-
         </div>
 
-        <div class="current-selection">
-            <div class="current-filter">
-                <p class="current-filter-text"> Current Filters: </p>
+        <div class="filter-by-network  menu_toggle menu-toggle">
+            <p class="feed-menu-title menu-title">
+                Networks
+            </p>
+            <div class="triangle-selector"></div>
+            <div class="group-menu menu">
+                {% for g in my_networks %}
+                    <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
+                        {% include 'deployment/snippets/group_box.html' with group=g %}
+                    </div>
+                {% empty %}
+                    You are not a member of any networks.
+                {% endfor %}
             </div>
-            <div class="current-options-images"> </div>
-            <div class="current-options">
-                <a href="" class="feed-clear feed_clear">
-                    clear
-                </a>
-                <a href="" class="feed-save save_filter_button">
-                    save
-                </a>
+        </div>
+
+        <div class="filter-by-political  menu_toggle menu-toggle">
+            <p class="feed-menu-title political_menu_title menu-title">
+                Political
+            </p>
+            <div class="triangle-selector"></div>
+            <div class="political-menu menu">
+                <div class="menu-option multi feed-level-selector" data-level="L">
+                    <p class="levels-choice-title menu-option-title">
+                        Local
+                    </p>
+                </div>
+                <div class="menu-option multi feed-level-selector" data-level="S">
+                    <p class="levels-choice-title menu-option-title">
+                        State
+                    </p>
+                </div>
+                <div class="menu-option multi feed-level-selector" data-level="F">
+                    <p class="levels-choice-title menu-option-title">
+                        Federal
+                    </p>
+                </div>
             </div>
-            <input type="text" name="filter-name" id="some_id" class="save_filter_input"/>
+        </div>
+
+        <div class="filter-by-content  menu_toggle menu-toggle">
+            <p class="feed-menu-title menu-title">
+                Content
+            </p>
+            <div class="triangle-selector"></div>
+            <div class="type-menu menu">
+                <div class="menu-option multi feed-type-selector" data-type="N">
+                    <p class="type-choice-title menu-option-title">
+                        News
+                    </p>
+                </div>
+                <div class="menu-option multi feed-type-selector" data-type="P">
+                    <p class="type-choice-title menu-option-title">
+                        Petitions
+                    </p>
+                </div>
+                <div class="menu-option multi feed-type-selector" data-type="G">
+                    <p class="type-choice-title menu-option-title">
+                        Groups
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="feed-topic-selector-wrapper topic-icons-wrapper">
+            {% for t in main_topics %}
+                <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}">
+                    {% thumbnail t.image "40x40" format="PNG" as im %}
+                        <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                    {% thumbnail t.selected "40x40" format="PNG" as im %}
+                        <img class="topic-img selected feed-topic-img" src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="filter-topic">
+            <h2 class="mini"> Topics: </h2>
         </div>
 
     </div>
 
-    <!-- feed body -->
-    <div class="feed-body">
-
-        <div class="pinterest-wrapper">
-
+    <div class="current-selection">
+        <div class="current-filter">
+            <p class="current-filter-text"> Current Filters: </p>
         </div>
+        <div class="current-options-images"> </div>
+        <div class="current-options">
+            <a href="" class="feed-clear feed_clear">
+                clear
+            </a>
+            <a href="" class="feed-save save_filter_button">
+                save
+            </a>
+        </div>
+        <input type="text" name="filter-name" id="some_id" class="save_filter_input"/>
+    </div>
+
+</div>
+
+<!-- feed body -->
+<div class="feed-body">
+
+    <div class="pinterest-wrapper">
 
     </div>
+
+</div>
 
 </div>
 

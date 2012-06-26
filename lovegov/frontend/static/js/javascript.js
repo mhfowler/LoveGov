@@ -374,7 +374,7 @@ function loadHoverComparison()
 
     function findHoverPosition(selector)
     {
-        var top = selector.offset().top - ($('#comparison-hover-div').height()) - selector.height();
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
         if (top <= $(document).scrollTop())
         {
             // show below
@@ -386,7 +386,7 @@ function loadHoverComparison()
             // show above
             $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
         }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) - 21;
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
         return {top:top,left:left};
     }
 
@@ -395,9 +395,8 @@ function loadHoverComparison()
         function(event)
         {
             var self = $(this);
-
             var href = $(this).data('href');
-            var displayName = $(this).data("displayName");
+            var displayName = $(this).data("display_name");
             if (href != "")
             {
                 clearTimeout(hoverTimer);
@@ -2125,6 +2124,8 @@ function getFeed(num)
 
             heartButtons();
             loadShareButton();
+
+            loadHoverComparison();
 
         },
         error: null

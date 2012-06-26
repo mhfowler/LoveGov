@@ -6,7 +6,7 @@
         {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as im %}
             <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
         {% empty %}
-            <img class="user-img" class="user-menu-pointer" src="{{ viewer.getProfileImage.image.url }}"/>
+            ?
         {% endthumbnail %}
         <a id="user-name" class="user-menu-pointer do-ajax-link" href="{{ viewer.getAlphaURL }}">{{ viewer.get_nameShort }}</a>
         <div id="down-arrow"></div>
