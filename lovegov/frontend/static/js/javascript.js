@@ -386,7 +386,7 @@ function loadHoverComparison()
             // show above
             $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
         }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2)+(selector.width/2);
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
         return {top:top,left:left};
     }
 
