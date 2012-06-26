@@ -41,6 +41,7 @@
                 {% include 'deployment/center/feed/feed_summary.html' %}
 
                 <!-- top-comment -->
+            <!--
                 {% with top_comment=item.getTopComment %}
                     {% if top_comment %}
 
@@ -48,9 +49,12 @@
 
                     {% endif %}
                 {% endwith %}
+                -->
 
                 <!-- avatar -->
-                {% include 'deployment/center/feed/feed_avatar.html' %}
+                <div class="avatar">
+                    {% include 'deployment/center/feed/feed_avatar.html' %}
+                </div>
 
             </div>
 

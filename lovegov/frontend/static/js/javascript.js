@@ -561,7 +561,7 @@ $(document).ready(function()
 // load universal frame
 function rebindUniversalFrame()
 {
-    //loadHeader();
+    loadHeader();
     loadLeftSidebar();
 }
 
@@ -709,6 +709,7 @@ function loadHeader()
     $('#notifications-dropdown-button').click(
         function(event)
         {
+            $('.notifications-ajax-load').show();
             event.preventDefault();
             var pos = $(this).offset();
             var dropdown = $('#notifications-dropdown');
@@ -725,6 +726,7 @@ function loadHeader()
                     success: function(data)
                     {
                         var obj = eval('(' + data + ')');
+                        $('.notifications-ajax-load').hide();
                         $('#notifications-dropdown').empty().append(tempDropDownDiv).append(obj.html);
                         unbindNotification();
                         loadNotification();
@@ -808,6 +810,8 @@ function loadHeader()
         div$.children('a').css("color",hexColor)
     }
 
+
+
     $('.user-menu-dropdown-div').hover
         (
             function()
@@ -831,16 +835,16 @@ function loadHeader()
      * Handles style change for selecting a security mode.
      *
      * @param security$     jQuery object for user-menu-security-<mode> div objects
-     */
+    */
     function selectSecuritySetting(security$)
     {
         $('.user-menu-security').each(function()
         {
             $(this).removeClass('user-menu-dropdown-div-selected');
             $(this).removeClass('user-menu-dropdown-div-hover');
-            userMenuDropDownColors($(this),'gray');
+            //userMenuDropDownColors($(this),'gray');
         });
-        userMenuDropDownColors(security$,'white');
+        //userMenuDropDownColors(security$,'white');
         security$.addClass("user-menu-dropdown-div-selected");
     }
 
