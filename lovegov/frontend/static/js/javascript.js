@@ -73,12 +73,12 @@ function loadMenuToggles() {
 
     $(".menu").hide();
     $(".menu_toggle").click(function(event) {
-        $(this).children(".menu").toggle();
-        if ($(this).hasClass("clicked")) {
-            $(this).children(".triangle-selector").removeClass("highlighted");
-        } else {
-            $(this).children(".triangle-selector").addClass("highlighted");
+        if (!$(this).hasClass("clicked")) {
+            var other_menu_toggles = $(".menu_toggle").not($(this));
+            other_menu_toggles.removeClass("clicked");
+            other_menu_toggles.children(".menu").hide();
         }
+        $(this).children(".menu").toggle();
     });
     $(".menu_toggle").hover(
         function(event) {
@@ -2400,11 +2400,14 @@ function loadNewFeed() {
     $(".more-options-wrapper").css('height', '0px');
     $(".more_options").click(function(event) {
         event.preventDefault();
+        $(this).toggleClass("clicked");
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
             wrapper.animate({"height": '0px'}, 1000);
             wrapper.removeClass("out");
+            wrapper.find(".menu_toggle").removeClass("clicked");
+            wrapper.find(".menu").hide();
         }
         else {
             wrapper.show();

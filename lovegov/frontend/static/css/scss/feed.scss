@@ -26,8 +26,9 @@
   margin-bottom:10px;
 
   p.your-feed {
-    @extend .really-big;
-    margin-top:25px;
+    @include really-big();
+    margin-top:20px;
+    margin-left:5px;
     margin-bottom:0px;
     float:left;
     @include fontSize(25px);
@@ -56,26 +57,39 @@
   }
 
   div.sort-by {
-    margin: 20px 0 0 15px;
+    margin: 18px 0 0 25px;
     float:left;
   }
 
   div.sort-by-choice {
     position:relative;
     float:left;
-    height:30px;
-    padding-top:10px;
-    margin: 10px 0 0 15px;
+    height:35px;
+    width:70px;
+    margin: 11px 0 0 12px;
     @extend .box;
 
     p.feed-menu-title {
+      @include fontSize(18px);
+      margin-top:5px;
+      margin-left:7px;
+      margin-bottom:0px;
       float:left;
-      margin: 2px 0 0 10px;
     }
 
     div.triangle-selector {
-      float:left;
-      margin: 6px 8px 0 7px;
+      float:right;
+      margin: 13px 7px 0 7px;
+    }
+
+    div.sort-menu {
+      top:36px;
+      div.menu-option {
+        width:67px;
+        p.menu-option-title {
+          margin: 8px 0px 0px 17px;
+        }
+      }
     }
   }
 
@@ -85,7 +99,7 @@
     width:140px;
     height:35px;
 
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
 
     float:left;
@@ -109,12 +123,10 @@
 
   div.saved-filters-box {
     position:relative;
-
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
-
+    margin-left:10px;
     float:left;
-    margin-left:30px;
 
     div.saved-filter-selector {
       margin-top:0px;
@@ -125,6 +137,11 @@
         margin-top:5px;
       }
     }
+
+    div.menu {
+        top:36px;
+    }
+
   }
 
   a.more-feed-button {
@@ -136,9 +153,16 @@
   }
 
   a.how-does {
+    @include really-big();
+    @include fontSize(12px);
+    text-decoration: underline;
     float:right;
-    margin-top:26px;
+    margin-top:21px;
     margin-right:10px;
+    margin-bottom:0px;
+  }
+  a.how-does:hover {
+    color:$black;
   }
 
   div.create-box {
@@ -147,27 +171,38 @@
     border-color:red;
     width:110px;
 
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
 
     float:right;
     margin-right:10px;
 
     p.options-title {
+      color:$red;
       margin: 5px 0 0 28px;
       text-align:center
     }
   }
 
-  div.create-box:hover {
-    color:white;
+  div.create-box.clicked {
     background-color:$red;
+    border-color:$light-gray;
+    p.create-title {
+      color:black;
+    }
+  }
+  div.create-box:hover {
+    background-color:$light-gray;
+    border-color:black;
+    p.create-title {
+      color:black;
+    }
   }
 
   div.display-box {
     @extend div.options-box;
 
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
 
     width:70px;
@@ -175,8 +210,8 @@
     float:right;
     div {
       float:left;
-      margin-left:15px;
-      margin-top:5px;
+      margin-left:14px;
+      margin-top:2px;
     }
   }
 }
@@ -201,6 +236,7 @@ div.more-options-wrapper {
       float:left;
       margin-top:10px;
       margin-left:10px;
+      margin-right:15px;
     }
 
     div.filter-by-group {
@@ -208,6 +244,7 @@ div.more-options-wrapper {
       float:left;
       margin-left:10px;
       height:30px;
+      width:80px;
       padding-top:10px;
       @extend .box;
 
@@ -218,15 +255,16 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
       }
-
     }
+
     div.filter-by-network {
       position:relative;
       float:left;
       height:30px;
+      width:90px;
       padding-top:10px;
       @extend .box;
 
@@ -237,11 +275,11 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
       }
-
     }
+
     div.filter-by-political {
       position:relative;
       float:left;
@@ -257,8 +295,15 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
+      }
+
+      div.menu-option {
+        width:77px;
+        p.menu-option-title {
+          margin-left:10px;
+        }
       }
 
     }
@@ -277,8 +322,16 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
+      }
+
+      div.menu-option {
+        width:77px;
+        p.menu-option-title {
+          margin: 10px 0 0 7px;
+        }
+
       }
 
     }
@@ -304,15 +357,25 @@ div.more-options-wrapper {
       float:left;
       border-right: 1px solid $light-gray;
       p.current-filter-text {
-        @extend .really-big;
+        @include really-big();
+        margin-left:0px;
         margin-top:12px;
       }
+    }
+
+    div.current-options-images {
+      float:left;
+      width:550px;
+      height:50px;
+      margin: 0;
+      border-right: 1px solid $light-gray;
     }
 
     input.save_filter_input {
       float:right;
       margin-right:15px;
       margin-top:10px;
+      margin-left:0px;
       height:30px;
       color:blue;
     }
@@ -329,7 +392,6 @@ div.more-options-wrapper {
       a.feed-save {
         display:block;
       }
-
     }
 
   }
@@ -369,19 +431,26 @@ div.group-box.clicked {
 
 div.menu-option {
   @extend .box;
+  @include really-big();
+  @include fontSize(16px);
+  border-width:1px;
   background-color: white;
-  width:85px;
+  width:80px;
   height:40px;
   margin:0px;
   z-index:20;
+
+  p.menu-option-title {
+    margin: 10px 0 0 20px;
+  }
 }
 
 div.menu-option:hover {
-  background-color: $light-gray;
+  background-color: $white-gray;
 }
 
 div.menu-option.clicked {
-  background-color: $light-gray;
+  background-color: $white-gray;
 }
 
 div.menu {
@@ -468,6 +537,26 @@ div.pinterest_card {
     }
   }
 }
+
+div.menu-toggle.clicked {
+  background-color:$red;
+  p.menu-title {
+    color:white;
+  }
+  div.triangle-selector {
+    border-top-color: white;
+  }
+}
+div.menu-toggle:hover {
+  background-color:$red;
+  p.menu-title {
+    color:white;
+  }
+  div.triangle-selector {
+    border-top-color: white;
+  }
+}
+
 
 div.feed-topic-icon-wrapper {
   float:right;
