@@ -2643,16 +2643,16 @@ function loadCreate()
                 isLoading = true;
                 if (regUrl.test(text))
                 {
-                    $('#news-link-generation').empty();
+                    $('#news-link-generation-wrapper').empty();
                     $('#news-link-generation').show();
-                    $('#news-link-generation').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
+                    $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
                     ajaxPost({
                         data: {'action':'getLinkInfo','url':text},
                         success: function(data)
                         {
                             returned = eval('(' + data + ')');
-                            $('#news-link-generation').html(returned.html);
+                            $('#news-link-generation-wrapper').html(returned.html);
                             $('#cycle-img-left').bind('click',function()
                             {
 
