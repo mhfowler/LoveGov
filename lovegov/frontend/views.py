@@ -364,9 +364,13 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def theFeed(request, vals={}):
 
+    rightSideBar(request, vals)
+
     viewer = vals['viewer']
 
-    rightSideBar(request, vals)
+    filter_name = request.GET.get('filter_name')
+    if not filter_name:
+        filter_name = 'default'
 
     feed_json = {'ranking': 'N',
                  'levels':[],
@@ -375,10 +379,11 @@ def theFeed(request, vals={}):
                  'groups':[],
                  'submissions_only': 1,
                  'display': 'L',
-                 'feed_start': 0}
+                 'feed_start': 0,
+                 'filter_name': filter_name}
 
     vals['feed_json'] = json.dumps(feed_json)
-    vals['my_filters'] = viewer.my_filters.all()
+    vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
     vals['my_groups'] = viewer.getGroups()
     vals['my_networks'] = Network.objects.all()
 
@@ -386,6 +391,7 @@ def theFeed(request, vals={}):
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
@@ -594,7 +600,6 @@ def group(request, g_id=None, vals={}):
     vals['comparison'] = comparison
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
-    vals['defaultImage'] = getDefaultImage().image
 
     # Histogram Things
     vals['histogram'] = group.getComparisonHistogram(user)

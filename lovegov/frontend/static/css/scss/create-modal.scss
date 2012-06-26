@@ -64,6 +64,99 @@
 
 }
 
+/* Group-Create */
+
+table.create-table
+{
+  width: 650px;
+
+  td
+  {
+    padding: 10px;
+  }
+
+  td.create-title
+  {
+    text-align: right;
+    width: 150px;
+  }
+
+  td.create-input
+  {
+    width: 500px;
+  }
+
+  .privacy-radio
+  {
+    display: none;
+  }
+
+  div.group-privacy
+  {
+    @include rounded(9px);
+    @include float-left;
+    padding: 10px 10px 0px 10px;
+    font-size: 18px;
+    font-family: $gill-std;
+    color: white;
+    background-color: $gray;
+    margin-right: 10px;
+  }
+
+  div.group-privacy:hover
+  {
+    background-color: $light-gray;
+  }
+
+  div.privacy-selected
+  {
+    background-color: $red;
+  }
+
+  div.privacy-selected:hover
+  {
+    background-color: $red-light;
+  }
+
+  .title-input
+  {
+    width:372px;
+    padding:5px;
+  }
+
+  .full-text-input
+  {
+    width:372px;
+    padding:5px;
+    height:100px !important;
+  }
+}
+
+div.submit-button
+{
+  float: right;
+  margin-bottom: 30px;
+}
+
+
+.create-topic-div
+{
+  position:relative;
+  height:65px;
+}
+
+.create-topic-text
+{
+  position:relative;
+  width:130px;
+  float:left;
+}
+
+.topic-images img
+{
+  padding-right:3px;
+}
+
 
 /* SUMMARY */
 

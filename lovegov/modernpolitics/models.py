@@ -522,7 +522,7 @@ class Content(Privacy, LocationLevel):
     # Get created relationship.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreatedRelationship(self):
-        created =  Created.objects.filter(content=self)
+        created = Created.objects.filter(content=self)
         if created:
             return created[0]
         else:
@@ -542,6 +542,13 @@ class Content(Privacy, LocationLevel):
                 return True
             else:
                 return False
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets a comparison, between inputted user and this content.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.backend import getUserContentComparison
+        return getUserContentComparison(user=viewer, content=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add like vote to content from inputted user (or adjust his vote appropriately)
@@ -842,7 +849,9 @@ class FilterSetting(LGModel):
 
 
 class SimpleFilter(LGModel):
-    name = models.CharField(max_length=200, default="filter")
+    name = models.CharField(max_length=200, default="default")
+    created_when = models.DateTimeField(auto_now_add=True, null=True)
+    creator = models.ForeignKey("UserProfile", null=True)
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
     types = custom_fields.ListField()                  # list of char of included types
@@ -1029,6 +1038,13 @@ class UserProfile(FacebookProfileModel, LGModel):
             return self
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Gets a comparison, between inputted user and this user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.compare import getUserUserComparison
+        return getUserUserComparison(userA=viewer, userB=self)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Makes unique alias from name
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
@@ -1049,6 +1065,14 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.user_notification_setting = DEFAULT_USER_NOTIFICATIONS
         self.email_notification_setting = DEFAULT_EMAIL_NOTIFICATIONS
         self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # create default fillter
+    #-------------------------------------------------------------------------------------------------------------------
+    def createDefaultFilter(self):
+        filter = SimpleFilter(creator=self)
+        filter.save()
+        self.my_filters.add(filter)
 
     #-------------------------------------------------------------------------------------------------------------------
     # get last page access
@@ -3205,6 +3229,13 @@ class Group(Content):
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Gets comparison between this group and inputted user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.compare import getUserGroupComparison
+        return getUserGroupComparison(user=viewer, group=self)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
     #-------------------------------------------------------------------------------------------------------------------
     def edit(self,field,value):
@@ -3350,7 +3381,7 @@ class Network(Group):
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
-        super(UserGroup, self).autoSave()
+        super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
     pass
 
 ########################################################################################################################

@@ -4,14 +4,13 @@
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
-
+{% load thumbnail %}
 <div class="main-div">
     <!-- Left Block -->
     <div class="middle-left">
         <div class="basic-info">
             <div class="basic-info-left">
                 <div class="profile-img">
-                    {% load thumbnail %}
                     {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
                         <img src="{{ im.url }}" class="icon-really-big"/>
                     {% empty %}
@@ -110,12 +109,13 @@
             <div class='profile-group-container'>
                 <div class="profile-section-title">Groups</div>
                 {% for group in prof_groups %}
-                    <a class="profile-group-link" href="{{ group.get_url }}">{{ group.get_name }}</a>
-                {% empty %}
-                    <a class="profile-group-link" href="" ></a>
-                    <a class="profile-group-link" href="" ></a>
-                    <a class="profile-group-link" href="" ></a>
-                    <a class="profile-group-link" href="" ></a>
+                    <a class="profile-group-link" title="{{ group.get_name }}" href="{{ group.get_url }}">
+                        {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
+                            <img src="{{ im.url }}" class="rounded"/>
+                        {% empty %}
+                            <img src="/static/images/profile_default.jpg" class="rounded"/>
+                        {% endthumbnail %}
+                    </a>
                 {% endfor %}
             </div>
         </div>

@@ -214,6 +214,7 @@ def create(request, val={}):
         form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
+
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
@@ -222,21 +223,34 @@ def create(request, val={}):
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
-            if formtype == "P":
-                from lovegov.frontend.views import petitionDetail
-                return petitionDetail(request=request,p_id=c.id,vals=val)
-            elif formtype == "N":
+            if formtype == "N":
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
-            elif formtype == "G":
+
+                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+        else:
+            if formtype == "G":
                 group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
                 group_joined.confirm()
                 group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
-                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
-        else:
-            return shortcuts.redirect('/display/' + str(c.id))
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+            elif formtype == "P":
+                try:
+                    if 'image' in request.FILES:
+                        file_content = ContentFile(request.FILES['image'].read())
+                        Image.open(file_content)
+                        c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+
+            return shortcuts.redirect(c.get_url())
     else:
         if request.is_ajax():
             errors = dict([(k, form.error_class.as_text(v)) for k, v in form.errors.items()])
@@ -247,6 +261,7 @@ def create(request, val={}):
             print simplejson.dumps(vals)
             return HttpResponse(json.dumps(vals))
         else:
+            return shortcuts.redirect('/web/')
             vals = {'petition': petition, 'event':event, 'news':news, 'group':group, 'album':album}
             return renderToResponseCSRF('usable/create_content_simple.html',vals,request)
 
@@ -971,7 +986,10 @@ def ajaxFeedHelper(content, user):
 #-----------------------------------------------------------------------------------------------------------------------
 def saveFilter(request, vals={}):
 
+    viewer = vals['viewer']
+
     name = request.POST['feed_name']
+
     ranking = request.POST['feed_ranking']
     types = json.loads(request.POST['feed_types'])
     levels = json.loads(request.POST['feed_levels'])
@@ -980,25 +998,48 @@ def saveFilter(request, vals={}):
     submissions_only = bool(int(request.POST['feed_submissions_only']))
     display = request.POST['feed_display']
 
-    filter = SimpleFilter(ranking=ranking, types=types,
-        levels=levels, submissions_only=submissions_only,
-    display=display, name=name)
-    filter.save()
+    already = viewer.my_filters.filter(name=name)
+    if already:
+        filter = already[0]
+        filter.ranking = ranking
+        filter.types = types
+        filter.levels = levels
+        filter.submissions_only = submissions_only
+        filter.display = display
+        filter.save()
+    else:
+        filter = SimpleFilter(ranking=ranking, types=types,
+            levels=levels, submissions_only=submissions_only,
+        display=display, name=name, creator=viewer)
+        filter.save()
+        viewer.my_filters.add(filter)
 
+    filter.topics.clear()
     for t in topics:
         filter.topics.add(t)
+    filter.groups.clear()
     for g in groups:
         filter.groups.add(g)
 
+    return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# deletes a filter setting
+#-----------------------------------------------------------------------------------------------------------------------
+def deleteFilter(request, vals={}):
+
     viewer = vals['viewer']
+    name = request.POST['f_name']
+
+    if name == 'default':
+        return HttpResponse("cant delete default filter.")
 
     already = viewer.my_filters.filter(name=name)
     if already:
-        viewer.my_filters.remove(already[0])
+        to_delete = already[0]
+        viewer.my_filters.remove(to_delete)
 
-    viewer.my_filters.add(filter)
-
-    return HttpResponse("success")
+    return HttpResponse("deleted")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets a filter setting and returns via json dump
@@ -1253,6 +1294,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
             'saveFilter': saveFilter,
+            'deleteFilter': deleteFilter,
             'getFilter': getFilter,
             'matchSection': matchSection,
             'shareContent': shareContent,

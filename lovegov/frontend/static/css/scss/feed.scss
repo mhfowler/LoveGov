@@ -26,8 +26,9 @@
   margin-bottom:10px;
 
   p.your-feed {
-    @extend .really-big;
-    margin-top:25px;
+    @include really-big();
+    margin-top:20px;
+    margin-left:5px;
     margin-bottom:0px;
     float:left;
     @include fontSize(25px);
@@ -56,26 +57,39 @@
   }
 
   div.sort-by {
-    margin: 20px 0 0 15px;
+    margin: 18px 0 0 25px;
     float:left;
   }
 
   div.sort-by-choice {
     position:relative;
     float:left;
-    height:30px;
-    padding-top:10px;
-    margin: 10px 0 0 15px;
+    height:35px;
+    width:70px;
+    margin: 11px 0 0 12px;
     @extend .box;
 
     p.feed-menu-title {
+      @include fontSize(18px);
+      margin-top:5px;
+      margin-left:7px;
+      margin-bottom:0px;
       float:left;
-      margin: 2px 0 0 10px;
     }
 
     div.triangle-selector {
-      float:left;
-      margin: 6px 8px 0 7px;
+      float:right;
+      margin: 13px 7px 0 7px;
+    }
+
+    div.sort-menu {
+      top:36px;
+      div.menu-option {
+        width:67px;
+        p.menu-option-title {
+          margin: 8px 0px 0px 17px;
+        }
+      }
     }
   }
 
@@ -85,7 +99,7 @@
     width:140px;
     height:35px;
 
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
 
     float:left;
@@ -109,22 +123,38 @@
 
   div.saved-filters-box {
     position:relative;
-
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
-
+    margin-left:10px;
     float:left;
-    margin-left:30px;
 
     div.saved-filter-selector {
       margin-top:0px;
       width:200px;
 
       p.saved-filter-title {
-        margin-left:10px;
-        margin-top:5px;
+        float:left;
+        width:165px;
+        margin: 8px 0 0 10px;
+      }
+
+      div.x-button {
+        float:right;
+        width:12px;
+        height:12px;
+        margin: 14px 10px 0 0;
+        background-image: url('/static/icons/x.png');
+        background-size:cover;
+      }
+      div.x-button:hover {
+        background-image: url('/static/icons/x_hover.png');
       }
     }
+
+    div.menu {
+      top:36px;
+    }
+
   }
 
   a.more-feed-button {
@@ -136,9 +166,16 @@
   }
 
   a.how-does {
+    @include really-big();
+    @include fontSize(12px);
+    text-decoration: underline;
     float:right;
-    margin-top:26px;
+    margin-top:21px;
     margin-right:10px;
+    margin-bottom:0px;
+  }
+  a.how-does:hover {
+    color:$black;
   }
 
   div.create-box {
@@ -147,27 +184,38 @@
     border-color:red;
     width:110px;
 
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
 
     float:right;
     margin-right:10px;
 
     p.options-title {
+      color:$red;
       margin: 5px 0 0 28px;
       text-align:center
     }
   }
 
-  div.create-box:hover {
-    color:white;
+  div.create-box.clicked {
     background-color:$red;
+    border-color:$light-gray;
+    p.create-title {
+      color:black;
+    }
+  }
+  div.create-box:hover {
+    background-color:$light-gray;
+    border-color:black;
+    p.create-title {
+      color:black;
+    }
   }
 
   div.display-box {
     @extend div.options-box;
 
-    margin-top:15px;
+    margin-top:11px;
     margin-bottom:0px;
 
     width:70px;
@@ -175,8 +223,8 @@
     float:right;
     div {
       float:left;
-      margin-left:15px;
-      margin-top:5px;
+      margin-left:14px;
+      margin-top:2px;
     }
   }
 }
@@ -201,6 +249,7 @@ div.more-options-wrapper {
       float:left;
       margin-top:10px;
       margin-left:10px;
+      margin-right:15px;
     }
 
     div.filter-by-group {
@@ -208,6 +257,7 @@ div.more-options-wrapper {
       float:left;
       margin-left:10px;
       height:30px;
+      width:80px;
       padding-top:10px;
       @extend .box;
 
@@ -218,15 +268,16 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
       }
-
     }
+
     div.filter-by-network {
       position:relative;
       float:left;
       height:30px;
+      width:90px;
       padding-top:10px;
       @extend .box;
 
@@ -237,11 +288,11 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
       }
-
     }
+
     div.filter-by-political {
       position:relative;
       float:left;
@@ -257,8 +308,15 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
+      }
+
+      div.menu-option {
+        width:77px;
+        p.menu-option-title {
+          margin-left:10px;
+        }
       }
 
     }
@@ -277,8 +335,16 @@ div.more-options-wrapper {
 
       div.triangle-selector {
         float:left;
-        margin-left:4px;
-        margin-top:13px;
+        margin-left:6px;
+        margin-top:4px;
+      }
+
+      div.menu-option {
+        width:77px;
+        p.menu-option-title {
+          margin: 10px 0 0 7px;
+        }
+
       }
 
     }
@@ -304,15 +370,25 @@ div.more-options-wrapper {
       float:left;
       border-right: 1px solid $light-gray;
       p.current-filter-text {
-        @extend .really-big;
+        @include really-big();
+        margin-left:0px;
         margin-top:12px;
       }
+    }
+
+    div.current-options-images {
+      float:left;
+      width:550px;
+      height:50px;
+      margin: 0;
+      border-right: 1px solid $light-gray;
     }
 
     input.save_filter_input {
       float:right;
       margin-right:15px;
       margin-top:10px;
+      margin-left:0px;
       height:30px;
       color:blue;
     }
@@ -329,7 +405,6 @@ div.more-options-wrapper {
       a.feed-save {
         display:block;
       }
-
     }
 
   }
@@ -369,19 +444,26 @@ div.group-box.clicked {
 
 div.menu-option {
   @extend .box;
+  @include really-big();
+  @include fontSize(16px);
+  border-width:1px;
   background-color: white;
-  width:85px;
+  width:80px;
   height:40px;
   margin:0px;
   z-index:20;
+
+  p.menu-option-title {
+    margin: 10px 0 0 20px;
+  }
 }
 
 div.menu-option:hover {
-  background-color: $light-gray;
+  background-color: $white-gray;
 }
 
 div.menu-option.clicked {
-  background-color: $light-gray;
+  background-color: $white-gray;
 }
 
 div.menu {
@@ -429,38 +511,6 @@ div.pinterest_card {
         margin-left:20px;
         height:50px;
 
-        div.prof-image{
-          float:left;
-          margin-bottom:0px;
-        }
-
-        div.header-middle {
-          float:left;
-          margin: 7px 0 0px 12px;
-          width:150px;
-          height:50px;
-          overflow:hidden;
-
-          p.submitted {
-            color:$light-gray;
-            text-decoration: underline;
-            margin: 0 0 5px 0;
-          }
-
-          div.user-name {
-            @include really-big();
-            margin: 0 0 0 0;
-
-            a {
-              color:$black;
-            }
-
-            a:hover {
-              color:black;
-            }
-          }
-        }
-
         div.header-topic {
           float:left;
           margin-left:20px;
@@ -492,113 +542,34 @@ div.pinterest_card {
       }
 
       div.pinterest-top-comment {
-        @extend .box;
-        @include rounded(10px);
         padding: 12px 12px 15px 15px;
         margin: 10px 20px 0px 20px;
 
-        div.comment-header {
-          height:20px;
-
-          div.comment-image{
-            float:left;
-            margin-bottom:0px;
-          }
-
-          div.comment-creator {
-            float:left;
-            margin: 2px 0px 0px 10px;
-          }
-        }
-
-        div.comment-text {
-          @include fontSize(12px);
-          clear:both;
-          margin: 5px 0px 0px 0px;
-          color:$light-gray;
-        }
       }
 
-    }
-
-    // footer
-    div.pinterest-footer {
-      height:50px;
-      border-top: 1px solid $light-gray;
-      margin: 15px 0px 0px 0px;
-
-      div.hearts {
-        float:left;
-        width:90px;
-        height:50px;
-        border-right: 1px solid $light-gray;
-
-        div.hearts-wrapper {
-          margin-left:10px;
-          margin-top: 15px;
-
-          div.heart {
-            width:20px;
-            height:18px;
-            background:contain;
-          }
-
-          span.status {
-            @include fontSize(20px);
-            width:20px;
-            overflow:hidden;
-            margin:auto;
-          }
-
-        }
-
-      }
-
-      div.comments {
-        float:left;
-        width:130px;
-        height:50px;
-        border-right: 1px solid $light-gray;
-
-        div.comments-wrapper {
-          margin:auto;
-          margin-top:10px;
-          width:90px;
-          height:30px;
-          @include rounded(10px);
-          @extend .box;
-
-          div.text-wrapper {
-            margin: 5px 0px 0 0;
-            span.comments-text {
-                margin-left:8px
-            }
-
-            span.comments-num {
-              color:$red;
-            }
-          }
-        }
-
-      }
-
-      div.share {
-        float:left;
-        width:80px;
-        height:50px;
-        border-left: 1px solid $light-gray;
-
-        a.share_button {
-          @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
-          position:relative;
-          top:17px;
-          margin: 10px;
-
-        }
-      }
     }
   }
 }
+
+div.menu-toggle.clicked {
+  background-color:$red;
+  p.menu-title {
+    color:white;
+  }
+  div.triangle-selector {
+    border-top-color: white;
+  }
+}
+div.menu-toggle:hover {
+  background-color:$red;
+  p.menu-title {
+    color:white;
+  }
+  div.triangle-selector {
+    border-top-color: white;
+  }
+}
+
 
 div.feed-topic-icon-wrapper {
   float:right;
@@ -611,22 +582,24 @@ div.linear-wrapper {
   width:1000px;
 
   div.linear {
-    width:750px;
-    height:250px;
+    width:800px;
+    height:225px;
     overflow:hidden;
     border-bottom: 1px solid $light-gray;
     margin-bottom:40px;
 
     div.linear-left {
-      width:250px;
+      width:220px;
+      overflow:hidden;
       float:left;
-      background-color:green;
 
       div.linear-picture {
-        height:100px;
+        display:block;
+        height:170px;
+        overflow:hidden;
 
         div.pinterest-image {
-          width:250px;
+          width:220px;
         }
 
         div.header-topic {
@@ -636,18 +609,271 @@ div.linear-wrapper {
         }
 
       }
+
+      div.pinterest-footer {
+        display:block;
+        margin-top:0px;
+        width:218px;
+        height:40px;
+        overflow:hidden;
+        @extend .box;
+
+        div.hearts {
+          width:60px;
+
+          div.hearts-wrapper {
+            margin:0px;
+
+            div.heart {
+              margin: 10px 0 0 0;
+              width:20px;
+              height:20px;
+            }
+
+            span.status {
+              margin: 0px 0 4px 0;
+              @include fontSize(14px);
+            }
+
+          }
+
+        }
+
+        div.comments {
+          width:80px;
+          margin:0px;
+
+          div.comments-wrapper {
+            margin-top:10px;
+            width:70px;
+            height:20px;
+
+            div.text-wrapper {
+              @include fontSize(10px);
+            }
+
+            span.comments-num {
+            }
+          }
+        }
+
+      }
+
+      div.share {
+        width:70px;
+        margin:0px;
+
+        a.share_button {
+            position:relative;
+            top:14px;
+            margin:10px 0 3px 5px;
+            width:30px;
+            height:20px;
+            @include fontSize(14px);
+        }
+      }
     }
 
     div.linear-right {
       float:left;
-      margin: 0px 0px 0px 20px;
-      width:400px;
+      margin: 0px 0px 0px 30px;
+      width:550px;
+      overflow:hidden;
+
+      div.pinterest-title {
+        height:40px;
+      }
+
+      div.pinterest-summary {
+        @include really-big();
+        @include fontSize(14px);
+        height:120px;
+        padding:0px;
+        margin: 0 0 0 0;
+        overflow:hidden;
+
+        p.summary-text {
+          margin:0px;
+        }
+      }
+
+      div.pinterest-top-comment {
+        margin-top:10px;
+      }
+
+      div.avatar {
+        margin-top:10px;
+        height:40px;
+        overflow:hidden;
+
+        div.prof-image {
+          float:left;
+          height:40px;
+        }
+
+        div.header-middle {
+          margin-top:0px;
+          height:40px;
+          p.submitted {
+            margin-bottom:0px;
+          }
+
+          div.user-name {
+            margin: 0px;
+            @include fontSize(14px);
+          }
+        }
+      }
+
     }
 
   }
 
 }
 
+a.comments-wrapper {
+  @include rounded(10px);
+  @extend .box;
+}
+
+div.pinterest-top-comment {
+  @extend .box;
+  @include rounded(10px);
+
+  padding: 5px;
+
+  div.comment-header {
+    height:20px;
+
+    div.comment-image{
+      float:left;
+      margin-bottom:0px;
+    }
+
+    div.comment-creator {
+      float:left;
+      margin: 2px 0px 0px 10px;
+    }
+  }
+
+  div.comment-text {
+    @include fontSize(12px);
+    clear:both;
+    margin: 5px 0px 0px 0px;
+    color:$light-gray;
+  }
+}
+
+div.prof-image{
+  float:left;
+  margin-bottom:0px;
+}
+
+div.header-middle {
+  float:left;
+  margin: 7px 0 0px 12px;
+  width:150px;
+  height:50px;
+  overflow:hidden;
+
+  p.submitted {
+    color:$light-gray;
+    text-decoration: underline;
+    margin: 0 0 5px 0;
+  }
+
+  div.user-name {
+    @include really-big();
+    margin: 0 0 0 0;
+
+    a {
+      color:$black;
+    }
+
+    a:hover {
+      color:black;
+    }
+  }
+}
+
+// footer
+div.pinterest-footer {
+  height:50px;
+  border-top: 1px solid $light-gray;
+  margin: 15px 0px 0px 0px;
+
+  div.hearts {
+    float:left;
+    width:90px;
+    height:50px;
+    border-right: 1px solid $light-gray;
+
+    div.hearts-wrapper {
+      margin-left:10px;
+      margin-top: 15px;
+
+      div.heart {
+        width:20px;
+        height:18px;
+        background:contain;
+      }
+
+      span.status {
+        @include fontSize(20px);
+        width:20px;
+        overflow:hidden;
+        margin:auto;
+      }
+
+    }
+
+  }
+
+  div.comments {
+    float:left;
+    width:130px;
+    height:50px;
+    border-right: 1px solid $light-gray;
+
+    div.comments-wrapper {
+      margin:auto;
+      margin-top:10px;
+      width:90px;
+      height:30px;
+
+      div.text-wrapper {
+        margin: 5px 0px 0 0;
+        span.comments-text {
+          margin-left:8px
+        }
+
+        span.comments-num {
+          color:$red;
+        }
+      }
+    }
+
+    div.comments-wrapper:hover {
+      border-width:2px;
+    }
+
+  }
+
+  div.share {
+    float:left;
+    width:80px;
+    height:50px;
+    border-left: 1px solid $light-gray;
+
+    a.share_button {
+      @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
+      position:relative;
+      top:17px;
+      margin: 10px;
+
+    }
+  }
+}
 
 .mini {
   @include fontSize(20px);

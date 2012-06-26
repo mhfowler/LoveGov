@@ -102,11 +102,11 @@
   font-family: $title-font, $body-fonts;
 }
 
-@mixin rounded-box
+@mixin rounded-box($size: 70px)
 {
   @include rounded();
-  height: 70px;
-  width: 70px;
+  height: $size;
+  width: $size;
   display: block;
   text-align: center;
 }
@@ -258,7 +258,6 @@
 }
 
 @mixin modal {
-  display: block;
   float: left;
   background-color: white;
   z-index: 103;
@@ -268,6 +267,7 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
   display: none;
+  border:1px solid $red;
 }
 
 
