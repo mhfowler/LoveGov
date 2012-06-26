@@ -397,7 +397,7 @@ function loadHoverComparison()
             var self = $(this);
 
             var href = $(this).data('href');
-            var displayName = $(this).data("displayName");
+            var displayName = $(this).data("display_name");
             if (href != "")
             {
                 clearTimeout(hoverTimer);
