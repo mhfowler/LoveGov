@@ -2126,6 +2126,8 @@ function getFeed(num)
             heartButtons();
             loadShareButton();
 
+            loadHoverComparison();
+
         },
         error: null
     });
