@@ -382,10 +382,20 @@ def theFeed(request, vals={}):
     vals['my_groups'] = viewer.getGroups()
     vals['my_networks'] = Network.objects.all()
 
+    createModal(vals)
+
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Populates 'vals' with the necessary fields for the create Modal
+#-----------------------------------------------------------------------------------------------------------------------
+def createModal(vals={}):
+    vals['uploadform'] = CreateUserGroupForm()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
@@ -594,7 +604,6 @@ def group(request, g_id=None, vals={}):
     vals['comparison'] = comparison
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
-    vals['defaultImage'] = getDefaultImage().image
 
     # Histogram Things
     vals['histogram'] = group.getComparisonHistogram(user)

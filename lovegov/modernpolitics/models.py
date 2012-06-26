@@ -522,7 +522,7 @@ class Content(Privacy, LocationLevel):
     # Get created relationship.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreatedRelationship(self):
-        created =  Created.objects.filter(content=self)
+        created = Created.objects.filter(content=self)
         if created:
             return created[0]
         else:
@@ -3350,7 +3350,7 @@ class Network(Group):
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
-        super(UserGroup, self).autoSave()
+        super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
     pass
 
 ########################################################################################################################

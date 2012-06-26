@@ -5,12 +5,22 @@
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
 
+{% load thumbnail %}
 {% if group.active %}
 <!-- Middle Container -->
 <div class="main-div">
     <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
     <!-- Left Block -->
     <div class="middle-left">
+        <div class="group-img">
+            {% load thumbnail %}
+            {% thumbnail group.getMainImage.image "100x100" crop="center" as im %}
+                <img src="{{ im.url }}" class="icon-really-big"/>
+            {% empty %}
+                <p> no pic </p>
+            {% endthumbnail %}
+        </div>
+
         <h1> {{ group.title }} </h1>
 
         <p>
@@ -19,8 +29,6 @@
 
 
         <div class="histogram">
-
-            {% load thumbnail %}
 
             <div class="histogram-wrapper" style="width:500px;float:left;">
 

@@ -1,56 +1,63 @@
 <div id="create_group_div" class="create-wrapper create_content_div" style="display:none">
 
-    <div id="group-errors-json"></div>
     <h2>Create Group:</h2>
-    <div id="group-errors-non_field"></div>
 
-    <div class="title">
-        <div id="group-errors-link"></div>
-        <span class="sub-title">Name:</span>
-        <input id="group-input-title" type="text" name="title" />
-    </div>
+        <form id="groupform" action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            <input type="hidden" name="action" value="create" />
+            <input type="hidden" name="group_type" value="U" />
+            <input type="hidden" name="type" value="G" />
 
-    <div id="group-full_text" class="full_text">
-        <div id="group-errors-full_text"></div>
-        <div id="group-full_text-text">
-            <span class="sub-title">Description:</span>
+
+        <table class='create-table'>
+
+            <tr class="group-title">
+                <td class="create-title"><span class="sub-title">Name:</span></td>
+                <td><input name="title" type="text" class="title-input"/></td>
+            </tr>
+
+            <tr class="group-full-text">
+                <td class="create-title"><span class="sub-title">Description:</span></td>
+                <td><textarea name="full_text" class="full-text-input"/></td>
+            </tr>
+
+            <tr class="group-privacy">
+
+                <td class="create-title"><span class="sub-title">Privacy:</span></td>
+                <td>
+                    <div id="group_open" class="group-privacy">
+                        Open
+                        <input type="radio" id="group-input-type-open" value='O' name="group_privacy"/>
+                    </div>
+                    <div id="group_private" class="group-privacy">
+                        Private:
+                        <input type="radio" id="group-input-type-private" value='P' name="group_privacy"/>
+                    </div>
+                    <div id="group_secret" class="group-privacy">
+                        Secret:
+                        <input type="radio" id="group-input-type-secret" value='S' name="group_privacy"/>
+                    </div>
+                    <div class='clear-both'></div>
+                </td>
+            </tr>
+
+            <tr class="group-image">
+                <td class="create-title"><span class="sub-title">Group Image:</span></td>
+                <td><input type="file" name="image" /></td>
+            </tr>
+
+            <tr class="create-topic">
+                <td class="create-title"><span class="sub-title">Topic: </span></td>
+                <td>
+                    <div class="topic-images news-input-topic">
+                        {% include 'deployment/pieces/topic_images.html' %}
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="submit-button">
+            <input type="submit" class="button-red" id="create-group" value="create group"/>
         </div>
-        <textarea id="group-input-full_text" type="text" name="full_text" ></textarea>
-    </div>
-
-    <div id="group-privacy">
-        <div id="group-errors-privacy"></div>
-        <div id="group-privacy-text">
-            <span class="sub-title">Privacy:</span>
-        </div>
-        Open:
-        <input type="radio" id="group-input-type-open" value='O' name="privacy"/> ||
-        Private:
-        <input type="radio" id="group-input-type-private" value='P' name="privacy"/> ||
-        Secret:
-        <input type="radio" id="group-input-type-secret" value='S' name="privacy"/> ||
-    </div>
-
-    <div class="group-image">
-        <input type="submit" class="button submit" id="submitpicture" value="Upload"/>
-        <div id="choose-image">{{ uploadform.image }}</div>
-
-        <input type="hidden" name="box" value="pic"/>
-    </div>
-
-    <div class="create-topic-div">
-        <div id="group-errors-topic"></div>
-        <div class="create-topic-text">
-            <span class="sub-title">Topic: </span> <br>
-            select which topics your news falls under
-        </div>
-        <div class="topic-images news-input-topic">
-            {% include 'deployment/pieces/topic_images.html' %}
-        </div>
-    </div>
-
-    <div class="create-submit-div">
-        <a href="" id="create-group" class="left-sidebar-button">create group</a>
-    </div>
-
+    </form>
 </div>

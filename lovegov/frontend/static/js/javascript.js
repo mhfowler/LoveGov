@@ -2536,7 +2536,8 @@ function loadNewFeed() {
  *      ~CreateModal
  *
  **********************************************************************************************************************/
-function bindCreateButton() {
+function bindCreateButton()
+{
     $('.create_button').click( function(event) {
         event.preventDefault();
         $('div.overdiv').fadeToggle("fast");
@@ -2549,13 +2550,19 @@ function bindCreateButton() {
     });
 }
 
+function bindGroupPrivacyRadio()
+{
+
+}
+
 function loadCreate()
 {
+    /*
     $('div.create-submit-div').click( function(event)
     {
-        event.preventDefault();
         $('div.overdiv').hide();
     });
+    */
 
     $('#create_petition_button').click(function()
     {
@@ -2702,45 +2709,6 @@ function loadCreate()
                     rebind = returned.rebind;
                     closeLeftSideWrapper($('.create-wrapper.clicked'));
                     replaceCenter(returned.html);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
-
-    $('#create-group').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#group-input-title').val();
-        var full_text = $('#group-input-full_text').val();
-        var privacy = $('input:radio[name=privacy]:checked').val();
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create',
-                'title':title,
-                'full_text':full_text,
-                'topics':topic,
-                'group_type':'U',
-                'group_privacy':privacy,
-                'type':'G'
-            },
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    alert('errors')
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location.href = returned.url;
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)

@@ -64,6 +64,61 @@
 
 }
 
+/* Group-Create */
+
+table.create-table
+{
+  width: 100%;
+
+  td
+  {
+    padding: 5px;
+  }
+
+  td.create-title
+  {
+    text-align: right;
+    width: 150px;
+  }
+
+  .privacy-radio
+  {
+    display: none;
+  }
+
+  div.group-privacy
+  {
+    @include float-left;
+    padding: 5px;
+
+  }
+}
+
+div.submit-button
+{
+  float: right;
+  margin-bottom: 30px;
+}
+
+
+.create-topic-div
+{
+  position:relative;
+  height:65px;
+}
+
+.create-topic-text
+{
+  position:relative;
+  width:130px;
+  float:left;
+}
+
+.topic-images img
+{
+  padding-right:3px;
+}
+
 
 /* SUMMARY */
 
