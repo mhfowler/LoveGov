@@ -3,7 +3,7 @@
 <div id="content">
     <div id="content-left">
     {% if content.active %}
-        <a href='/feed'><span class='back-to-feed'>Back to Your Feed</span></a>
+        <a href='/feed'><span class='content_header'>Back to Your Feed</span></a>
         <div class="content-left-side">
             <div class="content-image-area">
                 {% with topic=content.getMainTopic %}
@@ -14,6 +14,16 @@
                     </a>
                 {% endwith %}
             </div>
+            <div class="social_bar">
+            	<div class="hearts bar_elem">
+            	{% include "deployment/snippets/hearts.html" with content=content %}
+            	</div><div class="social_bar_comments bar_elem">
+            	<img src="/static/icons/comments_bubble.png" class="bubble_img">
+            	<span>comments <span class="num_comments">7</span></span>
+            	</div><div class="social_bar_links bar_elem">
+            	<div class="facebook_link"></div> <div class="twitter_link"></div>
+            	</div>
+            </div>
         </div>
 
         <div id="content-div">
@@ -22,6 +32,7 @@
             {% endblock %}
         </div>
 
+        <div class="content_separator"></div>
 
 
         <div id="comment-thread">

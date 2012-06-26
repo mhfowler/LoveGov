@@ -544,3 +544,11 @@ div.overdiv {
   z-index: 102;
   display: none;
 }
+
+span.content_header {
+    color: $gray;
+    font-size: 32px;
+    @include gillLight;
+    margin-bottom: 20px;
+    display: block;
+}

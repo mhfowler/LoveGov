@@ -1,11 +1,11 @@
 @import 'master-variables';
 @import 'master-mixins';
 
-span.back-to-feed {
+span.content_header {
     color: $gray;
     font-size: 32px;
-    @include titleFont;
-    padding-bottom: 20px;
+    @include gillLight;
+    margin-bottom: 20px;
     display: block;
 }
 
@@ -25,19 +25,27 @@ div#content-left
 }
 
 div.content-left-side {
-    width:150px;
+    width:250px;
     float:left;
+    padding: 0 30px 30px 0;
 }
 
-div.content-image-area {
+div.content-left-side div.content-image-area {
     background-image: url('http://www.summarynewspaper.com/wp-content/uploads/2011/04/terrorist-in-marocco.jpg');
+    background-size: 100%;
+    height: 150px;
+    width: 250px;
 }
 
 div#content-div
 {
     width:575px;
     margin-left:25px;
-    @include horizontalSeparator(100%);
+}
+
+div.content_separator {
+	@include horizontalSeparator(100%);
+	clear: both;
 }
 
 div#content-topic-img
@@ -47,8 +55,87 @@ div#content-topic-img
         height: 30px;
         width: 30px;
     }
+    padding: 5px;
 }
 
+
+div.social_bar {
+	width: 100%;
+	text-align: center;
+	padding: 10px 0 10px 0;
+    div.bar_elem {
+	    width: 30%; 
+	    text-align: center;
+	    display: inline-block;
+	    height: 25px;
+	    vertical-align: middle;
+	    padding: 0;
+	    margin: 0;
+	    border-color: $light-gray;
+	    border: 2px solid $light-gray;
+	    border-right: none;
+	    color: $deep-gray;
+	    
+	    &:last-child {
+		    border-right: 2px solid $light-gray;
+		}
+		
+		&.social_bar_comments {
+			position: relative;
+			img.bubble_img {
+				width: 90%;
+				height: 90%;
+			}
+			text-align: center;
+			> span {
+				position: absolute;
+				font-size: 10px;
+				top: 5px;
+				left: 5px;
+			}
+		}
+		
+		&.social_bar_links div {
+			border: none;
+			display: inline-block;
+			height: 20px;
+			width: 20px;
+			background-size: 100%;
+			&.twitter_link {
+				color: red;
+				background-image: url('/static/icons/twitter.png');
+				&:hover {
+					background-image: url('/static/icons/twitter_hover.png');
+				}
+			}
+			&.facebook_link {
+				color: blue;
+				background-image: url('/static/icons/facebook.png');
+				&:hover {
+					background-image: url('/static/icons/facebook_hover.png');
+				}
+			}
+		}
+	}
+	span.num_comments {
+		color: red;
+	}
+}
+
+div.hearts-wrapper {
+          div.heart {
+            width:20px;
+            height:18px;
+            background:contain;
+          }
+
+          span.status {
+            @include fontSize(20px);
+            width:20px;
+            overflow:hidden;
+            margin:auto;
+          }
+}
 
 div#thread
 {
@@ -61,8 +148,9 @@ span.discuss
 {
     font-size: 18px;
     color: $red;
-    @include titleFont;
-    margin: 10px;
+    @include gillLight;
+    margin: 15px 0 10px 0;
+    display: block;
 }
 
 div.comment

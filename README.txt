@@ -110,6 +110,9 @@ pip install South
 oauth2
 pip install oauth2
 
+sass
+gem install sass
+
 ********** GETTING STARTED ************
 
 Now that you have checked out a version of the project and installed all the dependencies you should be pretty much ready to go. 
@@ -196,8 +199,11 @@ all do the same things as commands listed above, except for live project. Obviou
 ********** THE PROJECT ************
 
 
-~       
+~ 
 
 
+********** SASS SETUP *************
+
+We are using Sassy CSS (SCSS) which is compiled to CSS. See http://sass-lang.com/ for more information. 
 
 
