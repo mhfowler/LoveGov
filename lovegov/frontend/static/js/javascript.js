@@ -73,12 +73,12 @@ function loadMenuToggles() {
 
     $(".menu").hide();
     $(".menu_toggle").click(function(event) {
-        $(this).children(".menu").toggle();
-        if ($(this).hasClass("clicked")) {
-            $(this).children(".triangle-selector").removeClass("highlighted");
-        } else {
-            $(this).children(".triangle-selector").addClass("highlighted");
+        if (!$(this).hasClass("clicked")) {
+            var other_menu_toggles = $(".menu_toggle").not($(this));
+            other_menu_toggles.removeClass("clicked");
+            other_menu_toggles.children(".menu").hide();
         }
+        $(this).children(".menu").toggle();
     });
     $(".menu_toggle").hover(
         function(event) {
@@ -2108,6 +2108,17 @@ function saveFilter(name) {
     });
 }
 
+/* deletes a filter from my_filters list */
+function deleteFilter(name) {
+    ajaxPost({
+        data: {'action':'deleteFilter','f_name':name},
+        success: function(data) {
+            location.reload();
+        },
+        error: null
+    });
+}
+
 /*
  retrives the filter setting with the inputted id from the server and refreshes feed.
  */
@@ -2133,6 +2144,13 @@ function getFilter(f_id) {
         },
         error: null
     })
+}
+
+/* retrieves and sets defaults filter for user */
+function getDefaultFilter() {
+    var default_filter = $(".saved-filter-selector[data-f_name=default]");
+    default_filter.addClass("clicked");
+    getFilter(default_filter.data('f_id'));
 }
 
 /* heart stuff */
@@ -2400,11 +2418,14 @@ function loadNewFeed() {
     $(".more-options-wrapper").css('height', '0px');
     $(".more_options").click(function(event) {
         event.preventDefault();
+        $(this).toggleClass("clicked");
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
             wrapper.animate({"height": '0px'}, 1000);
             wrapper.removeClass("out");
+            wrapper.find(".menu_toggle").removeClass("clicked");
+            wrapper.find(".menu").hide();
         }
         else {
             wrapper.show();
@@ -2448,6 +2469,14 @@ function loadNewFeed() {
         else {
             $(".save_filter_input").val('enter a name for your filter.');
         }
+    });
+
+    $(".delete_saved_filter").click(function(event) {
+        event.preventDefault();
+        var wrapper = $(this).parents(".saved-filter-selector");
+        var f_name = wrapper.data('f_name');
+        deleteFilter(f_name);
+        event.stopPropagation();
     });
 
     $(".saved-filter-selector").click(function(event) {
@@ -2523,7 +2552,7 @@ function loadNewFeed() {
             event.stopPropagation();
         });
 
-    getFeed(27);
+    getDefaultFilter();
 
     $(window).scroll(scrollFeed);
 

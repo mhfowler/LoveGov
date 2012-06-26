@@ -19,15 +19,15 @@
 
     <p class="your-feed"> Your Feed </p>
 
-    <div class="options-box more-options more_options menu_toggle">
-        <p class="options-title">
+    <div class="options-box more-options more_options menu-toggle">
+        <p class="options-title menu-title">
             More Options
         </p>
         <div class="triangle-selector"></div>
     </div>
 
-    <div class="options-box saved-filters-box  menu_toggle">
-        <p class="options-title">
+    <div class="options-box saved-filters-box  menu_toggle menu-toggle">
+        <p class="options-title menu-title">
             Saved Filters
         </p>
         <div class="triangle-selector"></div>
@@ -37,6 +37,9 @@
                     <p class="saved-filter-title">
                         {{ x.name }}
                     </p>
+                    {% if x.name != 'default' %}
+                        <div class="x-button delete_saved_filter"></div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
@@ -70,24 +73,24 @@
     <div class="sort-by">
         <h2 class="mini"> Sort by: </h2>
     </div>
-    <div class="sort-by-choice  menu_toggle">
-        <p class="feed-menu-title ranking_menu_title">
+    <div class="sort-by-choice  menu_toggle menu-toggle">
+        <p class="feed-menu-title ranking_menu_title menu-title">
             Hot
         </p>
         <div class="triangle-selector"></div>
         <div class="sort-menu menu">
             <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
-                <p class="ranking-choice-title">
+                <p class="ranking-choice-title menu-option-title">
                     New
                 </p>
             </div>
             <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
-                <p class="ranking-choice-title">
+                <p class="ranking-choice-title menu-option-title">
                     Hot
                 </p>
             </div>
             <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
-                <p class="ranking-choice-title">
+                <p class="ranking-choice-title menu-option-title">
                     Best
                 </p>
             </div>
@@ -108,9 +111,8 @@
 
 
     <div class="create-box create_button">
-        <p class="options-title"> create </p>
+        <p class="options-title create-title"> create </p>
     </div>
-
 
     <a href="" class="how-does"> how does this work? </a>
 
@@ -127,8 +129,8 @@
             <h2 class="mini"> Filter by: </h2>
         </div>
 
-        <div class="filter-by-group  menu_toggle">
-            <p class="feed-menu-title">
+        <div class="filter-by-group  menu_toggle menu-toggle">
+            <p class="feed-menu-title menu-title">
                 Groups
             </p>
             <div class="triangle-selector"></div>
@@ -143,8 +145,8 @@
             </div>
         </div>
 
-        <div class="filter-by-network  menu_toggle">
-            <p class="feed-menu-title">
+        <div class="filter-by-network  menu_toggle menu-toggle">
+            <p class="feed-menu-title menu-title">
                 Networks
             </p>
             <div class="triangle-selector"></div>
@@ -159,48 +161,48 @@
             </div>
         </div>
 
-        <div class="filter-by-political  menu_toggle">
-            <p class="feed-menu-title political_menu_title">
+        <div class="filter-by-political  menu_toggle menu-toggle">
+            <p class="feed-menu-title political_menu_title menu-title">
                 Political
             </p>
             <div class="triangle-selector"></div>
             <div class="political-menu menu">
                 <div class="menu-option multi feed-level-selector" data-level="L">
-                    <p class="levels-choice-title">
+                    <p class="levels-choice-title menu-option-title">
                         Local
                     </p>
                 </div>
-                <div class="menu-option multi feed-level-selector" data-level="F">
-                    <p class="levels-choice-title">
-                        Federal
+                <div class="menu-option multi feed-level-selector" data-level="S">
+                    <p class="levels-choice-title menu-option-title">
+                        State
                     </p>
                 </div>
-                <div class="menu-option multi feed-level-selector" data-level="W">
-                    <p class="levels-choice-title">
-                        World
+                <div class="menu-option multi feed-level-selector" data-level="F">
+                    <p class="levels-choice-title menu-option-title">
+                        Federal
                     </p>
                 </div>
             </div>
         </div>
 
-        <div class="filter-by-content  menu_toggle">
-            <p class="feed-menu-title">
+        <div class="filter-by-content  menu_toggle menu-toggle">
+            <p class="feed-menu-title menu-title">
                 Content
             </p>
             <div class="triangle-selector"></div>
             <div class="type-menu menu">
                 <div class="menu-option multi feed-type-selector" data-type="N">
-                    <p class="type-choice-title">
+                    <p class="type-choice-title menu-option-title">
                         News
                     </p>
                 </div>
                 <div class="menu-option multi feed-type-selector" data-type="P">
-                    <p class="type-choice-title">
+                    <p class="type-choice-title menu-option-title">
                         Petitions
                     </p>
                 </div>
                 <div class="menu-option multi feed-type-selector" data-type="G">
-                    <p class="type-choice-title">
+                    <p class="type-choice-title menu-option-title">
                         Groups
                     </p>
                 </div>
@@ -230,6 +232,7 @@
         <div class="current-filter">
             <p class="current-filter-text"> Current Filters: </p>
         </div>
+        <div class="current-options-images"> </div>
         <div class="current-options">
             <a href="" class="feed-clear feed_clear">
                 clear

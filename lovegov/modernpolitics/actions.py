@@ -984,6 +984,7 @@ def ajaxFeedHelper(content, user):
 def saveFilter(request, vals={}):
 
     name = request.POST['feed_name']
+
     ranking = request.POST['feed_ranking']
     types = json.loads(request.POST['feed_types'])
     levels = json.loads(request.POST['feed_levels'])
@@ -1011,6 +1012,24 @@ def saveFilter(request, vals={}):
     viewer.my_filters.add(filter)
 
     return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# deletes a filter setting
+#-----------------------------------------------------------------------------------------------------------------------
+def deleteFilter(request, vals={}):
+
+    viewer = vals['viewer']
+    name = request.POST['f_name']
+
+    if name == 'default':
+        return HttpResponse("cant delete default filter.")
+
+    already = viewer.my_filters.filter(name=name)
+    if already:
+        to_delete = already[0]
+        viewer.my_filters.remove(to_delete)
+
+    return HttpResponse("deleted")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets a filter setting and returns via json dump
@@ -1265,6 +1284,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
             'saveFilter': saveFilter,
+            'deleteFilter': deleteFilter,
             'getFilter': getFilter,
             'matchSection': matchSection,
             'shareContent': shareContent,
