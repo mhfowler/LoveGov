@@ -374,7 +374,7 @@ function loadHoverComparison()
 
     function findHoverPosition(selector)
     {
-        var top = selector.offset().top - ($('#comparison-hover-div').height()) - selector.height();
+        var top = selector.offset().top - $('#comparison-hover-div').height() - (selector.height()+30);
         if (top <= $(document).scrollTop())
         {
             // show below
@@ -386,7 +386,7 @@ function loadHoverComparison()
             // show above
             $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
         }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) - 21;
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2)
         return {top:top,left:left};
     }
 
