@@ -374,7 +374,7 @@ function loadHoverComparison()
 
     function findHoverPosition(selector)
     {
-        var top = selector.offset().top - $('#comparison-hover-div').height() - (selector.height()-30);
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
         if (top <= $(document).scrollTop())
         {
             // show below
