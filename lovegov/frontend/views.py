@@ -382,19 +382,10 @@ def theFeed(request, vals={}):
     vals['my_groups'] = viewer.getGroups()
     vals['my_networks'] = Network.objects.all()
 
-    createModal(vals)
-
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Populates 'vals' with the necessary fields for the create Modal
-#-----------------------------------------------------------------------------------------------------------------------
-def createModal(vals={}):
-    vals['uploadform'] = CreateUserGroupForm()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

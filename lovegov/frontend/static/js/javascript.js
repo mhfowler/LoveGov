@@ -2581,7 +2581,16 @@ function bindCreateButton()
 
 function bindGroupPrivacyRadio()
 {
+    $("div.group_privacy_radio").unbind();
+    $("div.group_privacy_radio").click(function(event)
+    {
+        var prev = $("input:radio[name=group_privacy]:checked");
+        prev.attr('checked',false);
+        prev.parent('.group_privacy_radio').removeClass("privacy-selected");
 
+        $(this).children("input:radio[name=group_privacy]").attr('checked',true);
+        $(this).addClass("privacy-selected");
+    });
 }
 
 function loadCreate()
@@ -2610,6 +2619,8 @@ function loadCreate()
         $('.create_content_div').hide();
         $('#create_group_div').show();
     });
+
+    bindGroupPrivacyRadio();
 
     var timeout;
     var delay = 750;
@@ -2707,7 +2718,7 @@ function loadCreate()
         $("#errors-non_field").empty();
     }
 
-
+    /*
     $('#create-petition').click(function(event)
     {
         event.preventDefault();
@@ -2746,6 +2757,7 @@ function loadCreate()
             }
         });
     });
+    */
 
     $('#share-button').click(function(event)
     {

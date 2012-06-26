@@ -24,17 +24,17 @@
 
                 <td class="create-title"><span class="sub-title">Privacy:</span></td>
                 <td>
-                    <div id="group_open" class="group-privacy">
+                    <div class="group-privacy group_privacy_radio">
                         Open
-                        <input type="radio" id="group-input-type-open" value='O' name="group_privacy"/>
+                        <input type="radio" class="privacy-radio" id="group-input-type-open" value='O' name="group_privacy"/>
                     </div>
-                    <div id="group_private" class="group-privacy">
-                        Private:
-                        <input type="radio" id="group-input-type-private" value='P' name="group_privacy"/>
+                    <div class="group-privacy group_privacy_radio">
+                        Private
+                        <input type="radio" class="privacy-radio" id="group-input-type-private" value='P' name="group_privacy"/>
                     </div>
-                    <div id="group_secret" class="group-privacy">
-                        Secret:
-                        <input type="radio" id="group-input-type-secret" value='S' name="group_privacy"/>
+                    <div class="group-privacy group_privacy_radio">
+                        Secret
+                        <input type="radio" class="privacy-radio" id="group-input-type-secret" value='S' name="group_privacy"/>
                     </div>
                     <div class='clear-both'></div>
                 </td>
@@ -48,7 +48,7 @@
             <tr class="create-topic">
                 <td class="create-title"><span class="sub-title">Topic: </span></td>
                 <td>
-                    <div class="topic-images news-input-topic">
+                    <div class="topic-images group-input-topic">
                         {% include 'deployment/pieces/topic_images.html' %}
                     </div>
                 </td>

@@ -68,17 +68,22 @@
 
 table.create-table
 {
-  width: 100%;
+  width: 650px;
 
   td
   {
-    padding: 5px;
+    padding: 10px;
   }
 
   td.create-title
   {
     text-align: right;
     width: 150px;
+  }
+
+  td.create-input
+  {
+    width: 500px;
   }
 
   .privacy-radio
@@ -88,9 +93,42 @@ table.create-table
 
   div.group-privacy
   {
+    @include rounded(9px);
     @include float-left;
-    padding: 5px;
+    padding: 10px 10px 0px 10px;
+    font-size: 18px;
+    font-family: $gill-std;
+    color: white;
+    background-color: $gray;
+    margin-right: 10px;
+  }
 
+  div.group-privacy:hover
+  {
+    background-color: $light-gray;
+  }
+
+  div.privacy-selected
+  {
+    background-color: $red;
+  }
+
+  div.privacy-selected:hover
+  {
+    background-color: $red-light;
+  }
+
+  .title-input
+  {
+    width:372px;
+    padding:5px;
+  }
+
+  .full-text-input
+  {
+    width:372px;
+    padding:5px;
+    height:100px !important;
   }
 }
 

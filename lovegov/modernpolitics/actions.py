@@ -223,10 +223,7 @@ def create(request, val={}):
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
-            if formtype == "P":
-                from lovegov.frontend.views import petitionDetail
-                return petitionDetail(request=request,p_id=c.id,vals=val)
-            elif formtype == "N":
+            if formtype == "N":
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
@@ -244,6 +241,14 @@ def create(request, val={}):
                     c.setMainImage(file_content)
                 except IOError:
                     print "Image Upload Error"
+            elif formtype == "P":
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+
             return shortcuts.redirect(c.get_url())
     else:
         if request.is_ajax():
