@@ -974,6 +974,8 @@ def ajaxFeedHelper(content, user):
 #-----------------------------------------------------------------------------------------------------------------------
 def saveFilter(request, vals={}):
 
+    viewer = vals['viewer']
+
     name = request.POST['feed_name']
 
     ranking = request.POST['feed_ranking']
@@ -984,23 +986,28 @@ def saveFilter(request, vals={}):
     submissions_only = bool(int(request.POST['feed_submissions_only']))
     display = request.POST['feed_display']
 
-    filter = SimpleFilter(ranking=ranking, types=types,
-        levels=levels, submissions_only=submissions_only,
-    display=display, name=name)
-    filter.save()
-
-    for t in topics:
-        filter.topics.add(t)
-    for g in groups:
-        filter.groups.add(g)
-
-    viewer = vals['viewer']
-
     already = viewer.my_filters.filter(name=name)
     if already:
-        viewer.my_filters.remove(already[0])
+        filter = already[0]
+        filter.ranking = ranking
+        filter.types = types
+        filter.levels = levels
+        filter.submissions_only = submissions_only
+        filter.display = display
+        filter.save()
+    else:
+        filter = SimpleFilter(ranking=ranking, types=types,
+            levels=levels, submissions_only=submissions_only,
+        display=display, name=name, creator=viewer)
+        filter.save()
+        viewer.my_filters.add(filter)
 
-    viewer.my_filters.add(filter)
+    filter.topics.clear()
+    for t in topics:
+        filter.topics.add(t)
+    filter.groups.clear()
+    for g in groups:
+        filter.groups.add(g)
 
     return HttpResponse("success")
 

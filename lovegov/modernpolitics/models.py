@@ -843,6 +843,8 @@ class FilterSetting(LGModel):
 
 class SimpleFilter(LGModel):
     name = models.CharField(max_length=200, default="default")
+    created_when = models.DateTimeField(auto_now_add=True)
+    creator = models.ForeignKey("UserProfile", null=True)
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
     types = custom_fields.ListField()                  # list of char of included types
@@ -1054,7 +1056,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # create default fillter
     #-------------------------------------------------------------------------------------------------------------------
     def createDefaultFilter(self):
-        filter = SimpleFilter()
+        filter = SimpleFilter(creator=self)
         filter.save()
         self.my_filters.add(filter)
 

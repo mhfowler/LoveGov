@@ -2102,7 +2102,7 @@ function saveFilter(name) {
             'feed_name': feed_name
         },
         success: function(data) {
-            $(".save_filter_input").val("saved.");
+            $(".save_filter_input").val("saved: " + feed_name);
         },
         error: null
     });
@@ -2147,10 +2147,12 @@ function getFilter(f_id) {
 }
 
 /* retrieves and sets defaults filter for user */
-function getDefaultFilter() {
-    var default_filter = $(".saved-filter-selector[data-f_name=default]");
-    default_filter.addClass("clicked");
-    getFilter(default_filter.data('f_id'));
+function getFilterByName(name) {
+    $(".saved-filter-selector").removeClass("clicked");
+    var this_filter = $(".saved-filter-selector[data-f_name=" + name + "]");
+    this_filter.addClass("clicked");
+    $(".save_filter_input").val(name);
+    getFilter(this_filter.data('f_id'));
 }
 
 /* heart stuff */
@@ -2552,7 +2554,7 @@ function loadNewFeed() {
             event.stopPropagation();
         });
 
-    getDefaultFilter();
+    getFilterByName(feed_metadata.filter_name);
 
     $(window).scroll(scrollFeed);
 
