@@ -997,7 +997,7 @@ def account(request, vals={}):
     vals['userProfile'] = user
     vals['uploadform'] = UploadFileForm()
     if request.method == 'GET':
-        vals['password_form'] = PasswordForm()
+        vals['password_form'] = PasswordForm()MA
         vals['uploadform'] = UploadFileForm()
         setPageTitle("lovegov: account",vals)
         html = ajaxRender('deployment/center/account.html', vals, request)
