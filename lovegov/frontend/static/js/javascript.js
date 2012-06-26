@@ -421,8 +421,8 @@ function loadHoverComparison()
                 },500)
             }
         );
-
 }
+
 
 
 // loads topic bar select functionality
@@ -835,7 +835,7 @@ function loadHeader()
      * Handles style change for selecting a security mode.
      *
      * @param security$     jQuery object for user-menu-security-<mode> div objects
-    */
+     */
     function selectSecuritySetting(security$)
     {
         $('.user-menu-security').each(function()
@@ -2598,11 +2598,11 @@ function bindGroupPrivacyRadio()
 function loadCreate()
 {
     /*
-    $('div.create-submit-div').click( function(event)
-    {
-        $('div.overdiv').hide();
-    });
-    */
+     $('div.create-submit-div').click( function(event)
+     {
+     $('div.overdiv').hide();
+     });
+     */
 
     $('#create_petition_button').click(function()
     {
@@ -2721,45 +2721,45 @@ function loadCreate()
     }
 
     /*
-    $('#create-petition').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#input-title').val();
-        var summary = $('#input-summary').val();
-        var full_text = $('#input-full_text').val();
-        var link = $('#input-link').val();
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#errors-title").html(returned.errors.title);
-                    $("#errors-summary").html(returned.errors.summary);
-                    $("#errors-full_text").html(returned.errors.full_text);
-                    $("#errors-topic").html(returned.errors.topics);
-                    $("#errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    $('.normal').show();
-                    $('');
-                    clearPetitionErrors();
-                    History.pushState( {k:1}, returned.title, returned.url);
-                    rebind = returned.rebind;
-                    closeLeftSideWrapper($('.create-wrapper.clicked'));
-                    replaceCenter(returned.html);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
-    */
+     $('#create-petition').click(function(event)
+     {
+     event.preventDefault();
+     var title = $('#input-title').val();
+     var summary = $('#input-summary').val();
+     var full_text = $('#input-full_text').val();
+     var link = $('#input-link').val();
+     var topic = $('input:radio[name=topics]:checked').val();
+     ajaxPost({
+     data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
+     success: function(data)
+     {
+     var returned = eval('(' + data + ')');
+     if (returned.success == false)
+     {
+     $("#errors-title").html(returned.errors.title);
+     $("#errors-summary").html(returned.errors.summary);
+     $("#errors-full_text").html(returned.errors.full_text);
+     $("#errors-topic").html(returned.errors.topics);
+     $("#errors-non_field").html(returned.errors.non_field_errors);
+     }
+     else
+     {
+     $('.normal').show();
+     $('');
+     clearPetitionErrors();
+     History.pushState( {k:1}, returned.title, returned.url);
+     rebind = returned.rebind;
+     closeLeftSideWrapper($('.create-wrapper.clicked'));
+     replaceCenter(returned.html);
+     }
+     },
+     error: function(jqXHR, textStatus, errorThrown)
+     {
+     $("body").html(jqXHR.responseText);
+     }
+     });
+     });
+     */
 
     $('#share-button').click(function(event)
     {

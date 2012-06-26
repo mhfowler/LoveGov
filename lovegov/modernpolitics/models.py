@@ -544,6 +544,13 @@ class Content(Privacy, LocationLevel):
                 return False
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Gets a comparison, between inputted user and this content.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.backend import getUserContentComparison
+        return getUserContentComparison(user=viewer, content=self)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Add like vote to content from inputted user (or adjust his vote appropriately)
     #-------------------------------------------------------------------------------------------------------------------
     def like(self, user, privacy):
@@ -1029,6 +1036,13 @@ class UserProfile(FacebookProfileModel, LGModel):
             return self.electedofficial.representative
         else:
             return self
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets a comparison, between inputted user and this user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.compare import getUserUserComparison
+        return getUserUserComparison(userA=viewer, userB=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Makes unique alias from name
@@ -3213,6 +3227,13 @@ class Group(Content):
                 pix = (num/people*100)*5
             tuple['pix'] = int(pix)
         return histogram
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets comparison between this group and inputted user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.compare import getUserGroupComparison
+        return getUserGroupComparison(user=viewer, group=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.

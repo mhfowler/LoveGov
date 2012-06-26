@@ -243,9 +243,10 @@ def create(request, val={}):
                     print "Image Upload Error"
             elif formtype == "P":
                 try:
-                    file_content = ContentFile(request.FILES['image'].read())
-                    Image.open(file_content)
-                    c.setMainImage(file_content)
+                    if 'image' in request.FILES:
+                        file_content = ContentFile(request.FILES['image'].read())
+                        Image.open(file_content)
+                        c.setMainImage(file_content)
                 except IOError:
                     print "Image Upload Error"
 

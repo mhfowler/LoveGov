@@ -3,12 +3,12 @@
         {% include 'deployment/snippets/hearts.html' with content=item %}
     </div>
     <div class="comments">
-        <div class="comments-wrapper">
+        <a href="{{ item.get_url }}" class="comments-wrapper">
             <div class="text-wrapper">
                 <span class="comments-text"> comments </span>
                 <span class="comments-num"> {{ item.num_comments }} </span>
             </div>
-        </div>
+        </a>
     </div>
     <div class="share">
         <a href="" class="share_button button" data-share_id="{{ item.id }}"> Share </a>

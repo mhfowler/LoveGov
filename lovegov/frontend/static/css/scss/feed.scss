@@ -674,7 +674,6 @@ div.linear-wrapper {
       }
     }
 
-
     div.linear-right {
       float:left;
       margin: 0px 0px 0px 30px;
@@ -686,6 +685,8 @@ div.linear-wrapper {
       }
 
       div.pinterest-summary {
+        @include really-big();
+        @include fontSize(14px);
         width:450px;
         height:120px;
         padding:0px;
@@ -714,6 +715,10 @@ div.linear-wrapper {
         div.header-middle {
           margin-top:0px;
           height:40px;
+          p.submitted {
+            margin-bottom:0px;
+          }
+
           div.user-name {
             margin: 0px;
             @include fontSize(14px);
@@ -727,7 +732,7 @@ div.linear-wrapper {
 
 }
 
-div.comments-wrapper {
+a.comments-wrapper {
   @include rounded(10px);
   @extend .box;
 }
@@ -847,6 +852,10 @@ div.pinterest-footer {
           color:$red;
         }
       }
+    }
+
+    div.comments-wrapper:hover {
+      border-width:2px;
     }
 
   }
