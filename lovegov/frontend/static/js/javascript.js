@@ -2108,6 +2108,17 @@ function saveFilter(name) {
     });
 }
 
+/* deletes a filter from my_filters list */
+function deleteFilter(name) {
+    ajaxPost({
+        data: {'action':'deleteFilter','f_name':name},
+        success: function(data) {
+            location.reload();
+        },
+        error: null
+    });
+}
+
 /*
  retrives the filter setting with the inputted id from the server and refreshes feed.
  */
@@ -2133,6 +2144,13 @@ function getFilter(f_id) {
         },
         error: null
     })
+}
+
+/* retrieves and sets defaults filter for user */
+function getDefaultFilter() {
+    var default_filter = $(".saved-filter-selector[data-f_name=default]");
+    default_filter.addClass("clicked");
+    getFilter(default_filter.data('f_id'));
 }
 
 /* heart stuff */
@@ -2453,6 +2471,14 @@ function loadNewFeed() {
         }
     });
 
+    $(".delete_saved_filter").click(function(event) {
+        event.preventDefault();
+        var wrapper = $(this).parents(".saved-filter-selector");
+        var f_name = wrapper.data('f_name');
+        deleteFilter(f_name);
+        event.stopPropagation();
+    });
+
     $(".saved-filter-selector").click(function(event) {
         event.preventDefault();
         var value = $(this).data("f_id");
@@ -2526,7 +2552,7 @@ function loadNewFeed() {
             event.stopPropagation();
         });
 
-    getFeed(27);
+    getDefaultFilter();
 
     $(window).scroll(scrollFeed);
 

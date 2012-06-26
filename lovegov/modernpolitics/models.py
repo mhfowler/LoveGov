@@ -842,7 +842,7 @@ class FilterSetting(LGModel):
 
 
 class SimpleFilter(LGModel):
-    name = models.CharField(max_length=200, default="filter")
+    name = models.CharField(max_length=200, default="default")
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
     types = custom_fields.ListField()                  # list of char of included types
@@ -1049,6 +1049,14 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.user_notification_setting = DEFAULT_USER_NOTIFICATIONS
         self.email_notification_setting = DEFAULT_EMAIL_NOTIFICATIONS
         self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # create default fillter
+    #-------------------------------------------------------------------------------------------------------------------
+    def createDefaultFilter(self):
+        filter = SimpleFilter()
+        filter.save()
+        self.my_filters.add(filter)
 
     #-------------------------------------------------------------------------------------------------------------------
     # get last page access
