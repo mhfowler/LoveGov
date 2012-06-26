@@ -9,10 +9,7 @@ def wsgi(request):
 
 def test(request, vals={}):
     user = vals['viewer']
-    vals['notifications_dropdown'] = user.getNotifications(num=5, dropdown=True)
-    vals['notifications_profile'] = user.getNotifications()
-    vals['notifications_all'] = user.getAllNotifications()
-    vals['actions'] = user.getActivity()
+    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
     return renderToResponseCSRF('test/newtest.html',vals,request)
 
 def test2(request, vals={}):
