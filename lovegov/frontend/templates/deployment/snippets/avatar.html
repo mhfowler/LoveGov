@@ -3,9 +3,11 @@
 <div class="avatar-box">
 
     {% thumbnail user.getProfileImage.image "50x50" crop="center" as im %}
-        <img class="hover_comparison avatar-image"  data-id="{{ user.id}}" src="{{ im.url }}"/>
+        <img class="has_hover_comparison avatar-image"  data-href="{{ user.get_url}}" data-display_name="{{ user.get_name }}"
+             src="{{ im.url }}"/>
     {% empty %}
-        <img class="hover_comparison avatar-image" data-id="{{ user.id}}" src="{{ user.getProfileImage.image.url }}" width="50px" height="50px"/>
+        <img class="has_hover_comparison avatar-image"  data-href="{{ user.get_url}}" data-display_name="{{ user.get_name }}"
+             src="{{ user.getProfileImage.image.url }}" width="50px" height="50px"/>
     {% endthumbnail %}
 
 </div>
