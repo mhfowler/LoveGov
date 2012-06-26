@@ -886,7 +886,7 @@ div.heart {
 }
 
 div.create-modal {
-  position: fixed;
+  position: absolute;
   @include modal;
   border:1px solid $red;
   margin-left: 20%;

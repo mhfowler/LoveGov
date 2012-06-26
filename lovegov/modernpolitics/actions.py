@@ -227,7 +227,8 @@ def create(request, val={}):
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
-                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+            return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+
         else:
             if formtype == "G":
                 group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
