@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="top-search">
-            <input type="text" id="searchbar" value="Search Users">
+            <input type="text" id="searchbar" class="input_default" value="Search Users">
             <img id="searchglass" src="/static/images/searchglass.png"/>
             <div id="search-dropdown" style="display:none">
                 <!-- For Search AutoComplete -->
@@ -55,12 +55,12 @@
             </div>
 
             <div class="user-menu user-menu-unselected">
-                {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as img %}
+                {% thumbnail viewer.getProfileImage.image "35x35" crop="center" as img %}
                     <img class="user-img" class="user-menu-pointer" src="{{ img.url }}"/>
                 {% empty %}
                     <img class="user-img" class="user-menu-pointer" src="{{ viewer.getProfileImage.image.url }}"/>
                 {% endthumbnail %}
-                <a id="user-name" class="do-ajax-link" href="{{ viewer.getAlphaURL }}">{{ viewer.get_nameShort }}</a>
+                <a id="user-name" class="do-ajax-link select-none" href="{{ viewer.getAlphaURL }}">{{ viewer.get_nameShort }}</a>
                 <div id="menu-down-arrow"></div>
             </div>
 

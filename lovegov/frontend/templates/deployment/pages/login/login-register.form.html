@@ -5,8 +5,7 @@
             <table>
                 <tr>
                     <td>
-                        <input type="text" id="fullname-input" class="login-input" name="fullname" value="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% else %}{% endif %}"/>
-                        <span class="input-span" id="fullname-span">{% if registerform.fullname.errors %}{{ registerform.fullname.errors|striptags }}{% else %}full name{% endif %}</span>
+                        <input type="text" id="fullname-input" class="login-input" name="fullname" value="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% else %}full name{% endif %}"/>
                     </td>
                 </tr>
 
@@ -14,8 +13,7 @@
 
                 <tr>
                     <td>
-                        <input type="text" id="email-input" class="login-input" name="email" value="{% if not registerform.email.errors and registerform.email.value %}{{ registerform.email.value }}{% else %}{% endif %}"/>
-                        <span class="input-span" id="email-span">{% if registerform.email.errors %}{{ registerform.email.errors|striptags }}{% else %}email{% endif %}</span>
+                        <input type="text" id="email-input" class="login-input" name="email" value="{% if not registerform.email.errors and registerform.email.value %}{{ registerform.email.value }}{% else %}email{% endif %}"/>
                     </td>
                 </tr>
 
@@ -23,8 +21,7 @@
 
                 <tr>
                     <td>
-                        <input type="text" id="email2-input" class="login-input" name="email2" value="{% if not registerform.email2.errors and registerform.email2.value %}{{ registerform.email2.value }}{% else %}{% endif %}"/>
-                        <span class="input-span" id="email2-span">{% if registerform.email2.errors %}{{ registerform.email2.errors|striptags }}{% else %}email again{% endif %}</span>
+                        <input type="text" id="email2-input" class="login-input" name="email2" value="{% if not registerform.email2.errors and registerform.email2.value %}{{ registerform.email2.value }}{% else %}email again{% endif %}"/>
                     </td>
                 </tr>
 
@@ -32,8 +29,7 @@
 
                 <tr>
                     <td>
-                        <input type="password" id="password-register-input" class="login-input" name="passwordregister"/>
-                        <span class="input-span" id="password-register-span">password</span>
+                        <input type="password" id="password-register-input" class="login-input" name="passwordregister" value="password"/>
                     </td>
                 </tr>
 
