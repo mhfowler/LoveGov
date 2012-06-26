@@ -395,7 +395,6 @@ function loadHoverComparison()
         function(event)
         {
             var self = $(this);
-
             var href = $(this).data('href');
             var displayName = $(this).data("display_name");
             if (href != "")
