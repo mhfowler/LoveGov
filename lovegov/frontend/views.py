@@ -392,6 +392,7 @@ def theFeed(request, vals={}):
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
 #-----------------------------------------------------------------------------------------------------------------------
@@ -599,7 +600,6 @@ def group(request, g_id=None, vals={}):
     vals['comparison'] = comparison
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
-    vals['defaultImage'] = getDefaultImage().image
 
     # Histogram Things
     vals['histogram'] = group.getComparisonHistogram(user)

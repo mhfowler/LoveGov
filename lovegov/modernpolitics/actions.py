@@ -214,6 +214,7 @@ def create(request, val={}):
         form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
+
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
@@ -222,21 +223,33 @@ def create(request, val={}):
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
-            if formtype == "P":
-                from lovegov.frontend.views import petitionDetail
-                return petitionDetail(request=request,p_id=c.id,vals=val)
-            elif formtype == "N":
+            if formtype == "N":
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
-            elif formtype == "G":
+
+                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+        else:
+            if formtype == "G":
                 group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
                 group_joined.confirm()
                 group_joined.autoSave()
                 c.admins.add(user)
                 c.members.add(user)
-                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
-        else:
-            return shortcuts.redirect('/display/' + str(c.id))
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+            elif formtype == "P":
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+
+            return shortcuts.redirect(c.get_url())
     else:
         if request.is_ajax():
             errors = dict([(k, form.error_class.as_text(v)) for k, v in form.errors.items()])
@@ -247,6 +260,7 @@ def create(request, val={}):
             print simplejson.dumps(vals)
             return HttpResponse(json.dumps(vals))
         else:
+            return shortcuts.redirect('/web/')
             vals = {'petition': petition, 'event':event, 'news':news, 'group':group, 'album':album}
             return renderToResponseCSRF('usable/create_content_simple.html',vals,request)
 

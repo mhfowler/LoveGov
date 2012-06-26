@@ -301,6 +301,8 @@ class CreateUserGroupForm(CreateContentForm):
         fields = ('title', 'full_text', 'topics', 'group_type', 'type', 'group_privacy')
     topics = SelectTopicsField(content_type=TYPE_DICT['group'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['group'])
+    action = forms.CharField(widget=forms.HiddenInput(), initial='create')
+    group_type = forms.CharField(widget=forms.HiddenInput(), initial='U')
 
 
 class CreateMotionForm(CreateContentForm):

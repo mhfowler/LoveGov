@@ -103,34 +103,6 @@
     vertical-align: middle;
 }
 
-/* TOPIC */
-
-.create-topic-div
-{
-    position:relative;
-    height:65px;
-}
-
-.create-topic-text
-{
-    position:relative;
-    width:130px;
-    float:left;
-}
-
-
-.topic-images
-{
-    position:relative;
-    float:right;
-    margin-left:18px;
-}
-
-.topic-images img
-{
-    padding-right:3px;
-}
-
 /* SUBMIT BUTTON */
 
 .left-sidebar-submit
