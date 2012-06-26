@@ -258,7 +258,6 @@
 }
 
 @mixin modal {
-  display: block;
   float: left;
   background-color: white;
   z-index: 103;
@@ -268,6 +267,7 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
   display: none;
+  border:1px solid $red;
 }
 
 

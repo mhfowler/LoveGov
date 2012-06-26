@@ -9,11 +9,12 @@ div#top
   position:relative;
   width:1000px;
   height:45px;
-  padding-bottom:6px;
+  padding-bottom:5px;
   background-color:white;
   margin-left:auto;
   margin-right:auto;
   margin-top:5px;
+  padding-top:5px;
   $shadow:0 1px 8px $light-gray;
 
   box-shadow: $shadow;
@@ -26,8 +27,14 @@ div#top
   div.top-logo
   {
     @extend .top-div;
-    padding-left:5px;
+    padding-left:10px;
     padding-right:5px;
+
+    img#logo-img
+    {
+      cursor:pointer;
+    }
+
   }
 
   div.link-wrapper
@@ -180,7 +187,7 @@ div#top
             border: solid $gray 1px;
             position: absolute;
             font-size: 13px;
-            top: 51px;
+            top: 55px;
             width: 300px;
             min-height: 200px;
             z-index: 100;
@@ -197,7 +204,7 @@ div#top
 
               div.notifications-header-border
               {
-                @include horizontalSeparator($width:250px,$color:$gray,$margin-left:25px,$margin-top:0,$margin-bottom:0)
+                @include horizontalSeparator($width:300px,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
               }
 
               div.notifications-pointer
@@ -212,7 +219,7 @@ div#top
                   position:absolute;
                   width:50px;
                   left:125px;
-                  top:125px;
+                  top:90px;
                 }
               }
             }
@@ -258,7 +265,7 @@ div#top
         float:left;
         margin-left:10px;
         margin-top:19px;
-        margin-right:5px;
+        margin-right:10px;
         @include triangle-down($size: 4px, $color: $red)
       }
 
@@ -286,7 +293,7 @@ div#top
     {
       position:absolute;
       right:0;
-      top:51px;
+      top:55px;
       z-index:1000;
 
       div.user-menu-pointer

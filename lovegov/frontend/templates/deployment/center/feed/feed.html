@@ -2,6 +2,12 @@
 <link href="/static/css/compiled/feed.css" rel="stylesheet" type="text/css"/>
 {% load thumbnail %}
 
+
+
+<div class="create-modal create_modal">
+    {% include 'deployment/pieces/create_modal.html' %}
+</div>
+
 <!-- feed metadata -->
 <div id="feed_metadata" data-json="{{ feed_json }}"></div>
 
@@ -246,10 +252,6 @@
 
 </div>
 
-</div>
-
-<div class="create-modal create_modal">
-    {% include 'deployment/pieces/create_modal.html' %}
 </div>
 
 <script> rebind = 'feed'; </script>
