@@ -13,13 +13,6 @@
   src: url(../GillSansStd.otf);
 }
 
-body
-{
-	font-family:Helvetica, Verdana, sans-serif;
-	font-size:11pt;
-	color:#959595;
-}
-
 .highlight
 {
 	color:#f0503b;

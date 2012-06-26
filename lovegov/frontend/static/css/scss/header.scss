@@ -78,30 +78,31 @@ div#top
   {
     float:left;
     position:relative;
-    margin-left:10px;
-    margin-top:7px;
+    margin-left:5px;
+    margin-top:9px;
 
-    $width: 325px;
-    $width-padding: 5px;
-    $search-height:23px;
+    $width:325px;
+    $width-padding:5px;
+    $search-height:20px;
 
     input[type="text"]#searchbar
     {
       position:relative;
       float:left;
       width:$width;
-      font-size:15px;
+      font-size:13px;
       padding:$width-padding;
-      height:23px;
-      color:#959595;
+      height:$search-height;
     }
+
+
 
     div#search-dropdown
     {
       position:absolute;
       width:$width + (2*$width-padding);
       height:320px;
-      top:$search-height + (2*$width-padding);
+      top:$search-height + (2*$width-padding) + 1;
       border-left:1px solid $gray;
       border-right:1px solid $gray;
       border-bottom:1px solid $gray;
@@ -113,7 +114,7 @@ div#top
     {
       position:absolute;
       right:10px;
-      top:10px;
+      top:8px;
       cursor:pointer;
     }
   }
@@ -156,8 +157,15 @@ div#top
           cursor:pointer;
           @include round-rectangle($width:$width+-5,$height:$height+-5 ,$radius:5px,$background-color:$red);
 
+          &:hover
+          {
+            background-color:$red-light;
+          }
+
+
           div#notifications-dropdown-button
           {
+
             width:$width - 5;
             height:$height - 5;
             margin: 0px;
@@ -275,15 +283,11 @@ div#top
         float:left;
         margin-left:5px;
         margin-top:13px;
-        font-size:16px;
         color:#0F5569;
       }
 
       .user-img
       {
-        width:38px;
-        height:38px;
-        padding:1px;
         vertical-align: middle;
         float:left
       }

@@ -882,12 +882,9 @@ def updateGroupView(request,vals={}):
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def hoverComparison(request,vals={}):
-    user = vals['viewer']
-    alias = request.POST['alias']
-    to_compare = UserProfile.objects.get(alias=alias)
-    comparison = getUserUserComparison(user, to_compare, force=True)
+    object = urlToObject(request.POST['href'])
+    comparison = object.getComparison(vals['viewer'])
     return HttpResponse(comparison.toJSON())
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds e-mail to mailing list

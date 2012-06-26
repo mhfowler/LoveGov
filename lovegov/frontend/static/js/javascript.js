@@ -64,6 +64,8 @@ function rebindFunction()
     }
 }
 
+
+
 /***********************************************************************************************************************
  *
  *      ~Menu and Icon Display
@@ -365,11 +367,73 @@ function loadHoverComparison()
     }
 
     $('#comparison-hover-div').hoverIntent
-        (
-            function() { clearTimeout(hoverTimer); },
-            function() { hoverTimer = setTimeout(function(){clearHover();},100)}
-        );
+    (
+        function() { clearTimeout(hoverTimer); },
+        function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+    );
 
+    function findHoverPosition(selector)
+    {
+        var top = selector.offset().top - ($('#comparison-hover-div').height()) - selector.height();
+        if (top <= $(document).scrollTop())
+        {
+            // show below
+            top = selector.offset().top + selector.height() + 30;
+            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+        }
+        else
+        {
+            // show above
+            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+        }
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) - 21;
+        return {top:top,left:left};
+    }
+
+    $('.has_hover_comparison').hoverIntent
+    (
+        function(event)
+        {
+            var self = $(this);
+
+            var href = $(this).data('href');
+            var displayName = $(this).data("displayName");
+            if (href != "")
+            {
+                clearTimeout(hoverTimer);
+                $('#comparison-hover').empty();
+                var offset = findHoverPosition(self);
+                $('#comparison-hover-div p').text('You & ' + displayName);
+                $('#comparison-hover-loading-img').show();
+                $('#comparison-hover-div').fadeIn(100);
+                $('#comparison-hover-div').offset(offset);
+                ajaxPost({
+                    'data': {'action':'hoverComparison','href':href},
+                    'success': function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        $('#comparison-hover-loading-img').hide();
+                        new VisualComparison('comparison-hover',obj).draw();
+                    },
+                    'error': function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('#comparison-hover-div p').text('Sorry there was an error');
+                    }
+                });
+            }
+        },
+        function(event)
+        {
+            hoverTimer = setTimeout(function()
+            {
+                $('#comparison-hover').empty();
+                $('#comparison-hover-div').fadeOut(100);
+            },500)
+        }
+    );
+
+
+    /*
     $('.feed-username').hoverIntent
         (
             // hover over
@@ -421,6 +485,7 @@ function loadHoverComparison()
                 },500)
             }
         );
+        */
 
 }
 
@@ -686,24 +751,9 @@ function loadHeader()
         }
     });
 
-    $('#searchbar').focusin(function()
-    {
-        if ($(this).val()=="Search Users")
-        {
-            $(this).val('');
-        }
-        $(this).css("color","#000000")
-    });
 
-    $("#searchbar").bind("clickoutside", function(event)
-    {
-        if ($(this).val()=="")
-        {
-            $(this).val('Search Users');
-            $(this).css("color",'#959595');
-        }
-        $(this).blur();
-    });
+    $('#searchbar').inputFade();
+
 
     var tempDropDownDiv = $('.notifications-dropdown-static-div');
     $('#notifications-dropdown-button').click(
@@ -762,7 +812,10 @@ function loadHeader()
         $('.user-menu').toggleClass("user-menu-unselected");
         $('.user-menu').toggleClass("user-menu-selected");
         $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
-        $('.user-menu-pointer').css('left',$('#user-menu-dropdown').width()-$('.user-menu').width()+($('.user-menu-pointer').width()/2));
+
+        var left = $('#user-menu-dropdown').width()-$('.user-menu').width()+$('.user-img').width()+$('#user-name').width()/2-$('.user-menu-pointer').width()/2;
+
+        $('.user-menu-pointer').css('left',left);
     }
 
     $('#user-menu-container').bind("clickoutside",function(event)

@@ -502,6 +502,15 @@ div.menu_toggle.clicked
   user-select: none;
 }
 
+input[type="text"].input_default { color:$dark-gray; }
+input[type="text"].input_focus
+{
+  @extend .select-none;
+  border-color:$red;
+  color:$light-gray;
+}
+input[type="text"].input_typing { color:$black }
+
 
 div.heart {
   display: inline-block;
