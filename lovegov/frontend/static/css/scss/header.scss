@@ -527,9 +527,17 @@ div#user-upload-avatar-modal
   position:absolute;
   width:50%;
   height:500px;
+  top:100px;
   margin-left:25%;
   margin-right:25%;
-  z-index:2000;
+  z-index:1500;
+
+  div.upload-modal-main-div
+  {
+    padding: 75px;
+  }
+
+
 }
 
 

@@ -2599,7 +2599,6 @@ function bindCreateButton()
     {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
-        $('div#user-upload-avatar-modal').hide();
     });
 }
 

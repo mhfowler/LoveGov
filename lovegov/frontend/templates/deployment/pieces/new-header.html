@@ -93,15 +93,9 @@
                     $('.user-menu-dashboard-avatar-overlay').click(function(event)
                     {
                         event.stopPropagation();
-                        $('#user-upload-avatar-modal').show();
-                        $('div.overdiv').show();
+                        ajaxLink('/account/',true);
                     });
 
-                    $('div.overdiv').click(function()
-                    {
-                        $('div.overdiv').hide();
-                        $('div#user-upload-avatar-modal').hide();
-                    });
                 </script>
 
                 <div class="user-menu-dashboard-right">
