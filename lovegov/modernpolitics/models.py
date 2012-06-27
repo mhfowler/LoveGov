@@ -43,10 +43,11 @@ class LGManager(models.Manager):
     """Adds get_or_none method to objects
     """
     def get_or_none(self, **kwargs):
-        try:
-            return self.get(**kwargs)
-        except self.model.DoesNotExist:
-            return None
+        to_return = self.filter(**kwargs)
+        if to_return:
+            return to_return[0]
+        else:
+            return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Our model
@@ -695,15 +696,10 @@ class Content(Privacy, LocationLevel):
     # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowMe(self, num=-1):
-        follows = Followed.objects.filter(content=self)
-        followers = []
-        if num == -1:
-            for f in follows:
-                followers.append(f.user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                followers.append(follows[i].user)
+        f_ids = UserFollow.objects.filter(content=self, confirmed=True).values_list('user', flat=True)
+        followers = UserProfile.objects.filter(id__in=f_ids)
+        if num != -1:
+            followers = followers[:num]
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1148,16 +1144,12 @@ class UserProfile(FacebookProfileModel, LGModel):
                 alias = alias.replace(",","")
                 alias = alias.replace(".","")
                 alias = alias.lower()
-                school_networks = Network.objects.filter(alias=alias,network_type='S')
-                if not school_networks:
+                school_network = Network.lg.get_or_none(alias=alias,network_type='S')
+                if not school_network:
                     school_network = Network(alias=alias,title=name,network_type='S')
                     school_network.autoSave()
-                    school_network.members.add(self)
-                    self.networks.add(school_network)
-                else:
-                    school_networks[0].members.add(self)
-                    self.networks.add(school_networks[0])
-
+                school_network.joinMember(self)
+                self.networks.add(school_network)
 
         if 'location' in fb_data:
             location = fb_data['location']
@@ -1166,15 +1158,12 @@ class UserProfile(FacebookProfileModel, LGModel):
             alias = alias.replace(",","")
             alias = alias.replace(".","")
             alias = alias.lower()
-            location_networks = Network.objects.filter(alias=alias,network_type='L')
-            if not location_networks:
+            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
+            if not location_network:
                 location_network = Network(alias=alias,title=name,network_type='L')
                 location_network.autoSave()
-                location_network.members.add(self)
-                self.networks.add(location_network)
-            else:
-                location_networks[0].members.add(self)
-                self.networks.add(location_networks[0])
+            location_network.joinMember(self)
+            self.networks.add(location_network)
 
 
         self.setUsername(fb_data['email'])
@@ -1408,9 +1397,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getNotifications(self, start=0, num=-1, new=False):
         if new:
-            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when').reverse()
+            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('-when')
         else:
-            notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
+            notifications = Notification.objects.filter(notify_user=self).order_by('-when')
         if num != -1:
             notifications = notifications[start:start+num]
         return notifications
@@ -1419,15 +1408,15 @@ class UserProfile(FacebookProfileModel, LGModel):
         return len( Notification.objects.filter(notify_user=self, viewed=False) )
 
     def getAllNotifications(self):
-        return Notification.objects.filter(notify_user=self).order_by('when').reverse()
+        return Notification.objects.filter(notify_user=self).order_by('-when')
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('when').reverse()
+        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('-when')
         print len( actions )
-        if num != 1:
+        if num != -1:
             actions = actions[start:start+num]
         print len( actions )
         return actions
@@ -1437,63 +1426,51 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupInvites(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')
         else:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()[:num]
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns a list of all Groups this user has joined and been accepted to.
+    # return a query set of groups and networks user is in
     #-------------------------------------------------------------------------------------------------------------------
-    def getGroups(self, num=-1):
-        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
-        groups = []
-        if num == -1:
-            for g in group_joins:
-                groups.append(g.group)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                groups.append(group_joins[i].group)
-        return groups
+    def getGroups(self):
+        g_ids = GroupJoined.objects.filter(user=self, confirmed=True).values_list('group', flat=True)
+        return Group.objects.filter(id__in=g_ids)
+
+    def getUserGroups(self):
+        return self.getGroups.filter(group_type='U')
+
+    def getNetworks(self):
+        return self.networks.all()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowMe(self, num=-1):
-        follows = UserFollow.objects.filter( to_user=self, confirmed=True )
-        followers = []
-        if num == -1:
-            for f in follows:
-                followers.append(f.user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                followers.append(follows[i].user)
+        f_ids = UserFollow.objects.filter(to_user=self, confirmed=True ).values_list('user', flat=True)
+        followers = UserProfile.objects.filter(id__in=f_ids)
+        if num != -1:
+            followers = followers[:num]
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
-        follows = UserFollow.objects.filter( user=self, confirmed=True )
-        following = []
-        if num == -1:
-            for f in follows:
-                following.append(f.to_user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                following.append(f.to_user)
-        return following
+        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('user', flat=True)
+        followers = UserProfile.objects.filter(id__in=f_ids)
+        if num != -1:
+            followers = followers[:num]
+        return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns query set of all UserFollow who are (confirmed) following this user and are fb friends with this user.
@@ -1587,6 +1564,8 @@ class Action(Privacy):
     when = models.DateTimeField(auto_now_add=True)
     relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
+    # group, for sharing with group
+    share_group = models.ForeignKey("Group", null=True)
     # optimization
     verbose = models.TextField()  # Don't use me!  I'm deprecated
 
@@ -3262,6 +3241,18 @@ class Group(Content):
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Joins a member to the group and creates GroupJoined appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
+    def joinMember(self, user, privacy='PUB'):
+        group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
+        if not group_joined:
+            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined.autoSave()
+        group_joined.privacy = privacy
+        group_joined.confirm()
+        self.members.add(user)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparison(self, viewer):
@@ -3418,6 +3409,7 @@ class Network(Group):
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
+        self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
     pass
 
@@ -3808,14 +3800,19 @@ class Shared(UCRelationship):
         self.save()
 
     def addUser(self, user):
-        if not user in self.share_users:
+        if not user in self.share_users.all():
             self.share_users.add(user)
-            # follow notification flow
+            action = Action.lg.get_or_none(relationship=self)
+            if not action:
+                action = Action(relationship=self)
+                action.autoSave()
+            user.notify(action)
 
     def addGroup(self, group):
-        if not group in self.share_groups:
+        if not group in self.share_groups.all():
             self.share_groups.add(group)
-            # follow notification flow
+            action = Action(relationship=self, share_group=group)
+            action.autoSave()
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.

@@ -235,7 +235,7 @@ div#top
           div.img-holder-account
           {
             @extend .img-holder;
-            background-image:url('/static/images/user-menu/geargray.png');
+            background-image:url('/static/images/user-menu/gear_red.png');
           }
 
           div.img-holder-logout
@@ -255,7 +255,7 @@ div#top
 
             div.img-holder-account
             {
-              background-image:url('/static/images/user-menu/gearwhite.png');
+              background-image:url('/static/images/user-menu/gear_white.png');
             }
           }
         }

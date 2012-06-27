@@ -205,7 +205,7 @@ def loadHistogram(request, vals={}):
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
     formtype = request.POST['type']
-    user = val['user']
+    user = val['viewer']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
@@ -233,11 +233,8 @@ def create(request, val={}):
 
         else:
             if formtype == "G":
-                group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
-                group_joined.confirm()
-                group_joined.autoSave()
+                c.joinMember(user)
                 c.admins.add(user)
-                c.members.add(user)
                 try:
                     file_content = ContentFile(request.FILES['image'].read())
                     Image.open(file_content)
@@ -526,8 +523,7 @@ def joinGroupRequest(request, vals={}):
         group_joined = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
         group_joined.autoSave()
     if group_joined.invited:
-        group_joined.confirm()
-        group.members.add(from_user)
+        group.joinMember(from_user, privacy=getPrivacy(request))
         action = Action(relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
@@ -538,8 +534,7 @@ def joinGroupRequest(request, vals={}):
         return HttpResponse("cannot request to join secret group")
     #If the group type is open...
     if group.group_privacy == 'O':
-        group_joined.confirm()
-        group.members.add(from_user)
+        group.joinMember(from_user, privacy=getPrivacy(request))
         action = Action(relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
@@ -572,8 +567,7 @@ def joinGroupResponse(request, vals={}):
             return HttpResponse("This person is already in your group")
         elif group_joined.requested:
             if response == 'Y':
-                group_joined.confirm()
-                group.members.add(from_user)
+                group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(relationship=group_joined,modifier="A")
                 action.autoSave()
                 from_user.notify(action)
@@ -601,8 +595,7 @@ def groupInviteResponse(request, vals={}):
             return HttpResponse("You have already joined that group")
         if group_joined.invited:
             if response == 'Y':
-                group_joined.confirm()
-                group.members.add(from_user)
+                group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(relationship=group_joined,modifier="D")
                 action.autoSave()
                 from_user.notify(action)
@@ -757,50 +750,6 @@ def leaveGroup(request, vals={}):
         return HttpResponse("follow removed")
     else:
         return HttpResponse("system group")
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates share relationship between user and content.
-#
-#-----------------------------------------------------------------------------------------------------------------------
-def share(request, vals={}):
-    # get data
-    user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
-    # check if already following
-    my_share = Shared.objects.filter(user=user,content=content)
-    if not my_share:
-        privacy = getPrivacy(request)
-        share = Shared(user=user,content=content,privacy=privacy)
-        share.autoSave()
-        # add to myinvolvement
-        user.updateInvolvement(content=content,amount=INVOLVED_FOLLOW)
-        # update status of content
-        content.status += STATUS_FOLLOW
-        content.save()
-        return HttpResponse("shared")
-    else:
-        return HttpResponse("already shared")
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates follow relationship between user and content.
-#
-#-----------------------------------------------------------------------------------------------------------------------
-def follow(request, vals={}):
-    # get data
-    user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
-    # check if already following
-    my_follow = Followed.objects.filter(user=user,content=content)
-    if not my_follow:
-        privacy = getPrivacy(request)
-        follow = Followed(user=user,content=content,privacy=privacy)
-        follow.autoSave()
-        # update status of content
-        content.status += STATUS_FOLLOW
-        content.save()
-        return HttpResponse("following")
-    else:
-        return HttpResponse("already following")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds content to group.
@@ -1234,11 +1183,65 @@ def matchSection(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Shares a piece of content
 #-----------------------------------------------------------------------------------------------------------------------
-
 def shareContent(request, vals={}):
-    share_with = request.POST['share_with'] 
-    return HttpResponse("oh hai thnx for sharing ur content with")
 
+    user = vals['viewer']
+    content = Content.objects.get(id=request.POST['share_this'])
+    share_with = json.loads(request.POST['share_with'])
+
+    follow_ids = []
+    group_ids = []
+    all_followers = False
+    all_groups = False
+    all_networks = False
+    for x in share_with:
+        splitted = x.split('_')
+        pre = splitted[0]
+        id = splitted[1]
+        if pre == 'follower':
+            follow_ids.append(id)
+        elif pre == 'group':
+            group_ids.append(id)
+        elif pre == 'network':
+            group_ids.append(id)
+        elif pre == 'all':
+            if id == 'followers':
+                all_followers=True
+            elif id == 'groups':
+                all_groups = True
+            elif id == 'networks':
+                all_networks = True
+
+    if all_followers:
+        share_users = user.getFollowMe()
+    else:
+        share_users = user.getFollowMe().filter(id__in=follow_ids)
+
+    if all_networks and all_groups:
+        share_groups = user.getGroups()
+    else:
+        if all_networks:
+            share_groups = user.getNetworks()
+        elif all_groups:
+            share_groups = user.getUserGroups()
+        else:
+            groups = user.getGroups()
+            share_groups = user.getGroups().filter(id__in=group_ids)
+
+    shared = Shared.lg.get_or_none(user=user, content=content)
+    if not shared:
+        shared = Shared(user=user, content=content)
+        shared.autoSave()
+    for u in share_users:
+        shared.addUser(u)
+    for g in share_groups:
+        shared.addGroup(g)
+
+    return HttpResponse('shared')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# blog action
+#-----------------------------------------------------------------------------------------------------------------------
 def blogAction(request,vals={}):
     user = vals['viewer']
     if 'url' in request.POST:
@@ -1317,8 +1320,6 @@ actions = { 'getLinkInfo': getLinkInfo,
             'groupinviteresponse': groupInviteResponse,
             'leavegroup': leaveGroup,
             'matchComparison': matchComparison,
-            'share': share,
-            'follow': follow,
             'posttogroup': posttogroup,
             'updateCompare': updateCompare,
             'viewCompare': viewCompare,

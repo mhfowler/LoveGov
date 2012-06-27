@@ -706,10 +706,11 @@ function loadHeader()
     $('#notifications-dropdown-button').click(
         function(event)
         {
+            var dropdown = $('#notifications-dropdown');
+            dropdown.empty().append(tempDropDownDiv);
             $('.notifications-ajax-load').show();
             event.preventDefault();
             var pos = $(this).offset();
-            var dropdown = $('#notifications-dropdown');
             dropdown.toggle();
 
             if( $('#notifications-dropdown').is(':visible') )
@@ -727,16 +728,13 @@ function loadHeader()
                         $('#notifications-dropdown').empty().append(tempDropDownDiv).append(obj.html);
                         unbindNotification();
                         loadNotification();
+                        loadAjaxifyAnchors();
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
                         $('body').html(jqXHR.responseText);
                     }
                 });
-            }
-            else
-            {
-                $('#notifications-dropdown').empty().append(tempDropDownDiv);
             }
             event.stopPropagation();
             hideOtherDropDowns(dropdown);
@@ -796,21 +794,39 @@ function loadHeader()
         event.stopPropagation();
     });
 
-    /**
-     * Handles initial styling for security mode
-     */
-    switch($.cookie('privacy'))
+
+    if ($.cookie('privacy'))
     {
+        switch($.cookie('privacy'))
+        {
         case "PUB":
             $.cookie('privacy','PUB', {path:'/'});
+            $(".security_setting").each(function()
+            {
+                if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+
+            });
             break;
         case "PRI":
             $.cookie('privacy','PRI', {path:'/'});
+            $(".security_setting").each(function()
+            {
+                if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+            });
             break;
-        default:
-            $.cookie('privacy','PUB', {path:'/'});
-            break;
+        }
     }
+    else
+    {
+        $.cookie('privacy','PUB', {path:'/'});
+        $(".security_setting").each(function()
+        {
+            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+
+        });
+    }
+
+
 
     $(".security_setting").click(function(event)
     {

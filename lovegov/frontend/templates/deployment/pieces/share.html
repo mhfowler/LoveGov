@@ -47,7 +47,7 @@ $('#submit_content').click(function(e) {
 	var share_with = $('.share_select').select2("val");
 	if (share_with!='') {
 		ajaxPost({
-			data: {'action': 'shareContent', 'share_with': JSON.stringify(share_with)},
+			data: {'action': 'shareContent', 'share_with': JSON.stringify(share_with), 'share_this':share_this},
 			success: function(data) { alert(data)}
 		});
 	}
