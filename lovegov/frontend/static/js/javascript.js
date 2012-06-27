@@ -799,17 +799,21 @@ function loadHeader()
     /**
      * Handles initial styling for security mode
      */
-    switch($.cookie('privacy'))
+    if ($.cookie('privacy'))
     {
-        case "PUB":
-            $.cookie('privacy','PUB', {path:'/'});
-            break;
-        case "PRI":
-            $.cookie('privacy','PRI', {path:'/'});
-            break;
-        default:
-            $.cookie('privacy','PUB', {path:'/'});
-            break;
+        switch($.cookie('privacy'))
+        {
+            case "PUB":
+                $.cookie('privacy','PUB', {path:'/'});
+                break;
+            case "PRI":
+                $.cookie('privacy','PRI', {path:'/'});
+                break;
+        }
+    }
+    else
+    {
+        $.cookie('privacy','PUB', {path:'/'});
     }
 
     $(".security_setting").click(function(event)
