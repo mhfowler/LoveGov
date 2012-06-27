@@ -129,6 +129,19 @@ class LocationLevel(models.Model):
     class Meta:
         abstract = True
 
+    def getScaleVerbose(self):
+        scale = self.scale
+        if scale == 'L':
+            return 'Local'
+        elif scale == 'S':
+            return 'State'
+        elif scale == 'F':
+            return 'Federal'
+        elif scale == 'A':
+            return 'All'
+        else:
+            return 'None'
+
 #=======================================================================================================================
 # Topic
 #
@@ -1016,6 +1029,9 @@ class UserProfile(FacebookProfileModel, LGModel):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
+
+    def get_email(self):
+        return self.username
 
     def isDeveloper(self):
         return self.developer

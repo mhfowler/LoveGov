@@ -13,7 +13,7 @@
         {% endif %}
     {% endif %}
 {% else %}
-<a href="{{ user.get_url }}" class="action_name">
+<a href="{{ user.get_url }}" class="action_name do-ajax-link">
     {% if possesive %}
         {{ user.get_name }}'s
     {% else %}

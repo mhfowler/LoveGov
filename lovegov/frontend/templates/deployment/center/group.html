@@ -1,5 +1,6 @@
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/group.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/user-name.css" />
 
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
@@ -9,101 +10,128 @@
 {% if group.active %}
 <!-- Middle Container -->
 <div class="main-div">
-    <div style="font-size: 30px;">THIS SECTION IS UNDER CONSTRUCTION.</div>
     <!-- Left Block -->
     <div class="middle-left">
-        <div class="group-img">
-            {% load thumbnail %}
-            {% thumbnail group.getMainImage.image "100x100" crop="center" as im %}
-                <img src="{{ im.url }}" class="icon-really-big"/>
-            {% empty %}
-                <p> no pic </p>
-            {% endthumbnail %}
-        </div>
+        <div class="basic-info">
 
-        <h1> {{ group.title }} </h1>
+            <div class="basic-info-left">
+                <div class="group-img">
+                    {% load thumbnail %}
+                    {% thumbnail group.getMainImage.image "100x100" crop="center" as im %}
+                        <img src="{{ im.url }}" class="icon-really-big"/>
+                    {% endthumbnail %}
+                </div>
+            </div>
 
-        <p>
-            {{ group.summary }}
-        </p>
-
-
-        <div class="histogram">
-
-            <div class="histogram-wrapper" style="width:500px;float:left;">
-
-                <div class="histogram-bars">
-                    {% include 'deployment/pieces/histogram.html'%}
+            <div class="basic-info-main">
+                <div class="group-name">
+                    {{ group.title }}
+                </div>
+                <div class="group-scale">
+                    {{ group.getScaleVerbose }}
+                </div>
+                <div class="group-summary">
+                    {% comment %}{{ group.summary }}{% endcomment %}
+                    This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
                 </div>
 
-                {% for k,v in histogram.items %}
-                    <div style="float:left;margin-left:10px;">
-                        <a class="histogram-select-block" style="color:red">  {{ k }} </a>
-                        <input class="block-val" type="hidden" value="{{k}}"/>
+                <div class="group-stats">
+                    <div class="stat-box members-stat">
+                        <span class="group-stats-number members-number">{{ group_members|length }}</span>
+                        <span class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</span>
                     </div>
-                {% endfor %}
-
-                <!-- all -->
-                <div style="float:left;margin-left:10px;">
-                    <a class="histogram-select-block" style="color:red">  * </a>
-                    <input class="block-val" type="hidden" value="-1"/>
+                    <div class="stat-box">
+                        <span class="group-stats-number">19</span>
+                        <span class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="group-stats-number">0</span>
+                        <span class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="group-stats-number">0</span>
+                        <span class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</span>
+                    </div>
                 </div>
 
-            </div>
-
-            <div class="topic-icons-wrapper h-topics-wrapper" style="float:left">
-                {% for t in main_topics %}
-                    <div class="topic-icon-wrapper h-topic-wrapper">
-                        {% thumbnail t.image "30x30" format="PNG" as im %}
-                            <img class="topic-img normal h-topic-img" src="{{ im.url }}"/>
-                        {% endthumbnail %}
-                        {% thumbnail t.selected "30x30" format="PNG" as im %}
-                            <img class="topic-img selected h-topic-img" src="{{ im.url }}"/>
-                        {% endthumbnail %}
-                        <input type="hidden" class="t-alias" value="{{t.alias}}">
+                {% if not group.system %}
+                    <div class="group-buttons">
+                        {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
+                            <a href="" class="button-red float-left" id="group_follow">
+                                follow
+                            </a>
+                        {% else %}
+                            <a href="" class="button-red float-left" id="group_unfollow">
+                                {% if is_user_confirmed %}
+                                    unfollow
+                                {% elif is_user_follow %}
+                                    un-request
+                                {% endif %}
+                            </a>
+                        {% endif %}
                     </div>
-                {% endfor %}
+                {% endif %}
             </div>
 
-        <div class="members-wrappers" style="width:200px;float:left;">
-            <h3> Members </h3>
-            <div id="members-list">
-                {% for x in group_members %}
-                    {% include 'deployment/snippets/group-member.div.html' with member=x %}
-                {% endfor %}
+            <div class="clear-both">
             </div>
         </div>
 
+        <div class="group-bottom">
+            <div class="group-activity-container">
+                <div class="profile-section-title">Activity</div>
+                <div class="group-activity-feed" id="group_activity_feed">
+                    {% for action in actions_text %}
+                        {{ action|safe|escape }}
+                        {% if not forloop.last %}
+                            <div class="action-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a href="" class="long-button-gray" id="group_more_actions">
+                    See more activity
+                </a>
+                <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
+                <br>
+            </div>
 
-        <div class="histogram-metadata">
-            <input id="group-id" type="hidden" value="{{ group.id }}"/>
-            <input id="histogram-topic" type="hidden" value="general"/>
-            <input id="histogram-block" type="hidden" value="-1"/>
-            <input id="histogram-resolution" type="hidden" value="{{ histogram_resolution }}"/>
-            <input id="histogram-displayed-num" type="hidden" value="{{ group_members.count}} "/>
+            <div class='group-users-container'>
+                <div class="profile-section-title">Administrators</div>
+                <div class="group-admins-container">
+                    {% for admin in group_admins %}
+                        {% include 'deployment/snippets/user_name.html' with user=admin %}
+                    {% endfor %}
+                </div>
+
+                <div class="profile-section-title">Members</div>
+                <div class="group-members-container">
+                    {% for member in group_members %}
+                        <div class="member-image">
+                            <a href="{{ member.get_url }}" title="{{ member.get_name }}">
+                                {% thumbnail member.getProfileImage.image "40x40" crop="center" as im %}
+                                    <img src="{{ im.url }}" class="icon-med"/>
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-
-        <div style="clear:both">
-            <a id="group-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
-        </div>
-
     </div>
-
 </div>
+
 
 <!-- Right Block -->
-<div id="middle-right">
-    <div id="matching">
-        <div id="myviews" class="middle-right-head-font">
+<div class="middle-right">
+    <div class="matching">
+        <div id="qaweb"></div>
+        <div id="qaweb-title">
             You & {{ group.title }}
         </div>
-        <div id="qaweb"></div>
+    </div>
+    <div class="group-histogram-container">
     </div>
 </div>
-
-    <div id="privacy">
-        Privacy: {{ group.group_privacy }}
-    </div>
 
     {% if not group.system %}
         {% if is_user_admin %}
@@ -121,37 +149,10 @@
         {% endif %}
 
         <br>
-        {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
-        <a href="" class="button-red" id="group_follow">
-            follow
-        </a>
-        {% else %}
-        <a href="" class="button-red" id="group_unfollow">
-            {% if is_user_confirmed %}
-            unfollow
-            {% elif is_user_follow %}
-            un-request
-            {% endif %}
-        </a>
-        {% endif %}
+
     {% endif %}
 
-    <div class="profile-activity-container">
-        <div class="profile-section-title">Activity</div>
-        <div class="profile-activity-feed" id="group_activity_feed">
-            {% for action in actions_text %}
-                {{ action|safe|escape }}
-                {% if not forloop.last %}
-                    <div class="action-separator"></div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <a href="" class="long-button-gray" id="group_more_actions">
-            See more activity
-        </a>
-        <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
-        <br>
-    </div>
+
 
     <script>
         var g_id = "{{ group.id }}";
@@ -165,3 +166,71 @@
 {% endif %}
 
 <script> rebind='group'; </script>
+
+{% comment %}
+    <div id="privacy">
+        Privacy: {{ group.group_privacy }}
+    </div>
+
+
+    <div class="members-wrappers" style="width:200px;float:left;">
+        <h3> Members </h3>
+        <div id="members-list">
+            {% for x in group_members %}
+                {% include 'deployment/snippets/group-member.div.html' with member=x %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+<div class="histogram">
+
+    <div class="histogram-wrapper" style="width:500px;float:left;">
+
+        <div class="histogram-bars">
+            {% include 'deployment/pieces/histogram.html'%}
+        </div>
+
+        {% for k,v in histogram.items %}
+            <div style="float:left;margin-left:10px;">
+                <a class="histogram-select-block" style="color:red">  {{ k }} </a>
+                <input class="block-val" type="hidden" value="{{k}}"/>
+            </div>
+        {% endfor %}
+
+        <!-- all -->
+        <div style="float:left;margin-left:10px;">
+            <a class="histogram-select-block" style="color:red">  * </a>
+            <input class="block-val" type="hidden" value="-1"/>
+        </div>
+
+    </div>
+
+    <div class="topic-icons-wrapper h-topics-wrapper" style="float:left">
+        {% for t in main_topics %}
+            <div class="topic-icon-wrapper h-topic-wrapper">
+                {% thumbnail t.image "30x30" format="PNG" as im %}
+                    <img class="topic-img normal h-topic-img" src="{{ im.url }}"/>
+                {% endthumbnail %}
+                {% thumbnail t.selected "30x30" format="PNG" as im %}
+                    <img class="topic-img selected h-topic-img" src="{{ im.url }}"/>
+                {% endthumbnail %}
+                <input type="hidden" class="t-alias" value="{{t.alias}}">
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="histogram-metadata">
+    <input id="group-id" type="hidden" value="{{ group.id }}"/>
+    <input id="histogram-topic" type="hidden" value="general"/>
+    <input id="histogram-block" type="hidden" value="-1"/>
+    <input id="histogram-resolution" type="hidden" value="{{ histogram_resolution }}"/>
+    <input id="histogram-displayed-num" type="hidden" value="{{ group_members.count}} "/>
+</div>
+
+<div style="clear:both">
+    <a id="group-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
+</div>
+{% endcomment %}

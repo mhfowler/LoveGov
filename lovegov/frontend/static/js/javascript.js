@@ -711,12 +711,12 @@ function loadHeader()
             var pos = $(this).offset();
             var dropdown = $('#notifications-dropdown');
             dropdown.toggle();
-            pos.left = (pos.left-dropdown.width()/2)+($(this).width()/2);
-            pos.top = dropdown.offset().top;
-            $('#notifications-dropdown').offset(pos);
 
             if( $('#notifications-dropdown').is(':visible') )
             {
+                pos.left = (pos.left-dropdown.width()/2)+($(this).width()/2);
+                pos.top = dropdown.offset().top;
+                $('#notifications-dropdown').offset(pos);
                 ajaxPost({
                     'data': {'action':'getnotifications',
                         'dropdown':'true'},
@@ -727,6 +727,7 @@ function loadHeader()
                         $('#notifications-dropdown').empty().append(tempDropDownDiv).append(obj.html);
                         unbindNotification();
                         loadNotification();
+                        loadAjaxifyAnchors();
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
@@ -738,34 +739,49 @@ function loadHeader()
             {
                 $('#notifications-dropdown').empty().append(tempDropDownDiv);
             }
-            return false;
+            event.stopPropagation();
+            hideOtherDropDowns(dropdown);
         }
     );
 
+    function hideOtherDropDowns(exclude)
+    {
+        $('.drop_down').each(function()
+        {
+            if (!$(this).is(exclude))
+            {
+                $(this).hide();
+            }
+        });
+    }
+
     $('#notifications-dropdown').bind('clickoutside',function(event)
     {
-        $('#notifications-dropdown').empty().append(tempDropDownDiv);
-        $(this).hide();
+        if ($('#notifications-dropdown').css("display") != "none")
+        {
+            $('#notifications-dropdown').empty().append(tempDropDownDiv);
+            $(this).hide();
+        }
     });
 
+
     $('#logo-img').hover
-        (
-            function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
-            function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
-        );
+    (
+        function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
+        function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
+    );
 
     function toggleUserMenu()
     {
         $('.user-menu').toggleClass("user-menu-unselected");
         $('.user-menu').toggleClass("user-menu-selected");
         $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
-
+        hideOtherDropDowns($('#user-menu-dropdown'));
         var left = $('#user-menu-dropdown').width()-$('.user-menu').width()+$('.user-img').width()+$('#user-name').width()/2-$('.user-menu-pointer').width()/2;
-
         $('.user-menu-pointer').css('left',left);
     }
 
-    $('#user-menu-container').bind("clickoutside",function(event)
+    $('#user-menu-dropdown').bind("clickoutside",function(event)
     {
         if ($('#user-menu-dropdown').css('display') != 'none')
         {
@@ -775,109 +791,54 @@ function loadHeader()
         }
     });
 
-    $('#menu-down-arrow').click(toggleUserMenu);
-
-    $('#user-menu-account').click(function(event)
-    {
-        event.preventDefault();
-        $(this).children('a').click();
-        return false;
-    });
-
-    $('#user-menu-account').children('a').click(function(event)
+    $('.user_menu_dropdown').click(function(event)
     {
         toggleUserMenu();
-        return false;
+        event.stopPropagation();
     });
-
-    $('#user-menu-logout').click(function()
-    {
-        window.location = '/logout/'
-    });
-
-    /**
-     * Handles style change for hover and selection in the user's dropdown menu.
-     *
-     * @param div$      jQuery object with class user-menu-dropdown-div
-     */
-    function userMenuDropDownColors(div$,color)
-    {
-        var replaceColor; var hexColor;
-        if (color == "white") {hexColor = "#FFFFFF"; replaceColor = 'gray'}
-        else { hexColor = "#000000"; replaceColor = 'white'}
-        var src = div$.children('img').attr('src').replace(replaceColor,color);
-        div$.children('img').attr('src',src);
-        div$.children('a').css("color",hexColor)
-    }
-
-
-
-    $('.user-menu-dropdown-div').hover
-        (
-            function()
-            {
-                if (!$(this).hasClass("user-menu-dropdown-div-selected"))
-                {
-                    $(this).addClass('user-menu-dropdown-div-hover');
-                    userMenuDropDownColors($(this),'white');
-                }
-            },
-            function()
-            {
-                if (!$(this).hasClass("user-menu-dropdown-div-selected"))
-                {
-                    $(this).removeClass('user-menu-dropdown-div-hover');
-                    userMenuDropDownColors($(this),'gray');
-                }
-            }
-        );
-    /**
-     * Handles style change for selecting a security mode.
-     *
-     * @param security$     jQuery object for user-menu-security-<mode> div objects
-     */
-    function selectSecuritySetting(security$)
-    {
-        $('.user-menu-security').each(function()
-        {
-            $(this).removeClass('user-menu-dropdown-div-selected');
-            $(this).removeClass('user-menu-dropdown-div-hover');
-            //userMenuDropDownColors($(this),'gray');
-        });
-        //userMenuDropDownColors(security$,'white');
-        security$.addClass("user-menu-dropdown-div-selected");
-    }
 
     /**
      * Handles initial styling for security mode
      */
-    switch($.cookie('privacy'))
+    if ($.cookie('privacy'))
     {
-        case "PUB":
-            selectSecuritySetting($('#user-menu-security-public'));
-            break;
-        case "PRI":
-            selectSecuritySetting($('#user-menu-security-private'));
-            break;
-        default:
-            $.cookie('privacy','PUB', {path:'/'});
-            selectSecuritySetting($('#user-menu-security-public'));
-            break;
+        switch($.cookie('privacy'))
+        {
+            case "PUB":
+                $.cookie('privacy','PUB', {path:'/'});
+                break;
+            case "PRI":
+                $.cookie('privacy','PRI', {path:'/'});
+                break;
+        }
     }
-
-    /**
-     * Set cookie for various security modes.  !LEARNING POINT: path of cookie is important
-     */
-    $("#user-menu-security-public").click(function(event)
+    else
     {
         $.cookie('privacy','PUB', {path:'/'});
-        selectSecuritySetting($(this));
-    });
-    $("#user-menu-security-private").click( function(event)
+    }
+
+    $(".security_setting").click(function(event)
     {
-        $.cookie('privacy','PRI', {path:'/'});
-        selectSecuritySetting($(this));
+
+        switch($.cookie('privacy'))
+        {
+            case "PUB":
+                $.cookie('privacy','PRI', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+                });
+                break;
+            case "PRI":
+                $.cookie('privacy','PUB', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+                });
+                break;
+        }
     });
+
 
     /**
      * Handles styling of header links
@@ -2699,7 +2660,7 @@ function createGroupValidation( event )
 
     /* Scale */
     var scale = $('input:radio.group_scale:checked').length;
-    var scale_error = $('#group_scale_error')
+    var scale_error = $('#group_scale_error');
     if( scale < 1 )
     {
         scale_error.text("Please select a group scale.");
@@ -2758,6 +2719,190 @@ function createGroupValidation( event )
     }
 }
 
+function createPetitionValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#petition_title').val();
+    var title_error = $('#petition_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a petition title.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Description */
+    var description = $('#petition_description').val();
+    var desc_error = $('#petition_description_error');
+    description = description.replace(" ","");
+    if( description == "" )
+    {
+        desc_error.text("Please enter a petition description.");
+        desc_error.show();
+        valid = false;
+    }
+    else
+    {
+        desc_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.petition_scale:checked').length;
+    var scale_error = $('#petition_scale_error');
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a petition scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple petition scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#petition_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#petition_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a petition topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple petition topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        $('#petition_form').submit();
+    }
+}
+
+function createNewsValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#news-input-link').val();
+    var title_error = $('#news_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a news link.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.news_scale:checked').length;
+    var scale_error = $('#news_scale_error');
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a news scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple news scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#news_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#news_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a news topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple news topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        postNews();
+    }
+}
+
+function postNews()
+{
+    var title = $('#news-input-title').val();
+    var summary = $('#news-input-summary').val();
+    var link = $('#news-input-link').val();
+    var description = $('#news-link-generation-description').text();
+    var screenshot = $('#news-link-image-src').attr("src");
+    var scale = $('input:radio.news_scale:checked').val();
+    var topic = $('input:radio[name=topics]:checked').val();
+    ajaxPost({
+        data: {'action':'create','title':title,'summary':summary,'link':link,
+            'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic, 'scale':scale },
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            if (returned.success == false)
+            {
+                $("#news-errors-link").html(returned.errors.link);
+                $("#news-errors-title").html(returned.errors.title);
+                $("#news-errors-summary").html(returned.errors.summary);
+                $("#news-errors-topic").html(returned.errors.topics);
+                $("#news-errors-non_field").html(returned.errors.non_field_errors);
+            }
+            else
+            {
+                window.location=returned.url;
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
+    });
+}
+
 function loadCreate()
 {
     $('#create_petition_button').click(function()
@@ -2788,12 +2933,28 @@ function loadCreate()
         }
     );
 
+    $('#submit_petition_button').click(
+        function(event)
+        {
+            createPetitionValidation(event);
+        }
+    );
+
+    $('#submit_news_button').click(
+        function(event)
+        {
+            createNewsValidation( event );
+        }
+    );
+
+
     var timeout;
     var delay = 750;
     var isLoading = false;
     var currentURL;
     var currentLink = 0;
     var returned;
+
     $('#news-input-link').bind('keyup',function()
     {
         var text = $(this).val();
@@ -2813,7 +2974,6 @@ function loadCreate()
                     $('#news-link-generation').show();
                     $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
-                    alert("wtf");
                     ajaxPost({
                         data: {'action':'getLinkInfo','remote_url':text},
                         success: function(data)
@@ -2883,39 +3043,4 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
-
-    $('#share-button').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#news-input-title').val();
-        var summary = $('#news-input-summary').val();
-        var link = $('#news-input-link').val();
-        var description = $('#news-link-generation-description').text();
-        var screenshot = $('#news-link-image-src').attr("src");
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary,'link':link,
-                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#news-errors-link").html(returned.errors.link);
-                    $("#news-errors-title").html(returned.errors.title);
-                    $("#news-errors-summary").html(returned.errors.summary);
-                    $("#news-errors-topic").html(returned.errors.topics);
-                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location=returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
 }

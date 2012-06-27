@@ -71,6 +71,12 @@ div.create-error
   display: none;
 }
 
+div.create-info
+{
+  color: $gray;
+  @include fontSize(12px);
+}
+
 /* Group-Create */
 
 table.create-table
