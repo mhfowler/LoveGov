@@ -2758,6 +2758,88 @@ function createGroupValidation( event )
     }
 }
 
+function createPetitionValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#petition_title').val();
+    var title_error = $('#petition_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a petition title.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Description */
+    var description = $('#petition_description').val();
+    var desc_error = $('#petition_description_error');
+    description = description.replace(" ","");
+    if( description == "" )
+    {
+        desc_error.text("Please enter a petition description.");
+        desc_error.show();
+        valid = false;
+    }
+    else
+    {
+        desc_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.petition_scale:checked').length;
+    var scale_error = $('#petition_scale_error')
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a petition scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple petition scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#petition_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#petition_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a petition topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple petition topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        $('#petition_form').submit();
+    }
+}
+
 function loadCreate()
 {
     $('#create_petition_button').click(function()
@@ -2785,6 +2867,13 @@ function loadCreate()
         function(event)
         {
             createGroupValidation(event);
+        }
+    );
+
+    $('#submit_petition_button').click(
+        function(event)
+        {
+            createPetitionValidation(event);
         }
     );
 
