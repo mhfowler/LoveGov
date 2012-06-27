@@ -128,6 +128,19 @@ class LocationLevel(models.Model):
     class Meta:
         abstract = True
 
+    def getScaleVerbose(self):
+        scale = self.scale
+        if scale == 'L':
+            return 'Local'
+        elif scale == 'S':
+            return 'State'
+        elif scale == 'F':
+            return 'Federal'
+        elif scale == 'A':
+            return 'All'
+        else:
+            return 'None'
+
 #=======================================================================================================================
 # Topic
 #

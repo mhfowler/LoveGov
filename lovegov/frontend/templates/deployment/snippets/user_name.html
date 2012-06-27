@@ -1,0 +1,20 @@
+{% load thumbnail %}
+<div class="user-name">
+    <table>
+        <tr>
+            <td class="user-name-pic">
+                <a href="{{ user.get_url }}">
+                    {% thumbnail user.getProfileImage.image "40x40" crop="center" as im %}
+                        <img src="{{ im.url }}" class='icon-med'/>
+                    {% endthumbnail %}
+                </a>
+            </td>
+
+            <td class="user-name-name">
+                <a href="{{ user.get_url }}">
+                    {{ user.get_name }}
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>

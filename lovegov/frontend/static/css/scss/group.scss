@@ -1,16 +1,259 @@
-@import 'master.scss';
-@import 'master-variables.scss';
+@import 'master-mixins';
 
-div.group-section-title
+div.profile-section-title
 {
-  @extend h4;
+  @include h4;
   color: $text-blue;
+}
+
+/* LEFT MODULE */
+div.middle-left
+{
+  position:relative;
+  float:left;
+  width:650px;
+
+/* Basic Info */
+  div.basic-info
+  {
+    position:relative;
+    margin-bottom:5px;
+    margin-left:30px;
+
+  /* Info Left Side */
+    div.basic-info-left
+    {
+      @include float-left;
+      margin-right: 20px;
+    }
+
+  /* Info Main Contents */
+    div.basic-info-main
+    {
+      @include float-left;
+
+      span.plus-color
+      {
+        color: $deep-gray;
+        font-weight: bold;
+      }
+
+      div.group-name
+      {
+        @include h2;
+        line-height: 30px;
+        min-height: 50px;
+      }
+
+      div.group-scale
+      {
+        @include h5;
+        color: $text-blue;
+        margin-left: 2px;
+      }
+
+      div.group-summary
+      {
+        color: $deep-gray;
+        font-style: italic;
+        width: 380px;
+      }
+
+    /* Profile Stat Boxes */
+      div.group-stats
+      {
+        margin-top: 20px;
+        height: 80px;
+
+        div.stat-box
+        {
+          @include rounded-box;
+          @include float-left;
+          border-width: 2px;
+          border-color: $gray;
+          border-style: solid;
+          background-color: $gray;
+          margin-right: 10px;
+
+          span.group-stats-number
+          {
+            @include big-num;
+            color: white;
+            position: relative;
+            line-height: 52px;
+          }
+
+          span.group-stats-title
+          {
+            @include fontSize(12px);
+            color: $deep-gray;
+            position: relative;
+            top: -3px;
+          }
+        }
+
+        div.stat-box:hover
+        {
+          background-color: $light-gray;
+          border-color: $light-gray;
+        }
+
+        div.members-stat
+        {
+          background-color: white;
+
+          span.members-number
+          {
+            color: $red;
+          }
+        }
+
+        div.members-stat:hover
+        {
+          background-color: white;
+          border-color: $gray;
+
+          span.members-number
+          {
+            color: $red-light;
+          }
+        }
+      }
+
+    /* Profile Buttons */
+      div.group-buttons
+      {
+        margin-top: 10px;
+        height: 50px;
+      }
+    }
+  }
+
+/* Profile Bottom */
+  div.group-bottom
+  {
+    @include float-left;
+    display: block;
+    margin-top: 50px;
+
+  /* Activity Feed */
+    div.group-activity-container
+    {
+      @include float-left;
+      display: block;
+      width: 400px;
+      margin-right: 50px;
+
+      div.group-activity-feed
+      {
+        display: block;
+
+        div.action-separator
+        {
+          @include horizontalSeparator(400px);
+        }
+      }
+    }
+
+    /* Admins Container */
+    div.group-users-container
+    {
+      @include float-left;
+      width: 200px;
+
+      div.group-admins-container
+      {
+        margin-bottom: 30px;
+      }
+
+      div.member-image
+      {
+        @include float-left;
+        margin-bottom: 10px;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+/* Activity Feed */
+div.profile-activity-container
+{
+  @include float-left;
+  display: block;
+  width: 400px;
+  margin-right: 50px;
+
+  div.profile-activity-feed
+  {
+    display: block;
+
+    div.action-separator
+    {
+      @include horizontalSeparator(400px);
+    }
+  }
+}
+
+/* RIGHT MODULE */
+div.middle-right
+{
+  float:left;
+  width:300px;
+  margin-left:20px;
+
+  div.right-separator
+  {
+    @include horizontalSeparator(300px);
+  }
+
+  div.follow-requests-container
+  {
+    width: 300px;
+
+    div.follow-request
+    {
+      padding: 15px 0px 15px 10px;
+    }
+  }
+
+  div.matching
+  {
+    @include rounded();
+    border-width: 3px;
+    border-color: $gray;
+    border-style: solid;
+    text-align:center;
+    position: relative;
+    top: -20px;
+    z-index:0;
+
+    div#qaweb
+    {
+      z-index:0;
+      position:relative;
+      width:300px;
+      height:300px;
+      text-align:left;
+    }
+
+    div#qaweb-title
+    {
+      @include rounded-bottom(10px);
+      position:relative;
+      background-color: $gray;
+      padding-top:10px;
+      padding-bottom:2px;
+      @include h5;
+      color: white;
+    }
+  }
 }
 
 /* Activity Feed */
 div.group-activity-container
 {
-  @extend .float-left;
+  @include float-left;
   width: 400px;
   margin-right: 50px;
 
@@ -23,4 +266,13 @@ div.group-activity-container
       @include horizontalSeparator(400px);
     }
   }
+}
+
+div.group-histogram-container
+{
+  @include float-left;
+  width: 300px;
+  height: 300px;
+  background-color: $gray;
+  @include rounded;
 }
