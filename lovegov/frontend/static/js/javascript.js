@@ -706,11 +706,11 @@ function loadHeader()
     $('#notifications-dropdown-button').click(
         function(event)
         {
+            var dropdown = $('#notifications-dropdown');
             dropdown.empty().append(tempDropDownDiv);
             $('.notifications-ajax-load').show();
             event.preventDefault();
             var pos = $(this).offset();
-            var dropdown = $('#notifications-dropdown');
             dropdown.toggle();
 
             if( $('#notifications-dropdown').is(':visible') )
