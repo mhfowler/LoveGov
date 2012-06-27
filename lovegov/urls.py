@@ -94,7 +94,8 @@ urlpatterns += patterns('',
 
     # test pages
     (r'^test/$', viewWrapper(tests.test, requires_login=True)),                                    # test page, for whatever you want!
-    (r'^test2/$', viewWrapper(tests.test2, requires_login=True)),                                                # for testing logging
+    (r'^test2/$', viewWrapper(tests.test2, requires_login=True)),                                  # for testing logging
+    (r'^test3/$', viewWrapper(tests.test3, requires_login=True)),
     (r'^css/$', viewWrapper(tests.css, requires_login=True)),
 
     #admin

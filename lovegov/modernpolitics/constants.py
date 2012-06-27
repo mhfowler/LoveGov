@@ -171,7 +171,7 @@ PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantom
 ########################################## CHOICES #####################################################################
 
 # level of government
-LEVEL_CHOICES = (
+SCALE_CHOICES = (
     ('P', 'Personal'),
     ('L', 'Local'),
     ('S', 'State'),
