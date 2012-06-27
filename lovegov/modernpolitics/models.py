@@ -3332,14 +3332,14 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic_alias=None):
+    def getMembers(self, user, block=-1, topic_alias=None, start=0, num=-1):
         from modernpolitics.backend import getUserUserComparison
         if block == -1:
-            return self.members.order_by('id')
+            to_return = self.members.all()
         else:
             topic = Topic.lg.get_or_none(alias=topic_alias)
             ids = []
-            for x in self.members.order_by('id'):
+            for x in self.members:
                 comparison = getUserUserComparison(user, x)
                 if topic and topic_alias!='general':
                    comparison = comparison.bytopic.get(topic=topic)
@@ -3347,7 +3347,11 @@ class Group(Content):
                     x_block = comparison.result / HISTOGRAM_RESOLUTION
                     if x_block == block:
                         ids.append(x.id)
-            return self.members.filter(id__in=ids).order_by('id')
+            to_return = self.members.filter(id__in=ids)
+        if num == -1:
+            return to_return[start:]
+        else:
+            return to_return[start:start+num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -3367,7 +3371,7 @@ class Group(Content):
         actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
         if num != 1:
             actions = actions[start:start+num]
-        return actions
+        return actions[start:]
 
 
 #=======================================================================================================================

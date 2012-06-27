@@ -106,15 +106,15 @@
                 <div class="profile-section-title">Members</div>
                 <div class="group-members-container">
                     {% for member in group_members %}
-                        <div class="member-image">
-                            <a href="{{ member.get_url }}" title="{{ member.get_name }}">
-                                {% thumbnail member.getProfileImage.image "40x40" crop="center" as im %}
-                                    <img src="{{ im.url }}" class="icon-med"/>
-                                {% endthumbnail %}
-                            </a>
-                        </div>
+                        {% include 'deployment/snippets/group-member-new.html' with member=member %}
                     {% endfor %}
                 </div>
+                <div class="clear-both"></div>
+                <a href="" class="long-button-gray" id="group_more_members">
+                    See more members
+                </a>
+                <input type="hidden" id="num_members" value="{{ num_members }}"/>
+                <br>
             </div>
         </div>
     </div>
