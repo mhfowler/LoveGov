@@ -180,8 +180,13 @@
 
     {% elif type == 'SH' %}
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+        {% if tally == 2 %}
+            and one other person
+        {% elif tally > 2 %}
+            and {{ tally|add:"-1" }} other people
+        {% endif %}
         shared
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        <a href="{{to_user.get_url}}"> {{ to_user.get_name }} </a>
 
     {% elif type == 'CR' %}
         {% if to_user.type == 'R' %}

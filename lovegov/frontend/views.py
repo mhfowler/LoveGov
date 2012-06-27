@@ -365,6 +365,7 @@ def compareWeb(request,alias=None,vals={}):
 def theFeed(request, vals={}):
 
     rightSideBar(request, vals)
+    shareButton(request, vals)
 
     viewer = vals['viewer']
 
@@ -384,8 +385,6 @@ def theFeed(request, vals={}):
 
     vals['feed_json'] = json.dumps(feed_json)
     vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
-    vals['my_groups'] = viewer.getGroups()
-    vals['my_networks'] = Network.objects.all()
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
@@ -503,6 +502,7 @@ def profile(request, alias=None, vals={}):
             #vals['prof_i_follow'] = user_prof.getIFollow(5)
 
             # Get user's top 5 similar groups
+
             num_groups = GROUP_INCREMENT
             vals['prof_groups'] = user_prof.getUserGroups(num=num_groups)
             vals['num_groups'] = num_groups
@@ -828,6 +828,7 @@ def matchNew(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def contentDetail(request, content, vals):
     rightSideBar(request, vals)
+    shareButton(request, vals)
     vals['thread_html'] = makeThread(request, content, vals['viewer'])
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
@@ -879,6 +880,16 @@ def newsDetail(request, n_id, vals={}):
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# get share button values
+#-----------------------------------------------------------------------------------------------------------------------
+def shareButton(request, vals={}):
+    viewer = vals['viewer']
+    vals['my_followers'] = viewer.getFollowMe()
+    groups = viewer.getGroups()
+    vals['my_groups'] = groups.filter(group_type="U")
+    vals['my_networks'] = groups.filter(group_type="N")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def questionDetail(request, q_id=-1, vals={}):
@@ -891,9 +902,6 @@ def questionDetail(request, q_id=-1, vals={}):
     valsQuestion(request, q_id, vals)
     user = vals['user']
     vals['pageTitle'] = "lovegov: " + vals['question'].question_text
-    vals['my_followers'] = user.getFollowMe()
-    vals['my_groups'] = user.getGroups()
-    vals['my_networks'] = [user.getNetwork()]
     html = ajaxRender('deployment/center/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)

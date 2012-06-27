@@ -1082,7 +1082,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # create default fillter
     #-------------------------------------------------------------------------------------------------------------------
     def createDefaultFilter(self):
-        filter = SimpleFilter(creator=self)
+        filter = SimpleFilter(creator=self, ranking="N")
         filter.save()
         self.my_filters.add(filter)
 
@@ -1319,7 +1319,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             already = Notification.objects.filter(notify_user=self,
                                                     when__gte=stale_date,
                                                     action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('when').reverse()
+                                                    action__type=action.type ).order_by('-when')
             for notification in already:
                 if notification.action.relationship.getTo().id == relationship.getTo().id:
                     notification.when = datetime.datetime.today()
@@ -1567,8 +1567,6 @@ class Action(Privacy):
     when = models.DateTimeField(auto_now_add=True)
     relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
-    # group, for sharing with group
-    share_group = models.ForeignKey("Group", null=True)
     # optimization
     verbose = models.TextField()  # Don't use me!  I'm deprecated
 
@@ -1676,6 +1674,10 @@ class Notification(Privacy):
                 notification_context['reverse_follow'] = reverse_follow
         if n_action.type == 'JO':
             notification_context['group_join'] = relationship.downcast()
+
+        if n_action.type == 'SH':
+            notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
+            notification_context['content'] = relationship.getTo()
 
         notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
         return notification_verbose
@@ -3813,9 +3815,10 @@ class Shared(UCRelationship):
 
     def addGroup(self, group):
         if not group in self.share_groups.all():
-            self.share_groups.add(group)
-            action = Action(relationship=self, share_group=group)
-            action.autoSave()
+            pass
+            # self.share_groups.add(group)
+            # action = Action(relationship=self, share_group=group)
+            # action.autoSave()
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
