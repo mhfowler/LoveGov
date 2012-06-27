@@ -1183,7 +1183,10 @@ def shareContent(request, vals={}):
     if all_followers:
         share_users = user.getFollowMe()
     else:
-        share_users = user.getFollowMe().filter(id__in=follow_ids)
+        if follow_ids:
+            share_users = user.getFollowMe().filter(id__in=follow_ids)
+        else:
+            share_users = []
 
     if all_networks and all_groups:
         share_groups = user.getGroups()
@@ -1193,8 +1196,11 @@ def shareContent(request, vals={}):
         elif all_groups:
             share_groups = user.getUserGroups()
         else:
-            groups = user.getGroups()
-            share_groups = user.getGroups().filter(id__in=group_ids)
+            if group_ids:
+                groups = user.getGroups()
+                share_groups = user.getGroups().filter(id__in=group_ids)
+            else:
+                share_groups = []
 
     shared = Shared.lg.get_or_none(user=user, content=content)
     if not shared:

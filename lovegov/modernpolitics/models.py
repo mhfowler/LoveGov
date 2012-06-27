@@ -1082,7 +1082,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # create default fillter
     #-------------------------------------------------------------------------------------------------------------------
     def createDefaultFilter(self):
-        filter = SimpleFilter(creator=self)
+        filter = SimpleFilter(creator=self, ranking="N")
         filter.save()
         self.my_filters.add(filter)
 
@@ -1447,7 +1447,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         return Group.objects.filter(id__in=g_ids)
 
     def getUserGroups(self):
-        return self.getGroups.filter(group_type='U')
+        return self.getGroups().filter(group_type='U')
 
     def getNetworks(self):
         return self.networks.all()
@@ -1673,6 +1673,10 @@ class Notification(Privacy):
                 notification_context['reverse_follow'] = reverse_follow
         if n_action.type == 'JO':
             notification_context['group_join'] = relationship.downcast()
+
+        if n_action.type == 'SH':
+            notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
+            notification_context['content'] = relationship.getTo()
 
         notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
         return notification_verbose
@@ -3806,9 +3810,10 @@ class Shared(UCRelationship):
 
     def addGroup(self, group):
         if not group in self.share_groups.all():
-            self.share_groups.add(group)
-            action = Action(relationship=self, share_group=group)
-            action.autoSave()
+            pass
+            # self.share_groups.add(group)
+            # action = Action(relationship=self, share_group=group)
+            # action.autoSave()
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
