@@ -1319,7 +1319,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             already = Notification.objects.filter(notify_user=self,
                                                     when__gte=stale_date,
                                                     action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('when').reverse()
+                                                    action__type=action.type ).order_by('-when')
             for notification in already:
                 if notification.action.relationship.getTo().id == relationship.getTo().id:
                     notification.when = datetime.datetime.today()
