@@ -2599,22 +2599,53 @@ function bindGroupPrivacyRadio()
     {
         var prev = $("input:radio[name=group_privacy]:checked");
         prev.attr('checked',false);
-        prev.parent('.group_privacy_radio').removeClass("privacy-selected");
+        prev.parent('.group_privacy_radio').removeClass("create-radio-selected");
 
         $(this).children("input:radio[name=group_privacy]").attr('checked',true);
-        $(this).addClass("privacy-selected");
+        $(this).addClass("create-radio-selected");
     });
 }
 
+function bindLevelRadio()
+{
+    $("div.group_level_radio").unbind();
+    $("div.group_level_radio").click(function(event)
+    {
+        var prev = $("input:radio[name=level]:checked");
+        prev.attr('checked',false);
+        prev.parent('.group_level_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio[name=level]").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+
+    $("div.petition_level_radio").unbind();
+    $("div.petition_level_radio").click(function(event)
+    {
+        var prev = $("input:radio[name=level]:checked");
+        prev.attr('checked',false);
+        prev.parent('.petition_level_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio[name=level]").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+
+    $("div.news_level_radio").unbind();
+    $("div.news_level_radio").click(function(event)
+    {
+        var prev = $("input:radio[name=level]:checked");
+        prev.attr('checked',false);
+        prev.parent('.news_level_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio[name=level]").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+}
+
+function createValidation( event, 
+
 function loadCreate()
 {
-    /*
-     $('div.create-submit-div').click( function(event)
-     {
-     $('div.overdiv').hide();
-     });
-     */
-
     $('#create_petition_button').click(function()
     {
         $('.create_content_div').hide();
@@ -2634,6 +2665,7 @@ function loadCreate()
     });
 
     bindGroupPrivacyRadio();
+    bindLevelRadio();
 
     var timeout;
     var delay = 750;
@@ -2730,47 +2762,6 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
-
-    /*
-     $('#create-petition').click(function(event)
-     {
-     event.preventDefault();
-     var title = $('#input-title').val();
-     var summary = $('#input-summary').val();
-     var full_text = $('#input-full_text').val();
-     var link = $('#input-link').val();
-     var topic = $('input:radio[name=topics]:checked').val();
-     ajaxPost({
-     data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-     success: function(data)
-     {
-     var returned = eval('(' + data + ')');
-     if (returned.success == false)
-     {
-     $("#errors-title").html(returned.errors.title);
-     $("#errors-summary").html(returned.errors.summary);
-     $("#errors-full_text").html(returned.errors.full_text);
-     $("#errors-topic").html(returned.errors.topics);
-     $("#errors-non_field").html(returned.errors.non_field_errors);
-     }
-     else
-     {
-     $('.normal').show();
-     $('');
-     clearPetitionErrors();
-     History.pushState( {k:1}, returned.title, returned.url);
-     rebind = returned.rebind;
-     closeLeftSideWrapper($('.create-wrapper.clicked'));
-     replaceCenter(returned.html);
-     }
-     },
-     error: function(jqXHR, textStatus, errorThrown)
-     {
-     $("body").html(jqXHR.responseText);
-     }
-     });
-     });
-     */
 
     $('#share-button').click(function(event)
     {

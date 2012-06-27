@@ -176,7 +176,7 @@ SCALE_CHOICES = (
     ('L', 'Local'),
     ('S', 'State'),
     ('F', 'Federal'),
-    ('W', 'World')
+    ('A', 'All')
 )
 
 # feed display types
