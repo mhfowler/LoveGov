@@ -64,6 +64,13 @@
 
 }
 
+div.create-error
+{
+  color: $red;
+  @include fontSize(12px);
+  display: none;
+}
+
 /* Group-Create */
 
 table.create-table
