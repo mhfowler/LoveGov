@@ -502,13 +502,10 @@ def profile(request, alias=None, vals={}):
             #vals['prof_i_follow'] = user_prof.getIFollow(5)
 
             # Get user's top 5 similar groups
-            prof_groups = list(user_prof.getUserGroups())
-            for group in prof_groups:
-                comparison = getUserGroupComparison(user_prof, group)
-                group.compare = comparison.toJSON()
-                group.result = comparison.result
-            prof_groups.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_groups'] = prof_groups[0:4]
+
+            num_groups = GROUP_INCREMENT
+            vals['prof_groups'] = user_prof.getUserGroups(num=num_groups)
+            vals['num_groups'] = num_groups
 
             # Get user's random 5 groups
             #vals['prof_groups'] = user_prof.getGroups(5)
