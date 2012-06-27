@@ -797,24 +797,27 @@ function loadHeader()
         event.stopPropagation();
     });
 
-    /**
-     * Handles initial styling for security mode
-     */
-    if ($.cookie('privacy'))
+
+
+
+
+    switch($.cookie('privacy'))
     {
-        switch($.cookie('privacy'))
-        {
-            case "PUB":
-                $.cookie('privacy','PUB', {path:'/'});
-                break;
-            case "PRI":
-                $.cookie('privacy','PRI', {path:'/'});
-                break;
-        }
-    }
-    else
-    {
-        $.cookie('privacy','PUB', {path:'/'});
+        case "PUB":
+            $.cookie('privacy','PUB', {path:'/'});
+            $(".security_setting").each(function()
+            {
+                if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+
+            });
+            break;
+        case "PRI":
+            $.cookie('privacy','PRI', {path:'/'});
+            $(".security_setting").each(function()
+            {
+                if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+            });
+            break;
     }
 
     $(".security_setting").click(function(event)
