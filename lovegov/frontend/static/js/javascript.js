@@ -711,12 +711,12 @@ function loadHeader()
             var pos = $(this).offset();
             var dropdown = $('#notifications-dropdown');
             dropdown.toggle();
-            pos.left = (pos.left-dropdown.width()/2)+($(this).width()/2);
-            pos.top = dropdown.offset().top;
-            $('#notifications-dropdown').offset(pos);
 
             if( $('#notifications-dropdown').is(':visible') )
             {
+                pos.left = (pos.left-dropdown.width()/2)+($(this).width()/2);
+                pos.top = dropdown.offset().top;
+                $('#notifications-dropdown').offset(pos);
                 ajaxPost({
                     'data': {'action':'getnotifications',
                         'dropdown':'true'},
@@ -738,34 +738,49 @@ function loadHeader()
             {
                 $('#notifications-dropdown').empty().append(tempDropDownDiv);
             }
-            return false;
+            event.stopPropagation();
+            hideOtherDropDowns(dropdown);
         }
     );
 
+    function hideOtherDropDowns(exclude)
+    {
+        $('.drop_down').each(function()
+        {
+            if (!$(this).is(exclude))
+            {
+                $(this).hide();
+            }
+        });
+    }
+
     $('#notifications-dropdown').bind('clickoutside',function(event)
     {
-        $('#notifications-dropdown').empty().append(tempDropDownDiv);
-        $(this).hide();
+        if ($('#notifications-dropdown').css("display") != "none")
+        {
+            $('#notifications-dropdown').empty().append(tempDropDownDiv);
+            $(this).hide();
+        }
     });
 
+
     $('#logo-img').hover
-        (
-            function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
-            function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
-        );
+    (
+        function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
+        function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
+    );
 
     function toggleUserMenu()
     {
         $('.user-menu').toggleClass("user-menu-unselected");
         $('.user-menu').toggleClass("user-menu-selected");
         $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
-
+        hideOtherDropDowns($('#user-menu-dropdown'));
         var left = $('#user-menu-dropdown').width()-$('.user-menu').width()+$('.user-img').width()+$('#user-name').width()/2-$('.user-menu-pointer').width()/2;
-
         $('.user-menu-pointer').css('left',left);
     }
 
-    $('#user-menu-container').bind("clickoutside",function(event)
+    $('#user-menu-dropdown').bind("clickoutside",function(event)
     {
         if ($('#user-menu-dropdown').css('display') != 'none')
         {
@@ -775,78 +790,11 @@ function loadHeader()
         }
     });
 
-    $('#menu-down-arrow').click(toggleUserMenu);
-
-    $('#user-menu-account').click(function(event)
-    {
-        event.preventDefault();
-        $(this).children('a').click();
-        return false;
-    });
-
-    $('#user-menu-account').children('a').click(function(event)
+    $('.user_menu_dropdown').click(function(event)
     {
         toggleUserMenu();
-        return false;
+        event.stopPropagation();
     });
-
-    $('#user-menu-logout').click(function()
-    {
-        window.location = '/logout/'
-    });
-
-    /**
-     * Handles style change for hover and selection in the user's dropdown menu.
-     *
-     * @param div$      jQuery object with class user-menu-dropdown-div
-     */
-    function userMenuDropDownColors(div$,color)
-    {
-        var replaceColor; var hexColor;
-        if (color == "white") {hexColor = "#FFFFFF"; replaceColor = 'gray'}
-        else { hexColor = "#000000"; replaceColor = 'white'}
-        var src = div$.children('img').attr('src').replace(replaceColor,color);
-        div$.children('img').attr('src',src);
-        div$.children('a').css("color",hexColor)
-    }
-
-
-
-    $('.user-menu-dropdown-div').hover
-        (
-            function()
-            {
-                if (!$(this).hasClass("user-menu-dropdown-div-selected"))
-                {
-                    $(this).addClass('user-menu-dropdown-div-hover');
-                    userMenuDropDownColors($(this),'white');
-                }
-            },
-            function()
-            {
-                if (!$(this).hasClass("user-menu-dropdown-div-selected"))
-                {
-                    $(this).removeClass('user-menu-dropdown-div-hover');
-                    userMenuDropDownColors($(this),'gray');
-                }
-            }
-        );
-    /**
-     * Handles style change for selecting a security mode.
-     *
-     * @param security$     jQuery object for user-menu-security-<mode> div objects
-     */
-    function selectSecuritySetting(security$)
-    {
-        $('.user-menu-security').each(function()
-        {
-            $(this).removeClass('user-menu-dropdown-div-selected');
-            $(this).removeClass('user-menu-dropdown-div-hover');
-            //userMenuDropDownColors($(this),'gray');
-        });
-        //userMenuDropDownColors(security$,'white');
-        security$.addClass("user-menu-dropdown-div-selected");
-    }
 
     /**
      * Handles initial styling for security mode
@@ -854,30 +802,38 @@ function loadHeader()
     switch($.cookie('privacy'))
     {
         case "PUB":
-            selectSecuritySetting($('#user-menu-security-public'));
+            $.cookie('privacy','PUB', {path:'/'});
             break;
         case "PRI":
-            selectSecuritySetting($('#user-menu-security-private'));
+            $.cookie('privacy','PRI', {path:'/'});
             break;
         default:
             $.cookie('privacy','PUB', {path:'/'});
-            selectSecuritySetting($('#user-menu-security-public'));
             break;
     }
 
-    /**
-     * Set cookie for various security modes.  !LEARNING POINT: path of cookie is important
-     */
-    $("#user-menu-security-public").click(function(event)
+    $(".security_setting").click(function(event)
     {
-        $.cookie('privacy','PUB', {path:'/'});
-        selectSecuritySetting($(this));
+
+        switch($.cookie('privacy'))
+        {
+            case "PUB":
+                $.cookie('privacy','PRI', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+                });
+                break;
+            case "PRI":
+                $.cookie('privacy','PUB', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+                });
+                break;
+        }
     });
-    $("#user-menu-security-private").click( function(event)
-    {
-        $.cookie('privacy','PRI', {path:'/'});
-        selectSecuritySetting($(this));
-    });
+
 
     /**
      * Handles styling of header links
@@ -3013,7 +2969,6 @@ function loadCreate()
                     $('#news-link-generation').show();
                     $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
-                    alert("wtf");
                     ajaxPost({
                         data: {'action':'getLinkInfo','remote_url':text},
                         success: function(data)

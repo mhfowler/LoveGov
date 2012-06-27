@@ -1034,6 +1034,9 @@ class UserProfile(FacebookProfileModel, LGModel):
             to_return = "UnicodeEncodeError"
         return to_return
 
+    def get_email(self):
+        return self.username
+
     def isDeveloper(self):
         return self.developer
 
