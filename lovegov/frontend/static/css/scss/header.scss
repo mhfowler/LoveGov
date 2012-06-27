@@ -414,30 +414,7 @@ div#top
         background-color: $light-gray;
       }
 
-      div.notification
-      {
-        padding: 15px 0px 15px 10px;
-      }
 
-      div.notification:hover
-      {
-        background-color: $light-gray;
-      }
-
-      td.notification-thumbnail
-      {
-        padding-right: 10px;
-        width: 25px;
-        text-align: center;
-        height: 25px;
-        vertical-align: middle;
-      }
-
-      td.notification-text
-      {
-        width: 250px;
-        vertical-align: middle;
-      }
     }
 
     div.user-menu
