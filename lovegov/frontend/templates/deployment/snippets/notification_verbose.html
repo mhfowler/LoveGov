@@ -8,7 +8,7 @@
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="notification-thumbnail">
-            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+            {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
