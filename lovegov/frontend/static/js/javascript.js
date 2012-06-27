@@ -795,9 +795,10 @@ function loadHeader()
     });
 
 
-
-    switch($.cookie('privacy'))
+    if ($.cookie('privacy'))
     {
+        switch($.cookie('privacy'))
+        {
         case "PUB":
             $.cookie('privacy','PUB', {path:'/'});
             $(".security_setting").each(function()
@@ -813,7 +814,19 @@ function loadHeader()
                 if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
             });
             break;
+        }
     }
+    else
+    {
+        $.cookie('privacy','PUB', {path:'/'});
+        $(".security_setting").each(function()
+        {
+            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+
+        });
+    }
+
+
 
     $(".security_setting").click(function(event)
     {
