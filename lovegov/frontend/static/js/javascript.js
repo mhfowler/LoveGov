@@ -2642,8 +2642,6 @@ function bindLevelRadio()
     });
 }
 
-function createValidation( event, 
-
 function loadCreate()
 {
     $('#create_petition_button').click(function()
