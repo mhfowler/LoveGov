@@ -229,7 +229,8 @@ def create(request, val={}):
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
-                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+            return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+
         else:
             if formtype == "G":
                 group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
@@ -965,8 +966,11 @@ def ajaxGetFeed(request, vals={}):
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
     items = ajaxFeedHelper(content, vals['viewer'])
-    to_render = {'items':items, 'display':feed_display}
+    to_render = {'items':items, 'display':feed_display, 'viewer':vals['viewer']}
 
+    if feed_display == 'L':
+        from lovegov.frontend.views import rightSideBar
+        rightSideBar(request, to_render)
     html = ajaxRender('deployment/center/feed/feed_helper.html', to_render, request)
     to_return = {'html':html, 'num':len(content)}
     return HttpResponse(json.dumps(to_return))

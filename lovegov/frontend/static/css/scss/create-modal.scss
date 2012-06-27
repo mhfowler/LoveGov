@@ -64,6 +64,19 @@
 
 }
 
+div.create-error
+{
+  color: $red;
+  @include fontSize(12px);
+  display: none;
+}
+
+div.create-info
+{
+  color: $gray;
+  @include fontSize(12px);
+}
+
 /* Group-Create */
 
 table.create-table
@@ -86,12 +99,12 @@ table.create-table
     width: 500px;
   }
 
-  .privacy-radio
+  .custom-radio
   {
     display: none;
   }
 
-  div.group-privacy
+  div.create-radio
   {
     @include rounded(9px);
     @include float-left;
@@ -103,17 +116,17 @@ table.create-table
     margin-right: 10px;
   }
 
-  div.group-privacy:hover
+  div.create-radio:hover
   {
     background-color: $light-gray;
   }
 
-  div.privacy-selected
+  div.create-radio-selected
   {
     background-color: $red;
   }
 
-  div.privacy-selected:hover
+  div.create-radio-selected:hover
   {
     background-color: $red-light;
   }

@@ -34,6 +34,7 @@ function rebindFunction()
             break;
         case 'feed':                                            // /feed
             loadNewFeed();
+            loadRightSideBar();
             break;
         case 'about':                                           // /about
             loadAbout();
@@ -390,7 +391,9 @@ function loadHoverComparison()
         return {top:top,left:left};
     }
 
-    $('.has_hover_comparison').hoverIntent
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
     (
         function(event)
         {
@@ -430,63 +433,6 @@ function loadHoverComparison()
             },500)
         }
     );
-
-
-    /*
-    $('.feed-username').hoverIntent
-        (
-            // hover over
-            function(event)
-            {
-                var self = $(this);
-                var a = $(this).find('a');
-                if (a.attr('href') != undefined)
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    var alias = a.attr('href').split('/')[2].toString();
-                    var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
-                    if (top <= $(document).scrollTop())
-                    {
-                        top = self.offset().top + 70;
-                        $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-                    }
-                    else
-                    {
-                        $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-                    }
-                    var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
-                    var offset = {top:top,left:left};
-                    $('#comparison-hover-div p').text('You & ' + a.text());
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    ajaxPost({
-                        'data': {'action':'hoverComparison','alias':alias},
-                        'success': function(data) {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
-                        },
-                        'error': function(jqXHR, textStatus, errorThrown) {
-                            $('#comparison-hover-div p').text('Sorry there was an error');
-                        }
-                    });
-                }
-            },
-            // hover out
-            function(event)
-            {
-                hoverTimer = setTimeout(function()
-                {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
-            }
-        );
-
-        */
-
 }
 
 
@@ -1048,14 +994,14 @@ function loadShareButton() {
     $('div.overdiv').appendTo('body');
     $('div.shareModal').appendTo('body');
 
-    $('.share_button').click(function(event) {
+    $('.share_button').bindOnce('click.share', function(event) {
         event.preventDefault();
         $("#share_id").data('share_id', $(this).data('share_id'));
         $('div.overdiv').fadeToggle("fast");
         $('div.shareModal').fadeToggle("fast");
     });
 
-    $('div.overdiv').click(function() {
+    $('div.overdiv').bindOnce('click.hide_overdiv', function() {
         $('div.overdiv').hide();
         $('div.shareModal').hide();
     });
@@ -1992,6 +1938,13 @@ function loadGroup()
  *
  **********************************************************************************************************************/
 
+/*
+ Sets the red bar to proper width.
+ */
+function petitionBar(wrapper) {
+    var percent = wrapper.data('percent');
+    wrapper.find('.red_bar').css("width", percent + "%");
+}
 
 /*
  Takes in a a value and the classname of an input which the value should
@@ -2075,18 +2028,20 @@ function getFeed(num)
             feed_metadata.feed_start = feed_start + returned.num;
 
             if (feed_display == "P") {
+                $(".right-sidebar").hide();
                 pinterestRender($(".pinterest_unrendered"));
+            }
+            else {
+                $(".right-sidebar").show();
             }
 
             heartButtons();
             loadShareButton();
-
             loadHoverComparison();
 
         },
         error: null
     });
-
 }
 
 /*
@@ -2170,13 +2125,13 @@ function getFilterByName(name) {
 /* heart stuff */
 function heartButtons()
 {
-    $(".heart_minus").click(function(event) {
+    $(".heart_minus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
         vote(wrapper, wrapper.data('c_id'), -1);
     });
 
-    $(".heart_plus").click(function(event) {
+    $(".heart_plus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
         vote(wrapper, wrapper.data('c_id'), 1);
@@ -2600,22 +2555,351 @@ function bindGroupPrivacyRadio()
     {
         var prev = $("input:radio[name=group_privacy]:checked");
         prev.attr('checked',false);
-        prev.parent('.group_privacy_radio').removeClass("privacy-selected");
+        prev.parent('.group_privacy_radio').removeClass("create-radio-selected");
 
         $(this).children("input:radio[name=group_privacy]").attr('checked',true);
-        $(this).addClass("privacy-selected");
+        $(this).addClass("create-radio-selected");
+    });
+}
+
+function bindScaleRadio()
+{
+    $("div.group_scale_radio").unbind();
+    $("div.group_scale_radio").click(function(event)
+    {
+        var prev = $("input:radio.group_scale:checked");
+        prev.attr('checked',false);
+        prev.parent('.group_scale_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio.group_scale").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+
+    $("div.petition_scale_radio").unbind();
+    $("div.petition_scale_radio").click(function(event)
+    {
+        var prev = $("input:radio.petition_scale:checked");
+        prev.attr('checked',false);
+        prev.parent('.petition_scale_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio.petition_scale").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+
+    $("div.news_scale_radio").unbind();
+    $("div.news_scale_radio").click(function(event)
+    {
+        var prev = $("input:radio.news_scale:checked");
+        prev.attr('checked',false);
+        prev.parent('.news_scale_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio.news_scale").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+}
+
+function createGroupValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#group_title').val();
+    var title_error = $('#group_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a group title.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Description */
+    var description = $('#group_description').val();
+    var desc_error = $('#group_description_error');
+    description = description.replace(" ","");
+    if( description == "" )
+    {
+        desc_error.text("Please enter a group description.");
+        desc_error.show();
+        valid = false;
+    }
+    else
+    {
+        desc_error.hide();
+    }
+
+    /* Privacy */
+    var privacy = $('input:radio[name=group_privacy]:checked').length;
+    var privacy_error = $('#group_privacy_error');
+    if( privacy < 1 )
+    {
+        privacy_error.text("Please select a group privacy.");
+        privacy_error.show();
+        valid = false;
+    }
+    else if( privacy > 1 )
+    {
+        privacy_error.text("You have selected multiple group privacy settings.");
+        privacy_error.show();
+        valid = false;
+    }
+    else
+    {
+        privacy_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.group_scale:checked').length;
+    var scale_error = $('#group_scale_error');
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a group scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple group scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Image */
+    var image = $('input#group_image').val();
+    var image_error = $('#group_image_error');
+    if( image == "" )
+    {
+        image_error.text("Please select a group image.");
+        image_error.show();
+        valid = false;
+    }
+    else
+    {
+        image_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#group_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#group_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a group topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple group topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        $('#group_form').submit();
+    }
+}
+
+function createPetitionValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#petition_title').val();
+    var title_error = $('#petition_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a petition title.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Description */
+    var description = $('#petition_description').val();
+    var desc_error = $('#petition_description_error');
+    description = description.replace(" ","");
+    if( description == "" )
+    {
+        desc_error.text("Please enter a petition description.");
+        desc_error.show();
+        valid = false;
+    }
+    else
+    {
+        desc_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.petition_scale:checked').length;
+    var scale_error = $('#petition_scale_error');
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a petition scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple petition scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#petition_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#petition_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a petition topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple petition topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        $('#petition_form').submit();
+    }
+}
+
+function createNewsValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#news-input-link').val();
+    var title_error = $('#news_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a news link.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.news_scale:checked').length;
+    var scale_error = $('#news_scale_error');
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a news scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple news scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#news_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#news_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a news topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple news topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        postNews();
+    }
+}
+
+function postNews()
+{
+    var title = $('#news-input-title').val();
+    var summary = $('#news-input-summary').val();
+    var link = $('#news-input-link').val();
+    var description = $('#news-link-generation-description').text();
+    var screenshot = $('#news-link-image-src').attr("src");
+    var scale = $('input:radio.news_scale:checked').val();
+    var topic = $('input:radio[name=topics]:checked').val();
+    ajaxPost({
+        data: {'action':'create','title':title,'summary':summary,'link':link,
+            'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic, 'scale':scale },
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            if (returned.success == false)
+            {
+                $("#news-errors-link").html(returned.errors.link);
+                $("#news-errors-title").html(returned.errors.title);
+                $("#news-errors-summary").html(returned.errors.summary);
+                $("#news-errors-topic").html(returned.errors.topics);
+                $("#news-errors-non_field").html(returned.errors.non_field_errors);
+            }
+            else
+            {
+                window.location=returned.url;
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
     });
 }
 
 function loadCreate()
 {
-    /*
-     $('div.create-submit-div').click( function(event)
-     {
-     $('div.overdiv').hide();
-     });
-     */
-
     $('#create_petition_button').click(function()
     {
         $('.create_content_div').hide();
@@ -2635,6 +2919,29 @@ function loadCreate()
     });
 
     bindGroupPrivacyRadio();
+    bindScaleRadio();
+
+    $('#submit_group_button').click(
+        function(event)
+        {
+            createGroupValidation(event);
+        }
+    );
+
+    $('#submit_petition_button').click(
+        function(event)
+        {
+            createPetitionValidation(event);
+        }
+    );
+
+    $('#submit_news_button').click(
+        function(event)
+        {
+            createNewsValidation( event );
+        }
+    );
+
 
     var timeout;
     var delay = 750;
@@ -2642,6 +2949,7 @@ function loadCreate()
     var currentURL;
     var currentLink = 0;
     var returned;
+
     $('#news-input-link').bind('keyup',function()
     {
         var text = $(this).val();
@@ -2730,80 +3038,4 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
-
-    /*
-     $('#create-petition').click(function(event)
-     {
-     event.preventDefault();
-     var title = $('#input-title').val();
-     var summary = $('#input-summary').val();
-     var full_text = $('#input-full_text').val();
-     var link = $('#input-link').val();
-     var topic = $('input:radio[name=topics]:checked').val();
-     ajaxPost({
-     data: {'action':'create','title':title,'summary':summary, 'full_text':full_text,'link':link, 'topics':topic, 'type':'P'},
-     success: function(data)
-     {
-     var returned = eval('(' + data + ')');
-     if (returned.success == false)
-     {
-     $("#errors-title").html(returned.errors.title);
-     $("#errors-summary").html(returned.errors.summary);
-     $("#errors-full_text").html(returned.errors.full_text);
-     $("#errors-topic").html(returned.errors.topics);
-     $("#errors-non_field").html(returned.errors.non_field_errors);
-     }
-     else
-     {
-     $('.normal').show();
-     $('');
-     clearPetitionErrors();
-     History.pushState( {k:1}, returned.title, returned.url);
-     rebind = returned.rebind;
-     closeLeftSideWrapper($('.create-wrapper.clicked'));
-     replaceCenter(returned.html);
-     }
-     },
-     error: function(jqXHR, textStatus, errorThrown)
-     {
-     $("body").html(jqXHR.responseText);
-     }
-     });
-     });
-     */
-
-    $('#share-button').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#news-input-title').val();
-        var summary = $('#news-input-summary').val();
-        var link = $('#news-input-link').val();
-        var description = $('#news-link-generation-description').text();
-        var screenshot = $('#news-link-image-src').attr("src");
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary,'link':link,
-                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#news-errors-link").html(returned.errors.link);
-                    $("#news-errors-title").html(returned.errors.title);
-                    $("#news-errors-summary").html(returned.errors.summary);
-                    $("#news-errors-topic").html(returned.errors.topics);
-                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location=returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
 }

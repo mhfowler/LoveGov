@@ -2,38 +2,72 @@
 
     <h2>New Petition:</h2>
 
-    <form id="petitionform" action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+    <form id="petition_form" action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
         <input type="hidden" name="action" value="create" />
         <input type="hidden" name="type" value="P" />
 
 
         <table class='create-table'>
             <tr class="petition-title">
-                <td class="create-title"><span class="sub-title">Title:</span></td>
-                <td><input name="title" type="text" class="title-input"/></td>
+                <td class="create-title">
+                    <div class="sub-title">Title:</div>
+                    <div class="create-error" id="petition_name_error"></div>
+                </td>
+                <td><input name="title" type="text" class="title-input" id="petition_title"/></td>
             </tr>
 
             <tr class="petition-full-text">
-                <td class="create-title"><span class="sub-title">Description:</span></td>
-                <td><textarea name="full_text" class="full-text-input"></textarea></td>
+                <td class="create-title">
+                    <div class="sub-title">Description:</div>
+                    <div class="create-error" id="petition_description_error"></div>
+                </td>
+                <td><textarea name="full_text" class="full-text-input" id="petition_description"></textarea></td>
+            </tr>
+
+            <tr class="petition-scale-wrapper">
+                <td class="create-title">
+                    <div class="sub-title">Scale:</div>
+                    <div class="create-error" id="petition_scale_error"></div>
+                </td>
+                <td>
+                    <div class="create-radio petition_scale_radio">
+                        Federal
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-federal" value='F' name="scale"/>
+                    </div>
+                    <div class="create-radio petition_scale_radio">
+                        State
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-state" value='S' name="scale"/>
+                    </div>
+                    <div class="create-radio petition_scale_radio">
+                        Local
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-local" value='L' name="scale"/>
+                    </div>
+                    <div class='clear-both'></div>
+                </td>
             </tr>
 
             <tr class="petition-image">
-                <td class="create-title"><span class="sub-title">Petition Image:</span></td>
-                <td><input type="file" name="image" /></td>
+                <td class="create-title">
+                    <div class="sub-title">Petition Image:</div>
+                    <div class="create-info" id="petition_image_info">[optional]</div>
+                </td>
+                <td><input type="file" name="image" id="petition_image"/></td>
             </tr>
 
             <tr class="create-topic">
-                <td class="create-title"><span class="sub-title">Topic:</span></td>
+                <td class="create-title">
+                    <div class="sub-title">Topic:</div>
+                    <div class="create-error" id="petition_topic_error"></div>
+                </td>
                 <td>
-                    <div class="topic-images petition-input-topic">
+                    <div class="topic-images" id="petition_input_topic">
                         {% include 'deployment/pieces/topic_images.html' %}
                     </div>
                 </td>
             </tr>
         </table>
     <div class="submit-button">
-        <input type="submit" class="button-red" id="create-petition" value="create petition" />
+        <input type="submit" class="button-red" id="submit_petition_button" value="create petition" />
     </div>
     </form>
 

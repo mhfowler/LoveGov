@@ -7,3 +7,4 @@ lovegov/frontend/static/css/compiled
 .DS_Store
 lovegov/db/local.db-journal
 *.sass-cache
+lovegove/beta

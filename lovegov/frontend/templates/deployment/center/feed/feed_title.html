@@ -1,11 +1,11 @@
 <div class="pinterest-title">
     <a href="{{ item.get_url }}">
         {% if item.type == 'N' %}
-            <h2 class="title-text"> {{ item.title }} </h2>
+            <h2 class="title-text"> {{ item.title|truncatechars:50 }} </h2>
         {% elif item.type == 'P' %}
-            <h3 class="title-text"> PETITION: {{ item.title }} </h3>
+            <h3 class="title-text"> PETITION: {{ item.title|truncatechars:50 }} </h3>
         {% else %}
-            <h4 class="title-text"> {{ item.title }} </h4>
+            <h4 class="title-text"> {{ item.title|truncatechars:50 }} </h4>
         {% endif %}
     </a>
 </div>
