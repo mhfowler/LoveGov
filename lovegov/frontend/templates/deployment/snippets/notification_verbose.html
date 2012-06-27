@@ -74,7 +74,7 @@
         {% if modifier == 'R' %}
             <td class="notification-thumbnail">
                 {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -92,7 +92,7 @@
         {% elif modifier == 'D' %}
             <td class="notification-thumbnail">
                 {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -111,7 +111,7 @@
         {% elif modifier == 'A' %}
             <td class="notification-thumbnail">
                 {% thumbnail to_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -123,7 +123,7 @@
         {% elif modifier == 'X' %}
             <td class="notification-thumbnail">
                 {% thumbnail to_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -138,7 +138,7 @@
         {% elif modifier == 'S' %}
             <td class="notification-thumbnail">
                 {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
