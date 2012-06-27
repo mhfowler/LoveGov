@@ -38,11 +38,14 @@
             <!-- top-comment -->
             {% with top_comment=item.getTopComment %}
                 {% if top_comment %}
-
                     {% include 'deployment/center/feed/top_comment.html' %}
-
                 {% endif %}
             {% endwith %}
+
+            <!-- petition bar -->
+            {% if item.type == 'P' %}
+                {% include 'deployment/snippets/petition_bar.html' with p=item %}
+            {% endif %}
 
             <!-- footer -->
             {% include 'deployment/center/feed/feed_footer.html' %}

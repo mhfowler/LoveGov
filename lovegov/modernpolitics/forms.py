@@ -268,7 +268,7 @@ class CreateContentForm(forms.ModelForm):
 class CreatePetitionForm(CreateContentForm):
     class Meta:
         model = Petition
-        fields = ('title', 'full_text', 'topics', 'type','level')
+        fields = ('title', 'full_text', 'topics', 'type','scale')
     topics = SelectTopicsField(content_type=TYPE_DICT['petition'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['petition'])
 
@@ -282,7 +282,7 @@ class CreateEventForm(CreateContentForm):
 class CreateNewsForm(CreateContentForm):
     class Meta:
         model = News
-        fields = ('title', 'link', 'summary', 'topics', 'type','level')
+        fields = ('title', 'link', 'summary', 'topics', 'type','scale')
     topics = SelectTopicsField(content_type=TYPE_DICT['news'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['news'])
     def complete(self, request):
@@ -298,7 +298,7 @@ class CreateNewsForm(CreateContentForm):
 class CreateUserGroupForm(CreateContentForm):
     class Meta:
         model = UserGroup
-        fields = ('title', 'full_text', 'topics', 'group_type', 'type', 'group_privacy','level')
+        fields = ('title', 'full_text', 'topics', 'group_type', 'type', 'group_privacy','scale')
     topics = SelectTopicsField(content_type=TYPE_DICT['group'])
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['group'])
     action = forms.CharField(widget=forms.HiddenInput(), initial='create')

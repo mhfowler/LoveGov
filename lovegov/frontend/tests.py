@@ -17,6 +17,18 @@ def test2(request, vals={}):
         return HttpResponse("oh baby")
     return HttpResponse("fuck")
 
+def test3(request, vals={}):
+
+    frame(request, vals)
+
+    vals['p'] = Petition.objects.all()[0]
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('test/petition.html', vals, request)
+    url = '/test3/'
+    return framedResponse(request, html, url, vals)
+
+
 def css(request, vals={}):
     return renderToResponseCSRF('test/css.html', vals, request)
 

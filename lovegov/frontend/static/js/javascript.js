@@ -34,6 +34,7 @@ function rebindFunction()
             break;
         case 'feed':                                            // /feed
             loadNewFeed();
+            loadRightSideBar();
             break;
         case 'about':                                           // /about
             loadAbout();
@@ -390,7 +391,9 @@ function loadHoverComparison()
         return {top:top,left:left};
     }
 
-    $('.has_hover_comparison').hoverIntent
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
     (
         function(event)
         {
@@ -430,63 +433,6 @@ function loadHoverComparison()
             },500)
         }
     );
-
-
-    /*
-    $('.feed-username').hoverIntent
-        (
-            // hover over
-            function(event)
-            {
-                var self = $(this);
-                var a = $(this).find('a');
-                if (a.attr('href') != undefined)
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    var alias = a.attr('href').split('/')[2].toString();
-                    var top = self.offset().top - ($('#comparison-hover-div').height()) - 40;
-                    if (top <= $(document).scrollTop())
-                    {
-                        top = self.offset().top + 70;
-                        $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-                    }
-                    else
-                    {
-                        $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-                    }
-                    var left = self.offset().left - ($('#comparison-hover-div').width()/2) + 21;
-                    var offset = {top:top,left:left};
-                    $('#comparison-hover-div p').text('You & ' + a.text());
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    ajaxPost({
-                        'data': {'action':'hoverComparison','alias':alias},
-                        'success': function(data) {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
-                        },
-                        'error': function(jqXHR, textStatus, errorThrown) {
-                            $('#comparison-hover-div p').text('Sorry there was an error');
-                        }
-                    });
-                }
-            },
-            // hover out
-            function(event)
-            {
-                hoverTimer = setTimeout(function()
-                {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
-            }
-        );
-
-        */
-
 }
 
 
@@ -1092,14 +1038,14 @@ function loadShareButton() {
     $('div.overdiv').appendTo('body');
     $('div.shareModal').appendTo('body');
 
-    $('.share_button').click(function(event) {
+    $('.share_button').bindOnce('click.share', function(event) {
         event.preventDefault();
         $("#share_id").data('share_id', $(this).data('share_id'));
         $('div.overdiv').fadeToggle("fast");
         $('div.shareModal').fadeToggle("fast");
     });
 
-    $('div.overdiv').click(function() {
+    $('div.overdiv').bindOnce('click.hide_overdiv', function() {
         $('div.overdiv').hide();
         $('div.shareModal').hide();
     });
@@ -2036,6 +1982,13 @@ function loadGroup()
  *
  **********************************************************************************************************************/
 
+/*
+ Sets the red bar to proper width.
+ */
+function petitionBar(wrapper) {
+    var percent = wrapper.data('percent');
+    wrapper.find('.red_bar').css("width", percent + "%");
+}
 
 /*
  Takes in a a value and the classname of an input which the value should
@@ -2119,18 +2072,20 @@ function getFeed(num)
             feed_metadata.feed_start = feed_start + returned.num;
 
             if (feed_display == "P") {
+                $(".right-sidebar").hide();
                 pinterestRender($(".pinterest_unrendered"));
+            }
+            else {
+                $(".right-sidebar").show();
             }
 
             heartButtons();
             loadShareButton();
-
             loadHoverComparison();
 
         },
         error: null
     });
-
 }
 
 /*
@@ -2214,13 +2169,13 @@ function getFilterByName(name) {
 /* heart stuff */
 function heartButtons()
 {
-    $(".heart_minus").click(function(event) {
+    $(".heart_minus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
         vote(wrapper, wrapper.data('c_id'), -1);
     });
 
-    $(".heart_plus").click(function(event) {
+    $(".heart_plus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
         vote(wrapper, wrapper.data('c_id'), 1);
@@ -2802,7 +2757,6 @@ function createGroupValidation( event )
         $('#group_form').submit();
     }
 }
-
 
 function loadCreate()
 {

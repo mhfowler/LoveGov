@@ -124,7 +124,7 @@ class PhysicalAddress(LGModel):
 #=======================================================================================================================
 class LocationLevel(models.Model):
     location = models.ForeignKey(PhysicalAddress, null=True)
-    level = models.CharField(max_length=1, choices=LEVEL_CHOICES, default='W')
+    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
     class Meta:
         abstract = True
 
@@ -1879,6 +1879,9 @@ class Petition(Content):
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
     finalized = models.BooleanField(default=False)
+    current = models.IntegerField(default=0)
+    goal = models.IntegerField(default=10)
+    p_level = models.IntegerField(default=0)
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -1896,11 +1899,25 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
+                self.current += 1
+                if self.current >= self.goal:
+                    self.p_level += 1
+                    self.goal = PETITION_LEVELS[self.p_level]
+                self.save()
                 return True
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Finalize petition for signing.
+    #-------------------------------------------------------------------------------------------------------------------
     def finalize(self):
         self.finalized = True
         self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Return percentages for petition bar.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getCompletionPercent(self):
+        return self.current / self.goal
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the petition-specific version of the general content method.
