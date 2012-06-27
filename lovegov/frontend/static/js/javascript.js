@@ -2558,9 +2558,11 @@ function bindCreateButton()
         $('div.create_modal').fadeToggle("fast");
     });
 
-    $('div.overdiv').click(function() {
+    $('div.overdiv').click(function()
+    {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
+        $('div#user-upload-avatar-modal').hide();
     });
 }
 
