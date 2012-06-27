@@ -34,6 +34,7 @@ function rebindFunction()
             break;
         case 'feed':                                            // /feed
             loadNewFeed();
+            loadRightSideBar();
             break;
         case 'about':                                           // /about
             loadAbout();
@@ -2119,7 +2120,11 @@ function getFeed(num)
             feed_metadata.feed_start = feed_start + returned.num;
 
             if (feed_display == "P") {
+                $(".right-sidebar").hide();
                 pinterestRender($(".pinterest_unrendered"));
+            }
+            else {
+                $(".right-sidebar").show();
             }
 
             heartButtons();

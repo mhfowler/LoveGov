@@ -1879,6 +1879,9 @@ class Petition(Content):
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
     finalized = models.BooleanField(default=False)
+    current = models.IntegerField(default=0)
+    goal = models.IntegerField(default=10)
+    level = models.IntegerField(default=0)
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -1896,6 +1899,11 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
+                self.current += 1
+                if self.current >= self.goal:
+                    self.level += 1
+                    self.goal = PETITION_LEVELS[level]
+                self.save()
                 return True
 
     def finalize(self):

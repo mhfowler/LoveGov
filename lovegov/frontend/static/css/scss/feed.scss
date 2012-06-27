@@ -481,7 +481,7 @@ div.feed-body {
 
 div.pinterest-wrapper {
 
-  display: block;
+  float:left;
   position:relative;
   top:20px;
   left:0px;
@@ -579,10 +579,10 @@ div.feed-topic-icon-wrapper {
 
 
 div.linear-wrapper {
-  width:1000px;
+  width:750px;
 
   div.linear {
-    width:800px;
+    width:750px;
     height:225px;
     overflow:hidden;
     border-bottom: 1px solid $light-gray;
@@ -643,33 +643,43 @@ div.linear-wrapper {
           width:80px;
           margin:0px;
 
-          div.comments-wrapper {
-            margin-top:10px;
+          a.comments-wrapper {
+            margin: 7px 0 0 5px;
             width:70px;
-            height:20px;
+            height:25px;
 
             div.text-wrapper {
               @include fontSize(10px);
-            }
 
-            span.comments-num {
+              div.comments-text {
+                display:block;
+                margin: 0px 0 3px 4px;
+              }
+
+              div.comments-num {
+                display:block;
+                margin: 5px 0 0 4px;
+              }
             }
           }
         }
 
-      }
+        div.share {
+          width:70px;
+          margin:0px;
 
-      div.share {
-        width:70px;
-        margin:0px;
-
-        a.share_button {
+          a.share_button {
             position:relative;
             top:14px;
             margin:10px 0 3px 5px;
             width:30px;
             height:20px;
             @include fontSize(14px);
+          }
+          a.share_button:hover {
+            margin-bottom:2px;
+            margin-left:4px;
+          }
         }
       }
     }
@@ -677,7 +687,7 @@ div.linear-wrapper {
     div.linear-right {
       float:left;
       margin: 0px 0px 0px 30px;
-      width:550px;
+      width:500px;
       overflow:hidden;
 
       div.pinterest-title {
@@ -724,17 +734,17 @@ div.linear-wrapper {
           }
         }
       }
-
     }
-
   }
-
 }
 
-a.comments-wrapper {
-  @include rounded(10px);
-  @extend .box;
+div.right-sidebar {
+  width:250px;
+  overflow:hidden;
+  float:left;
+  margin: 30px 0 0 0;
 }
+
 
 div.pinterest-top-comment {
   @extend .box;
@@ -836,26 +846,36 @@ div.pinterest-footer {
     border-right: 1px solid $light-gray;
 
     a.comments-wrapper {
-      margin:auto;
-      margin-top:10px;
-      width:90px;
+      display:block;
+      width:100px;
       height:30px;
+      margin: 8px 0 0 14px;
+      @include rounded(10px);
+      @extend .box;
 
       div.text-wrapper {
-        margin: 5px 0px 0 0;
-        span.comments-text {
-          margin-left:8px
+        foat:left;
+
+        div.comments-text {
+          @include really-big();
+          @include fontSize(12px);
+          margin: 2px 0 0 18px;
+          float:left;
         }
 
-        span.comments-num {
+        div.comments-num {
+          float:left;
+          margin: 6px 0 0 5px;
           color:$red;
         }
       }
     }
 
-    div.comments-wrapper:hover {
-      border-width:2px;
+    a.comments-wrapper:hover {
+      border-color:$dark-gray;
     }
+
+
 
   }
 
@@ -870,10 +890,16 @@ div.pinterest-footer {
       position:relative;
       top:17px;
       margin: 10px;
+    }
 
+    a.share_button:hover {
+      border: 1px solid $dark-gray;
+      margin-left:9px;
+      margin-bottom:9px;
     }
   }
 }
+
 
 .mini {
   @include fontSize(20px);
