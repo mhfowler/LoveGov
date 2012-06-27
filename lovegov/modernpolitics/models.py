@@ -1564,8 +1564,6 @@ class Action(Privacy):
     when = models.DateTimeField(auto_now_add=True)
     relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
-    # group, for sharing with group
-    share_group = models.ForeignKey("Group", null=True)
     # optimization
     verbose = models.TextField()  # Don't use me!  I'm deprecated
 
