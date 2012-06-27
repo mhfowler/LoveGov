@@ -5,8 +5,7 @@
             <table>
                 <tr>
                     <td>
-                        <input type="text" id="fullname-input" class="login-input" name="fullname" value="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% elif registerform.fullname.errors %}{{ registerform.fullname.errors|striptags }}{% else %}
-                        full name{% endif %}"/>
+                        <input type="text" id="fullname-input" class="login-input" name="fullname" value="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% elif registerform.fullname.errors %}{{ registerform.fullname.errors|striptags }}{% else %}full name{% endif %}"/>
                     </td>
                 </tr>
 

@@ -2705,8 +2705,9 @@ function loadCreate()
                     $('#news-link-generation').show();
                     $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
+                    alert("wtf");
                     ajaxPost({
-                        data: {'action':'getLinkInfo','url':text},
+                        data: {'action':'getLinkInfo','remote_url':text},
                         success: function(data)
                         {
                             returned = eval('(' + data + ')');
