@@ -727,6 +727,7 @@ function loadHeader()
                         $('#notifications-dropdown').empty().append(tempDropDownDiv).append(obj.html);
                         unbindNotification();
                         loadNotification();
+                        loadAjaxifyAnchors();
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
