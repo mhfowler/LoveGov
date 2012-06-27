@@ -555,6 +555,11 @@ div.pinterest_card {
           width:270px;
           height:8px;
           border: 1px solid $red;
+          overflow:hidden;
+          div.red_bar {
+            height:8px;
+            background-color:$red;
+          }
         }
         div.goal-statement {
           margin: 5px 0 0 0;
@@ -754,6 +759,7 @@ div.linear-wrapper {
 
 div.right-sidebar {
   width:250px;
+  display:none;
   overflow:hidden;
   float:left;
   margin: 30px 0 0 0;
