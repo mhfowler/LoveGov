@@ -2713,7 +2713,6 @@ function loadCreate()
                             $('#news-link-generation-wrapper').html(returned.html);
                             $('#cycle-img-left').bind('click',function()
                             {
-
                                 if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
                                 else { currentLink--; }
                                 $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
