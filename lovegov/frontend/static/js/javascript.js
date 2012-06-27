@@ -2606,40 +2606,156 @@ function bindGroupPrivacyRadio()
     });
 }
 
-function bindLevelRadio()
+function bindScaleRadio()
 {
-    $("div.group_level_radio").unbind();
-    $("div.group_level_radio").click(function(event)
+    $("div.group_scale_radio").unbind();
+    $("div.group_scale_radio").click(function(event)
     {
-        var prev = $("input:radio[name=level]:checked");
+        var prev = $("input:radio.group_scale:checked");
         prev.attr('checked',false);
-        prev.parent('.group_level_radio').removeClass("create-radio-selected");
+        prev.parent('.group_scale_radio').removeClass("create-radio-selected");
 
-        $(this).children("input:radio[name=level]").attr('checked',true);
+        $(this).children("input:radio.group_scale").attr('checked',true);
         $(this).addClass("create-radio-selected");
     });
 
-    $("div.petition_level_radio").unbind();
-    $("div.petition_level_radio").click(function(event)
+    $("div.petition_scale_radio").unbind();
+    $("div.petition_scale_radio").click(function(event)
     {
-        var prev = $("input:radio[name=level]:checked");
+        var prev = $("input:radio.petition_scale:checked");
         prev.attr('checked',false);
-        prev.parent('.petition_level_radio').removeClass("create-radio-selected");
+        prev.parent('.petition_scale_radio').removeClass("create-radio-selected");
 
-        $(this).children("input:radio[name=level]").attr('checked',true);
+        $(this).children("input:radio.petition_scale").attr('checked',true);
         $(this).addClass("create-radio-selected");
     });
 
-    $("div.news_level_radio").unbind();
-    $("div.news_level_radio").click(function(event)
+    $("div.news_scale_radio").unbind();
+    $("div.news_scale_radio").click(function(event)
     {
-        var prev = $("input:radio[name=level]:checked");
+        var prev = $("input:radio.news_scale:checked");
         prev.attr('checked',false);
-        prev.parent('.news_level_radio').removeClass("create-radio-selected");
+        prev.parent('.news_scale_radio').removeClass("create-radio-selected");
 
-        $(this).children("input:radio[name=level]").attr('checked',true);
+        $(this).children("input:radio.news_scale").attr('checked',true);
         $(this).addClass("create-radio-selected");
     });
+}
+
+function createGroupValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#group_title').val();
+    var title_error = $('#group_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a group title.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Description */
+    var description = $('#group_description').val();
+    var desc_error = $('#group_description_error');
+    description = description.replace(" ","");
+    if( description == "" )
+    {
+        desc_error.text("Please enter a group description.");
+        desc_error.show();
+        valid = false;
+    }
+    else
+    {
+        desc_error.hide();
+    }
+
+    /* Privacy */
+    var privacy = $('input:radio[name=group_privacy]:checked').length;
+    var privacy_error = $('#group_privacy_error');
+    if( privacy < 1 )
+    {
+        privacy_error.text("Please select a group privacy.");
+        privacy_error.show();
+        valid = false;
+    }
+    else if( privacy > 1 )
+    {
+        privacy_error.text("You have selected multiple group privacy settings.");
+        privacy_error.show();
+        valid = false;
+    }
+    else
+    {
+        privacy_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.group_scale:checked').length;
+    var scale_error = $('#group_scale_error')
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a group scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple group scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Image */
+    var image = $('input#group_image').val();
+    var image_error = $('#group_image_error');
+    if( image == "" )
+    {
+        image_error.text("Please select a group image.");
+        image_error.show();
+        valid = false;
+    }
+    else
+    {
+        image_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#group_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#group_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a group topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple group topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        $('#group_form').submit();
+    }
 }
 
 function loadCreate()
@@ -2663,7 +2779,14 @@ function loadCreate()
     });
 
     bindGroupPrivacyRadio();
-    bindLevelRadio();
+    bindScaleRadio();
+
+    $('#submit_group_button').click(
+        function(event)
+        {
+            createGroupValidation(event);
+        }
+    );
 
     var timeout;
     var delay = 750;

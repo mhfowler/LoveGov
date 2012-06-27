@@ -2,7 +2,7 @@
 
     <h2>Create Group:</h2>
 
-        <form id="groupform" action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+        <form id="group_form" action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
             <input type="hidden" name="action" value="create" />
             <input type="hidden" name="group_type" value="U" />
             <input type="hidden" name="type" value="G" />
@@ -11,18 +11,27 @@
         <table class='create-table'>
 
             <tr class="group-title">
-                <td class="create-title"><span class="sub-title">Name:</span></td>
-                <td><input name="title" type="text" class="title-input"/></td>
+                <td class="create-title">
+                    <div class="sub-title">Name:</div>
+                    <div class="create-error" id="group_name_error"></div>
+                </td>
+                <td><input id="group_title" name="title" type="text" class="title-input"/></td>
             </tr>
 
             <tr class="group-full-text">
-                <td class="create-title"><span class="sub-title">Description:</span></td>
-                <td><textarea name="full_text" class="full-text-input"></textarea></td>
+                <td class="create-title">
+                    <div class="sub-title">Description:</div>
+                    <div class="create-error" id="group_description_error"></div>
+                </td>
+                <td><textarea id="group_description" name="full_text" class="full-text-input"></textarea></td>
             </tr>
 
             <tr class="group-privacy-wrapper">
 
-                <td class="create-title"><span class="sub-title">Privacy:</span></td>
+                <td class="create-title">
+                    <div class="sub-title">Privacy:</div>
+                    <div class="create-error" id="group_privacy_error"></div>
+                </td>
                 <td>
                     <div class="create-radio group_privacy_radio">
                         Open
@@ -40,34 +49,43 @@
                 </td>
             </tr>
 
-            <tr class="group-level-wrapper">
-                <td class="create-title"><span class="sub-title">Gov. Level:</span></td>
+            <tr class="group-scale-wrapper">
+                <td class="create-title">
+                    <div class="sub-title">Scale:</div>
+                    <div class="create-error" id="group_scale_error"></div>
+                </td>
                 <td>
-                    <div class="create-radio group_level_radio">
+                    <div class="create-radio group_scale_radio">
                         Federal
-                        <input type="radio" class="custom-radio group_level" id="government-level-federal" value='F' name="level"/>
+                        <input type="radio" class="custom-radio group_scale" id="government-scale-federal" value='F' name="scale"/>
                     </div>
-                    <div class="create-radio group_level_radio">
+                    <div class="create-radio group_scale_radio">
                         State
-                        <input type="radio" class="custom-radio group_level" id="government-level-state" value='S' name="level"/>
+                        <input type="radio" class="custom-radio group_scale" id="government-scale-state" value='S' name="scale"/>
                     </div>
-                    <div class="create-radio group_level_radio">
+                    <div class="create-radio group_scale_radio">
                         Local
-                        <input type="radio" class="custom-radio group_level" id="government-level-local" value='L' name="level"/>
+                        <input type="radio" class="custom-radio group_scale" id="government-scale-local" value='L' name="scale"/>
                     </div>
                     <div class='clear-both'></div>
                 </td>
             </tr>
 
             <tr class="group-image">
-                <td class="create-title"><span class="sub-title">Group Image:</span></td>
-                <td><input type="file" name="image" /></td>
+                <td class="create-title">
+                    <div class="sub-title">Group Image:</div>
+                    <div class="create-error" id="group_image_error"></div>
+                </td>
+                <td><input type="file" name="image" id="group_image"/></td>
             </tr>
 
             <tr class="create-topic">
-                <td class="create-title"><span class="sub-title">Topic: </span></td>
+                <td class="create-title">
+                    <div class="sub-title">Topic:</div>
+                    <div class="create-error" id="group_topic_error"></div>
+                </td>
                 <td>
-                    <div class="topic-images group-input-topic">
+                    <div class="topic-images" id="group_input_topic">
                         {% include 'deployment/pieces/topic_images.html' %}
                     </div>
                 </td>
@@ -76,7 +94,7 @@
         </table>
 
         <div class="submit-button">
-            <input type="submit" class="button-red" id="create-group" value="create group"/>
+            <input type="submit" class="button-red" id="submit_group_button" value="create group"/>
         </div>
     </form>
 </div>
