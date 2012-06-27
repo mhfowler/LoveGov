@@ -706,10 +706,11 @@ function loadHeader()
     $('#notifications-dropdown-button').click(
         function(event)
         {
+            var dropdown = $('#notifications-dropdown');
+            dropdown.empty().append(tempDropDownDiv);
             $('.notifications-ajax-load').show();
             event.preventDefault();
             var pos = $(this).offset();
-            var dropdown = $('#notifications-dropdown');
             dropdown.toggle();
 
             if( $('#notifications-dropdown').is(':visible') )
@@ -734,10 +735,6 @@ function loadHeader()
                         $('body').html(jqXHR.responseText);
                     }
                 });
-            }
-            else
-            {
-                $('#notifications-dropdown').empty().append(tempDropDownDiv);
             }
             event.stopPropagation();
             hideOtherDropDowns(dropdown);
@@ -798,11 +795,10 @@ function loadHeader()
     });
 
 
-
-
-
-    switch($.cookie('privacy'))
+    if ($.cookie('privacy'))
     {
+        switch($.cookie('privacy'))
+        {
         case "PUB":
             $.cookie('privacy','PUB', {path:'/'});
             $(".security_setting").each(function()
@@ -818,7 +814,19 @@ function loadHeader()
                 if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
             });
             break;
+        }
     }
+    else
+    {
+        $.cookie('privacy','PUB', {path:'/'});
+        $(".security_setting").each(function()
+        {
+            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+
+        });
+    }
+
+
 
     $(".security_setting").click(function(event)
     {
@@ -1904,9 +1912,46 @@ function loadGroup()
                     $('#num_actions').val(obj.num_actions);
                     if( 'error' in obj && obj.error == 'No more actions' )
                     {
-                        $('#group_more_actions').html('No more actions')
+                        $('#group_more_actions').html('No more actions');
                         $('#group_more_actions').unbind();
                         $('#group_more_actions').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
+                    }
+                    else if( 'error' in obj )
+                    {
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
+    $('#group_more_members').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_members = $("#num_members").val();
+            ajaxPost({
+                'data': {'action':'getgroupmembers',
+                    'num_members':num_members,
+                    'g_id':g_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#group_members_container').append(obj.html);
+                    $('#num_members').val(obj.num_members);
+                    if( 'error' in obj && obj.error == 'No more members' )
+                    {
+                        alert('ahhh');
+                        $('#group_more_members').html('No more members');
+                        $('#group_more_members').unbind();
+                        $('#group_more_members').click( function(event)
                         {
                             event.preventDefault();
                         });

@@ -4,9 +4,7 @@
         <tr>
             <td class="user-name-pic">
                 <a href="{{ user.get_url }}">
-                    {% thumbnail user.getProfileImage.image "40x40" crop="center" as im %}
-                        <img src="{{ im.url }}" class='icon-med'/>
-                    {% endthumbnail %}
+                    {% include 'deployment/snippets/avatar.html' with user=user width="38" height="38" private=0 %}
                 </a>
             </td>
 

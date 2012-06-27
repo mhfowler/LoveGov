@@ -1031,7 +1031,7 @@ def getNotifications(request, vals={}):
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets activity feed
+# gets user activity feed
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserActions(request, vals={}):
     # Get Actions
@@ -1046,7 +1046,6 @@ def getUserActions(request, vals={}):
         num_actions = int(request.POST['num_actions'])
     actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
     if len(actions) == 0:
-        print 'no more actions'
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
@@ -1057,6 +1056,9 @@ def getUserActions(request, vals={}):
     html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets group activity feed
+#-----------------------------------------------------------------------------------------------------------------------
 def getGroupActions(request, vals={}):
     # Get Actions
     viewer = vals['viewer']
@@ -1080,6 +1082,36 @@ def getGroupActions(request, vals={}):
     vals['num_actions'] = num_actions
     html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets group members
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroupMembers(request, vals={}):
+    # Get Members
+    viewer = vals['viewer']
+    if not 'g_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No group id given'}))
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        return HttpResponse(json.dumps({'error':'Invalid group id'}))
+    num_members = 0
+    if 'num_members' in request.POST:
+        num_members = int(request.POST['num_members'])
+    print num_members
+    members = group.getMembers(user=viewer,num=MEMBER_INCREMENT,start=num_members)
+    print len(members)
+    if len(members) == 0:
+        return HttpResponse(json.dumps({'error':'No more members'}))
+    members_text = []
+    for member in members:
+        member_text = render_to_string( 'deployment/snippets/group-member-new.html' , {'member':member} )
+        members_text.append( member_text )
+    vals['members_text'] = members_text
+    num_members += MEMBER_INCREMENT
+    vals['num_members'] = num_members
+    html = ajaxRender('deployment/snippets/member-snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_members':num_members}))
+
 
 
 def matchSection(request, vals={}):
@@ -1304,6 +1336,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getnotifications': getNotifications,
             'getuseractions': getUserActions,
             'getgroupactions': getGroupActions,
+            'getgroupmembers': getGroupMembers,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
             'saveFilter': saveFilter,
