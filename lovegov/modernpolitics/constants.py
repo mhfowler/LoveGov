@@ -91,6 +91,8 @@ STATUS_SHARE = 0
 STATUS_FOLLOW = 0
 
 NOTIFICATION_INCREMENT = 5
+MEMBER_INCREMENT = 25
+GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
 
@@ -266,8 +268,8 @@ ACTION_MODIFIERS = (
         )
 
 # types of action which user should be notified about
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO']
-AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO', 'SH']
+AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO', 'SH']
 
 # Timedelta that it takes for aggregate notifications to go stale.
 STALE_TIME_DELTA = datetime.timedelta(14)

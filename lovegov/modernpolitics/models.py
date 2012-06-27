@@ -1082,7 +1082,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     # create default fillter
     #-------------------------------------------------------------------------------------------------------------------
     def createDefaultFilter(self):
-        filter = SimpleFilter(creator=self)
+        filter = SimpleFilter(creator=self, ranking="N")
         filter.save()
         self.my_filters.add(filter)
 
@@ -1319,7 +1319,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             already = Notification.objects.filter(notify_user=self,
                                                     when__gte=stale_date,
                                                     action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('when').reverse()
+                                                    action__type=action.type ).order_by('-when')
             for notification in already:
                 if notification.action.relationship.getTo().id == relationship.getTo().id:
                     notification.when = datetime.datetime.today()
@@ -1447,7 +1447,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         return Group.objects.filter(id__in=g_ids)
 
     def getUserGroups(self):
-        return self.getGroups.filter(group_type='U')
+        return self.getGroups().filter(group_type='U')
 
     def getNetworks(self):
         return self.networks.all()
@@ -1564,8 +1564,6 @@ class Action(Privacy):
     when = models.DateTimeField(auto_now_add=True)
     relationship = models.ForeignKey("Relationship", null=True)
     must_notify = models.BooleanField(default=False)        # to override check for permission to notify
-    # group, for sharing with group
-    share_group = models.ForeignKey("Group", null=True)
     # optimization
     verbose = models.TextField()  # Don't use me!  I'm deprecated
 
@@ -1673,6 +1671,10 @@ class Notification(Privacy):
                 notification_context['reverse_follow'] = reverse_follow
         if n_action.type == 'JO':
             notification_context['group_join'] = relationship.downcast()
+
+        if n_action.type == 'SH':
+            notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
+            notification_context['content'] = relationship.getTo()
 
         notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
         return notification_verbose
@@ -3323,14 +3325,14 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic_alias=None):
+    def getMembers(self, user, block=-1, topic_alias=None, start=0, num=-1):
         from modernpolitics.backend import getUserUserComparison
         if block == -1:
-            return self.members.order_by('id')
+            to_return = self.members.all()
         else:
             topic = Topic.lg.get_or_none(alias=topic_alias)
             ids = []
-            for x in self.members.order_by('id'):
+            for x in self.members:
                 comparison = getUserUserComparison(user, x)
                 if topic and topic_alias!='general':
                    comparison = comparison.bytopic.get(topic=topic)
@@ -3338,7 +3340,11 @@ class Group(Content):
                     x_block = comparison.result / HISTOGRAM_RESOLUTION
                     if x_block == block:
                         ids.append(x.id)
-            return self.members.filter(id__in=ids).order_by('id')
+            to_return = self.members.filter(id__in=ids)
+        if num == -1:
+            return to_return[start:]
+        else:
+            return to_return[start:start+num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -3358,7 +3364,7 @@ class Group(Content):
         actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
         if num != 1:
             actions = actions[start:start+num]
-        return actions
+        return actions[start:]
 
 
 #=======================================================================================================================
@@ -3806,9 +3812,10 @@ class Shared(UCRelationship):
 
     def addGroup(self, group):
         if not group in self.share_groups.all():
-            self.share_groups.add(group)
-            action = Action(relationship=self, share_group=group)
-            action.autoSave()
+            pass
+            # self.share_groups.add(group)
+            # action = Action(relationship=self, share_group=group)
+            # action.autoSave()
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.

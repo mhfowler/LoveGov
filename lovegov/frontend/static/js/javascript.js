@@ -1912,9 +1912,46 @@ function loadGroup()
                     $('#num_actions').val(obj.num_actions);
                     if( 'error' in obj && obj.error == 'No more actions' )
                     {
-                        $('#group_more_actions').html('No more actions')
+                        $('#group_more_actions').html('No more actions');
                         $('#group_more_actions').unbind();
                         $('#group_more_actions').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
+                    }
+                    else if( 'error' in obj )
+                    {
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
+    $('#group_more_members').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_members = $("#num_members").val();
+            ajaxPost({
+                'data': {'action':'getgroupmembers',
+                    'num_members':num_members,
+                    'g_id':g_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#group_members_container').append(obj.html);
+                    $('#num_members').val(obj.num_members);
+                    if( 'error' in obj && obj.error == 'No more members' )
+                    {
+                        alert('ahhh');
+                        $('#group_more_members').html('No more members');
+                        $('#group_more_members').unbind();
+                        $('#group_more_members').click( function(event)
                         {
                             event.preventDefault();
                         });

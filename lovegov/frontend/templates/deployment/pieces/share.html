@@ -3,19 +3,21 @@
 <script src="/static/select2/select2.js"></script>
 
 <div class="share_content">
-<span class="share_header"><h2>Share this with your followers, groups, or networks.</h2></span>
+<span class="share_header"><h2> Share this with your followers. </h2></span>
 <hr>
 <form>
-<p>Share this with:</p>
 <p><select multiple class="share_select">
 	<option value='all_followers'>All my followers</option>
+<!--
 	<option value='all_groups'>All my groups</option>
 	<option value='all_networks'>All my networks</option>
+	-->
 	<optgroup label="Followers">
 		{% for follower in my_followers %}
 		<option value='follower_{{follower.id}}'>{{follower.get_name}}</option>
 		{% endfor %}
 	</optgroup>
+    <!--
 	<optgroup label="Groups">
 		{% for follower in my_groups %}
 		<option value='group_{{follower.id}}'>{{follower.get_name}}</option>
@@ -26,6 +28,7 @@
 		<option value='network_{{follower.id}}'>{{follower.get_name}}</option>
 		{% endfor %}
 	</optgroup>
+	-->
 </select>
 <p>
 <p><a href='' id='submit_content' class="button">Submit</a>
@@ -34,7 +37,7 @@
 
 <script>
 $('select.share_select').select2({
-    placeholder: "Enter a follower, network, or group name"
+    placeholder: "Enter a follower,"
 });
 
 // Prevents click being fired twice.
@@ -43,12 +46,11 @@ $('#submit_content').unbind();
 $('#submit_content').click(function(e) {
 	e.preventDefault();
     var share_this = $("#share_id").data('share_id');
-    alert("sharethis: " + share_this);
 	var share_with = $('.share_select').select2("val");
 	if (share_with!='') {
 		ajaxPost({
 			data: {'action': 'shareContent', 'share_with': JSON.stringify(share_with), 'share_this':share_this},
-			success: function(data) { alert(data)}
+			success: function(data) {}
 		});
 	}
 });

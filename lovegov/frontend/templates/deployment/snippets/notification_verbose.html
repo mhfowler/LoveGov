@@ -276,9 +276,20 @@
         </td>
 
     {% elif type == 'SH' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        shared
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        <td class="notification-thumbnail">
+            <img src="/static/images/feed/check-small.png"/>
+        </td>
+        <td class="notification-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
+            shared <a href="{{content.get_url}}"> {{ content.title }} </a>
+            with
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     {% elif type == 'CR' %}
         {% if to_user.type == 'R' %}
