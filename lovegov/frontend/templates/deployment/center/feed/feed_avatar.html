@@ -3,7 +3,7 @@
 <div class="prof-image">
     {% if item.getPublic %}
         <a href="{{ creator.get_url }}">
-            {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" %}
+            {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" private=0 %}
         </a>
     {% else %}
         {% thumbnail defaultImage "50x50" format="PNG" as im %}
