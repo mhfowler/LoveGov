@@ -1162,7 +1162,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             if not location_network:
                 location_network = Network(alias=alias,title=name,network_type='L')
                 location_network.autoSave()
-            location_network.members.add(self)
+            location_network.joinMember(self)
             self.networks.add(location_network)
 
 
