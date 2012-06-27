@@ -29,7 +29,9 @@ from googlemaps import GoogleMaps
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
 def getLinkInfo(request, vals={}):
-    url = str(request.POST['url'])
+    vals = {}
+    url = str(request.POST['remote_url'])
+    print url
     url.strip()
     # url may not be well formed so try variations until one works
     for prefix in PREFIX_ITERATIONS:
@@ -41,7 +43,6 @@ def getLinkInfo(request, vals={}):
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        vals = {}
         try:
             vals['title'] = soup.title.string
         except:
@@ -83,6 +84,7 @@ def getLinkInfo(request, vals={}):
             list.append({'path':"/static/images/top-logo-default.png"})
 
         vals['imglink'] = list
+
         html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
         return HttpResponse(json.dumps({'html':html,'imglink':list}))
 
