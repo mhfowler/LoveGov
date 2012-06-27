@@ -1446,8 +1446,11 @@ class UserProfile(FacebookProfileModel, LGModel):
         g_ids = GroupJoined.objects.filter(user=self, confirmed=True).values_list('group', flat=True)
         return Group.objects.filter(id__in=g_ids)
 
-    def getUserGroups(self):
-        return self.getGroups.filter(group_type='U')
+    def getUserGroups(self, num=-1, start=0):
+        if num == -1:
+            return self.getGroups().filter(group_type='U')[start:]
+        else:
+            return self.getGroups().filter(group_type='U')[start:start+num]
 
     def getNetworks(self):
         return self.networks.all()

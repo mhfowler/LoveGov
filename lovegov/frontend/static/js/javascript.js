@@ -1607,6 +1607,43 @@ function loadProfile()
         }
     );
 
+    $('#profile_more_groups').click(
+        function(event)
+        {
+            event.preventDefault();
+            var num_groups = $("#num_groups").val();
+            ajaxPost({
+                'data': {'action':'getusergroups',
+                    'num_groups':num_groups,
+                    'p_id':p_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('#profile_activity_feed').append(obj.html);
+                    $('#num_groups').val(obj.num_groups);
+                    if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
+                    {
+                        $('#profile_more_groups').html('No more groups')
+                        $('#profile_more_groups').unbind();
+                        $('#profile_more_groups').click( function(event)
+                        {
+                            event.preventDefault();
+                        });
+                    }
+                    else if( obj.hasOwnProperty('error') )
+                    {
+                        alert(obj.error);
+                        $('body').html(obj.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            });
+        }
+    );
+
     $(".public-follow").click( function(event)
     {
         setFollowPrivacy(event,0,$(this));

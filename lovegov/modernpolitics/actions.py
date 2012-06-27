@@ -1112,6 +1112,28 @@ def getGroupMembers(request, vals={}):
     html = ajaxRender('deployment/snippets/member-snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_members':num_members}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets user groups
+#-----------------------------------------------------------------------------------------------------------------------
+def getUserGroups(request, vals={}):
+    # Get Groups
+    viewer = vals['viewer']
+    if not 'p_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No profile id given'}))
+    user_prof = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if not user_prof:
+        return HttpResponse(json.dumps({'error':'Invalid profile id'}))
+    num_groups = 0
+    if 'num_groups' in request.POST:
+        num_groups = int(request.POST['num_groups'])
+    groups = user_prof.getUserGroups(num=GROUP_INCREMENT,start=num_groups)
+    if len(groups) == 0:
+        return HttpResponse(json.dumps({'error':'No more groups'}))
+    vals['user_groups'] = groups
+    num_groups += GROUP_INCREMENT
+    vals['num_groups'] = num_groups
+    html = ajaxRender('deployment/snippets/group_snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_groups':num_groups}))
 
 
 def matchSection(request, vals={}):
@@ -1329,6 +1351,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
             'getuseractions': getUserActions,
+            'getusergroups': getUserGroups,
             'getgroupactions': getGroupActions,
             'getgroupmembers': getGroupMembers,
             'ajaxGetFeed': ajaxGetFeed,
