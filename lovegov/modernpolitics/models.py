@@ -1446,8 +1446,11 @@ class UserProfile(FacebookProfileModel, LGModel):
         g_ids = GroupJoined.objects.filter(user=self, confirmed=True).values_list('group', flat=True)
         return Group.objects.filter(id__in=g_ids)
 
-    def getUserGroups(self):
-        return self.getGroups().filter(group_type='U')
+    def getUserGroups(self, num=-1, start=0):
+        if num == -1:
+            return self.getGroups().filter(group_type='U')[start:]
+        else:
+            return self.getGroups().filter(group_type='U')[start:start+num]
 
     def getNetworks(self):
         return self.networks.all()
@@ -3448,7 +3451,7 @@ class PageAccess(LGModel):
     ACCESS_CHOICES= ('POST', 'GET')
     user = models.ForeignKey(UserProfile)
     ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
-    page = models.CharField(max_length=50)
+    page = models.CharField(max_length=5000)
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
     left = models.DateTimeField(null=True)
@@ -3476,7 +3479,8 @@ class PageAccess(LGModel):
                     self.type = 'GET'
                     if 'action' in request.GET:
                         self.action = request.GET['action']
-                self.save()
+                try: self.save()
+                except: pass
                 user_prof.last_page_access = self.id
                 user_prof.save()
 

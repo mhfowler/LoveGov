@@ -110,15 +110,23 @@
 
             <div class='profile-group-container'>
                 <div class="profile-section-title">Groups</div>
-                {% for group in prof_groups %}
-                    <a class="profile-group-link" title="{{ group.get_name }}" href="{{ group.get_url }}">
-                        {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
-                            <img src="{{ im.url }}" class="rounded"/>
-                        {% empty %}
-                            <img src="/static/images/profile_default.jpg" class="rounded"/>
-                        {% endthumbnail %}
-                    </a>
-                {% endfor %}
+                <div class='profile-groups'>
+                    {% for group in prof_groups %}
+                        <a class="profile-group-link" title="{{ group.get_name }}" href="{{ group.get_url }}">
+                            {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
+                                <img src="{{ im.url }}" class="rounded"/>
+                            {% empty %}
+                                <img src="/static/images/profile_default.jpg" class="rounded"/>
+                            {% endthumbnail %}
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="clear-both"></div>
+                <a href="" class="long-button-gray" id="profile_more_groups">
+                    See more groups
+                </a>
+                <input type="hidden" id="num_groups" value="{{ num_groups }}"/>
+                <br>
             </div>
         </div>
     </div>
