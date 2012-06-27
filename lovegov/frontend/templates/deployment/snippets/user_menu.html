@@ -1,10 +1,9 @@
-<link rel="stylesheet" type="text/css" charset="utf-8" href="/static/css/deployment/user-menu.css"/>
+{% load thumbnail %}
 
 <div id="user-menu-container">
     <div id=user-menu class="user-menu-unselected">
-        {% load thumbnail %}
-        {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as im %}
-            <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
+        {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as img %}
+            <img class="user-img" class="user-menu-pointer" src="{{ img.url }}"/>
         {% empty %}
             ?
         {% endthumbnail %}
@@ -12,9 +11,19 @@
         <div id="down-arrow"></div>
     </div>
     <div id="user-menu-dropdown" style="display:none;">
+
+        <div>
+            {% thumbnail viewer.getProfileImage.image "75x75" crop="center" as img %}
+                <img src="{{ img.url }}"/>
+            {% empty %}
+                ?
+            {% endthumbnail %}
+        </div>
+
         <div id="user-menu-account" class="user-menu-dropdown-div user-menu-dropdown-div-top">
             <img src="/static/images/user-menu/geargray.png"/><a href="/account/" class="do-ajax-link">account settings</a>
         </div>
+
         <div>
             <div style="float:left;border-right:0;width:124px" id="user-menu-security-public" class="user-menu-dropdown-div user-menu-security">
                 <img src="/static/images/user-menu/publicgray.png"/><a>public</a>
@@ -23,9 +32,11 @@
                 <img src="/static/images/user-menu/lockgray.png"/><a>private</a>
             </div>
         </div>
+
         <div style="clear:both" id="user-menu-logout" class="user-menu-dropdown-div">
             <img src="/static/images/user-menu/logout.png"/><a class="no-ajax-link" href="/logout/">logout</a>
         </div>
+
     </div>
     <div class="preloadImages">
         <img src="/static/images/user-menu/geargray.png"/>
