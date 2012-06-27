@@ -706,6 +706,7 @@ function loadHeader()
     $('#notifications-dropdown-button').click(
         function(event)
         {
+            dropdown.empty().append(tempDropDownDiv);
             $('.notifications-ajax-load').show();
             event.preventDefault();
             var pos = $(this).offset();
@@ -734,10 +735,6 @@ function loadHeader()
                         $('body').html(jqXHR.responseText);
                     }
                 });
-            }
-            else
-            {
-                $('#notifications-dropdown').empty().append(tempDropDownDiv);
             }
             event.stopPropagation();
             hideOtherDropDowns(dropdown);
@@ -796,8 +793,6 @@ function loadHeader()
         toggleUserMenu();
         event.stopPropagation();
     });
-
-
 
 
 
