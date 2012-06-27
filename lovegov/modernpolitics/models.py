@@ -3450,7 +3450,7 @@ class PageAccess(LGModel):
     ACCESS_CHOICES= ('POST', 'GET')
     user = models.ForeignKey(UserProfile)
     ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
-    page = models.CharField(max_length=50)
+    page = models.CharField(max_length=5000)
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
     left = models.DateTimeField(null=True)
@@ -3478,7 +3478,8 @@ class PageAccess(LGModel):
                     self.type = 'GET'
                     if 'action' in request.GET:
                         self.action = request.GET['action']
-                self.save()
+                try: self.save()
+                except: pass
                 user_prof.last_page_access = self.id
                 user_prof.save()
 
