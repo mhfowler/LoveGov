@@ -2699,7 +2699,7 @@ function createGroupValidation( event )
 
     /* Scale */
     var scale = $('input:radio.group_scale:checked').length;
-    var scale_error = $('#group_scale_error')
+    var scale_error = $('#group_scale_error');
     if( scale < 1 )
     {
         scale_error.text("Please select a group scale.");
@@ -2795,7 +2795,7 @@ function createPetitionValidation( event )
 
     /* Scale */
     var scale = $('input:radio.petition_scale:checked').length;
-    var scale_error = $('#petition_scale_error')
+    var scale_error = $('#petition_scale_error');
     if( scale < 1 )
     {
         scale_error.text("Please select a petition scale.");
@@ -2840,6 +2840,108 @@ function createPetitionValidation( event )
     }
 }
 
+function createNewsValidation( event )
+{
+    event.preventDefault();
+    var valid = true;
+
+    /* Title */
+    var title = $('#news-input-link').val();
+    var title_error = $('#news_name_error');
+    title = title.replace(" ","");
+    if( title == "" )
+    {
+        title_error.text("Please enter a news link.");
+        title_error.show();
+        valid = false;
+    }
+    else
+    {
+        title_error.hide();
+    }
+
+    /* Scale */
+    var scale = $('input:radio.news_scale:checked').length;
+    var scale_error = $('#news_scale_error');
+    if( scale < 1 )
+    {
+        scale_error.text("Please select a news scale.");
+        scale_error.show();
+        valid = false;
+    }
+    else if( scale > 1 )
+    {
+        scale_error.text("You have selected multiple news scales.");
+        scale_error.show();
+        valid = false;
+    }
+    else
+    {
+        scale_error.hide();
+    }
+
+    /* Topics */
+    var topic = $('#news_input_topic').find('input:radio[name=topics]:checked').length;
+    var topic_error = $('#news_topic_error');
+    if( topic < 1 )
+    {
+        topic_error.text("Please select a news topic.");
+        topic_error.show();
+        valid = false;
+    }
+    else if( topic > 1 )
+    {
+        topic_error.text("You have selected multiple news topics.");
+        topic_error.show();
+        valid = false;
+    }
+    else
+    {
+        topic_error.hide();
+    }
+
+    /* submit if valid! */
+    if( valid )
+    {
+        postNews();
+    }
+}
+
+function postNews()
+{
+    var title = $('#news-input-title').val();
+    var summary = $('#news-input-summary').val();
+    var link = $('#news-input-link').val();
+    var description = $('#news-link-generation-description').text();
+    var screenshot = $('#news-link-image-src').attr("src");
+    var scale = $('input:radio.news_scale:checked').val();
+    var topic = $('input:radio[name=topics]:checked').val();
+    ajaxPost({
+        data: {'action':'create','title':title,'summary':summary,'link':link,
+            'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic, 'scale':scale },
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            if (returned.success == false)
+            {
+                $("#news-errors-link").html(returned.errors.link);
+                $("#news-errors-title").html(returned.errors.title);
+                $("#news-errors-summary").html(returned.errors.summary);
+                $("#news-errors-topic").html(returned.errors.topics);
+                $("#news-errors-non_field").html(returned.errors.non_field_errors);
+            }
+            else
+            {
+                window.location=returned.url;
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
+    });
+}
+
 function loadCreate()
 {
     $('#create_petition_button').click(function()
@@ -2877,12 +2979,21 @@ function loadCreate()
         }
     );
 
+    $('#submit_news_button').click(
+        function(event)
+        {
+            createNewsValidation( event );
+        }
+    );
+
+
     var timeout;
     var delay = 750;
     var isLoading = false;
     var currentURL;
     var currentLink = 0;
     var returned;
+
     $('#news-input-link').bind('keyup',function()
     {
         var text = $(this).val();
@@ -2972,39 +3083,4 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
-
-    $('#share-button').click(function(event)
-    {
-        event.preventDefault();
-        var title = $('#news-input-title').val();
-        var summary = $('#news-input-summary').val();
-        var link = $('#news-input-link').val();
-        var description = $('#news-link-generation-description').text();
-        var screenshot = $('#news-link-image-src').attr("src");
-        var topic = $('input:radio[name=topics]:checked').val();
-        ajaxPost({
-            data: {'action':'create','title':title,'summary':summary,'link':link,
-                'type':'N', 'description':description, 'screenshot':screenshot, 'topics':topic},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (returned.success == false)
-                {
-                    $("#news-errors-link").html(returned.errors.link);
-                    $("#news-errors-title").html(returned.errors.title);
-                    $("#news-errors-summary").html(returned.errors.summary);
-                    $("#news-errors-topic").html(returned.errors.topics);
-                    $("#news-errors-non_field").html(returned.errors.non_field_errors);
-                }
-                else
-                {
-                    window.location=returned.url;
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $("body").html(jqXHR.responseText);
-            }
-        });
-    });
 }
