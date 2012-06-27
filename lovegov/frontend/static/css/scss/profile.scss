@@ -19,7 +19,6 @@ div.middle-left
     position:relative;
     margin-bottom:5px;
     margin-left:30px;
-    height:235px;
 
     /* Info Left Side */
     div.basic-info-left
@@ -99,6 +98,7 @@ div.middle-left
 
           span.profile-stats-title
           {
+            @include fontSize(12px);
             color: $deep-gray;
             position: relative;
             top: -3px;
@@ -225,7 +225,7 @@ div.middle-right
 {
   float:left;
   width:300px;
-  margin-left:40px;
+  margin-left:20px;
 
   div.right-separator
   {
@@ -276,94 +276,3 @@ div.middle-right
 }
 
 
-
-
-
-/* toolbox */
-
-#toolbox
-{
-  height:215px;
-  margin-bottom:20px;
-  border-bottom:1px solid #ccc;
-}
-
-#toolbox p
-{
-  height:8px;
-}
-
-#toolbox ul
-{
-  list-style-type:none;
-}
-
-#toolbox li
-{
-  margin-bottom:25px;
-}
-
-.toolbox-button:link
-{
-  color:#FFFFFF;
-  background-color:#ccc;
-  position:relative;
-  margin-bottom:10px;
-}
-
-.toolbox-button:link, .toolboox-button:visited, .toolbox-button:active
-{
-  text-decoration:none;
-}
-
-.toolbox-button:hover
-{
-  color:#ccc;
-  background-color:#FFFFFF;
-}
-
-/* my reps */
-
-#myreps
-{
-  font-family:"Gill Sans Std Light", Verdana, sans-serif;
-  font-size:18pt;
-  color:#ccc;
-  padding-bottom:30px;
-  border-bottom:1px solid #ccc;
-}
-
-
-.middle-right-head-font
-{
-  text-align:left;
-  font-family:"Gill Sans Std Light", Verdana, sans-serif;
-  font-size:18pt;
-  color:#959595;
-}
-
-.network-member-div
-{
-  float:left;
-  width:205px;
-  margin-bottom:10px;
-}
-
-.network-member-div:hover
-{
-  cursor:pointer;
-}
-
-.network-user-link
-{
-  color:#0F5569;
-  float:left;
-  margin-top:12px;
-  margin-left:10px;
-  width:140px;
-}
-
-.network-user-link:link, .network-user-link:active, .network-user-link:visited
-{
-  color:#0F5569;
-}

@@ -636,6 +636,7 @@ def group(request, g_id=None, vals={}):
     for admin in admins:
         if admin.id == user.id:
             vals['is_user_admin'] = True
+    vals['group_admins'] = group.admins.all()
 
     setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/center/group.html', vals, request)
