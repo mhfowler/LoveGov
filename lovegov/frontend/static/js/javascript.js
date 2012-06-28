@@ -367,6 +367,36 @@ function setFollowPrivacy(event,private_follow,div)
 
 /***********************************************************************************************************************
  *
+ *      ~Editing
+ *
+ ***********************************************************************************************************************/
+function editContent(c_id,info,edit_div)
+{
+    var content_data = info;
+    content_data.action = 'editcontent';
+    content_data.c_id = c_id;
+
+    ajaxPost({
+        'data': content_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            if( obj.success )
+            {
+                edit_div.text(obj.value);
+                edit_div.show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
  *      ~General
  *
  ***********************************************************************************************************************/
@@ -1330,6 +1360,7 @@ function loadThread()
         }
     });
 
+
     loadHoverComparison();
 }
 
@@ -1525,6 +1556,29 @@ function loadNotification()
 var prof_more_notifications = true;
 var prof_more_actions = true;
 var prof_more_groups = true;
+
+function editUserProfile(info,edit_div)
+{
+    var prof_data = info;
+    prof_data.action = 'editprofile';
+
+    ajaxPost({
+        'data': prof_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            if( obj.success )
+            {
+                edit_div.text(obj.value);
+                edit_div.show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
 
 function getMoreNotifications()
 {
@@ -1730,6 +1784,35 @@ function loadProfile()
     {
         setFollowPrivacy(event,1,$(this));
     });
+
+    $(".edit_button").click(
+        function(event)
+        {
+            event.preventDefault();
+            $(this).siblings('.inline_hide').hide();
+            $(this).hide();
+            $(this).siblings('.inline_edit').show();
+        }
+    );
+
+    $(".submit_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var input = $(this).siblings('input.edit_input');
+            var value = input.val();
+            var name = input.attr('name');
+            var info = {
+                'key':name,
+                'val':value
+            };
+            var edit_div = $(this).parent().siblings('.inline_hide');
+
+            editUserProfile(info,edit_div);
+            $(this).parent().siblings('.edit_button').show();
+            $(this).parent().hide();
+        }
+    );
 }
 
 
