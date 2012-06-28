@@ -13,7 +13,7 @@
             {% endthumbnail %}
         </td>
         <td class="notification-text">
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true anon=%}
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             {% if tally == 2 %}
                 and one other person
             {% elif tally > 2 %}

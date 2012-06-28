@@ -1968,6 +1968,7 @@ function loadGroup()
     var loadUsersLockout = false;
     var loadHistoLockout = false;
 
+    bindGroupRequestsButton();
     // load more users for display
     function loadMoreUsers(event, replace)
     {
