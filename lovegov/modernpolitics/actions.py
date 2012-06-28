@@ -205,7 +205,7 @@ def loadHistogram(request, vals={}):
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
     formtype = request.POST['type']
-    user = val['viewer']
+    viewer = val['viewer']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
@@ -226,6 +226,8 @@ def create(request, val={}):
         # if ajax, return page center
         if request.is_ajax():
             if formtype == "N":
+                viewer.num_articles += 1
+                viewer.save();
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
@@ -233,8 +235,8 @@ def create(request, val={}):
 
         else:
             if formtype == "G":
-                c.joinMember(user)
-                c.admins.add(user)
+                c.joinMember(viewer)
+                c.admins.add(viewer)
                 try:
                     file_content = ContentFile(request.FILES['image'].read())
                     Image.open(file_content)
@@ -249,7 +251,8 @@ def create(request, val={}):
                         c.setMainImage(file_content)
                 except IOError:
                     print "Image Upload Error"
-
+                viewer.num_petitions += 1
+                viewer.save()
             return shortcuts.redirect(c.get_url())
     else:
         if request.is_ajax():
