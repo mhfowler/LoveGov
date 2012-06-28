@@ -558,12 +558,12 @@ input.tab-button, a.tab-button, span.tab-button {
 	color: $white;
 	padding: 8px;
 	border: none;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 	&.alt {
 		background-color: $gray;
 	}
   &:hover {
-    padding-top: 12px;
+    padding-top: 14px;
     margin-bottom: 0;
   }
 }

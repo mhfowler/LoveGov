@@ -5,6 +5,24 @@
 
 	    <div class="sidebar-box clearfix">
 	
+	        <div class="topics-header">
+	            <span class="content_header">Recent Activity </span>
+	        </div>
+	        
+	        {% for action in recent_actions %}
+	        
+	        <p>{{ action.getVerbose }}
+	        
+	        {% endfor %}
+	        
+	        <div class="activity_box_piece">
+	        
+	        </div>
+	
+		</div>
+
+	    <div class="sidebar-box clearfix">
+	
 	        <div id="topic-questions" class="panel">
 	
 	            <div class="topics-header">
@@ -67,24 +85,6 @@
 		        </div>
 		    </div>
 	    </div>
-	    
-	    <div class="sidebar-box clearfix">
-	
-	        <div class="topics-header">
-	            <span class="content_header">Recent Activity </span>
-	        </div>
-	        
-	        {% for action in recent_actions %}
-	        
-	        <p>action: {{ action.getVerbose }}
-	        
-	        {% endfor %}
-	        
-	        <div class="activity_box_piece">
-	        
-	        </div>
-	
-		</div>
 
     </div>
 </div>
