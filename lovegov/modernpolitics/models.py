@@ -1917,7 +1917,8 @@ class Petition(Content):
     # Return percentages for petition bar.
     #-------------------------------------------------------------------------------------------------------------------
     def getCompletionPercent(self):
-        return self.current / self.goal
+        val = float(self.current) / self.goal
+        return int(val*100)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the petition-specific version of the general content method.

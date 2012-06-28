@@ -2111,9 +2111,12 @@ function loadGroup()
 /*
  Sets the red bar to proper width.
  */
-function petitionBar(wrapper) {
-    var percent = wrapper.data('percent');
-    wrapper.find('.red_bar').css("width", percent + "%");
+function petitionBar() {
+    var petition_bars = $(".bar-wrapper");
+    petition_bars.each(function(index) {
+        var percent = $(this).data('percent');
+        $(this).find('.red_bar').css("width", percent + "%");
+    });
 }
 
 /*
@@ -2208,6 +2211,7 @@ function getFeed(num)
             heartButtons();
             loadShareButton();
             loadHoverComparison();
+            petitionBar();
 
         },
         error: null
@@ -2712,7 +2716,8 @@ function bindCreateButton()
         $('div.create_modal').fadeToggle("fast");
     });
 
-    $('div.overdiv').click(function() {
+    $('div.overdiv').click(function()
+    {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
     });

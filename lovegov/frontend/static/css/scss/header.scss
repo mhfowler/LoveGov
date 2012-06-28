@@ -162,12 +162,33 @@ div#top
         margin-bottom:30px;
         margin-top:15px;
 
-        img
+        img#user-menu-dashboard-avatar
         {
           $padding:15px;
           padding-left: $padding;
           padding-right: $padding;
           float:left;
+        }
+
+        div.user-menu-dashboard-avatar-overlay
+        {
+          opacity:0.4;
+          background-color:$red;
+          height:75px;
+          width:75px;
+          margin-left:15px;
+          position:absolute;
+          cursor:pointer;
+        }
+
+        h5.user-menu-dashboard-avatar-overlay
+        {
+          position:absolute;
+          color:white;
+          margin-left:25px;
+          margin-top:15px;
+          text-align:center;
+          cursor:pointer;
         }
 
         div.user-menu-dashboard-right
@@ -499,6 +520,26 @@ div#top
 
   }
 }
+
+div#user-upload-avatar-modal
+{
+  @include modal;
+  position:absolute;
+  width:50%;
+  height:500px;
+  top:100px;
+  margin-left:25%;
+  margin-right:25%;
+  z-index:1500;
+
+  div.upload-modal-main-div
+  {
+    padding: 75px;
+  }
+
+
+}
+
 
 
 
