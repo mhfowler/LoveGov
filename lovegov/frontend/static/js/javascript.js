@@ -419,6 +419,13 @@ function editContent(c_id,info,edit_div)
     });
 }
 
+function unbindInlineEdits()
+{
+    $(".edit_button").unbind();
+    $(".submit_inline_edit").unbind();
+    $(".cancel_inline_edit").unbind();
+}
+
 function bindInlineEdits()
 {
     $(".edit_button").click(

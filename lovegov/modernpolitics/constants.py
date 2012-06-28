@@ -178,7 +178,7 @@ USERPROFILE_EDITABLE_FIELDS = [
 ]
 
 CONTENT_EDITABLE_FIELDS = [
-
+    'full_text',
 ]
 
 # level of government
