@@ -1319,14 +1319,32 @@ function loadThread()
     });
 
     $('span.collapse').click(function(e) {
-        var close = '[-]';
-        var open = '[+]';
+        var close = '[ - ]';
+        var open = '[ + ]';
         if($(this).text()==close) { 
             $(this).text(open);
             $(this).next('div.threaddiv').children().hide();
         } else if($(this).text()==open) {
             $(this).text(close);
             $(this).next('div.threaddiv').children().show();
+        }
+    });
+
+    $('span.flag').click(function(e) {
+        var commentid = $(this).data('commentid');
+        var comment = $(this).parent().children('div.comment-text').text();
+        var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
+        if(conf) {
+            ajaxPost({
+                data: {'action': 'flag', 'c_id': commentid},
+                success: function(data) {
+                    alert("Comment flagged successfully.");
+                    $(this).css("color", "red");
+                },
+                error: function(data) {
+                    alert("Flagging comment failed.");
+                }
+            });
         }
     });
 

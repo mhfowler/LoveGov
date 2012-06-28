@@ -1312,6 +1312,14 @@ def blogAction(request,vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
+def flag(request,vals={}):
+    c_id = request.POST.get('c_id')
+    val_data = {'name': vals['viewer'].get_name(), 'c_id': c_id}
+    print val_data
+    for team_member in TEAM_EMAILS:
+            send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
+    return HttpResponse("Comment flagged successfully.")
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1367,7 +1375,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getFilter': getFilter,
             'matchSection': matchSection,
             'shareContent': shareContent,
-            'blogAction': blogAction
+            'blogAction': blogAction,
+            'flag': flag
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1380,5 +1389,9 @@ def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
         vals['viewer'] = getUserProfile(request)
-    action = request.POST['action']
+    if not request.REQUEST.__contains__('action'):
+        return HttpResponse('No action specified.')
+    action = request.REQUEST['action']
+    if action not in actions:
+        return HttpResponse('The specified action ("%s") is not valid.' % (action))
     return actions[action](request, vals)

@@ -264,9 +264,13 @@ div.comment
 
 div.comment span.timestamp {
     float: left;
-    font-size: 13px;
+    font-size: 12px;
     color: $deep-gray;
-    margin-left: 20px;
+    margin-left: 10px;
+    margin-top: 18px;
+    display: block;
+    float: left;
+    font-family: $body-fonts;
 }
 
 
@@ -275,6 +279,20 @@ span.collapse {
     position: relative;
     float: left;
     z-index: 1;
+    color: $deep-gray;
+}
+
+span.flag {
+    color: $gray;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-left: 10px;
+    display: block;
+    float: left;
+    &:hover {
+        color: $deep-gray;
+    }
 }
 
 div.threaddiv {

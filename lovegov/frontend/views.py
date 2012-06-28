@@ -835,7 +835,7 @@ def contentDetail(request, content, vals):
     vals['content'] = content
     creator = content.getCreator()
     vals['creator'] = creator
-    vals['recent_actions'] = Action.objects.all().order_by('-when')[:3]
+    vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
     vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -956,7 +956,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         to_return = ''
         for c in comments:
             margin = 30*(depth+1)
-            to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
+            to_return += "<span class='collapse'>[ - ]</span><div class='threaddiv'>"     # open list
             my_vote = user_votes.filter(content=c) # check if i like comment
             if my_vote:
                 i_vote = my_vote[0].value

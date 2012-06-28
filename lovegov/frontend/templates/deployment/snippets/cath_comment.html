@@ -15,6 +15,10 @@
             <a> deleted </a>
         {% endif %}
     </div>
+    <span class="flag tooltip-top" data-commentid="{{comment.id}}" title="Flag this comment">⚐</span>
+    <span class="timestamp">
+        {{comment.created_when}}
+    </span>
     <div class="clearfix"></div>
     <div class="comment-text">
         {% if comment.active %}
@@ -24,9 +28,6 @@
             deleted
     {% endif %}
     </div>
-    <span class="timestamp">
-        {{comment.created_when}}
-    </span>
     <div class="comment-reply">
         <div class="reply">
             reply
