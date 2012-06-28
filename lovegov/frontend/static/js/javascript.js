@@ -1392,7 +1392,7 @@ function loadThread()
         function(event)
         {
             event.preventDefault();
-            var input = $(this).siblings('input.edit_input');
+            var input = $(this).siblings('.edit_input');
             var value = input.val();
             var name = input.attr('name');
             var info = {
@@ -1846,7 +1846,7 @@ function loadProfile()
         function(event)
         {
             event.preventDefault();
-            var input = $(this).siblings('input.edit_input');
+            var input = $(this).siblings('.edit_input');
             var value = input.val();
             var name = input.attr('name');
             var info = {
