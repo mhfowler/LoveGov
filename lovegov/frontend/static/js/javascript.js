@@ -1665,7 +1665,7 @@ function loadProfile()
     $(window).scroll(
         function()
         {
-            if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
+            if  (($(window).scrollTop() + $(window).height() + 5 >= $(document).height())) {
 
                 if( p_id == view_id )
                 {
@@ -2092,7 +2092,7 @@ function loadGroup()
     $(window).scroll(
         function()
         {
-            if  (($(window).scrollTop() >= $(document).height() - $(window).height()))
+            if  (($(window).scrollTop() + $(window).height() + 5 >= $(document).height() ))
             {
                 getMoreGroupActions();
                 getMoreGroupMembers();
