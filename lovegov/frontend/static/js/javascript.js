@@ -13,6 +13,7 @@ function rebindFunction()
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
     bindTooltips();                                             // bind all tooltip classes
+    bindInlineEdits();
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -367,9 +368,33 @@ function setFollowPrivacy(event,private_follow,div)
 
 /***********************************************************************************************************************
  *
- *      ~Editing
+ *      ~InlineEdits
  *
  ***********************************************************************************************************************/
+function editUserProfile(info,edit_div)
+{
+    var prof_data = info;
+    prof_data.action = 'editprofile';
+
+    ajaxPost({
+        'data': prof_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            if( obj.success )
+            {
+                edit_div.text(obj.value);
+                edit_div.show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
+
+
 function editContent(c_id,info,edit_div)
 {
     var content_data = info;
@@ -393,6 +418,50 @@ function editContent(c_id,info,edit_div)
         }
     });
 }
+
+function bindInlineEdits()
+{
+    $(".edit_button").click(
+        function(event)
+        {
+            event.preventDefault();
+            $(this).siblings('.inline_hide').hide();
+            $(this).hide();
+            $(this).siblings('.inline_edit').show();
+        }
+    );
+
+    $(".submit_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var input = $(this).siblings('.edit_input');
+            var wrapper = $(this).parent();
+            var name = input.attr('name');
+            var value = input.val();
+            var model = wrapper.data('model');
+            var info = {
+                'key':name,
+                'val':value
+            };
+            var edit_div = $(this).parent().siblings('.inline_hide');
+
+            if( model == "Content" )
+            {
+                var c_id = wrapper.data('id');
+                editContent(c_id,info,edit_div);
+            }
+            else if( model == "UserProfile")
+            {
+                editUserProfile(info,edit_div);
+            }
+
+            $(this).parent().siblings('.edit_button').show();
+            $(this).parent().hide();
+        }
+    );
+}
+
 
 
 /***********************************************************************************************************************
@@ -1378,36 +1447,6 @@ function loadThread()
         }
     });
 
-    $(".edit_button").click(
-        function(event)
-        {
-            event.preventDefault();
-            $(this).siblings('.inline_hide').hide();
-            $(this).hide();
-            $(this).siblings('.inline_edit').show();
-        }
-    );
-
-    $(".submit_inline_edit").click(
-        function(event)
-        {
-            event.preventDefault();
-            var input = $(this).siblings('.edit_input');
-            var value = input.val();
-            var name = input.attr('name');
-            var info = {
-                'key':name,
-                'val':value
-            };
-            var edit_div = $(this).parent().siblings('.inline_hide');
-            var c_id = $(this).siblings('input:hidden[name=c_id]').val();
-
-            editContent(c_id,info,edit_div);
-            $(this).parent().siblings('.edit_button').show();
-            $(this).parent().hide();
-        }
-    );
-
     loadHoverComparison();
 }
 
@@ -1603,29 +1642,6 @@ function loadNotification()
 var prof_more_notifications = true;
 var prof_more_actions = true;
 var prof_more_groups = true;
-
-function editUserProfile(info,edit_div)
-{
-    var prof_data = info;
-    prof_data.action = 'editprofile';
-
-    ajaxPost({
-        'data': prof_data,
-        success: function(data)
-        {
-            var obj = eval('(' + data + ')');
-            if( obj.success )
-            {
-                edit_div.text(obj.value);
-                edit_div.show();
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
-        }
-    });
-}
 
 function getMoreNotifications()
 {
@@ -1831,35 +1847,6 @@ function loadProfile()
     {
         setFollowPrivacy(event,1,$(this));
     });
-
-    $(".edit_button").click(
-        function(event)
-        {
-            event.preventDefault();
-            $(this).siblings('.inline_hide').hide();
-            $(this).hide();
-            $(this).siblings('.inline_edit').show();
-        }
-    );
-
-    $(".submit_inline_edit").click(
-        function(event)
-        {
-            event.preventDefault();
-            var input = $(this).siblings('.edit_input');
-            var value = input.val();
-            var name = input.attr('name');
-            var info = {
-                'key':name,
-                'val':value
-            };
-            var edit_div = $(this).parent().siblings('.inline_hide');
-
-            editUserProfile(info,edit_div);
-            $(this).parent().siblings('.edit_button').show();
-            $(this).parent().hide();
-        }
-    );
 }
 
 

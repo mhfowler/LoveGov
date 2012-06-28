@@ -330,6 +330,8 @@ def editProfile(request, vals={}):
         return HttpResponse( json.dumps({'success':False,'value':''}) )
     value = request.POST['val']
     key = request.POST['key']
+    if key not in USERPROFILE_EDITABLE_FIELDS:
+        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
     setattr( viewer , key , value )
     viewer.save()
     return HttpResponse( json.dumps({'success':True,'value':value}) )
@@ -343,8 +345,10 @@ def editContent(request, vals={}):
         return HttpResponse( json.dumps({'success':False,'value':''}) )
     value = request.POST['val']
     key = request.POST['key']
+    if key not in CONTENT_EDITABLE_FIELDS:
+        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
     content = Content.lg.get_or_none(id=request.POST['c_id'])
-    if content:
+    if content and viewer.id == content.getCreator().id:
         setattr( content , key , value )
         content.save()
         return HttpResponse( json.dumps({'success':True,'value':value}) )
