@@ -21,6 +21,15 @@
                         <img src="{{ im.url }}" class="icon-really-big"/>
                     {% endthumbnail %}
                 </div>
+                <div class="group-privacy">
+                    {% if group.group_privacy == 'O' %}
+                        PUBLIC
+                    {% elif group.group_privacy == 'P' %}
+                        PRIVATE
+                    {% elif group.group_privacy == 'S' %}
+                        HIDDEN
+                    {% endif %}
+                </div>
             </div>
             {% endif %}
 
@@ -77,6 +86,11 @@
                                 {% endif %}
                             </a>
                         {% endif %}
+                        {% if is_user_admin and group_requests|length > 0 %}
+                            <a href="" class="button-red float-left" id="group_requests">
+                                {{ group_requests|length }} join requests
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>
@@ -128,48 +142,33 @@
             </div>
         </div>
     </div>
-</div>
 
-
-<!-- Right Block -->
-<div class="middle-right">
-    <div class="matching">
-        <div id="qaweb"></div>
-        <div id="qaweb-title">
-            You & {{ group.title }}
+    <!-- Right Block -->
+    <div class="middle-right">
+        <div class="matching">
+            <div id="qaweb"></div>
+            <div id="qaweb-title">
+                You & {{ group.title }}
+            </div>
+        </div>
+        <div class="group-histogram-container">
         </div>
     </div>
-    <div class="group-histogram-container">
-    </div>
 </div>
 
-    {% if not group.system %}
-        {% if is_user_admin %}
-        <ul id="group-requests">
-            {% for req in prof_requests %}
-            <li><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-                <a href="" class="group-response-y"> I accept! </a> ||
-                <a href="" class="group-response-n"> I decline! </a>
-                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-            </li>
-            {% empty %}
-            <li>No follow requests! =( </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        <br>
-
-    {% endif %}
-
-
-
-    <script>
-        var g_id = "{{ group.id }}";
-    </script>
-
+<div id="group_requests_modal" class="requests-modal">
+    {% for req in prof_requests %}
+        <div><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
+            <a href="" class="group-response-y"> I accept </a> ||
+            <a href="" class="group-response-n"> I decline </a>
+            <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+        </div>
+    {% endfor %}
 </div>
 
+<script>
+    var g_id = "{{ group.id }}";
+</script>
 
 {% else %}
     This group has been deleted.

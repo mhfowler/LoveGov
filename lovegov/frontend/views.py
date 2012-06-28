@@ -602,7 +602,7 @@ def group(request, g_id=None, vals={}):
     vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
 
     # Get Follow Requests
-    vals['prof_requests'] = list(group.getFollowRequests())
+    vals['group_requests'] = list(group.getFollowRequests())
 
     # Get Activity
     num_actions = NOTIFICATION_INCREMENT

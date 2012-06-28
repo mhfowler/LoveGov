@@ -138,7 +138,7 @@ class LocationLevel(models.Model):
         elif scale == 'F':
             return 'Federal'
         elif scale == 'A':
-            return 'All'
+            return 'Universal'
         else:
             return 'None'
 

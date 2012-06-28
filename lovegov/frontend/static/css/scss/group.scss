@@ -25,6 +25,14 @@ div.middle-left
     {
       @include float-left;
       margin-right: 20px;
+
+      div.group-privacy
+      {
+        font-size: 11px;
+        margin-top: 2px;
+        text-align: center;
+        color: $deep-gray;
+      }
     }
 
   /* Info Main Contents */
@@ -43,7 +51,6 @@ div.middle-left
       {
         @include h2;
         line-height: 30px;
-        min-height: 50px;
       }
 
       div.group-scale
@@ -276,4 +283,12 @@ div.group-histogram-container
   height: 300px;
   background-color: $gray;
   @include rounded;
+}
+
+div.requests-modal
+{
+  @include modal;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
 }

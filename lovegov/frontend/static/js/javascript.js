@@ -1842,6 +1842,20 @@ function loadAccount()
  *      ~Group
  *
  **********************************************************************************************************************/
+function bindGroupRequestsButton()
+{
+    $('#group_requests').click( function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div#group_requests_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#group_requests_modal').hide();
+    });
+}
+
 function groupFollowResponse(event,response,div,g_id)
 {
     event.preventDefault();
