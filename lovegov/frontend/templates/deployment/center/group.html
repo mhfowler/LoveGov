@@ -42,8 +42,17 @@
                         {{ group.getScaleVerbose }}
                     </div>
                     <div class="group-summary">
-                        {% comment %}{{ group.summary }}{% endcomment %}
-                        This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
+                        <div class="inline-div inline_hide">
+                            {{ group.full_text }}
+                        </div>
+                        {% if is_user_admin  %}
+                            <div class="edit-link edit_button"></div>
+                            <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                                <textarea maxlength="1000" class="group-full-text-edit edit_input" name="full_text">{{ group.full_text }}</textarea>
+                                <a href="" class="edit-link submit_inline_edit">submit</a>
+                                <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                            </div>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="group-scale">
