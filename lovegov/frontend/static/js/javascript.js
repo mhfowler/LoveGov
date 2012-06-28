@@ -1502,6 +1502,120 @@ function loadNotification()
  *      ~Profile
  *
  ***********************************************************************************************************************/
+function getMoreNotifications()
+{
+
+    var num_notifications = $("#num_notifications").val();
+    ajaxPost({
+        'data': {'action':'getnotifications',
+            'num_notifications':num_notifications },
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            $('#profile_notifications').append(obj.html);
+            $('#num_notifications').val(obj.num_notifications);
+            if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
+            {
+                $('#see_more_notifications').html('No more notifications');
+                $('#see_more_notifications').unbind();
+                $('#see_more_notifications').click( function(event)
+                {
+                    event.preventDefault();
+                });
+                return false;
+            }
+            else if( obj.hasOwnProperty('error') )
+            {
+                $('body').html(obj.error);
+                return false;
+            }
+            unbindNotification();
+            loadNotification();
+            return true;
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+            return false;
+        }
+    });
+}
+
+function getMoreUserActions()
+{
+    var num_actions = $("#num_actions").val();
+    ajaxPost({
+        'data': {'action':'getuseractions',
+            'num_actions':num_actions,
+            'p_id':p_id },
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            $('#profile_activity_feed').append(obj.html);
+            $('#num_actions').val(obj.num_actions);
+            if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
+            {
+                $('#profile_more_actions').html('No more actions')
+                $('#profile_more_actions').unbind();
+                $('#profile_more_actions').click( function(event)
+                {
+                    event.preventDefault();
+                });
+                return false;
+            }
+            else if( obj.hasOwnProperty('error') )
+            {
+                alert(obj.error);
+                $('body').html(obj.error);
+                return false;
+            }
+            return true;
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+            return false;
+        }
+    });
+}
+
+function getMoreGroups()
+{
+    var num_groups = $("#num_groups").val();
+    ajaxPost({
+        'data': {'action':'getusergroups',
+            'num_groups':num_groups,
+            'p_id':p_id },
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            $('#profile_activity_feed').append(obj.html);
+            $('#num_groups').val(obj.num_groups);
+            if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
+            {
+                $('#profile_more_groups').html('No more groups');
+                $('#profile_more_groups').unbind();
+                $('#profile_more_groups').click( function(event)
+                {
+                    event.preventDefault();
+                });
+                return false;
+            }
+            else if( obj.hasOwnProperty('error') )
+            {
+                //$('body').html(obj.error);
+                return false;
+            }
+            return true;
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+            return false;
+        }
+    });
+}
+
 function loadProfile()
 {
     unbindNotification();
@@ -1533,40 +1647,52 @@ function loadProfile()
         groupInviteResponse(event,"N",$(this));
     });
 
+
+    var more_notifications = true;
+    var more_actions = true;
+    var more_groups = true;
+
+    $(window).scroll(
+        function()
+        {
+            if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
+
+                if( more_notifications && p_id == view_id )
+                {
+                    if( !getMoreNotifications() )
+                    {
+                        more_notifications = false;
+                    }
+                }
+                if( more_actions )
+                {
+                    if( ! getMoreUserActions() )
+                    {
+                        more_actions = false;
+                    }
+                }
+                if( more_groups )
+                {
+                    if( !getMoreGroups() )
+                    {
+                        more_groups = false;
+                    }
+                }
+            }
+        }
+    );
+
     $('#see_more_notifications').click(
         function(event)
         {
             event.preventDefault();
-            var num_notifications = $("#num_notifications").val();
-            ajaxPost({
-                'data': {'action':'getnotifications',
-                    'num_notifications':num_notifications },
-                success: function(data)
+            if( more_notifications )
+            {
+                if( !getMoreNotifications() )
                 {
-                    var obj = eval('(' + data + ')');
-                    $('#profile_notifications').append(obj.html);
-                    $('#num_notifications').val(obj.num_notifications);
-                    if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
-                    {
-                        $('#see_more_notifications').html('No more notifications');
-                        $('#see_more_notifications').unbind();
-                        $('#see_more_notifications').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( obj.hasOwnProperty('error') )
-                    {
-                        $('body').html(obj.error);
-                    }
-                    unbindNotification();
-                    loadNotification();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
+                    more_notifications = false;
                 }
-            });
+            }
         }
     );
 
@@ -1574,36 +1700,13 @@ function loadProfile()
         function(event)
         {
             event.preventDefault();
-            var num_actions = $("#num_actions").val();
-            ajaxPost({
-                'data': {'action':'getuseractions',
-                    'num_actions':num_actions,
-                    'p_id':p_id },
-                success: function(data)
+            if( more_actions )
+            {
+                if( !getMoreUserActions() )
                 {
-                    var obj = eval('(' + data + ')');
-                    $('#profile_activity_feed').append(obj.html);
-                    $('#num_actions').val(obj.num_actions);
-                    if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
-                    {
-                        $('#profile_more_actions').html('No more actions')
-                        $('#profile_more_actions').unbind();
-                        $('#profile_more_actions').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( obj.hasOwnProperty('error') )
-                    {
-                        alert(obj.error);
-                        $('body').html(obj.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
+                    more_actions = false;
                 }
-            });
+            }
         }
     );
 
@@ -1611,36 +1714,13 @@ function loadProfile()
         function(event)
         {
             event.preventDefault();
-            var num_groups = $("#num_groups").val();
-            ajaxPost({
-                'data': {'action':'getusergroups',
-                    'num_groups':num_groups,
-                    'p_id':p_id },
-                success: function(data)
+            if( more_groups )
+            {
+                if( !getMoreGroups() )
                 {
-                    var obj = eval('(' + data + ')');
-                    $('#profile_activity_feed').append(obj.html);
-                    $('#num_groups').val(obj.num_groups);
-                    if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
-                    {
-                        $('#profile_more_groups').html('No more groups')
-                        $('#profile_more_groups').unbind();
-                        $('#profile_more_groups').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( obj.hasOwnProperty('error') )
-                    {
-                        alert(obj.error);
-                        $('body').html(obj.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
+                    more_groups = fase;
                 }
-            });
+            }
         }
     );
 
