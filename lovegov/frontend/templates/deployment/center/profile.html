@@ -52,7 +52,7 @@
                     </div>
                     {% if viewer.id == user_prof.id %}
                         <div class="edit-link edit_button"></div>
-                        <div class="inline-edit-input inline_edit">
+                        <div class="inline-edit-input inline_edit" data-model="UserProfile">
                             <input type="text" maxlength="200" value="{{ user_prof.user_title }}" class="edit_input" name="user_title"/>
                             <a href="" class="edit-link submit_inline_edit">submit</a>
                         </div>

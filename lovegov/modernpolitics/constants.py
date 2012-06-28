@@ -172,6 +172,15 @@ PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantom
 
 ########################################## CHOICES #####################################################################
 
+# editable fields
+USERPROFILE_EDITABLE_FIELDS = [
+    'user_title',
+]
+
+CONTENT_EDITABLE_FIELDS = [
+
+]
+
 # level of government
 SCALE_CHOICES = (
     ('P', 'Personal'),
