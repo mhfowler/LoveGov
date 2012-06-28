@@ -1899,6 +1899,7 @@ function getMoreGroupActions()
 {
     if( group_more_actions )
     {
+        group_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
             'data': {'action':'getgroupactions',
@@ -1939,6 +1940,7 @@ function getMoreGroupMembers()
 {
     if( group_more_members )
     {
+        group_more_members = false;
         var num_members = $("#num_members").val();
         ajaxPost({
             'data': {'action':'getgroupmembers',
@@ -2119,7 +2121,7 @@ function loadGroup()
     $(window).scroll(
         function()
         {
-            if  (($(window).scrollTop() + $(window).height() + 5 >= $(document).height() ))
+            if(($(window).scrollTop() + $(window).height() >= $(document).height() ))
             {
                 getMoreGroupActions();
                 getMoreGroupMembers();
