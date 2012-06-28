@@ -29,11 +29,12 @@
                 deleted
         {% endif %}
         </div>
-        <div class="edit_button edit-link">Edit</div>
-        <div class="inline-edit-input">
-            <textarea style="width:{{ width }}px" class="comment-textarea inline_edit edit_input" type="text" name="comment">what's your opinion?</textarea>
-            <a class="submit_inline_edit">Submit changes</a>
-            <input type="hidden" name="c_id" value="{{comment.id}}">
+        <div class="edit_button edit-link"></div>
+        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{comment.id}}">
+            <textarea style="width:{{ width }}px" class="comment-textarea edit_input" type="text" name="text" maxlength='1000'>{{comment.text}}</textarea>
+            <input type="button" class="tab-button edit-link submit_inline_edit" style="float: right" value="Save">
+            <input type="button" class="tab-button cancel_inline_edit alt" style="float: right; margin-right: 10px" value="Cancel">
+            <div style="clear:both"></div>
         </div>
     </div>
     <div class="comment-reply">
