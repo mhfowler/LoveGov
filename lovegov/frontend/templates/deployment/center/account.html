@@ -24,41 +24,44 @@
     </div>
     <div class="account-right">
         <div id="account-basic-information">
-            <table>
-                <tr>
-                    <td></td>
-                    <td><h2>Basic Information</h2></td>
-                </tr>
-                <tr>
-                    <td class="left"><h3>first name</h3></td>
-                    <td><h3 class="gray">{{ viewer.get_first_name }}</h3></td>
-                </tr>
-                <tr>
-                    <td class="left"><h3>last name</h3></td>
-                    <td><h3 class="gray">{{ viewer.get_last_name }}</h3></td>
-                </tr>
-                <tr>
-                    <td class="left"><h3>email</h3></td>
-                    <td><h3 class="gray">{{ viewer.get_email }}</h3></td>
-                </tr>
-                <tr class="break"></tr>
-                <tr>
-                    <td class="left">
-                        <h3>address</h3>
-                        <p>
-                            We use your address to
-                            determine your voting
-                            district. See our <a>privacy
-                            policy</a> for details
-                        </p>
-                    </td>
-                    <td><h3 class="gray">{{ viewer.get_address }}</h3></td>
-                </tr>
-            </table>
-
-
+            <form action="" method="post"> {% csrf_token %}
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h2>Basic Information</h2></td>
+                    </tr>
+                    <tr>
+                        <td class="left"><h3>first name</h3></td>
+                        <td><input type="text" value="{{ viewer.get_first_name }}" name="first_name"/></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left"><h3>last name</h3></td>
+                        <td><input type="text" value="{{ viewer.get_last_name }}" name="last_name"/></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left"><h3>email</h3></td>
+                        <td><input type="text" value="{{ viewer.get_email }}" name="email"/></td>
+                    </tr>
+                    <tr class="break-small"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>address</h3>
+                            <p>
+                                We use your address to determine your voting district. See our <a>privacy policy</a> for details.
+                            </p>
+                        </td>
+                        <td><textarea id="address_input" name="address">{{ viewer.get_address }}</textarea></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td></td>
+                        <td style="text-align:right"><input type="submit" class="button-red" value="save changes"/></td>
+                    </tr>
+                </table>
+            </form>
         </div>
-
     </div>
 
 </div>
@@ -75,6 +78,14 @@
             $(this).addClass("account-button-selected");
             $(this).prepend(pointer);
 
+        });
+
+        $('#address_input').keypress(function(event)
+        {
+            if ($(this).val().length >= 100)
+            {
+                event.preventDefault();
+            }
         });
     }
 

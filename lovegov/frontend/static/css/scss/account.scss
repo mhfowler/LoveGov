@@ -2,6 +2,8 @@
 @import 'master-variables';
 @import 'master-mixins';
 
+$account-header-margin-bottom:25px;
+
 div.account-left
 {
   $width:325px;
@@ -11,7 +13,7 @@ div.account-left
 
   h2
   {
-    margin-bottom:25px;
+    margin-bottom:$account-header-margin-bottom;
   }
 
   div.account-button-options
@@ -76,13 +78,36 @@ div.account-right
  {
    h2
    {
-     margin-bottom:25px;
+     margin-bottom:$account-header-margin-bottom;
+   }
+
+   td
+   {
+     vertical-align:middle;
+   }
+
+   input[type="text"]
+   {
+     border:0;
+     @include h3;
+     color:$dark-gray;
+     font-family:$title-font;
+     width:360px;
+   }
+
+   textarea
+   {
+     border:0;
+     @include h3;
+     color:$dark-gray;
+     font-family:$title-font;
+     width:360px;
+     height:105px;
    }
 
    td.left
    {
-     padding-right:75px;
-     padding-bottom:8px;
+     padding-right:60px;
      text-align:right;
 
      h3
@@ -106,16 +131,29 @@ div.account-right
      }
    }
 
-  tr.break
+   tr.break
+   {
+     height:8px;
+   }
+
+
+  tr.break-small
   {
     height:20px;
   }
+
+   tr.break-large
+   {
+     height:30px;
+   }
 
    h3.gray
    {
      color:$dark-gray;
      font-family:$title-font;
    }
+
+
  }
 
 
