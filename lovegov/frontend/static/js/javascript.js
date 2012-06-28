@@ -1319,8 +1319,8 @@ function loadThread()
     });
 
     $('span.collapse').click(function(e) {
-        var close = '[ - ]';
-        var open = '[ + ]';
+        var close = '[-]';
+        var open = '[+]';
         if($(this).text()==close) { 
             $(this).text(open);
             $(this).next('div.threaddiv').children().hide();

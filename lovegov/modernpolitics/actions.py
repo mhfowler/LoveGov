@@ -1315,9 +1315,10 @@ def blogAction(request,vals={}):
 def flag(request,vals={}):
     c_id = request.POST.get('c_id')
     val_data = {'name': vals['viewer'].get_name(), 'c_id': c_id}
-    print val_data
-    for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
+    c = Comment.objects.get_or_none(c_id)
+    print c
+    #for team_member in TEAM_EMAILS:
+    #        send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
     return HttpResponse("Comment flagged successfully.")
 
 
