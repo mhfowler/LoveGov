@@ -1378,6 +1378,36 @@ function loadThread()
         }
     });
 
+    $(".edit_button").click(
+        function(event)
+        {
+            event.preventDefault();
+            $(this).siblings('.inline_hide').hide();
+            $(this).hide();
+            $(this).siblings('.inline_edit').show();
+        }
+    );
+
+    $(".submit_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var input = $(this).siblings('input.edit_input');
+            var value = input.val();
+            var name = input.attr('name');
+            var info = {
+                'key':name,
+                'val':value
+            };
+            var edit_div = $(this).parent().siblings('.inline_hide');
+            var c_id = $(this).siblings('input:hidden[name=c_id]').val();
+
+            editContent(c_id,info,edit_div);
+            $(this).parent().siblings('.edit_button').show();
+            $(this).parent().hide();
+        }
+    );
+
     loadHoverComparison();
 }
 
