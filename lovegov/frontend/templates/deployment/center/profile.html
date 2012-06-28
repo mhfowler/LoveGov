@@ -47,7 +47,16 @@
                 </div>
 
                 <div class="profile-summary">
-                    This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
+                    <div class="inline-div inline_hide">
+                        {{ user_prof.user_title }}
+                    </div>
+                    {% if viewer.id == user_prof.id %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit">
+                            <input type="text" maxlength="200" value="{{ user_prof.user_title }}" class="edit_input" name="user_title"/>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="profile-stats">

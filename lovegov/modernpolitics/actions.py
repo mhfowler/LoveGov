@@ -321,6 +321,35 @@ def finalize(request, vals={}):
         petition.finalize()
     return HttpResponse("success")
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Edits user profile information
+#-----------------------------------------------------------------------------------------------------------------------
+def editProfile(request, vals={}):
+    viewer = vals['viewer']
+    if not 'val' in request.POST or not 'key' in request.POST:
+        return HttpResponse( json.dumps({'success':False,'value':''}) )
+    value = request.POST['val']
+    key = request.POST['key']
+    setattr( viewer , key , value )
+    viewer.save()
+    return HttpResponse( json.dumps({'success':True,'value':value}) )
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Edits user profile information
+#-----------------------------------------------------------------------------------------------------------------------
+def editContent(request, vals={}):
+    viewer = vals['viewer']
+    if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
+        return HttpResponse( json.dumps({'success':False,'value':''}) )
+    value = request.POST['val']
+    key = request.POST['key']
+    content = Content.lg.get_or_none(id=request.POST['c_id'])
+    if content:
+        setattr( content , key , value )
+        content.save()
+        return HttpResponse( json.dumps({'success':True,'value':value}) )
+    return HttpResponse( json.dumps({'success':False,'value':''}) )
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Edit content based on editform.
@@ -1312,6 +1341,14 @@ def blogAction(request,vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
+def flag(request,vals={}):
+    c_id = request.POST.get('c_id')
+    val_data = {'name': vals['viewer'].get_name(), 'c_id': c_id}
+    print val_data
+    for team_member in TEAM_EMAILS:
+            send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
+    return HttpResponse("Comment flagged successfully.")
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1332,6 +1369,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'create': create,
             'invite': invite,
             'edit': edit,
+            'editprofile': editProfile,
             'delete': delete,
             'setprivacy': setPrivacy,
             'followprivacy': setFollowPrivacy,
@@ -1367,7 +1405,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getFilter': getFilter,
             'matchSection': matchSection,
             'shareContent': shareContent,
-            'blogAction': blogAction
+            'blogAction': blogAction,
+            'flag': flag
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1380,5 +1419,9 @@ def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
         vals['viewer'] = getUserProfile(request)
-    action = request.POST['action']
+    if not request.REQUEST.__contains__('action'):
+        return HttpResponse('No action specified.')
+    action = request.REQUEST['action']
+    if action not in actions:
+        return HttpResponse('The specified action ("%s") is not valid.' % (action))
     return actions[action](request, vals)

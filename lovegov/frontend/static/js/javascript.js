@@ -12,6 +12,7 @@ function rebindFunction()
     loadHoverComparison();                                      // hover comparison functionality
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
+    bindTooltips();                                             // bind all tooltip classes
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -65,6 +66,19 @@ function rebindFunction()
     }
 }
 
+
+/***********************************************************************************************************************
+ *
+ *      ~Bind popovers
+ *
+ ***********************************************************************************************************************/
+
+function bindTooltips() {
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+}
 
 
 /***********************************************************************************************************************
@@ -350,6 +364,36 @@ function setFollowPrivacy(event,private_follow,div)
 
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *      ~Editing
+ *
+ ***********************************************************************************************************************/
+function editContent(c_id,info,edit_div)
+{
+    var content_data = info;
+    content_data.action = 'editcontent';
+    content_data.c_id = c_id;
+
+    ajaxPost({
+        'data': content_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            if( obj.success )
+            {
+                edit_div.text(obj.value);
+                edit_div.show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
+
 
 /***********************************************************************************************************************
  *
@@ -1176,28 +1220,8 @@ function submitAnswer()
  ***********************************************************************************************************************/
 // binding for thread
 function loadThread()
-{
-    $('.heart').hover
-        (
-            function(event)
-            {
-                if (!$(this).hasClass('blue'))
-                {
-                    var src = $(this).attr('src');
-                    src = src.replace('Grey','Blue');
-                    $(this).attr('src',src);
-                }
-            },
-            function(event)
-            {
-                if (!$(this).hasClass('blue'))
-                {
-                    var src = $(this).attr('src');
-                    src = src.replace('Blue','Grey');
-                    $(this).attr('src',src);
-                }
-            }
-        );
+{ 
+	heartButtons();
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)
@@ -1235,6 +1259,12 @@ function loadThread()
     $(".reply").click(function()
     {
         $(this).parent().siblings('.replyform').toggle();
+    });
+    
+    // hide for "cancel" button
+    $("input.tab-button.alt").click(function()
+    {
+        $(this).parent().hide();
     });
 
     // delete comment
@@ -1317,6 +1347,66 @@ function loadThread()
         }
         $(this).blur();
     });
+
+    $('span.collapse').click(function(e) {
+        var close = '[ - ]';
+        var open = '[ + ]';
+        if($(this).text()==close) { 
+            $(this).text(open);
+            $(this).next('div.threaddiv').children().hide();
+        } else if($(this).text()==open) {
+            $(this).text(close);
+            $(this).next('div.threaddiv').children().show();
+        }
+    });
+
+    $('span.flag').click(function(e) {
+        var commentid = $(this).data('commentid');
+        var comment = $(this).parent().children('div.comment-text').text();
+        var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
+        if(conf) {
+            ajaxPost({
+                data: {'action': 'flag', 'c_id': commentid},
+                success: function(data) {
+                    alert("Comment flagged successfully.");
+                    $(this).css("color", "red");
+                },
+                error: function(data) {
+                    alert("Flagging comment failed.");
+                }
+            });
+        }
+    });
+
+    $(".edit_button").click(
+        function(event)
+        {
+            event.preventDefault();
+            $(this).siblings('.inline_hide').hide();
+            $(this).hide();
+            $(this).siblings('.inline_edit').show();
+        }
+    );
+
+    $(".submit_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var input = $(this).siblings('input.edit_input');
+            var value = input.val();
+            var name = input.attr('name');
+            var info = {
+                'key':name,
+                'val':value
+            };
+            var edit_div = $(this).parent().siblings('.inline_hide');
+            var c_id = $(this).siblings('input:hidden[name=c_id]').val();
+
+            editContent(c_id,info,edit_div);
+            $(this).parent().siblings('.edit_button').show();
+            $(this).parent().hide();
+        }
+    );
 
     loadHoverComparison();
 }
@@ -1494,6 +1584,14 @@ function loadNotification()
     $(".notification-follow-response-n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
+
+    $(".notification_group_response_y").click( function(event) {
+        groupFollowResponse(event,"Y",$(this));
+    });
+
+    $(".notification_group_response_n").click( function(event) {
+        groupFollowResponse(event,"N",$(this));
+    });
 }
 
 
@@ -1505,6 +1603,29 @@ function loadNotification()
 var prof_more_notifications = true;
 var prof_more_actions = true;
 var prof_more_groups = true;
+
+function editUserProfile(info,edit_div)
+{
+    var prof_data = info;
+    prof_data.action = 'editprofile';
+
+    ajaxPost({
+        'data': prof_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            if( obj.success )
+            {
+                edit_div.text(obj.value);
+                edit_div.show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
 
 function getMoreNotifications()
 {
@@ -1710,6 +1831,35 @@ function loadProfile()
     {
         setFollowPrivacy(event,1,$(this));
     });
+
+    $(".edit_button").click(
+        function(event)
+        {
+            event.preventDefault();
+            $(this).siblings('.inline_hide').hide();
+            $(this).hide();
+            $(this).siblings('.inline_edit').show();
+        }
+    );
+
+    $(".submit_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var input = $(this).siblings('input.edit_input');
+            var value = input.val();
+            var name = input.attr('name');
+            var info = {
+                'key':name,
+                'val':value
+            };
+            var edit_div = $(this).parent().siblings('.inline_hide');
+
+            editUserProfile(info,edit_div);
+            $(this).parent().siblings('.edit_button').show();
+            $(this).parent().hide();
+        }
+    );
 }
 
 
@@ -1842,11 +1992,25 @@ function loadAccount()
  *      ~Group
  *
  **********************************************************************************************************************/
+function bindGroupRequestsButton()
+{
+    $('#group_requests').click( function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div#group_requests_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#group_requests_modal').hide();
+    });
+}
+
 function groupFollowResponse(event,response,div,g_id)
 {
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
-    alert( follow_id );
+    var g_id = div.siblings(".group-id").val();
     ajaxPost({
             data: {
                 'action':'joinresponse',
@@ -1873,6 +2037,7 @@ function getMoreGroupActions()
 {
     if( group_more_actions )
     {
+        group_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
             'data': {'action':'getgroupactions',
@@ -1913,6 +2078,7 @@ function getMoreGroupMembers()
 {
     if( group_more_members )
     {
+        group_more_members = false;
         var num_members = $("#num_members").val();
         ajaxPost({
             'data': {'action':'getgroupmembers',
@@ -1954,6 +2120,7 @@ function loadGroup()
     var loadUsersLockout = false;
     var loadHistoLockout = false;
 
+    bindGroupRequestsButton();
     // load more users for display
     function loadMoreUsers(event, replace)
     {
@@ -2092,7 +2259,7 @@ function loadGroup()
     $(window).scroll(
         function()
         {
-            if  (($(window).scrollTop() + $(window).height() + 5 >= $(document).height() ))
+            if(($(window).scrollTop() + $(window).height() >= $(document).height() ))
             {
                 getMoreGroupActions();
                 getMoreGroupMembers();
