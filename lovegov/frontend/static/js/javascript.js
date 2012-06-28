@@ -1308,6 +1308,7 @@ function submitAnswer()
 // binding for thread
 function loadThread()
 { 
+    bindInlineEdits();
 	heartButtons();
     // comment submit
     $(".submit-comment").unbind();
