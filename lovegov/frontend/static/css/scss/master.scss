@@ -675,3 +675,28 @@ input.tab-button, a.tab-button, span.tab-button {
   color:$gray;
 }
 
+.inline-edit-input
+{
+  display: none;
+}
+
+div.edit-link
+{
+  background-image: url('/static/images/edit-pencil.png');
+  background-size: 16px 16px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+div.edit-link:hover
+{
+  background-image: url('/static/images/edit-pencil-blue.png');
+}
+
+
+.inline-div
+{
+  display: inline;
+}
