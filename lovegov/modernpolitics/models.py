@@ -1666,7 +1666,8 @@ class Notification(Privacy):
                           'modifier':n_action.modifier,
                           'tally':self.tally,
                           'true':True,
-                          'viewed':viewed}
+                          'viewed':viewed,
+                          'anon':n_action.getPrivate()}
         if n_action.type == 'FO':
             notification_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
@@ -3239,7 +3240,9 @@ class Group(Content):
         for k in histogram:
             tuple = histogram[k]
             num = tuple['num']
-            if  not num:
+            tuple['percent'] = num/people
+            if not num:
+
                 pix = 5
             else:
                 pix = (num/people*100)*5
