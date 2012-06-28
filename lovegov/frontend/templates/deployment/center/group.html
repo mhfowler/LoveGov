@@ -13,7 +13,7 @@
     <!-- Left Block -->
     <div class="middle-left">
         <div class="basic-info">
-
+            {% if not group.system %}
             <div class="basic-info-left">
                 <div class="group-img">
                     {% load thumbnail %}
@@ -22,35 +22,43 @@
                     {% endthumbnail %}
                 </div>
             </div>
+            {% endif %}
 
             <div class="basic-info-main">
                 <div class="group-name">
                     {{ group.title }}
                 </div>
-                <div class="group-scale">
-                    {{ group.getScaleVerbose }}
-                </div>
-                <div class="group-summary">
-                    {% comment %}{{ group.summary }}{% endcomment %}
-                    This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
-                </div>
+                {% if not group.system %}
+                    <div class="group-scale">
+                        {{ group.getScaleVerbose }}
+                    </div>
+                    <div class="group-summary">
+                        {% comment %}{{ group.summary }}{% endcomment %}
+                        This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
+                    </div>
+                {% else %}
+                    <div class="group-scale">
+                        System Group
+                    </div>
+                {% endif %}
+
 
                 <div class="group-stats">
                     <div class="stat-box members-stat">
-                        <span class="group-stats-number members-number">{{ group_members|length }}</span>
-                        <span class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number members-number">{{ group_members|length }}</div>
+                        <div class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="group-stats-number">19</span>
-                        <span class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number">19</div>
+                        <div class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="group-stats-number">0</span>
-                        <span class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number">0</div>
+                        <div class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="group-stats-number">0</span>
-                        <span class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number">0</div>
+                        <div class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                 </div>
 

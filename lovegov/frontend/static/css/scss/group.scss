@@ -75,7 +75,7 @@ div.middle-left
           background-color: $gray;
           margin-right: 10px;
 
-          span.group-stats-number
+          div.group-stats-number
           {
             @include big-num;
             color: white;
@@ -83,7 +83,7 @@ div.middle-left
             line-height: 52px;
           }
 
-          span.group-stats-title
+          div.group-stats-title
           {
             @include fontSize(12px);
             color: $deep-gray;
@@ -102,7 +102,7 @@ div.middle-left
         {
           background-color: white;
 
-          span.members-number
+          div.members-number
           {
             color: $red;
           }
@@ -113,7 +113,7 @@ div.middle-left
           background-color: white;
           border-color: $gray;
 
-          span.members-number
+          div.members-number
           {
             color: $red-light;
           }
