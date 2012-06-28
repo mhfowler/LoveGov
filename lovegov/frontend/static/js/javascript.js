@@ -1510,6 +1510,7 @@ function getMoreNotifications()
 {
     if( prof_more_notifications )
     {
+        prof_more_notifications = false;
         var num_notifications = $("#num_notifications").val();
         ajaxPost({
             'data': {'action':'getnotifications',
@@ -1521,7 +1522,6 @@ function getMoreNotifications()
                 $('#num_notifications').val(obj.num_notifications);
                 if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
                 {
-                    prof_more_notifications = false;
                     $('#see_more_notifications').html('No more notifications');
                     $('#see_more_notifications').unbind();
                     $('#see_more_notifications').click( function(event)
@@ -1531,8 +1531,11 @@ function getMoreNotifications()
                 }
                 else if( obj.hasOwnProperty('error') )
                 {
-                    prof_more_notifications = false;
                     $('body').html(obj.error);
+                }
+                else
+                {
+                    prof_more_notifications = true;
                 }
                 unbindNotification();
                 loadNotification();
@@ -1549,6 +1552,7 @@ function getMoreUserActions()
 {
     if( prof_more_actions )
     {
+        prof_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
             'data': {'action':'getuseractions',
@@ -1561,7 +1565,6 @@ function getMoreUserActions()
                 $('#num_actions').val(obj.num_actions);
                 if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
                 {
-                    prof_more_actions = false;
                     $('#profile_more_actions').html('No more actions')
                     $('#profile_more_actions').unbind();
                     $('#profile_more_actions').click( function(event)
@@ -1571,10 +1574,12 @@ function getMoreUserActions()
                 }
                 else if( obj.hasOwnProperty('error') )
                 {
-                    prof_more_actions = false;
                     $('body').html(obj.error);
                 }
-                return true;
+                else
+                {
+                    prof_more_actions = true;
+                }
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -1588,6 +1593,7 @@ function getMoreGroups()
 {
     if( prof_more_groups )
     {
+        prof_more_groups = false;
         var num_groups = $("#num_groups").val();
         ajaxPost({
             'data': {'action':'getusergroups',
@@ -1600,7 +1606,7 @@ function getMoreGroups()
                 $('#num_groups').val(obj.num_groups);
                 if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
                 {
-                    prof_more_groups = false;
+
                     $('#profile_more_groups').html('No more groups');
                     $('#profile_more_groups').unbind();
                     $('#profile_more_groups').click( function(event)
@@ -1610,8 +1616,11 @@ function getMoreGroups()
                 }
                 else if( obj.hasOwnProperty('error') )
                 {
-                    prof_more_groups = false;
-                    //$('body').html(obj.error);
+                    $('body').html(obj.error);
+                }
+                else
+                {
+                    prof_more_groups = true;
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
