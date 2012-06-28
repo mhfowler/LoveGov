@@ -37,6 +37,9 @@
                     <p class="saved-filter-title">
                         {{ x.name }}
                     </p>
+                    {% if x.name != 'default' %}
+                        <div class="x-button delete_saved_filter"></div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
@@ -249,6 +252,14 @@
     <div class="pinterest-wrapper">
 
     </div>
+
+
+    <div class="right-sidebar">
+
+      {% include 'deployment/pieces/right_sidebar.html' %}
+
+    </div>
+
 
 </div>
 

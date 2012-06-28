@@ -4,33 +4,36 @@
 </head>
 <body>
 
-<h3> <a href="/twitter/redirect/"> twitter </a></h3>
+{% load thumbnail %}
 
-<h1>{{ viewer.get_name }}</h1>
-<br>
-<h2> Dropdown </h2>
-{% for x in notifications_dropdown %}
-    {{ x.verbose }}
-    <br>
+    {% thumbnail 'http://lovegov.com/static/images/login/lovegovlogo.png' "50x50" as im%}
+        <img src="{{ im.url }}"/>
+    {% empty %}
+        <p> no pic </p>
+        <img src="http://lovegov.com/static/images/login/lovegovlogo.png"/>
+    {% endthumbnail %}
+
+<h2> HELLO </h2>
+
+{% for t in main_topics %}
+    <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}">
+        {% thumbnail t.image "40x40" format="PNG" as im %}
+            <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
+        {% endthumbnail %}
+        {% thumbnail t.selected "40x40" format="PNG" as im %}
+            <img class="topic-img selected feed-topic-img" src="{{ im.url }}"/>
+        {% endthumbnail %}
+    </div>
 {% endfor %}
 
-<h2> Profile </h2>
-{% for x in notifications_profile%}
-    {{ x.verbose }}
-    <br>
-{% endfor %}
+<h2> HELLO </h2>
 
-<h2> All </h2>
-{% for x in notifications_all%}
-    {{ x.verbose }}
-    <br>
-{% endfor %}
-
-<h2> Actions </h2>
-{% for x in actions %}
-    {{ x.verbose }}
-    <br>
-{% endfor %}
+{% thumbnail viewer.getProfileImage.image "50x50" format="PNG" as im %}
+    <img src="{{ im.url }}"/>
+{% empty %}
+    <p> why! {{ viewer.getProfileImage.image.url }} </p>
+    <img src="{{ viewer.getProfileImage.image.url }}"/>
+{% endthumbnail %}
 
 </body>
 </html>

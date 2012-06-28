@@ -133,13 +133,26 @@
       width:200px;
 
       p.saved-filter-title {
-        margin-left:10px;
-        margin-top:5px;
+        float:left;
+        width:165px;
+        margin: 8px 0 0 10px;
+      }
+
+      div.x-button {
+        float:right;
+        width:12px;
+        height:12px;
+        margin: 14px 10px 0 0;
+        background-image: url('/static/icons/x.png');
+        background-size:cover;
+      }
+      div.x-button:hover {
+        background-image: url('/static/icons/x_hover.png');
       }
     }
 
     div.menu {
-        top:36px;
+      top:36px;
     }
 
   }
@@ -468,7 +481,7 @@ div.feed-body {
 
 div.pinterest-wrapper {
 
-  display: block;
+  float:left;
   position:relative;
   top:20px;
   left:0px;
@@ -534,6 +547,25 @@ div.pinterest_card {
 
       }
 
+      div.petition_bar {
+
+        margin: 15px 0 0 20px;
+
+        div.bar-wrapper {
+          width:270px;
+          height:8px;
+          border: 1px solid $red;
+          overflow:hidden;
+          div.red_bar {
+            height:8px;
+            background-color:$red;
+          }
+        }
+        div.goal-statement {
+          margin: 5px 0 0 0;
+        }
+      }
+
     }
   }
 }
@@ -566,26 +598,27 @@ div.feed-topic-icon-wrapper {
 
 
 div.linear-wrapper {
-  width:1000px;
+  width:750px;
 
   div.linear {
-    width:800px;
-    height:210px;
+    width:750px;
+    height:225px;
     overflow:hidden;
     border-bottom: 1px solid $light-gray;
     margin-bottom:40px;
 
     div.linear-left {
-      width:320px;
+      width:220px;
       overflow:hidden;
       float:left;
 
       div.linear-picture {
         display:block;
-        height:100px;
+        height:170px;
+        overflow:hidden;
 
         div.pinterest-image {
-          width:250px;
+          width:220px;
         }
 
         div.header-topic {
@@ -598,18 +631,92 @@ div.linear-wrapper {
 
       div.pinterest-footer {
         display:block;
-        margin-top:60px;
+        margin-top:0px;
+        width:218px;
+        height:40px;
+        overflow:hidden;
+        @extend .box;
+
+        div.hearts {
+          width:60px;
+
+          div.hearts-wrapper {
+            margin:0px;
+
+            div.heart {
+              margin: 10px 0 0 0;
+              width:20px;
+              height:20px;
+            }
+
+            span.status {
+              margin: 0px 0 4px 0;
+              @include fontSize(14px);
+            }
+
+          }
+
+        }
+
+        div.comments {
+          width:80px;
+          margin:0px;
+
+          a.comments-wrapper {
+            margin: 7px 0 0 5px;
+            width:70px;
+            height:25px;
+
+            div.text-wrapper {
+              @include fontSize(10px);
+
+              div.comments-text {
+                display:block;
+                margin: 0px 0 3px 4px;
+              }
+
+              div.comments-num {
+                display:block;
+                margin: 5px 0 0 4px;
+              }
+            }
+          }
+        }
+
+        div.share {
+          width:70px;
+          margin:0px;
+
+          a.share_button {
+            position:relative;
+            top:14px;
+            margin:10px 0 3px 5px;
+            width:30px;
+            height:20px;
+            @include fontSize(14px);
+          }
+          a.share_button:hover {
+            margin-bottom:2px;
+            margin-left:4px;
+          }
+        }
       }
     }
 
     div.linear-right {
       float:left;
-      margin: 0px 0px 0px 20px;
-      width:400px;
+      margin: 0px 0px 0px 30px;
+      width:500px;
+      overflow:hidden;
+
+      div.pinterest-title {
+        height:40px;
+      }
 
       div.pinterest-summary {
-        width:450px;
-        height:100px;
+        @include really-big();
+        @include fontSize(14px);
+        height:120px;
         padding:0px;
         margin: 0 0 0 0;
         overflow:hidden;
@@ -624,24 +731,40 @@ div.linear-wrapper {
       }
 
       div.avatar {
-        background-color:blue;
         margin-top:10px;
+        height:40px;
+        overflow:hidden;
 
         div.prof-image {
           float:left;
+          height:40px;
+        }
+
+        div.header-middle {
+          margin-top:0px;
+          height:40px;
+          p.submitted {
+            margin-bottom:0px;
+          }
+
+          div.user-name {
+            margin: 0px;
+            @include fontSize(14px);
+          }
         }
       }
-
     }
-
   }
-
 }
 
-div.comments-wrapper {
-  @include rounded(10px);
-  @extend .box;
+div.right-sidebar {
+  width:250px;
+  display:none;
+  overflow:hidden;
+  float:left;
+  margin: 30px 0 0 0;
 }
+
 
 div.pinterest-top-comment {
   @extend .box;
@@ -685,7 +808,6 @@ div.header-middle {
 
   p.submitted {
     color:$light-gray;
-    text-decoration: underline;
     margin: 0 0 5px 0;
   }
 
@@ -742,23 +864,37 @@ div.pinterest-footer {
     height:50px;
     border-right: 1px solid $light-gray;
 
-    div.comments-wrapper {
-      margin:auto;
-      margin-top:10px;
-      width:90px;
+    a.comments-wrapper {
+      display:block;
+      width:100px;
       height:30px;
+      margin: 8px 0 0 14px;
+      @include rounded(10px);
+      @extend .box;
 
       div.text-wrapper {
-        margin: 5px 0px 0 0;
-        span.comments-text {
-          margin-left:8px
+        foat:left;
+
+        div.comments-text {
+          @include really-big();
+          @include fontSize(12px);
+          margin: 2px 0 0 18px;
+          float:left;
         }
 
-        span.comments-num {
+        div.comments-num {
+          float:left;
+          margin: 6px 0 0 5px;
           color:$red;
         }
       }
     }
+
+    a.comments-wrapper:hover {
+      border-color:$dark-gray;
+    }
+
+
 
   }
 
@@ -769,14 +905,19 @@ div.pinterest-footer {
     border-left: 1px solid $light-gray;
 
     a.share_button {
-      @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray);
+      @include div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$red);
       position:relative;
       top:17px;
       margin: 10px;
+    }
 
+    a.share_button:hover {
+      //border: 1px solid $dark-gray;
+      background-color:$red-light;
     }
   }
 }
+
 
 .mini {
   @include fontSize(20px);
@@ -789,7 +930,7 @@ div.heart {
 }
 
 div.create-modal {
-  position: fixed;
+  position: absolute;
   @include modal;
   border:1px solid $red;
   margin-left: 20%;

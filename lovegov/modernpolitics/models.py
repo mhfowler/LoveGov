@@ -43,10 +43,11 @@ class LGManager(models.Manager):
     """Adds get_or_none method to objects
     """
     def get_or_none(self, **kwargs):
-        try:
-            return self.get(**kwargs)
-        except self.model.DoesNotExist:
-            return None
+        to_return = self.filter(**kwargs)
+        if to_return:
+            return to_return[0]
+        else:
+            return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Our model
@@ -124,9 +125,22 @@ class PhysicalAddress(LGModel):
 #=======================================================================================================================
 class LocationLevel(models.Model):
     location = models.ForeignKey(PhysicalAddress, null=True)
-    level = models.CharField(max_length=1, choices=LEVEL_CHOICES, default='W')
+    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
     class Meta:
         abstract = True
+
+    def getScaleVerbose(self):
+        scale = self.scale
+        if scale == 'L':
+            return 'Local'
+        elif scale == 'S':
+            return 'State'
+        elif scale == 'F':
+            return 'Federal'
+        elif scale == 'A':
+            return 'All'
+        else:
+            return 'None'
 
 #=======================================================================================================================
 # Topic
@@ -522,7 +536,7 @@ class Content(Privacy, LocationLevel):
     # Get created relationship.
     #-------------------------------------------------------------------------------------------------------------------
     def getCreatedRelationship(self):
-        created =  Created.objects.filter(content=self)
+        created = Created.objects.filter(content=self)
         if created:
             return created[0]
         else:
@@ -542,6 +556,13 @@ class Content(Privacy, LocationLevel):
                 return True
             else:
                 return False
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets a comparison, between inputted user and this content.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.backend import getUserContentComparison
+        return getUserContentComparison(user=viewer, content=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add like vote to content from inputted user (or adjust his vote appropriately)
@@ -675,15 +696,10 @@ class Content(Privacy, LocationLevel):
     # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowMe(self, num=-1):
-        follows = Followed.objects.filter(content=self)
-        followers = []
-        if num == -1:
-            for f in follows:
-                followers.append(f.user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                followers.append(follows[i].user)
+        f_ids = UserFollow.objects.filter(content=self, confirmed=True).values_list('user', flat=True)
+        followers = UserProfile.objects.filter(id__in=f_ids)
+        if num != -1:
+            followers = followers[:num]
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -842,7 +858,9 @@ class FilterSetting(LGModel):
 
 
 class SimpleFilter(LGModel):
-    name = models.CharField(max_length=200, default="filter")
+    name = models.CharField(max_length=200, default="default")
+    created_when = models.DateTimeField(auto_now_add=True, null=True)
+    creator = models.ForeignKey("UserProfile", null=True)
     ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
     topics = models.ManyToManyField(Topic)
     types = custom_fields.ListField()                  # list of char of included types
@@ -1012,6 +1030,9 @@ class UserProfile(FacebookProfileModel, LGModel):
             to_return = "UnicodeEncodeError"
         return to_return
 
+    def get_email(self):
+        return self.username
+
     def isDeveloper(self):
         return self.developer
 
@@ -1027,6 +1048,13 @@ class UserProfile(FacebookProfileModel, LGModel):
             return self.electedofficial.representative
         else:
             return self
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets a comparison, between inputted user and this user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.compare import getUserUserComparison
+        return getUserUserComparison(userA=viewer, userB=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Makes unique alias from name
@@ -1049,6 +1077,14 @@ class UserProfile(FacebookProfileModel, LGModel):
         self.user_notification_setting = DEFAULT_USER_NOTIFICATIONS
         self.email_notification_setting = DEFAULT_EMAIL_NOTIFICATIONS
         self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # create default fillter
+    #-------------------------------------------------------------------------------------------------------------------
+    def createDefaultFilter(self):
+        filter = SimpleFilter(creator=self, ranking="N")
+        filter.save()
+        self.my_filters.add(filter)
 
     #-------------------------------------------------------------------------------------------------------------------
     # get last page access
@@ -1108,16 +1144,12 @@ class UserProfile(FacebookProfileModel, LGModel):
                 alias = alias.replace(",","")
                 alias = alias.replace(".","")
                 alias = alias.lower()
-                school_networks = Network.objects.filter(alias=alias,network_type='S')
-                if not school_networks:
+                school_network = Network.lg.get_or_none(alias=alias,network_type='S')
+                if not school_network:
                     school_network = Network(alias=alias,title=name,network_type='S')
                     school_network.autoSave()
-                    school_network.members.add(self)
-                    self.networks.add(school_network)
-                else:
-                    school_networks[0].members.add(self)
-                    self.networks.add(school_networks[0])
-
+                school_network.joinMember(self)
+                self.networks.add(school_network)
 
         if 'location' in fb_data:
             location = fb_data['location']
@@ -1126,15 +1158,12 @@ class UserProfile(FacebookProfileModel, LGModel):
             alias = alias.replace(",","")
             alias = alias.replace(".","")
             alias = alias.lower()
-            location_networks = Network.objects.filter(alias=alias,network_type='L')
-            if not location_networks:
+            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
+            if not location_network:
                 location_network = Network(alias=alias,title=name,network_type='L')
                 location_network.autoSave()
-                location_network.members.add(self)
-                self.networks.add(location_network)
-            else:
-                location_networks[0].members.add(self)
-                self.networks.add(location_networks[0])
+            location_network.joinMember(self)
+            self.networks.add(location_network)
 
 
         self.setUsername(fb_data['email'])
@@ -1290,7 +1319,7 @@ class UserProfile(FacebookProfileModel, LGModel):
             already = Notification.objects.filter(notify_user=self,
                                                     when__gte=stale_date,
                                                     action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('when').reverse()
+                                                    action__type=action.type ).order_by('-when')
             for notification in already:
                 if notification.action.relationship.getTo().id == relationship.getTo().id:
                     notification.when = datetime.datetime.today()
@@ -1368,9 +1397,9 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getNotifications(self, start=0, num=-1, new=False):
         if new:
-            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('when').reverse()
+            notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('-when')
         else:
-            notifications = Notification.objects.filter(notify_user=self).order_by('when').reverse()
+            notifications = Notification.objects.filter(notify_user=self).order_by('-when')
         if num != -1:
             notifications = notifications[start:start+num]
         return notifications
@@ -1379,15 +1408,15 @@ class UserProfile(FacebookProfileModel, LGModel):
         return len( Notification.objects.filter(notify_user=self, viewed=False) )
 
     def getAllNotifications(self):
-        return Notification.objects.filter(notify_user=self).order_by('when').reverse()
+        return Notification.objects.filter(notify_user=self).order_by('-when')
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('when').reverse()
+        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('-when')
         print len( actions )
-        if num != 1:
+        if num != -1:
             actions = actions[start:start+num]
         print len( actions )
         return actions
@@ -1397,63 +1426,54 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')
         else:
-            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+            return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupInvites(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')
         else:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('when').reverse()[:num]
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns a list of all Groups this user has joined and been accepted to.
+    # return a query set of groups and networks user is in
     #-------------------------------------------------------------------------------------------------------------------
-    def getGroups(self, num=-1):
-        group_joins = GroupJoined.objects.filter( user=self, confirmed=True )
-        groups = []
+    def getGroups(self):
+        g_ids = GroupJoined.objects.filter(user=self, confirmed=True).values_list('group', flat=True)
+        return Group.objects.filter(id__in=g_ids)
+
+    def getUserGroups(self, num=-1, start=0):
         if num == -1:
-            for g in group_joins:
-                groups.append(g.group)
+            return self.getGroups().filter(group_type='U')[start:]
         else:
-            i = 0
-            while i < len(follows) and i < num:
-                groups.append(group_joins[i].group)
-        return groups
+            return self.getGroups().filter(group_type='U')[start:start+num]
+
+    def getNetworks(self):
+        return self.networks.all()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowMe(self, num=-1):
-        follows = UserFollow.objects.filter( to_user=self, confirmed=True )
-        followers = []
-        if num == -1:
-            for f in follows:
-                followers.append(f.user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                followers.append(follows[i].user)
+        f_ids = UserFollow.objects.filter(to_user=self, confirmed=True ).values_list('user', flat=True)
+        followers = UserProfile.objects.filter(id__in=f_ids)
+        if num != -1:
+            followers = followers[:num]
         return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
-        follows = UserFollow.objects.filter( user=self, confirmed=True )
-        following = []
-        if num == -1:
-            for f in follows:
-                following.append(f.to_user)
-        else:
-            i = 0
-            while i < len(follows) and i < num:
-                following.append(f.to_user)
-        return following
+        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('user', flat=True)
+        followers = UserProfile.objects.filter(id__in=f_ids)
+        if num != -1:
+            followers = followers[:num]
+        return followers
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns query set of all UserFollow who are (confirmed) following this user and are fb friends with this user.
@@ -1646,7 +1666,8 @@ class Notification(Privacy):
                           'modifier':n_action.modifier,
                           'tally':self.tally,
                           'true':True,
-                          'viewed':viewed}
+                          'viewed':viewed,
+                          'anon':n_action.getPrivate()}
         if n_action.type == 'FO':
             notification_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
@@ -1654,6 +1675,10 @@ class Notification(Privacy):
                 notification_context['reverse_follow'] = reverse_follow
         if n_action.type == 'JO':
             notification_context['group_join'] = relationship.downcast()
+
+        if n_action.type == 'SH':
+            notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
+            notification_context['content'] = relationship.getTo()
 
         notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
         return notification_verbose
@@ -1855,6 +1880,9 @@ class Petition(Content):
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
     finalized = models.BooleanField(default=False)
+    current = models.IntegerField(default=0)
+    goal = models.IntegerField(default=10)
+    p_level = models.IntegerField(default=0)
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -1872,11 +1900,26 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
+                self.current += 1
+                if self.current >= self.goal:
+                    self.p_level += 1
+                    self.goal = PETITION_LEVELS[self.p_level]
+                self.save()
                 return True
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Finalize petition for signing.
+    #-------------------------------------------------------------------------------------------------------------------
     def finalize(self):
         self.finalized = True
         self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Return percentages for petition bar.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getCompletionPercent(self):
+        val = float(self.current) / self.goal
+        return int(val*100)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the petition-specific version of the general content method.
@@ -3197,12 +3240,33 @@ class Group(Content):
         for k in histogram:
             tuple = histogram[k]
             num = tuple['num']
-            if  not num:
+            tuple['percent'] = num/people
+            if not num:
+
                 pix = 5
             else:
                 pix = (num/people*100)*5
             tuple['pix'] = int(pix)
         return histogram
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Joins a member to the group and creates GroupJoined appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
+    def joinMember(self, user, privacy='PUB'):
+        group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
+        if not group_joined:
+            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined.autoSave()
+        group_joined.privacy = privacy
+        group_joined.confirm()
+        self.members.add(user)
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets comparison between this group and inputted user.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getComparison(self, viewer):
+        from lovegov.modernpolitics.compare import getUserGroupComparison
+        return getUserGroupComparison(user=viewer, group=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
@@ -3268,14 +3332,14 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic_alias=None):
+    def getMembers(self, user, block=-1, topic_alias=None, start=0, num=-1):
         from modernpolitics.backend import getUserUserComparison
         if block == -1:
-            return self.members.order_by('id')
+            to_return = self.members.all()
         else:
             topic = Topic.lg.get_or_none(alias=topic_alias)
             ids = []
-            for x in self.members.order_by('id'):
+            for x in self.members:
                 comparison = getUserUserComparison(user, x)
                 if topic and topic_alias!='general':
                    comparison = comparison.bytopic.get(topic=topic)
@@ -3283,7 +3347,11 @@ class Group(Content):
                     x_block = comparison.result / HISTOGRAM_RESOLUTION
                     if x_block == block:
                         ids.append(x.id)
-            return self.members.filter(id__in=ids).order_by('id')
+            to_return = self.members.filter(id__in=ids)
+        if num == -1:
+            return to_return[start:]
+        else:
+            return to_return[start:start+num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -3303,7 +3371,7 @@ class Group(Content):
         actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
         if num != 1:
             actions = actions[start:start+num]
-        return actions
+        return actions[start:]
 
 
 #=======================================================================================================================
@@ -3350,7 +3418,8 @@ class Network(Group):
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
-        super(UserGroup, self).autoSave()
+        self.group_type = 'U'
+        super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
     pass
 
 ########################################################################################################################
@@ -3385,7 +3454,7 @@ class PageAccess(LGModel):
     ACCESS_CHOICES= ('POST', 'GET')
     user = models.ForeignKey(UserProfile)
     ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
-    page = models.CharField(max_length=50)
+    page = models.CharField(max_length=5000)
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
     left = models.DateTimeField(null=True)
@@ -3413,7 +3482,8 @@ class PageAccess(LGModel):
                     self.type = 'GET'
                     if 'action' in request.GET:
                         self.action = request.GET['action']
-                self.save()
+                try: self.save()
+                except: pass
                 user_prof.last_page_access = self.id
                 user_prof.save()
 
@@ -3740,14 +3810,20 @@ class Shared(UCRelationship):
         self.save()
 
     def addUser(self, user):
-        if not user in self.share_users:
+        if not user in self.share_users.all():
             self.share_users.add(user)
-            # follow notification flow
+            action = Action.lg.get_or_none(relationship=self)
+            if not action:
+                action = Action(relationship=self)
+                action.autoSave()
+            user.notify(action)
 
     def addGroup(self, group):
-        if not group in self.share_groups:
-            self.share_groups.add(group)
-            # follow notification flow
+        if not group in self.share_groups.all():
+            pass
+            # self.share_groups.add(group)
+            # action = Action(relationship=self, share_group=group)
+            # action.autoSave()
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.

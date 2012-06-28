@@ -1,39 +1,79 @@
 <div id="create_petition_div" class="create-wrapper create_content_div" style="display:none">
 
-    <div id="errors-json"></div>
     <h2>New Petition:</h2>
 
-    <div id="errors-non_field"></div>
+    <form id="petition_form" action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+        <input type="hidden" name="action" value="create" />
+        <input type="hidden" name="type" value="P" />
 
-    <div class="title">
-        <div id="errors-title"></div>
-        <span class="sub-title">Title:</span>
-        <input id="input-title" type="text" name="title"/>
-    </div>
 
-    <div class="full-text">
-        <div id="errors-full_text"></div>
-        <div id="full-text-text">
-            <span class="sub-title">Full Text: </span>  <br>
-            write the full text here
-        </div>
-        <textarea id="input-full_text" name="full_text" ></textarea>
-    </div>
+        <table class='create-table'>
+            <tr class="petition-title">
+                <td class="create-title">
+                    <div class="sub-title">Title:</div>
+                    <div class="create-error" id="petition_name_error"></div>
+                </td>
+                <td><input name="title" type="text" class="title-input" id="petition_title"/></td>
+            </tr>
 
-    <div class="create-topic-div">
-        <div id="errors-topic"></div>
-        <div class="create-topic-text">
-            <span class="sub-title">Topic: </span> <br>
-            select which topic your petition falls under
-        </div>
-        <div id="petition-topics" class="topic-images">
-            {% include 'deployment/pieces/topic_images.html' %}
-        </div>
-    </div>
+            <tr class="petition-full-text">
+                <td class="create-title">
+                    <div class="sub-title">Description:</div>
+                    <div class="create-error" id="petition_description_error"></div>
+                </td>
+                <td><textarea name="full_text" class="full-text-input" id="petition_description"></textarea></td>
+            </tr>
 
-    <div class="create-submit-div">
-        <a href="" id="create-petition" class="left-sidebar-button">create petition</a>
+            <tr class="petition-scale-wrapper">
+                <td class="create-title">
+                    <div class="sub-title">Scale:</div>
+                    <div class="create-error" id="petition_scale_error"></div>
+                </td>
+                <td>
+                    <div class="create-radio petition_scale_radio">
+                        All
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-all" value='A' name="scale"/>
+                    </div>
+                    <div class="create-radio petition_scale_radio">
+                        Federal
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-federal" value='F' name="scale"/>
+                    </div>
+                    <div class="create-radio petition_scale_radio">
+                        State
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-state" value='S' name="scale"/>
+                    </div>
+                    <div class="create-radio petition_scale_radio">
+                        Local
+                        <input type="radio" class="custom-radio petition_scale" id="government-scale-local" value='L' name="scale"/>
+                    </div>
+                    <div class='clear-both'></div>
+                </td>
+            </tr>
+
+            <tr class="petition-image">
+                <td class="create-title">
+                    <div class="sub-title">Petition Image:</div>
+                    <div class="create-info" id="petition_image_info">[optional]</div>
+                </td>
+                <td><input type="file" name="image" id="petition_image"/></td>
+            </tr>
+
+            <tr class="create-topic">
+                <td class="create-title">
+                    <div class="sub-title">Topic:</div>
+                    <div class="create-error" id="petition_topic_error"></div>
+                </td>
+                <td>
+                    <div class="topic-images" id="petition_input_topic">
+                        {% include 'deployment/pieces/topic_images.html' %}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    <div class="submit-button">
+        <input type="submit" class="button-red" id="submit_petition_button" value="create petition" />
     </div>
+    </form>
 
 </div>
 

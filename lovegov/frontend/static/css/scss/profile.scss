@@ -19,7 +19,7 @@ div.middle-left
     position:relative;
     margin-bottom:5px;
     margin-left:30px;
-    height:235px;
+    min-height:250px;
 
     /* Info Left Side */
     div.basic-info-left
@@ -40,6 +40,7 @@ div.middle-left
     div.basic-info-main
     {
       @include float-left;
+      max-width: 520px;
 
       span.plus-color
       {
@@ -89,7 +90,7 @@ div.middle-left
           background-color: $gray;
           margin-right: 10px;
 
-          span.profile-stats-number
+          div.profile-stats-number
           {
             @include big-num;
             color: white;
@@ -97,8 +98,9 @@ div.middle-left
             line-height: 52px;
           }
 
-          span.profile-stats-title
+          div.profile-stats-title
           {
+            @include fontSize(12px);
             color: $deep-gray;
             position: relative;
             top: -3px;
@@ -115,7 +117,7 @@ div.middle-left
         {
           background-color: white;
 
-          span.followers-number
+          div.followers-number
           {
             color: $red;
           }
@@ -126,7 +128,7 @@ div.middle-left
           background-color: white;
           border-color: $gray;
 
-          span.followers-number
+          div.followers-number
           {
             color: $red-light;
           }
@@ -155,7 +157,7 @@ div.middle-left
       @include float-left;
       display: block;
       width: 400px;
-      margin-right: 50px;
+      margin-right: 30px;
 
       div.profile-activity-feed
       {
@@ -177,21 +179,25 @@ div.middle-left
 
       a.profile-group-link, a.profile-group-link:link, a.profile-group-link:active, a.profile-group-link:visited
       {
-        @include rounded-box;
+        @include rounded-box(80px);
         @include float-left;
-        padding: 5px;
         margin: $linkborder 10+$linkborder 10+$linkborder $linkborder;
         border: hidden $linkborder $gray;
-        background-color: $red; //temporary
-        color: white; //temporary
       }
 
       a.profile-group-link:hover
       {
-        @include rounded-box;
+        @include rounded-box(80px);
         @include float-left;
         margin: 0px 10px 10px 0px;
         border-style: solid;
+      }
+
+      img.rounded
+      {
+        @include rounded(18px);
+        height: 80px;
+        width: 80px;
       }
     }
   }
@@ -221,7 +227,7 @@ div.middle-right
 {
   float:left;
   width:300px;
-  margin-left:40px;
+  margin-left:20px;
 
   div.right-separator
   {
@@ -272,94 +278,3 @@ div.middle-right
 }
 
 
-
-
-
-/* toolbox */
-
-#toolbox
-{
-  height:215px;
-  margin-bottom:20px;
-  border-bottom:1px solid #ccc;
-}
-
-#toolbox p
-{
-  height:8px;
-}
-
-#toolbox ul
-{
-  list-style-type:none;
-}
-
-#toolbox li
-{
-  margin-bottom:25px;
-}
-
-.toolbox-button:link
-{
-  color:#FFFFFF;
-  background-color:#ccc;
-  position:relative;
-  margin-bottom:10px;
-}
-
-.toolbox-button:link, .toolboox-button:visited, .toolbox-button:active
-{
-  text-decoration:none;
-}
-
-.toolbox-button:hover
-{
-  color:#ccc;
-  background-color:#FFFFFF;
-}
-
-/* my reps */
-
-#myreps
-{
-  font-family:"Gill Sans Std Light", Verdana, sans-serif;
-  font-size:18pt;
-  color:#ccc;
-  padding-bottom:30px;
-  border-bottom:1px solid #ccc;
-}
-
-
-.middle-right-head-font
-{
-  text-align:left;
-  font-family:"Gill Sans Std Light", Verdana, sans-serif;
-  font-size:18pt;
-  color:#959595;
-}
-
-.network-member-div
-{
-  float:left;
-  width:205px;
-  margin-bottom:10px;
-}
-
-.network-member-div:hover
-{
-  cursor:pointer;
-}
-
-.network-user-link
-{
-  color:#0F5569;
-  float:left;
-  margin-top:12px;
-  margin-left:10px;
-  width:140px;
-}
-
-.network-user-link:link, .network-user-link:active, .network-user-link:visited
-{
-  color:#0F5569;
-}

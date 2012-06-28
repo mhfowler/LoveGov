@@ -8,12 +8,12 @@
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="notification-thumbnail">
-            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+            {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
         <td class="notification-text">
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true anon=%}
             {% if tally == 2 %}
                 and one other person
             {% elif tally > 2 %}
@@ -73,8 +73,8 @@
     {% elif type == 'FO' %}
         {% if modifier == 'R' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -91,8 +91,8 @@
             </td>
         {% elif modifier == 'D' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -110,8 +110,8 @@
             </td>
         {% elif modifier == 'A' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                {% thumbnail to_user.getProfileImage.image "35x35" crop="center" as im %}
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -122,8 +122,8 @@
             </td>
         {% elif modifier == 'X' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                {% thumbnail to_user.getProfileImage.image "35x35" crop="center" as im %}
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -137,8 +137,8 @@
             </td>
         {% elif modifier == 'S' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
-                    <img src="{{ im.url }}" class="icon-small"/>
+                {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
+                    <img src="{{ im.url }}" />
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -276,9 +276,20 @@
         </td>
 
     {% elif type == 'SH' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        shared
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        <td class="notification-thumbnail">
+            <img src="/static/images/feed/check-small.png"/>
+        </td>
+        <td class="notification-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
+            shared <a href="{{content.get_url}}"> {{ content.title }} </a>
+            with
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     {% elif type == 'CR' %}
         {% if to_user.type == 'R' %}

@@ -365,9 +365,14 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def theFeed(request, vals={}):
 
+    rightSideBar(request, vals)
+    shareButton(request, vals)
+
     viewer = vals['viewer']
 
-    rightSideBar(request, vals)
+    filter_name = request.GET.get('filter_name')
+    if not filter_name:
+        filter_name = 'default'
 
     feed_json = {'ranking': 'N',
                  'levels':[],
@@ -376,17 +381,17 @@ def theFeed(request, vals={}):
                  'groups':[],
                  'submissions_only': 1,
                  'display': 'L',
-                 'feed_start': 0}
+                 'feed_start': 0,
+                 'filter_name': filter_name}
 
     vals['feed_json'] = json.dumps(feed_json)
-    vals['my_filters'] = viewer.my_filters.all()
-    vals['my_groups'] = viewer.getGroups()
-    vals['my_networks'] = Network.objects.all()
+    vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
     url = '/feed/'
     return framedResponse(request, html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
@@ -498,13 +503,10 @@ def profile(request, alias=None, vals={}):
             #vals['prof_i_follow'] = user_prof.getIFollow(5)
 
             # Get user's top 5 similar groups
-            prof_groups = list(user_prof.getGroups())
-            for group in prof_groups:
-                comparison = getUserGroupComparison(user_prof, group)
-                group.compare = comparison.toJSON()
-                group.result = comparison.result
-            prof_groups.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_groups'] = prof_groups[0:4]
+
+            num_groups = GROUP_INCREMENT
+            vals['prof_groups'] = user_prof.getUserGroups(num=num_groups)
+            vals['num_groups'] = num_groups
 
             # Get user's random 5 groups
             #vals['prof_groups'] = user_prof.getGroups(5)
@@ -584,23 +586,21 @@ def network(request, alias=None, vals={}):
 # Group page
 #-----------------------------------------------------------------------------------------------------------------------
 def group(request, g_id=None, vals={}):
-    user = vals['viewer']
+    viewer = vals['viewer']
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
     if not group:
         return HttpResponse('Group id not found in database')
     vals['group'] = group
-    comparison = getUserGroupComparison(user, group, force=True)
+    comparison = getUserGroupComparison(viewer, group, force=True)
     vals['comparison'] = comparison
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
-    vals['defaultImage'] = getDefaultImage().image
 
     # Histogram Things
-    vals['histogram'] = group.getComparisonHistogram(user)
+    vals['histogram'] = group.getComparisonHistogram(viewer)
     vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
-    vals['group_members'] = group.members.order_by('id')[0:25]
 
     # Get Follow Requests
     vals['prof_requests'] = list(group.getFollowRequests())
@@ -610,15 +610,15 @@ def group(request, g_id=None, vals={}):
     actions = group.getActivity(num=num_actions)
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=user) )
+        actions_text.append( action.getVerbose(view_user=viewer) )
     vals['actions_text'] = actions_text
     vals['num_actions'] = num_actions
 
-    # Is the current user already (requesting to) following this group?
+    # Is the current viewer already (requesting to) following this group?
     vals['is_user_follow'] = False
     vals['is_user_confirmed'] = False
     vals['is_user_rejected'] = False
-    group_joined = GroupJoined.lg.get_or_none(user=user,group=group)
+    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
     if group_joined:
         if group_joined.requested:
             vals['is_user_follow'] = True
@@ -630,8 +630,12 @@ def group(request, g_id=None, vals={}):
     vals['is_user_admin'] = False
     admins = list( group.admins.all() )
     for admin in admins:
-        if admin.id == user.id:
+        if admin.id == viewer.id:
             vals['is_user_admin'] = True
+    vals['group_admins'] = group.admins.all()
+    num_members = MEMBER_INCREMENT
+    vals['group_members'] = group.getMembers(user=viewer,num=num_members)
+    vals['num_members'] = num_members
 
     setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/center/group.html', vals, request)
@@ -825,6 +829,7 @@ def matchNew(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def contentDetail(request, content, vals):
     rightSideBar(request, vals)
+    shareButton(request, vals)
     vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
@@ -877,6 +882,16 @@ def newsDetail(request, n_id, vals={}):
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# get share button values
+#-----------------------------------------------------------------------------------------------------------------------
+def shareButton(request, vals={}):
+    viewer = vals['viewer']
+    vals['my_followers'] = viewer.getFollowMe()
+    groups = viewer.getGroups()
+    vals['my_groups'] = groups.filter(group_type="U")
+    vals['my_networks'] = groups.filter(group_type="N")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def questionDetail(request, q_id=-1, vals={}):
@@ -889,9 +904,6 @@ def questionDetail(request, q_id=-1, vals={}):
     valsQuestion(request, q_id, vals)
     user = vals['user']
     vals['pageTitle'] = "lovegov: " + vals['question'].question_text
-    vals['my_followers'] = user.getFollowMe()
-    vals['my_groups'] = user.getGroups()
-    vals['my_networks'] = [user.getNetwork()]
     html = ajaxRender('deployment/center/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)

@@ -3,11 +3,7 @@
 <div class="prof-image">
     {% if item.getPublic %}
         <a href="{{ creator.get_url }}">
-            {% thumbnail creator.getProfileImage.image "50x50" crop="center" as im %}
-                <img src="{{ im.url }}"/>
-            {% empty %}
-                <img src="/static/images/obama.jpg" width="50px" height="50px">
-            {% endthumbnail %}
+            {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" private=0 %}
         </a>
     {% else %}
         {% thumbnail defaultImage "50x50" format="PNG" as im %}
@@ -19,9 +15,6 @@
 </div>
 
 <div class="header-middle">
-    <p class="submitted" id="cman">
-        submitted at {{ item.created_when|date:"h:m"}}
-    </p>
     <div class="user-name">
         {% if item.getPublic %}
             <a href="{{ creator.get_url }}">
@@ -31,4 +24,7 @@
             <a href=""> Anonymous </a>
         {% endif %}
     </div>
+    <p class="submitted" id="cman">
+        submitted at {{ item.created_when|date:"h:m"}}
+    </p>
 </div>

@@ -1,90 +1,135 @@
-<!--<link rel="stylesheet" type="text/css" href="/static/css/deployment/header.css" />-->
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/notification.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/header.css" />
 {% load thumbnail %}
 
-    <!-- Header -->
-    <div id="top">
-        <div class="top-logo">
-            <img id="logo-img" href="/home/" class="do-ajax-link" src="/static/images/top-logo-default.png"/>
-        </div>
-        <div class="link-wrapper">
-            <div class="top-links">
-                <a href="/feed/" id="about-link" class="do-ajax-link">feed</a>
-            </div>
-            <div class="top-links">
-                <a href="/match/" id="match-link" class="do-ajax-link">match</a>
-            </div>
-            <div class="top-links">
-                <a href="/web/" id="web-link" class="do-ajax-link">web</a>
-            </div>
-        </div>
-        <div class="top-search">
-            <input type="text" id="searchbar" value="Search Users">
-            <img id="searchglass" src="/static/images/searchglass.png"/>
-            <div id="search-dropdown" style="display:none">
-                <!-- For Search AutoComplete -->
-            </div>
-        </div>
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/header.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/notification.css" />
 
-        <div id="user-menu-container">
+<!-- Header -->
+<div id="top">
+    <div class="top-logo">
+        <img id="logo-img" href="/home/" class="do-ajax-link" src="/static/images/top-logo-default.png"/>
+    </div>
+    <div class="link-wrapper">
+        <div class="top-links">
+            <a href="/feed/" id="about-link" class="do-ajax-link">feed</a>
+        </div>
+        <div class="top-links">
+            <a href="/match/" id="match-link" class="do-ajax-link">match</a>
+        </div>
+        <div class="top-links">
+            <a href="/web/" id="web-link" class="do-ajax-link">web</a>
+        </div>
+    </div>
+    <div class="top-search">
+        <input type="text" id="searchbar" class="input_default" value="Search Users">
+        <img id="searchglass" src="/static/images/searchglass.png"/>
+        <div id="search-dropdown" style="display:none">
+            <!-- For Search AutoComplete -->
+        </div>
+    </div>
 
-            <div class="user-menu-options-wrapper">
-                <div class="user-menu-options">
-                    <div class="header-notifications">
-                        <div id="notifications-dropdown-button">
-                            <div id="notifications-number"><h5>{{ new_notification_count }}</h5></div>
-                        </div>
-                        <div id="notifications-dropdown" class="select-none" style="display:none">
-                            <div class="notifications-dropdown-static-div">
-                                <div class="notifications-pointer">
-                                    <div class="border"></div>
-                                    <div class="inner"></div>
-                                </div>
-                                <h5>Notifications</h5>
-                                <div class="notifications-header-border"></div>
-                                <div class="notifications-ajax-load" style="display:none">
-                                    <img src="/static/images/ajax-loader.gif"/>
-                                </div>
-                            </div>
-                            <!-- For Notifications -->
+    <div id="user-menu-container">
+
+        <div class="user-menu-options-wrapper">
+            <div class="user-menu-options">
+                <div class="header-notifications select-none">
+                    <div id="notifications-dropdown-button">
+                        <div id="notifications-number">
+                            <h5>{{ new_notification_count }}</h5>
                         </div>
                     </div>
-                    <img class="security-mode" src="/static/images/public.png"/>
                 </div>
-            </div>
-
-            <div class="user-menu user-menu-unselected">
-                {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as img %}
-                    <img class="user-img" class="user-menu-pointer" src="{{ img.url }}"/>
-                {% empty %}
-                    <img class="user-img" class="user-menu-pointer" src="{{ viewer.getProfileImage.image.url }}"/>
-                {% endthumbnail %}
-                <a id="user-name" class="do-ajax-link" href="{{ viewer.getAlphaURL }}">{{ viewer.get_nameShort }}</a>
-                <div id="menu-down-arrow"></div>
-            </div>
-
-            <div id="user-menu-dropdown" class="select-none" style="display:none;">
-                <div class="user-menu-pointer">
-                    <div class="border"></div>
-                    <div class="inner"></div>
+                <div id="notifications-dropdown" class="drop_down" style="display:none">
+                    <div class="notifications-dropdown-static-div">
+                        <div class="notifications-pointer">
+                            <div class="border"></div>
+                            <div class="inner"></div>
+                        </div>
+                        <h5>Notifications</h5>
+                        <div class="notifications-header-border"></div>
+                        <div class="notifications-ajax-load" style="display:none">
+                            <img src="/static/images/ajax-loader.gif"/>
+                        </div>
+                    </div>
+                    <!-- For Notifications -->
                 </div>
-                <div id="user-menu-account" class="user-menu-dropdown-div user-menu-dropdown-div-top">
-                    <img src="/static/images/user-menu/geargray.png"/><a href="/account/" class="do-ajax-link">account settings</a>
-                </div>
-                <div style="clear:both" id="user-menu-logout" class="user-menu-dropdown-div">
-                    <img src="/static/images/user-menu/logout.png"/><a href="/logout/">logout</a>
-                </div>
-            </div>
-
-            <div class="preload-images">
-                <img src="/static/images/user-menu/geargray.png"/>
-                <img src="/static/images/user-menu/gearwhite.png"/>
-                <img src="/static/images/user-menu/lockgray.png"/>
-                <img src="/static/images/user-menu/lockwhite.png"/>
+                <img class="security-mode security_setting" src="/static/images/public.png"/>
             </div>
         </div>
 
+        <div class="user-menu user-menu-unselected user_menu_dropdown select-none">
+            {% thumbnail viewer.getProfileImage.image "35x35" crop="center" as img %}
+                <img class="user-img" class="user-menu-pointer" src="{{ img.url }}"/>
+            {% empty %}
+                ?
+            {% endthumbnail %}
+            <a id="user-name">{{ viewer.get_nameShort }}</a>
+            <div id="menu-down-arrow"></div>
+        </div>
+
+        <div id="user-menu-dropdown" class="drop_down" style="display:none;">
+
+            <div class="user-menu-pointer">
+                <div class="border"></div>
+                <div class="inner"></div>
+            </div>
+
+            <div id="user-menu-dashboard">
+                {% thumbnail viewer.getProfileImage.image "75x75" crop="center" as img %}
+                    <img id="user-menu-dashboard-avatar" src="{{ img.url }}"/>
+                    <div class="user-menu-dashboard-avatar-overlay" style="display:none"></div>
+                    <h5 class="user-menu-dashboard-avatar-overlay" style="display:none">change<br>avatar</h5>
+                {% empty %}
+                {% endthumbnail %}
+                <script type="text/javascript">
+                    $('#user-menu-dashboard-avatar').hover(
+                        function(event) { $('.user-menu-dashboard-avatar-overlay').show(); },
+                        function(event) { $('.user-menu-dashboard-avatar-overlay').hide(); }
+                    );
+                    $('.user-menu-dashboard-avatar-overlay').hover(
+                            function(event) { $('.user-menu-dashboard-avatar-overlay').show(); },
+                            function(event) { $('.user-menu-dashboard-avatar-overlay').hide(); }
+                    );
+
+                    $('.user-menu-dashboard-avatar-overlay').click(function(event)
+                    {
+                        event.stopPropagation();
+                        ajaxLink('/account/',true);
+                    });
+
+                </script>
+
+                <div class="user-menu-dashboard-right">
+                    <p class="user-menu-dashboard-text">{{ viewer.get_name }}</p>
+                    <p class="user-menu-dashboard-text text-gray">{{ viewer.get_email }}</p>
+                    <table>
+                        <tr>
+                            <td><a class="do-ajax-link" href="{{ viewer.getAlphaURL }}">View Profile</a></td>
+                            <td><a class="security_setting">Privacy</a><img class="security_setting" src="/static/images/public.png"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="clear-both"></div>
+            </div>
+
+            <div class="user-menu-dashboard-option-wrapper">
+                <div class="user-menu-dashboard-option-left user_menu_option">
+                    <a href="/account/" class="do-ajax-link">Settings</a><div class="img-holder-account"></div>
+                </div>
+                <div class="user-menu-dashboard-option-right user_menu_option">
+                    <a href="/logout/">Logout</a><div class="img-holder-logout"></div>
+                </div>
+                <div class="clear-both"></div>
+                <script type="text/javascript">
+                    $('.user_menu_option').click(function()
+                    {
+                        $(this).children('a').click();
+                    });
+                </script>
+            </div>
+
+        </div>
 
     </div>
+
 </div>
+

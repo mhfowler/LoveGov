@@ -2,7 +2,6 @@
 @import 'master-variables';
 @import 'master-mixins';
 
-
 div#top
 {
   z-index:3;
@@ -78,30 +77,31 @@ div#top
   {
     float:left;
     position:relative;
-    margin-left:10px;
-    margin-top:7px;
+    margin-left:5px;
+    margin-top:9px;
 
-    $width: 325px;
-    $width-padding: 5px;
-    $search-height:23px;
+    $width:325px;
+    $width-padding:5px;
+    $search-height:20px;
 
     input[type="text"]#searchbar
     {
       position:relative;
       float:left;
       width:$width;
-      font-size:15px;
+      font-size:13px;
       padding:$width-padding;
-      height:23px;
-      color:#959595;
+      height:$search-height;
     }
+
+
 
     div#search-dropdown
     {
       position:absolute;
       width:$width + (2*$width-padding);
       height:320px;
-      top:$search-height + (2*$width-padding);
+      top:$search-height + (2*$width-padding) + 1;
       border-left:1px solid $gray;
       border-right:1px solid $gray;
       border-bottom:1px solid $gray;
@@ -113,7 +113,7 @@ div#top
     {
       position:absolute;
       right:10px;
-      top:10px;
+      top:8px;
       cursor:pointer;
     }
   }
@@ -121,13 +121,186 @@ div#top
   div#user-menu-container
   {
     float:right;
-    margin-top:5px;
+    margin-top:7px;
     height:40px;
+
+    img
+    {
+      cursor:pointer;
+    }
+
+
+    div#user-menu-dropdown
+    {
+      position:absolute;
+      right:0;
+      top:55px;
+      border:1px $gray solid;
+      $outer-width:300px;
+      width:$outer-width;
+      z-index:1000;
+      background-color:white;
+      @include box-shadow($horizontal-offset:0px,$vertical-offset:2px,$optional-blur:12px,$color:$light-gray);
+
+      div.user-menu-pointer
+      {
+        @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:30px);
+      }
+
+      a, a:link, a:visited, a:active
+      {
+        color:$red;
+      }
+
+      a:hover
+      {
+        color:$red-light;
+      }
+
+      div#user-menu-dashboard
+      {
+        margin-bottom:30px;
+        margin-top:15px;
+
+        img#user-menu-dashboard-avatar
+        {
+          $padding:15px;
+          padding-left: $padding;
+          padding-right: $padding;
+          float:left;
+        }
+
+        div.user-menu-dashboard-avatar-overlay
+        {
+          opacity:0.4;
+          background-color:$red;
+          height:75px;
+          width:75px;
+          margin-left:15px;
+          position:absolute;
+          cursor:pointer;
+        }
+
+        h5.user-menu-dashboard-avatar-overlay
+        {
+          position:absolute;
+          color:white;
+          margin-left:25px;
+          margin-top:15px;
+          text-align:center;
+          cursor:pointer;
+        }
+
+        div.user-menu-dashboard-right
+        {
+          $width:195px;
+          width:$width;
+          float:left;
+
+          p.user-menu-dashboard-text
+          {
+            margin-bottom:0;
+            margin-top:5px;
+          }
+
+          table
+          {
+            width:$width;
+            margin-top:10px;
+
+            img
+            {
+              float:none;
+              padding:0;
+              margin-left:10px;
+              width:20px;
+            }
+
+            td
+            {
+              width:$width/2;
+            }
+
+            a
+            {
+              vertical-align:middle;
+            }
+          }
+        }
+      }
+
+      div.user-menu-dashboard-option-wrapper
+      {
+        div.user-menu-dashboard-option
+        {
+          float:left;
+          border-top:1px $gray solid;
+          padding-top:8px;
+          padding-bottom:8px;
+
+          a
+          {
+            margin-left:10px;
+            font-size:15px;
+            float:left;
+          }
+
+          div.img-holder
+          {
+            float:right;
+            margin-right:10px;
+            width:20px;
+            height:20px;
+          }
+
+          div.img-holder-account
+          {
+            @extend .img-holder;
+            background-image:url('/static/images/user-menu/gear_red.png');
+          }
+
+          div.img-holder-logout
+          {
+            @extend .img-holder;
+            background-image:url('/static/images/user-menu/logout.png');
+          }
+
+          &:hover
+          {
+            cursor:pointer;
+            background-color:$red;
+            a
+            {
+              color:white;
+            }
+
+            div.img-holder-account
+            {
+              background-image:url('/static/images/user-menu/gear_white.png');
+            }
+          }
+        }
+
+        div.user-menu-dashboard-option-left
+        {
+          @extend .user-menu-dashboard-option;
+          width:($outer-width/2+-1);
+          border-right:1px $gray solid;
+        }
+
+        div.user-menu-dashboard-option-right
+        {
+          @extend .user-menu-dashboard-option;
+          width:($outer-width/2);
+        }
+      }
+    }
+
 
     div.user-menu-options-wrapper
     {
       float:left;
-      margin-top:5px;
+      margin-top:3px;
       padding-left:8px;
       padding-right:8px;
       margin-right:10px;
@@ -156,8 +329,14 @@ div#top
           cursor:pointer;
           @include round-rectangle($width:$width+-5,$height:$height+-5 ,$radius:5px,$background-color:$red);
 
+          &:hover
+          {
+            background-color:$red-light;
+          }
+
           div#notifications-dropdown-button
           {
+
             width:$width - 5;
             height:$height - 5;
             margin: 0px;
@@ -181,90 +360,96 @@ div#top
               top: -5px;
             }
           }
+        }
 
-          #notifications-dropdown
+      }
+    }
+
+    #notifications-dropdown
+    {
+      border: solid $gray 1px;
+      position: absolute;
+      font-size: 13px;
+      top: 55px;
+      width: 300px;
+      min-height: 200px;
+      z-index: 100;
+      background-color: white;
+      @include box-shadow($horizontal-offset:0px,$vertical-offset:2px,$optional-blur:12px,$color:$light-gray);
+
+      div.notifications-dropdown-static-div
+      {
+        text-align:center;
+
+        h5
+        {
+          margin-top:10px;
+        }
+
+        div.notifications-header-border
+        {
+          @include horizontalSeparator($width:300px,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
+        }
+
+        div.notifications-pointer
+        {
+          @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
+        }
+
+        div.notifications-ajax-load
+        {
+          img
           {
-            border: solid $gray 1px;
-            position: absolute;
-            font-size: 13px;
-            top: 55px;
-            width: 300px;
-            min-height: 200px;
-            z-index: 100;
-            background-color: white;
-
-            div.notifications-dropdown-static-div
-            {
-              text-align:center;
-
-              h5
-              {
-                margin-top:10px;
-              }
-
-              div.notifications-header-border
-              {
-                @include horizontalSeparator($width:300px,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
-              }
-
-              div.notifications-pointer
-              {
-                @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
-              }
-
-              div.notifications-ajax-load
-              {
-                img
-                {
-                  position:absolute;
-                  width:50px;
-                  left:125px;
-                  top:90px;
-                }
-              }
-            }
-
-            div.notification
-            {
-              @include notification-box;
-              padding-top: 10px;
-              padding-bottom: 10px;
-              padding-left: 10px;
-            }
-
-            div.notification:hover
-            {
-              background-color: $light-gray;
-            }
-
-            div.see-more-notifications
-            {
-              @include notification-box;
-              border-bottom: solid 0;
-              padding-top: 5px;
-              padding-bottom: 5px;
-              text-align: center;
-            }
-
-            div.see-more-notifications:hover
-            {
-              background-color: $light-gray;
-            }
+            position:absolute;
+            width:50px;
+            left:125px;
+            top:90px;
           }
         }
       }
+
+      div.notification
+      {
+        @include notification-box;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+      }
+
+      div.notification:hover
+      {
+        background-color: $light-gray;
+      }
+
+      div.see-more-notifications
+      {
+        @include notification-box;
+        border-bottom: solid 0;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        text-align: center;
+      }
+
+      div.see-more-notifications:hover
+      {
+        background-color: $light-gray;
+      }
+
+
     }
 
     div.user-menu
     {
       float:right;
       font-family:$title-font;
+      cursor:pointer;
+
 
       div#menu-down-arrow
       {
         float:left;
         margin-left:10px;
-        margin-top:19px;
+        margin-top:17px;
         margin-right:10px;
         @include triangle-down($size: 4px, $color: $red)
       }
@@ -275,33 +460,16 @@ div#top
         float:left;
         margin-left:5px;
         margin-top:13px;
-        font-size:16px;
         color:#0F5569;
       }
 
       .user-img
       {
-        width:38px;
-        height:38px;
-        padding:1px;
         vertical-align: middle;
         float:left
       }
     }
 
-    div#user-menu-dropdown
-    {
-      position:absolute;
-      right:0;
-      top:55px;
-      z-index:1000;
-
-      div.user-menu-pointer
-      {
-        @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:30px);
-      }
-
-    }
 
     .user-menu-dropdown-div-top
     {
@@ -311,7 +479,7 @@ div#top
     .user-menu-dropdown-div
     {
       height:50px;
-      width:260px;
+      width:300px;
       border-left: 1px solid #CCC;
       border-right: 1px solid #CCC;
       border-bottom: 1px solid #CCC;
@@ -352,6 +520,26 @@ div#top
 
   }
 }
+
+div#user-upload-avatar-modal
+{
+  @include modal;
+  position:absolute;
+  width:50%;
+  height:500px;
+  top:100px;
+  margin-left:25%;
+  margin-right:25%;
+  z-index:1500;
+
+  div.upload-modal-main-div
+  {
+    padding: 75px;
+  }
+
+
+}
+
 
 
 

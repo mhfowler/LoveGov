@@ -48,40 +48,7 @@
                 $('#why-facebook-hover').fadeOut(300);
             });
 
-            $('.login-input').each(function()
-            {
-                if ($(this).val() != "")
-                {
-                    var id_span = "#" + $(this).attr('id').replace("input",'span');
-                    $(id_span).hide();
-                }
-            });
-
-            $('.login-input').focusin(function()
-            {
-                var id_span = "#" + $(this).attr('id').replace("input",'span');
-                $(id_span).css("color","#CCCCCC");
-            });
-
-            $('.login-input').focusout(function()
-            {
-                var id_span = "#" + $(this).attr('id').replace("input",'span');
-                $(id_span).css('color','#959595');
-                if ($(this).val()==''){ $(id_span).show(); }
-            });
-
-            $('.login-input').keyup(function()
-            {
-                var id_span = "#" + $(this).attr('id').replace("input",'span');
-                if ($(this).val()=="") { $(id_span).show(); }
-                else {  $(id_span).hide(); }
-            });
-
-            $('.input-span').click(function()
-            {
-                var id_span = "#" + $(this).attr('id').replace("span",'input');
-                $(id_span).focus();
-            });
+            $('.login-input').inputFade();
 
             $('#create-account').click(function(event)
             {

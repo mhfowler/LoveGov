@@ -29,7 +29,9 @@ from googlemaps import GoogleMaps
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
 def getLinkInfo(request, vals={}):
-    url = str(request.POST['url'])
+    vals = {}
+    url = str(request.POST['remote_url'])
+    print url
     url.strip()
     # url may not be well formed so try variations until one works
     for prefix in PREFIX_ITERATIONS:
@@ -41,7 +43,6 @@ def getLinkInfo(request, vals={}):
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        vals = {}
         try:
             vals['title'] = soup.title.string
         except:
@@ -83,6 +84,7 @@ def getLinkInfo(request, vals={}):
             list.append({'path':"/static/images/top-logo-default.png"})
 
         vals['imglink'] = list
+
         html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
         return HttpResponse(json.dumps({'html':html,'imglink':list}))
 
@@ -203,7 +205,7 @@ def loadHistogram(request, vals={}):
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
     formtype = request.POST['type']
-    user = val['user']
+    user = val['viewer']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
@@ -214,6 +216,7 @@ def create(request, val={}):
         form = CreateUserGroupForm(request.POST)
     elif formtype =='I':
         form = UserImageForm(request.POST)
+
         # if valid form, save to db
     if form.is_valid():
         # save new piece of content
@@ -222,21 +225,32 @@ def create(request, val={}):
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
-            if formtype == "P":
-                from lovegov.frontend.views import petitionDetail
-                return petitionDetail(request=request,p_id=c.id,vals=val)
-            elif formtype == "N":
+            if formtype == "N":
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
-            elif formtype == "G":
-                group_joined = GroupJoined(user=user, content=c, group=c, privacy=getPrivacy(request))
-                group_joined.confirm()
-                group_joined.autoSave()
-                c.admins.add(user)
-                c.members.add(user)
-                return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+
+            return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
+
         else:
-            return shortcuts.redirect('/display/' + str(c.id))
+            if formtype == "G":
+                c.joinMember(user)
+                c.admins.add(user)
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+            elif formtype == "P":
+                try:
+                    if 'image' in request.FILES:
+                        file_content = ContentFile(request.FILES['image'].read())
+                        Image.open(file_content)
+                        c.setMainImage(file_content)
+                except IOError:
+                    print "Image Upload Error"
+
+            return shortcuts.redirect(c.get_url())
     else:
         if request.is_ajax():
             errors = dict([(k, form.error_class.as_text(v)) for k, v in form.errors.items()])
@@ -247,6 +261,7 @@ def create(request, val={}):
             print simplejson.dumps(vals)
             return HttpResponse(json.dumps(vals))
         else:
+            return shortcuts.redirect('/web/')
             vals = {'petition': petition, 'event':event, 'news':news, 'group':group, 'album':album}
             return renderToResponseCSRF('usable/create_content_simple.html',vals,request)
 
@@ -508,8 +523,7 @@ def joinGroupRequest(request, vals={}):
         group_joined = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
         group_joined.autoSave()
     if group_joined.invited:
-        group_joined.confirm()
-        group.members.add(from_user)
+        group.joinMember(from_user, privacy=getPrivacy(request))
         action = Action(relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
@@ -520,8 +534,7 @@ def joinGroupRequest(request, vals={}):
         return HttpResponse("cannot request to join secret group")
     #If the group type is open...
     if group.group_privacy == 'O':
-        group_joined.confirm()
-        group.members.add(from_user)
+        group.joinMember(from_user, privacy=getPrivacy(request))
         action = Action(relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
@@ -554,8 +567,7 @@ def joinGroupResponse(request, vals={}):
             return HttpResponse("This person is already in your group")
         elif group_joined.requested:
             if response == 'Y':
-                group_joined.confirm()
-                group.members.add(from_user)
+                group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(relationship=group_joined,modifier="A")
                 action.autoSave()
                 from_user.notify(action)
@@ -583,8 +595,7 @@ def groupInviteResponse(request, vals={}):
             return HttpResponse("You have already joined that group")
         if group_joined.invited:
             if response == 'Y':
-                group_joined.confirm()
-                group.members.add(from_user)
+                group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(relationship=group_joined,modifier="D")
                 action.autoSave()
                 from_user.notify(action)
@@ -741,50 +752,6 @@ def leaveGroup(request, vals={}):
         return HttpResponse("system group")
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Creates share relationship between user and content.
-#
-#-----------------------------------------------------------------------------------------------------------------------
-def share(request, vals={}):
-    # get data
-    user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
-    # check if already following
-    my_share = Shared.objects.filter(user=user,content=content)
-    if not my_share:
-        privacy = getPrivacy(request)
-        share = Shared(user=user,content=content,privacy=privacy)
-        share.autoSave()
-        # add to myinvolvement
-        user.updateInvolvement(content=content,amount=INVOLVED_FOLLOW)
-        # update status of content
-        content.status += STATUS_FOLLOW
-        content.save()
-        return HttpResponse("shared")
-    else:
-        return HttpResponse("already shared")
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates follow relationship between user and content.
-#
-#-----------------------------------------------------------------------------------------------------------------------
-def follow(request, vals={}):
-    # get data
-    user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
-    # check if already following
-    my_follow = Followed.objects.filter(user=user,content=content)
-    if not my_follow:
-        privacy = getPrivacy(request)
-        follow = Followed(user=user,content=content,privacy=privacy)
-        follow.autoSave()
-        # update status of content
-        content.status += STATUS_FOLLOW
-        content.save()
-        return HttpResponse("following")
-    else:
-        return HttpResponse("already following")
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Adds content to group.
 #
 #-----------------------------------------------------------------------------------------------------------------------
@@ -882,12 +849,9 @@ def updateGroupView(request,vals={}):
 # tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def hoverComparison(request,vals={}):
-    user = vals['viewer']
-    alias = request.POST['alias']
-    to_compare = UserProfile.objects.get(alias=alias)
-    comparison = getUserUserComparison(user, to_compare, force=True)
+    object = urlToObject(request.POST['href'])
+    comparison = object.getComparison(vals['viewer'])
     return HttpResponse(comparison.toJSON())
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds e-mail to mailing list
@@ -951,8 +915,11 @@ def ajaxGetFeed(request, vals={}):
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
     items = ajaxFeedHelper(content, vals['viewer'])
-    to_render = {'items':items, 'display':feed_display}
+    to_render = {'items':items, 'display':feed_display, 'viewer':vals['viewer']}
 
+    if feed_display == 'L':
+        from lovegov.frontend.views import rightSideBar
+        rightSideBar(request, to_render)
     html = ajaxRender('deployment/center/feed/feed_helper.html', to_render, request)
     to_return = {'html':html, 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
@@ -974,7 +941,10 @@ def ajaxFeedHelper(content, user):
 #-----------------------------------------------------------------------------------------------------------------------
 def saveFilter(request, vals={}):
 
+    viewer = vals['viewer']
+
     name = request.POST['feed_name']
+
     ranking = request.POST['feed_ranking']
     types = json.loads(request.POST['feed_types'])
     levels = json.loads(request.POST['feed_levels'])
@@ -983,25 +953,48 @@ def saveFilter(request, vals={}):
     submissions_only = bool(int(request.POST['feed_submissions_only']))
     display = request.POST['feed_display']
 
-    filter = SimpleFilter(ranking=ranking, types=types,
-        levels=levels, submissions_only=submissions_only,
-    display=display, name=name)
-    filter.save()
+    already = viewer.my_filters.filter(name=name)
+    if already:
+        filter = already[0]
+        filter.ranking = ranking
+        filter.types = types
+        filter.levels = levels
+        filter.submissions_only = submissions_only
+        filter.display = display
+        filter.save()
+    else:
+        filter = SimpleFilter(ranking=ranking, types=types,
+            levels=levels, submissions_only=submissions_only,
+        display=display, name=name, creator=viewer)
+        filter.save()
+        viewer.my_filters.add(filter)
 
+    filter.topics.clear()
     for t in topics:
         filter.topics.add(t)
+    filter.groups.clear()
     for g in groups:
         filter.groups.add(g)
 
+    return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# deletes a filter setting
+#-----------------------------------------------------------------------------------------------------------------------
+def deleteFilter(request, vals={}):
+
     viewer = vals['viewer']
+    name = request.POST['f_name']
+
+    if name == 'default':
+        return HttpResponse("cant delete default filter.")
 
     already = viewer.my_filters.filter(name=name)
     if already:
-        viewer.my_filters.remove(already[0])
+        to_delete = already[0]
+        viewer.my_filters.remove(to_delete)
 
-    viewer.my_filters.add(filter)
-
-    return HttpResponse("success")
+    return HttpResponse("deleted")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets a filter setting and returns via json dump
@@ -1038,7 +1031,7 @@ def getNotifications(request, vals={}):
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets activity feed
+# gets user activity feed
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserActions(request, vals={}):
     # Get Actions
@@ -1053,7 +1046,6 @@ def getUserActions(request, vals={}):
         num_actions = int(request.POST['num_actions'])
     actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
     if len(actions) == 0:
-        print 'no more actions'
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
@@ -1064,6 +1056,9 @@ def getUserActions(request, vals={}):
     html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets group activity feed
+#-----------------------------------------------------------------------------------------------------------------------
 def getGroupActions(request, vals={}):
     # Get Actions
     viewer = vals['viewer']
@@ -1087,6 +1082,58 @@ def getGroupActions(request, vals={}):
     vals['num_actions'] = num_actions
     html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets group members
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroupMembers(request, vals={}):
+    # Get Members
+    viewer = vals['viewer']
+    if not 'g_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No group id given'}))
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        return HttpResponse(json.dumps({'error':'Invalid group id'}))
+    num_members = 0
+    if 'num_members' in request.POST:
+        num_members = int(request.POST['num_members'])
+    print num_members
+    members = group.getMembers(user=viewer,num=MEMBER_INCREMENT,start=num_members)
+    print len(members)
+    if len(members) == 0:
+        return HttpResponse(json.dumps({'error':'No more members'}))
+    members_text = []
+    for member in members:
+        member_text = render_to_string( 'deployment/snippets/group-member-new.html' , {'member':member} )
+        members_text.append( member_text )
+    vals['members_text'] = members_text
+    num_members += MEMBER_INCREMENT
+    vals['num_members'] = num_members
+    html = ajaxRender('deployment/snippets/member-snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_members':num_members}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets user groups
+#-----------------------------------------------------------------------------------------------------------------------
+def getUserGroups(request, vals={}):
+    # Get Groups
+    viewer = vals['viewer']
+    if not 'p_id' in request.POST:
+        return HttpResponse(json.dumps({'error':'No profile id given'}))
+    user_prof = UserProfile.lg.get_or_none(id=request.POST['p_id'])
+    if not user_prof:
+        return HttpResponse(json.dumps({'error':'Invalid profile id'}))
+    num_groups = 0
+    if 'num_groups' in request.POST:
+        num_groups = int(request.POST['num_groups'])
+    groups = user_prof.getUserGroups(num=GROUP_INCREMENT,start=num_groups)
+    if len(groups) == 0:
+        return HttpResponse(json.dumps({'error':'No more groups'}))
+    vals['user_groups'] = groups
+    num_groups += GROUP_INCREMENT
+    vals['num_groups'] = num_groups
+    html = ajaxRender('deployment/snippets/group_snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_groups':num_groups}))
 
 
 def matchSection(request, vals={}):
@@ -1158,11 +1205,71 @@ def matchSection(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Shares a piece of content
 #-----------------------------------------------------------------------------------------------------------------------
-
 def shareContent(request, vals={}):
-    share_with = request.POST['share_with'] 
-    return HttpResponse("oh hai thnx for sharing ur content with")
 
+    user = vals['viewer']
+    content = Content.objects.get(id=request.POST['share_this'])
+    share_with = json.loads(request.POST['share_with'])
+
+    follow_ids = []
+    group_ids = []
+    all_followers = False
+    all_groups = False
+    all_networks = False
+    for x in share_with:
+        splitted = x.split('_')
+        pre = splitted[0]
+        id = splitted[1]
+        if pre == 'follower':
+            follow_ids.append(id)
+        elif pre == 'group':
+            group_ids.append(id)
+        elif pre == 'network':
+            group_ids.append(id)
+        elif pre == 'all':
+            if id == 'followers':
+                all_followers=True
+            elif id == 'groups':
+                all_groups = True
+            elif id == 'networks':
+                all_networks = True
+
+    if all_followers:
+        share_users = user.getFollowMe()
+    else:
+        if follow_ids:
+            share_users = user.getFollowMe().filter(id__in=follow_ids)
+        else:
+            share_users = []
+
+    if all_networks and all_groups:
+        share_groups = user.getGroups()
+    else:
+        if all_networks:
+            share_groups = user.getNetworks()
+        elif all_groups:
+            share_groups = user.getUserGroups()
+        else:
+            if group_ids:
+                groups = user.getGroups()
+                share_groups = user.getGroups().filter(id__in=group_ids)
+            else:
+                share_groups = []
+
+    shared = Shared.lg.get_or_none(user=user, content=content)
+    if not shared:
+        shared = Shared(user=user, content=content)
+        shared.autoSave()
+    for u in share_users:
+        shared.addUser(u)
+    for g in share_groups:
+        shared.addGroup(g)
+
+    return HttpResponse('shared')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# blog action
+#-----------------------------------------------------------------------------------------------------------------------
 def blogAction(request,vals={}):
     user = vals['viewer']
     if 'url' in request.POST:
@@ -1241,8 +1348,6 @@ actions = { 'getLinkInfo': getLinkInfo,
             'groupinviteresponse': groupInviteResponse,
             'leavegroup': leaveGroup,
             'matchComparison': matchComparison,
-            'share': share,
-            'follow': follow,
             'posttogroup': posttogroup,
             'updateCompare': updateCompare,
             'viewCompare': viewCompare,
@@ -1252,10 +1357,13 @@ actions = { 'getLinkInfo': getLinkInfo,
             'ajaxThread': ajaxThread,
             'getnotifications': getNotifications,
             'getuseractions': getUserActions,
+            'getusergroups': getUserGroups,
             'getgroupactions': getGroupActions,
+            'getgroupmembers': getGroupMembers,
             'ajaxGetFeed': ajaxGetFeed,
             'matchSection': matchSection,
             'saveFilter': saveFilter,
+            'deleteFilter': deleteFilter,
             'getFilter': getFilter,
             'matchSection': matchSection,
             'shareContent': shareContent,

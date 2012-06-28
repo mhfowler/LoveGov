@@ -91,6 +91,8 @@ STATUS_SHARE = 0
 STATUS_FOLLOW = 0
 
 NOTIFICATION_INCREMENT = 5
+MEMBER_INCREMENT = 25
+GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
 
@@ -171,12 +173,12 @@ PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantom
 ########################################## CHOICES #####################################################################
 
 # level of government
-LEVEL_CHOICES = (
+SCALE_CHOICES = (
     ('P', 'Personal'),
     ('L', 'Local'),
     ('S', 'State'),
     ('F', 'Federal'),
-    ('W', 'World')
+    ('A', 'All')
 )
 
 # feed display types
@@ -266,8 +268,8 @@ ACTION_MODIFIERS = (
         )
 
 # types of action which user should be notified about
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO']
-AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO', 'SH']
+AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO', 'SH']
 
 # Timedelta that it takes for aggregate notifications to go stale.
 STALE_TIME_DELTA = datetime.timedelta(14)
@@ -298,13 +300,13 @@ USER_CHOICES =  (
     ('S','senator'),
     ('R','representative'),
     ('G', 'ghost')
-    )
+)
 
 # types of motions
 MOTION_CHOICES = (
     ('O','other'),
     ('C','charity')
-    )
+)
 
 # types of user permissions
 PERMISSION_CHOICES = (
@@ -329,7 +331,7 @@ BILL_TYPES = {
     'sc': 'Senate Committee Bill',
     'sj': 'Senate Joint Bill',
     'hj': 'House of Representatives Joint Bill',
-    }
+}
 
 # types of content that show up in the feed
 FEED_CONTENT_TYPES = ['P','N','L','G']
@@ -340,3 +342,9 @@ DEFAULT_IMAGE = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/prof
 
 STATIC_PATH = '/media/'
 
+###################################### GAMIFICATION ####################################################################
+
+PETITION_LEVELS = [0, 10, 50, 100, 500, 1000, 5000, 10000, 50000,
+                   100000, 500000, 1000000, 5000000, 10000000,
+                   50000000, 100000000, 500000000, 1000000000,
+                   5000000000, 10000000000]

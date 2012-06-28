@@ -1,53 +1,73 @@
 <div id="create_news_div" class="create-wrapper create_content_div">
 
-    <div id="news-errors-json"></div>
-
     <h2>Share News:</h2>
+    <table class='create-table'>
+        <tr class="news-title">
+            <td class="create-title">
+                <div class="sub-title">Link:</div>
+                <div class="create-error" id="news_name_error"></div>
+            </td>
+            <td><input id="news-input-link" class="title-input" type="text" name="link" /></td>
+        </tr>
 
-    <div id="news-errors-non_field"></div>
+        <tr id="news-link-generation" style="display:none">
+            <td class="create-title">
+                <div class="sub-title">Link Image:</div>
+                <div class="create-error" id="news_link_error"></div>
+            </td>
+            <td class="news-link-cell"><div id="news-link-generation-wrapper"></div></td>
+        </tr>
 
-    <div class="title">
+        <tr id="news-summary" class="summary" style="display:none">
+            <td class="create-title">
+                <div class="sub-title">Your View:</div>
+                <div class="create-info" id="news_summary_info">[optional]</div>
+            </td>
+            <td><textarea id="news-input-summary" class="full-text-input" type="text" name="summary"></textarea></td>
+        </tr>
 
-        <div id="news-errors-link"></div>
+        <tr class="news-scale-wrapper">
+            <td class="create-title">
+                <div class="sub-title">Scale:</div>
+                <div class="create-error" id="news_scale_error"></div>
+            </td>
+            <td>
+                <div class="create-radio news_scale_radio">
+                    All
+                    <input type="radio" class="custom-radio news_scale" id="government-scale-all" value='A' name="scale"/>
+                </div>
+                <div class="create-radio news_scale_radio">
+                    Federal
+                    <input type="radio" class="custom-radio news_scale" id="government-scale-federal" value='F' name="scale"/>
+                </div>
+                <div class="create-radio news_scale_radio">
+                    State
+                    <input type="radio" class="custom-radio news_scale" id="government-scale-state" value='S' name="scale"/>
+                </div>
+                <div class="create-radio news_scale_radio">
+                    Local
+                    <input type="radio" class="custom-radio news_scale" id="government-scale-local" value='L' name="scale"/>
+                </div>
+                <div class='clear-both'></div>
+            </td>
+        </tr>
 
-        <span class="sub-title">Link:</span>
+        <tr class="news-topic">
+            <td class="create-title">
+                <div class="sub-title">Topic:</div>
+                <div class="create-error" id="news_topic_error"></div>
+            </td>
+            <td>
+                <div class="topic-images" id="news_input_topic">
+                    {% include 'deployment/pieces/topic_images.html' %}
+                </div>
+            </td>
+        </tr>
 
-        <input id="news-input-link" type="text" name="link" />
+    </table>
 
-    </div>
-
-    <div id="news-link-generation" style="display:none">
-    </div>
-
-    <div id="news-summary" class="summary" style="display:none">
-
-        <div id="news-errors-summary"></div>
-
-        <div id="news-summary-text">
-            <span class="sub-title">Your View:</span>
-        </div>
-
-        <textarea id="news-input-summary" type="text" name="summary" ></textarea>
-
-    </div>
-
-    <div class="create-topic-div">
-
-        <div id="news-errors-topic"></div>
-
-        <div class="create-topic-text">
-            <span class="sub-title">Topic: </span> <br>
-            select which topic your news falls under
-        </div>
-
-        <div class="topic-images news-input-topic">
-            {% include 'deployment/pieces/topic_images.html' %}
-        </div>
-
-    </div>
-
-    <div class="create-submit-div">
-        <a href="" id="share-button" class="left-sidebar-button"> share </a>
+    <div class="submit-button">
+        <a href="" id="submit_news_button" class="button-red">share</a>
     </div>
 
 </div>

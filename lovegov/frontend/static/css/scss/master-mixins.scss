@@ -102,11 +102,11 @@
   font-family: $title-font, $body-fonts;
 }
 
-@mixin rounded-box
+@mixin rounded-box($size: 70px)
 {
   @include rounded();
-  height: 70px;
-  width: 70px;
+  height: $size;
+  width: $size;
   display: block;
   text-align: center;
 }
