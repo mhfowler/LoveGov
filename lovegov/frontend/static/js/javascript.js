@@ -460,6 +460,17 @@ function bindInlineEdits()
             $(this).parent().hide();
         }
     );
+
+    $(".cancel_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var wrapper = $(this).parent();
+            wrapper.hide();
+            wrapper.siblings('.inline_hide').show();
+            wrapper.siblings('.edit_button').show();
+        }
+    );
 }
 
 
