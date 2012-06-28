@@ -12,6 +12,7 @@ function rebindFunction()
     loadHoverComparison();                                      // hover comparison functionality
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
+    bindTooltips();                                             // bind all tooltip classes
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -63,6 +64,21 @@ function rebindFunction()
             break
     }
 }
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Bind popovers
+ *
+ ***********************************************************************************************************************/
+
+function bindTooltips() {
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+}
+
 
 /***********************************************************************************************************************
  *
@@ -1204,28 +1220,8 @@ function submitAnswer()
  ***********************************************************************************************************************/
 // binding for thread
 function loadThread()
-{
-    $('.heart').hover
-        (
-            function(event)
-            {
-                if (!$(this).hasClass('blue'))
-                {
-                    var src = $(this).attr('src');
-                    src = src.replace('Grey','Blue');
-                    $(this).attr('src',src);
-                }
-            },
-            function(event)
-            {
-                if (!$(this).hasClass('blue'))
-                {
-                    var src = $(this).attr('src');
-                    src = src.replace('Blue','Grey');
-                    $(this).attr('src',src);
-                }
-            }
-        );
+{ 
+	heartButtons();
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)
@@ -1263,6 +1259,12 @@ function loadThread()
     $(".reply").click(function()
     {
         $(this).parent().siblings('.replyform').toggle();
+    });
+    
+    // hide for "cancel" button
+    $("input.tab-button.alt").click(function()
+    {
+        $(this).parent().hide();
     });
 
     // delete comment
@@ -1344,6 +1346,18 @@ function loadThread()
             $(this).val("what's your opinion?");
         }
         $(this).blur();
+    });
+
+    $('span.collapse').click(function(e) {
+        var close = '[-]';
+        var open = '[+]';
+        if($(this).text()==close) { 
+            $(this).text(open);
+            $(this).next('div.threaddiv').children().hide();
+        } else if($(this).text()==open) {
+            $(this).text(close);
+            $(this).next('div.threaddiv').children().show();
+        }
     });
 
     loadHoverComparison();
