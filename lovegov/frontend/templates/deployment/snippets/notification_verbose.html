@@ -164,9 +164,10 @@
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             {% if not group_join.rejected and not group_join.confirmed and group_join.requested %}
                 <div class="notification-follow-response">
-                    <a href="" class="notification-follow-response-y"> I accept! </a> ||
-                    <a href="" class="notification-follow-response-n"> I decline! </a>
-                    <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
+                    <a href="" class="notification_group_response_y button-small-red">accept</a>
+                    <a href="" class="notification_group_response_n button-small-red">decline</a>
+                    <input type="hidden" class="follow-id" value="{{ from_user.id }}"/>
+                    <input type="hidden" class="group-id" value="{{ to_user.id }}"/>
                 </div>
             {% endif %}
         {% elif modifier == 'A' %}

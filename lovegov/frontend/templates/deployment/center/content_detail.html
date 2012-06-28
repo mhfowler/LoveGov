@@ -1,11 +1,18 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/content_detail.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css"/>
 
 <div id="content">
     <div id="content-left">
     {% if content.active %}
-        <a href='/feed'><span class='back-to-feed'>Back to Your Feed</span></a>
+        <div class="row"><div class="tencol"><a href='/feed'><span class='content_header'>Back to Your Feed</span></a></div></div>
         <div class="content-left-side">
-            <div class="content-image-area">
+        	{% load thumbnail %}
+        	{% thumbnail content.getImage "150x250" crop="center" as im %}
+            	<div class="content-image-area" style="background-image: url('{{content.getImage}}');">
+            {% empty %}
+            	<div class="content-image-area" style="background-image: url('http://images1.wikia.nocookie.net/__cb20111125230859/youtube/images/d/d0/Dancing-terrorists.jpg');">
+            {% endthumbnail %}
+            {{content.getImage}}
                 {% with topic=content.getMainTopic %}
                     <a href="{{topic.get_url}}">
                         <div id="content-topic-img">
@@ -13,6 +20,15 @@
                         </div>
                     </a>
                 {% endwith %}
+            </div>
+            <div class="social_bar">
+            	<div class="hearts bar_elem">
+            	{% include "deployment/snippets/hearts.html" with content=content %}
+            	</div><div class="social_bar_comments bar_elem">
+            	<span>comments <span class="num_comments">{{content.num_comments}}</span></span>
+            	</div><div class="social_bar_links bar_elem">
+            	<div class="facebook_link tooltip-bottom" title="Share with facebook"></div> <div class="twitter_link tooltip-bottom" title="Share with twitter"></div>
+            	</div>
             </div>
         </div>
 
@@ -22,6 +38,7 @@
             {% endblock %}
         </div>
 
+        <div class="content_separator"></div>
 
 
         <div id="comment-thread">
@@ -32,7 +49,7 @@
                 <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment">what's your opinion?</textarea>
                 <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
                 <br>
-                <input class="submit-comment" type="submit" value="Submit Comment" />
+                <input class="tab-button" type="submit" value="Save" style="float: right;" /><div class="clearfix"></div>
             </form>
 
             <!-- comment thread -->

@@ -52,20 +52,20 @@
 
                 <div class="profile-stats">
                     <div class="stat-box followers-stat">
-                        <span class="profile-stats-number followers-number">{{ prof_follow_me|length }}</span>
-                        <span class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
+                        <div class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="profile-stats-number">{{ responses }}</span>
-                        <span class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number">{{ responses }}</div>
+                        <div class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="profile-stats-number">0</span>
-                        <span class="profile-stats-title">petition{% if responses != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number">0</div>
+                        <div class="profile-stats-title">petition{% if responses != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="profile-stats-number">0</span>
-                        <span class="profile-stats-title">article{% if responses != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number">0</div>
+                        <div class="profile-stats-title">article{% if responses != 1 %}s{% endif %}</div>
                     </div>
                 </div>
                 <div class="profile-buttons">
@@ -112,9 +112,9 @@
                 <div class="profile-section-title">Groups</div>
                 <div class='profile-groups'>
                     {% for group in prof_groups %}
-                        <a class="profile-group-link" title="{{ group.get_name }}" href="{{ group.get_url }}">
+                        <a class="profile-group-link" href="{{ group.get_url }}">
                             {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
-                                <img src="{{ im.url }}" class="rounded"/>
+                                <img src="{{ im.url }}" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}" class="has_hover_comparison rounded"/>
                             {% empty %}
                                 <img src="/static/images/profile_default.jpg" class="rounded"/>
                             {% endthumbnail %}

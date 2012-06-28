@@ -21,7 +21,11 @@ def test3(request, vals={}):
 
     frame(request, vals)
 
-    vals['p'] = Petition.objects.all()[0]
+    vals['g'] = Group.objects.all()[0]
+
+    vals['histogram_json'] = group.getComparisonHistogram(vals['viewer'])
+
+    vals['bar_labels'] = [2, 4, 6, 8, 10]
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('test/petition.html', vals, request)

@@ -13,7 +13,7 @@
     <!-- Left Block -->
     <div class="middle-left">
         <div class="basic-info">
-
+            {% if not group.system %}
             <div class="basic-info-left">
                 <div class="group-img">
                     {% load thumbnail %}
@@ -21,53 +21,79 @@
                         <img src="{{ im.url }}" class="icon-really-big"/>
                     {% endthumbnail %}
                 </div>
+                <div class="group-privacy">
+                    {% if group.group_privacy == 'O' %}
+                        PUBLIC
+                    {% elif group.group_privacy == 'P' %}
+                        PRIVATE
+                    {% elif group.group_privacy == 'S' %}
+                        HIDDEN
+                    {% endif %}
+                </div>
             </div>
+            {% endif %}
 
             <div class="basic-info-main">
                 <div class="group-name">
                     {{ group.title }}
                 </div>
-                <div class="group-scale">
-                    {{ group.getScaleVerbose }}
-                </div>
-                <div class="group-summary">
-                    {% comment %}{{ group.summary }}{% endcomment %}
-                    This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
-                </div>
+                {% if not group.system %}
+                    <div class="group-scale">
+                        {{ group.getScaleVerbose }}
+                    </div>
+                    <div class="group-summary">
+                        {% comment %}{{ group.summary }}{% endcomment %}
+                        This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
+                    </div>
+                {% else %}
+                    <div class="group-scale">
+                        System Group
+                    </div>
+                {% endif %}
+
 
                 <div class="group-stats">
                     <div class="stat-box members-stat">
-                        <span class="group-stats-number members-number">{{ group_members|length }}</span>
-                        <span class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number members-number">{{ group_members|length }}</div>
+                        <div class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="group-stats-number">19</span>
-                        <span class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number">19</div>
+                        <div class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="group-stats-number">0</span>
-                        <span class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number">0</div>
+                        <div class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="group-stats-number">0</span>
-                        <span class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</span>
+                        <div class="group-stats-number">0</div>
+                        <div class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                 </div>
 
                 {% if not group.system %}
                     <div class="group-buttons">
-                        {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
-                            <a href="" class="button-red float-left" id="group_follow">
-                                follow
-                            </a>
-                        {% else %}
-                            <a href="" class="button-red float-left" id="group_unfollow">
-                                {% if is_user_confirmed %}
-                                    unfollow
-                                {% elif is_user_follow %}
-                                    un-request
-                                {% endif %}
-                            </a>
+                        <div class="group-button">
+                            {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
+                                <a href="" class="button-red float-left" id="group_follow">
+                                    follow
+                                </a>
+                            {% else %}
+                                <a href="" class="button-red float-left" id="group_unfollow">
+                                    {% if is_user_confirmed %}
+                                        unfollow
+                                    {% elif is_user_follow %}
+                                        un-request
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        </div>
+                        {% if is_user_admin and group_requests|length > 0 %}
+                            <div class="group-button">
+                                <a href="" class="button-red float-left" id="group_requests">
+                                    {{ group_requests|length }} request{% if group_requests|length > 1 %}s{% endif %}
+                                </a>
+                            </div>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -112,56 +138,54 @@
                     {% endfor %}
                 </div>
                 <div class="clear-both"></div>
-                <a href="" class="long-button-gray" id="profile_more_groups">
-                    See more groups
+                <a href="" class="long-button-gray" id="group_more_members">
+                    See more members
                 </a>
-                <input type="hidden" id="num_groups" value="{{ num_groups }}"/>
+                <input type="hidden" id="num_members" value="{{ num_members }}"/>
                 <br>
             </div>
         </div>
     </div>
-</div>
 
-
-<!-- Right Block -->
-<div class="middle-right">
-    <div class="matching">
-        <div id="qaweb"></div>
-        <div id="qaweb-title">
-            You & {{ group.title }}
+    <!-- Right Block -->
+    <div class="middle-right">
+        <div class="matching">
+            <div id="qaweb"></div>
+            <div id="qaweb-title">
+                You & {{ group.title }}
+            </div>
+        </div>
+        <div class="group-histogram-container">
         </div>
     </div>
-    <div class="group-histogram-container">
-    </div>
 </div>
 
-    {% if not group.system %}
-        {% if is_user_admin %}
-        <ul id="group-requests">
-            {% for req in prof_requests %}
-            <li><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-                <a href="" class="group-response-y"> I accept! </a> ||
-                <a href="" class="group-response-n"> I decline! </a>
-                <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-            </li>
-            {% empty %}
-            <li>No follow requests! =( </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        <br>
-
-    {% endif %}
-
-
-
-    <script>
-        var g_id = "{{ group.id }}";
-    </script>
-
+<div id="group_requests_modal" class="requests-modal">
+    <table class="group-request-table">
+        {% for req in group_requests %}
+            <tr>
+                <td>
+                    <a href="{{ req.getFrom.get_url }}">
+                        {% thumbnail req.getFrom.getProfileImage.image "38x38" crop="center" as im %}
+                            <img src="{{ im.url }}" class="icon-med"/>
+                        {% endthumbnail %}
+                    </a>
+                </td>
+                <td><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow {{ gropu.get_name }}:</td>
+                <td>
+                    <a href="" class="group-response-y button-red group-button">accept</a>
+                    <a href="" class="group-response-n button-red group-button">decline</a>
+                    <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+                    <input type="hidden" class="group-id" value="{{ req.getTo.id }}"/>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 </div>
 
+<script>
+    var g_id = "{{ group.id }}";
+</script>
 
 {% else %}
     This group has been deleted.

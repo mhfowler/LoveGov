@@ -12,6 +12,7 @@ function rebindFunction()
     loadHoverComparison();                                      // hover comparison functionality
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
+    bindTooltips();                                             // bind all tooltip classes
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -65,6 +66,19 @@ function rebindFunction()
     }
 }
 
+
+/***********************************************************************************************************************
+ *
+ *      ~Bind popovers
+ *
+ ***********************************************************************************************************************/
+
+function bindTooltips() {
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+}
 
 
 /***********************************************************************************************************************
@@ -1176,28 +1190,8 @@ function submitAnswer()
  ***********************************************************************************************************************/
 // binding for thread
 function loadThread()
-{
-    $('.heart').hover
-        (
-            function(event)
-            {
-                if (!$(this).hasClass('blue'))
-                {
-                    var src = $(this).attr('src');
-                    src = src.replace('Grey','Blue');
-                    $(this).attr('src',src);
-                }
-            },
-            function(event)
-            {
-                if (!$(this).hasClass('blue'))
-                {
-                    var src = $(this).attr('src');
-                    src = src.replace('Blue','Grey');
-                    $(this).attr('src',src);
-                }
-            }
-        );
+{ 
+	heartButtons();
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)
@@ -1235,6 +1229,12 @@ function loadThread()
     $(".reply").click(function()
     {
         $(this).parent().siblings('.replyform').toggle();
+    });
+    
+    // hide for "cancel" button
+    $("input.tab-button.alt").click(function()
+    {
+        $(this).parent().hide();
     });
 
     // delete comment
@@ -1316,6 +1316,36 @@ function loadThread()
             $(this).val("what's your opinion?");
         }
         $(this).blur();
+    });
+
+    $('span.collapse').click(function(e) {
+        var close = '[ - ]';
+        var open = '[ + ]';
+        if($(this).text()==close) { 
+            $(this).text(open);
+            $(this).next('div.threaddiv').children().hide();
+        } else if($(this).text()==open) {
+            $(this).text(close);
+            $(this).next('div.threaddiv').children().show();
+        }
+    });
+
+    $('span.flag').click(function(e) {
+        var commentid = $(this).data('commentid');
+        var comment = $(this).parent().children('div.comment-text').text();
+        var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
+        if(conf) {
+            ajaxPost({
+                data: {'action': 'flag', 'c_id': commentid},
+                success: function(data) {
+                    alert("Comment flagged successfully.");
+                    $(this).css("color", "red");
+                },
+                error: function(data) {
+                    alert("Flagging comment failed.");
+                }
+            });
+        }
     });
 
     loadHoverComparison();
@@ -1494,6 +1524,14 @@ function loadNotification()
     $(".notification-follow-response-n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
+
+    $(".notification_group_response_y").click( function(event) {
+        groupFollowResponse(event,"Y",$(this));
+    });
+
+    $(".notification_group_response_n").click( function(event) {
+        groupFollowResponse(event,"N",$(this));
+    });
 }
 
 
@@ -1502,6 +1540,135 @@ function loadNotification()
  *      ~Profile
  *
  ***********************************************************************************************************************/
+var prof_more_notifications = true;
+var prof_more_actions = true;
+var prof_more_groups = true;
+
+function getMoreNotifications()
+{
+    if( prof_more_notifications )
+    {
+        prof_more_notifications = false;
+        var num_notifications = $("#num_notifications").val();
+        ajaxPost({
+            'data': {'action':'getnotifications',
+                'num_notifications':num_notifications },
+            success: function(data)
+            {
+                var obj = eval('(' + data + ')');
+                $('#profile_notifications').append(obj.html);
+                $('#num_notifications').val(obj.num_notifications);
+                if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
+                {
+                    $('#see_more_notifications').html('No more notifications');
+                    $('#see_more_notifications').unbind();
+                    $('#see_more_notifications').click( function(event)
+                    {
+                        event.preventDefault();
+                    });
+                }
+                else if( obj.hasOwnProperty('error') )
+                {
+                    $('body').html(obj.error);
+                }
+                else
+                {
+                    prof_more_notifications = true;
+                }
+                unbindNotification();
+                loadNotification();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+function getMoreUserActions()
+{
+    if( prof_more_actions )
+    {
+        prof_more_actions = false;
+        var num_actions = $("#num_actions").val();
+        ajaxPost({
+            'data': {'action':'getuseractions',
+                'num_actions':num_actions,
+                'p_id':p_id },
+            success: function(data)
+            {
+                var obj = eval('(' + data + ')');
+                $('#profile_activity_feed').append(obj.html);
+                $('#num_actions').val(obj.num_actions);
+                if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
+                {
+                    $('#profile_more_actions').html('No more actions')
+                    $('#profile_more_actions').unbind();
+                    $('#profile_more_actions').click( function(event)
+                    {
+                        event.preventDefault();
+                    });
+                }
+                else if( obj.hasOwnProperty('error') )
+                {
+                    $('body').html(obj.error);
+                }
+                else
+                {
+                    prof_more_actions = true;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+function getMoreGroups()
+{
+    if( prof_more_groups )
+    {
+        prof_more_groups = false;
+        var num_groups = $("#num_groups").val();
+        ajaxPost({
+            'data': {'action':'getusergroups',
+                'num_groups':num_groups,
+                'p_id':p_id },
+            success: function(data)
+            {
+                var obj = eval('(' + data + ')');
+                $('#profile_activity_feed').append(obj.html);
+                $('#num_groups').val(obj.num_groups);
+                if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
+                {
+
+                    $('#profile_more_groups').html('No more groups');
+                    $('#profile_more_groups').unbind();
+                    $('#profile_more_groups').click( function(event)
+                    {
+                        event.preventDefault();
+                    });
+                }
+                else if( obj.hasOwnProperty('error') )
+                {
+                    $('body').html(obj.error);
+                }
+                else
+                {
+                    prof_more_groups = true;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
 function loadProfile()
 {
     unbindNotification();
@@ -1533,40 +1700,26 @@ function loadProfile()
         groupInviteResponse(event,"N",$(this));
     });
 
+    $(window).scroll(
+        function()
+        {
+            if  (($(window).scrollTop() + $(window).height() + 5 >= $(document).height())) {
+
+                if( p_id == view_id )
+                {
+                    getMoreNotifications();
+                }
+                getMoreUserActions();
+                getMoreGroups();
+            }
+        }
+    );
+
     $('#see_more_notifications').click(
         function(event)
         {
             event.preventDefault();
-            var num_notifications = $("#num_notifications").val();
-            ajaxPost({
-                'data': {'action':'getnotifications',
-                    'num_notifications':num_notifications },
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#profile_notifications').append(obj.html);
-                    $('#num_notifications').val(obj.num_notifications);
-                    if( obj.hasOwnProperty('error') && obj.error == 'No more notifications' )
-                    {
-                        $('#see_more_notifications').html('No more notifications');
-                        $('#see_more_notifications').unbind();
-                        $('#see_more_notifications').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( obj.hasOwnProperty('error') )
-                    {
-                        $('body').html(obj.error);
-                    }
-                    unbindNotification();
-                    loadNotification();
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            getMoreNotifications();
         }
     );
 
@@ -1574,36 +1727,7 @@ function loadProfile()
         function(event)
         {
             event.preventDefault();
-            var num_actions = $("#num_actions").val();
-            ajaxPost({
-                'data': {'action':'getuseractions',
-                    'num_actions':num_actions,
-                    'p_id':p_id },
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#profile_activity_feed').append(obj.html);
-                    $('#num_actions').val(obj.num_actions);
-                    if( obj.hasOwnProperty('error') && obj.error == 'No more actions' )
-                    {
-                        $('#profile_more_actions').html('No more actions')
-                        $('#profile_more_actions').unbind();
-                        $('#profile_more_actions').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( obj.hasOwnProperty('error') )
-                    {
-                        alert(obj.error);
-                        $('body').html(obj.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            getMoreUserActions();
         }
     );
 
@@ -1611,36 +1735,7 @@ function loadProfile()
         function(event)
         {
             event.preventDefault();
-            var num_groups = $("#num_groups").val();
-            ajaxPost({
-                'data': {'action':'getusergroups',
-                    'num_groups':num_groups,
-                    'p_id':p_id },
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#profile_activity_feed').append(obj.html);
-                    $('#num_groups').val(obj.num_groups);
-                    if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
-                    {
-                        $('#profile_more_groups').html('No more groups')
-                        $('#profile_more_groups').unbind();
-                        $('#profile_more_groups').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( obj.hasOwnProperty('error') )
-                    {
-                        alert(obj.error);
-                        $('body').html(obj.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            getMoreGroups();
         }
     );
 
@@ -1785,11 +1880,25 @@ function loadAccount()
  *      ~Group
  *
  **********************************************************************************************************************/
+function bindGroupRequestsButton()
+{
+    $('#group_requests').click( function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div#group_requests_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#group_requests_modal').hide();
+    });
+}
+
 function groupFollowResponse(event,response,div,g_id)
 {
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
-    alert( follow_id );
+    var g_id = div.siblings(".group-id").val();
     ajaxPost({
             data: {
                 'action':'joinresponse',
@@ -1809,11 +1918,97 @@ function groupFollowResponse(event,response,div,g_id)
     );
 }
 
+var group_more_actions = true;
+var group_more_members = true;
+
+function getMoreGroupActions()
+{
+    if( group_more_actions )
+    {
+        group_more_actions = false;
+        var num_actions = $("#num_actions").val();
+        ajaxPost({
+            'data': {'action':'getgroupactions',
+                'num_actions':num_actions,
+                'g_id':g_id },
+            success: function(data)
+            {
+                var obj = eval('(' + data + ')');
+                $('#group_activity_feed').append(obj.html);
+                $('#num_actions').val(obj.num_actions);
+                if( 'error' in obj && obj.error == 'No more actions' )
+                {
+                    $('#group_more_actions').html('No more actions');
+                    $('#group_more_actions').unbind();
+                    $('#group_more_actions').click( function(event)
+                    {
+                        event.preventDefault();
+                    });
+                }
+                else if( 'error' in obj )
+                {
+                    $('body').html(obj.error);
+                }
+                else
+                {
+                    group_more_actions = true;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+function getMoreGroupMembers()
+{
+    if( group_more_members )
+    {
+        group_more_members = false;
+        var num_members = $("#num_members").val();
+        ajaxPost({
+            'data': {'action':'getgroupmembers',
+                'num_members':num_members,
+                'g_id':g_id },
+            success: function(data)
+            {
+                var obj = eval('(' + data + ')');
+                $('#group_members_container').append(obj.html);
+                $('#num_members').val(obj.num_members);
+                if( 'error' in obj && obj.error == 'No more members' )
+                {
+                    $('#group_more_members').html('No more members');
+                    $('#group_more_members').unbind();
+                    $('#group_more_members').click( function(event)
+                    {
+                        event.preventDefault();
+                    });
+                }
+                else if( 'error' in obj )
+                {
+                    $('body').html(obj.error);
+                }
+                else
+                {
+                    group_more_members = true;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
 function loadGroup()
 {
     var loadUsersLockout = false;
     var loadHistoLockout = false;
 
+    bindGroupRequestsButton();
     // load more users for display
     function loadMoreUsers(event, replace)
     {
@@ -1937,35 +2132,7 @@ function loadGroup()
         function(event)
         {
             event.preventDefault();
-            var num_actions = $("#num_actions").val();
-            ajaxPost({
-                'data': {'action':'getgroupactions',
-                    'num_actions':num_actions,
-                    'g_id':g_id },
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#group_activity_feed').append(obj.html);
-                    $('#num_actions').val(obj.num_actions);
-                    if( 'error' in obj && obj.error == 'No more actions' )
-                    {
-                        $('#group_more_actions').html('No more actions');
-                        $('#group_more_actions').unbind();
-                        $('#group_more_actions').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( 'error' in obj )
-                    {
-                        $('body').html(obj.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            getMoreGroupActions();
         }
     );
 
@@ -1973,36 +2140,18 @@ function loadGroup()
         function(event)
         {
             event.preventDefault();
-            var num_members = $("#num_members").val();
-            ajaxPost({
-                'data': {'action':'getgroupmembers',
-                    'num_members':num_members,
-                    'g_id':g_id },
-                success: function(data)
-                {
-                    var obj = eval('(' + data + ')');
-                    $('#group_members_container').append(obj.html);
-                    $('#num_members').val(obj.num_members);
-                    if( 'error' in obj && obj.error == 'No more members' )
-                    {
-                        alert('ahhh');
-                        $('#group_more_members').html('No more members');
-                        $('#group_more_members').unbind();
-                        $('#group_more_members').click( function(event)
-                        {
-                            event.preventDefault();
-                        });
-                    }
-                    else if( 'error' in obj )
-                    {
-                        $('body').html(obj.error);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
+            getMoreGroupMembers();
+        }
+    );
+
+    $(window).scroll(
+        function()
+        {
+            if(($(window).scrollTop() + $(window).height() >= $(document).height() ))
+            {
+                getMoreGroupActions();
+                getMoreGroupMembers();
+            }
         }
     );
 
@@ -2632,8 +2781,7 @@ function bindCreateButton()
         $('div.create_modal').fadeToggle("fast");
     });
 
-    $('div.overdiv').click(function()
-    {
+    $('div.overdiv').click(function() {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
     });

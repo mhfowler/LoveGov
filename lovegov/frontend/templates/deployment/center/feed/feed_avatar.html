@@ -15,9 +15,6 @@
 </div>
 
 <div class="header-middle">
-    <p class="submitted" id="cman">
-        submitted at {{ item.created_when|date:"h:m"}}
-    </p>
     <div class="user-name">
         {% if item.getPublic %}
             <a href="{{ creator.get_url }}">
@@ -27,4 +24,7 @@
             <a href=""> Anonymous </a>
         {% endif %}
     </div>
+    <p class="submitted" id="cman">
+        submitted at {{ item.created_when|date:"h:m"}}
+    </p>
 </div>

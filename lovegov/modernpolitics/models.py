@@ -138,7 +138,7 @@ class LocationLevel(models.Model):
         elif scale == 'F':
             return 'Federal'
         elif scale == 'A':
-            return 'All'
+            return 'Universal'
         else:
             return 'None'
 
@@ -1591,7 +1591,7 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,view_user):
+    def getVerbose(self,view_user=None):
         #Check for relationship
         relationship = self.relationship
         #Set default local variables
@@ -1602,9 +1602,9 @@ class Action(Privacy):
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
         #check to see if the viewing user is the to or from user
-        if from_user.id == view_user.id:
+        if view_user and from_user.id == view_user.id:
             from_you = True
-        elif to_user.id == view_user.id:
+        elif view_user and to_user.id == view_user.id:
             to_you = True
 
         action_context = {'to_user':to_user,
@@ -1676,7 +1676,8 @@ class Notification(Privacy):
                           'modifier':n_action.modifier,
                           'tally':self.tally,
                           'true':True,
-                          'viewed':viewed}
+                          'viewed':viewed,
+                          'anon':n_action.getPrivate()}
         if n_action.type == 'FO':
             notification_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
@@ -1927,7 +1928,8 @@ class Petition(Content):
     # Return percentages for petition bar.
     #-------------------------------------------------------------------------------------------------------------------
     def getCompletionPercent(self):
-        return self.current / self.goal
+        val = float(self.current) / self.goal
+        return int(val*100)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the petition-specific version of the general content method.
@@ -3248,7 +3250,9 @@ class Group(Content):
         for k in histogram:
             tuple = histogram[k]
             num = tuple['num']
-            if  not num:
+            tuple['percent'] = num/people
+            if not num:
+
                 pix = 5
             else:
                 pix = (num/people*100)*5
@@ -3364,9 +3368,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')
         else:
-            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3374,9 +3378,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
         gmembers = self.members.all()
-        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
+        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('-when')
         if num != 1:
-            actions = actions[start:start+num]
+            return actions[start:start+num]
         return actions[start:]
 
 
