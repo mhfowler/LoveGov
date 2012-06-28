@@ -6,6 +6,12 @@ div.profile-section-title
   color: $text-blue;
 }
 
+.group-button
+{
+  float: left;
+  margin-right: 10px;
+}
+
 /* LEFT MODULE */
 div.middle-left
 {
@@ -133,12 +139,6 @@ div.middle-left
       {
         margin-top: 10px;
         height: 50px;
-
-        div.group-button
-        {
-          float: left;
-          margin-right: 10px;
-        }
       }
     }
   }
@@ -300,4 +300,14 @@ div.requests-modal
   width: 60%;
   margin-left: 20%;
   margin-right: 20%;
+  padding: 50px;
+
+  table.group-request-table
+  {
+    td
+    {
+      vertical-align: middle;
+      padding: 10px;
+    }
+  }
 }

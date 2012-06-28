@@ -161,15 +161,26 @@
 </div>
 
 <div id="group_requests_modal" class="requests-modal">
-    {% for req in group_requests %}
-        <div class="group-request">
-            <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
-            <a href="" class="group-response-y">I accept</a> ||
-            <a href="" class="group-response-n">I decline</a>
-            <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-            <input type="hidden" class="group-id" value="{{ req.getTo.id }}"/>
-        </div>
-    {% endfor %}
+    <table class="group-request-table">
+        {% for req in group_requests %}
+            <tr>
+                <td>
+                    <a href="{{ req.getFrom.get_url }}">
+                        {% thumbnail req.getFrom.getProfileImage.image "38x38" crop="center" as im %}
+                            <img src="{{ im.url }}" class="icon-med"/>
+                        {% endthumbnail %}
+                    </a>
+                </td>
+                <td><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow {{ gropu.get_name }}:</td>
+                <td>
+                    <a href="" class="group-response-y button-red group-button">accept</a>
+                    <a href="" class="group-response-n button-red group-button">decline</a>
+                    <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+                    <input type="hidden" class="group-id" value="{{ req.getTo.id }}"/>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 </div>
 
 <script>
