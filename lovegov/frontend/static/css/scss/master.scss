@@ -687,12 +687,13 @@ div.edit-link
   height: 16px;
   cursor: pointer;
   display: inline-block;
+
+  &:hover
+  {
+    background-image: url('/static/images/edit-pencil-blue.png');
+  }
 }
 
-div.edit-link:hover
-{
-  background-image: url('/static/images/edit-pencil-blue.png');
-}
 
 
 .inline-div

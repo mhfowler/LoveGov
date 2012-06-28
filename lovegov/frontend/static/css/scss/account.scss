@@ -6,9 +6,9 @@ $account-header-margin-bottom:25px;
 
 div.account-left
 {
-  $width:325px;
+  $width:300px;
   width:$width;
-  margin-right:75px;
+  margin-right:60px;
   float:left;
 
   h2
@@ -72,69 +72,158 @@ div.account-left
 div.account-right
 {
   float:left;
-  width:600px;
+  width:625px;
+  $input-width:360px;
 
- div#account-basic-information
- {
-   h2
-   {
-     margin-bottom:$account-header-margin-bottom;
-   }
+  span.edit-link-large
+  {
+    @include edit-link(20px);
+    vertical-align:middle;
+    position:relative;
+    margin-left:15px;
+  }
 
-   td
-   {
-     vertical-align:middle;
-   }
+  p.account-message
+  {
+    width:250px;
+  }
 
-   input[type="text"]
-   {
-     border:0;
-     @include h3;
-     color:$dark-gray;
-     font-family:$title-font;
-     width:360px;
-   }
+  h2
+  {
+    margin-bottom:$account-header-margin-bottom;
+  }
 
-   textarea
-   {
-     border:0;
-     @include h3;
-     color:$dark-gray;
-     font-family:$title-font;
-     width:360px;
-     height:105px;
-   }
+  td
+  {
+    vertical-align:middle;
+  }
 
-   td.left
-   {
-     padding-right:60px;
-     text-align:right;
+  input[type="text"]
+  {
+    border:0;
+    @include h3;
+    color:$deep-gray;
+    font-family:$title-font;
+    width:$input-width;
 
-     h3
-     {
-       font-family:$title-font;
-       color:$text-blue
-     }
+    &:focus
+    {
+      color:$black;
+    }
+  }
 
-     p
-     {
-       width:140px;
-       color:$dark-gray;
-       font-style:italic;
-       line-height:125%;
+  input[type="password"]
+  {
+    @include h2;
+    color:$deep-gray;
+    font-family:$title-font;
+    width:$input-width+-75;
+    padding:5px;
 
-       a, a:link, a:active, a:visited
-       {
-         text-decoration:underline;
-       }
+    &:focus
+    {
+      color:$black;
+    }
+  }
 
-     }
-   }
+  input[type="file"]
+  {
+    display:inline-block;
+    width:230px;
+  }
 
-   tr.break
-   {
-     height:8px;
-   }
+
+  input[type="checkbox"]
+  {
+
+  }
+
+
+  div.lockprofile-td
+  {
+    position:relative;
+    bottom:24px;
+
+    span
+    {
+      color:$deep-gray;
+      margin-left:10px;
+    }
+
+  }
+
+  textarea
+  {
+    border:0;
+    width:$input-width;
+    resize:none;
+
+    &:focus
+    {
+      color:$black;
+    }
+  }
+
+  textarea.bio-field
+  {
+    @extend textarea;
+    @include h5;
+    color:$deep-gray;
+    font-family:$title-font;
+    height:90px;
+    margin-top:5px;
+
+  }
+
+  textarea.address-field
+  {
+    @extend textarea;
+    @include h3;
+    color:$deep-gray;
+    font-family:$title-font;
+    height:110px;
+
+    &:focus
+    {
+      color:$black;
+    }
+  }
+
+
+  td.left
+  {
+    vertical-align:top;
+    min-width:200px;
+    padding-right:50px;
+    text-align:right;
+
+    h3
+    {
+      font-family:$title-font;
+      color:$text-blue
+    }
+
+    p
+    {
+      text-align:right;
+      width:140px;
+      color:$dark-gray;
+      font-style:italic;
+      line-height:125%;
+      display:inline-block;
+
+      a, a:link, a:active, a:visited
+      {
+        text-decoration:underline;
+      }
+
+    }
+  }
+
+  tr.break
+  {
+    height:8px;
+  }
 
 
   tr.break-small
@@ -142,20 +231,16 @@ div.account-right
     height:20px;
   }
 
-   tr.break-large
-   {
-     height:30px;
-   }
+  tr.break-large
+  {
+    height:30px;
+  }
 
-   h3.gray
-   {
-     color:$dark-gray;
-     font-family:$title-font;
-   }
-
-
- }
-
+  h3.gray
+  {
+    color:$dark-gray;
+    font-family:$title-font;
+  }
 
 
 }

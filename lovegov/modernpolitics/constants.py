@@ -14,6 +14,7 @@ from django.conf import settings
 import sunlight
 import os.path
 import datetime
+import os
 
 ########################################## EMAIL LISTS #################################################################
 
@@ -158,9 +159,14 @@ MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Health Care':4}
 
 MAIN_TOPIC_COLORS_LIST = []
-
 for topic in MAIN_TOPICS:
     MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
+
+POLITICAL_PARTIES_IMAGES = []
+for imgRef in os.listdir(os.path.join(settings.STATIC_ROOT, 'images/party_labels/')):
+    POLITICAL_PARTIES_IMAGES.append(imgRef)
+
+
 
 
 

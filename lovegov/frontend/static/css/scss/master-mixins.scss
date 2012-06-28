@@ -326,3 +326,19 @@
   top:50%;
   margin-top:-$h*1/2;
 }
+
+@mixin edit-link($side-length:16px)
+{
+    background-image: url('/static/images/edit-pencil.png');
+    background-size: $side-length $side-length;
+    width: $side-length;
+    height: $side-length;
+    cursor: pointer;
+    display: inline-block;
+
+    &:hover
+    {
+      background-image: url('/static/images/edit-pencil-blue.png');
+    }
+
+}
