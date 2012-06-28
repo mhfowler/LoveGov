@@ -1,64 +1,57 @@
-<div class="comment" style="margin-left:{{ margin }}px;width:{{ width }}px">
-    <div class="comment-username feed-username">
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:{{ width }}px">
+    <div class="comment-username feed-username"> 
         {% load thumbnail %}
         {% if public and comment.active %}
             {% thumbnail creator.getProfileImage.image "40x40" crop="center" as im %}
                 <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
             {% empty %}
-                {% thumbnail defaultImage "40x40" crop="center" as im %}
-                    <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
-                {% endthumbnail %}
+            	<img class="user-img" class="user-menu-pointer" src="http://lovegov.com/static/images/profile_default.jpg" width="40px" height="40px"/>
             {% endthumbnail %}
         {% else %}
-            {% thumbnail defaultImage "40x40" crop="center" as im %}
-                <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
-            {% endthumbnail %}
-        {% endif %}
+        	<img class="user-img" class="user-menu-pointer" src="http://lovegov.com/static/images/profile_default.jpg" width="40px" height="40px"/>        {% endif %}
         {% if comment.active %}
-            <a href="{% if public %}{{creator.get_url}}{% endif %}">{{ display_name }}</a>
+            <a href="{% if public %}{{creator.get_url}}{% endif %}">{{ display_name}}</a>
         {% else %}
             <a> deleted </a>
         {% endif %}
     </div>
+    <div class="clearfix"></div>
     <div class="comment-text">
         {% if comment.active %}
             {{ comment.text|linebreaks }}
+
         {% else %}
             deleted
     {% endif %}
     </div>
+    <span class="timestamp">
+        {{comment.created_when}}
+    </span>
     <div class="comment-reply">
-        <div class="reply" style="float:left">
+        <div class="reply">
             reply
         </div>
+        <div class="share">
+        	share
+        </div>
     {% if owner and comment.active %}
-        <div class="commentdelete" style="float:left">
+        <div class="commentdelete">
             delete
             <input type="hidden" class="delete_id" name="delete_id" value="{{ comment.id }}"/>
         </div>
     {% endif %}
+    </div>
+    <div class="comment-footer">
 
-        <div class="comment-footer">
-
-            <div class="metadata commentlike">
-                <img class="heart plus {% if my_vote == 1 %}blue{% else %}grey{% endif %}"
-                     src="/static/images/feed/plusHeart{% if my_vote == 1 %}Blue{% else %}Grey{% endif %}.png"/>
-            </div>
-            <div class="metadata commentdislike">
-                <img class="heart minus {% if my_vote == -1 %}blue{% else %}grey{% endif %}"
-                     src="/static/images/feed/minusHeart{% if my_vote == -1 %}Blue{% else %}Grey{% endif %}.png"/>
-            </div>
-            <div class="metadata">
-                <span class="post-score"> {{ comment.status }} </span>
-            </div>
+            {% include "deployment/snippets/hearts.html" with content=comment %}
 
         </div>
-    </div>
 
     <form class="replyform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
         <textarea style="width:{{ width }}px" class="comment-textarea" type="text" name="comment">what's your opinion?</textarea>
         <input class="hidden_id" type="hidden" name="c_id" value="{{ comment.id }}"/>
-        <input class="submit-comment" type="submit" value="Comment" />
+        <input class="tab-button" type="submit" value="Save" style="float: right;" />
+        <input class="tab-button alt" type="button" value="Cancel" style="float: right; margin-right: 10px" /><div class="clearfix"></div>
     </form>
 </div>
 

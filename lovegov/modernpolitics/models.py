@@ -1581,7 +1581,7 @@ class Action(Privacy):
         self.type = relationship.relationship_type
         self.save()
 
-    def getVerbose(self,view_user):
+    def getVerbose(self,view_user=None):
         #Check for relationship
         relationship = self.relationship
         #Set default local variables
@@ -1592,9 +1592,9 @@ class Action(Privacy):
         to_user = relationship.getTo()
         from_user = relationship.getFrom()
         #check to see if the viewing user is the to or from user
-        if from_user.id == view_user.id:
+        if view_user and from_user.id == view_user.id:
             from_you = True
-        elif to_user.id == view_user.id:
+        elif view_user and to_user.id == view_user.id:
             to_you = True
 
         action_context = {'to_user':to_user,

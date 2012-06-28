@@ -53,6 +53,7 @@ def viewWrapper(view, requires_login=False):
                 logger.debug('deleted cookie')
                 return response
         vals['google'] = GOOGLE_LOVEGOV
+        vals['defaultProfileImage'] = 'images/profile_default.jpg'
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
@@ -829,11 +830,12 @@ def matchNew(request, vals={}):
 def contentDetail(request, content, vals):
     rightSideBar(request, vals)
     shareButton(request, vals)
-    vals['thread_html'] = makeThread(request, content, vals['viewer'])
+    vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
     creator = content.getCreator()
     vals['creator'] = creator
+    vals['recent_actions'] = Action.objects.all().order_by('-when')[:3]
     vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -943,7 +945,7 @@ class AnswerClass:
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates the html for a comment thread.
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
@@ -951,30 +953,34 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         user_comments = Comment.objects.filter(creator=user)
     comments = Comment.objects.filter(on_content=object).order_by('-status')
     if comments:
-        to_return = "<div>"     # open list
+        to_return = ''
         for c in comments:
+            margin = 30*(depth+1)
+            to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
             my_vote = user_votes.filter(content=c) # check if i like comment
             if my_vote:
                 i_vote = my_vote[0].value
             else: i_vote = 0
             i_own = user_comments.filter(id=c.id) # check if i own comment
             creator = c.getCreator()
-            vals = {'comment': c,
+            vals.update({'comment': c,
                     'my_vote': i_vote,
                     'owner': i_own,
                     'votes': c.upvotes - c.downvotes,
                     'creator': creator,
                     'display_name': c.getCreatorDisplayName(user, getSourcePath(request)),
                     'public': c.getPublic(),
-                    'margin': 30*(depth+1),
+                    'margin': margin,
                     'width': 690-(30*depth+1)-30,
-                    'defaultImage':getDefaultImage().image}
+                    'defaultImage':getDefaultImage().image,
+                    'depth':depth})
+                    
             context = RequestContext(request,vals)
             template = loader.get_template('deployment/snippets/cath_comment.html')
             comment_string = template.render(context)  # render comment html
             to_return += comment_string
-            to_return += makeThread(request,c,user,depth+1,user_votes,user_comments)    # recur through children
-        to_return += "</div>"   # close list
+            to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
+            to_return += "</div>"   # close list
         return to_return
     else:
         return ''
