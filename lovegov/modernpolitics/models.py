@@ -3358,9 +3358,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getFollowRequests(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when').reverse()
         else:
-            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('when').reverse()[:num]
+            return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when').reverse()[:num]
 
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3368,9 +3368,9 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
         gmembers = self.members.all()
-        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('when').reverse()
+        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('-when').reverse()
         if num != 1:
-            actions = actions[start:start+num]
+            return actions[start:start+num]
         return actions[start:]
 
 
