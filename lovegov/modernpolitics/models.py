@@ -1033,8 +1033,18 @@ class UserProfile(FacebookProfileModel, LGModel):
     def get_email(self):
         return self.username
 
+    def get_first_name(self):
+        return self.first_name
+
+    def get_last_name(self):
+        return self.last_name
+
     def isDeveloper(self):
         return self.developer
+
+    def get_address(self):
+        if self.location: return self.location.address_string
+        else: return ""
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.

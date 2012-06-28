@@ -1,5 +1,88 @@
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="/static/css/deployment/account.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/account.css" xmlns="http://www.w3.org/1999/html"/>
+
+<div class="main-div">
+    <div class="account-left">
+        <h2>Account Settings</h2>
+        <div class="account-button-options">
+            <div class="account-button">
+                <div class="account-button-pointer">
+                    <div class="border"></div>
+                    <div class="inner"></div>
+                </div>
+                <span>Basic Information</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button">
+                <span>Change Password</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button">
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+    <div class="account-right">
+        <div id="account-basic-information">
+            <table>
+                <tr>
+                    <td></td>
+                    <td><h2>Basic Information</h2></td>
+                </tr>
+                <tr>
+                    <td class="left"><h3>first name</h3></td>
+                    <td><h3 class="gray">{{ viewer.get_first_name }}</h3></td>
+                </tr>
+                <tr>
+                    <td class="left"><h3>last name</h3></td>
+                    <td><h3 class="gray">{{ viewer.get_last_name }}</h3></td>
+                </tr>
+                <tr>
+                    <td class="left"><h3>email</h3></td>
+                    <td><h3 class="gray">{{ viewer.get_email }}</h3></td>
+                </tr>
+                <tr class="break"></tr>
+                <tr>
+                    <td class="left">
+                        <h3>address</h3>
+                        <p>
+                            We use your address to
+                            determine your voting
+                            district. See our <a>privacy
+                            policy</a> for details
+                        </p>
+                    </td>
+                    <td><h3 class="gray">{{ viewer.get_address }}</h3></td>
+                </tr>
+            </table>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function account()
+    {
+        var pointer = $('.account-button-pointer').detach();
+
+        $('.account-button').click(function()
+        {
+            $('.account-button').removeClass("account-button-selected");
+            $(this).addClass("account-button-selected");
+            $(this).prepend(pointer);
+
+        });
+    }
+
+    account();
+
+
+</script>
+
 
 <!-- HTML -->
 <div id="account-main" style="width:1000px;margin-left:auto;margin-right:auto;margin-top:65px">
@@ -68,7 +151,6 @@
 
 <!-- Javascript -->
 <script> rebind='account'; </script>
-
 <!-- End Account -->
 
 

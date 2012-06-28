@@ -1,0 +1,124 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+div.account-left
+{
+  $width:325px;
+  width:$width;
+  margin-right:75px;
+  float:left;
+
+  h2
+  {
+    margin-bottom:25px;
+  }
+
+  div.account-button-options
+  {
+    position:relative;
+    border: 1px $gray solid;
+    width:$width;
+
+    div.account-button
+    {
+      position:relative;
+      background-color:white;
+      padding:20px;
+      padding-top:15px;
+      padding-bottom:15px;
+
+      span
+      {
+        color:$deep-gray;
+        font-size:15px;
+      }
+
+      &:hover
+      {
+        cursor:pointer;
+        background-color:$red;
+
+        span
+        {
+          color:white;
+        }
+
+      }
+    }
+
+    div.account-button-selected
+    {
+      background-color:$red;
+      span{ color:white };
+    }
+
+    div.account-button-separator
+    {
+      @include horizontalSeparator($width:$width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
+    }
+
+  }
+
+  div.account-button-pointer
+  {
+    @include trianglePointer($direction:'right',$width:10px,$color-inner:$red,$color-border:$gray,$offset:15px);
+  }
+
+}
+
+div.account-right
+{
+  float:left;
+  width:600px;
+
+ div#account-basic-information
+ {
+   h2
+   {
+     margin-bottom:25px;
+   }
+
+   td.left
+   {
+     padding-right:75px;
+     padding-bottom:8px;
+     text-align:right;
+
+     h3
+     {
+       font-family:$title-font;
+       color:$text-blue
+     }
+
+     p
+     {
+       width:140px;
+       color:$dark-gray;
+       font-style:italic;
+       line-height:125%;
+
+       a, a:link, a:active, a:visited
+       {
+         text-decoration:underline;
+       }
+
+     }
+   }
+
+  tr.break
+  {
+    height:20px;
+  }
+
+   h3.gray
+   {
+     color:$dark-gray;
+     font-family:$title-font;
+   }
+ }
+
+
+
+}
+

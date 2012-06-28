@@ -143,12 +143,11 @@
   }
 }
 
-@mixin trianglePointer($direction,$width,$color-inner,$color-border,$horizontal-pos)
+@mixin trianglePointer($direction,$width,$color-inner,$color-border,$offset)
 {
   width:$width * 2;
   height:$width * 2;
   position:absolute;
-  left:$horizontal-pos;
   $border-color-inner:'null';
   $border-color-border:'null';
 
@@ -157,12 +156,28 @@
     $border-color-border: $color-border transparent transparent transparent;
     $border-color-inner: $color-inner transparent transparent transparent;
     bottom:($width*-2);
+    left:$offset;
   }
-  @else
+  @else if $direction == "up"
   {
     $border-color-border: transparent transparent $color-border transparent;
     $border-color-inner: transparent transparent $color-inner transparent;
     top:($width*-2);
+    left:$offset;
+  }
+  @else if $direction == "left"
+  {
+    $border-color-border: transparent $color-border transparent transparent;
+    $border-color-inner: transparent $color-inner transparent transparent;
+    left:0;
+    top:($width*-2);
+  }
+  @else if $direction == "right"
+  {
+    $border-color-border: transparent transparent transparent $color-border;
+    $border-color-inner: transparent transparent transparent $color-inner;
+    right:($width*-2)+-1;
+    top:$offset;
   }
 
   div.border
@@ -179,7 +194,15 @@
     border-style: solid;
     border-width: $width;
     border-color:$border-color-inner;
-    top:1px;
+
+    @if $direction == "right"
+    {
+      right:1px;
+    }
+    @else if $direction == "up"
+    {
+      top:1px;
+    }
   }
 }
 
