@@ -3137,10 +3137,6 @@ class ViewComparison(LGModel):
             return True
 
 
-
-
-
-
 #=======================================================================================================================
 # Comparison of two people's worldview.
 #
@@ -3221,32 +3217,53 @@ class Group(Content):
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
-        from modernpolitics.backend import getUserUserComparison
-        histogram = {}                  # initialize empty histogram
-        topic = Topic.lg.get_or_none(alias=topic_alias)
-        for i in range(0, resolution+1):
-            histogram[i]= {'num':0, 'percent':0}
+
+        from lovegov.modernpolitics.compare import getUserUserComparison
+        def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
+            i = 0
+            current=buckets_list[i]
+            while result > current:
+                i += 1
+                current = buckets_list[i]
+            return current
+
+        bucket_size = 100/resolution                    # initalize bucket list
+        bucket_list = []
+        for i in range(0, resolution):
+            bucket_list.append(i*bucket_size)
+
+        histogram = {}                              # initialize empty histogram dictionary
+        for bucket in bucket_list:
+            histogram[bucket] = {'num': 0}
+
         members = self.members.all()
+
+        topic = Topic.lg.get_or_none(alias=topic_alias)
+
         for x in members:
             comparison = getUserUserComparison(user, x)
             if topic and topic_alias != 'general':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
-                block = comparison.result / 10
-                if block in histogram:
-                    histogram[block]['num'] += 1
-        # calc percents
-        people = float(len(members))
+                result = comparison.result
+                bucket = getBucket(result, bucket_list)
+                histogram[bucket]['num'] += 1
+
+        total = float(len(members))
         for k in histogram:
             tuple = histogram[k]
             num = tuple['num']
-            tuple['percent'] = num/people
+            if total:
+                percent = (num/total)*100
+            else:
+                percent = 0
+            tuple['percent'] = percent
             if not num:
-
                 pix = 5
             else:
-                pix = (num/people*100)*5
+                pix = percent*5
             tuple['pix'] = int(pix)
+
         return histogram
 
     #-------------------------------------------------------------------------------------------------------------------
