@@ -167,6 +167,7 @@
             <a href="" class="group-response-y">I accept</a> ||
             <a href="" class="group-response-n">I decline</a>
             <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
+            <input type="hidden" class="group-id" value="{{ req.getTo.id }}"/>
         </div>
     {% endfor %}
 </div>

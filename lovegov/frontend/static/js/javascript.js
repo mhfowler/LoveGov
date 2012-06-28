@@ -1506,6 +1506,14 @@ function loadNotification()
     $(".notification-follow-response-n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
+
+    $(".notification_group_response_y").click( function(event) {
+        groupFollowResponse(event,"Y",$(this));
+    });
+
+    $(".notification_group_response_n").click( function(event) {
+        groupFollowResponse(event,"N",$(this));
+    });
 }
 
 
@@ -1872,7 +1880,7 @@ function groupFollowResponse(event,response,div,g_id)
 {
     event.preventDefault();
     var follow_id = div.siblings(".follow-id").val();
-    alert( follow_id );
+    var g_id = div.siblings(".group-id").val();
     ajaxPost({
             data: {
                 'action':'joinresponse',
