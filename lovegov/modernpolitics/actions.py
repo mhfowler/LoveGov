@@ -321,6 +321,35 @@ def finalize(request, vals={}):
         petition.finalize()
     return HttpResponse("success")
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Edits user profile information
+#-----------------------------------------------------------------------------------------------------------------------
+def editProfile(request, vals={}):
+    viewer = vals['viewer']
+    if not 'val' in request.POST or not 'key' in request.POST:
+        return HttpResponse( json.dumps({'success':False,'value':''}) )
+    value = request.POST['val']
+    key = request.POST['key']
+    setattr( viewer , key , value )
+    viewer.save()
+    return HttpResponse( json.dumps({'success':True,'value':value}) )
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Edits user profile information
+#-----------------------------------------------------------------------------------------------------------------------
+def editContent(request, vals={}):
+    viewer = vals['viewer']
+    if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
+        return HttpResponse( json.dumps({'success':False,'value':''}) )
+    value = request.POST['val']
+    key = request.POST['key']
+    content = Content.lg.get_or_none(id=request.POST['c_id'])
+    if content:
+        setattr( content , key , value )
+        content.save()
+        return HttpResponse( json.dumps({'success':True,'value':value}) )
+    return HttpResponse( json.dumps({'success':False,'value':''}) )
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Edit content based on editform.
@@ -1340,6 +1369,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'create': create,
             'invite': invite,
             'edit': edit,
+            'editprofile': editProfile,
             'delete': delete,
             'setprivacy': setPrivacy,
             'followprivacy': setFollowPrivacy,
