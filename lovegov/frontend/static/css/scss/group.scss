@@ -31,8 +31,9 @@ div.middle-left
     div.basic-info-main
     {
       @include float-left;
+      max-width: 545px;
 
-      span.plus-color
+      .plus-color
       {
         color: $deep-gray;
         font-weight: bold;
