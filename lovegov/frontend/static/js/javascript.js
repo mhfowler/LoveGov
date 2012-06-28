@@ -1368,7 +1368,7 @@ function loadThread()
             ajaxPost({
                 data: {'action': 'flag', 'c_id': commentid},
                 success: function(data) {
-                    alert("Comment flagged successfully.");
+                    alert(data);
                     $(this).css("color", "red");
                 },
                 error: function(data) {
