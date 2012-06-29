@@ -12,7 +12,7 @@
             {{content.getImage}}
                 {% with topic=content.getMainTopic %}
                     <a href="{{topic.get_url}}">
-                        <div id="content-topic-img">
+                        <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
                             <img src="{{ topic.getImageRef }}"/>
                         </div>
                     </a>

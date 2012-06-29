@@ -1331,6 +1331,13 @@ function loadThread()
         $(this).parent().submit();
     });
 
+    // increment number of comments
+    function incNumComments() {
+        var ncspan = $('span.num_comments');
+        var num_comments = parseInt(ncspan.text());
+        ncspan.text(num_comments + 1);
+    }
+
     // new comment submit
     $('#commentform').unbind();
     $("#commentform").submit(function(event)
@@ -1346,6 +1353,7 @@ function loadThread()
                 'data': {'action':'postcomment','c_id': content_id,'comment':comment_text},
                 'success': function(data) {
                     ajaxThread();
+                    incNumComments();
                 },
                 'error': null
             });
@@ -1421,6 +1429,7 @@ function loadThread()
                 success: function(data)
                 {
                     ajaxThread();
+                    incNumComments();
                 },
                 error: null
             });
@@ -1431,6 +1440,8 @@ function loadThread()
         }
     });
 
+
+    // Collapse a thread (a comment and all its children)
     $('span.collapse').click(function(e) {
         var close = '[-]';
         var open = '[+]';
@@ -1443,6 +1454,7 @@ function loadThread()
         }
     });
 
+    // Flag a comment
     $('span.flag').click(function(e) {
         var commentid = $(this).data('commentid');
         var comment = $(this).parent().children('div.comment-text').text();
