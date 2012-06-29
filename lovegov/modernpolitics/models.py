@@ -3242,7 +3242,7 @@ class Group(Content):
         # ACTUAL METHOD
         buckets = {}                              # initialize empty histogram dictionary
         for bucket in bucket_list:
-            buckets[bucket] = {'num':0}
+            buckets[bucket] = {'num':0, 'u_ids':[]}
 
         if num == -1:
             members = self.members.all()[start:]
@@ -3262,6 +3262,7 @@ class Group(Content):
                 result = comparison.result
                 bucket = getBucket(result, bucket_list)
                 buckets[bucket]['num'] += 1
+                buckets[bucket]['u_ids'].append(x.id)
                 if comparison.result == 100:
                     identical += 1
 
@@ -3356,26 +3357,12 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic_alias=None, start=0, num=-1):
-        from modernpolitics.backend import getUserUserComparison
-        if block == -1:
-            to_return = self.members.all()
-        else:
-            topic = Topic.lg.get_or_none(alias=topic_alias)
-            ids = []
-            for x in self.members:
-                comparison = getUserUserComparison(user, x)
-                if topic and topic_alias!='general':
-                   comparison = comparison.bytopic.get(topic=topic)
-                if comparison.num_q:
-                    x_block = comparison.result / HISTOGRAM_RESOLUTION
-                    if x_block == block:
-                        ids.append(x.id)
-            to_return = self.members.filter(id__in=ids)
+    def getMembers(self, start=0, num=-1):
+        members = self.members.all()
         if num == -1:
-            return to_return[start:]
+            return members[start:]
         else:
-            return to_return[start:start+num]
+            return members[start:start+num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.

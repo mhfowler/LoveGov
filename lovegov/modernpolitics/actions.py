@@ -1135,7 +1135,7 @@ def getGroupMembers(request, vals={}):
     if 'num_members' in request.POST:
         num_members = int(request.POST['num_members'])
     print num_members
-    members = group.getMembers(user=viewer,num=MEMBER_INCREMENT,start=num_members)
+    members = group.getMembers(num=MEMBER_INCREMENT,start=num_members)
     print len(members)
     if len(members) == 0:
         return HttpResponse(json.dumps({'error':'No more members'}))
@@ -1374,6 +1374,35 @@ def updateHistogram(request, vals={}):
 
     return HttpResponse(json.dumps(histogram))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# returns html to render avatars of histogram percentile
+#-----------------------------------------------------------------------------------------------------------------------
+def getHistogramMembers(request, vals={}):
+
+    start = int(request.POST['start'])
+    num = int(request.POST['num'])
+    u_ids = json.loads(request.POST['u_ids'])
+    bucket = int(request.POST['bucket'])
+    viewer = vals['viewer']
+
+    if bucket != -1:
+        members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
+    else:
+        group = Group.objects.get(id=request.POST['g_id'])
+        members = group.getMembers().order_by('id')
+
+    if num == -1:
+        members = members[start:]
+    else:
+        members = members[start:start+num]
+    vals['users'] = members
+    how_many = len(members)
+
+    html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
+    to_return = {'html':html, 'num':how_many}
+
+    return HttpResponse(json.dumps(to_return))
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1432,7 +1461,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'shareContent': shareContent,
             'blogAction': blogAction,
             'flag': flag,
-            'updateHistogram': updateHistogram
+            'updateHistogram': updateHistogram,
+            'getHistogramMembers': getHistogramMembers
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

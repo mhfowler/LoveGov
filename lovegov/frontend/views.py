@@ -600,14 +600,20 @@ def group(request, g_id=None, vals={}):
 
     # histogram
     resolution = 5
-    vals['buckets'] = getBucketList(resolution)
+    bucket_list = getBucketList(resolution)
+    vals['buckets'] = bucket_list
+    bucket_uids = {}
+    for x in bucket_list:
+        bucket_uids[x] = []
     histogram_metadata = {'total':0,
                           'identical':0,
                           'resolution':resolution,
                           'g_id':group.id,
                           'which':'mini',
                           'increment':1,
-                          'topic_alias':'all'}
+                          'topic_alias':'all',
+                          'bucket_uids': bucket_uids,
+                          'current_bucket': -1}
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     # Get Follow Requests
@@ -642,7 +648,7 @@ def group(request, g_id=None, vals={}):
             vals['is_user_admin'] = True
     vals['group_admins'] = group.admins.all()
     num_members = MEMBER_INCREMENT
-    vals['group_members'] = group.getMembers(user=viewer,num=num_members)
+    vals['group_members'] = group.getMembers(num=num_members)
     vals['num_members'] = num_members
 
     setPageTitle("lovegov: " + group.title,vals)
@@ -657,14 +663,20 @@ def histogramDetail(request, g_id, vals={}):
     vals['group'] = group
 
     resolution = 10
-    vals['buckets'] = getBucketList(resolution)
+    bucket_list = getBucketList(resolution)
+    vals['buckets'] = bucket_list
+    bucket_uids = {}
+    for x in bucket_list:
+        bucket_uids[x] = []
     histogram_metadata = {'total':0,
-                      'identical':0,
-                      'resolution':resolution,
-                      'g_id':group.id,
-                      'which':'full',
-                      'increment':1,
-                      'topic_alias':'all'}
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'full',
+                          'increment':1,
+                          'topic_alias':'all',
+                          'bucket_uids': bucket_uids,
+                          'current_bucket': -1}
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     setPageTitle("lovegov: " + group.title,vals)
