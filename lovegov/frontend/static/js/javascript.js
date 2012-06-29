@@ -3510,6 +3510,7 @@ function refreshHistogram() {
     $.map(histogram.bucket_uids, function(item, key) {
         histogram.bucket_uids[key] = [];
     });
+    histogram.members_displayed = 0;
 
     updateHistogram(true);
 }
@@ -3530,6 +3531,10 @@ function updateHistogram(recursive) {
 
                 refreshHistogramData(returned);
                 renderHistogram();
+
+                if (histogram.members_displayed == 0) {
+                    getHistogramMembers();
+                }
 
                 if (returned.total != 0 && recursive) {
                         updateHistogram(true);
@@ -3559,7 +3564,7 @@ function getHistogramMembers() {
             data: {
                 'action':'getHistogramMembers',
                 'start': histogram.members_displayed,
-                'num': 1,
+                'num': 10,
                 'u_ids': u_ids,
                 'g_id': histogram.g_id,
                 'bucket': histogram.current_bucket

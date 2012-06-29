@@ -613,7 +613,7 @@ def group(request, g_id=None, vals={}):
                           'increment':1,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
-                          'current_bucket': -1}
+                          'current_bucket': -1 }
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     # Get Follow Requests
@@ -676,7 +676,7 @@ def histogramDetail(request, g_id, vals={}):
                           'increment':1,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
-                          'current_bucket': -1}
+                          'current_bucket': -1 }
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     setPageTitle("lovegov: " + group.title,vals)
