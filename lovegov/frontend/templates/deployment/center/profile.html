@@ -1,5 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/profile.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/user-name.css" />
 
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
@@ -61,7 +62,7 @@
                 </div>
 
                 <div class="profile-stats">
-                    <div class="stat-box followers-stat">
+                    <div class="stat-box followers-stat" id="profile_followers">
                         <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
                         <div class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</div>
                     </div>
@@ -209,17 +210,16 @@
         {% endif %}
 
         <div class="profile-section-title">Notifications</div>
-            <div id="profile_notifications" class="profile-notifications-container">
-                {% for note in notifications_text %}
-                    {{ note|safe|escape }}
-                    {% if not forloop.last %}
-                        <div class="right-separator"></div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
-            <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
+        <div id="profile_notifications" class="profile-notifications-container">
+            {% for note in notifications_text %}
+                {{ note|safe|escape }}
+                {% if not forloop.last %}
+                    <div class="right-separator"></div>
+                {% endif %}
+            {% endfor %}
         </div>
+        <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
+        <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
 
         {% else %}
             <div class="matching">
@@ -230,6 +230,14 @@
             </div>
         {% endif %}
     </div>
+</div>
+
+<div id="profile_followers_modal" class="followers-modal">
+    {% for follower in prof_follow_me %}
+        <div class="user-container">
+            {% include 'deployment/snippets/user_name.html' with user=follower %}
+        </div>
+    {% endfor %}
 </div>
 
 <script> var p_id = "{{ user_prof.id }}"; </script>

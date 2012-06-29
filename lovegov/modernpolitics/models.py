@@ -3414,7 +3414,6 @@ class Group(Content):
             num_articles += member.num_articles
         return num_articles
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Returns the average number of questions the whole group has answered
     #-------------------------------------------------------------------------------------------------------------------

@@ -1800,10 +1800,26 @@ function getMoreGroups()
     }
 }
 
+function bindProfileFollowersButton()
+{
+    $('#profile_followers').click( function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div#profile_followers_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#profile_followers_modal').hide();
+    });
+}
+
 function loadProfile()
 {
     unbindNotification();
     loadNotification();
+
+    bindProfileFollowersButton();
 
     $("#user_follow_button").click( function(event)
     {
