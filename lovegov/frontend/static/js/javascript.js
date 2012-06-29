@@ -1418,24 +1418,6 @@ function loadThread()
         }
     });
 
-    // comment text click function
-    $(".comment-textarea").click(function()
-    {
-        if ($(this).val() == "what's your opinion?")
-        {
-            $(this).val("");
-        }
-    });
-
-    $(".comment-textarea").bind("clickoutside", function(event)
-    {
-        if ($(this).val()=="")
-        {
-            $(this).val("what's your opinion?");
-        }
-        $(this).blur();
-    });
-
     $('span.collapse').click(function(e) {
         var close = '[-]';
         var open = '[+]';
