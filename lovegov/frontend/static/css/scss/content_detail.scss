@@ -2,9 +2,13 @@
 @import 'master-mixins';
 
 
-div#content-div h3 {
+div#content-div h3, div.content-left-side h3 {
     color: $red;
-    @include gillLight
+    @include titleFont
+}
+
+div.content-left-side h3 {
+    font-size: 20px;
 }
 
 div#content
@@ -36,7 +40,6 @@ div.content-left-side div.content-image-area {
 
 div#content-div
 {
-    width:575px;
     margin-left:25px;
 }
 
@@ -78,12 +81,12 @@ div.social_bar {
 	    padding: 0;
 	    margin: 0;
 	    border-color: $light-gray;
-	    border: 1.5px solid $light-gray;
+	    border: 1px solid $light-gray;
 	    border-right: none;
 	    color: $deep-gray;
 	    
 	    &:last-child {
-		    border-right: 2px solid $light-gray;
+		    border-right: 1px solid $light-gray;
 		}
 		
 		&.social_bar_comments {
@@ -152,7 +155,7 @@ span.discuss
 {
     font-size: 18px;
     color: $red;
-    @include gillLight;
+    @include titleFont;
     margin: 15px 0 10px 0;
     display: block;
 }
@@ -181,8 +184,27 @@ div.comment
 
 div#content-div p {
     color: $deep-gray;
-    @include gillLight;
+    @include titleFont;
     font-size: 20px;
+}
+
+div.petition_bar {
+
+  margin: 15px 0 0 20px;
+
+  div.bar-wrapper {
+    width:100%;
+    height:14px;
+    border: 1px solid $red;
+    overflow:hidden;
+    div.red_bar {
+      height:14px;
+      background-color:$red;
+    }
+  }
+  div.goal-statement {
+    margin: 5px 0 0 0;
+  }
 }
 
 .comment-username
@@ -193,7 +215,7 @@ div#content-div p {
     margin-bottom:10px;
     float:left;
     cursor:pointer;
-    @include gillLight;
+    @include titleFont;
 }
 
 .comment-username a, .comment-username a:hover, .comment-username a:link, .comment-username a:visited, .comment-username a:active
@@ -208,7 +230,7 @@ div#content-div p {
 {
     position:relative;
     margin-top:10px;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #f0503b;
     font-size:13pt;
     cursor:pointer;
@@ -232,7 +254,7 @@ div#content-div p {
 {
     position:relative;
     float:right;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #ccc;
     font-size:10pt;
     padding-left:10px;
@@ -241,7 +263,7 @@ div#content-div p {
 
 .comment-textarea
 {
-    font-family:"Gill Sans Std", Verdana, sans-serif;
+    @include titleFont;
     font-size:11pt;
     border: 1px solid #ccc;
     height:100px;
@@ -419,7 +441,7 @@ div.threaddiv {
     position:relative;
     padding-bottom:5px;
     font-size:20pt;
-    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    @include titleFont;
     color:#0f5569;;
 }
 
@@ -456,7 +478,7 @@ div.threaddiv {
 
 .profile-header
 {
-    font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif;
+    @include titleFont;
     color:#959595;
     font-size:14pt;
     margin-bottom:3px;
@@ -505,7 +527,7 @@ div.threaddiv {
 {
     padding-bottom:5px;
     font-size:14pt;
-    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    @include titleFont;
     color:#0f5569;
 }
 
@@ -555,7 +577,7 @@ div.threaddiv {
 {
     position:relative;
     top:10px;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #f0503b;
     font-size:13pt;
     cursor:pointer;
@@ -565,7 +587,7 @@ div.threaddiv {
 {
     position:relative;
     float:right;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #0F5569;
     font-size:10pt;
     padding-left:10px;
@@ -613,7 +635,7 @@ div.threaddiv {
     padding:10px;
     padding-bottom:7px;
     font-size:14pt;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
 }
 .red-button:link
 {

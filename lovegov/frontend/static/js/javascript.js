@@ -1899,6 +1899,8 @@ function loadProfile()
  ***********************************************************************************************************************/
 function loadPetition()
 {
+    var barWrapper = $('div.petition_bar div.bar-wrapper');
+    petitionBar(barWrapper);
 
     $("#sign-button").click(function(event)
     {
