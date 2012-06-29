@@ -17,7 +17,9 @@ def compileFolder(relative_path):
             os.system(command)
         else:                               # then folder
             directory_relative_path = relative_path + "/" + splitted[0]
-            print directory_relative_path
+            full_path = compiled + directory_relative_path
+            if not os.path.exists(full_path):
+                os.makedirs(full_path)
             compileFolder(directory_relative_path)
 
 compileFolder('')
