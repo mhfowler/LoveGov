@@ -536,6 +536,7 @@ div.pinterest_card {
         margin: 5px 0px 0px 20px;
         p {
           @include really-big();
+          @include titleFont();
           line-height: 18px;
           margin: 0 0 0 0;
         }
@@ -693,6 +694,7 @@ div.linear-wrapper {
             margin:10px 0 3px 5px;
             width:30px;
             height:20px;
+            @include titleFont;
             @include fontSize(14px);
           }
           a.share_button:hover {
