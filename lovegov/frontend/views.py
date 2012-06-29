@@ -1038,10 +1038,13 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request, vals={}):
+def account(request,section, vals={}):
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
     vals['party_labels'] = POLITICAL_PARTIES_IMAGES
+
+    if section == "profile": vals['profile_message'] = " "
+
     if request.method == 'GET':
         setPageTitle("lovegov: account",vals)
         html = ajaxRender('deployment/center/account.html', vals, request)
