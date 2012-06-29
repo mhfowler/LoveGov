@@ -209,42 +209,42 @@
 
 @mixin h1
 {
-  font-family:$gill-light;
+  font-family:$title-font;
   color:$text-blue;
   font-size: 50px;
 }
 
 @mixin h2
 {
-  font-family:$gill-light;
+  font-family:$title-font;
   color:$red;
   font-size: 32px;
 }
 
 @mixin h3
 {
-  font-family:$gill-std;
+  font-family:$title-font;
   color: $text-blue;
   font-size: 26px;
 }
 
 @mixin h4
 {
-  font-family:$gill-std;
+  font-family:$title-font;
   color: $red;
   font-size: 22px;
 }
 
 @mixin h5
 {
-  font-family:$gill-std;
+  font-family:$title-font;
   color: $deep-gray;
   font-size: 18px;
 }
 
 @mixin h6
 {
-  font-family:$gill-std;
+  font-family:$title-font;
   color: $text-blue;
   font-size: 13px;
 }
@@ -254,7 +254,7 @@
 /* extra big numbers - percents etc */
   font-size:50px;
   font-weight:bold;
-  font-family: $body-fonts
+  font-family: $body-fonts;
 }
 
 @mixin modal {
@@ -273,7 +273,7 @@
 
 @mixin huge
 {
-  font-family: $gill-light;
+  font-family: $title-font;
   color: $black;
   font-size:24px;
   line-height:30px;
@@ -282,7 +282,7 @@
 
 @mixin really-big
 {
-  font-family: $gill-light;
+  font-family: $title-font;
   color: $deep-gray;
   font-size:20px;
   line-height:28px;
@@ -291,7 +291,7 @@
 
 @mixin big
 {
-  font-family: $gill-light;
+  font-family: $title-font;
   color: $text-blue;
   font-size:18px;
   line-height:26px;
