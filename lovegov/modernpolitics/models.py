@@ -3233,9 +3233,9 @@ class Group(Content):
             if result > current:
                 to_return = num_buckets-1
             elif i > 0:
-                i -= 1
+                to_return = i-1
 
-            return buckets_list[i]
+            return buckets_list[to_return]
 
         # ACTUAL METHOD
         buckets = {}                              # initialize empty histogram dictionary
