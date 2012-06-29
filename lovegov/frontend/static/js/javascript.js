@@ -538,8 +538,8 @@ function loadHoverComparison()
             {
                 clearTimeout(hoverTimer);
                 $('#comparison-hover').empty();
-                var offset = findHoverPosition(self);
                 $('#comparison-hover-div p').text('You & ' + displayName);
+                var offset = findHoverPosition(self);
                 $('#comparison-hover-loading-img').show();
                 $('#comparison-hover-div').fadeIn(100);
                 $('#comparison-hover-div').offset(offset);
@@ -563,6 +563,7 @@ function loadHoverComparison()
             hoverTimer = setTimeout(function()
             {
                 $('#comparison-hover').empty();
+                $('#comparison-hover-div p').empty();
                 $('#comparison-hover-div').fadeOut(100);
             },500)
         }
