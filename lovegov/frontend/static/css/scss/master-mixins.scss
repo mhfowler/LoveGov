@@ -312,6 +312,19 @@
   margin-bottom:20px;
 }
 
+@mixin small
+{
+  font-size: 12px;
+  color: #959595;
+}
+
+@mixin body
+{
+  font-family: Helvetica, Arial, Verdana, sans-serif;
+  font-size: 13px;
+  color: #353535;
+}
+
 @mixin big
 {
   font-family: $title-font;

@@ -49,6 +49,8 @@ def getSourcePath(request):
     print "path: " + path
     return path
 
+def getHostHelper(request):
+    return 'http://' + request.get_host()
 
 def getEmptyDict():
     return {}

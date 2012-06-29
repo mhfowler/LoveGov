@@ -3318,6 +3318,8 @@ class Group(Content):
     # autosave
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
+        if not self.summary:
+            self.summary = self.full_text[:400]
         self.type='G'
         worldview = WorldView()
         worldview.save()
