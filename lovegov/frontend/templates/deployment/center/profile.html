@@ -233,11 +233,24 @@
 </div>
 
 <div id="profile_followers_modal" class="followers-modal">
-    {% for follower in prof_follow_me %}
-        <div class="user-container">
-            {% include 'deployment/snippets/user_name.html' with user=follower %}
-        </div>
-    {% endfor %}
+    <div class="modal-section-title">Followers:</div>
+    <div class="modal-horizontal-separator"></div>
+    <div class="followers-container">
+        {% for follower in prof_follow_me %}
+            <table class="user-container">
+                <tr>
+                    <td>
+                        <a href="{{ follower.get_url }}">
+                            {% thumbnail follower.getProfileImage.image "38x38" crop="center" as im %}
+                                <img src="{{ im.url }}" class="icon-med"/>
+                            {% endthumbnail %}
+                        </a>
+                    </td>
+                    <td><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></td>
+                </tr>
+            </table>
+        {% endfor %}
+    </div>
 </div>
 
 <script> var p_id = "{{ user_prof.id }}"; </script>

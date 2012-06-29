@@ -290,9 +290,31 @@ div.followers-modal
   margin-right: 20%;
   padding: 50px;
 
-  div.user-container
+  div.modal-section-title
   {
-    margin-right: 20px;
-    margin-bottom: 20px;
+    @extend div.profile-section-title;
+    margin-bottom: 10px;
+  }
+
+  div.modal-horizontal-separator
+  {
+    @include horizontalSeparator(100%);
+  }
+
+  div.followers-container
+  {
+    margin-top:20px;
+
+    table.user-container
+    {
+      margin-right: 20px;
+      margin-bottom: 20px;
+
+      td
+      {
+        vertical-align: middle;
+        padding: 10px;
+      }
+    }
   }
 }
