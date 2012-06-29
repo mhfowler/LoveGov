@@ -71,12 +71,12 @@
                         <div class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="group-stats-number">0</div>
-                        <div class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</div>
+                        <div class="group-stats-number">{{ group.getNumPetitions }}</div>
+                        <div class="group-stats-title">petition{% if group.getNumPetitions != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="group-stats-number">0</div>
-                        <div class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</div>
+                        <div class="group-stats-number">{{ group.getNumArticles }}</div>
+                        <div class="group-stats-title">article{% if group.getNumArticles != 1 %}s{% endif %}</div>
                     </div>
                 </div>
 

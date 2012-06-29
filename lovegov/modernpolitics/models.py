@@ -3376,6 +3376,25 @@ class Group(Content):
         return actions[start:]
 
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the number of petitions the whole group has created
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumPetitions(self):
+        num_petitions = 0
+        for member in self.members.all():
+            num_petitions += member.num_petitions
+        return num_petitions
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the number of articles the whole group has created
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumArticles(self):
+        num_articles = 0
+        for member in self.members.all():
+            num_articles += member.num_articles
+        return num_articles
+
+
 #=======================================================================================================================
 # Motion, for democratic groups.
 #
