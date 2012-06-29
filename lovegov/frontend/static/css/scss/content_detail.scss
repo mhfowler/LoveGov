@@ -177,9 +177,10 @@ div.comment
     }
 }
 
-.content-text {
+div#content-div p {
     color: $gray;
     @include gillLight;
+    font-size: 20px;
 }
 
 .comment-username
