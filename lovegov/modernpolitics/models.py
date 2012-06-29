@@ -3250,7 +3250,7 @@ class Group(Content):
             members = self.members.all()[start:start+num]
 
         topic = Topic.lg.get_or_none(alias=topic_alias)
-        total = float(len(members))
+        total = 0
         identical = 0
 
         for x in members:
@@ -3258,6 +3258,7 @@ class Group(Content):
             if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
+                total += 1
                 result = comparison.result
                 bucket = getBucket(result, bucket_list)
                 buckets[bucket]['num'] += 1
