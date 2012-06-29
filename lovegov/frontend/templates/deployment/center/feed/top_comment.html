@@ -24,9 +24,9 @@
 
             <div class="comment-creator">
                 {% if top_comment.getPublic %}
-                    <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said:
+                    <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said,
                 {% else %}
-                    Anonymous said:
+                    Anonymous said,
                 {% endif %}
             </div>
         {% endwith %}

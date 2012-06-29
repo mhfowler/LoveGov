@@ -1,7 +1,5 @@
 {% load thumbnail %}
 
-
-
 <div class="create-modal create_modal">
     {% include 'deployment/pieces/create_modal.html' %}
 </div>
@@ -42,30 +40,6 @@
             {% endfor %}
         </div>
     </div>
-
-    <!-- get more
-   <a class="get_feed more-feed-button" href="">
-       load
-   </a> -->
-
-    <!-- sorting buttons
-    <div class="sorting-buttons">
-        <a href="">
-            <div class="sorting-button feed-ranking-selector" data-ranking="N" data-verbose="New">
-                <p class="sorting-text">New</p>
-            </div>
-        </a>
-        <a href="">
-            <div class="sorting-button feed-ranking-selector" data-ranking="H" data-verbose="Hot">
-                <p class="sorting-text">Hot</p>
-            </div>
-        </a>
-        <a href="">
-            <div class="sorting-button feed-ranking-selector" data-ranking="B" data-verbose="Best">
-                <p class="sorting-text">Best</p>
-            </div>
-        </a>
-    </div> -->
 
     <!-- sorting dropdown -->
     <div class="sort-by">
@@ -249,15 +223,24 @@
 
     <div class="pinterest-wrapper">
 
+        {% for x in num_pinterest %}
+            <div class="pinterest_column
+                 {% if forloop.counter0 != 0 %}
+                        pinterest-column-not-first
+                    {% endif %}"
+                 data-column="{{ forloop.counter0 }}"></div>
+        {% endfor %}
+
     </div>
 
+    <div class="linear-wrapper">
 
-    <div class="right-sidebar">
+        <div class="right-sidebar">
 
-      {% include 'deployment/pieces/right_sidebar.html' %}
+            {% include 'deployment/pieces/right_sidebar.html' %}
 
+        </div>
     </div>
-
 
 </div>
 

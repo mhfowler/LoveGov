@@ -2,53 +2,57 @@
 
 {% with creator=item.getCreator %}
 
-    <div class="pinterest">
+    <div class="pinterest_card pinterest_unrendered" data-rank="{{ pinterest_sequence }}">
 
-        <div class="pinterest-main">
+        <div class="pinterest">
 
-            <div class="pinterest-header">
+            <div class="pinterest-main">
 
-                <!-- avatar -->
-                {% include 'deployment/center/feed/feed_avatar.html' %}
+                <div class="pinterest-header">
 
-                <div class="header-topic">
-                    <a href="{{ item.getMainTopic.get_url }}">
-                        {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
-                            <img src="{{ im.url }}"/>
-                        {% empty %}
-                            <p> ? </p>
-                        {% endthumbnail %}
-                    </a>
+                    <!-- avatar -->
+                    {% include 'deployment/center/feed/feed_avatar.html' %}
+
+                    <div class="header-topic">
+                        <a href="{{ item.getMainTopic.get_url }}">
+                            {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
+                                <img src="{{ im.url }}"/>
+                            {% empty %}
+                                <p> ? </p>
+                            {% endthumbnail %}
+                        </a>
+                    </div>
+
+                    <div style="clear:both"></div>
                 </div>
 
-                <div style="clear:both"></div>
-            </div>
-
-            <!-- image -->
-            {% if item.type == 'N' %}
-                {% include 'deployment/center/feed/feed_image.html' %}
-            {% endif %}
-
-            <!-- title -->
-            {% include 'deployment/center/feed/feed_title.html' %}
-
-            <!-- summary -->
-            {% include 'deployment/center/feed/feed_summary.html' %}
-
-            <!-- top-comment -->
-            {% with top_comment=item.getTopComment %}
-                {% if top_comment %}
-                    {% include 'deployment/center/feed/top_comment.html' %}
+                <!-- image -->
+                {% if item.type == 'N' or item.type == 'G' %}
+                    {% include 'deployment/center/feed/feed_image.html' %}
                 {% endif %}
-            {% endwith %}
 
-            <!-- petition bar -->
-            {% if item.type == 'P' %}
-                {% include 'deployment/snippets/petition_bar.html' with p=item %}
-            {% endif %}
+                <!-- title -->
+                {% include 'deployment/center/feed/feed_title.html' %}
 
-            <!-- footer -->
-            {% include 'deployment/center/feed/feed_footer.html' %}
+                <!-- summary -->
+                {% include 'deployment/center/feed/feed_summary.html' %}
+
+                <!-- top-comment -->
+                {% with top_comment=item.getTopComment %}
+                    {% if top_comment %}
+                        {% include 'deployment/center/feed/top_comment.html' %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- petition bar -->
+                {% if item.type == 'P' %}
+                    {% include 'deployment/snippets/petition_bar.html' with p=item %}
+                {% endif %}
+
+                <!-- footer -->
+                {% include 'deployment/center/feed/feed_footer.html' %}
+
+            </div>
 
         </div>
 
