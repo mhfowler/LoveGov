@@ -3410,6 +3410,9 @@ function refreshHistogramData(data) {
             var percent = 0;
         }
         bar.data("percent", percent);
+
+        var bucket_uids = histogram.bucket_uids[parseInt(key)];
+        bucket_uids.push.apply(bucket_uids, item.u_ids);
     });
 }
 
@@ -3466,20 +3469,49 @@ function loadHistogram() {
         var wrapper = $(this).parents(".topic-icon-wrapper");
         if (wrapper.hasClass("chosen")) {
             var alias = 'all';
+            var topic_text = "All Topics"
         }
         else {
             var alias = wrapper.data('t_alias');
+            var topic_text = wrapper.data('t_text');
         }
+        $(".histogram-topic").text(topic_text);
         histogram.topic_alias = alias;
         toggleTopicSingle(wrapper);
         refreshHistogram();
     });
+
+    $(".bar_label").bindOnce("click.histogram", function(event) {
+        if ($(this).hasClass("clicked")) {
+            histogram.current_bucket = -1;
+            $(this).removeClass("clicked");
+        }
+        else {
+            $(".bar_label").removeClass("clicked");
+            var bar = $(this).parents(".bar");
+            histogram.current_bucket = bar.data('bucket');
+            $(this).addClass("clicked");
+        }
+        histogram.members_displayed = 0;
+        getHistogramMembers();
+    });
+
+    $(".get_more_members").bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        getHistogramMembers();
+    });
 }
 
 function refreshHistogram() {
+
     histogram.total = 0;
     histogram.identical = 0;
     $(".bar").data('num', 0);
+    $.map(histogram.bucket_uids, function(item, key) {
+        histogram.bucket_uids[key] = [];
+    });
+    histogram.members_displayed = 0;
+
     updateHistogram(true);
 }
 
@@ -3500,6 +3532,10 @@ function updateHistogram(recursive) {
                 refreshHistogramData(returned);
                 renderHistogram();
 
+                if (histogram.members_displayed == 0) {
+                    getHistogramMembers();
+                }
+
                 if (returned.total != 0 && recursive) {
                         updateHistogram(true);
                 }
@@ -3512,3 +3548,45 @@ function updateHistogram(recursive) {
     );
 }
 
+function getHistogramMembers() {
+
+    var replace = (histogram.members_displayed == 0);
+
+    if (histogram.current_bucket != -1) {
+        var u_ids = histogram.bucket_uids[histogram.current_bucket];
+    }
+    else {
+        var u_ids=[];
+    }
+    u_ids = JSON.stringify(u_ids);
+
+    ajaxPost({
+            data: {
+                'action':'getHistogramMembers',
+                'start': histogram.members_displayed,
+                'num': 10,
+                'u_ids': u_ids,
+                'g_id': histogram.g_id,
+                'bucket': histogram.current_bucket
+            },
+            success: function(data)
+            {
+                var returned =  eval('(' + data + ')');
+
+                if (replace) {
+                    $(".members-avatars").html(returned.html);
+                }
+                else {
+                    $(".members-avatars").append(returned.html);
+                }
+
+                loadHoverComparison();
+                histogram.members_displayed += returned.num;
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
