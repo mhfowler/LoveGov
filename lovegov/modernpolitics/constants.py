@@ -14,6 +14,7 @@ from django.conf import settings
 import sunlight
 import os.path
 import datetime
+import os
 
 ########################################## EMAIL LISTS #################################################################
 
@@ -147,7 +148,17 @@ MAIN_TOPICS_COLORS = {'Economy':{'default':'#92B76C','light':'#CCDDC0'},
                      'National Security':{'default':'#EA947D','light':'#FFCBC0'},
                      'Environment':{'default':'#9797C6','light':'#D4D3EF'},
                      'Energy':{'default':'#F9D180','light':'#FFF0C5'},
-                     'Health Care':{'default':'#EA7D95','light':'#FBCCD6'}}
+                     'Health Care':{'default':'#EA7D95','light':'#FBCCD6'},
+                     'All':{'default':'#EF503B','light':'#FC8A81'}}
+
+MAIN_TOPICS_COLORS_ALIAS = {'economy':{'default':'#92B76C','light':'#CCDDC0'},
+                      'education':{'default':'#9DC5C9','light':'#D3EBED'},
+                      'socialissues':{'default':'#639E9B','light':'#A3C6C4'},
+                      'nationalsecurity':{'default':'#EA947D','light':'#FFCBC0'},
+                      'environment':{'default':'#9797C6','light':'#D4D3EF'},
+                      'energy':{'default':'#F9D180','light':'#FFF0C5'},
+                      'healthcare':{'default':'#EA7D95','light':'#FBCCD6'},
+                      'all':{'default':'#EF503B','light':'#FC8A81'}}
 
 MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Education':1,
@@ -158,9 +169,14 @@ MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Health Care':4}
 
 MAIN_TOPIC_COLORS_LIST = []
-
 for topic in MAIN_TOPICS:
     MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
+
+POLITICAL_PARTIES_IMAGES = []
+for imgRef in os.listdir(os.path.join(settings.PROJECT_PATH, 'frontend/static/images/party_labels/')):
+    if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
+
+
 
 
 

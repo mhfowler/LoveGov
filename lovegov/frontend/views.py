@@ -549,7 +549,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT
+                num_notifications = NOTIFICATION_INCREMENT*2
                 notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
                 for notification in notifications:
@@ -597,9 +597,23 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # Histogram Things
-    vals['histogram'] = group.getComparisonHistogram(viewer)
-    vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
+    # histogram
+    resolution = 5
+    bucket_list = getBucketList(resolution)
+    vals['buckets'] = bucket_list
+    bucket_uids = {}
+    for x in bucket_list:
+        bucket_uids[x] = []
+    histogram_metadata = {'total':0,
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'mini',
+                          'increment':1,
+                          'topic_alias':'all',
+                          'bucket_uids': bucket_uids,
+                          'current_bucket': -1 }
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -617,14 +631,20 @@ def group(request, g_id=None, vals={}):
     vals['is_user_follow'] = False
     vals['is_user_confirmed'] = False
     vals['is_user_rejected'] = False
+    vals['is_visible'] = False
     group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
     if group_joined:
+        if group_joined.confirmed:
+            vals['is_visible'] = True
         if group_joined.requested:
             vals['is_user_follow'] = True
         if group_joined.confirmed:
             vals['is_user_confirmed'] = True
         if group_joined.rejected:
             vals['is_user_rejected'] = True
+
+    if not group.group_privacy == 'S':
+        vals['is_visible'] = True
 
     vals['is_user_admin'] = False
     admins = list( group.admins.all() )
@@ -633,7 +653,7 @@ def group(request, g_id=None, vals={}):
             vals['is_user_admin'] = True
     vals['group_admins'] = group.admins.all()
     num_members = MEMBER_INCREMENT
-    vals['group_members'] = group.getMembers(user=viewer,num=num_members)
+    vals['group_members'] = group.getMembers(num=num_members)
     vals['num_members'] = num_members
 
     setPageTitle("lovegov: " + group.title,vals)
@@ -641,7 +661,33 @@ def group(request, g_id=None, vals={}):
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
+def histogramDetail(request, g_id, vals={}):
 
+    viewer = vals['viewer']
+    group = Group.objects.get(id=g_id)
+    vals['group'] = group
+
+    resolution = 10
+    bucket_list = getBucketList(resolution)
+    vals['buckets'] = bucket_list
+    bucket_uids = {}
+    for x in bucket_list:
+        bucket_uids[x] = []
+    histogram_metadata = {'total':0,
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'full',
+                          'increment':1,
+                          'topic_alias':'all',
+                          'bucket_uids': bucket_uids,
+                          'current_bucket': -1 }
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1009,13 +1055,14 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request, vals={}):
+def account(request,section="", vals={}):
     user = vals['viewer']
-    vals['userProfile'] = user
     vals['uploadform'] = UploadFileForm()
+    vals['party_labels'] = POLITICAL_PARTIES_IMAGES
+
+    if section == "profile": vals['profile_message'] = " "
+
     if request.method == 'GET':
-        vals['password_form'] = PasswordForm()
-        vals['uploadform'] = UploadFileForm()
         setPageTitle("lovegov: account",vals)
         html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'
@@ -1026,22 +1073,26 @@ def account(request, vals={}):
             if password_form.process(request):
                 message = "You successfully changed your password. We sent you an email for your records."
             else:
-                message = "Either the two new passwords you entered were not the same, "\
-                          "or your old password was incorrect. Try again?"
-            vals['pass_message'] = message
-            vals['password_form'] = password_form
-        elif request.POST['box'] == 'pic' and 'image' in request.FILES:
-            try:
-                file_content = ContentFile(request.FILES['image'].read())
-                Image.open(file_content)
-                user.setProfileImage(file_content)
-                vals['pic_message'] = "You look great!"
-            except IOError:
-                vals['pic_message'] = "The image upload didn't work. Try again?"
-                vals['uploadform'] = UploadFileForm(request.POST)
+                message = "Failure.  Either the two new passwords you entered were not the same, "\
+                          "or you entered your old password incorrectly."
+            vals['password_message'] = message
+        elif request.POST['box'] == 'profile':
+            if 'image' in request.FILES:
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    user.setProfileImage(file_content)
+                    vals['profile_message'] = "You look great!"
+                except IOError:
+                    vals['profile_message'] = "The image upload didn't work. Try again?"
+                    vals['uploadform'] = UploadFileForm(request.POST)
+
+
+            vals['profile_message'] = " "
+        elif request.POST['box'] == 'basic_info':
+            pass
         else:
             pass
-
 
         html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'

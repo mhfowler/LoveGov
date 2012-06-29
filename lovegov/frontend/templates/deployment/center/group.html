@@ -10,6 +10,7 @@
 {% if group.active %}
 <!-- Middle Container -->
 <div class="main-div">
+    {% if is_visible %}
     <!-- Left Block -->
     <div class="middle-left">
         <div class="basic-info">
@@ -67,16 +68,16 @@
                         <div class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="group-stats-number">19</div>
-                        <div class="group-stats-title">discussion{% if 0 != 1 %}s{% endif %}</div>
+                        <div class="group-stats-number">{{ group.getAverageQuestions }}</div>
+                        <div class="group-stats-title">question{% if 0 != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="group-stats-number">0</div>
-                        <div class="group-stats-title">petition{% if 0 != 1 %}s{% endif %}</div>
+                        <div class="group-stats-number">{{ group.getNumPetitions }}</div>
+                        <div class="group-stats-title">petition{% if group.getNumPetitions != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="group-stats-number">0</div>
-                        <div class="group-stats-title">article{% if 0 != 1 %}s{% endif %}</div>
+                        <div class="group-stats-number">{{ group.getNumArticles }}</div>
+                        <div class="group-stats-title">article{% if group.getNumArticles != 1 %}s{% endif %}</div>
                     </div>
                 </div>
 
@@ -164,9 +165,15 @@
                 You & {{ group.title }}
             </div>
         </div>
-        <div class="group-histogram-container">
+        <div class="group-histogram-container histogram_box">
+            {% include 'deployment/snippets/histogram/histogram_mini.html' %}
         </div>
     </div>
+    {% else %}
+        <div class="hidden-message">
+            <h1>This group is hidden.</h1>
+        </div>
+    {% endif %}
 </div>
 
 <div id="group_requests_modal" class="requests-modal">
@@ -203,11 +210,6 @@
 <script> rebind='group'; </script>
 
 {% comment %}
-    <div id="privacy">
-        Privacy: {{ group.group_privacy }}
-    </div>
-
-
     <div class="members-wrappers" style="width:200px;float:left;">
         <h3> Members </h3>
         <div id="members-list">
@@ -216,56 +218,4 @@
             {% endfor %}
         </div>
     </div>
-
-
-
-<div class="histogram">
-
-    <div class="histogram-wrapper" style="width:500px;float:left;">
-
-        <div class="histogram-bars">
-            {% include 'deployment/pieces/histogram.html'%}
-        </div>
-
-        {% for k,v in histogram.items %}
-            <div style="float:left;margin-left:10px;">
-                <a class="histogram-select-block" style="color:red">  {{ k }} </a>
-                <input class="block-val" type="hidden" value="{{k}}"/>
-            </div>
-        {% endfor %}
-
-        <!-- all -->
-        <div style="float:left;margin-left:10px;">
-            <a class="histogram-select-block" style="color:red">  * </a>
-            <input class="block-val" type="hidden" value="-1"/>
-        </div>
-
-    </div>
-
-    <div class="topic-icons-wrapper h-topics-wrapper" style="float:left">
-        {% for t in main_topics %}
-            <div class="topic-icon-wrapper h-topic-wrapper">
-                {% thumbnail t.image "30x30" format="PNG" as im %}
-                    <img class="topic-img normal h-topic-img" src="{{ im.url }}"/>
-                {% endthumbnail %}
-                {% thumbnail t.selected "30x30" format="PNG" as im %}
-                    <img class="topic-img selected h-topic-img" src="{{ im.url }}"/>
-                {% endthumbnail %}
-                <input type="hidden" class="t-alias" value="{{t.alias}}">
-            </div>
-        {% endfor %}
-    </div>
-</div>
-
-<div class="histogram-metadata">
-    <input id="group-id" type="hidden" value="{{ group.id }}"/>
-    <input id="histogram-topic" type="hidden" value="general"/>
-    <input id="histogram-block" type="hidden" value="-1"/>
-    <input id="histogram-resolution" type="hidden" value="{{ histogram_resolution }}"/>
-    <input id="histogram-displayed-num" type="hidden" value="{{ group_members.count}} "/>
-</div>
-
-<div style="clear:both">
-    <a id="group-see-more-users" href="" class="left-sidebar-button" style="float:left">See More</a>
-</div>
 {% endcomment %}

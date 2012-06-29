@@ -86,7 +86,7 @@ class Privacy(LGModel):
         try:
             creator = self.creator
         except UserProfile.DoesNotExist:
-            from modernpolitics.backend import getLoveGovUser
+            from lovegov.modernpolitics.backend import getLoveGovUser
             return getLoveGovUser() 
         return creator
 
@@ -769,6 +769,7 @@ class BasicInfo(LGModel):
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True)
     invite_message = models.CharField(max_length=10000, blank=True, default=DEFAULT_INVITE_MESSAGE)
     invite_subject = models.CharField(max_length=1000, blank=True, default=DEFAULT_INVITE_SUBJECT)
+    bio = models.CharField(max_length=150, blank=True)
 
 #=======================================================================================================================
 # Tuple for storing a users involvement with content
@@ -990,6 +991,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
+    num_petitions = models.IntegerField(default=0)
+    num_articles = models.IntegerField(default=0)
     # feeds & ranking
     my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS
@@ -1033,8 +1036,18 @@ class UserProfile(FacebookProfileModel, LGModel):
     def get_email(self):
         return self.username
 
+    def get_first_name(self):
+        return self.first_name
+
+    def get_last_name(self):
+        return self.last_name
+
     def isDeveloper(self):
         return self.developer
+
+    def get_address(self):
+        if self.location: return self.location.address_string
+        else: return ""
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
@@ -3137,10 +3150,6 @@ class ViewComparison(LGModel):
             return True
 
 
-
-
-
-
 #=======================================================================================================================
 # Comparison of two people's worldview.
 #
@@ -3220,34 +3229,61 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
-    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
-        from modernpolitics.backend import getUserUserComparison
-        histogram = {}                  # initialize empty histogram
+    def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
+
+        from lovegov.modernpolitics.compare import getUserUserComparison
+
+        def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
+            i = 0
+            current=buckets_list[0]
+            num_buckets = len(buckets_list)
+            while current < result and i < num_buckets:
+                current = buckets_list[i]
+                i += 1
+
+            if result > current:
+                to_return = num_buckets-1
+            elif i>0:
+                to_return = i-1
+            else:
+                to_return = 0
+
+            return buckets_list[to_return]
+
+        # ACTUAL METHOD
+        buckets = {}                              # initialize empty histogram dictionary
+        for bucket in bucket_list:
+            buckets[bucket] = {'num':0, 'u_ids':[]}
+
+        if num == -1:
+            members = self.members.all()[start:]
+        else:
+            members = self.members.all()[start:start+num]
+
         topic = Topic.lg.get_or_none(alias=topic_alias)
-        for i in range(0, resolution+1):
-            histogram[i]= {'num':0, 'percent':0}
-        members = self.members.all()
+        total = 0
+        identical = 0
+
         for x in members:
             comparison = getUserUserComparison(user, x)
-            if topic and topic_alias != 'general':
+            if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
-                block = comparison.result / 10
-                if block in histogram:
-                    histogram[block]['num'] += 1
-        # calc percents
-        people = float(len(members))
-        for k in histogram:
-            tuple = histogram[k]
-            num = tuple['num']
-            tuple['percent'] = num/people
-            if not num:
+                total += 1
+                result = comparison.result
+                bucket = getBucket(result, bucket_list)
+                buckets[bucket]['num'] += 1
+                buckets[bucket]['u_ids'].append(x.id)
+                if comparison.result == 100:
+                    identical += 1
 
-                pix = 5
-            else:
-                pix = (num/people*100)*5
-            tuple['pix'] = int(pix)
-        return histogram
+        return {'total':int(total), 'identical': identical, 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get url of histogram detail.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getHistogramURL(self):
+        return '/histogram/' + str(self.id) + "/"
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
@@ -3332,26 +3368,12 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
     #-------------------------------------------------------------------------------------------------------------------
-    def getMembers(self, user, block=-1, topic_alias=None, start=0, num=-1):
-        from modernpolitics.backend import getUserUserComparison
-        if block == -1:
-            to_return = self.members.all()
-        else:
-            topic = Topic.lg.get_or_none(alias=topic_alias)
-            ids = []
-            for x in self.members:
-                comparison = getUserUserComparison(user, x)
-                if topic and topic_alias!='general':
-                   comparison = comparison.bytopic.get(topic=topic)
-                if comparison.num_q:
-                    x_block = comparison.result / HISTOGRAM_RESOLUTION
-                    if x_block == block:
-                        ids.append(x.id)
-            to_return = self.members.filter(id__in=ids)
+    def getMembers(self, start=0, num=-1):
+        members = self.members.all()
         if num == -1:
-            return to_return[start:]
+            return members[start:]
         else:
-            return to_return[start:start+num]
+            return members[start:start+num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -3372,6 +3394,36 @@ class Group(Content):
         if num != 1:
             return actions[start:start+num]
         return actions[start:]
+
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the number of petitions the whole group has created
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumPetitions(self):
+        num_petitions = 0
+        for member in self.members.all():
+            num_petitions += member.num_petitions
+        return num_petitions
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the number of articles the whole group has created
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumArticles(self):
+        num_articles = 0
+        for member in self.members.all():
+            num_articles += member.num_articles
+        return num_articles
+
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the average number of questions the whole group has answered
+    #-------------------------------------------------------------------------------------------------------------------
+    def getAverageQuestions(self):
+        num_questions = 0
+        for member in self.members.all():
+            num_questions += member.getView().responses.count()
+        avg_questions = num_questions/self.members.count()
+        return int(round(avg_questions))
 
 
 #=======================================================================================================================

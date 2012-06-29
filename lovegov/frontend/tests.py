@@ -21,11 +21,17 @@ def test3(request, vals={}):
 
     frame(request, vals)
 
-    vals['g'] = Group.objects.all()[0]
+    group = Group.objects.all()[0]
+    vals['g'] = group
 
-    vals['histogram_json'] = group.getComparisonHistogram(vals['viewer'])
+    histogram = group.getComparisonHistogram(vals['viewer'])
+    vals['histogram_json'] = json.dumps(histogram)
 
-    vals['bar_labels'] = [2, 4, 6, 8, 10]
+    buckets = []
+    for bucket in histogram['buckets']:
+        buckets.append(bucket)
+    buckets.sort()
+    vals['buckets'] = buckets
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('test/petition.html', vals, request)

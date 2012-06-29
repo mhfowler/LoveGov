@@ -114,6 +114,7 @@ table.create-table
     color: white;
     background-color: $gray;
     margin-right: 10px;
+    cursor: pointer;
   }
 
   div.create-radio:hover
@@ -141,7 +142,7 @@ table.create-table
   {
     width:372px;
     padding:5px;
-    height:100px !important;
+    height:100px;
   }
 }
 

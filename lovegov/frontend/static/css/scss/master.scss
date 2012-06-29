@@ -297,10 +297,9 @@ textarea:focus
   -khtml-border-radius: 9px;
   border-radius: 9px;
   padding: 12px;
-  padding-bottom: 5px;
   letter-spacing: 1px;
   font-size: 18px;
-  font-family: $gill-std;
+  font-family: $title-font;
   color: white;
   text-decoration: none;
   outline: none;
@@ -688,11 +687,11 @@ div.edit-link
   height: 16px;
   cursor: pointer;
   display: inline-block;
-}
 
-div.edit-link:hover
-{
-  background-image: url('/static/images/edit-pencil-blue.png');
+  &:hover
+  {
+    background-image: url('/static/images/edit-pencil-blue.png');
+  }
 }
 
 
@@ -700,3 +699,5 @@ div.edit-link:hover
 {
   display: inline;
 }
+
+
