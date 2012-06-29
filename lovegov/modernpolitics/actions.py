@@ -768,12 +768,10 @@ def leaveGroup(request, vals={}):
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     group_joined = GroupJoined.objects.get(group=group, user=from_user)
-    if group_joined:
-        group_joined.clear()
-    if not group.system:
-        group.members.remove(from_user)
+    if group_joined and not group.system:
+        group.removeMember(from_user)
         group.admins.remove(from_user)
-        if not group.admins.all():
+        if not group.admins.all() and not group.group_type == 'P':
             members = list( group.members.all() )
             if not members:
                 group.active = False

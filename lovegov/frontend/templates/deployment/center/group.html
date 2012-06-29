@@ -14,7 +14,7 @@
     <!-- Left Block -->
     <div class="middle-left">
         <div class="basic-info">
-            {% if not group.system %}
+            {% if not group.system and not group.group_type == 'P' %}
             <div class="basic-info-left">
                 <div class="group-img">
                     {% load thumbnail %}
@@ -38,7 +38,7 @@
                 <div class="group-name">
                     {{ group.title }}
                 </div>
-                {% if not group.system %}
+                {% if not group.system and not group.group_type == 'P' %}
                     <div class="group-scale">
                         {{ group.getScaleVerbose }}
                     </div>
@@ -55,10 +55,6 @@
                             </div>
                         {% endif %}
                     </div>
-                {% else %}
-                    <div class="group-scale">
-                        System Group
-                    </div>
                 {% endif %}
 
 
@@ -69,7 +65,7 @@
                     </div>
                     <div class="stat-box">
                         <div class="group-stats-number">{{ group.getAverageQuestions }}</div>
-                        <div class="group-stats-title">question{% if 0 != 1 %}s{% endif %}</div>
+                        <div class="group-stats-title">question{% if group.getAverageQuestions != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
                         <div class="group-stats-number">{{ group.getNumPetitions }}</div>
@@ -86,12 +82,12 @@
                         <div class="group-button">
                             {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
                                 <a href="" class="button-red float-left" id="group_follow">
-                                    follow
+                                    join
                                 </a>
                             {% else %}
                                 <a href="" class="button-red float-left" id="group_unfollow">
                                     {% if is_user_confirmed %}
-                                        unfollow
+                                        leave
                                     {% elif is_user_follow %}
                                         un-request
                                     {% endif %}
@@ -132,7 +128,7 @@
             </div>
 
             <div class='group-users-container'>
-                {% if not group.system %}
+                {% if not group.system and not group.group_type == 'P' %}
                 <div class="profile-section-title">Administrators</div>
                 <div class="group-admins-container">
                     {% for admin in group_admins %}

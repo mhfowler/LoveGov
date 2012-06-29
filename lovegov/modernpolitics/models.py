@@ -993,6 +993,7 @@ class UserProfile(FacebookProfileModel, LGModel):
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     num_petitions = models.IntegerField(default=0)
     num_articles = models.IntegerField(default=0)
+    parties = models.ManyToManyField("Party", related_name='parties')
     # feeds & ranking
     my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS
@@ -3298,6 +3299,19 @@ class Group(Content):
         self.members.add(user)
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Removes a member from the group and creates GroupJoined appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
+    def removeMember(self, user, privacy='PUB'):
+        group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
+        if not group_joined:
+            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined.autoSave()
+        group_joined.privacy = privacy
+        group_joined.clear()
+        self.members.remove(user)
+
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparison(self, viewer):
@@ -3418,6 +3432,8 @@ class Group(Content):
     # Returns the average number of questions the whole group has answered
     #-------------------------------------------------------------------------------------------------------------------
     def getAverageQuestions(self):
+        if self.members.count() == 0:
+            return 0
         num_questions = 0
         for member in self.members.all():
             num_questions += member.getView().responses.count()
@@ -3461,6 +3477,33 @@ class Network(Group):
 
     def get_url(self):
         return '/network/' + self.alias + '/'
+
+
+#=======================================================================================================================
+# Network Group
+#
+#=======================================================================================================================
+class Party(Group):
+    party_type = models.CharField(max_length=1, choices=PARTY_TYPE, default='D')
+    extension = models.CharField(max_length=50, null=True)
+
+    # autosave any network
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.group_type = 'P'
+        self.system = False
+        self.group_privacy = 'O'
+        super(Party, self).autoSave()
+
+    def get_url(self):
+        return '/group/' + str( self.id ) + '/'
+
+    def joinMember(self, user, privacy='PUB'):
+        user.parties.add(self)
+        super(Party, self).joinMember(self, user, privacy)
+
+    def removeMember(self, user, privacy='PUB'):
+        user.parties.remove(self)
+        super(Party, self).removeMember(self, user, privacy)
 
 #=======================================================================================================================
 # User Group
