@@ -299,6 +299,7 @@ div.group-histogram-container
   border-style: solid;
   text-align:center;
   z-index:0;
+  overflow:hidden;
 
   .histogram-body {
     height:265px;
@@ -309,26 +310,27 @@ div.group-histogram-container
       width:200px;
       overflow:hidden;
 
-      .identical_count {
-        display:inline;
-        margin: 0 0 0 5px;
-      }
-
       .total_count {
-        display:inline;
-        margin: 0 0 0 5px;
+        @include big();
+        @include fontSize(20px);
+        float:left;
+        margin: 10px 0 0 20px;
       }
 
-      .update_histogram {
-        display:inline;
-        margin: 0 0 0 5px;
+      .identical_count {
+        float:left;
+        @include big();
+        @include fontSize(20px);
+        float:left;
+        margin: 10px 0 0 20px;
       }
+
 
     }
 
     .histogram-bars {
 
-      margin: 0 0 0 9px;
+      margin: 0 0 0 5px;
 
       .bar {
         float:left;
@@ -340,11 +342,17 @@ div.group-histogram-container
       }
 
       .red_bar {
-        background-color:red;
+        background-color:$red;
         width:25px;
+        border: 1px solid $red;
+      }
+      .red_bar:hover {
+        border-color:$black;
       }
 
       .label {
+        @include really-big();
+        @include fontSize(14px);
         margin-top: 5px;
       }
     }
@@ -356,12 +364,23 @@ div.group-histogram-container
     @include rounded-bottom(10px);
     position:relative;
     background-color: $gray;
-    padding-top:10px;
-    padding-bottom:2px;
-    @include h5;
+    height: 35px;
     color: white;
+    z-index:-1;
+
+    p{
+      position:relative;
+      top:-8px;
+      display:block;
+      @include h5;
+      color:white;
+    }
   }
 
+}
+
+div.group-histogram-container:hover {
+  border-color:$black;
 }
 
 div.requests-modal

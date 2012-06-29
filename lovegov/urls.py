@@ -72,6 +72,7 @@ urlpatterns += patterns('',
     (r'^network/(\S+)/$', viewWrapper(views.network, requires_login=True)),                   # network page
     (r'^network/$', viewWrapper(views.network, requires_login=True)),                         # network page
     (r'^group/(\d+)/$', viewWrapper(views.group, requires_login=True)),
+    (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),               # histogram detail of group
     (r'^feed/$', viewWrapper(views.theFeed, requires_login=True)),                            # the feed
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),            # profile/comparison
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),                   # profile/comparison

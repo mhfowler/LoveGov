@@ -600,8 +600,15 @@ def group(request, g_id=None, vals={}):
 
     # histogram
     resolution = 5
-    vals['histogram_resolution'] = resolution
     vals['buckets'] = getBucketList(resolution)
+    histogram_metadata = {'total':0,
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'mini',
+                          'increment':1,
+                          'topic_alias':'all'}
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -642,6 +649,29 @@ def group(request, g_id=None, vals={}):
     html = ajaxRender('deployment/center/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
+
+def histogramDetail(request, g_id, vals={}):
+
+    viewer = vals['viewer']
+    group = Group.objects.get(id=g_id)
+    vals['group'] = group
+
+    resolution = 10
+    vals['buckets'] = getBucketList(resolution)
+    histogram_metadata = {'total':0,
+                      'identical':0,
+                      'resolution':resolution,
+                      'g_id':group.id,
+                      'which':'full',
+                      'increment':1,
+                      'topic_alias':'all'}
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link

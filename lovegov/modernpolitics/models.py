@@ -3224,12 +3224,18 @@ class Group(Content):
 
         def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
             i = 0
-            current=0
+            current=buckets_list[0]
             num_buckets = len(buckets_list)
-            while current < result and i < (num_buckets):
+            while current < result and i < num_buckets:
                 current = buckets_list[i]
                 i += 1
-            return current
+
+            if result > current:
+                to_return = num_buckets-1
+            elif i > 0:
+                i -= 1
+
+            return buckets_list[i]
 
         # ACTUAL METHOD
         buckets = {}                              # initialize empty histogram dictionary
@@ -3257,6 +3263,12 @@ class Group(Content):
                     identical += 1
 
         return {'total':int(total), 'identical': identical, 'buckets':buckets}
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get url of histogram detail.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getHistogramURL(self):
+        return '/histogram/' + str(self.id) + "/"
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.

@@ -1358,15 +1358,15 @@ def flag(request,vals={}):
     return HttpResponse("Comment has been flagged successfully.")
 
 #-----------------------------------------------------------------------------------------------------------------------
-# get histogram
+# get histogram data
 #-----------------------------------------------------------------------------------------------------------------------
-def getHistogram(request, vals={}):
+def updateHistogram(request, vals={}):
 
     group = Group.objects.get(id=request.POST['g_id'])
     resolution = int(request.POST['resolution'])
     start = int(request.POST['start'])
     num = int(request.POST['num'])
-    topic_alias = request.POST['topic']
+    topic_alias = request.POST['topic_alias']
     viewer = vals['viewer']
 
     bucket_list = getBucketList(resolution=resolution)
@@ -1432,7 +1432,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'shareContent': shareContent,
             'blogAction': blogAction,
             'flag': flag,
-            'getHistogram': getHistogram
+            'updateHistogram': updateHistogram
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -62,6 +62,9 @@ function rebindFunction()
         case 'account':                                         // /account
             loadAccount();
             break;
+        case 'histogram':
+            loadHistogram();                                // histogram detail
+            break;
         default:
             break
     }
@@ -601,6 +604,15 @@ function selectTopicSingle(wrapper)
     var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
     clearTopicIcons(icons_wrapper);
     showTopicIcon(wrapper);
+}
+
+function toggleTopicSingle(wrapper) {
+    var deselect = wrapper.hasClass("chosen");
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    if (!deselect) {
+        showTopicIcon(wrapper);
+    }
 }
 
 // clears all topic icons within an overall topic-icons-wrapper
@@ -2131,51 +2143,50 @@ function bindNewDivs()
         );
 }
 
+var loadUsersLockout=false;
+function loadMoreUsers(event, replace)
+{
+    if (replace == true) {
+        $("#histogram-displayed-num").val(0);
+    }
+    event.preventDefault();
+    var histogram_displayed_num = $('#histogram-displayed-num').val();
+    var histogram_topic = $('#histogram-topic').val();
+    var histogram_block = $('#histogram-block').val();
+    var group_id = $('#group-id').val();
+    if (!loadUsersLockout)
+    {
+        loadUsersLockout = true;
+        ajaxPost({
+            data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
+                'histogram_topic':histogram_topic,'histogram_block':histogram_block },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (replace==true) {
+                    $('#members-list').html(returned.html);
+                }
+                else {
+                    $('#members-list').append(returned.html);
+                }
+                $('#histogram-displayed-num').val(returned.num);
+                loadHoverComparison();
+                loadAjaxifyAnchors();
+                bindNewDivs();
+                loadUsersLockout = false;
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
 function loadGroup()
 {
-    var loadUsersLockout = false;
-    var loadHistoLockout = false;
 
     bindGroupRequestsButton();
-    // load more users for display
-    function loadMoreUsers(event, replace)
-    {
-        if (replace == true) {
-            $("#histogram-displayed-num").val(0);
-        }
-        event.preventDefault();
-        var histogram_displayed_num = $('#histogram-displayed-num').val();
-        var histogram_topic = $('#histogram-topic').val();
-        var histogram_block = $('#histogram-block').val();
-        var group_id = $('#group-id').val();
-        if (!loadUsersLockout)
-        {
-            loadUsersLockout = true;
-            ajaxPost({
-                data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
-                    'histogram_topic':histogram_topic,'histogram_block':histogram_block },
-                success: function(data)
-                {
-                    var returned = eval('(' + data + ')');
-                    if (replace==true) {
-                        $('#members-list').html(returned.html);
-                    }
-                    else {
-                        $('#members-list').append(returned.html);
-                    }
-                    $('#histogram-displayed-num').val(returned.num);
-                    loadHoverComparison();
-                    loadAjaxifyAnchors();
-                    bindNewDivs();
-                    loadUsersLockout = false;
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
-        }
-    }
 
     $(".group-response-y").click( function(event) {
         groupFollowResponse(event,"Y",$(this),g_id);
@@ -2249,12 +2260,16 @@ function loadGroup()
         }
     );
 
-    $('#group-see-more-users').click(function(event)
+    $('#group-see-more-users').bindOnce('click.group', function(event)
     {
         loadMoreUsers(event, false);
     });
 
-    loadHistogramMini();
+    loadHistogram();
+
+    $(".histogram_box").bindOnce("click.group", function(event) {
+        window.location.href = "/histogram/" + histogram.g_id + "/"
+    });
 
     bindNewDivs();
 
@@ -3398,59 +3413,95 @@ function refreshHistogramData(data) {
     });
 }
 
-function renderHistogramMini() {
+function renderHistogram() {
 
-    $(".bar").each(function(index, element) {
-        var percent = $(this).data("percent");
-        var total_height = 200;
-        var zero_height = 5;
-        var height = zero_height+((total_height-zero_height)*(percent/100));
-        $(this).find(".white_bar").css("height", total_height-height);
-        $(this).find(".red_bar").css("height", height);
+    if (histogram.which == 'mini') {
+        $(".bar").each(function(index, element) {
+            var percent = $(this).data("percent");
+            var total_height = 200;
+            var zero_height = 5;
+            var height = zero_height+((total_height-zero_height)*(percent/100));
+            $(this).find(".white_bar").css("height", total_height-height);
+            $(this).find(".red_bar").css("height", height);
+        });
+    }
 
-    });
+    else {
+        $(".bar").each(function(index, element) {
+            // width and position
+            var total_width = 850;
+            var margin_left = 15;
+            var margin_space = margin_left * histogram.resolution;
+            var width = (total_width-margin_space) / histogram.resolution;
+            $(this).css("width", width);
+            $(this).css("margin-left", margin_left);
+            $(this).find(".red_bar").css("width", width);
 
-    $(".total_num").text(histogram.total);
-    $(".identical_num").text(histogram.identical);
+            // height
+            var percent = $(this).data("percent");
+            var total_height = 300;
+            var zero_height = 5;
+            var height = zero_height+((total_height-zero_height)*(percent/100));
+            $(this).find(".white_bar").css("height", total_height-height);
+            $(this).find(".red_bar").css("height", height);
+        });
+    }
+
+    $(".histogram_count").text(histogram.total);
+    $(".histogram_identical").text(histogram.identical);
+
 }
 
-function loadHistogramMini() {
+function loadHistogram() {
 
-    histogram.total = 0;
-    histogram.identical = 0;
-    histogram.resolution = $(".mini-histogram").data('resolution');
-    histogram.g_id = $(".mini-histogram").data('g_id');
-    updateHistogram();
+    histogram = $(".histogram").data('metadata');
+    updateHistogram(true);
 
     $('.update_histogram').bindOnce("click.histogram", function(event) {
         event.preventDefault();
         updateHistogram();
     });
 
+    $(".histogram-topic-img").bindOnce("click.histogram", function(event) {
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        if (wrapper.hasClass("chosen")) {
+            var alias = 'all';
+        }
+        else {
+            var alias = wrapper.data('t_alias');
+        }
+        histogram.topic_alias = alias;
+        toggleTopicSingle(wrapper);
+        refreshHistogram();
+    });
 }
 
-function updateHistogram() {
-    getHistogram(histogram.total, 1, 'all', histogram.g_id, histogram.resolution);
+function refreshHistogram() {
+    histogram.total = 0;
+    histogram.identical = 0;
+    $(".bar").data('num', 0);
+    updateHistogram(true);
 }
 
-function getHistogram(start, num, topic, g_id, resolution) {
+function updateHistogram(recursive) {
     ajaxPost({
             data: {
-                'action':'getHistogram',
-                'start': start,
-                'num': num,
-                'topic':topic,
-                'g_id': g_id,
-                'resolution': resolution
+                'action':'updateHistogram',
+                'start': histogram.total,
+                'num': histogram.increment,
+                'topic_alias':histogram.topic_alias,
+                'g_id': histogram.g_id,
+                'resolution': histogram.resolution
             },
             success: function(data)
             {
                 var returned =  eval('(' + data + ')');
-                refreshHistogramData(returned);
-                renderHistogramMini();
 
-                if (returned.total != 0) {
-                    updateHistogram();
+                refreshHistogramData(returned);
+                renderHistogram();
+
+                if (returned.total != 0 && recursive) {
+                        updateHistogram(true);
                 }
             },
             error: function(error, textStatus, errorThrown)
@@ -3460,3 +3511,4 @@ function getHistogram(start, num, topic, g_id, resolution) {
         }
     );
 }
+
