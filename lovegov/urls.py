@@ -57,10 +57,11 @@ urlpatterns += patterns('',
     (r'^underconstruction/$', views.underConstruction),
 
     # main pages
-    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                           # home page with feeds
+    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
-    (r'^account/$', viewWrapper(views.account,requires_login=True)),                         # account/change password
+    (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
+    (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
     (r'^match/$', viewWrapper(views.match, requires_login=True)),                             # match page
     (r'^matchNew/$', viewWrapper(views.matchNew, requires_login=True)),
 

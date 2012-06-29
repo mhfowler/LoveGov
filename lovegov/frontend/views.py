@@ -1050,13 +1050,14 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request, vals={}):
+def account(request,section="", vals={}):
     user = vals['viewer']
-    vals['userProfile'] = user
     vals['uploadform'] = UploadFileForm()
+    vals['party_labels'] = POLITICAL_PARTIES_IMAGES
+
+    if section == "profile": vals['profile_message'] = " "
+
     if request.method == 'GET':
-        vals['password_form'] = PasswordForm()
-        vals['uploadform'] = UploadFileForm()
         setPageTitle("lovegov: account",vals)
         html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'
@@ -1067,22 +1068,26 @@ def account(request, vals={}):
             if password_form.process(request):
                 message = "You successfully changed your password. We sent you an email for your records."
             else:
-                message = "Either the two new passwords you entered were not the same, "\
-                          "or your old password was incorrect. Try again?"
-            vals['pass_message'] = message
-            vals['password_form'] = password_form
-        elif request.POST['box'] == 'pic' and 'image' in request.FILES:
-            try:
-                file_content = ContentFile(request.FILES['image'].read())
-                Image.open(file_content)
-                user.setProfileImage(file_content)
-                vals['pic_message'] = "You look great!"
-            except IOError:
-                vals['pic_message'] = "The image upload didn't work. Try again?"
-                vals['uploadform'] = UploadFileForm(request.POST)
+                message = "Failure.  Either the two new passwords you entered were not the same, "\
+                          "or you entered your old password incorrectly."
+            vals['password_message'] = message
+        elif request.POST['box'] == 'profile':
+            if 'image' in request.FILES:
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    user.setProfileImage(file_content)
+                    vals['profile_message'] = "You look great!"
+                except IOError:
+                    vals['profile_message'] = "The image upload didn't work. Try again?"
+                    vals['uploadform'] = UploadFileForm(request.POST)
+
+
+            vals['profile_message'] = " "
+        elif request.POST['box'] == 'basic_info':
+            pass
         else:
             pass
-
 
         html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'

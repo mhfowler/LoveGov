@@ -144,7 +144,7 @@ div#top
 
       div.user-menu-pointer
       {
-        @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:30px);
+        @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$offset:30px);
       }
 
       a, a:link, a:visited, a:active
@@ -393,7 +393,7 @@ div#top
 
         div.notifications-pointer
         {
-          @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$horizontal-pos:138px);
+          @include trianglePointer($direction:'up',$width:10px,$color-inner:#FFFFFF,$color-border:$gray,$offset:138px);
         }
 
         div.notifications-ajax-load

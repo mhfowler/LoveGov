@@ -86,7 +86,7 @@ class Privacy(LGModel):
         try:
             creator = self.creator
         except UserProfile.DoesNotExist:
-            from modernpolitics.backend import getLoveGovUser
+            from lovegov.modernpolitics.backend import getLoveGovUser
             return getLoveGovUser() 
         return creator
 
@@ -769,6 +769,7 @@ class BasicInfo(LGModel):
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True)
     invite_message = models.CharField(max_length=10000, blank=True, default=DEFAULT_INVITE_MESSAGE)
     invite_subject = models.CharField(max_length=1000, blank=True, default=DEFAULT_INVITE_SUBJECT)
+    bio = models.CharField(max_length=150, blank=True)
 
 #=======================================================================================================================
 # Tuple for storing a users involvement with content
@@ -1035,8 +1036,18 @@ class UserProfile(FacebookProfileModel, LGModel):
     def get_email(self):
         return self.username
 
+    def get_first_name(self):
+        return self.first_name
+
+    def get_last_name(self):
+        return self.last_name
+
     def isDeveloper(self):
         return self.developer
+
+    def get_address(self):
+        if self.location: return self.location.address_string
+        else: return ""
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
