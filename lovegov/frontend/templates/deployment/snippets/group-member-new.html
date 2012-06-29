@@ -1,6 +1,6 @@
 {% load thumbnail %}
 <div class="member-image">
-    <a href="{{ member.get_url }}" title="{{ member.get_name }}">
+    <a href="{{ member.get_url }}">
         {% include 'deployment/snippets/avatar.html' with user=member width="38" height="38" private=0 %}
     </a>
 </div>

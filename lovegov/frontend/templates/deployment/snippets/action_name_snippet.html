@@ -13,11 +13,15 @@
         {% endif %}
     {% endif %}
 {% else %}
-<a href="{{ user.get_url }}" class="action_name do-ajax-link">
-    {% if possesive %}
-        {{ user.get_name }}'s
+    {% if not anon %}
+        <a href="{{ user.get_url }}" class="action_name do-ajax-link">
+            {% if possesive %}
+                {{ user.get_name }}'s
+            {% else %}
+                {{ user.get_name }}
+            {% endif %}
+        </a>
     {% else %}
-        {{ user.get_name }}
+        <a href="" class="action_name"> Anonymous </a>
     {% endif %}
-</a>
 {% endif %}

@@ -94,7 +94,7 @@
         {% elif modifier == 'D' %}
             joined
         {% elif modifier == 'N' %}
-            declined to join
+            declined joining
         {% elif modifier == 'X' %}
             {% if from_you %}
                 were rejected from
@@ -103,6 +103,12 @@
             {% endif %}
         {% elif modifier == 'S' %}
             left
+        {% elif modifier == 'A' %}
+            {% if from_you %}
+                were accepted to join
+            {% else %}
+                was accepted to join
+            {% endif %}
         {% endif %}
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 

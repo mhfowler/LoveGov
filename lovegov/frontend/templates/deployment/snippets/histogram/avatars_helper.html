@@ -1,0 +1,7 @@
+{% for u in users %}
+
+    <div class="histogram-avatar">
+        {% include 'deployment/snippets/avatar.html' with user=u width="50" height="50" %}
+    </div>
+
+{% endfor %}

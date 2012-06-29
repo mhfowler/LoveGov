@@ -53,6 +53,7 @@ def viewWrapper(view, requires_login=False):
                 logger.debug('deleted cookie')
                 return response
         vals['google'] = GOOGLE_LOVEGOV
+        vals['defaultProfileImage'] = 'images/profile_default.jpg'
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
@@ -549,7 +550,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT
+                num_notifications = NOTIFICATION_INCREMENT*2
                 notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
                 for notification in notifications:
@@ -597,12 +598,26 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # Histogram Things
-    vals['histogram'] = group.getComparisonHistogram(viewer)
-    vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
+    # histogram
+    resolution = 5
+    bucket_list = getBucketList(resolution)
+    vals['buckets'] = bucket_list
+    bucket_uids = {}
+    for x in bucket_list:
+        bucket_uids[x] = []
+    histogram_metadata = {'total':0,
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'mini',
+                          'increment':1,
+                          'topic_alias':'all',
+                          'bucket_uids': bucket_uids,
+                          'current_bucket': -1 }
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     # Get Follow Requests
-    vals['prof_requests'] = list(group.getFollowRequests())
+    vals['group_requests'] = list(group.getFollowRequests())
 
     # Get Activity
     num_actions = NOTIFICATION_INCREMENT
@@ -633,7 +648,7 @@ def group(request, g_id=None, vals={}):
             vals['is_user_admin'] = True
     vals['group_admins'] = group.admins.all()
     num_members = MEMBER_INCREMENT
-    vals['group_members'] = group.getMembers(user=viewer,num=num_members)
+    vals['group_members'] = group.getMembers(num=num_members)
     vals['num_members'] = num_members
 
     setPageTitle("lovegov: " + group.title,vals)
@@ -641,7 +656,33 @@ def group(request, g_id=None, vals={}):
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
+def histogramDetail(request, g_id, vals={}):
 
+    viewer = vals['viewer']
+    group = Group.objects.get(id=g_id)
+    vals['group'] = group
+
+    resolution = 10
+    bucket_list = getBucketList(resolution)
+    vals['buckets'] = bucket_list
+    bucket_uids = {}
+    for x in bucket_list:
+        bucket_uids[x] = []
+    histogram_metadata = {'total':0,
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'full',
+                          'increment':1,
+                          'topic_alias':'all',
+                          'bucket_uids': bucket_uids,
+                          'current_bucket': -1 }
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -829,11 +870,12 @@ def matchNew(request, vals={}):
 def contentDetail(request, content, vals):
     rightSideBar(request, vals)
     shareButton(request, vals)
-    vals['thread_html'] = makeThread(request, content, vals['viewer'])
+    vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
     creator = content.getCreator()
     vals['creator'] = creator
+    vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
     vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -943,7 +985,7 @@ class AnswerClass:
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates the html for a comment thread.
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
@@ -951,30 +993,34 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         user_comments = Comment.objects.filter(creator=user)
     comments = Comment.objects.filter(on_content=object).order_by('-status')
     if comments:
-        to_return = "<div>"     # open list
+        to_return = ''
         for c in comments:
+            margin = 30*(depth+1)
+            to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
             my_vote = user_votes.filter(content=c) # check if i like comment
             if my_vote:
                 i_vote = my_vote[0].value
             else: i_vote = 0
             i_own = user_comments.filter(id=c.id) # check if i own comment
             creator = c.getCreator()
-            vals = {'comment': c,
+            vals.update({'comment': c,
                     'my_vote': i_vote,
                     'owner': i_own,
                     'votes': c.upvotes - c.downvotes,
                     'creator': creator,
                     'display_name': c.getCreatorDisplayName(user, getSourcePath(request)),
                     'public': c.getPublic(),
-                    'margin': 30*(depth+1),
+                    'margin': margin,
                     'width': 690-(30*depth+1)-30,
-                    'defaultImage':getDefaultImage().image}
+                    'defaultImage':getDefaultImage().image,
+                    'depth':depth})
+                    
             context = RequestContext(request,vals)
             template = loader.get_template('deployment/snippets/cath_comment.html')
             comment_string = template.render(context)  # render comment html
             to_return += comment_string
-            to_return += makeThread(request,c,user,depth+1,user_votes,user_comments)    # recur through children
-        to_return += "</div>"   # close list
+            to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
+            to_return += "</div>"   # close list
         return to_return
     else:
         return ''
@@ -1004,13 +1050,14 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request, vals={}):
+def account(request,section="", vals={}):
     user = vals['viewer']
-    vals['userProfile'] = user
     vals['uploadform'] = UploadFileForm()
+    vals['party_labels'] = POLITICAL_PARTIES_IMAGES
+
+    if section == "profile": vals['profile_message'] = " "
+
     if request.method == 'GET':
-        vals['password_form'] = PasswordForm()
-        vals['uploadform'] = UploadFileForm()
         setPageTitle("lovegov: account",vals)
         html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'
@@ -1021,22 +1068,26 @@ def account(request, vals={}):
             if password_form.process(request):
                 message = "You successfully changed your password. We sent you an email for your records."
             else:
-                message = "Either the two new passwords you entered were not the same, "\
-                          "or your old password was incorrect. Try again?"
-            vals['pass_message'] = message
-            vals['password_form'] = password_form
-        elif request.POST['box'] == 'pic' and 'image' in request.FILES:
-            try:
-                file_content = ContentFile(request.FILES['image'].read())
-                Image.open(file_content)
-                user.setProfileImage(file_content)
-                vals['pic_message'] = "You look great!"
-            except IOError:
-                vals['pic_message'] = "The image upload didn't work. Try again?"
-                vals['uploadform'] = UploadFileForm(request.POST)
+                message = "Failure.  Either the two new passwords you entered were not the same, "\
+                          "or you entered your old password incorrectly."
+            vals['password_message'] = message
+        elif request.POST['box'] == 'profile':
+            if 'image' in request.FILES:
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    user.setProfileImage(file_content)
+                    vals['profile_message'] = "You look great!"
+                except IOError:
+                    vals['profile_message'] = "The image upload didn't work. Try again?"
+                    vals['uploadform'] = UploadFileForm(request.POST)
+
+
+            vals['profile_message'] = " "
+        elif request.POST['box'] == 'basic_info':
+            pass
         else:
             pass
-
 
         html = ajaxRender('deployment/center/account.html', vals, request)
         url = '/account/'

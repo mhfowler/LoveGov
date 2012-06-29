@@ -57,10 +57,11 @@ urlpatterns += patterns('',
     (r'^underconstruction/$', views.underConstruction),
 
     # main pages
-    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                           # home page with feeds
+    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
-    (r'^account/$', viewWrapper(views.account,requires_login=True)),                         # account/change password
+    (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
+    (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
     (r'^match/$', viewWrapper(views.match, requires_login=True)),                             # match page
     (r'^matchNew/$', viewWrapper(views.matchNew, requires_login=True)),
 
@@ -72,6 +73,7 @@ urlpatterns += patterns('',
     (r'^network/(\S+)/$', viewWrapper(views.network, requires_login=True)),                   # network page
     (r'^network/$', viewWrapper(views.network, requires_login=True)),                         # network page
     (r'^group/(\d+)/$', viewWrapper(views.group, requires_login=True)),
+    (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),               # histogram detail of group
     (r'^feed/$', viewWrapper(views.theFeed, requires_login=True)),                            # the feed
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),            # profile/comparison
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),                   # profile/comparison

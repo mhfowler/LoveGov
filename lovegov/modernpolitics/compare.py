@@ -14,15 +14,35 @@ from lovegov.modernpolitics.defaults import *
 import math
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Gets a list of buckets (by percent), based on an inputted resolution.
+#-----------------------------------------------------------------------------------------------------------------------
+def getBucketList(resolution=10):
+    bucket_size = 100/resolution
+    bucket_list = []
+    for i in range(0, resolution):
+        bucket_list.append(i*bucket_size)
+    return bucket_list
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for all groups
 #-----------------------------------------------------------------------------------------------------------------------
 def updateGroupViews(debug=False):
+
     scheduled_logger.debug("UPDATE GROUP VIEWS")
-    groups = Network.objects.exclude(name="congress")
+
+    networks = Network.objects.exclude(name="congress")
+    for g in networks:
+        updateGroupView(g)
+        if debug:
+            print "updated: " + enc(g.title) + " aggregate-view"
+    print "updated networks."
+
+    groups = UserGroup.objects.all()
     for g in groups:
         updateGroupView(g)
         if debug:
             print "updated: " + enc(g.title) + " aggregate-view"
+    print "updated usergroups."
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.

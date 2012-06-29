@@ -47,25 +47,35 @@
                 </div>
 
                 <div class="profile-summary">
-                    This is an 140 character bio.  It will be short and sweet, and hopefully a little witty.
+                    <div class="inline-div inline_hide">
+                        {{ user_prof.user_title }}
+                    </div>
+                    {% if viewer.id == user_prof.id %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="UserProfile">
+                            <input type="text" maxlength="200" value="{{ user_prof.user_title }}" class="edit_input" name="user_title"/>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="profile-stats">
                     <div class="stat-box followers-stat">
-                        <span class="profile-stats-number followers-number">{{ prof_follow_me|length }}</span>
-                        <span class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
+                        <div class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="profile-stats-number">{{ responses }}</span>
-                        <span class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number">{{ responses }}</div>
+                        <div class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="profile-stats-number">0</span>
-                        <span class="profile-stats-title">petition{% if responses != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
+                        <div class="profile-stats-title">petition{% if user_prof.num_petitions != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <span class="profile-stats-number">0</span>
-                        <span class="profile-stats-title">article{% if responses != 1 %}s{% endif %}</span>
+                        <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
+                        <div class="profile-stats-title">article{% if user_prof.num_articles != 1 %}s{% endif %}</div>
                     </div>
                 </div>
                 <div class="profile-buttons">
@@ -112,9 +122,9 @@
                 <div class="profile-section-title">Groups</div>
                 <div class='profile-groups'>
                     {% for group in prof_groups %}
-                        <a class="profile-group-link" title="{{ group.get_name }}" href="{{ group.get_url }}">
+                        <a class="profile-group-link" href="{{ group.get_url }}">
                             {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
-                                <img src="{{ im.url }}" class="rounded"/>
+                                <img src="{{ im.url }}" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}" class="has_hover_comparison rounded"/>
                             {% empty %}
                                 <img src="/static/images/profile_default.jpg" class="rounded"/>
                             {% endthumbnail %}

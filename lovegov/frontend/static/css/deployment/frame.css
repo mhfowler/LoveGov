@@ -437,7 +437,6 @@ a, a:link, a:visited, a:active
 #comparison-hover-div
 {
     width:300px;
-    height:370px;
     position:absolute;
     background-color:#FFFFFF;
     -moz-border-radius: 20px;
@@ -471,7 +470,7 @@ a, a:link, a:visited, a:active
 {
     position:absolute;
     left:133px;
-    top:370px;
+    bottom:-29px;
     z-index:0;
 }
 

@@ -14,6 +14,7 @@ from django.conf import settings
 import sunlight
 import os.path
 import datetime
+import os
 
 ########################################## EMAIL LISTS #################################################################
 
@@ -158,9 +159,14 @@ MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Health Care':4}
 
 MAIN_TOPIC_COLORS_LIST = []
-
 for topic in MAIN_TOPICS:
     MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
+
+POLITICAL_PARTIES_IMAGES = []
+for imgRef in os.listdir(os.path.join(settings.PROJECT_PATH, 'frontend/static/images/party_labels/')):
+    if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
+
+
 
 
 
@@ -171,6 +177,16 @@ PHANTOMJS = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/bin/./p
 PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
 
 ########################################## CHOICES #####################################################################
+
+# editable fields
+USERPROFILE_EDITABLE_FIELDS = [
+    'user_title',
+]
+
+CONTENT_EDITABLE_FIELDS = [
+    'text', 
+    'full_text',
+]
 
 # level of government
 SCALE_CHOICES = (

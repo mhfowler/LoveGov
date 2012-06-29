@@ -40,6 +40,7 @@ div.middle-left
     div.basic-info-main
     {
       @include float-left;
+      max-width: 520px;
 
       span.plus-color
       {
@@ -89,7 +90,7 @@ div.middle-left
           background-color: $gray;
           margin-right: 10px;
 
-          span.profile-stats-number
+          div.profile-stats-number
           {
             @include big-num;
             color: white;
@@ -97,7 +98,7 @@ div.middle-left
             line-height: 52px;
           }
 
-          span.profile-stats-title
+          div.profile-stats-title
           {
             @include fontSize(12px);
             color: $deep-gray;
@@ -116,7 +117,7 @@ div.middle-left
         {
           background-color: white;
 
-          span.followers-number
+          div.followers-number
           {
             color: $red;
           }
@@ -127,7 +128,7 @@ div.middle-left
           background-color: white;
           border-color: $gray;
 
-          span.followers-number
+          div.followers-number
           {
             color: $red-light;
           }
