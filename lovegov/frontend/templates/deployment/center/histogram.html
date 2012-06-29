@@ -1,0 +1,50 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/histogram.css" />
+{% load thumbnail %}
+
+<div class="histogram-wrapper histogram" data-metadata="{{ histogram_metadata }}">
+
+    <div class="histogram-body">
+
+        <div class="count histogram_count"> 0 </div>
+
+        <div class="histogram-topic-selector-wrapper topic-icons-wrapper">
+            {% for t in main_topics %}
+                <div class="histogram-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}" data-t_alias="{{ t.alias }}">
+                    {% thumbnail t.image "50x50" format="PNG" as im %}
+                        <img class="topic-img normal histogram-topic-img" src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                    {% thumbnail t.selected "50x50" format="PNG" as im %}
+                        <img class="topic-img selected histogram-topic-img" src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="histogram-bars">
+            {% for bucket in buckets %}
+                <div class="bar" data-bucket="{{ bucket }}" data-num="0">
+
+                    <div class="white_bar"></div>
+                    <div class="red_bar"></div>
+                    <div class="label"> {{ bucket }}% </div>
+
+                </div>
+            {% endfor %}
+            <div style="clear:both"></div>
+        </div>
+
+
+    </div>
+
+
+    <div class="histogram-footer">
+
+        <p class="histogram-title"> {{ group.title }} Match Percentage Breakdown </p>
+
+        <p class="histogram-topic"> All Topics </p>
+
+    </div>
+
+</div>
+
+<script> rebind='histogram'; </script>
