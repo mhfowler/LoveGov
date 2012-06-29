@@ -252,7 +252,6 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
     userProfile = vals['viewer']
-    vals['all_users'] = UserProfile.objects.filter(confirmed=True).order_by("last_name")
     vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -60,7 +60,7 @@
         </div>
 
     <form class="replyform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
-        <textarea style="width:{{ width }}px" class="comment-textarea" type="text" name="comment">what's your opinion?</textarea>
+        <textarea style="width:{{ width }}px" class="comment-textarea" type="text" name="comment" placeholder="what's your opinion?"></textarea>
         <input class="hidden_id" type="hidden" name="c_id" value="{{ comment.id }}"/>
         <input class="tab-button" type="submit" value="Save" style="float: right;" />
         <input class="tab-button alt" type="button" value="Cancel" style="float: right; margin-right: 10px" /><div class="clearfix"></div>

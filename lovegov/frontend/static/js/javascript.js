@@ -1331,6 +1331,13 @@ function loadThread()
         $(this).parent().submit();
     });
 
+    // increment number of comments
+    function incNumComments() {
+        var ncspan = $('span.num_comments');
+        var num_comments = parseInt(ncspan.text());
+        ncspan.text(num_comments + 1);
+    }
+
     // new comment submit
     $('#commentform').unbind();
     $("#commentform").submit(function(event)
@@ -1346,6 +1353,7 @@ function loadThread()
                 'data': {'action':'postcomment','c_id': content_id,'comment':comment_text},
                 'success': function(data) {
                     ajaxThread();
+                    incNumComments();
                 },
                 'error': null
             });
@@ -1421,6 +1429,7 @@ function loadThread()
                 success: function(data)
                 {
                     ajaxThread();
+                    incNumComments();
                 },
                 error: null
             });
@@ -1431,24 +1440,8 @@ function loadThread()
         }
     });
 
-    // comment text click function
-    $(".comment-textarea").click(function()
-    {
-        if ($(this).val() == "what's your opinion?")
-        {
-            $(this).val("");
-        }
-    });
 
-    $(".comment-textarea").bind("clickoutside", function(event)
-    {
-        if ($(this).val()=="")
-        {
-            $(this).val("what's your opinion?");
-        }
-        $(this).blur();
-    });
-
+    // Collapse a thread (a comment and all its children)
     $('span.collapse').click(function(e) {
         var close = '[-]';
         var open = '[+]';
@@ -1461,6 +1454,7 @@ function loadThread()
         }
     });
 
+    // Flag a comment
     $('span.flag').click(function(e) {
         var commentid = $(this).data('commentid');
         var comment = $(this).parent().children('div.comment-text').text();
@@ -3419,6 +3413,7 @@ function refreshHistogramData(data) {
 
         bar.children('.red_bar').css("background-color",data.color);
         $('.histogram-footer').css("background-color",data.color);
+        $('.histogram-wrapper').css("border-color",data.color);
 
         var num = bar.data('num') + item.num;
         bar.data('num', num);

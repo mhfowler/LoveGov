@@ -1,6 +1,3 @@
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/content_detail.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/action.css"/>
-
 <div id="content">
     <div id="content-left">
     {% if content.active %}
@@ -15,7 +12,7 @@
             {{content.getImage}}
                 {% with topic=content.getMainTopic %}
                     <a href="{{topic.get_url}}">
-                        <div id="content-topic-img">
+                        <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
                             <img src="{{ topic.getImageRef }}"/>
                         </div>
                     </a>
@@ -46,7 +43,7 @@
             <span class="discuss">Discuss</span>
 
             <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
-                <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment">what's your opinion?</textarea>
+                <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment" placeholder="what's your opinion?"></textarea>
                 <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
                 <br>
                 <input class="tab-button" type="submit" value="Save" style="float: right;" /><div class="clearfix"></div>
