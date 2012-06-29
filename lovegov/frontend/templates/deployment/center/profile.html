@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="profile-stats">
-                    <div class="stat-box followers-stat">
+                    <div class="stat-box followers-stat" id="profile_followers">
                         <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
                         <div class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</div>
                     </div>
@@ -206,17 +206,16 @@
         {% endif %}
 
         <div class="profile-section-title">Notifications</div>
-            <div id="profile_notifications" class="profile-notifications-container">
-                {% for note in notifications_text %}
-                    {{ note|safe|escape }}
-                    {% if not forloop.last %}
-                        <div class="right-separator"></div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
-            <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
+        <div id="profile_notifications" class="profile-notifications-container">
+            {% for note in notifications_text %}
+                {{ note|safe|escape }}
+                {% if not forloop.last %}
+                    <div class="right-separator"></div>
+                {% endif %}
+            {% endfor %}
         </div>
+        <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
+        <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
 
         {% else %}
             <div class="matching">
@@ -226,6 +225,27 @@
                 </div>
             </div>
         {% endif %}
+    </div>
+</div>
+
+<div id="profile_followers_modal" class="followers-modal">
+    <div class="modal-section-title">Followers:</div>
+    <div class="modal-horizontal-separator"></div>
+    <div class="followers-container">
+        {% for follower in prof_follow_me %}
+            <table class="user-container">
+                <tr>
+                    <td>
+                        <a href="{{ follower.get_url }}">
+                            {% thumbnail follower.getProfileImage.image "38x38" crop="center" as im %}
+                                <img src="{{ im.url }}" class="icon-med"/>
+                            {% endthumbnail %}
+                        </a>
+                    </td>
+                    <td><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></td>
+                </tr>
+            </table>
+        {% endfor %}
     </div>
 </div>
 

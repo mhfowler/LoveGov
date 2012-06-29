@@ -115,6 +115,7 @@ div.middle-left
 
         div.followers-stat
         {
+          cursor: pointer;
           background-color: white;
 
           div.followers-number
@@ -278,3 +279,42 @@ div.middle-right
 }
 
 
+div.followers-modal
+{
+  min-height: 300px;
+  border:1px solid $red;
+  position: absolute;
+  @include modal;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+  padding: 50px;
+
+  div.modal-section-title
+  {
+    @extend div.profile-section-title;
+    margin-bottom: 10px;
+  }
+
+  div.modal-horizontal-separator
+  {
+    @include horizontalSeparator(100%);
+  }
+
+  div.followers-container
+  {
+    margin-top:20px;
+
+    table.user-container
+    {
+      margin-right: 20px;
+      @include float-left;
+
+      td
+      {
+        vertical-align: middle;
+        padding: 10px 10px 10px 2px;
+      }
+    }
+  }
+}

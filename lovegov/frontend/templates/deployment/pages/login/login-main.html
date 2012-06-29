@@ -3,12 +3,8 @@
 {% block middle %}
 
     <div id="middle-left">
-        <video width="425" height="287" controls="controls" style="display:none">
-            <source src="/static/video/intro.mp4" type="video/mp4" />
-            <object data="/static/video/intro.mp4" width="425" height="287">
-            </object>
-        </video>
-        <a id="what-is-lovegov">what is<br> lovegov?</a>
+        <iframe src="http://player.vimeo.com/video/44933991?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="425" height="245" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+        <p style="text-align:center;">Want to learn more? <a id="what-is-lovegov" class="invert_link">Click here</a>.</p>
     </div>
 
     <div id="middle-right">
@@ -25,13 +21,8 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
-
             $('#what-is-lovegov').click(function()
             {
-                $(this).parent().css("background-image",'none');
-                $(this).siblings("video").show();
-                $(this).siblings("video")[0].play();
-                $(this).fadeOut(300);
                 $('._fade').fadeOut(300);
                 $('.about-div').fadeToggle(300);
             });
