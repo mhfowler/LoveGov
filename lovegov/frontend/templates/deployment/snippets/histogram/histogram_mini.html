@@ -1,0 +1,38 @@
+<div class="mini-histogram" data-json="{{ histogram_json }}" data-g_id="{{ group.id }}" data-resolution="{{ histogram_resolution }}">
+
+    <div class="histogram-body">
+
+        <div class="histogram-meta-box">
+            <a href="" class="update_histogram">
+                update
+            </a>
+
+            <div class="identical_count">
+                <span class="identical_num">  </span> identical
+            </div>
+
+            <div class="total_count">
+                <span class="total_num">  </span> total
+            </div>
+        </div>
+
+        <div class="histogram-bars">
+            {% for bucket in buckets %}
+                <div class="bar" data-bucket="{{ bucket }}" data-num="0">
+
+                    <div class="white_bar"></div>
+                    <div class="red_bar"></div>
+                    <div class="label"> {{ bucket }}% </div>
+
+                </div>
+            {% endfor %}
+            <div style="clear:both"></div>
+        </div>
+
+    </div>
+
+    <div class="histogram-title">
+        Comparison Breakdown
+    </div>
+
+</div>
