@@ -13,6 +13,7 @@ function rebindFunction()
     loadAjaxifyAnchors();                                       // ajaxify all <a> tags with attribute "href"
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
     bindTooltips();                                             // bind all tooltip classes
+    bindInlineEdits();
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -60,6 +61,9 @@ function rebindFunction()
             break;
         case 'account':                                         // /account
             loadAccount();
+            break;
+        case 'histogram':
+            loadHistogram();                                // histogram detail
             break;
         default:
             break
@@ -367,9 +371,33 @@ function setFollowPrivacy(event,private_follow,div)
 
 /***********************************************************************************************************************
  *
- *      ~Editing
+ *      ~InlineEdits
  *
  ***********************************************************************************************************************/
+function editUserProfile(info,edit_div)
+{
+    var prof_data = info;
+    prof_data.action = 'editprofile';
+
+    ajaxPost({
+        'data': prof_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            if( obj.success )
+            {
+                edit_div.text(obj.value);
+                edit_div.show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
+
+
 function editContent(c_id,info,edit_div)
 {
     var content_data = info;
@@ -393,6 +421,68 @@ function editContent(c_id,info,edit_div)
         }
     });
 }
+
+function unbindInlineEdits()
+{
+    $(".edit_button").unbind();
+    $(".submit_inline_edit").unbind();
+    $(".cancel_inline_edit").unbind();
+}
+
+function bindInlineEdits()
+{
+    $(".edit_button").click(
+        function(event)
+        {
+            event.preventDefault();
+            $(this).siblings('.inline_hide').hide();
+            $(this).hide();
+            $(this).siblings('.inline_edit').show();
+        }
+    );
+
+    $(".submit_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var input = $(this).siblings('.edit_input');
+            var wrapper = $(this).parent();
+            var name = input.attr('name');
+            var value = input.val();
+            var model = wrapper.data('model');
+            var info = {
+                'key':name,
+                'val':value
+            };
+            var edit_div = $(this).parent().siblings('.inline_hide');
+
+            if( model == "Content" )
+            {
+                var c_id = wrapper.data('id');
+                editContent(c_id,info,edit_div);
+            }
+            else if( model == "UserProfile")
+            {
+                editUserProfile(info,edit_div);
+            }
+
+            $(this).parent().siblings('.edit_button').show();
+            $(this).parent().hide();
+        }
+    );
+
+    $(".cancel_inline_edit").click(
+        function(event)
+        {
+            event.preventDefault();
+            var wrapper = $(this).parent();
+            wrapper.hide();
+            wrapper.siblings('.inline_hide').show();
+            wrapper.siblings('.edit_button').show();
+        }
+    );
+}
+
 
 
 /***********************************************************************************************************************
@@ -514,6 +604,15 @@ function selectTopicSingle(wrapper)
     var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
     clearTopicIcons(icons_wrapper);
     showTopicIcon(wrapper);
+}
+
+function toggleTopicSingle(wrapper) {
+    var deselect = wrapper.hasClass("chosen");
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    if (!deselect) {
+        showTopicIcon(wrapper);
+    }
 }
 
 // clears all topic icons within an overall topic-icons-wrapper
@@ -1221,6 +1320,7 @@ function submitAnswer()
 // binding for thread
 function loadThread()
 { 
+    bindInlineEdits();
 	heartButtons();
     // comment submit
     $(".submit-comment").unbind();
@@ -1349,8 +1449,8 @@ function loadThread()
     });
 
     $('span.collapse').click(function(e) {
-        var close = '[ - ]';
-        var open = '[ + ]';
+        var close = '[-]';
+        var open = '[+]';
         if($(this).text()==close) { 
             $(this).text(open);
             $(this).next('div.threaddiv').children().hide();
@@ -1368,7 +1468,7 @@ function loadThread()
             ajaxPost({
                 data: {'action': 'flag', 'c_id': commentid},
                 success: function(data) {
-                    alert("Comment flagged successfully.");
+                    alert(data);
                     $(this).css("color", "red");
                 },
                 error: function(data) {
@@ -1574,29 +1674,6 @@ var prof_more_notifications = true;
 var prof_more_actions = true;
 var prof_more_groups = true;
 
-function editUserProfile(info,edit_div)
-{
-    var prof_data = info;
-    prof_data.action = 'editprofile';
-
-    ajaxPost({
-        'data': prof_data,
-        success: function(data)
-        {
-            var obj = eval('(' + data + ')');
-            if( obj.success )
-            {
-                edit_div.text(obj.value);
-                edit_div.show();
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
-        }
-    });
-}
-
 function getMoreNotifications()
 {
     if( prof_more_notifications )
@@ -1801,35 +1878,6 @@ function loadProfile()
     {
         setFollowPrivacy(event,1,$(this));
     });
-
-    $(".edit_button").click(
-        function(event)
-        {
-            event.preventDefault();
-            $(this).siblings('.inline_hide').hide();
-            $(this).hide();
-            $(this).siblings('.inline_edit').show();
-        }
-    );
-
-    $(".submit_inline_edit").click(
-        function(event)
-        {
-            event.preventDefault();
-            var input = $(this).siblings('input.edit_input');
-            var value = input.val();
-            var name = input.attr('name');
-            var info = {
-                'key':name,
-                'val':value
-            };
-            var edit_div = $(this).parent().siblings('.inline_hide');
-
-            editUserProfile(info,edit_div);
-            $(this).parent().siblings('.edit_button').show();
-            $(this).parent().hide();
-        }
-    );
 }
 
 
@@ -2085,75 +2133,60 @@ function getMoreGroupMembers()
     }
 }
 
+// bind news div
+function bindNewDivs()
+{
+    $('.group-member-div').hover
+        (
+            function(){ $(this).css("background-color","#EBEBEB") },
+            function(){ $(this).css("background-color","#FFFFFF") }
+        );
+}
+
+var loadUsersLockout=false;
+function loadMoreUsers(event, replace)
+{
+    if (replace == true) {
+        $("#histogram-displayed-num").val(0);
+    }
+    event.preventDefault();
+    var histogram_displayed_num = $('#histogram-displayed-num').val();
+    var histogram_topic = $('#histogram-topic').val();
+    var histogram_block = $('#histogram-block').val();
+    var group_id = $('#group-id').val();
+    if (!loadUsersLockout)
+    {
+        loadUsersLockout = true;
+        ajaxPost({
+            data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
+                'histogram_topic':histogram_topic,'histogram_block':histogram_block },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (replace==true) {
+                    $('#members-list').html(returned.html);
+                }
+                else {
+                    $('#members-list').append(returned.html);
+                }
+                $('#histogram-displayed-num').val(returned.num);
+                loadHoverComparison();
+                loadAjaxifyAnchors();
+                bindNewDivs();
+                loadUsersLockout = false;
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
 function loadGroup()
 {
-    var loadUsersLockout = false;
-    var loadHistoLockout = false;
 
     bindGroupRequestsButton();
-    // load more users for display
-    function loadMoreUsers(event, replace)
-    {
-        if (replace == true) {
-            $("#histogram-displayed-num").val(0);
-        }
-        event.preventDefault();
-        var histogram_displayed_num = $('#histogram-displayed-num').val();
-        var histogram_topic = $('#histogram-topic').val();
-        var histogram_block = $('#histogram-block').val();
-        var group_id = $('#group-id').val();
-        if (!loadUsersLockout)
-        {
-            loadUsersLockout = true;
-            ajaxPost({
-                data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
-                    'histogram_topic':histogram_topic,'histogram_block':histogram_block },
-                success: function(data)
-                {
-                    var returned = eval('(' + data + ')');
-                    if (replace==true) {
-                        $('#members-list').html(returned.html);
-                    }
-                    else {
-                        $('#members-list').append(returned.html);
-                    }
-                    $('#histogram-displayed-num').val(returned.num);
-                    loadHoverComparison();
-                    loadAjaxifyAnchors();
-                    bindNewDivs();
-                    loadUsersLockout = false;
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
-        }
-    }
-
-    // load new histogram data
-    function getHistogram() {
-        var histogram_topic = $('#histogram-topic').val();
-        var group_id = $('#group-id').val();
-        if (!loadHistoLockout)
-        {
-            loadHistoLockout = true;
-            ajaxPost({
-                data: {'action':'loadHistogram','group_id':group_id,
-                    'histogram_topic':histogram_topic},
-                success: function(data)
-                {
-                    var returned = eval('(' + data + ')');
-                    $(".histogram-bars").html(returned.html);
-                    loadHistoLockout = false;
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
-        }
-    }
 
     $(".group-response-y").click( function(event) {
         groupFollowResponse(event,"Y",$(this),g_id);
@@ -2200,16 +2233,6 @@ function loadGroup()
         getHistogram();
     });
 
-    function bindNewDivs()
-    {
-        $('.group-member-div').hover
-            (
-                function(){ $(this).css("background-color","#EBEBEB") },
-                function(){ $(this).css("background-color","#FFFFFF") }
-            );
-
-    }
-
     $('#group_more_actions').click(
         function(event)
         {
@@ -2237,16 +2260,15 @@ function loadGroup()
         }
     );
 
-    /*
-     $(window).scroll(function(event)
-     {
-     if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
-     });
-     */
-
-    $('#group-see-more-users').click(function(event)
+    $('#group-see-more-users').bindOnce('click.group', function(event)
     {
         loadMoreUsers(event, false);
+    });
+
+    loadHistogram();
+
+    $(".histogram_box").bindOnce("click.group", function(event) {
+        window.location.href = "/histogram/" + histogram.g_id + "/"
     });
 
     bindNewDivs();
@@ -3360,3 +3382,133 @@ function loadCreate()
         $("#errors-non_field").empty();
     }
 }
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Histogram
+ *
+ **********************************************************************************************************************/
+var histogram = new Object();
+
+function refreshHistogramData(data) {
+
+    histogram.total += data.total;
+    histogram.identical += data.identical;
+
+    $.map(data.buckets, function(item, key) {
+
+        var bar = $(".bar[data-bucket=" + key + "]");
+
+        var num = bar.data('num') + item.num;
+        bar.data('num', num);
+
+        if (histogram.total != 0) {
+            var percent = (num / histogram.total)*100;
+        }
+        else {
+            var percent = 0;
+        }
+        bar.data("percent", percent);
+    });
+}
+
+function renderHistogram() {
+
+    if (histogram.which == 'mini') {
+        $(".bar").each(function(index, element) {
+            var percent = $(this).data("percent");
+            var total_height = 200;
+            var zero_height = 5;
+            var height = zero_height+((total_height-zero_height)*(percent/100));
+            $(this).find(".white_bar").css("height", total_height-height);
+            $(this).find(".red_bar").css("height", height);
+        });
+    }
+
+    else {
+        $(".bar").each(function(index, element) {
+            // width and position
+            var total_width = 850;
+            var margin_left = 15;
+            var margin_space = margin_left * histogram.resolution;
+            var width = (total_width-margin_space) / histogram.resolution;
+            $(this).css("width", width);
+            $(this).css("margin-left", margin_left);
+            $(this).find(".red_bar").css("width", width);
+
+            // height
+            var percent = $(this).data("percent");
+            var total_height = 300;
+            var zero_height = 5;
+            var height = zero_height+((total_height-zero_height)*(percent/100));
+            $(this).find(".white_bar").css("height", total_height-height);
+            $(this).find(".red_bar").css("height", height);
+        });
+    }
+
+    $(".histogram_count").text(histogram.total);
+    $(".histogram_identical").text(histogram.identical);
+
+}
+
+function loadHistogram() {
+
+    histogram = $(".histogram").data('metadata');
+    updateHistogram(true);
+
+    $('.update_histogram').bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        updateHistogram();
+    });
+
+    $(".histogram-topic-img").bindOnce("click.histogram", function(event) {
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        if (wrapper.hasClass("chosen")) {
+            var alias = 'all';
+        }
+        else {
+            var alias = wrapper.data('t_alias');
+        }
+        histogram.topic_alias = alias;
+        toggleTopicSingle(wrapper);
+        refreshHistogram();
+    });
+}
+
+function refreshHistogram() {
+    histogram.total = 0;
+    histogram.identical = 0;
+    $(".bar").data('num', 0);
+    updateHistogram(true);
+}
+
+function updateHistogram(recursive) {
+    ajaxPost({
+            data: {
+                'action':'updateHistogram',
+                'start': histogram.total,
+                'num': histogram.increment,
+                'topic_alias':histogram.topic_alias,
+                'g_id': histogram.g_id,
+                'resolution': histogram.resolution
+            },
+            success: function(data)
+            {
+                var returned =  eval('(' + data + ')');
+
+                refreshHistogramData(returned);
+                renderHistogram();
+
+                if (returned.total != 0 && recursive) {
+                        updateHistogram(true);
+                }
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+

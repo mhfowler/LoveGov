@@ -73,6 +73,12 @@ div.middle-left
         width: 380px;
       }
 
+      .group-full-text-edit
+      {
+        width: 360px;
+        height: 150px;
+      }
+
     /* Profile Stat Boxes */
       div.group-stats
       {
@@ -287,8 +293,94 @@ div.group-histogram-container
   @include float-left;
   width: 300px;
   height: 300px;
-  background-color: $gray;
-  @include rounded;
+  @include rounded();
+  border-width: 3px;
+  border-color: $gray;
+  border-style: solid;
+  text-align:center;
+  z-index:0;
+  overflow:hidden;
+
+  .histogram-body {
+    height:265px;
+    width:300px;
+
+    .histogram-meta-box {
+      height:30px;
+      width:200px;
+      overflow:hidden;
+
+      .total_count {
+        @include big();
+        @include fontSize(20px);
+        float:left;
+        margin: 10px 0 0 20px;
+      }
+
+      .identical_count {
+        float:left;
+        @include big();
+        @include fontSize(20px);
+        float:left;
+        margin: 10px 0 0 20px;
+      }
+
+
+    }
+
+    .histogram-bars {
+
+      margin: 0 0 0 5px;
+
+      .bar {
+        float:left;
+        margin-left:25px;
+      }
+
+      .white_bar {
+        background-color:white;
+      }
+
+      .red_bar {
+        background-color:$red;
+        width:25px;
+        border: 1px solid $red;
+      }
+      .red_bar:hover {
+        border-color:$black;
+      }
+
+      .label {
+        @include really-big();
+        @include fontSize(14px);
+        margin-top: 5px;
+      }
+    }
+
+  }
+
+  div.histogram-title
+  {
+    @include rounded-bottom(10px);
+    position:relative;
+    background-color: $gray;
+    height: 35px;
+    color: white;
+    z-index:-1;
+
+    p{
+      position:relative;
+      top:-8px;
+      display:block;
+      @include h5;
+      color:white;
+    }
+  }
+
+}
+
+div.group-histogram-container:hover {
+  border-color:$black;
 }
 
 div.requests-modal

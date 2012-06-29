@@ -550,7 +550,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT
+                num_notifications = NOTIFICATION_INCREMENT*2
                 notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
                 for notification in notifications:
@@ -598,9 +598,17 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # Histogram Things
-    vals['histogram'] = group.getComparisonHistogram(viewer)
-    vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
+    # histogram
+    resolution = 5
+    vals['buckets'] = getBucketList(resolution)
+    histogram_metadata = {'total':0,
+                          'identical':0,
+                          'resolution':resolution,
+                          'g_id':group.id,
+                          'which':'mini',
+                          'increment':1,
+                          'topic_alias':'all'}
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -642,7 +650,27 @@ def group(request, g_id=None, vals={}):
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
+def histogramDetail(request, g_id, vals={}):
 
+    viewer = vals['viewer']
+    group = Group.objects.get(id=g_id)
+    vals['group'] = group
+
+    resolution = 10
+    vals['buckets'] = getBucketList(resolution)
+    histogram_metadata = {'total':0,
+                      'identical':0,
+                      'resolution':resolution,
+                      'g_id':group.id,
+                      'which':'full',
+                      'increment':1,
+                      'topic_alias':'all'}
+    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -956,7 +984,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         to_return = ''
         for c in comments:
             margin = 30*(depth+1)
-            to_return += "<span class='collapse'>[ - ]</span><div class='threaddiv'>"     # open list
+            to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
             my_vote = user_votes.filter(content=c) # check if i like comment
             if my_vote:
                 i_vote = my_vote[0].value

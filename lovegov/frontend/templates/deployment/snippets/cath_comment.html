@@ -20,13 +20,24 @@
         {{comment.created_when}}
     </span>
     <div class="clearfix"></div>
-    <div class="comment-text">
-        {% if comment.active %}
-            {{ comment.text|linebreaks }}
+    <div>
+        <div class="comment-text inline_hide">
+            {% if comment.active %}
+                {{ comment.text|linebreaks }}
 
-        {% else %}
-            deleted
-    {% endif %}
+            {% else %}
+                deleted
+        {% endif %}
+        </div>
+        {% if comment.getCreator == viewer %}
+        <div class="edit_button edit-link"></div>
+        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{comment.id}}">
+            <textarea style="width:{{ width }}px" class="comment-textarea edit_input" type="text" name="text" maxlength='1000'>{{comment.text}}</textarea>
+            <input type="button" class="tab-button edit-link submit_inline_edit" style="float: right" value="Save">
+            <input type="button" class="tab-button cancel_inline_edit alt" style="float: right; margin-right: 10px" value="Cancel">
+            <div style="clear:both"></div>
+        </div>
+        {% endif %}
     </div>
     <div class="comment-reply">
         <div class="reply">

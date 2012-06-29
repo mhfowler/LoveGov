@@ -205,7 +205,7 @@ def loadHistogram(request, vals={}):
 def create(request, val={}):
     """Creates a piece of content and stores it in database."""
     formtype = request.POST['type']
-    user = val['viewer']
+    viewer = val['viewer']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
@@ -226,6 +226,8 @@ def create(request, val={}):
         # if ajax, return page center
         if request.is_ajax():
             if formtype == "N":
+                viewer.num_articles += 1
+                viewer.save();
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
@@ -233,8 +235,8 @@ def create(request, val={}):
 
         else:
             if formtype == "G":
-                c.joinMember(user)
-                c.admins.add(user)
+                c.joinMember(viewer)
+                c.admins.add(viewer)
                 try:
                     file_content = ContentFile(request.FILES['image'].read())
                     Image.open(file_content)
@@ -249,7 +251,8 @@ def create(request, val={}):
                         c.setMainImage(file_content)
                 except IOError:
                     print "Image Upload Error"
-
+                viewer.num_petitions += 1
+                viewer.save()
             return shortcuts.redirect(c.get_url())
     else:
         if request.is_ajax():
@@ -330,6 +333,8 @@ def editProfile(request, vals={}):
         return HttpResponse( json.dumps({'success':False,'value':''}) )
     value = request.POST['val']
     key = request.POST['key']
+    if key not in USERPROFILE_EDITABLE_FIELDS:
+        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
     setattr( viewer , key , value )
     viewer.save()
     return HttpResponse( json.dumps({'success':True,'value':value}) )
@@ -343,10 +348,13 @@ def editContent(request, vals={}):
         return HttpResponse( json.dumps({'success':False,'value':''}) )
     value = request.POST['val']
     key = request.POST['key']
+    if key not in CONTENT_EDITABLE_FIELDS:
+        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
     content = Content.lg.get_or_none(id=request.POST['c_id'])
-    if content:
-        setattr( content , key , value )
-        content.save()
+    if content and viewer.id == content.getCreator().id:
+        save_content = content.downcast()
+        setattr( save_content , key , value )
+        save_content.save()
         return HttpResponse( json.dumps({'success':True,'value':value}) )
     return HttpResponse( json.dumps({'success':False,'value':''}) )
 
@@ -1343,12 +1351,28 @@ def blogAction(request,vals={}):
 
 def flag(request,vals={}):
     c_id = request.POST.get('c_id')
-    val_data = {'name': vals['viewer'].get_name(), 'c_id': c_id}
-    print val_data
+    c = Comment.lg.get_or_none(id=c_id)
+    val_data = {'flagger': vals['viewer'].get_name(), 'comment': c}
     for team_member in TEAM_EMAILS:
             send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
-    return HttpResponse("Comment flagged successfully.")
+    return HttpResponse("Comment has been flagged successfully.")
 
+#-----------------------------------------------------------------------------------------------------------------------
+# get histogram data
+#-----------------------------------------------------------------------------------------------------------------------
+def updateHistogram(request, vals={}):
+
+    group = Group.objects.get(id=request.POST['g_id'])
+    resolution = int(request.POST['resolution'])
+    start = int(request.POST['start'])
+    num = int(request.POST['num'])
+    topic_alias = request.POST['topic_alias']
+    viewer = vals['viewer']
+
+    bucket_list = getBucketList(resolution=resolution)
+    histogram = group.getComparisonHistogram(viewer, bucket_list, start=start, num=num, topic_alias=topic_alias)
+
+    return HttpResponse(json.dumps(histogram))
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1370,6 +1394,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'invite': invite,
             'edit': edit,
             'editprofile': editProfile,
+            'editcontent': editContent,
             'delete': delete,
             'setprivacy': setPrivacy,
             'followprivacy': setFollowPrivacy,
@@ -1406,7 +1431,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'matchSection': matchSection,
             'shareContent': shareContent,
             'blogAction': blogAction,
-            'flag': flag
+            'flag': flag,
+            'updateHistogram': updateHistogram
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

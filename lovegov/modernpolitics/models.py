@@ -991,6 +991,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
+    num_petitions = models.IntegerField(default=0)
+    num_articles = models.IntegerField(default=0)
     # feeds & ranking
     my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS
@@ -3148,10 +3150,6 @@ class ViewComparison(LGModel):
             return True
 
 
-
-
-
-
 #=======================================================================================================================
 # Comparison of two people's worldview.
 #
@@ -3231,34 +3229,60 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
-    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
-        from modernpolitics.backend import getUserUserComparison
-        histogram = {}                  # initialize empty histogram
+    def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
+
+        from lovegov.modernpolitics.compare import getUserUserComparison
+
+        def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
+            i = 0
+            current=buckets_list[0]
+            num_buckets = len(buckets_list)
+            while current < result and i < num_buckets:
+                current = buckets_list[i]
+                i += 1
+
+            if result > current:
+                to_return = num_buckets-1
+            elif i>0:
+                to_return = i-1
+            else:
+                to_return = 0
+
+            return buckets_list[to_return]
+
+        # ACTUAL METHOD
+        buckets = {}                              # initialize empty histogram dictionary
+        for bucket in bucket_list:
+            buckets[bucket] = {'num':0}
+
+        if num == -1:
+            members = self.members.all()[start:]
+        else:
+            members = self.members.all()[start:start+num]
+
         topic = Topic.lg.get_or_none(alias=topic_alias)
-        for i in range(0, resolution+1):
-            histogram[i]= {'num':0, 'percent':0}
-        members = self.members.all()
+        total = 0
+        identical = 0
+
         for x in members:
             comparison = getUserUserComparison(user, x)
-            if topic and topic_alias != 'general':
+            if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
-                block = comparison.result / 10
-                if block in histogram:
-                    histogram[block]['num'] += 1
-        # calc percents
-        people = float(len(members))
-        for k in histogram:
-            tuple = histogram[k]
-            num = tuple['num']
-            tuple['percent'] = num/people
-            if not num:
+                total += 1
+                result = comparison.result
+                bucket = getBucket(result, bucket_list)
+                buckets[bucket]['num'] += 1
+                if comparison.result == 100:
+                    identical += 1
 
-                pix = 5
-            else:
-                pix = (num/people*100)*5
-            tuple['pix'] = int(pix)
-        return histogram
+        return {'total':int(total), 'identical': identical, 'buckets':buckets}
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get url of histogram detail.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getHistogramURL(self):
+        return '/histogram/' + str(self.id) + "/"
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
