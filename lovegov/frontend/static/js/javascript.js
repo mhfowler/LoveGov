@@ -3417,6 +3417,9 @@ function refreshHistogramData(data) {
 
         var bar = $(".bar[data-bucket=" + key + "]");
 
+        bar.children('.red_bar').css("background-color",data.color);
+        $('.histogram-footer').css("background-color",data.color);
+
         var num = bar.data('num') + item.num;
         bar.data('num', num);
 

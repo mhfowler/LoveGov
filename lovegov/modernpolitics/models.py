@@ -3277,7 +3277,7 @@ class Group(Content):
                 if comparison.result == 100:
                     identical += 1
 
-        return {'total':int(total), 'identical': identical, 'buckets':buckets}
+        return {'total':int(total), 'identical': identical, 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.
