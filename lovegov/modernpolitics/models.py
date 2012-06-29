@@ -990,6 +990,8 @@ class UserProfile(FacebookProfileModel, LGModel):
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
+    num_petitions = models.IntegerField(default=0)
+    num_articles = models.IntegerField(default=0)
     # feeds & ranking
     my_filters = models.ManyToManyField(SimpleFilter)
     # SETTINGS

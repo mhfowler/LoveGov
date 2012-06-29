@@ -550,7 +550,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT
+                num_notifications = NOTIFICATION_INCREMENT*2
                 notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
                 for notification in notifications:
@@ -954,7 +954,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         to_return = ''
         for c in comments:
             margin = 30*(depth+1)
-            to_return += "<span class='collapse'>[ - ]</span><div class='threaddiv'>"     # open list
+            to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
             my_vote = user_votes.filter(content=c) # check if i like comment
             if my_vote:
                 i_vote = my_vote[0].value

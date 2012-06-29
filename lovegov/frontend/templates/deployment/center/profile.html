@@ -52,9 +52,10 @@
                     </div>
                     {% if viewer.id == user_prof.id %}
                         <div class="edit-link edit_button"></div>
-                        <div class="inline-edit-input inline_edit">
+                        <div class="inline-edit-input inline_edit" data-model="UserProfile">
                             <input type="text" maxlength="200" value="{{ user_prof.user_title }}" class="edit_input" name="user_title"/>
                             <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
                         </div>
                     {% endif %}
                 </div>
@@ -69,12 +70,12 @@
                         <div class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="profile-stats-number">0</div>
-                        <div class="profile-stats-title">petition{% if responses != 1 %}s{% endif %}</div>
+                        <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
+                        <div class="profile-stats-title">petition{% if user_prof.num_petitions != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
-                        <div class="profile-stats-number">0</div>
-                        <div class="profile-stats-title">article{% if responses != 1 %}s{% endif %}</div>
+                        <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
+                        <div class="profile-stats-title">article{% if user_prof.num_articles != 1 %}s{% endif %}</div>
                     </div>
                 </div>
                 <div class="profile-buttons">
