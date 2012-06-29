@@ -3415,6 +3415,17 @@ class Group(Content):
         return num_articles
 
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the average number of questions the whole group has answered
+    #-------------------------------------------------------------------------------------------------------------------
+    def getAverageQuestions(self):
+        num_questions = 0
+        for member in self.members.all():
+            num_questions += member.getView().responses.count()
+        avg_questions = num_questions/self.members.count()
+        return int(round(avg_questions))
+
+
 #=======================================================================================================================
 # Motion, for democratic groups.
 #
