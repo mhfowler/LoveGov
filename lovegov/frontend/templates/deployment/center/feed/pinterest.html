@@ -25,7 +25,7 @@
             </div>
 
             <!-- image -->
-            {% if item.type == 'N' %}
+            {% if item.type == 'N' or item.type == 'G' %}
                 {% include 'deployment/center/feed/feed_image.html' %}
             {% endif %}
 

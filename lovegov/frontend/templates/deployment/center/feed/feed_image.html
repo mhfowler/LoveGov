@@ -1,9 +1,13 @@
 {% load thumbnail %}
 
 <div class="pinterest-image">
-    {% thumbnail item.link_screenshot "250x150" as im %}
-        <img src="{{ im.url }}"/>
-    {% empty %}
-        <img src="/static/images/logo.png" width="320px" height="150px" />
-    {% endthumbnail %}
+    {% if item.type == 'N' %}
+        {% thumbnail item.link_screenshot "250x150" as im %}
+            <img src="{{ im.url }}"/>
+        {% endthumbnail %}
+    {% elif item.type == 'G' %}
+        {% thumbnail item.getImage "250x150" as im %}
+            <img src="{{ im.url }}"/>
+        {% endthumbnail %}
+    {% endif %}
 </div>

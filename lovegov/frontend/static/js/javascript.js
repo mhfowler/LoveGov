@@ -502,10 +502,10 @@ function loadHoverComparison()
     }
 
     $('#comparison-hover-div').hoverIntent
-    (
-        function() { clearTimeout(hoverTimer); },
-        function() { hoverTimer = setTimeout(function(){clearHover();},100)}
-    );
+        (
+            function() { clearTimeout(hoverTimer); },
+            function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+        );
 
     function findHoverPosition(selector)
     {
@@ -528,46 +528,46 @@ function loadHoverComparison()
     var to_hover = $('.has_hover_comparison').not('.already_hover');
     to_hover.addClass('already_hover');
     to_hover.hoverIntent
-    (
-        function(event)
-        {
-            var self = $(this);
-            var href = $(this).data('href');
-            var displayName = $(this).data("display_name");
-            if (href != "")
+        (
+            function(event)
             {
-                clearTimeout(hoverTimer);
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div p').text('You & ' + displayName);
-                var offset = findHoverPosition(self);
-                $('#comparison-hover-loading-img').show();
-                $('#comparison-hover-div').fadeIn(100);
-                $('#comparison-hover-div').offset(offset);
-                ajaxPost({
-                    'data': {'action':'hoverComparison','href':href},
-                    'success': function(data)
-                    {
-                        var obj = eval('(' + data + ')');
-                        $('#comparison-hover-loading-img').hide();
-                        new VisualComparison('comparison-hover',obj).draw();
-                    },
-                    'error': function(jqXHR, textStatus, errorThrown)
-                    {
-                        $('#comparison-hover-div p').text('Sorry there was an error');
-                    }
-                });
+                var self = $(this);
+                var href = $(this).data('href');
+                var displayName = $(this).data("display_name");
+                if (href != "")
+                {
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    $('#comparison-hover-div p').text('You & ' + displayName);
+                    var offset = findHoverPosition(self);
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    ajaxPost({
+                        'data': {'action':'hoverComparison','href':href},
+                        'success': function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            new VisualComparison('comparison-hover',obj).draw();
+                        },
+                        'error': function(jqXHR, textStatus, errorThrown)
+                        {
+                            $('#comparison-hover-div p').text('Sorry there was an error');
+                        }
+                    });
+                }
+            },
+            function(event)
+            {
+                hoverTimer = setTimeout(function()
+                {
+                    $('#comparison-hover').empty();
+                    $('#comparison-hover-div p').empty();
+                    $('#comparison-hover-div').fadeOut(100);
+                },500)
             }
-        },
-        function(event)
-        {
-            hoverTimer = setTimeout(function()
-            {
-                $('#comparison-hover').empty();
-                $('#comparison-hover-div p').empty();
-                $('#comparison-hover-div').fadeOut(100);
-            },500)
-        }
-    );
+        );
 }
 
 
@@ -907,10 +907,10 @@ function loadHeader()
 
 
     $('#logo-img').hover
-    (
-        function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
-        function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
-    );
+        (
+            function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
+            function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
+        );
 
     function toggleUserMenu()
     {
@@ -943,21 +943,21 @@ function loadHeader()
     {
         switch($.cookie('privacy'))
         {
-        case "PUB":
-            $.cookie('privacy','PUB', {path:'/'});
-            $(".security_setting").each(function()
-            {
-                if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+            case "PUB":
+                $.cookie('privacy','PUB', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
 
-            });
-            break;
-        case "PRI":
-            $.cookie('privacy','PRI', {path:'/'});
-            $(".security_setting").each(function()
-            {
-                if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
-            });
-            break;
+                });
+                break;
+            case "PRI":
+                $.cookie('privacy','PRI', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+                });
+                break;
         }
     }
     else
@@ -1320,9 +1320,9 @@ function submitAnswer()
  ***********************************************************************************************************************/
 // binding for thread
 function loadThread()
-{ 
+{
     bindInlineEdits();
-	heartButtons();
+    heartButtons();
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)
@@ -1361,7 +1361,7 @@ function loadThread()
     {
         $(this).parent().siblings('.replyform').toggle();
     });
-    
+
     // hide for "cancel" button
     $("input.tab-button.alt").click(function()
     {
@@ -1452,7 +1452,7 @@ function loadThread()
     $('span.collapse').click(function(e) {
         var close = '[-]';
         var open = '[+]';
-        if($(this).text()==close) { 
+        if($(this).text()==close) {
             $(this).text(open);
             $(this).next('div.threaddiv').children().hide();
         } else if($(this).text()==open) {
@@ -2285,9 +2285,12 @@ function loadGroup()
 /*
  Sets the red bar to proper width.
  */
-function petitionBar(wrapper) {
-    var percent = wrapper.data('percent');
-    wrapper.find('.red_bar').css("width", percent + "%");
+function petitionBar() {
+    var petition_bars = $(".petition-bar-wrapper");
+    petition_bars.each(function(index, element) {
+        var percent = $(this).data('percent');
+        $(this).find('.red_bar').css("width", percent + "%");
+    });
 }
 
 /*
@@ -2381,6 +2384,7 @@ function getFeed(num)
 
             heartButtons();
             loadShareButton();
+            petitionBar();
             loadHoverComparison();
 
         },
@@ -3538,7 +3542,7 @@ function updateHistogram(recursive) {
                 }
 
                 if (returned.total != 0 && recursive) {
-                        updateHistogram(true);
+                    updateHistogram(true);
                 }
             },
             error: function(error, textStatus, errorThrown)

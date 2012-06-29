@@ -53,7 +53,9 @@ def viewWrapper(view, requires_login=False):
                 logger.debug('deleted cookie')
                 return response
         vals['google'] = GOOGLE_LOVEGOV
-        vals['defaultProfileImage'] = 'images/profile_default.jpg'
+        host_full = getHostHelper(request)
+        vals['host_full'] = host_full
+        vals['defaultProfileImage'] = host_full + DEFAULT_IMAGE_URL
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
@@ -662,7 +664,7 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
     vals['group'] = group
 
-    resolution = 10
+    resolution = 20
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}
