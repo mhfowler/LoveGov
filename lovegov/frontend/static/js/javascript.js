@@ -3419,7 +3419,7 @@ function refreshHistogramData(data) {
 
         bar.children('.red_bar').css("background-color",data.color);
         $('.histogram-footer').css("background-color",data.color);
-        $('.histogram-wrapper').css("background-color",data.color);
+        $('.histogram-wrapper').css("border-color",data.color);
 
         var num = bar.data('num') + item.num;
         bar.data('num', num);
