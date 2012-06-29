@@ -3503,9 +3503,14 @@ function loadHistogram() {
 }
 
 function refreshHistogram() {
+
     histogram.total = 0;
     histogram.identical = 0;
     $(".bar").data('num', 0);
+    $.map(histogram.bucket_uids, function(item, key) {
+        histogram.bucket_uids[key] = [];
+    });
+
     updateHistogram(true);
 }
 
