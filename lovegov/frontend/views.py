@@ -1038,7 +1038,7 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request,section, vals={}):
+def account(request,section="", vals={}):
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
     vals['party_labels'] = POLITICAL_PARTIES_IMAGES
