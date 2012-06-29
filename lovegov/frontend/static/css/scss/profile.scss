@@ -115,6 +115,7 @@ div.middle-left
 
         div.followers-stat
         {
+          cursor: pointer;
           background-color: white;
 
           div.followers-number
@@ -278,3 +279,20 @@ div.middle-right
 }
 
 
+div.followers-modal
+{
+  min-height: 300px;
+  border:1px solid $red;
+  position: absolute;
+  @include modal;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+  padding: 50px;
+
+  div.user-container
+  {
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+}
