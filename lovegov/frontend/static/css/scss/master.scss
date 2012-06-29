@@ -209,48 +209,43 @@ blockquote
 
 h1, h2, h3, h4, h5, h6
 {
+  font-family: $title-font;
   font-weight:normal;
   font-style: normal;
 }
 
 h1
 {
-  font-family:$gill-light;
   color:$text-blue;
   font-size: 50px;
 }
 
 h2
 {
-  font-family:$gill-light;
   color:$red;
   font-size: 32px;
 }
 
 h3
 {
-  font-family:$gill-std;
   color: $text-blue;
   font-size: 26px;
 }
 
 h4
 {
-  font-family:$gill-std;
   color: $red;
   font-size: 22px;
 }
 
 h5
 {
-  font-family:$gill-std;
   color: $deep-gray;
   font-size: 18px;
 }
 
 h6
 {
-  font-family:$gill-std;
   color: $text-blue;
   font-size: 13px;
 }
