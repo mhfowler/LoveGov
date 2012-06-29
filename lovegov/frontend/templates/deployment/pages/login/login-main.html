@@ -3,6 +3,11 @@
 {% block middle %}
 
     <div id="middle-left">
+        <video width="425" height="287" controls="controls" style="display:none">
+            <source src="/static/video/intro.mp4" type="video/mp4" />
+            <object data="/static/video/intro.mp4" width="425" height="287">
+            </object>
+        </video>
         <a id="what-is-lovegov">what is<br> lovegov?</a>
     </div>
 
@@ -20,9 +25,14 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
+
             $('#what-is-lovegov').click(function()
             {
-                $('.fade').fadeOut(300);
+                $(this).parent().css("background-image",'none');
+                $(this).siblings("video").show();
+                $(this).siblings("video")[0].play();
+                $(this).fadeOut(300);
+                $('.login_fade').fadeOut(300);
                 $('.about-div').fadeToggle(300);
             });
 

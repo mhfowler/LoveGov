@@ -83,6 +83,47 @@ div.account-right
     margin-left:15px;
   }
 
+  img.party-choice-deselected
+  {
+    filter: url(/static/images/party_labels/filter.svg#grayscale) !important; /* Firefox 3.5+ */
+    filter: gray !important; /* IE6-9 */
+    -webkit-filter: grayscale(1) !important; /* Google Chrome & Webkit Nightlies */
+    opacity:0.6 !important;
+  }
+
+  img.party-choice
+  {
+    padding:5px;
+    filter: url(/static/images/party_labels/filter.svg#grayscale); /* Firefox 3.5+ */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(1); /* Google Chrome & Webkit Nightlies */
+    opacity:0.6;
+
+    &:hover
+    {
+      opacity:1.0;
+      cursor:pointer;
+      filter: none;
+      -webkit-filter: grayscale(0);
+    }
+  }
+
+  img.party-choice-selected
+  {
+    opacity:1.0;
+    cursor:pointer;
+    filter: none;
+    -webkit-filter: grayscale(0);
+  }
+
+
+
+
+  input.party-choice
+  {
+    display:none;
+  }
+
   p.account-message
   {
     width:250px;

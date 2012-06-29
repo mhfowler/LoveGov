@@ -1038,6 +1038,8 @@ def account(request, vals={}):
                 except IOError:
                     vals['profile_message'] = "The image upload didn't work. Try again?"
                     vals['uploadform'] = UploadFileForm(request.POST)
+
+
             vals['profile_message'] = " "
         elif request.POST['box'] == 'basic_info':
             pass

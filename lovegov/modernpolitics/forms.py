@@ -420,6 +420,35 @@ class UserImageForm(forms.Form):
 
 
 
+class EditProfileForm(forms.Form):
+    bio = forms.CharField(required=False)
+    avatar =  forms.FileField(required=False)
+
+
+
+    fullname = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
+    email2 = forms.EmailField(required=True)
+    passwordregister = forms.CharField(widget=forms.PasswordInput,required=True)
+    privacy = forms.BooleanField(error_messages={'required': '< click'})
+    bio = LoginEmailField()
+    password = LoginPasswordField()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Validates form data and returns cleaned data with any errors
+    #-------------------------------------------------------------------------------------------------------------------
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if cleaned_data.has_key("username") and cleaned_data.has_key("password"):
+            user = auth.authenticate(username=cleaned_data.get("username"), password=cleaned_data.get("password"))
+            if user is None or not user.is_active:
+                error_msg = u"That email and password do not match our records. Check for a typo, if not registering is easy too."
+                self._errors["username"] = self.error_class([error_msg])
+                self._errors["password"] = self.error_class([error_msg])
+                del cleaned_data["password"]
+        return cleaned_data
+
+
 
 
 

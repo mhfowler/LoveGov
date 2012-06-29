@@ -25,10 +25,6 @@
         </div>
     </div>
 
-    {% for imgRef in party_labels %}
-        <img src="{{ imgRef }}"/>
-    {% endfor %}
-
     <div class="account-right">
 
         <div class="account_div" id="account-basic-information" style="display:none">
@@ -152,7 +148,12 @@
                     <tr class="break"></tr>
                     <tr>
                         <td class="left"><h3>parties</h3></td>
-                        <td><input class="account_input" type="text" value="" name="parties"/></td>
+                        <td>
+                            {% for imgRef in party_labels %}
+                                <img class="party-choice" src="{{ imgRef.path }}" data-input="#party-{{ imgRef.name }}"/>
+                                <input id="party-{{ imgRef.name }}" class="party-choice" type="checkbox" name="party" value="{{ imgRef.name }}">
+                            {% endfor %}
+                        </td>
                         <td></td>
                     </tr>
                     <tr class="break-small"></tr>
@@ -207,7 +208,6 @@
         $(id).prepend(pointer.detach()).addClass("account-button-selected");
         $(id.replace(/_/g,"-")).show();
 
-
         $('.account_input').hover(
             function() { $(this).parent().next().append(pencil); },
             function() { pencil = pencil.detach(); }
@@ -220,7 +220,21 @@
             $(this).prepend(pointer);
         });
 
+        $('.party-choice').click(function()
+        {
+            var $checkbox = $($(this).data('input'));
+            $checkbox.attr('checked', !$checkbox.attr('checked'));
+            $(this).toggleClass("party-choice-selected");
+            if (!$(this).hasClass("party-choice-selected"))
+            {
+                $(this).addClass("party-choice-deselected");
+            }
+        });
 
+        $('.party-choice').mouseout(function()
+        {
+            $(this).removeClass("party-choice-deselected");
+        });
 
         var inputLimit = 150;
         $('.limit_input').keypress(function(event)
