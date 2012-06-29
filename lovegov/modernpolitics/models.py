@@ -3228,6 +3228,20 @@ class Group(Content):
     system = models.BooleanField(default=False)     # means you can't leave
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Downcasts Group to appropriate child model.
+    #-------------------------------------------------------------------------------------------------------------------
+    def downcast(self):
+        type = self.group_type
+        if type == 'N':
+            object = self.network
+        elif type == 'P':
+            object = self.party
+        elif type == 'U':
+            object = self.usergroup
+        else: object = self
+        return object
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
@@ -3485,7 +3499,7 @@ class Network(Group):
 #=======================================================================================================================
 class Party(Group):
     party_type = models.CharField(max_length=1, choices=PARTY_TYPE, default='D')
-    extension = models.CharField(max_length=50, null=True)
+    party_label = models.ImageField(null=True, upload_to="defaults/")
 
     # autosave any network
     def autoSave(self, creator=None, privacy="PUB"):
@@ -3499,11 +3513,13 @@ class Party(Group):
 
     def joinMember(self, user, privacy='PUB'):
         user.parties.add(self)
-        super(Party, self).joinMember(self, user, privacy)
+        user.save()
+        super(Party, self).joinMember(user, privacy)
 
     def removeMember(self, user, privacy='PUB'):
         user.parties.remove(self)
-        super(Party, self).removeMember(self, user, privacy)
+        user.save()
+        super(Party, self).removeMember(user, privacy)
 
 #=======================================================================================================================
 # User Group

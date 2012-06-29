@@ -27,7 +27,7 @@
     <div class="account-right">
 
         <div class="account_div" id="account-basic-information" style="display:none">
-            <form action="" method="post"> {% csrf_token %}
+            <form action="/action/" method="post"> {% csrf_token %}
                 <span class="edit-link-large edit_link"></span>
                 <table>
                     <tr>
@@ -69,11 +69,12 @@
                                 {{ profile_message }}
                             </p>
                         </td>
-                        <td style="text-align:right"><input type="submit" class="button-red" value="save changes"/></td>
+                        <td style="text-align:right"><input type="submit" action="/action/" class="button-red" value="save changes"/></td>
                         <td width=20></td>
                     </tr>
                 </table>
                 <input type="hidden" name="box" value="basic_info"/>
+                <input type="hidden" name="action" value="editaccount"/>
             </form>
         </div>
 
@@ -108,7 +109,7 @@
                                 {{ password_message }}
                             </p>
                         </td>
-                        <td style="text-align:right"><input type="submit" class="button-red" value="change password"/></td>
+                        <td style="text-align:right"><input type="submit" action="" class="button-red" value="change password"/></td>
                         <td width=35></td>
                     </tr>
                 </table>
@@ -117,7 +118,7 @@
         </div>
 
         <div class="account_div" id="account-change-profile" style="display:none">
-            <form action="" method="post" enctype="multipart/form-data"> {% csrf_token %}
+            <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
                 <table>
                     <tr>
                         <td></td>
@@ -148,9 +149,15 @@
                     <tr>
                         <td class="left"><h3>parties</h3></td>
                         <td>
-                            {% for imgRef in party_labels %}
-                                <img class="party-choice" src="{{ imgRef.path }}" data-input="#party-{{ imgRef.name }}"/>
-                                <input id="party-{{ imgRef.name }}" class="party-choice" type="checkbox" name="party" value="{{ imgRef.name }}">
+                            {% for party in parties %}
+                                {% thumbnail party.party_label "100x18" as im %}
+                                    <img class="party-choice" src="{{ im.url }}" data-input="#party-{{ party.alias }}"/>
+                                {% endthumbnail %}
+                                {% if party in user_parties %}
+                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="party" value="{{ party.alias }}" checked="checked">
+                                {% else %}
+                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="party" value="{{ party.alias }}">
+                                {% endif %}
                             {% endfor %}
                         </td>
                         <td></td>
@@ -166,7 +173,11 @@
                         </td>
                         <td>
                             <div class="lockprofile-td">
-                                <input class="account_input" type="checkbox" name="lock"/>
+                                {% if viewer.private_follow %}
+                                    <input class="account_input" checked="checked" type="checkbox" name="lock"/>
+                                {% else %}
+                                    <input class="account_input" type="checkbox" name="lock"/>
+                                {% endif %}
                                 <span>Check to lock profile</span>
                             </div>
                         </td>
@@ -180,6 +191,7 @@
                     </tr>
                 </table>
                 <input type="hidden" name="box" value="profile"/>
+                <input type="hidden" name="action" value="editaccount"/>
             </form>
         </div>
 
@@ -219,10 +231,19 @@
             $(this).prepend(pointer);
         });
 
+        $('.party-choice').each( function(i)
+        {
+            var $checkbox = $($(this).data('input'));
+            if( $checkbox.prop('checked') )
+            {
+                $(this).addClass("party-choice-selected");
+            }
+        });
+
         $('.party-choice').click(function()
         {
             var $checkbox = $($(this).data('input'));
-            $checkbox.attr('checked', !$checkbox.attr('checked'));
+            $checkbox.prop('checked', !$checkbox.prop('checked'));
             $(this).toggleClass("party-choice-selected");
             if (!$(this).hasClass("party-choice-selected"))
             {

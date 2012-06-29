@@ -324,8 +324,52 @@ def finalize(request, vals={}):
         petition.finalize()
     return HttpResponse("success")
 
+
 #-----------------------------------------------------------------------------------------------------------------------
-# Edits user profile information
+# FORM Edits user profile information from /account/ page
+#-----------------------------------------------------------------------------------------------------------------------
+def editAccount(request, vals={}):
+    viewer = vals['viewer']
+    box = request.POST['box']
+
+    if box == 'basic_info':
+        viewer.first_name = request.POST['first_name']
+        viewer.last_name = request.POST['last_name']
+        viewer.save()
+
+    elif box == 'profile':
+        if 'image' in request.FILES:
+            try:
+                file_content = ContentFile(request.FILES['image'].read())
+                Image.open(file_content)
+                viewer.setProfileImage(file_content)
+            except IOError:
+                print "Image Upload Error"
+        if 'lock' in request.POST:
+            viewer.private_follow = True
+        else:
+            viewer.private_follow = False
+        viewer.save()
+
+        all_parties = Party.objects.all()
+        if 'party' in request.POST:
+            parties = json.loads(request.POST['party'])
+            for party in parties:
+                party.joinMember(viewer)
+                all_parties.remove(party)
+
+        for party in all_parties:
+            party.removeMember(viewer)
+
+
+
+        viewer.basicinfo.bio = request.POST['bio']
+        viewer.basicinfo.save()
+
+    return shortcuts.redirect('/account/')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editProfile(request, vals={}):
     viewer = vals['viewer']
@@ -340,7 +384,7 @@ def editProfile(request, vals={}):
     return HttpResponse( json.dumps({'success':True,'value':value}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Edits user profile information
+# INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editContent(request, vals={}):
     viewer = vals['viewer']
@@ -547,6 +591,7 @@ def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
+    group = group.downcast()
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
@@ -597,6 +642,7 @@ def joinGroupResponse(request, vals={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
+    group = group.downcast()
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_joined = already[0]
@@ -742,6 +788,7 @@ def joinGroupInvite(request, vals={}):
     user = vals['viewer']
     to_invite = UserProfile.objects.get(id=request.POST['invited_id'])
     group = Group.objects.get(id=request.POST['g_id'])
+    group = group.downcast()
     admin = group.admins.filter(id=user.id)
     if admin:
         already = GroupJoined.objects.filter(user=to_invite, group=group)
@@ -767,6 +814,7 @@ def leaveGroup(request, vals={}):
     # if not system then remove
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
+    group = group.downcast()
     group_joined = GroupJoined.objects.get(group=group, user=from_user)
     if group_joined and not group.system:
         group.removeMember(from_user)
@@ -1419,7 +1467,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'postcomment': comment,
             'create': create,
             'invite': invite,
-            'edit': edit,
+            'editaccount': editAccount,
             'editprofile': editProfile,
             'editcontent': editContent,
             'delete': delete,
