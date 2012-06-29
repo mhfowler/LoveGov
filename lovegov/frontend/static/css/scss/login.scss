@@ -43,10 +43,11 @@ div#bottom
   float:left;
   width:425px;
   height:287px;
-  background-image:url(/static/images/login/banner-425x287.png);
+  //background-image:url(/static/images/login/banner-425x287.png);
   margin-left:20px;
 }
 
+/*
 #middle-left a, #middle-left a:link, #middle-left a:active, #middle-left a:visited
 {
   padding-top:10px;
@@ -75,7 +76,7 @@ div#bottom
   padding-bottom:15px;
   padding-right:35px;
 
-}
+}*/
 
 #middle-right
 {
@@ -407,7 +408,7 @@ div.vertical-separator
 #privacy-div
 {
   float:left;
-  margin-top:50px;
+  margin-top:20px;
 }
 
 #privacy-div div
