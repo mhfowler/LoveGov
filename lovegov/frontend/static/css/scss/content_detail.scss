@@ -2,11 +2,6 @@
 @import 'master-mixins';
 
 
-div#content-div h3 {
-    color: $red;
-    @include gillLight
-}
-
 div#content
 {
     width:1000px;
@@ -88,10 +83,8 @@ div.social_bar {
 			position: relative;
 			text-align: center;
 			> span {
-                text-align: center;
 				position: absolute;
 				font-size: 12px;
-                @include gillLight;
 				top: 5px;
 				left: 5px;
 			}
@@ -175,11 +168,6 @@ div.comment
     &.toplevel {
 	    margin-top: 10px;
     }
-}
-
-.content-text {
-    color: $gray;
-    @include gillLight;
 }
 
 .comment-username
