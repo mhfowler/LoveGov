@@ -143,11 +143,12 @@
   }
 }
 
-@mixin trianglePointer($direction,$width,$color-inner,$color-border,$offset)
+@mixin trianglePointer($direction,$width,$color-inner,$color-border,$horizontal-pos)
 {
   width:$width * 2;
   height:$width * 2;
   position:absolute;
+  left:$horizontal-pos;
   $border-color-inner:'null';
   $border-color-border:'null';
 
@@ -156,28 +157,12 @@
     $border-color-border: $color-border transparent transparent transparent;
     $border-color-inner: $color-inner transparent transparent transparent;
     bottom:($width*-2);
-    left:$offset;
   }
-  @else if $direction == "up"
+  @else
   {
     $border-color-border: transparent transparent $color-border transparent;
     $border-color-inner: transparent transparent $color-inner transparent;
     top:($width*-2);
-    left:$offset;
-  }
-  @else if $direction == "left"
-  {
-    $border-color-border: transparent $color-border transparent transparent;
-    $border-color-inner: transparent $color-inner transparent transparent;
-    left:0;
-    top:($width*-2);
-  }
-  @else if $direction == "right"
-  {
-    $border-color-border: transparent transparent transparent $color-border;
-    $border-color-inner: transparent transparent transparent $color-inner;
-    right:($width*-2)+-1;
-    top:$offset;
   }
 
   div.border
@@ -194,15 +179,7 @@
     border-style: solid;
     border-width: $width;
     border-color:$border-color-inner;
-
-    @if $direction == "right"
-    {
-      right:1px;
-    }
-    @else if $direction == "up"
-    {
-      top:1px;
-    }
+    top:1px;
   }
 }
 
@@ -232,42 +209,42 @@
 
 @mixin h1
 {
-  font-family:$title-font;
+  font-family:$gill-light;
   color:$text-blue;
   font-size: 50px;
 }
 
 @mixin h2
 {
-  font-family:$title-font;
+  font-family:$gill-light;
   color:$red;
   font-size: 32px;
 }
 
 @mixin h3
 {
-  font-family:$title-font;
+  font-family:$gill-std;
   color: $text-blue;
   font-size: 26px;
 }
 
 @mixin h4
 {
-  font-family:$title-font;
+  font-family:$gill-std;
   color: $red;
   font-size: 22px;
 }
 
 @mixin h5
 {
-  font-family:$title-font;
+  font-family:$gill-std;
   color: $deep-gray;
   font-size: 18px;
 }
 
 @mixin h6
 {
-  font-family:$title-font;
+  font-family:$gill-std;
   color: $text-blue;
   font-size: 13px;
 }
@@ -277,7 +254,7 @@
 /* extra big numbers - percents etc */
   font-size:50px;
   font-weight:bold;
-  font-family: $body-fonts;
+  font-family: $body-fonts
 }
 
 @mixin modal {
@@ -296,7 +273,7 @@
 
 @mixin huge
 {
-  font-family: $title-font;
+  font-family: $gill-light;
   color: $black;
   font-size:24px;
   line-height:30px;
@@ -305,7 +282,7 @@
 
 @mixin really-big
 {
-  font-family: $title-font;
+  font-family: $gill-light;
   color: $deep-gray;
   font-size:20px;
   line-height:28px;
@@ -314,7 +291,7 @@
 
 @mixin big
 {
-  font-family: $title-font;
+  font-family: $gill-light;
   color: $text-blue;
   font-size:18px;
   line-height:26px;
@@ -325,20 +302,4 @@
   position: relative;
   top:50%;
   margin-top:-$h*1/2;
-}
-
-@mixin edit-link($side-length:16px)
-{
-    background-image: url('/static/images/edit-pencil.png');
-    background-size: $side-length $side-length;
-    width: $side-length;
-    height: $side-length;
-    cursor: pointer;
-    display: inline-block;
-
-    &:hover
-    {
-      background-image: url('/static/images/edit-pencil-blue.png');
-    }
-
 }
