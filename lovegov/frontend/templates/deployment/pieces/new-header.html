@@ -3,6 +3,7 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/header.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/notification.css" />
 
+
 <!-- Header -->
 <div id="top">
     <div class="top-logo">
@@ -119,13 +120,16 @@
                     <a href="/logout/">Logout</a><div class="img-holder-logout"></div>
                 </div>
                 <div class="clear-both"></div>
-                <script type="text/javascript">
-                    $('.user_menu_option').click(function()
-                    {
-                        $(this).children('a').click();
-                    });
-                </script>
             </div>
+
+            <script type="text/javascript">
+                $('.user_menu_option').click(function()
+                {
+                    var link = $(this).children('a');
+                    if (link.attr("href") == "/logout/") { window.location = "/logout/"; }
+                    else { link.click(); }
+                });
+            </script>
 
         </div>
 
