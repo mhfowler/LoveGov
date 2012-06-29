@@ -3232,8 +3232,10 @@ class Group(Content):
 
             if result > current:
                 to_return = num_buckets-1
-            elif i > 0:
+            elif i>0:
                 to_return = i-1
+            else:
+                to_return = 0
 
             return buckets_list[to_return]
 
