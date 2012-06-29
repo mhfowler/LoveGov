@@ -3277,7 +3277,7 @@ class Group(Content):
                 if comparison.result == 100:
                     identical += 1
 
-        return {'total':int(total), 'identical': identical, 'buckets':buckets}
+        return {'total':int(total), 'identical': identical, 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.
@@ -3396,6 +3396,35 @@ class Group(Content):
         if num != 1:
             return actions[start:start+num]
         return actions[start:]
+
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the number of petitions the whole group has created
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumPetitions(self):
+        num_petitions = 0
+        for member in self.members.all():
+            num_petitions += member.num_petitions
+        return num_petitions
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the number of articles the whole group has created
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumArticles(self):
+        num_articles = 0
+        for member in self.members.all():
+            num_articles += member.num_articles
+        return num_articles
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Returns the average number of questions the whole group has answered
+    #-------------------------------------------------------------------------------------------------------------------
+    def getAverageQuestions(self):
+        num_questions = 0
+        for member in self.members.all():
+            num_questions += member.getView().responses.count()
+        avg_questions = num_questions/self.members.count()
+        return int(round(avg_questions))
 
 
 #=======================================================================================================================

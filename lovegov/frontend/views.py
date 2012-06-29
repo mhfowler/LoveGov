@@ -254,7 +254,6 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
     userProfile = vals['viewer']
-    vals['all_users'] = UserProfile.objects.filter(confirmed=True).order_by("last_name")
     vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -388,6 +387,7 @@ def theFeed(request, vals={}):
 
     vals['feed_json'] = json.dumps(feed_json)
     vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
+    vals['num_pinterest'] = range(3)
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
@@ -634,14 +634,20 @@ def group(request, g_id=None, vals={}):
     vals['is_user_follow'] = False
     vals['is_user_confirmed'] = False
     vals['is_user_rejected'] = False
+    vals['is_visible'] = False
     group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
     if group_joined:
+        if group_joined.confirmed:
+            vals['is_visible'] = True
         if group_joined.requested:
             vals['is_user_follow'] = True
         if group_joined.confirmed:
             vals['is_user_confirmed'] = True
         if group_joined.rejected:
             vals['is_user_rejected'] = True
+
+    if not group.group_privacy == 'S':
+        vals['is_visible'] = True
 
     vals['is_user_admin'] = False
     admins = list( group.admins.all() )

@@ -956,10 +956,16 @@ def ajaxGetFeed(request, vals={}):
     vals['display']=feed_display
 
     if feed_display == 'L':
-        from lovegov.frontend.views import rightSideBar
-        rightSideBar(request, vals)
-    html = ajaxRender('deployment/center/feed/feed_helper.html', vals, request)
-    to_return = {'html':html, 'num':len(content)}
+        html = ajaxRender('deployment/center/feed/linear_helper.html', vals, request)
+        to_return = {'html':html, 'num':len(content)}
+    else:
+        cards = []
+        for x in items:
+            vals['item'] = x[0].downcast()
+            vals['my_vote'] = x[1]
+            card =  ajaxRender('deployment/center/feed/pinterest.html', vals, request)
+            cards.append(card)
+        to_return = {'cards':json.dumps(cards), 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
 
 def ajaxFeedHelper(content, user):

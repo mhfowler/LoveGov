@@ -1431,24 +1431,6 @@ function loadThread()
         }
     });
 
-    // comment text click function
-    $(".comment-textarea").click(function()
-    {
-        if ($(this).val() == "what's your opinion?")
-        {
-            $(this).val("");
-        }
-    });
-
-    $(".comment-textarea").bind("clickoutside", function(event)
-    {
-        if ($(this).val()=="")
-        {
-            $(this).val("what's your opinion?");
-        }
-        $(this).blur();
-    });
-
     $('span.collapse').click(function(e) {
         var close = '[-]';
         var open = '[+]';
@@ -1800,10 +1782,26 @@ function getMoreGroups()
     }
 }
 
+function bindProfileFollowersButton()
+{
+    $('#profile_followers').click( function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div#profile_followers_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#profile_followers_modal').hide();
+    });
+}
+
 function loadProfile()
 {
     unbindNotification();
     loadNotification();
+
+    bindProfileFollowersButton();
 
     $("#user_follow_button").click( function(event)
     {
@@ -2314,11 +2312,7 @@ function listToggleHelper(list_values, value) {
 function refreshFeed(num) {
 
     feed_metadata.feed_start = 0;
-    var i =0;
-    while (i < pinterest.length) {
-        pinterest[i] = 0;
-        i += 1;
-    }
+    current_pinterest_column = 0;
     getFeed(num);
 }
 
@@ -2365,21 +2359,26 @@ function getFeed(num)
         success: function(data) {
             var returned = eval('(' + data + ')');
 
-            if (feed_replace == true) {
-                $(".pinterest-wrapper").html(returned.html);
-            }
-            else {
-                $(".pinterest-wrapper").append(returned.html);
-            }
-
             feed_metadata.feed_start = feed_start + returned.num;
 
             if (feed_display == "P") {
-                $(".right-sidebar").hide();
-                pinterestRender($(".pinterest_unrendered"));
+                if (feed_replace == true) {
+                    $(".pinterest_column").html("");
+                }
+                var cards = $.parseJSON(returned.cards);
+                newPinterestRender(cards);
+                $(".linear-wrapper").hide();
+                $(".pinterest-wrapper").show();
             }
             else {
-                $(".right-sidebar").show();
+                if (feed_replace == true) {
+                    $(".linear-wrapper").html(returned.html);
+                }
+                else {
+                    $(".linear-wrapper").append(returned.html);
+                }
+                $(".pinterest-wrapper").hide();
+                $(".linear-wrapper").show();
             }
 
             heartButtons();
@@ -2610,40 +2609,20 @@ function setRanking(value) {
     feed_metadata.ranking = value;
 }
 
+var current_pinterest_column = 0;
+function newPinterestRender(cards) {
 
-var pinterest = [];
-var current_col=0;
-var total_cols=3;
-var pinterest_width=(1000/total_cols)+8;
-/* returns a list of pinterest cards, sorted by rank */
-function pinterestRender(cards) {
+    var num_columns = $(".pinterest_column").size();
 
-    // if pinterest is empty, initialize it with as many elements as there are columns
-    if (pinterest.length == 0) {
-        // initialize variables
-        var i = 0;
-        while (i < total_cols) {
-            pinterest.push(0);
-            i += 1;
+    $.each(cards, function(index, element) {
+        if (current_pinterest_column == num_columns) {
+            current_pinterest_column = 0;
         }
-    }
-
-    cards.each(function(index) {
-        if (current_col == total_cols) {
-            current_col = 0;
-        }
-        var top = pinterest[current_col];
-        var left = pinterest_width*current_col;
-        var height = $(this).height() + 20;
-        $(this).css("position", 'absolute');
-        $(this).css("left", left);
-        $(this).css({"top": top}, 1400);
-        pinterest[current_col] = (top + height);
-        current_col += 1;
-        $(this).removeClass("pinterest_unrendered");
+        var bucket = $(".pinterest_column[data-column=" + current_pinterest_column + "]");
+        bucket.append(element);
+        current_pinterest_column += 1;
     });
 }
-
 
 var scrollLoadLockout=false;
 function scrollFeed() {
@@ -3404,6 +3383,10 @@ function refreshHistogramData(data) {
     $.map(data.buckets, function(item, key) {
 
         var bar = $(".bar[data-bucket=" + key + "]");
+
+        bar.children('.red_bar').css("background-color",data.color);
+        $('.histogram-footer').css("background-color",data.color);
+        $('.histogram-wrapper').css("border-color",data.color);
 
         var num = bar.data('num') + item.num;
         bar.data('num', num);

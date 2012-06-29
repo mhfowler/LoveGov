@@ -7,7 +7,7 @@
         {% endthumbnail %}
     {% elif item.type == 'G' %}
         {% thumbnail item.getImage "250x150" as im %}
-            <img src="{{ im.url }}"/>
+            <img src="{{ im.url }}" data-height="{{ im.height }}"/>
         {% endthumbnail %}
     {% endif %}
 </div>

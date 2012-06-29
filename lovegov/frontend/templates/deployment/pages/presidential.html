@@ -4,9 +4,6 @@
 
     <!-- Begin Presidential -->
 
-    <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="/static/css/deployment/presidential.css" />
-
     <div id="presidential">
         {% for candidate in comparison_list %}
             {% with firstname=candidate.0 fullname=candidate.1 img=candidate.2%}

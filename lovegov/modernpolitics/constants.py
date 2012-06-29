@@ -148,7 +148,17 @@ MAIN_TOPICS_COLORS = {'Economy':{'default':'#92B76C','light':'#CCDDC0'},
                      'National Security':{'default':'#EA947D','light':'#FFCBC0'},
                      'Environment':{'default':'#9797C6','light':'#D4D3EF'},
                      'Energy':{'default':'#F9D180','light':'#FFF0C5'},
-                     'Health Care':{'default':'#EA7D95','light':'#FBCCD6'}}
+                     'Health Care':{'default':'#EA7D95','light':'#FBCCD6'},
+                     'All':{'default':'#EF503B','light':'#FC8A81'}}
+
+MAIN_TOPICS_COLORS_ALIAS = {'economy':{'default':'#92B76C','light':'#CCDDC0'},
+                      'education':{'default':'#9DC5C9','light':'#D3EBED'},
+                      'socialissues':{'default':'#639E9B','light':'#A3C6C4'},
+                      'nationalsecurity':{'default':'#EA947D','light':'#FFCBC0'},
+                      'environment':{'default':'#9797C6','light':'#D4D3EF'},
+                      'energy':{'default':'#F9D180','light':'#FFF0C5'},
+                      'healthcare':{'default':'#EA7D95','light':'#FBCCD6'},
+                      'all':{'default':'#EF503B','light':'#FC8A81'}}
 
 MAIN_TOPICS_CLOCKWISE_ORDER = {'Economy':0,
                                'Education':1,
