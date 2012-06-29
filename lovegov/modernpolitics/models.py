@@ -3216,55 +3216,45 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
-    def getComparisonHistogram(self, user, topic_alias=None, resolution=10):
+    def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
 
         from lovegov.modernpolitics.compare import getUserUserComparison
+
         def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
             i = 0
-            current=buckets_list[i]
-            while result > current:
-                i += 1
+            current=0
+            num_buckets = len(buckets_list)
+            while current < result and i < (num_buckets):
                 current = buckets_list[i]
+                i += 1
             return current
 
-        bucket_size = 100/resolution                    # initalize bucket list
-        bucket_list = []
-        for i in range(0, resolution):
-            bucket_list.append(i*bucket_size)
-
-        histogram = {}                              # initialize empty histogram dictionary
+        # ACTUAL METHOD
+        buckets = {}                              # initialize empty histogram dictionary
         for bucket in bucket_list:
-            histogram[bucket] = {'num': 0}
+            buckets[bucket] = {'num':0}
 
-        members = self.members.all()
+        if num == -1:
+            members = self.members.all()[start:]
+        else:
+            members = self.members.all()[start:start+num]
 
         topic = Topic.lg.get_or_none(alias=topic_alias)
+        total = float(len(members))
+        identical = 0
 
         for x in members:
             comparison = getUserUserComparison(user, x)
-            if topic and topic_alias != 'general':
+            if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
                 result = comparison.result
                 bucket = getBucket(result, bucket_list)
-                histogram[bucket]['num'] += 1
+                buckets[bucket]['num'] += 1
+                if comparison.result == 100:
+                    identical += 1
 
-        total = float(len(members))
-        for k in histogram:
-            tuple = histogram[k]
-            num = tuple['num']
-            if total:
-                percent = (num/total)*100
-            else:
-                percent = 0
-            tuple['percent'] = percent
-            if not num:
-                pix = 5
-            else:
-                pix = percent*5
-            tuple['pix'] = int(pix)
-
-        return histogram
+        return {'total':int(total), 'identical': identical, 'buckets':buckets}
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.

@@ -2115,6 +2115,16 @@ function getMoreGroupMembers()
     }
 }
 
+// bind news div
+function bindNewDivs()
+{
+    $('.group-member-div').hover
+        (
+            function(){ $(this).css("background-color","#EBEBEB") },
+            function(){ $(this).css("background-color","#FFFFFF") }
+        );
+}
+
 function loadGroup()
 {
     var loadUsersLockout = false;
@@ -2152,30 +2162,6 @@ function loadGroup()
                     loadAjaxifyAnchors();
                     bindNewDivs();
                     loadUsersLockout = false;
-                },
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    $('body').html(jqXHR.responseText);
-                }
-            });
-        }
-    }
-
-    // load new histogram data
-    function getHistogram() {
-        var histogram_topic = $('#histogram-topic').val();
-        var group_id = $('#group-id').val();
-        if (!loadHistoLockout)
-        {
-            loadHistoLockout = true;
-            ajaxPost({
-                data: {'action':'loadHistogram','group_id':group_id,
-                    'histogram_topic':histogram_topic},
-                success: function(data)
-                {
-                    var returned = eval('(' + data + ')');
-                    $(".histogram-bars").html(returned.html);
-                    loadHistoLockout = false;
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -2230,16 +2216,6 @@ function loadGroup()
         getHistogram();
     });
 
-    function bindNewDivs()
-    {
-        $('.group-member-div').hover
-            (
-                function(){ $(this).css("background-color","#EBEBEB") },
-                function(){ $(this).css("background-color","#FFFFFF") }
-            );
-
-    }
-
     $('#group_more_actions').click(
         function(event)
         {
@@ -2267,17 +2243,12 @@ function loadGroup()
         }
     );
 
-    /*
-     $(window).scroll(function(event)
-     {
-     if  ($(window).scrollTop() == $(document).height() - $(window).height()) { loadMoreUsers(event); }
-     });
-     */
-
     $('#group-see-more-users').click(function(event)
     {
         loadMoreUsers(event, false);
     });
+
+    loadHistogramMini();
 
     bindNewDivs();
 
@@ -3389,4 +3360,97 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Histogram
+ *
+ **********************************************************************************************************************/
+var histogram = new Object();
+
+function refreshHistogramData(data) {
+
+    histogram.total += data.total;
+    histogram.identical += data.identical;
+
+    $.map(data.buckets, function(item, key) {
+
+        var bar = $(".bar[data-bucket=" + key + "]");
+
+        var num = bar.data('num') + item.num;
+        bar.data('num', num);
+
+        if (histogram.total != 0) {
+            var percent = (num / histogram.total)*100;
+        }
+        else {
+            var percent = 0;
+        }
+        bar.data("percent", percent);
+    });
+}
+
+function renderHistogramMini() {
+
+    $(".bar").each(function(index, element) {
+        var percent = $(this).data("percent");
+        var total_height = 200;
+        var zero_height = 5;
+        var height = zero_height+((total_height-zero_height)*(percent/100));
+        $(this).find(".white_bar").css("height", total_height-height);
+        $(this).find(".red_bar").css("height", height);
+
+    });
+
+    $(".total_num").text(histogram.total);
+    $(".identical_num").text(histogram.identical);
+}
+
+function loadHistogramMini() {
+
+    histogram.total = 0;
+    histogram.identical = 0;
+    histogram.resolution = $(".mini-histogram").data('resolution');
+    histogram.g_id = $(".mini-histogram").data('g_id');
+    updateHistogram();
+
+    $('.update_histogram').bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        updateHistogram();
+    });
+
+}
+
+function updateHistogram() {
+    getHistogram(histogram.total, 1, 'all', histogram.g_id, histogram.resolution);
+}
+
+function getHistogram(start, num, topic, g_id, resolution) {
+    ajaxPost({
+            data: {
+                'action':'getHistogram',
+                'start': start,
+                'num': num,
+                'topic':topic,
+                'g_id': g_id,
+                'resolution': resolution
+            },
+            success: function(data)
+            {
+                var returned =  eval('(' + data + ')');
+                refreshHistogramData(returned);
+                renderHistogramMini();
+
+                if (returned.total != 0) {
+                    updateHistogram();
+                }
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
 }

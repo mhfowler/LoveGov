@@ -28,7 +28,7 @@ def test3(request, vals={}):
     vals['histogram_json'] = json.dumps(histogram)
 
     buckets = []
-    for bucket in histogram:
+    for bucket in histogram['buckets']:
         buckets.append(bucket)
     buckets.sort()
     vals['buckets'] = buckets

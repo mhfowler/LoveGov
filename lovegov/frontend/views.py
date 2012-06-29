@@ -598,9 +598,10 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # Histogram Things
-    vals['histogram'] = group.getComparisonHistogram(viewer)
-    vals['histogram_resolution'] = HISTOGRAM_RESOLUTION
+    # histogram
+    resolution = 5
+    vals['histogram_resolution'] = resolution
+    vals['buckets'] = getBucketList(resolution)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -641,9 +642,6 @@ def group(request, g_id=None, vals={}):
     html = ajaxRender('deployment/center/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
-
-
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link

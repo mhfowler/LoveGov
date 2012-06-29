@@ -1349,6 +1349,22 @@ def flag(request,vals={}):
             send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
     return HttpResponse("Comment flagged successfully.")
 
+#-----------------------------------------------------------------------------------------------------------------------
+# get histogram
+#-----------------------------------------------------------------------------------------------------------------------
+def getHistogram(request, vals={}):
+
+    group = Group.objects.get(id=request.POST['g_id'])
+    resolution = int(request.POST['resolution'])
+    start = int(request.POST['start'])
+    num = int(request.POST['num'])
+    topic_alias = request.POST['topic']
+    viewer = vals['viewer']
+
+    bucket_list = getBucketList(resolution=resolution)
+    histogram = group.getComparisonHistogram(viewer, bucket_list, start=start, num=num, topic_alias=topic_alias)
+
+    return HttpResponse(json.dumps(histogram))
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1406,7 +1422,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'matchSection': matchSection,
             'shareContent': shareContent,
             'blogAction': blogAction,
-            'flag': flag
+            'flag': flag,
+            'getHistogram': getHistogram
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

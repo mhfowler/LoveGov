@@ -287,8 +287,75 @@ div.group-histogram-container
   @include float-left;
   width: 300px;
   height: 300px;
-  background-color: $gray;
-  @include rounded;
+  @include rounded();
+  border-width: 3px;
+  border-color: $gray;
+  border-style: solid;
+  text-align:center;
+  z-index:0;
+
+  .histogram-body {
+    height:265px;
+    width:300px;
+
+    .histogram-meta-box {
+      height:30px;
+      width:200px;
+      overflow:hidden;
+
+      .identical_count {
+        display:inline;
+        margin: 0 0 0 5px;
+      }
+
+      .total_count {
+        display:inline;
+        margin: 0 0 0 5px;
+      }
+
+      .update_histogram {
+        display:inline;
+        margin: 0 0 0 5px;
+      }
+
+    }
+
+    .histogram-bars {
+
+      margin: 0 0 0 9px;
+
+      .bar {
+        float:left;
+        margin-left:25px;
+      }
+
+      .white_bar {
+        background-color:white;
+      }
+
+      .red_bar {
+        background-color:red;
+        width:25px;
+      }
+
+      .label {
+        margin-top: 5px;
+      }
+    }
+
+  }
+
+  div.histogram-title
+  {
+    @include rounded-bottom(10px);
+    position:relative;
+    background-color: $gray;
+    padding-top:10px;
+    padding-bottom:2px;
+    @include h5;
+    color: white;
+  }
+
 }
 
 div.requests-modal
