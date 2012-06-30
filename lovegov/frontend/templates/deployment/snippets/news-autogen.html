@@ -1,11 +1,6 @@
-{% load thumbnail %}
-
 <div id="news-link-generation-image" class="news-link-generation-div">
     <div>
-        {% thumbnail imglink.0.path "250" crop="center" as img %}
-            <img class="avatar-image" src="{{ img.url }}"/>
-        {% endthumbnail %}
-        <!--<img id="news-link-image-src" src="{{ imglink.0.path }}">-->
+        <img id="news-link-image-src" src="{{ imglink.0.path }}">
     </div>
 </div>
 <div id="news-link-generation-text-container" class="news-link-generation-div">
