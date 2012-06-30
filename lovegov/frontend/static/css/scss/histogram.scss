@@ -78,7 +78,7 @@
       width:980px;
       height:50px;
 
-      .histogram-title {
+      p {
         float:left;
         @include really-big();
         @include fontSize(30px);
@@ -94,6 +94,12 @@
         }
       }
 
+      p.breakdown {
+        display:block;
+        margin-left: 160px;
+        text-align:center;
+      }
+
       .histogram-topic {
         float:right;
         @include really-big();
@@ -106,42 +112,54 @@
 
   }
 
+  div.members-header {
+    border-top: 1px solid $gray;
+    margin: 25px 0 0 0;
+    width:980px;
+
+    div.members-avatars-header {
+      padding-top:10px;
+      padding-bottom:4px;
+      float:left;
+      width:800px;
+      border-right:1px solid $gray;
+    }
+    div.identical-avatars-header {
+      padding-top:10px;
+      float:left;
+      margin:0 0 0 0;
+
+      h3.identical {
+        margin-left:25px;
+      }
+    }
+  }
+
   div.group-members-wrapper {
-    margin: 10px 0 0 0;
+    margin: 0 0 0 0;
     width: 980px;
-    border-bottom: 1px solid $gray;
+    border-top: 1px solid $gray;
     text-align:center;
 
     div.members-avatars {
-
-      width:800px;
       float:left;
-      border-right:1px solid $gray;
+      width:800px;
       margin-bottom:20px;
-
-      a.histogram-avatar {
-        float:left;
-        margin: 20px 0 0 30px;
-      }
     }
 
-    div.identical-members {
+    div.identical-avatars {
+      border-left:1px solid $gray;
       margin:0 0 0 0;
       float:left;
       width:170px;
       text-align:center;
-
-      div.identical {
-          @include titleFont();
-          @include fontSize(20px);
-          margin: 5px 0 0 0;
-      }
-
-      a.get_more_members {
-        float:left;
-        margin: 35px 0 0 30px;
-      }
     }
+
+    a.histogram-avatar {
+      float:left;
+      margin: 20px 0 0 30px;
+    }
+
   }
 }
 

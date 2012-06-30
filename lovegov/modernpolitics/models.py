@@ -3269,6 +3269,7 @@ class Group(Content):
         topic = Topic.lg.get_or_none(alias=topic_alias)
         total = 0
         identical = 0
+        identical_uids = []
 
         for x in members:
             comparison = getUserUserComparison(user, x)
@@ -3282,8 +3283,10 @@ class Group(Content):
                 buckets[bucket]['u_ids'].append(x.id)
                 if comparison.result == 100:
                     identical += 1
+                    identical_uids.append(x.id)
 
-        return {'total':int(total), 'identical': identical, 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
+        return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
+                'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.

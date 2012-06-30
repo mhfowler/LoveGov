@@ -604,6 +604,7 @@ def group(request, g_id=None, vals={}):
         bucket_uids[x] = []
     histogram_metadata = {'total':0,
                           'identical':0,
+                          'identical_uids':[],
                           'resolution':resolution,
                           'g_id':group.id,
                           'which':'mini',
@@ -673,6 +674,7 @@ def histogramDetail(request, g_id, vals={}):
         bucket_uids[x] = []
     histogram_metadata = {'total':0,
                           'identical':0,
+                          'identical_uids':[],
                           'resolution':resolution,
                           'g_id':group.id,
                           'which':'full',
