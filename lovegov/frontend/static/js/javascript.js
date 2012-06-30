@@ -3210,7 +3210,7 @@ function postNews()
     var summary = $('#news-input-summary').val();
     var link = $('#news-input-link').val();
     var description = $('#news-link-generation-description').text();
-    var screenshot = $('#news-link-image-src').attr("src");
+    var screenshot = $('.news_link_selected').attr("src");
     var scale = $('input:radio.news_scale:checked').val();
     var topic = $('input:radio[name=topics]:checked').val();
     ajaxPost({
@@ -3288,12 +3288,22 @@ function loadCreate()
     var delay = 750;
     var isLoading = false;
     var currentURL;
-    var currentLink = 0;
+    var currentLink = 1;
+    var image_count = 0;
     var returned;
 
     $('#news-input-link').bind('keyup',function()
     {
         var text = $(this).val();
+
+        function selectImageToggle()
+        {
+            $('#cycle-img-span').text(currentLink + " / " + image_count);
+            $('.news_link_image').removeClass("news_link_selected").hide();
+            $('.news_link_image').eq(currentLink-1).addClass("news_link_selected").show();
+        }
+
+
         if (timeout)
         {
             clearTimeout(timeout);
@@ -3316,19 +3326,19 @@ function loadCreate()
                         {
                             returned = eval('(' + data + ')');
                             $('#news-link-generation-wrapper').html(returned.html);
+                            image_count = $('.news_link_image_container').children().length;
                             $('#cycle-img-left').bind('click',function()
                             {
-                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
+                                if (currentLink-1 < 1) { currentLink = image_count; }
                                 else { currentLink--; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                selectImageToggle();
+
                             });
                             $('#cycle-img-right').bind('click',function()
                             {
-                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
+                                if (currentLink+1 > image_count) { currentLink = 1; }
                                 else { currentLink++; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                selectImageToggle();
                             });
                             currentURL = text;
                         },

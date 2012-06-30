@@ -532,6 +532,7 @@ div.pinterest_card {
 
       // below header
       div.pinterest-image {
+        text-align:center;
         margin: 15px 0px 0px 20px;
 
         div.img-wrapper {
@@ -575,16 +576,15 @@ div.pinterest_card {
 
       div.petition_bar {
 
-        margin: 20px 0 0 20px;
+        margin: 20px 20px 0 20px;
 
         div.bar-wrapper {
-          width:270px;
           height:14px;
           overflow:hidden;
           border: 2px solid $gray;
           div.red_bar {
             height:14px;
-            background-color:$gray;
+            background-color:$red;
           }
         }
         div.goal-statement {
@@ -623,6 +623,169 @@ div.feed-topic-icon-wrapper {
   float:right;
   margin-left:10px;
   margin-bottom:10px;
+}
+
+
+div.linear-wrapper {
+  width:750px;
+
+  div.linear {
+    width:750px;
+    height:225px;
+    overflow:hidden;
+    border-bottom: 1px solid $light-gray;
+    margin-bottom:40px;
+
+    div.linear-left {
+      width:220px;
+      overflow:hidden;
+      float:left;
+
+      div.linear-picture {
+        display:block;
+        height:170px;
+        overflow:hidden;
+
+        div.pinterest-image {
+          width:220px;
+        }
+
+        div.header-topic {
+          position:absolute;
+          top:10px;
+          left:20px;
+        }
+
+      }
+
+      div.pinterest-footer {
+        display:block;
+        margin-top:0px;
+        width:218px;
+        height:40px;
+        overflow:hidden;
+        @extend .box;
+
+        div.hearts {
+          width:60px;
+
+          div.hearts-wrapper {
+            margin:0px;
+
+            div.heart {
+              margin: 10px 0 0 0;
+              width:20px;
+              height:20px;
+            }
+
+            span.status {
+              margin: 0px 0 4px 0;
+              @include fontSize(14px);
+            }
+
+          }
+
+        }
+
+        div.comments {
+          width:80px;
+          margin:0px;
+
+          a.comments-wrapper {
+            margin: 7px 0 0 5px;
+            width:70px;
+            height:25px;
+
+            div.text-wrapper {
+              @include fontSize(10px);
+
+              div.comments-text {
+                display:block;
+                margin: 0px 0 3px 4px;
+              }
+
+              div.comments-num {
+                display:block;
+                margin: 5px 0 0 4px;
+              }
+            }
+          }
+        }
+
+        div.share
+        {
+          width:70px;
+          margin:0px;
+
+          a.share_button {
+            position:relative;
+            top:14px;
+            margin:10px 0 3px 5px;
+            width:30px;
+            height:20px;
+            @include titleFont;
+            @include fontSize(14px);
+          }
+          a.share_button:hover {
+            margin-bottom:2px;
+            margin-left:4px;
+          }
+        }
+      }
+    }
+
+    div.linear-right {
+      float:left;
+      margin: 0px 0px 0px 30px;
+      width:500px;
+      overflow:hidden;
+
+      div.pinterest-title {
+        height:40px;
+      }
+
+      div.pinterest-summary {
+        @include really-big();
+        @include fontSize(14px);
+        height:120px;
+        padding:0px;
+        margin: 0 0 0 0;
+        overflow:hidden;
+
+        p.summary-text {
+          margin:0px;
+        }
+      }
+
+      div.pinterest-top-comment {
+        margin-top:10px;
+      }
+
+      div.avatar {
+        margin-top:10px;
+        height:40px;
+        overflow:hidden;
+
+        div.prof-image {
+          float:left;
+          height:40px;
+        }
+
+        div.header-middle {
+          margin-top:0px;
+          height:40px;
+          p.submitted {
+            margin-bottom:0px;
+          }
+
+          div.user-name {
+            margin: 0px;
+            @include fontSize(14px);
+          }
+        }
+      }
+    }
+  }
 }
 
 
@@ -747,7 +910,6 @@ div.pinterest-footer {
     float:left;
     width:130px;
     height:50px;
-    border-right: 1px solid $light-gray;
 
     a.comments-wrapper {
       display:block;
@@ -800,7 +962,7 @@ div.pinterest-footer {
   }
 
   div.share:hover {
-    background-color:$gray;
+    background-color:$red;
     cursor:pointer;
     p.share-text {
       color:white;

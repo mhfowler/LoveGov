@@ -28,10 +28,9 @@ from googlemaps import GoogleMaps
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
-def getLinkInfo(request, vals={}):
+def getLinkInfo(request, vals={}, html="",URL=""):
     vals = {}
     url = str(request.POST['remote_url'])
-    print url
     url.strip()
     # url may not be well formed so try variations until one works
     for prefix in PREFIX_ITERATIONS:
@@ -39,18 +38,14 @@ def getLinkInfo(request, vals={}):
             URL = prefix + url
             html = urllib2.urlopen(URL,data=None).fp.read()
             if html: break
-        except ValueError:
+        except:
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        try:
-            vals['title'] = soup.title.string
-        except:
-            vals['title'] = "No Title"
-        try:
-            vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
-        except:
-            vals['description'] = "No Description"
+        try: vals['title'] = soup.title.string
+        except: vals['title'] = "No Title"
+        try:  vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
+        except: vals['description'] = "No Description"
         image_refs = soup.findAll("img")
         list = []
         first_image = None
@@ -72,21 +67,21 @@ def getLinkInfo(request, vals={}):
 
         try:
             for imageobj in list:
-                imageobj['path'] = resizeImage(imageobj['path'])
+                imageobj['path'] = open(imageobj['path'],'r+')
         except:
             pass
 
         if len(list) == 0 and (first_image is not None and first_image is not False):
-            first_image['path'] = resizeImage(first_image['path'])
+            first_image['path'] =open(first_image['path'],'r+')
             list.append(first_image)
 
         if len(list) == 0:
-            list.append({'path':"/static/images/top-logo-default.png"})
+            list.append({'path':open('/static/dev/images/top-logo-default.png','r+')})
 
         vals['imglink'] = list
 
         html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
-        return HttpResponse(json.dumps({'html':html,'imglink':list}))
+        return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
@@ -1390,7 +1385,6 @@ def getHistogramMembers(request, vals={}):
     num = int(request.POST['num'])
     u_ids = json.loads(request.POST['u_ids'])
     bucket = int(request.POST['bucket'])
-    viewer = vals['viewer']
 
     if bucket != -1:
         members = UserProfile.objects.filter(id__in=u_ids).order_by('id')

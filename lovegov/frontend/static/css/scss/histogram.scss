@@ -53,11 +53,18 @@
           }
 
           .label {
+            width:30px;
             margin-top:10px;
             text-align:center;
+            cursor:pointer;
+            padding:1px;
+            @include rounded(7px);
           }
           .label.clicked {
-            color:$blue;
+            background-color:$light-gray;
+          }
+          .label:hover {
+            background-color:$light-gray;
           }
         }
 
@@ -77,6 +84,14 @@
         @include fontSize(30px);
         color:white;
         margin: 15px 0 0 20px;
+
+        a {
+          font-style:italic;
+          color: white;
+        }
+        a:hover {
+          color: $black;
+        }
       }
 
       .histogram-topic {
@@ -94,18 +109,39 @@
   div.group-members-wrapper {
     margin: 10px 0 0 0;
     width: 980px;
-    height:500px;
+    border-bottom: 1px solid $gray;
+    text-align:center;
 
+    div.members-avatars {
 
-    div.histogram-avatar {
+      width:800px;
       float:left;
-      margin: 20px 0 0 30px;
+      border-right:1px solid $gray;
+      margin-bottom:20px;
+
+      a.histogram-avatar {
+        float:left;
+        margin: 20px 0 0 30px;
+      }
     }
 
-    a.get_more_members {
+    div.identical-members {
+      margin:0 0 0 0;
       float:left;
-      margin: 35px 0 0 30px;
+      width:170px;
+      text-align:center;
+
+      div.identical {
+          @include titleFont();
+          @include fontSize(20px);
+          margin: 5px 0 0 0;
+      }
+
+      a.get_more_members {
+        float:left;
+        margin: 35px 0 0 30px;
+      }
     }
   }
-
 }
+

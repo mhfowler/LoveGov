@@ -59,11 +59,21 @@ var QAWebHover = Class.extend
             var self = this;
             if (self.node != null && !self.node.clicked)
             {
+                if ($.trim( $('#answers-ul').html() ).length)
+                {
+                    var data = self._arrayToDictionary(".qaweb-answerform");
+                    self.node.user_explanation = data['explanation'];
+                    if (data.hasOwnProperty('choice'))
+                    {
+                        ajaxPost({data:data,success:function(){alert("success");},error:null});
+                    }
+                }
                 self._toggleButtons('hide');
                 self.node = null;
-                $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
+                $('#value_statement').hide();
                 $('#question-weight-div').hide();
+                $(self.idDiv).fadeOut(10);
             }
         },
         showHover: function(node)
@@ -87,6 +97,7 @@ var QAWebHover = Class.extend
         {
             $('#question-weight-div').show();
             this._printAnswers();
+            $('#value_statement').show();
             this._bindAnswers();
             this._setPosition();
         },
@@ -154,22 +165,18 @@ var QAWebHover = Class.extend
             $('#dialogue-pointer img').attr('src',color['pointerImage'].src);
             $('.dialogue-buttons').css('backgroundColor',color['default']);
             $('.dialogue-buttons').hover
-                (
-                    function()
-                    {
-                        $(this).css('backgroundColor',color['hover']);
-                    },
-                    function()
-                    {
-                        $(this).css('backgroundColor',color['default']);
-                    }
-                );
-
-            /*
+            (
+                function()
+                {
+                    $(this).css('backgroundColor',color['hover']);
+                },
+                function()
+                {
+                    $(this).css('backgroundColor',color['default']);
+                }
+            );
              $('#user_explanation').css('outline-color',color['hover']);
              $('#user_explanation').css('border','2px solid ' + color['hover']);
-             */
-
         },
 
         _toggleButtons: function(switchString)
@@ -217,38 +224,27 @@ var QAWebHover = Class.extend
             var self = this;
             var color = this.node.color;
             $('#answers-ul p').hover
-                (
-                    function()
-                    {
-                        if (!$(this).hasClass('answer-selected')) { $(this).css({'background-color':'#EBEBEB',color:'#000000'}); }
-                    },
-                    function()
-                    {
-                        if (!$(this).hasClass('answer-selected')) { $(this).css({'background-color':'#FFFFFF',color:'#959595'}); }
-                    }
-                );
-
-            $('#question-weight-slider').bind("slide", function(event, ui)
-            {
-                var value = parseInt(ui.value);
-                for (var i=0; i<self.node.answers.length; i++)
+            (
+                function()
                 {
-                    if (self.node.answers[i].user_answer)
+                    if (!$(this).hasClass('answer-selected')) { $(this).css({'background-color':'#EBEBEB',color:'#000000'}); }
+                },
+                function()
+                {
+                    if (!$(this).hasClass('answer-selected')) { $(this).css({'background-color':'#FFFFFF',color:'#959595'}); }
+                }
+            );
+
+            $('#question-weight-slider').unbind("slidechange");
+            $('#question-weight-slider').bind("slidechange", function(event, ui)
+            {
+                if (event.originalEvent)
+                {
+                    var value = parseInt(ui.value);
+                    self._moveSlider(value);
+                    for (var i=0; i<self.node.answers.length; i++)
                     {
-                        self.node.answers[i].weight = value;
-                        self._moveSlider(value);
-                        var data = self._arrayToDictionary(".qaweb-answerform");
-                        if (data.hasOwnProperty('choice'))
-                        {
-                        $.ajax
-                            ({
-                                type: 'POST',
-                                url:'/answer/',
-                                data: data,
-                                success: function(data) { },
-                                error: function(jqXHR, textStatus, errorThrown) { }
-                            });
-                        }
+                        if (self.node.answers[i].user_answer) { self.node.answers[i].weight = value; }
                     }
                 }
             });
@@ -257,14 +253,14 @@ var QAWebHover = Class.extend
             {
                 if ($(this).children('input').attr("checked")) { var currentAnswer = true; }
                 $('#answers-ul p').children('input').attr('checked',false);
-                if (!currentAnswer){ $(this).children('input').attr("checked","checked"); }
-                var data = self._arrayToDictionary(".qaweb-answerform");
-                if (data.hasOwnProperty('choice'))
+                $('#answers-ul p').removeClass("answer-selected").css("background-color",'white');
+                if (!currentAnswer)
                 {
+                    $(this).children('input').attr("checked","checked");
+                    $(this).addClass('answer-selected').css("background-color",'#EBEBEB');
+                    var data = self._arrayToDictionary(".qaweb-answerform");
                     self.node.HTML_selectRadioAnswer(data['choice']);
                     self.node.onAnswer();
-                    $('#answer-div').hide();
-                    $('#dialogue-loading').show();
                 }
                 else
                 {
@@ -275,6 +271,9 @@ var QAWebHover = Class.extend
                         self.node.answers[j].user_answer = false;
                     }
                 }
+
+
+                /*
                 $.ajax
                     ({
                         type: 'POST',
@@ -282,6 +281,7 @@ var QAWebHover = Class.extend
                         data: data,
                         success: function(data)
                         {
+
                             if (!currentAnswer)
                             {
                                 // handle drawing on canvas and repositioning
@@ -321,7 +321,7 @@ var QAWebHover = Class.extend
                         {
                             alert("failure");
                         }
-                    });
+                    });*/
 
             });
         },
@@ -335,16 +335,20 @@ var QAWebHover = Class.extend
                 toReturn[objectArray[i].name] = objectArray[i].value;
             }
             toReturn['explanation'] = $('#user_explanation').val();
+            toReturn['action'] = "answer";
             return toReturn;
         },
 
         _clickQuestion: function(node)
         {
-            node.clicked = true;
-            node.idImgObj.attr("src",node.getImage('answering'));
-            this._toggleButtons('show');
-            this.showHover(node);
-            this.showAnswers(node);
+            if (node)
+            {
+                node.clicked = true;
+                node.idImgObj.attr("src",node.getImage('answering'));
+                this._toggleButtons('show');
+                this.showHover(node);
+                this.showAnswers(node);
+            }
         },
 
         /**
@@ -517,21 +521,21 @@ var Node = Class.extend
                     var xpos2 = (Math.cos(angle2) * newskew)+offsetxx;
                     var ypos2 = (Math.sin(angle2) * newskew)+offsetyy;
                     var test = new Question
-                        ({
-                            xpos:xpos2,
-                            ypos:ypos2,
-                            angle:angle2,
-                            skew:newskew,
-                            ring:this.ring+1,
-                            imgref:questionSwitch(this.order),
-                            parents:this,
-                            color:this.color,
-                            childrenData:this.childrenData[j]['childrenData'],
-                            text:this.childrenData[j]['text'],
-                            answers:this.childrenData[j]['answers'],
-                            id:this.childrenData[j]['id'],
-                            user_explanation:this.childrenData[j]['user_explanation']
-                        });
+                    ({
+                        xpos:xpos2,
+                        ypos:ypos2,
+                        angle:angle2,
+                        skew:newskew,
+                        ring:this.ring+1,
+                        imgref:questionSwitch(this.order),
+                        parents:this,
+                        color:this.color,
+                        childrenData:this.childrenData[j]['childrenData'],
+                        text:this.childrenData[j]['text'],
+                        answers:this.childrenData[j]['answers'],
+                        id:this.childrenData[j]['id'],
+                        user_explanation:this.childrenData[j]['user_explanation']
+                    });
                     test.toDisplay();
                     this.children.push(test);
                     test._init_hide();
@@ -1336,15 +1340,3 @@ function createWebCircle(x, y, radius, percentage, stroke, fill)
         });
 }
 
-
-function arrayToDictionary(selector)
-{
-    var objectArray = $(selector).serializeArray();
-    var toReturn = {};
-    for (var i=0; i<objectArray.length; i++)
-    {
-        toReturn[objectArray[i].name] = objectArray[i].value;
-    }
-    toReturn['explanation'] = $('#user_explanation').val();
-    return toReturn;
-}
