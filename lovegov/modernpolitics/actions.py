@@ -31,7 +31,6 @@ PREFIX_ITERATIONS = ["","http://","http://www."]
 def getLinkInfo(request, vals={}):
     vals = {}
     url = str(request.POST['remote_url'])
-    print url
     url.strip()
     # url may not be well formed so try variations until one works
     for prefix in PREFIX_ITERATIONS:
@@ -43,14 +42,10 @@ def getLinkInfo(request, vals={}):
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        try:
-            vals['title'] = soup.title.string
-        except:
-            vals['title'] = "No Title"
-        try:
-            vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
-        except:
-            vals['description'] = "No Description"
+        try: vals['title'] = soup.title.string
+        except: vals['title'] = "No Title"
+        try:  vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
+        except: vals['description'] = "No Description"
         image_refs = soup.findAll("img")
         list = []
         first_image = None
@@ -70,14 +65,16 @@ def getLinkInfo(request, vals={}):
 
         list.sort(key=lambda img:img['size'],reverse=True)
 
+        """
         try:
             for imageobj in list:
                 imageobj['path'] = resizeImage(imageobj['path'])
         except:
             pass
+        """
 
         if len(list) == 0 and (first_image is not None and first_image is not False):
-            first_image['path'] = resizeImage(first_image['path'])
+            #first_image['path'] = resizeImage(first_image['path'])
             list.append(first_image)
 
         if len(list) == 0:
