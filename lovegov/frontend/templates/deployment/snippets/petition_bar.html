@@ -4,7 +4,7 @@
             <div class="red_bar"></div>
         </div>
         <div class="goal-statement">
-            <span style="font-weight:bold">{{ p.p_level }}</span><span style="float:right">{{ p.current }} of {{ p.goal }} signatures</span>
+            <span style="font-weight:bold">{{ p.p_level|add:1 }}</span><span style="float:right">{{ p.current }} of {{ p.goal }} signatures</span>
         </div>
     {% else %}
         <div class="goal-statement">
