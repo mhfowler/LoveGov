@@ -365,7 +365,9 @@ FEED_CONTENT_TYPES = ['P','N','L','G']
 ###################################### STATIC FILE URLS ################################################################
 
 DEFAULT_IMAGE = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
-DEFAULT_IMAGE_URL = '/static/images/profile_default.jpg'
+DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
+DEFAULT_NEWS_IMAGE_URL = '/static/images/create/news.png'
+DEFAULT_PETITION_IMAGE_URL = '/static/images/create/petitions.png'
 
 STATIC_PATH = '/media/'
 

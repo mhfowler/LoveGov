@@ -4,19 +4,18 @@
         <div class="row"><div class="tencol"><a href='/feed'><span class='content_header'>Back to Your Feed</span></a></div></div>
         <div class="content-left-side">
         	{% load thumbnail %}
-        	{% thumbnail content.getImage "150x250" crop="center" as im %}
-            	<div class="content-image-area" style="background-image: url('{{content.getImage}}');">
-            {% empty %}
-            	<div class="content-image-area" style="background-image: url('http://images1.wikia.nocookie.net/__cb20111125230859/youtube/images/d/d0/Dancing-terrorists.jpg');">
+            {% with full_url=host_full|add:content.getImageURL %}
+        	{% thumbnail full_url "250x150" upscale=False format="PNG" crop="center" as im %}
+            	<div class="content-image-area" style="background-image: url('{{im.url}}');">
             {% endthumbnail %}
-            {{content.getImage}}
-                {% with topic=content.getMainTopic %}
-                    <a href="{{topic.get_url}}">
-                        <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
-                            <img src="{{ topic.getImageRef }}"/>
-                        </div>
-                    </a>
-                {% endwith %}
+            {% endwith %}
+            {% with topic=content.getMainTopic %}
+                <a href="{{topic.get_url}}">
+                    <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
+                        <img src="{{ topic.getImageRef }}"/>
+                    </div>
+                </a>
+            {% endwith %}
             </div>
             <div class="social_bar">
             	<div class="hearts bar_elem">
@@ -27,6 +26,9 @@
             	<div class="facebook_link tooltip-bottom" title="Share with facebook"></div> <div class="twitter_link tooltip-bottom" title="Share with twitter"></div>
             	</div>
             </div>
+            {% block petition_detail %}
+
+            {% endblock %}
         </div>
 
         <div id="content-div">
