@@ -3317,21 +3317,19 @@ function loadCreate()
                             var image_count = $('.news_link_image_container').children().length;
                             $('#cycle-img-left').bind('click',function()
                             {
-                                if (currentLink-1 < 0) { currentLink = image_count; }
+                                if (currentLink-1 < 1) { currentLink = image_count; }
                                 else { currentLink--; }
                                 $('#cycle-img-span').text(currentLink + " / " + image_count);
-                                $('.news_link_image').hide();
-                                $('.news_link_image').eq(currentLink-1).show();
-                                //$('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                $('.news_link_image').fadeOut('fast');
+                                $('.news_link_image').eq(currentLink-1).fadeIn('fast');
                             });
                             $('#cycle-img-right').bind('click',function()
                             {
-                                if (currentLink+1 >= image_count) { currentLink = 1; }
+                                if (currentLink+1 > image_count) { currentLink = 1; }
                                 else { currentLink++; }
                                 $('#cycle-img-span').text(currentLink + " / " + image_count);
-                                $('.news_link_image').hide();
-                                $('.news_link_image').eq(currentLink-1).show();
-                                //$('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                $('.news_link_image').fadeOut('fast');
+                                $('.news_link_image').eq(currentLink-1).fadeIn('fast');
                             });
                             currentURL = text;
                         },
