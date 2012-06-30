@@ -40,7 +40,7 @@
 
         <div class="histogram-footer">
 
-            <p class="histogram-title"> {{ group.title }} Match Percentage Breakdown </p>
+            <p class="histogram-title"> <a class="group_link" href="{{ group.get_url }}"> {{ group.title|truncatechars:20}} </a> Match Percentage Breakdown </p>
 
             <p class="histogram-topic"> All Topics </p>
 
@@ -53,7 +53,12 @@
             {% include 'deployment/snippets/histogram/avatars_helper.html' with users=group.getMembers %}
         </div>
 
-        <a href="" class="get_more_members"> more </a>
+        <div class="identical-members">
+            <div class="identical identical_count"> <span class="histogram_identical"> </span> Identical </div>
+        </div>
+
+        <div style="clear:both"></div>
+        <!--<a href="" class="get_more_members"> more </a>-->
     </div>
 
     <script> rebind='histogram'; </script>

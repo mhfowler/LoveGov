@@ -1139,6 +1139,12 @@ class UserProfile(FacebookProfileModel, LGModel):
         else:
             return getDefaultImage()
 
+    def getProfileImageURL(self):
+        if self.basicinfo.profile_image:
+            return self.basicinfo.profile_image.image.url
+        else:
+            return DEFAULT_IMAGE_URL
+
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------

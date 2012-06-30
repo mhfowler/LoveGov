@@ -1385,7 +1385,6 @@ def getHistogramMembers(request, vals={}):
     num = int(request.POST['num'])
     u_ids = json.loads(request.POST['u_ids'])
     bucket = int(request.POST['bucket'])
-    viewer = vals['viewer']
 
     if bucket != -1:
         members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
