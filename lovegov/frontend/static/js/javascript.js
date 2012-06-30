@@ -3286,7 +3286,7 @@ function loadCreate()
     var delay = 750;
     var isLoading = false;
     var currentURL;
-    var currentLink = 0;
+    var currentLink = 1;
     var image_count = 0;
     var returned;
 
