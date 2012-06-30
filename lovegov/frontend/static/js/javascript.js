@@ -2384,10 +2384,10 @@ function getFeed(num)
             }
             else {
                 if (feed_replace == true) {
-                    $(".linear-wrapper").html(returned.html);
+                    $(".linear-items-wrapper").html(returned.html);
                 }
                 else {
-                    $(".linear-wrapper").append(returned.html);
+                    $(".linear-items-wrapper").append(returned.html);
                 }
                 $(".pinterest-wrapper").hide();
                 $(".linear-wrapper").show();

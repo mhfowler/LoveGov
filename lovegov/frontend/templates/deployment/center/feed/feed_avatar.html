@@ -1,4 +1,5 @@
 {% load thumbnail %}
+{% load humanize %}
 
 <div class="prof-image">
     <a href="{{ creator.get_url }}">
@@ -17,6 +18,6 @@
         {% endif %}
     </div>
     <p class="submitted">
-        {{ item.created_when }}
+        {{ item.created_when|naturaltime }}
     </p>
 </div>
