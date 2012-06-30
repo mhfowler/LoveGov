@@ -919,7 +919,7 @@ var Topic = Node.extend
 
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
-            var circle = createCircle(self.base_width/2,self.base_height/2,colorObject,self.base_width/2, percentage);
+            var circle = createCircle(self.base_width/2,self.base_height/2,colorObject,self.base_width/2-2, percentage);
             layer.add(circle);
 
 
@@ -1048,7 +1048,6 @@ var Root = Node.extend
             var style = 'style="cursor:pointer;position:absolute;' + left + top + zindex + size + '"';
             $(DRAGGER_ID).append("<div id='" + self.idDiv + "' " + style + "></div>");
 
-
             var topicObj = comparisonJSON['main'];
             var num_q = topicObj['num_q'];
             var percentage = topicObj['result']/100;
@@ -1056,7 +1055,7 @@ var Root = Node.extend
 
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
-            var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2, percentage);
+            var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
             layer.add(circle);
             test.add(layer);
             this.idDivObj = $('#' + this.idDiv);

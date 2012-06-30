@@ -295,7 +295,8 @@ def getUserWebResponsesJSON(request,vals={}):
                 weight = 5
             answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
-        toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"Idk",'childrenData':[]}
+        toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
+        if len(response) > 0 : toAddquestion['user_explanation'] = response[0].userresponse.explanation
         questionsArray[topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
 
@@ -344,15 +345,9 @@ def compareWeb(request,alias=None,vals={}):
             vals['viewer'] = user
             vals['json'] = comparison.toJSON()
             setPageTitle("lovegov: web2",vals)
-            if request.is_ajax():
-                html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
-                url = '/profile/web/' + alias + '/'
-                rebind = 'qaweb'
-                to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['pageTitle']}
-                return HttpResponse(json.dumps(to_return))
-            else:
-                frame(request, vals)
-                return renderToResponseCSRF(template='deployment/pages/web.html', vals=vals, request=request)
+            html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
+            url = '/profile/web/' + alias + '/'
+            return framedResponse(request, html, url, vals)
     if request.method == 'POST':
         if request.POST['action']:
             return actions.answer(request, vals)
