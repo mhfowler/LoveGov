@@ -1323,6 +1323,7 @@ function loadThread()
 {
     bindInlineEdits();
     heartButtons();
+    bindTooltips();
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)

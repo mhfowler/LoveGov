@@ -353,6 +353,12 @@ class Content(Privacy, LocationLevel):
     def getImage(self):
         return self.getMainImage().image
 
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return self.getMainTopic().getUserImage()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1143,7 +1149,7 @@ class UserProfile(FacebookProfileModel, LGModel):
         if self.basicinfo.profile_image:
             return self.basicinfo.profile_image.image.url
         else:
-            return DEFAULT_IMAGE_URL
+            return DEFAULT_PROFILE_IMAGE_URL
 
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
@@ -1957,6 +1963,15 @@ class Petition(Content):
         return self.signers.all()
     def numSigners(self):
         return self.signers.count()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Override getImageURL function to use default petition image
+    #-------------------------------------------------------------------------------------------------------------------
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_PETITION_IMAGE_URL
 
 #=======================================================================================================================
 # Event

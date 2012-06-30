@@ -55,7 +55,7 @@ def viewWrapper(view, requires_login=False):
         vals['google'] = GOOGLE_LOVEGOV
         host_full = getHostHelper(request)
         vals['host_full'] = host_full
-        vals['defaultProfileImage'] = host_full + DEFAULT_IMAGE_URL
+        vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')

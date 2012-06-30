@@ -32,15 +32,10 @@ div.content-left-side {
 }
 
 div.content-left-side div.content-image-area {
-    background-size: 100%;
+    background-size: auto;
     height: 150px;
     width: 250px;
     position: relative;
-}
-
-div#content-div
-{
-    margin-left:25px;
 }
 
 div.content_separator {
@@ -185,7 +180,7 @@ div.comment
 div#content-div p {
     color: $deep-gray;
     @include titleFont;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 div.petition_bar {
