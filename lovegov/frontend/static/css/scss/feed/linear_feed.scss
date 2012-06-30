@@ -178,18 +178,17 @@ div.right-sidebar {
   overflow:hidden;
   float:left;
   padding: 0 0 0 0;
-  margin: 0 0 0 10px;
+  margin: 20px 0 0 20px;
 
   #sidebar {
-    padding-left:0px;
-    margin-top:0px;
-    margin-left:0px;
+    padding:0px;
+    margin:0px;
     #sidebar-fixed-div {
-      padding-left:0px;
-      margin-top:0px;
-      margin-left:0px;
+      padding:0px;
+      margin:0px;
       div.sidebar-box {
-        margin-left:0px;
+        margin:0;
+        padding-bottom:0px;
       }
     }
   }

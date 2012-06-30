@@ -1178,7 +1178,8 @@ function loadRightSideBar()
     // select topic click function
     $(".q-topic-img").click(function(event) {
         var wrapper = $(this).parents(".topic-icon-wrapper");
-        selectTopicSingle(wrapper);
+        toggleTopicSingle(wrapper);
+        toggleQuestionTopic($(this));
     });
 
     // sidebar stuff, for question-topic select
@@ -1195,12 +1196,6 @@ function loadRightSideBar()
     {
         $("#topic-all").show();
     }
-
-    // click and change topic question div
-    $(".q-topic-img").click(function(event)
-    {
-        selectQuestionTopic($(this));
-    });
 
     // hides all other topic divs, and shows random topic div
     $("#all-topics-button").click(function(event) {
@@ -1219,7 +1214,25 @@ function selectQuestionTopic(div)
 {
     var t = div.siblings(".t-alias").val();
     $(".topic-div").hide();
-    $("#topic-"+t).fadeIn();
+    var topic_div = $("#topic-"+t);
+    topic_div.fadeIn();
+    topic_div.addClass("chosen");
+}
+
+// shows questions from the selected topic and calls select topic to adjust icons appropriately
+function toggleQuestionTopic(div)
+{
+    var t = div.siblings(".t-alias").val();
+    $(".topic-div").hide();
+    var topic_div = $("#topic-"+t);
+    if (topic_div.hasClass("chosen")) {
+        topic_div.removeClass("chosen");
+        $("#topic-all").fadeIn();
+    }
+    else {
+        topic_div.addClass("chosen");
+        topic_div.fadeIn();
+    }
 }
 
 
