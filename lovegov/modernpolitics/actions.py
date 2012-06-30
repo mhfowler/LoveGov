@@ -38,7 +38,7 @@ def getLinkInfo(request, vals={}):
             URL = prefix + url
             html = urllib2.urlopen(URL,data=None).fp.read()
             if html: break
-        except ValueError:
+        except:
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
