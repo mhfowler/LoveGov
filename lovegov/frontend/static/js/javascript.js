@@ -3324,7 +3324,7 @@ function loadCreate()
                         {
                             returned = eval('(' + data + ')');
                             $('#news-link-generation-wrapper').html(returned.html);
-                            var image_count = $('.news_link_image_container').children().length;
+                            image_count = $('.news_link_image_container').children().length;
                             $('#cycle-img-left').bind('click',function()
                             {
                                 if (currentLink-1 < 1) { currentLink = image_count; }
