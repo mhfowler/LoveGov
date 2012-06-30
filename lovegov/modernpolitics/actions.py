@@ -81,7 +81,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
         vals['imglink'] = list
 
         html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
-        return HttpResponse(json.dumps({'html':html,'imglink':list}))
+        return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
