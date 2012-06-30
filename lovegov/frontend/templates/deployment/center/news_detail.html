@@ -2,24 +2,16 @@
 
 {% block content_detail %}
 
-        <h3> {{ news.title }} </h3>
+        <a href='{{ news.getAbsoluteLink }}'><h3> {{ news.title }} </h3></a>
 
-        <p>
-            <a href="{{ news.getAbsoluteLink }}"> {{ news.link }} </a>
-        </p>
-
-        {% load thumbnail %}
-        {% thumbnail news.link_screenshot "235x180" format="PNG" as im %}
-            <img src="{{ im.url }}" style="float:left;padding:25px;padding-top:0px;padding-left:0px"/>
-        {% empty %}
-            no image
-        {% endthumbnail %}
-
-        <p>
+        <p class="content-text">
             {{ news.summary|urlize|linebreaks }}
         </p>
 
     <script> rebind='news'; </script>
+    <script>
+    alert({{news.summary|urlize|linebreaks}});
+    </script>
 
 {% endblock %}
 

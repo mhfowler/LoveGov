@@ -53,7 +53,9 @@ def viewWrapper(view, requires_login=False):
                 logger.debug('deleted cookie')
                 return response
         vals['google'] = GOOGLE_LOVEGOV
-        vals['defaultProfileImage'] = 'images/profile_default.jpg'
+        host_full = getHostHelper(request)
+        vals['host_full'] = host_full
+        vals['defaultProfileImage'] = host_full + DEFAULT_IMAGE_URL
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
@@ -252,7 +254,6 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
     userProfile = vals['viewer']
-    vals['all_users'] = UserProfile.objects.filter(confirmed=True).order_by("last_name")
     vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -381,6 +382,7 @@ def theFeed(request, vals={}):
 
     vals['feed_json'] = json.dumps(feed_json)
     vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
+    vals['num_pinterest'] = range(3)
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
@@ -663,7 +665,7 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
     vals['group'] = group
 
-    resolution = 10
+    resolution = 20
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}

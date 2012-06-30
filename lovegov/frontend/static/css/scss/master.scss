@@ -209,48 +209,43 @@ blockquote
 
 h1, h2, h3, h4, h5, h6
 {
+  font-family: $title-font;
   font-weight:normal;
   font-style: normal;
 }
 
 h1
 {
-  font-family:$gill-light;
   color:$text-blue;
   font-size: 50px;
 }
 
 h2
 {
-  font-family:$gill-light;
   color:$red;
   font-size: 32px;
 }
 
 h3
 {
-  font-family:$gill-std;
   color: $text-blue;
   font-size: 26px;
 }
 
 h4
 {
-  font-family:$gill-std;
   color: $red;
   font-size: 22px;
 }
 
 h5
 {
-  font-family:$gill-std;
   color: $deep-gray;
   font-size: 18px;
 }
 
 h6
 {
-  font-family:$gill-std;
   color: $text-blue;
   font-size: 13px;
 }
@@ -507,27 +502,27 @@ div.heart {
 }
 
 div.heart_minus {
-  background-image: url('/static/images/heart_minus_30.png');
+  background-image: url('/static/icons/minusheart-gray.png');
 }
 
 div.heart_minus.clicked {
-  background-image: url('/static/images/heart_minus_hover_30.png');
+  background-image: url('/static/icons/minusheart-red.png');
 }
 
 div.heart_minus:hover {
-  background-image: url('/static/images/heart_minus_hover_30.png');
+  background-image: url('/static/icons/minusheart-red.png');
 }
 
 div.heart_plus {
-  background-image: url('/static/images/heart_plus_30.png');
+  background-image: url('/static/icons/plusheart-gray.png');
 }
 
 div.heart_plus.clicked {
-  background-image: url('/static/images/heart_plus_hover_30.png');
+  background-image: url('/static/icons/plusheart-red.png');
 }
 
 div.heart_plus:hover {
-  background-image: url('/static/images/heart_plus_hover_30.png');
+  background-image: url('/static/icons/plusheart-red.png');
 }
 
 div.overdiv {
