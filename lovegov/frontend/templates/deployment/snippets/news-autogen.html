@@ -3,7 +3,7 @@
 <div id="news-link-generation-image" class="news-link-generation-div">
     <div>
         {% for image in imglink %}
-            {% thumbnail image "250" crop="center" as img %}
+            {% thumbnail image.path "250" crop="center" as img %}
                 <img src="{{ img.url }}"/>
             {% endthumbnail %}
         {% endfor %}

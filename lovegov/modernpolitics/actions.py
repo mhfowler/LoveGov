@@ -67,13 +67,13 @@ def getLinkInfo(request, vals={}, html="",URL=""):
 
         try:
             for imageobj in list:
-                imageobj['path'] = open(imageobj['path'])
+                imageobj['path'] = open(imageobj['path'],'r+')
         except:
             pass
 
         if len(list) == 0 and (first_image is not None and first_image is not False):
-            #first_image['path'] = resizeImage(first_image['path'])
-            list.append(open(first_image['path'],'r+'))
+            first_image['path'] =open(first_image['path'],'r+')
+            list.append(first_image)
 
         if len(list) == 0:
             list.append({'path':open('/static/images/top-logo-default.png','r+')})
