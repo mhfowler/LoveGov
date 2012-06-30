@@ -76,7 +76,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
             list.append(first_image)
 
         if len(list) == 0:
-            list.append({'path':open('/static/images/top-logo-default.png','r+')})
+            list.append({'path':open('/static/dev/images/top-logo-default.png','r+')})
 
         vals['imglink'] = list
 
