@@ -1,16 +1,12 @@
 {% load thumbnail %}
 
 <div id="news-link-generation-image" class="news-link-generation-div">
-    <div>
+    <div class="news_link_image_container">
         {% for image in imglink %}
             {% thumbnail image.path "250" crop="center" as img %}
-                <img src="{{ img.url }}"/>
+                <img class="news_link_image" src="{{ img.url }}" style="display:{% if not forloop.first %}none{% endif %}"/>
             {% endthumbnail %}
         {% endfor %}
-
-
-
-        <!--<img id="news-link-image-src" src="{{ imglink.0.path }}">-->
     </div>
 </div>
 <div id="news-link-generation-text-container" class="news-link-generation-div">
