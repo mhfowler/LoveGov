@@ -1,7 +1,7 @@
 <div class="signer-wrapper feed-username">
     {% load thumbnail %}
     {% thumbnail signer.getProfileImage.image "40x40" crop="center" as im %}
-        <img class="user-image-comparison user-image-comparison-left" src="{{ im.url }}" height="40px" width="40px"/>
+        <img src="{{ im.url }}"/>
     {% endthumbnail %}
     <div>
         <a href="{{ signer.get_url }}" class="signed do-ajax-link"> {{ signer.get_name }} </a>
