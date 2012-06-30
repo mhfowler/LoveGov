@@ -1,6 +1,16 @@
+{% load thumbnail %}
+
 <div id="news-link-generation-image" class="news-link-generation-div">
     <div>
-        <img id="news-link-image-src" src="{{ imglink.0.path }}">
+        {% for image in imglink %}
+            {% thumbnail image geometry '250' crop="center" as img %}
+                <img src="{{ img.url }}"/>
+            {% endthumbnail %}
+        {% endfor %}
+
+
+
+        <!--<img id="news-link-image-src" src="{{ imglink.0.path }}">-->
     </div>
 </div>
 <div id="news-link-generation-text-container" class="news-link-generation-div">
