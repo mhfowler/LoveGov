@@ -3404,6 +3404,7 @@ function refreshHistogramData(data) {
 
     histogram.total += data.total;
     histogram.identical += data.identical;
+    histogram.identical_uids.push.apply(histogram.identical_uids, data.identical_uids);
 
     $.map(data.buckets, function(item, key) {
 
@@ -3471,6 +3472,8 @@ function renderHistogram() {
 function loadHistogram() {
 
     histogram = $(".histogram").data('metadata');
+    histogram.members_displayed = 0;
+    histogram.identical_displayed = 0;
     updateHistogram(true);
 
     $('.update_histogram').bindOnce("click.histogram", function(event) {
@@ -3518,12 +3521,16 @@ function loadHistogram() {
 function refreshHistogram() {
 
     histogram.total = 0;
-    histogram.identical = 0;
+
     $(".bar").data('num', 0);
     $.map(histogram.bucket_uids, function(item, key) {
         histogram.bucket_uids[key] = [];
     });
     histogram.members_displayed = 0;
+
+    histogram.identical = 0;
+    histogram.identical_uids = [];
+    histogram.identical_displayed = 0;
 
     updateHistogram(true);
 }
@@ -3544,10 +3551,8 @@ function updateHistogram(recursive) {
 
                 refreshHistogramData(returned);
                 renderHistogram();
-
-                if (histogram.members_displayed == 0) {
-                    getHistogramMembers();
-                }
+                getHistogramMembers();
+                getIdenticalMembers();
 
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
@@ -3561,45 +3566,145 @@ function updateHistogram(recursive) {
     );
 }
 
+var getHistogramMembersLockout = false;
 function getHistogramMembers() {
+    if (!getHistogramMembersLockout) {
+        getHistogramMembersHelper(false);
+    }
+}
 
-    var replace = (histogram.members_displayed == 0);
+var getIdenticalMembersLockout = false;
+function getIdenticalMembers() {
+    if (!getIdenticalMembersLockout) {
+        getHistogramMembersHelper(true);
+    }
+}
 
-    if (histogram.current_bucket != -1) {
-        var u_ids = histogram.bucket_uids[histogram.current_bucket];
+function getHistogramMembersHelper(identical) {
+
+    if (identical) {
+        var start = histogram.identical_displayed;
+        var u_ids = histogram.identical_uids;
     }
     else {
-        var u_ids=[];
+        var start = histogram.members_displayed;
+        if (histogram.current_bucket != -1) {
+            var u_ids = histogram.bucket_uids[histogram.current_bucket];
+        }
+        else {
+            setHistogramExplanation();
+            return getAllGroupMembers(start, 10, histogram.g_id);
+        }
     }
-    u_ids = JSON.stringify(u_ids);
+
+    var replace = (start== 0);
+
+    if (replace && u_ids.length==0) {
+        if (identical) {
+            $(".identical-avatars").html("");
+        }
+        else {
+            setHistogramExplanation();
+            $(".members-avatars").html("");
+        }
+    }
+
+    if (start <= (u_ids.length-1)) {
+
+        if (identical) {
+            getIdenticalMembersLockout = true;
+        }
+        else {
+            getHistogramMembersLockout = true;
+        }
+
+        var end = Math.min(u_ids.length, start+10);
+        u_ids = u_ids.slice(start, end);
+
+        u_ids = JSON.stringify(u_ids);
+
+        ajaxPost({
+                data: {
+                    'action':'getHistogramMembers',
+                    'u_ids': u_ids
+                },
+                success: function(data)
+                {
+                    var returned =  eval('(' + data + ')');
+
+                    if (identical) {
+                        var $wrapper = $(".identical-avatars");
+                        histogram.identical_displayed += returned.num;
+                        getIdenticalMembersLockout = false;
+                    }
+                    else {
+                        var $wrapper = $(".members-avatars");
+                        histogram.members_displayed += returned.num;
+                        getHistogramMembersLockout = false;
+                        setHistogramExplanation();
+                    }
+
+                    if (replace) {
+                        $wrapper.html(returned.html);
+                    }
+                    else {
+                        $wrapper.append(returned.html);
+                    }
+                    loadHoverComparison();
+                },
+                error: function(error, textStatus, errorThrown)
+                {
+                    $('body').html(error.responseText);
+                }
+            }
+        );
+    }
+}
+
+function setHistogramExplanation() {
+    var lower = histogram.current_bucket;
+    if (lower != -1) {
+        var inc = 100 / histogram.resolution;
+        var higher = lower + inc;
+        var message = String(lower) + '-' + String(higher) + "% similar to you";
+    }
+    else {
+        var message = "";
+    }
+    $(".in_percentile").html(message)
+}
+
+function getAllGroupMembers(start, num, g_id) {
+
+    var replace = (start== 0);
+    getHistogramMembersLockout = true;
 
     ajaxPost({
-            data: {
-                'action':'getHistogramMembers',
-                'start': histogram.members_displayed,
-                'num': 10,
-                'u_ids': u_ids,
-                'g_id': histogram.g_id,
-                'bucket': histogram.current_bucket
-            },
-            success: function(data)
-            {
-                var returned =  eval('(' + data + ')');
+        data: {
+            'action':'getAllGroupMembers',
+            'start':start,
+            'num':num,
+            'g_id':g_id
+        },
+        success: function(data)
+        {
+            var returned =  eval('(' + data + ')');
 
-                if (replace) {
-                    $(".members-avatars").html(returned.html);
-                }
-                else {
-                    $(".members-avatars").append(returned.html);
-                }
+            var $wrapper = $(".members-avatars");
+            histogram.members_displayed += returned.num;
+            getHistogramMembersLockout = false;
 
-                loadHoverComparison();
-                histogram.members_displayed += returned.num;
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
+            if (replace) {
+                $wrapper.html(returned.html);
             }
+            else {
+                $wrapper.append(returned.html);
+            }
+            loadHoverComparison();
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
         }
-    );
+    });
 }

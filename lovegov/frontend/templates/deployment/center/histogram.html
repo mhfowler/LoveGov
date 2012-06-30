@@ -1,6 +1,6 @@
 {% load thumbnail %}
 
-<div class="histogram-main">
+<div class="histogram-main" xmlns="http://www.w3.org/1999/html">
 
     <div class="histogram-wrapper histogram" data-metadata="{{ histogram_metadata }}">
 
@@ -40,7 +40,11 @@
 
         <div class="histogram-footer">
 
-            <p class="histogram-title"> <a class="group_link" href="{{ group.get_url }}"> {{ group.title|truncatechars:20}} </a> Match Percentage Breakdown </p>
+            <p class="histogram-title">
+                <a class="group_link" href="{{ group.get_url }}"> {{ group.title|truncatechars:20}} </a>
+            </p>
+
+            <p class="breakdown"> Match Percentage Breakdown </p>
 
             <p class="histogram-topic"> All Topics </p>
 
@@ -48,13 +52,27 @@
 
     </div>
 
+
+    <div class="members-header">
+        <div class="members-avatars-header">
+            <h3> All Members <span class="in_percentile"></span> </h3>
+        </div>
+
+        <div class="identical-avatars-header">
+            <h3 class="identical identical_count"> <span class="histogram_identical"> </span> Identical </h3>
+        </div>
+
+        <div style="clear:both"></div>
+    </div>
+
     <div class="group-members-wrapper">
         <div class="members-avatars">
             {% include 'deployment/snippets/histogram/avatars_helper.html' with users=group.getMembers %}
         </div>
 
-        <div class="identical-members">
-            <div class="identical identical_count"> <span class="histogram_identical"> </span> Identical </div>
+        <div class="identical-avatars"> </div>
+    </div>
+
         </div>
 
         <div style="clear:both"></div>

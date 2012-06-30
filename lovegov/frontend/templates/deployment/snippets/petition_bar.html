@@ -1,14 +1,17 @@
-<div class="petition_bar">
-    {% if p.current %}
-        <div class="petition-bar-wrapper bar-wrapper" data-percent="{{ p.getCompletionPercent }}">
-            <div class="red_bar"></div>
-        </div>
-        <div class="goal-statement">
-            <span style="font-weight:bold">Level {{ p.p_level|add:1 }}</span><span style="float:right">{{ p.current }} of {{ p.goal }} signatures</span>
-        </div>
-    {% else %}
-        <div class="goal-statement">
-            No one has signed this petition yet.
-        </div>
-    {% endif %}
-</div>
+{% load humanize %}
+{% with milestone=p.p_level|add:1 %}
+    <div class="petition_bar">
+        {% if p.current %}
+            <div class="petition-bar-wrapper bar-wrapper" data-percent="{{ p.getCompletionPercent }}">
+                <div class="red_bar"></div>
+            </div>
+            <div class="goal-statement">
+                <span style="font-weight:bold"> {{ milestone|ordinal }} Milestone </span><span style="float:right">{{ p.current }} of {{ p.goal }} signatures</span>
+            </div>
+        {% else %}
+            <div class="goal-statement">
+                No one has signed this petition yet.
+            </div>
+        {% endif %}
+    </div>
+{% endwith %}
