@@ -3208,7 +3208,7 @@ function postNews()
     var summary = $('#news-input-summary').val();
     var link = $('#news-input-link').val();
     var description = $('#news-link-generation-description').text();
-    var screenshot = $('#news-link-image-src').attr("src");
+    var screenshot = $('.news_link_selected').attr("src");
     var scale = $('input:radio.news_scale:checked').val();
     var topic = $('input:radio[name=topics]:checked').val();
     ajaxPost({
@@ -3297,8 +3297,8 @@ function loadCreate()
         function selectImageToggle()
         {
             $('#cycle-img-span').text(currentLink + " / " + image_count);
-            $('.news_link_image').hide();
-            $('.news_link_image').eq(currentLink-1).show();
+            $('.news_link_image').removeClass("news_link_selected").hide();
+            $('.news_link_image').eq(currentLink-1).addClass("news_link_selected").show();
         }
 
 

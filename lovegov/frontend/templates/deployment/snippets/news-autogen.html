@@ -4,7 +4,7 @@
     <div class="news_link_image_container">
         {% for image in imglink %}
             {% thumbnail image.path "250" crop="center" as img %}
-                <img class="news_link_image" src="{{ img.url }}" style="display:{% if not forloop.first %}none{% endif %}"/>
+                <img class="news_link_image {% if forloop.first %}news_link_selected{% endif %}" src="{{ img.url }}" style="display:{% if not forloop.first %}none{% endif %}"/>
             {% endthumbnail %}
         {% endfor %}
     </div>
