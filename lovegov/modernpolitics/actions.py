@@ -65,16 +65,14 @@ def getLinkInfo(request, vals={}):
 
         list.sort(key=lambda img:img['size'],reverse=True)
 
-        """
         try:
             for imageobj in list:
-                imageobj['path'] = resizeImage(imageobj['path'])
+                imageobj['path'] = fixImagePath(imageobj['path'])
         except:
             pass
-        """
 
         if len(list) == 0 and (first_image is not None and first_image is not False):
-            #first_image['path'] = resizeImage(first_image['path'])
+            first_image['path'] = fixImagePath(first_image['path'])
             list.append(first_image)
 
         if len(list) == 0:

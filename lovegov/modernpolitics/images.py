@@ -83,3 +83,9 @@ def resizeImage(img_path,basewidth=230,maxheight=230):
         return str(img_path).replace(settings.MEDIA_ROOT,settings.MEDIA_URL)
     except:
         pass
+
+def fixImagePath(img_path):
+    try:
+        return str(img_path).replace(settings.MEDIA_ROOT,settings.MEDIA_URL)
+    except:
+        pass
