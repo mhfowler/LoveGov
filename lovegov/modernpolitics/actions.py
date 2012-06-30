@@ -28,7 +28,7 @@ from googlemaps import GoogleMaps
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
-def getLinkInfo(request, vals={}):
+def getLinkInfo(request, vals={}, html="",URL=""):
     vals = {}
     url = str(request.POST['remote_url'])
     url.strip()
