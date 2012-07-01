@@ -4,11 +4,17 @@
     </div>
     <div class="comments">
         <a href="{{ item.get_url }}" class="comments-wrapper">
+
             <div class="text-wrapper">
                 <div class="comments-text"> comments </div>
                 <div class="comments-num"> {{ item.num_comments }} </div>
                 <div style="clear:both;"></div>
             </div>
+
+            <div class="comments-bubble">
+                <div class="comments-num"> {{ item.num_comments }} </div>
+            </div>
+
             <div style="clear:both;"></div>
         </a>
     </div>

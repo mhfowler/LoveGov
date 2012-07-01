@@ -12,10 +12,10 @@
                 {% for t in main_topics %}
                     <div class="histogram-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}" data-t_alias="{{ t.alias }}" data-t_text="{{t.topic_text }}">
                         {% thumbnail t.image "50x50" format="PNG" as im %}
-                            <img class="topic-img normal histogram-topic-img" src="{{ im.url }}"/>
+                            <img class="topic-img normal histogram-topic-img tooltip-top" title="{{ t.topic_text }}" src="{{ im.url }}"/>
                         {% endthumbnail %}
                         {% thumbnail t.selected "50x50" format="PNG" as im %}
-                            <img class="topic-img selected histogram-topic-img" src="{{ im.url }}"/>
+                            <img class="topic-img selected histogram-topic-img tooltip-top" title="{{ t.topic_text }}" src="{{ im.url }}"/>
                         {% endthumbnail %}
                     </div>
                 {% endfor %}
@@ -26,7 +26,7 @@
                     <div class="bar" data-bucket="{{ bucket }}" data-num="0">
 
                         <div class="white_bar"></div>
-                        <div class="red_bar"></div>
+                        <div class="red_bar tooltip-top" title="whatup"></div>
                         <div class="label bar_label"> {{ bucket }}% </div>
 
                     </div>
@@ -55,7 +55,9 @@
 
     <div class="members-header">
         <div class="members-avatars-header">
-            <h3> All Members <span class="in_percentile"></span> </h3>
+            <h3> <span class="num_members"> All </span>
+                Members
+                <span class="in_percentile"></span> </h3>
         </div>
 
         <div class="identical-avatars-header">

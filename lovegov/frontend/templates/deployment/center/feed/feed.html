@@ -135,7 +135,7 @@
 
         <div class="filter-by-political  menu_toggle menu-toggle">
             <p class="feed-menu-title political_menu_title menu-title">
-                Political
+                Scale
             </p>
             <div class="triangle-selector"></div>
             <div class="political-menu menu">
@@ -159,7 +159,7 @@
 
         <div class="filter-by-content  menu_toggle menu-toggle">
             <p class="feed-menu-title menu-title">
-                Content
+                Type
             </p>
             <div class="triangle-selector"></div>
             <div class="type-menu menu">
@@ -185,10 +185,10 @@
             {% for t in main_topics %}
                 <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}">
                     {% thumbnail t.image "40x40" format="PNG" as im %}
-                        <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
+                        <img class="topic-img normal feed-topic-img tooltip-top" title="{{ t.topic_text }}" src="{{ im.url }}"/>
                     {% endthumbnail %}
                     {% thumbnail t.selected "40x40" format="PNG" as im %}
-                        <img class="topic-img selected feed-topic-img" src="{{ im.url }}"/>
+                        <img class="topic-img selected feed-topic-img tooltip-top" title="{{ t.topic_text }}" src="{{ im.url }}"/>
                     {% endthumbnail %}
                 </div>
             {% endfor %}

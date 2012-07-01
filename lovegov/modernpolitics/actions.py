@@ -290,11 +290,6 @@ def sign(request, vals={}):
             return HttpResponse("This petition does not exist")
         if petition.finalized:
             if petition.sign(user):
-                signed = Signed(user=user, content=petition)
-                signed.autoSave()
-                action = Action(relationship=signed)
-                action.autoSave()
-                petition.getCreator().notify(action)
                 vals['signer'] = user
                 context = RequestContext(request,vals)
                 template = loader.get_template('deployment/snippets/signer.html')

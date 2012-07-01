@@ -1925,12 +1925,22 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
+
+                signed = Signed(user=user, content=self)
+                signed.autoSave()
+                action = Action(relationship=signed)
+                action.autoSave()
+                self.getCreator().notify(action)
+
                 self.current += 1
                 if self.current >= self.goal:
                     self.p_level += 1
                     self.goal = PETITION_LEVELS[self.p_level]
                 self.save()
+
                 return True
+        else:
+            return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Finalize petition for signing.

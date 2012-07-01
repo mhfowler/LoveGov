@@ -2740,20 +2740,28 @@ function loadNewFeed() {
     updateFeedVisual();
 
     $(".more-options-wrapper").css('height', '0px');
+    //$(".more-options-wrapper").show();
+    //$(".more-options-wrapper").css('overflow', 'visible');
     $(".more_options").click(function(event) {
         event.preventDefault();
         $(this).toggleClass("clicked");
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px'}, 1000);
+            wrapper.animate({"height": '0px'}, 850,
+                function() {
+                    wrapper.fadeOut();
+                    wrapper.css("border-width", "0px");
+                });
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
         }
         else {
             wrapper.show();
-            wrapper.animate({"height": '120px'}, 1000, function() { wrapper.css('overflow', 'visible')});
+            wrapper.css("border-width", "1px");
+            wrapper.animate({"height": '120px', 'border-width': '1px'}, 850,
+                function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
     });
@@ -3429,6 +3437,13 @@ function refreshHistogramData(data) {
 
         var num = bar.data('num') + item.num;
         bar.data('num', num);
+        if (num == 1) {
+            var mouseover = String(num) + " person.";
+        }
+        else {
+            var mouseover = String(num) + " people.";
+        }
+        bar.find(".red_bar").attr("data-original-title", mouseover);
 
         if (histogram.total != 0) {
             var percent = (num / histogram.total)*100;
@@ -3677,6 +3692,7 @@ function getHistogramMembersHelper(identical) {
 function setHistogramExplanation() {
     var lower = histogram.current_bucket;
     if (lower != -1) {
+
         var inc = 100 / histogram.resolution;
         var higher = lower + inc;
         var message = String(lower) + '-' + String(higher) + "% similar to you";
@@ -3684,7 +3700,7 @@ function setHistogramExplanation() {
     else {
         var message = "";
     }
-    $(".in_percentile").html(message)
+    $(".in_percentile").html(message);
 }
 
 function getAllGroupMembers(start, num, g_id) {
