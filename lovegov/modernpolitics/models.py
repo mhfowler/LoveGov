@@ -2026,6 +2026,12 @@ class News(Content):
     def getImage(self):
         return self.link_screenshot
 
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_NEWS_IMAGE_URL
+
     # takes in a lovegov.com url and saves image file from that location
     def saveScreenShot(self, ref):
         from lovegov.modernpolitics.helpers import photoKey
@@ -2830,6 +2836,12 @@ class Question(Content):
             super(Question, self).edit(field,value)
         self.save()
 
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_DISCUSSION_IMAGE_URL
+
 #=======================================================================================================================
 # NextQuestion is essentially a relation from one question to another, based on how you answered the first question.
 #
@@ -3459,6 +3471,12 @@ class Group(Content):
             num_questions += member.getView().responses.count()
         avg_questions = num_questions/self.members.count()
         return int(round(avg_questions))
+
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_GROUP_IMAGE_URL
 
 
 #=======================================================================================================================

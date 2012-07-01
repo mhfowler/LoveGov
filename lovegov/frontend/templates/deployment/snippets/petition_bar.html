@@ -6,7 +6,8 @@
                 <div class="red_bar"></div>
             </div>
             <div class="goal-statement">
-                <span style="font-weight:bold"> {{ milestone|ordinal }} Milestone </span><span style="float:right">{{ p.current }} of {{ p.goal }} signatures</span>
+                {% load customtags %}
+                <span style="font-weight:bold"> {{p.current}} signature{{p.current|pluralize}} </span><span style="float:right">{{p.goal|subtract:p.current}} until next milestone</span>
             </div>
         {% else %}
             <div class="goal-statement">
