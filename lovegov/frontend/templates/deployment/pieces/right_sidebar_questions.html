@@ -4,7 +4,6 @@
 
         <div class="topics-header">
             <span class="content_header">Answer Questions </span>
-            <a id="all-topics-button"> ALL </a>
         </div>
 
         <div class="topic-icons-wrapper q-topics-wrapper">
@@ -30,11 +29,6 @@
         {% for t in main_topics %}
             <div id="topic-{{t.alias}}" class="topic-div">
                 <div class="topic-questions-header">
-                    <a href="{{t.get_url}}">
-                        <div id="content-topic-img">
-                            <img src="{{ t.getImageRef }}" width="50" height="50" class="topic-img-mini"/>
-                        </div>
-                    </a>
                     <h3  class="panel-title lower-title"> {{ t.topic_text }} </h3>
                 </div>
                 {% for q in t.getQuestions %}
@@ -49,7 +43,7 @@
 
         <!-- random questions from all topics -->
         <div id="topic-all" class="topic-div">
-            <h3  id="random-title" class="panel-title lower-title"> Random Questions </h3>
+            <h3  id="random-title" class="panel-title lower-title"> Random </h3>
             {% for q in random_questions %}
                 <div  class="question">
                     <a class="q-title" href="{{ q.get_url }}">{{ q.get_name }}</a>
