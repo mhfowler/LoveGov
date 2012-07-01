@@ -6,7 +6,7 @@
         	{% load thumbnail %}
             {% with full_url=host_full|add:content.getImageURL %}
         	{% thumbnail full_url "250x150" upscale=False format="PNG" crop="center" as im %}
-            	<div class="content-image-area" style="background-image: url('{{im.url}}');">
+            	<div class="content-image-area" style="background-image: url('{{im.url}}')">
             {% endthumbnail %}
             {% endwith %}
             {% with topic=content.getMainTopic %}
@@ -17,15 +17,8 @@
                 </a>
             {% endwith %}
             </div>
-            <div class="social_bar">
-            	<div class="hearts bar_elem">
-            	{% include "deployment/snippets/hearts.html" with content=content %}
-            	</div><div class="social_bar_comments bar_elem">
-            	<span>comments <span class="num_comments">{{content.num_comments}}</span></span>
-            	</div><div class="social_bar_links bar_elem">
-            	<div class="facebook_link tooltip-bottom" title="Share with facebook"></div> <div class="twitter_link tooltip-bottom" title="Share with twitter"></div>
-            	</div>
-            </div>
+            {% include 'deployment/center/feed/social_bar.html' with item=content %}
+
             {% block petition_detail %}
 
             {% endblock %}

@@ -4,11 +4,13 @@
 
 div#content-div h3, div.content-left-side h3 {
     color: $red;
-    @include titleFont
+    @include titleFont;
+    margin-bottom: 20px;
 }
 
 div.content-left-side h3 {
     font-size: 20px;
+    margin-top: 30px;
 }
 
 div#content
@@ -29,6 +31,112 @@ div.content-left-side {
     width:250px;
     float:left;
     padding: 0 30px 30px 0;
+    div.social-bar{
+      height:50px;
+      border: 1px solid $light-gray;
+      margin: 15px 0px 0px 0px;
+
+      div.hearts {
+        float:left;
+        width:90px;
+        height:50px;
+        border-right: 1px solid $light-gray;
+
+        div.hearts-wrapper {
+          position:relative;
+          margin-top: 12px;
+          width:100%;
+          text-align: center;
+
+          div.heart {
+            width:20px;
+            height:18px;
+            background:contain;
+          }
+
+          div.heart_minus {
+            float:left;
+            margin: 3px 0 0 8px;
+          }
+
+          div.heart_plus {
+            float:right;
+            margin: 3px 8px 0 0;
+          }
+
+          span.status {
+            @include really-big();
+            @include fontSize(20px);
+            color:#4c4c4c;
+            text-align:center;
+          }
+
+        }
+
+      }
+
+      div.comments {
+        float:left;
+        width:86px;
+        height:50px;
+
+        a.comments-wrapper {
+          display:block;
+
+          div.text-wrapper {
+            foat:left;
+            position: relative;
+
+            div.comments-text {
+              @include really-big();
+              @include fontSize(12px);
+              position: absolute;
+              top: 25px;
+              left:50%;
+              margin-left:-25px;
+            }
+
+            div.comments-num {
+              margin: 6px 0 0 5px;
+              color:$red;
+              position: absolute;
+              left: 50%;
+              margin-left:-10px;
+              font-size: 20px;
+            }
+          }
+        }
+
+        a.comments-wrapper:hover {
+          border-color:$dark-gray;
+        }
+
+
+
+      }
+
+      div.share {
+        float:left;
+        width:70px;
+        height:50px;
+        border-left: 1px solid $light-gray;
+        text-align:center;
+        color:$red;
+
+        p.share-text {
+            @include titleFont();
+            @include fontSize(18px);
+            margin: 14px 0 0 0;
+        }
+        &:hover {
+            background-color:$red;
+            cursor:pointer;
+            p.share-text {
+              color:white;
+            }
+        }
+      }
+    }
 }
 
 div.content-left-side div.content-image-area {
@@ -63,6 +171,8 @@ div.hearts_wrapper span.status {
 	color: $black;
 }
 
+// Deprecated
+/*
 div.social_bar {
 	width: 100%;
 	text-align: center;
@@ -123,21 +233,8 @@ div.social_bar {
 		color: red;
 	}
 }
+*/
 
-div.hearts-wrapper {
-          div.heart {
-            width:20px;
-            height:18px;
-            background:contain;
-          }
-
-          span.status {
-            @include fontSize(20px);
-            width:20px;
-            overflow:hidden;
-            margin:auto;
-          }
-}
 
 div#thread
 {

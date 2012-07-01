@@ -51,6 +51,7 @@ div.linear-wrapper {
           @extend .box;
 
           div.hearts {
+            float:left;
             width:70px;
 
             div.hearts-wrapper {
