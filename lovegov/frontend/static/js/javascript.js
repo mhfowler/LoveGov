@@ -2739,8 +2739,10 @@ function loadNewFeed() {
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
 
-    $(".more-options-wrapper").css('height', '0px');
-    //$(".more-options-wrapper").show();
+    var more_options_wrapper = $(".more-options-wrapper");
+    more_options_wrapper.css('height', '0px');
+    more_options_wrapper.css('opacity', 0);
+    more_options_wrapper.css("padding", "0px");
     //$(".more-options-wrapper").css('overflow', 'visible');
     $(".more_options").click(function(event) {
         event.preventDefault();
@@ -2748,19 +2750,14 @@ function loadNewFeed() {
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px'}, 850,
-                function() {
-                    wrapper.fadeOut();
-                    wrapper.css("border-width", "0px");
-                });
+            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 850);
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
         }
         else {
             wrapper.show();
-            wrapper.css("border-width", "1px");
-            wrapper.animate({"height": '120px', 'border-width': '1px'}, 850,
+            wrapper.animate({"height": '120px', 'padding':"10px",  'opacity':1.0}, 850,
                 function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
