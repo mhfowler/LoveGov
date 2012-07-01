@@ -54,34 +54,39 @@
     }
   }
 
-  div.sort-by {
-    margin: 18px 0 0 25px;
-    float:left;
-  }
 
   div.sort-by-choice {
     position:relative;
     float:left;
-    height:25px;
-    width:55px;
     margin: 11px 0 0 10px;
+    height:25px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top: 8px;
+    padding-bottom:0px;
     @extend .box;
+    @include rounded(9px);
+    border-color:$red;
 
     p.feed-menu-title {
       @include titleFont();
-      @include fontSize(18px);
+      @include fontSize(15px);
+      color:$red;
+      text-transform: uppercase;
+      letter-spacing:1px;
       float:left;
-      margin-top:2px;
-      margin-left:0px;
+      margin:0px;
     }
 
     div.triangle-selector {
-      float:right;
-      margin: 9px 0px 0 12px;
+      float:left;
+      margin:0px;
+      margin-left:4px;
+      margin-top:4px;
     }
 
     div.sort-menu {
-      top:36px;
+      top:40px;
       div.menu-option {
         width:100%;
         p.menu-option-title {
@@ -91,9 +96,28 @@
     }
   }
 
+  div.sort-by-choice:hover {
+    background-color:$red;
+    p.feed-menu-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
+    }
+  }
+
+  div.sort-by-choice.clicked {
+    background-color:$red;
+    p.feed-menu-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
+    }
+  }
+
 
   div.options-box {
-    @extend .box;
     padding:5px;
     padding-left:10px;
     padding-right:10px;
@@ -105,9 +129,10 @@
     margin-left:20px;
 
     @include titleFont();
-    @include fontSize(18px);
 
     p.options-title {
+      @include fontSize(22px);
+      color: #959595;
       float:left;
       margin: 0;
     }
@@ -116,6 +141,27 @@
       float:left;
       margin-left:7px;
       margin-top:8px;
+      background-image: url('/static/icons/down-arrow.png');
+    }
+  }
+
+  div.options-box:hover {
+    background-color:#adadad;
+    p.options-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
+    }
+  }
+
+  div.options-box.clicked {
+    background-color:#adadad;
+    p.options-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
     }
   }
 
@@ -150,15 +196,15 @@
     }
 
     div.menu {
-      top:36px;
+      top:40px;
     }
 
   }
 
   a.how-does {
-    @include really-big();
+    @include body();
     @include fontSize(12px);
-    text-decoration: underline;
+    color: #959595;
     float:right;
     margin-top:21px;
     margin-right:10px;
@@ -169,59 +215,38 @@
   }
 
   div.create-box {
-
-    @extend div.options-box;
-    border-color:red;
-    border-width: 1px;
-    width:110px;
-    height:25px;
-    padding:5px;
-
-    margin-top:11px;
-    margin-bottom:0px;
-
     float:right;
+    font-size:22px;
+    background-color:#EF503B;
+    padding:5px;
+    padding-left:12px;
+    padding-right:12px;
+    color: white;
+    margin-top:9px;
     margin-right:10px;
-
-    p.options-title {
-      width:100%;
-      text-align:center;
+    margin-left:10px;
+    text-decoration:none;
+    border-radius:8px;
+    p.create-title {
+      @include titleFont();
       margin:0px;
-      color:$red;
+      padding:0px;
     }
   }
 
   div.create-box.clicked {
-    background-color:$red;
-    border-color:$light-gray;
-    p.create-title {
-      color:black;
-    }
+    color:white;
+    background-color:#FC8A81;
   }
   div.create-box:hover {
-    background-color:$light-gray;
-    border-color:black;
-    p.create-title {
-      color:black;
-    }
+    color:white;
+    background-color:#FC8A81;
     cursor:pointer;
   }
-
-  div.display-box {
-    @extend div.options-box;
-    border:none;
-
-    margin-top:10px;
-    margin-bottom:0px;
-
-    width:70px;
-    height:25px;
+  div.display-choice {
     float:right;
-    div {
-      float:left;
-      margin-left:14px;
-      margin-top:2px;
-    }
+    margin-left:14px;
+    margin-top:15px;
   }
 }
 
@@ -229,9 +254,8 @@ div.more-options-wrapper {
 
   display:none;
   margin-top:0px;
-  padding:0px;
-  width:1000px;
-  height:120px;
+  padding:10px;
+  height:100px;
   @extend .box;
   overflow:hidden;
 
@@ -243,7 +267,6 @@ div.more-options-wrapper {
     margin-top:10px;
 
     div.menu-toggle {
-      @extend .box;
       position:relative;
 
       div.menu {
@@ -258,6 +281,10 @@ div.more-options-wrapper {
       margin-top:6px;
       margin-left:10px;
       margin-right:15px;
+      h3.mini {
+        color: #959595;
+        @include fontSize(18px);
+      }
     }
 
     div.filter-by-group {
@@ -284,60 +311,47 @@ div.more-options-wrapper {
     div.filter-topic {
       margin-top:10px;
       float:right;
-    }
-  }
-
-  div.current-selection {
-    height:50px;
-    width:950px;
-    margin-left:20px;
-    @extend .box;
-
-    div.current-filter {
-      margin-top:0px;
-      margin-left:12px;
-      height:50px;
-      width:130px;
-      float:left;
-      border-right: 1px solid $light-gray;
-      p.current-filter-text {
-        @include really-big();
-        margin-left:0px;
-        margin-top:12px;
+      h2.mini {
+        color: #959595;
       }
     }
 
-    div.current-options-images {
-      float:left;
-      width:550px;
-      height:50px;
-      margin: 0;
-      border-right: 1px solid $light-gray;
-    }
-
-    input.save_filter_input {
-      float:right;
+    div.feed-topic-selector-wrapper {
       margin-right:15px;
-      margin-top:10px;
-      margin-left:0px;
-      height:30px;
-      color:blue;
-    }
-
-    div.current-options {
-      float:right;
-      margin-top:8px;
-      margin-right:12px;
-
-      a.feed-clear {
-        display:block;
-      }
-
-      a.feed-save {
-        display:block;
-      }
     }
   }
+
+  div#clear-save {
+    float:right;
+    font-size:15px;
+    margin-top:10px;
+    @include titleFont();
+    margin-right:10px;
+    margin-bottom:0px;
+  }
+
+  div#clear-save a {
+    text-decoration:none;
+    color:white;
+    padding:8px;
+    margin:5px;
+    background-color: #adadad;
+  }
+
+  div#clear-save a:hover {
+    color:white;
+    background-color:#e0e0e0;
+  }
+
+  input.save_filter_input {
+    float:right;
+    margin-right:15px;
+    margin-top:10px;
+    margin-left:0px;
+    height:30px;
+    color:blue;
+  }
+
 }
 
 
@@ -536,6 +550,7 @@ div.menu-toggle {
     @include titleFont();
     @include fontSize(18px);
     float:left;
+    color:$red;
   }
   div.triangle-selector {
     background:contain;
@@ -552,21 +567,21 @@ div.menu-toggle {
 }
 
 div.menu-toggle.clicked {
-  background-color:$red;
+  cursor:pointer;
   p.menu-title {
-    color:white;
+    color:$red-light;
   }
   div.triangle-selector {
-    background-image: url('/static/icons/down-arrow-white.png');
+    //background-image: url('/static/icons/down-arrow-white.png');
   }
 }
 div.menu-toggle:hover {
-  background-color:$red;
+  cursor:pointer;
   p.menu-title {
-    color:white;
+    color:$red-light;
   }
   div.triangle-selector {
-    background-image: url('/static/icons/down-arrow-white.png');
+    //background-image: url('/static/icons/down-arrow-white.png');
   }
 }
 
