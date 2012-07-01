@@ -21,16 +21,15 @@ div#content
     margin-top:40px;
 }
 
-div#content-left
-{
-    width:700px;
-    float:left;
-}
-
 div.content-left-side {
     width:250px;
     float:left;
     padding: 0 30px 30px 0;
+}
+
+div#content-left {
+    width:700px;
+    float:left;
     div.social-bar{
       height:50px;
       border: 1px solid $light-gray;
@@ -144,6 +143,7 @@ div.content-left-side div.content-image-area {
     height: 150px;
     width: 250px;
     position: relative;
+    background-repeat: no-repeat;
 }
 
 div.content_separator {
@@ -282,8 +282,7 @@ div#content-div p {
 
 div.petition_bar {
 
-  margin: 15px 0 0 20px;
-
+    margin-top: 10px;
   div.bar-wrapper {
     width:100%;
     height:14px;
@@ -757,6 +756,7 @@ div.threaddiv {
 {
     float:left;
     margin-bottom:40px;
+    width: 100%;
 }
 
 #signer-names
@@ -777,16 +777,19 @@ div.threaddiv {
     float:left;
 }
 
-.signer-wrapper div
+.signer-wrapper div.signer-name
 {
-    width: 130px;
     float: left;
     margin-left: 10px;
+    height: 40px;
+    position: relative;
+    top: 10px;
 }
 
 .signer-wrapper a, .signer-wrapper a:link, .signer-wrapper a:hover, .signer-wrapper a:active
 {
     color:#0F5569;
+    font-size: 18px;
 }
 
 #finalize-button
@@ -799,11 +802,18 @@ div.threaddiv {
     margin-top:20px;
 }
 
-.sign
+.sign .red-button
 {
-    width:575px;
+    color: white;
+    width:100%;
+    display:block;
+    text-align: center;
     margin-top:25px;
-    float:right;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    &:hover {
+        background-color: $red-light;
+    }
 }
 
 #num-signers

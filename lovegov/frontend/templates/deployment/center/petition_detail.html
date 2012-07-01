@@ -44,24 +44,10 @@
     <!-- sign -->
     <div id="signers">
         {% if petition.finalized %}
-            <div>
-                <h4> Signers </h4>
-                <div id="num-signers"> {{ signers.count }} signed </div>
-            </div>
-
-            <div id="signer-names">
-                {% for signer in signers %}
-                    {% include 'deployment/snippets/signer.html' %}
-                {% empty %}
-                    <span id="be-first-signer-message">Be the first to sign this petition.</span>
-                {% endfor %}
-            </div>
 
             <div class="sign">
                 {% if not i_signed %}
-                    <div class="submit">
-                        <a href="" class='red-button' id="sign-button"> sign </a>
-                    </div>
+                        <a href="" class='red-button' id="sign-button"> Sign </a>
                 {% else %}
                     You have signed this petition.
                 {% endif %}
