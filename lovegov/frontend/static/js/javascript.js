@@ -2739,21 +2739,23 @@ function loadNewFeed() {
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
 
-    $(".more-options-wrapper").css('height', '0px');
+    //$(".more-options-wrapper").css('height', '0px');
+    $(".more-options-wrapper").show();
+    $(".more-options-wrapper").css('overflow', 'visible');
     $(".more_options").click(function(event) {
         event.preventDefault();
         $(this).toggleClass("clicked");
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px'}, 1000);
+            wrapper.animate({"height": '0px'}, 850, function() { wrapper.fadeOut(); });
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
         }
         else {
             wrapper.show();
-            wrapper.animate({"height": '120px'}, 1000, function() { wrapper.css('overflow', 'visible')});
+            wrapper.animate({"height": '120px'}, 850, function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
     });
@@ -3677,13 +3679,21 @@ function getHistogramMembersHelper(identical) {
 function setHistogramExplanation() {
     var lower = histogram.current_bucket;
     if (lower != -1) {
+
         var inc = 100 / histogram.resolution;
         var higher = lower + inc;
         var message = String(lower) + '-' + String(higher) + "% similar to you";
+        var bar = $(".bar[data-bucket=" + lower + "]");
+        var num = bar.data('num');
     }
     else {
         var message = "";
+        var num = "All";
     }
+    if (num==1) {
+        $(".num_members_pluralize").html("");
+    } else { $(".num_members_pluralize").html("s");}
+    $(".num_members").html(num);
     $(".in_percentile").html(message)
 }
 

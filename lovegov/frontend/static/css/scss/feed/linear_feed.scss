@@ -96,6 +96,7 @@ div.linear-wrapper {
               height:20px;
 
               div.text-wrapper {
+                display:none;
                 @include fontSize(10px);
                 text-align:center;
 
@@ -107,6 +108,29 @@ div.linear-wrapper {
                 div.comments-num {
                   display:block;
                   margin: 3px 0 0 17px;
+                }
+              }
+
+              div.comments-bubble {
+                position:relative;
+                display:block;
+                background-image: url('/static/icons/comments.png');
+                background:contain;
+                width:35px;
+                height:35px;
+                margin: 1px 0 0 20px;
+                text-align:center;
+
+                div.comments-num {
+                  position:relative;
+                  top: 7px;
+                  color:$black;
+                }
+              }
+              div.comments-bubble:hover {
+                background-image: url('/static/icons/comments-filled.png');
+                div.comments-num {
+                  color:white;
                 }
               }
             }
