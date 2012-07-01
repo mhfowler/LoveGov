@@ -412,6 +412,8 @@ span.collapse {
     float: left;
     z-index: 1;
     color: $deep-gray;
+    top: 85px;
+    left: 10px;
 }
 
 span.flag {
@@ -506,7 +508,7 @@ div.threaddiv {
     position: relative;
     margin-left: 10px;
     cursor:pointer;
-    width:550px;
+    width: 400px;
 }
 
 
