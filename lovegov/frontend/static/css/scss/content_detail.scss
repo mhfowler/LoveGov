@@ -138,6 +138,10 @@ div#content-left {
     }
 }
 
+div.comments-bubble {
+    display: none;
+}
+
 div.content-left-side div.content-image-area {
     background-size: auto;
     height: 150px;
@@ -437,7 +441,7 @@ div.threaddiv {
 {
     float:left;
     position:relative;
-    width:575px;
+    width:400px;
 }
 
 #question h3
@@ -766,7 +770,6 @@ div.threaddiv {
 
 .signer-wrapper
 {
-    width:190px;
     float:left;
     margin-bottom:15px;
     height:40px;
@@ -835,7 +838,7 @@ div.threaddiv {
 
 .answer-container
 {
-    width:575px;
+    width:400px;
     margin-bottom:15px;
     float:left;
     border-radius:15px;
