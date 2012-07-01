@@ -43,27 +43,43 @@ div.linear-wrapper {
 
         div.social-bar {
           display:block;
-          margin-top:0px;
+          margin-top:4px;
+          margin-bottom:15px;
           width:218px;
-          height:40px;
+          height:35px;
           overflow:hidden;
           @extend .box;
 
           div.hearts {
-            width:60px;
+            width:70px;
 
             div.hearts-wrapper {
-              margin:0px;
+              position:relative;
+              margin-top: 7px;
+              width:100%;
+              text-align: center;
 
               div.heart {
-                margin: 10px 0 0 0;
-                width:20px;
-                height:20px;
+                width:16px;
+                height:16px;
+                background:contain;
+              }
+
+              div.heart_minus {
+                float:left;
+                margin: 3px 0 0 5px;
+              }
+
+              div.heart_plus {
+                float:right;
+                margin: 3px 5px 0 0;
               }
 
               span.status {
-                margin: 0px 0 4px 0;
-                @include fontSize(14px);
+                @include really-big();
+                @include fontSize(20px);
+                color:#4c4c4c;
+                text-align:center;
               }
 
             }
@@ -71,25 +87,26 @@ div.linear-wrapper {
           }
 
           div.comments {
-            width:80px;
+            width:70px;
             margin:0px;
 
             a.comments-wrapper {
-              margin: 7px 0 0 5px;
-              width:70px;
-              height:25px;
+              margin: 7px 0 0 15px;
+              width:40px;
+              height:20px;
 
               div.text-wrapper {
                 @include fontSize(10px);
+                text-align:center;
 
                 div.comments-text {
-                  display:block;
+                  display:none;
                   margin: 0px 0 3px 4px;
                 }
 
                 div.comments-num {
                   display:block;
-                  margin: 5px 0 0 4px;
+                  margin: 3px 0 0 17px;
                 }
               }
             }
@@ -97,21 +114,12 @@ div.linear-wrapper {
 
           div.share
           {
-            width:70px;
+            width:76px;
             margin:0px;
+            text-align:center;
 
-            a.share_button {
-              position:relative;
-              top:14px;
-              margin:10px 0 3px 5px;
-              width:30px;
-              height:20px;
-              @include titleFont;
-              @include fontSize(14px);
-            }
-            a.share_button:hover {
-              margin-bottom:2px;
-              margin-left:4px;
+            p.share-text {
+                margin-top:7px;
             }
           }
         }
@@ -119,9 +127,8 @@ div.linear-wrapper {
 
       div.linear-right {
         float:left;
-        margin: 0px 0px 0px 30px;
-        width:500px;
-        overflow:hidden;
+        width:470px;
+        margin: 0px 0px 0px 25px;
 
         div.pinterest-title {
           height:40px;
@@ -130,7 +137,7 @@ div.linear-wrapper {
         div.pinterest-summary {
           @include really-big();
           @include fontSize(14px);
-          height:120px;
+          height:110px;
           padding:0px;
           margin: 0 0 0 0;
           overflow:hidden;
@@ -146,17 +153,17 @@ div.linear-wrapper {
 
         div.avatar {
           margin-top:10px;
-          height:40px;
+          height:50px;
           overflow:hidden;
 
           div.prof-image {
             float:left;
-            height:40px;
+            height:50px;
           }
 
           div.header-middle {
             margin-top:0px;
-            height:40px;
+            height:50px;
             p.submitted {
               margin-bottom:0px;
             }
