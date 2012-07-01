@@ -689,110 +689,112 @@ div.header-middle {
 }
 
 // footer
-div.social-bar{
-  height:50px;
-  border-top: 1px solid $light-gray;
-  margin: 15px 0px 0px 0px;
-
-  div.hearts {
-    float:left;
-    width:90px;
+div.pinterest {
+  div.social-bar{
     height:50px;
-    border-right: 1px solid $light-gray;
+    border-top: 1px solid $light-gray;
+    margin: 15px 0px 0px 0px;
 
-    div.hearts-wrapper {
-      position:relative;
-      margin-top: 12px;
-      width:100%;
-      text-align: center;
+    div.hearts {
+      float:left;
+      width:90px;
+      height:50px;
+      border-right: 1px solid $light-gray;
 
-      div.heart {
-        width:20px;
-        height:18px;
-        background:contain;
-      }
+      div.hearts-wrapper {
+        position:relative;
+        margin-top: 12px;
+        width:100%;
+        text-align: center;
 
-      div.heart_minus {
-        float:left;
-        margin: 3px 0 0 8px;
-      }
+        div.heart {
+          width:20px;
+          height:18px;
+          background:contain;
+        }
 
-      div.heart_plus {
-        float:right;
-        margin: 3px 8px 0 0;
-      }
+        div.heart_minus {
+          float:left;
+          margin: 3px 0 0 8px;
+        }
 
-      span.status {
-        @include really-big();
-        @include fontSize(20px);
-        color:#4c4c4c;
-        text-align:center;
-      }
+        div.heart_plus {
+          float:right;
+          margin: 3px 8px 0 0;
+        }
 
-    }
-
-  }
-
-  div.comments {
-    float:left;
-    width:130px;
-    height:50px;
-
-    a.comments-wrapper {
-      display:block;
-      width:100px;
-      height:30px;
-      margin: 8px 0 0 14px;
-      @include rounded(10px);
-      @extend .box;
-
-      div.text-wrapper {
-        foat:left;
-
-        div.comments-text {
+        span.status {
           @include really-big();
-          @include fontSize(12px);
-          margin: 2px 0 0 18px;
-          float:left;
+          @include fontSize(20px);
+          color:#4c4c4c;
+          text-align:center;
         }
 
-        div.comments-num {
-          float:left;
-          margin: 6px 0 0 5px;
-          color:$red;
+      }
+
+    }
+
+    div.comments {
+      float:left;
+      width:130px;
+      height:50px;
+
+      a.comments-wrapper {
+        display:block;
+        width:100px;
+        height:30px;
+        margin: 8px 0 0 14px;
+        @include rounded(10px);
+        @extend .box;
+
+        div.text-wrapper {
+          foat:left;
+
+          div.comments-text {
+            @include really-big();
+            @include fontSize(12px);
+            margin: 2px 0 0 18px;
+            float:left;
+          }
+
+          div.comments-num {
+            float:left;
+            margin: 6px 0 0 5px;
+            color:$red;
+          }
         }
       }
+
+      a.comments-wrapper:hover {
+        border-color:$dark-gray;
+      }
+
+
+
     }
 
-    a.comments-wrapper:hover {
-      border-color:$dark-gray;
+    div.share {
+      float:left;
+      width:97px;
+      height:50px;
+      border-left: 1px solid $light-gray;
+      text-align:center;
+      color:$red;
+
+      p.share-text {
+          @include titleFont();
+          @include fontSize(18px);
+          margin: 14px 0 0 0;
+      }
+
     }
 
-
-
-  }
-
-  div.share {
-    float:left;
-    width:97px;
-    height:50px;
-    border-left: 1px solid $light-gray;
-    text-align:center;
-    color:$red;
-
-    p.share-text {
-        @include titleFont();
-        @include fontSize(18px);
-        margin: 14px 0 0 0;
-    }
-
-  }
-
-  div.share:hover {
-    background-color:$red;
-    cursor:pointer;
-    p.share-text {
-      color:white;
+    div.share:hover {
+      background-color:$red;
+      cursor:pointer;
+      p.share-text {
+        color:white;
+      }
     }
   }
 }
