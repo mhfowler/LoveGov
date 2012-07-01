@@ -1,0 +1,166 @@
+
+@font-face {
+	font-family: "Sonus";
+	src: url("SonusLig.otf");
+}
+
+* {
+	margin:0px;
+	padding:0px;
+}
+
+body {
+	width:1000px;
+	margin-left:auto;
+	margin-right:auto;
+	font-family: "Sonus";
+}
+
+div#feed-container {
+	margin-top:30px;
+	height: 45px;
+}
+
+a.sort-button {
+	font-size:22px;
+	color:#959595;
+	padding:10px;
+	float:left;
+	border: 0px solid #adadad;
+	margin-right:10px;
+	text-decoration:none;
+}
+
+a:hover.sort-button {
+	background-color: #adadad;
+	color: white;
+}
+
+a#selected {
+	background-color: #adadad;
+	color: white;
+}
+
+a:hover#selected {
+	background-color:#adadad;
+}
+
+a#create {
+	float:right;
+	font-size:22px;
+	background-color:#EF503B;
+	padding:10px;
+	color: white;
+	margin-right:10px;
+	margin-left:10px;
+	text-decoration:none;
+	border-radius:8px;
+}
+
+a:hover#create {
+	color:white;
+	background-color:#FC8A81;
+}
+
+img.view {
+	float:right;
+	margin: 10px 0px 10px 10px;
+}
+
+a#how {
+	font-size: 12px;
+	font-family: Helvetica;
+	color:#959595;
+	float:right;
+	text-decoration:none;
+	margin:15px 10px 10px 10px;
+}
+
+a:hover#how {
+	text-decoration:underline;
+}
+
+a#sort {
+	text-transform:uppercase;
+	float:left;
+	letter-spacing:1px;
+	font-size:15px;
+	color:#EF503B;
+	padding:10px;
+	padding-bottom: 8px;
+	border: 1px solid #EF503B;
+	border-radius: 7px;
+	margin-right:10px;
+	margin-left:10px;
+	text-decoration:none;
+	margin-top:3px;
+}
+
+a:hover#sort {
+	background-color: #FC8A81;
+	color: white;
+	border-color: #FC8A81;
+}
+
+div#filtering {
+	height:55px;
+	margin-top: 10px;
+	padding:30px;
+	border: 1px solid #ccc;
+}
+
+div#filter-criteria {
+	height: 40px;
+}
+
+div#filter {
+	float:left;
+	font-size: 18px;
+	color: #959595;
+}
+
+div#filter a {
+	text-decoration:none;
+	padding:0px 10px;
+	color: #EF503B;
+}
+
+div#filter a:hover {
+	color:#FC8A81;
+}
+
+div#topics {
+	float:right;
+	font-size: 18px;
+	color: #959595;
+}
+
+div#topic-images {
+	float:right;
+	margin-left:10px;
+	margin-top:-30px;
+}
+
+div#topic-images img {
+	padding-left:5px;
+}
+
+div#clear-save {
+	float:right;
+	font-size:15px;
+	margin-top:10px;
+}
+
+div#clear-save a {
+	text-decoration:none;
+	color:white;
+	padding:8px;
+	margin:5px;
+	background-color: #adadad;
+}
+
+div#clear-save a:hover {
+	color:white;
+	background-color:#e0e0e0;
+}
+
