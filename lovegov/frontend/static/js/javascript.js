@@ -1156,7 +1156,8 @@ function loadShareButton() {
 
     $('.share_button').bindOnce('click.share', function(event) {
         event.preventDefault();
-        $("#share_id").data('share_id', $(this).data('share_id'));
+        var share_id = $(this).data('share_id');
+        $("#share_id").data('share_id', share_id);
         $('div.overdiv').fadeToggle("fast");
         $('div.shareModal').fadeToggle("fast");
     });
