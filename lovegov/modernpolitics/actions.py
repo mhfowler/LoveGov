@@ -28,10 +28,9 @@ from googlemaps import GoogleMaps
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
-def getLinkInfo(request, vals={}):
+def getLinkInfo(request, vals={}, html="",URL=""):
     vals = {}
     url = str(request.POST['remote_url'])
-    print url
     url.strip()
     # url may not be well formed so try variations until one works
     for prefix in PREFIX_ITERATIONS:
@@ -39,18 +38,14 @@ def getLinkInfo(request, vals={}):
             URL = prefix + url
             html = urllib2.urlopen(URL,data=None).fp.read()
             if html: break
-        except ValueError:
+        except:
             continue
     if html and URL:
         soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        try:
-            vals['title'] = soup.title.string
-        except:
-            vals['title'] = "No Title"
-        try:
-            vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
-        except:
-            vals['description'] = "No Description"
+        try: vals['title'] = soup.title.string
+        except: vals['title'] = "No Title"
+        try:  vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
+        except: vals['description'] = "No Description"
         image_refs = soup.findAll("img")
         list = []
         first_image = None
@@ -72,21 +67,21 @@ def getLinkInfo(request, vals={}):
 
         try:
             for imageobj in list:
-                imageobj['path'] = resizeImage(imageobj['path'])
+                imageobj['path'] = open(imageobj['path'],'r+')
         except:
             pass
 
         if len(list) == 0 and (first_image is not None and first_image is not False):
-            first_image['path'] = resizeImage(first_image['path'])
+            first_image['path'] =open(first_image['path'],'r+')
             list.append(first_image)
 
         if len(list) == 0:
-            list.append({'path':"/static/images/top-logo-default.png"})
+            list.append({'path':open('/static/dev/images/top-logo-default.png','r+')})
 
         vals['imglink'] = list
 
         html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
-        return HttpResponse(json.dumps({'html':html,'imglink':list}))
+        return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
@@ -295,11 +290,6 @@ def sign(request, vals={}):
             return HttpResponse("This petition does not exist")
         if petition.finalized:
             if petition.sign(user):
-                signed = Signed(user=user, content=petition)
-                signed.autoSave()
-                action = Action(relationship=signed)
-                action.autoSave()
-                petition.getCreator().notify(action)
                 vals['signer'] = user
                 context = RequestContext(request,vals)
                 template = loader.get_template('deployment/snippets/signer.html')
@@ -1432,29 +1422,30 @@ def updateHistogram(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getHistogramMembers(request, vals={}):
 
-    start = int(request.POST['start'])
-    num = int(request.POST['num'])
     u_ids = json.loads(request.POST['u_ids'])
-    bucket = int(request.POST['bucket'])
-    viewer = vals['viewer']
+    members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
 
-    if bucket != -1:
-        members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
-    else:
-        group = Group.objects.get(id=request.POST['g_id'])
-        members = group.getMembers().order_by('id')
-
-    if num == -1:
-        members = members[start:]
-    else:
-        members = members[start:start+num]
     vals['users'] = members
     how_many = len(members)
-
     html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
+
+def getAllGroupMembers(request, vals={}):
+
+    group = Group.objects.get(id=request.POST['g_id'])
+    start = int(request.POST['start'])
+    num = int(request.POST['num'])
+    members = group.getMembers(start=start, num=num)
+
+    vals['users'] = members
+    how_many = len(members)
+    html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
+    to_return = {'html':html, 'num':how_many}
+
+    return HttpResponse(json.dumps(to_return))
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1515,7 +1506,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'blogAction': blogAction,
             'flag': flag,
             'updateHistogram': updateHistogram,
-            'getHistogramMembers': getHistogramMembers
+            'getHistogramMembers': getHistogramMembers,
+            'getAllGroupMembers': getAllGroupMembers
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

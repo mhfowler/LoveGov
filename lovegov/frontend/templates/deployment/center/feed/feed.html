@@ -13,38 +13,7 @@
 <!-- feed header -->
 <div class="feed-header">
 
-    <p class="your-feed"> Your Feed </p>
-
-    <div class="options-box more-options more_options menu-toggle">
-        <p class="options-title menu-title">
-            More Options
-        </p>
-        <div class="triangle-selector"></div>
-    </div>
-
-    <div class="options-box saved-filters-box  menu_toggle menu-toggle">
-        <p class="options-title menu-title">
-            Saved Filters
-        </p>
-        <div class="triangle-selector"></div>
-        <div class="saved-menu menu">
-            {% for x in my_filters %}
-                <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
-                    <p class="saved-filter-title">
-                        {{ x.name }}
-                    </p>
-                    {% if x.name != 'default' %}
-                        <div class="x-button delete_saved_filter"></div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
     <!-- sorting dropdown -->
-    <div class="sort-by">
-        <h2 class="mini"> Sort by: </h2>
-    </div>
     <div class="sort-by-choice  menu_toggle menu-toggle">
         <p class="feed-menu-title ranking_menu_title menu-title">
             Hot
@@ -69,15 +38,41 @@
         </div>
     </div>
 
+    <div class="options-box more-options more_options menu-toggle">
+        <p class="options-title menu-title">
+            filter
+        </p>
+        <div class="triangle-selector"></div>
+    </div>
+
+    <div class="options-box saved-filters-box  menu_toggle menu-toggle">
+        <p class="options-title menu-title">
+            saved filters
+        </p>
+        <div class="triangle-selector"></div>
+        <div class="saved-menu menu">
+            {% for x in my_filters %}
+                <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
+                    <p class="saved-filter-title">
+                        {{ x.name }}
+                    </p>
+                    {% if x.name != 'default' %}
+                        <div class="x-button delete_saved_filter"></div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- display choice -->
     <div class="display-box">
         <div class="display-choice" data-display="P">
-            <img src="/static/images/card-view.png" width="15px" height="15px" class="display-gray"/>
-            <img src="/static/images/card-view-red.png" width="15px" height="15px" class="display-red"/>
+            <img src="/static/images/card-view.png" class="display-gray"/>
+            <img src="/static/images/card-view-red.png" class="display-red"/>
         </div>
         <div class="display-choice" data-display="L">
-            <img src="/static/images/list-view.png" width="15px" height="15px" class="display-gray"/>
-            <img src="/static/images/list-view-red.png" width="15px" height="15px" class="display-red"/>
+            <img src="/static/images/list-view.png"  class="display-gray"/>
+            <img src="/static/images/list-view-red.png" class="display-red"/>
         </div>
     </div>
 
@@ -98,12 +93,12 @@
     <div class="more-options-selector">
 
         <div class="filter-by">
-            <h2 class="mini"> Filter by: </h2>
+            <h3 class="mini"> filter by: </h3>
         </div>
 
         <div class="filter-by-group  menu_toggle menu-toggle">
             <p class="feed-menu-title menu-title">
-                Groups
+                groups
             </p>
             <div class="triangle-selector"></div>
             <div class="group-menu menu">
@@ -119,7 +114,7 @@
 
         <div class="filter-by-network  menu_toggle menu-toggle">
             <p class="feed-menu-title menu-title">
-                Networks
+                networks
             </p>
             <div class="triangle-selector"></div>
             <div class="group-menu menu">
@@ -135,7 +130,7 @@
 
         <div class="filter-by-political  menu_toggle menu-toggle">
             <p class="feed-menu-title political_menu_title menu-title">
-                Political
+                scale
             </p>
             <div class="triangle-selector"></div>
             <div class="political-menu menu">
@@ -159,7 +154,7 @@
 
         <div class="filter-by-content  menu_toggle menu-toggle">
             <p class="feed-menu-title menu-title">
-                Content
+                type
             </p>
             <div class="triangle-selector"></div>
             <div class="type-menu menu">
@@ -184,22 +179,23 @@
         <div class="feed-topic-selector-wrapper topic-icons-wrapper">
             {% for t in main_topics %}
                 <div class="feed-topic-icon-wrapper topic-icon-wrapper" data-t_id="{{ t.id }}">
-                    {% thumbnail t.image "40x40" format="PNG" as im %}
-                        <img class="topic-img normal feed-topic-img" src="{{ im.url }}"/>
+                    {% thumbnail t.image "35x35" format="PNG" as im %}
+                        <img class="topic-img normal feed-topic-img tooltip-top" title="{{ t.topic_text }}" src="{{ im.url }}"/>
                     {% endthumbnail %}
-                    {% thumbnail t.selected "40x40" format="PNG" as im %}
-                        <img class="topic-img selected feed-topic-img" src="{{ im.url }}"/>
+                    {% thumbnail t.selected "35x35" format="PNG" as im %}
+                        <img class="topic-img selected feed-topic-img tooltip-top" title="{{ t.topic_text }}" src="{{ im.url }}"/>
                     {% endthumbnail %}
                 </div>
             {% endfor %}
         </div>
 
         <div class="filter-topic">
-            <h2 class="mini"> Topics: </h2>
+            <h2 class="mini"> topics: </h2>
         </div>
 
     </div>
 
+<!--
     <div class="current-selection">
         <div class="current-filter">
             <p class="current-filter-text"> Current Filters: </p>
@@ -215,6 +211,29 @@
         </div>
         <input type="text" name="filter-name" id="some_id" class="save_filter_input"/>
     </div>
+    -->
+
+    <div id="clear-save">
+        <a href="#" class="feed_clear gray-button">
+            clear filter
+        </a>
+        <a href="#" class="save-filter gray-button open_save_button">
+            save filter
+        </a>
+        <div class="save-dialog">
+            <div class="save-pointer-up" class="select-none"></div>
+            <div class="save-div">
+                <div class="save-text">
+                    Enter a name for this filter.
+                </div>
+                <input class='save_filter_input'/>
+                <a href="#" class="save_filter_button save-filter-button"> save </a>
+            </div>
+        </div>
+        <a class="saved-message"> saved </a>
+    </div>
+
+    <div style="clear:both"></div>
 
 </div>
 
@@ -234,11 +253,15 @@
     </div>
 
     <div class="linear-wrapper">
+        <div class="linear-items-wrapper">
 
+        </div>
         <div class="right-sidebar">
-
-            {% include 'deployment/pieces/right_sidebar.html' %}
-
+            <div id="sidebar">
+                <div id="sidebar-fixed-div">
+                    {% include 'deployment/pieces/right_sidebar_questions.html' %}
+                </div>
+            </div>
         </div>
     </div>
 

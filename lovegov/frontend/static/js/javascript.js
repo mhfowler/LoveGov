@@ -1178,7 +1178,8 @@ function loadRightSideBar()
     // select topic click function
     $(".q-topic-img").click(function(event) {
         var wrapper = $(this).parents(".topic-icon-wrapper");
-        selectTopicSingle(wrapper);
+        toggleTopicSingle(wrapper);
+        toggleQuestionTopic($(this));
     });
 
     // sidebar stuff, for question-topic select
@@ -1195,12 +1196,6 @@ function loadRightSideBar()
     {
         $("#topic-all").show();
     }
-
-    // click and change topic question div
-    $(".q-topic-img").click(function(event)
-    {
-        selectQuestionTopic($(this));
-    });
 
     // hides all other topic divs, and shows random topic div
     $("#all-topics-button").click(function(event) {
@@ -1219,7 +1214,25 @@ function selectQuestionTopic(div)
 {
     var t = div.siblings(".t-alias").val();
     $(".topic-div").hide();
-    $("#topic-"+t).fadeIn();
+    var topic_div = $("#topic-"+t);
+    topic_div.fadeIn();
+    topic_div.addClass("chosen");
+}
+
+// shows questions from the selected topic and calls select topic to adjust icons appropriately
+function toggleQuestionTopic(div)
+{
+    var t = div.siblings(".t-alias").val();
+    $(".topic-div").hide();
+    var topic_div = $("#topic-"+t);
+    if (topic_div.hasClass("chosen")) {
+        topic_div.removeClass("chosen");
+        $("#topic-all").fadeIn();
+    }
+    else {
+        topic_div.addClass("chosen");
+        topic_div.fadeIn();
+    }
 }
 
 
@@ -1323,6 +1336,7 @@ function loadThread()
 {
     bindInlineEdits();
     heartButtons();
+    bindTooltips();
     // comment submit
     $(".submit-comment").unbind();
     $(".submit-comment").click(function(event)
@@ -1899,6 +1913,8 @@ function loadProfile()
  ***********************************************************************************************************************/
 function loadPetition()
 {
+    var barWrapper = $('div.petition_bar div.bar-wrapper');
+    petitionBar(barWrapper);
 
     $("#sign-button").click(function(event)
     {
@@ -2384,10 +2400,10 @@ function getFeed(num)
             }
             else {
                 if (feed_replace == true) {
-                    $(".linear-wrapper").html(returned.html);
+                    $(".linear-items-wrapper").html(returned.html);
                 }
                 else {
-                    $(".linear-wrapper").append(returned.html);
+                    $(".linear-items-wrapper").append(returned.html);
                 }
                 $(".pinterest-wrapper").hide();
                 $(".linear-wrapper").show();
@@ -2428,7 +2444,9 @@ function saveFilter(name) {
             'feed_name': feed_name
         },
         success: function(data) {
-            $(".save_filter_input").val("saved: " + feed_name);
+            $(".save_filter_input").val(feed_name);
+            $(".saved-message").show();
+            $(".saved-message").fadeOut();
         },
         error: null
     });
@@ -2723,21 +2741,28 @@ function loadNewFeed() {
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
 
-    $(".more-options-wrapper").css('height', '0px');
+    var more_options_wrapper = $(".more-options-wrapper");
+    more_options_wrapper.css('height', '0px');
+    more_options_wrapper.css('opacity', 0);
+    more_options_wrapper.css("padding", "0px");
+    //more_options_wrapper.show();
+    //more_options_wrapper.css("overflow", "visible");
     $(".more_options").click(function(event) {
         event.preventDefault();
         $(this).toggleClass("clicked");
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px'}, 1000);
+            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 850);
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
+            wrapper.find(".save-dialog").hide();
         }
         else {
             wrapper.show();
-            wrapper.animate({"height": '120px'}, 1000, function() { wrapper.css('overflow', 'visible')});
+            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 850,
+                function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
     });
@@ -2768,11 +2793,16 @@ function loadNewFeed() {
         refreshFeed(-1);
     });
 
+    $(".open_save_button").click(function(event) {
+        $(".save-dialog").show();
+    });
+
     $(".save_filter_button").click(function(event) {
         event.preventDefault();
         var name = $(".save_filter_input").val();
         if (name!='' && name!='enter a name for your filter.') {
             saveFilter(name);
+            $(".save-dialog").hide();
         }
         else {
             $(".save_filter_input").val('enter a name for your filter.');
@@ -2866,6 +2896,7 @@ function loadNewFeed() {
 
     bindCreateButton();
     loadCreate();
+
 }
 
 /***********************************************************************************************************************
@@ -3208,7 +3239,7 @@ function postNews()
     var summary = $('#news-input-summary').val();
     var link = $('#news-input-link').val();
     var description = $('#news-link-generation-description').text();
-    var screenshot = $('#news-link-image-src').attr("src");
+    var screenshot = $('.news_link_selected').attr("src");
     var scale = $('input:radio.news_scale:checked').val();
     var topic = $('input:radio[name=topics]:checked').val();
     ajaxPost({
@@ -3286,12 +3317,22 @@ function loadCreate()
     var delay = 750;
     var isLoading = false;
     var currentURL;
-    var currentLink = 0;
+    var currentLink = 1;
+    var image_count = 0;
     var returned;
 
     $('#news-input-link').bind('keyup',function()
     {
         var text = $(this).val();
+
+        function selectImageToggle()
+        {
+            $('#cycle-img-span').text(currentLink + " / " + image_count);
+            $('.news_link_image').removeClass("news_link_selected").hide();
+            $('.news_link_image').eq(currentLink-1).addClass("news_link_selected").show();
+        }
+
+
         if (timeout)
         {
             clearTimeout(timeout);
@@ -3314,19 +3355,19 @@ function loadCreate()
                         {
                             returned = eval('(' + data + ')');
                             $('#news-link-generation-wrapper').html(returned.html);
+                            image_count = $('.news_link_image_container').children().length;
                             $('#cycle-img-left').bind('click',function()
                             {
-                                if (currentLink-1 < 0) { currentLink = returned.imglink.length-1; }
+                                if (currentLink-1 < 1) { currentLink = image_count; }
                                 else { currentLink--; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                selectImageToggle();
+
                             });
                             $('#cycle-img-right').bind('click',function()
                             {
-                                if (currentLink+1 >= returned.imglink.length) { currentLink = 0; }
+                                if (currentLink+1 > image_count) { currentLink = 1; }
                                 else { currentLink++; }
-                                $('#cycle-img-span').text((currentLink+1) + " / " + returned.imglink.length);
-                                $('#news-link-image-src').attr("src",returned.imglink[currentLink].path);
+                                selectImageToggle();
                             });
                             currentURL = text;
                         },
@@ -3391,6 +3432,7 @@ function refreshHistogramData(data) {
 
     histogram.total += data.total;
     histogram.identical += data.identical;
+    histogram.identical_uids.push.apply(histogram.identical_uids, data.identical_uids);
 
     $.map(data.buckets, function(item, key) {
 
@@ -3402,6 +3444,13 @@ function refreshHistogramData(data) {
 
         var num = bar.data('num') + item.num;
         bar.data('num', num);
+        if (num == 1) {
+            var mouseover = String(num) + " person.";
+        }
+        else {
+            var mouseover = String(num) + " people.";
+        }
+        bar.find(".red_bar").attr("data-original-title", mouseover);
 
         if (histogram.total != 0) {
             var percent = (num / histogram.total)*100;
@@ -3458,6 +3507,8 @@ function renderHistogram() {
 function loadHistogram() {
 
     histogram = $(".histogram").data('metadata');
+    histogram.members_displayed = 0;
+    histogram.identical_displayed = 0;
     updateHistogram(true);
 
     $('.update_histogram').bindOnce("click.histogram", function(event) {
@@ -3505,12 +3556,16 @@ function loadHistogram() {
 function refreshHistogram() {
 
     histogram.total = 0;
-    histogram.identical = 0;
+
     $(".bar").data('num', 0);
     $.map(histogram.bucket_uids, function(item, key) {
         histogram.bucket_uids[key] = [];
     });
     histogram.members_displayed = 0;
+
+    histogram.identical = 0;
+    histogram.identical_uids = [];
+    histogram.identical_displayed = 0;
 
     updateHistogram(true);
 }
@@ -3531,10 +3586,8 @@ function updateHistogram(recursive) {
 
                 refreshHistogramData(returned);
                 renderHistogram();
-
-                if (histogram.members_displayed == 0) {
-                    getHistogramMembers();
-                }
+                getHistogramMembers();
+                getIdenticalMembers();
 
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
@@ -3548,45 +3601,146 @@ function updateHistogram(recursive) {
     );
 }
 
+var getHistogramMembersLockout = false;
 function getHistogramMembers() {
+    if (!getHistogramMembersLockout) {
+        getHistogramMembersHelper(false);
+    }
+}
 
-    var replace = (histogram.members_displayed == 0);
+var getIdenticalMembersLockout = false;
+function getIdenticalMembers() {
+    if (!getIdenticalMembersLockout) {
+        getHistogramMembersHelper(true);
+    }
+}
 
-    if (histogram.current_bucket != -1) {
-        var u_ids = histogram.bucket_uids[histogram.current_bucket];
+function getHistogramMembersHelper(identical) {
+
+    if (identical) {
+        var start = histogram.identical_displayed;
+        var u_ids = histogram.identical_uids;
     }
     else {
-        var u_ids=[];
+        var start = histogram.members_displayed;
+        if (histogram.current_bucket != -1) {
+            var u_ids = histogram.bucket_uids[histogram.current_bucket];
+        }
+        else {
+            setHistogramExplanation();
+            return getAllGroupMembers(start, 10, histogram.g_id);
+        }
     }
-    u_ids = JSON.stringify(u_ids);
+
+    var replace = (start== 0);
+
+    if (replace && u_ids.length==0) {
+        if (identical) {
+            $(".identical-avatars").html("");
+        }
+        else {
+            setHistogramExplanation();
+            $(".members-avatars").html("");
+        }
+    }
+
+    if (start <= (u_ids.length-1)) {
+
+        if (identical) {
+            getIdenticalMembersLockout = true;
+        }
+        else {
+            getHistogramMembersLockout = true;
+        }
+
+        var end = Math.min(u_ids.length, start+10);
+        u_ids = u_ids.slice(start, end);
+
+        u_ids = JSON.stringify(u_ids);
+
+        ajaxPost({
+                data: {
+                    'action':'getHistogramMembers',
+                    'u_ids': u_ids
+                },
+                success: function(data)
+                {
+                    var returned =  eval('(' + data + ')');
+
+                    if (identical) {
+                        var $wrapper = $(".identical-avatars");
+                        histogram.identical_displayed += returned.num;
+                        getIdenticalMembersLockout = false;
+                    }
+                    else {
+                        var $wrapper = $(".members-avatars");
+                        histogram.members_displayed += returned.num;
+                        getHistogramMembersLockout = false;
+                        setHistogramExplanation();
+                    }
+
+                    if (replace) {
+                        $wrapper.html(returned.html);
+                    }
+                    else {
+                        $wrapper.append(returned.html);
+                    }
+                    loadHoverComparison();
+                },
+                error: function(error, textStatus, errorThrown)
+                {
+                    $('body').html(error.responseText);
+                }
+            }
+        );
+    }
+}
+
+function setHistogramExplanation() {
+    var lower = histogram.current_bucket;
+    if (lower != -1) {
+
+        var inc = 100 / histogram.resolution;
+        var higher = lower + inc;
+        var message = String(lower) + '-' + String(higher) + "% similar to you";
+    }
+    else {
+        var message = "";
+    }
+    $(".in_percentile").html(message);
+}
+
+function getAllGroupMembers(start, num, g_id) {
+
+    var replace = (start== 0);
+    getHistogramMembersLockout = true;
 
     ajaxPost({
-            data: {
-                'action':'getHistogramMembers',
-                'start': histogram.members_displayed,
-                'num': 10,
-                'u_ids': u_ids,
-                'g_id': histogram.g_id,
-                'bucket': histogram.current_bucket
-            },
-            success: function(data)
-            {
-                var returned =  eval('(' + data + ')');
+        data: {
+            'action':'getAllGroupMembers',
+            'start':start,
+            'num':num,
+            'g_id':g_id
+        },
+        success: function(data)
+        {
+            var returned =  eval('(' + data + ')');
 
-                if (replace) {
-                    $(".members-avatars").html(returned.html);
-                }
-                else {
-                    $(".members-avatars").append(returned.html);
-                }
+            var $wrapper = $(".members-avatars");
+            histogram.members_displayed += returned.num;
+            getHistogramMembersLockout = false;
 
-                loadHoverComparison();
-                histogram.members_displayed += returned.num;
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
+            if (replace) {
+                $wrapper.html(returned.html);
             }
+            else {
+                $wrapper.append(returned.html);
+            }
+            loadHoverComparison();
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
         }
-    );
+    });
 }

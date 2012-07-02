@@ -21,7 +21,7 @@
 
 .feed-header {
 
-  margin-bottom:10px;
+  padding-top:10px;
 
   p.your-feed {
     @include really-big();
@@ -54,36 +54,41 @@
     }
   }
 
-  div.sort-by {
-    margin: 18px 0 0 25px;
-    float:left;
-  }
 
   div.sort-by-choice {
     position:relative;
     float:left;
-    height:35px;
-    width:70px;
-    margin: 11px 0 0 12px;
+    margin: 11px 0 0 10px;
+    height:25px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top: 8px;
+    padding-bottom:0px;
     @extend .box;
+    @include rounded(9px);
+    border-color:$red;
 
     p.feed-menu-title {
-      @include fontSize(18px);
-      margin-top:5px;
-      margin-left:7px;
-      margin-bottom:0px;
+      @include titleFont();
+      @include fontSize(15px);
+      color:$red;
+      text-transform: uppercase;
+      letter-spacing:1px;
       float:left;
+      margin:0px;
     }
 
     div.triangle-selector {
-      float:right;
-      margin: 13px 7px 0 7px;
+      float:left;
+      margin:0px;
+      margin-left:4px;
+      margin-top:4px;
     }
 
     div.sort-menu {
-      top:36px;
+      top:40px;
       div.menu-option {
-        width:67px;
+        width:100%;
         p.menu-option-title {
           margin: 8px 0px 0px 17px;
         }
@@ -91,11 +96,31 @@
     }
   }
 
+  div.sort-by-choice:hover {
+    background-color:$red;
+    p.feed-menu-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
+    }
+  }
+
+  div.sort-by-choice.clicked {
+    background-color:$red;
+    p.feed-menu-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
+    }
+  }
+
 
   div.options-box {
-    @extend .box;
-    width:140px;
-    height:35px;
+    padding:5px;
+    padding-left:10px;
+    padding-right:10px;
 
     margin-top:11px;
     margin-bottom:0px;
@@ -103,19 +128,40 @@
     float:left;
     margin-left:20px;
 
-    @include fontSize(18px);
+    @include titleFont();
 
     p.options-title {
-      margin-top:5px;
-      margin-left:6px;
-      margin-bottom:0px;
+      @include fontSize(22px);
+      color: #959595;
       float:left;
+      margin: 0;
     }
 
     div.triangle-selector {
       float:left;
-      margin-left:4px;
-      margin-top:13px;
+      margin-left:7px;
+      margin-top:8px;
+      background-image: url('/static/icons/down-arrow.png');
+    }
+  }
+
+  div.options-box:hover {
+    background-color:#adadad;
+    p.options-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
+    }
+  }
+
+  div.options-box.clicked {
+    background-color:#adadad;
+    p.options-title {
+      color:white;
+    }
+    div.triangle-selector {
+      background-image: url('/static/icons/down-arrow-white.png');
     }
   }
 
@@ -150,23 +196,15 @@
     }
 
     div.menu {
-      top:36px;
+      top:40px;
     }
 
   }
 
-  a.more-feed-button {
-    margin-top:26px;
-    margin-bottom:0px;
-
-    float:left;
-    margin-left:18px;
-  }
-
   a.how-does {
-    @include really-big();
+    @include body();
     @include fontSize(12px);
-    text-decoration: underline;
+    color: #959595;
     float:right;
     margin-top:21px;
     margin-right:10px;
@@ -177,63 +215,45 @@
   }
 
   div.create-box {
-
-    @extend div.options-box;
-    border-color:red;
-    width:110px;
-
-    margin-top:11px;
-    margin-bottom:0px;
-
     float:right;
+    font-size:22px;
+    background-color:#EF503B;
+    padding: 8px 12px 5px 12px;
+    color: white;
+    margin-top:6px;
     margin-right:10px;
-
-    p.options-title {
-      color:$red;
-      margin: 5px 0 0 28px;
-      text-align:center
+    margin-left:10px;
+    text-decoration:none;
+    border-radius:8px;
+    p.create-title {
+      @include titleFont();
+      margin:0px;
+      padding:0px;
     }
   }
 
   div.create-box.clicked {
-    background-color:$red;
-    border-color:$light-gray;
-    p.create-title {
-      color:black;
-    }
+    color:white;
+    background-color:#FC8A81;
   }
   div.create-box:hover {
-    background-color:$light-gray;
-    border-color:black;
-    p.create-title {
-      color:black;
-    }
+    color:white;
+    background-color:#FC8A81;
     cursor:pointer;
   }
-
-  div.display-box {
-    @extend div.options-box;
-
-    margin-top:11px;
-    margin-bottom:0px;
-
-    width:70px;
-    height:35px;
+  div.display-choice {
     float:right;
-    div {
-      float:left;
-      margin-left:14px;
-      margin-top:2px;
-    }
+    margin-left:14px;
+    margin-top:15px;
   }
 }
 
 div.more-options-wrapper {
 
-  margin-top:0px;
-  padding:0px;
-  width:1000px;
-  height:120px;
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  height:105px;
   @extend .box;
   overflow:hidden;
 
@@ -244,176 +264,140 @@ div.more-options-wrapper {
     margin-left:10px;
     margin-top:10px;
 
+    div.menu-toggle {
+      position:relative;
+
+      div.menu {
+        position:absolute;
+        top:35px;
+        width:100%;
+      }
+    }
+
     div.filter-by {
       float:left;
-      margin-top:10px;
+      margin-top:6px;
       margin-left:10px;
       margin-right:15px;
+      h3.mini {
+        color: #959595;
+        @include fontSize(18px);
+      }
     }
 
     div.filter-by-group {
-      position:relative;
-      float:left;
-      margin-left:10px;
-      height:30px;
-      width:80px;
-      padding-top:10px;
-      @extend .box;
-
-      p.feed-menu-title {
-        float:left;
-        margin-left:10px;
-      }
-
-      div.triangle-selector {
-        float:left;
-        margin-left:6px;
-        margin-top:4px;
+      div.menu {
+        width:120px;
+        padding-bottom:10px;
       }
     }
 
     div.filter-by-network {
-      position:relative;
-      float:left;
-      height:30px;
-      width:90px;
-      padding-top:10px;
-      @extend .box;
-
-      p.feed-menu-title {
-        float:left;
-        margin-left:10px;
-      }
-
-      div.triangle-selector {
-        float:left;
-        margin-left:6px;
-        margin-top:4px;
+      div.menu {
+        width:120px;
+        padding-bottom:10px;
       }
     }
 
-    div.filter-by-political {
-      position:relative;
-      float:left;
-      width:80px;
-      height:30px;
-      padding-top:10px;
-      @extend .box;
-
-      p.feed-menu-title {
-        float:left;
-        margin-left:10px;
+    div.menu-option {
+      width:100%;
+      p.menu-option-title {
+        margin: 10px 0 0 7px;
       }
-
-      div.triangle-selector {
-        float:left;
-        margin-left:6px;
-        margin-top:4px;
-      }
-
-      div.menu-option {
-        width:77px;
-        p.menu-option-title {
-          margin-left:10px;
-        }
-      }
-
-    }
-    div.filter-by-content {
-      position:relative;
-      float:left;
-      width:80px;
-      height:30px;
-      padding-top:10px;
-      @extend .box;
-
-      p.feed-menu-title {
-        float:left;
-        margin-left:10px;
-      }
-
-      div.triangle-selector {
-        float:left;
-        margin-left:6px;
-        margin-top:4px;
-      }
-
-      div.menu-option {
-        width:77px;
-        p.menu-option-title {
-          margin: 10px 0 0 7px;
-        }
-
-      }
-
     }
 
     div.filter-topic {
       margin-top:10px;
       float:right;
-    }
-
-  }
-
-  div.current-selection {
-    height:50px;
-    width:950px;
-    margin-left:20px;
-    @extend .box;
-
-    div.current-filter {
-      margin-top:0px;
-      margin-left:12px;
-      height:50px;
-      width:130px;
-      float:left;
-      border-right: 1px solid $light-gray;
-      p.current-filter-text {
-        @include really-big();
-        margin-left:0px;
-        margin-top:12px;
+      h2.mini {
+        color: #959595;
       }
     }
 
-    div.current-options-images {
-      float:left;
-      width:550px;
-      height:50px;
-      margin: 0;
-      border-right: 1px solid $light-gray;
-    }
-
-    input.save_filter_input {
-      float:right;
+    div.feed-topic-selector-wrapper {
       margin-right:15px;
-      margin-top:10px;
-      margin-left:0px;
-      height:30px;
-      color:blue;
+    }
+  }
+
+  div#clear-save {
+    float:right;
+    font-size:15px;
+    margin-top:10px;
+    @include titleFont();
+    margin-right:10px;
+    margin-bottom:0px;
+    position: relative;
+
+    a.saved-message {
+      display:none;
+      position:absolute;
+      top:25px;
+      left:145px;
     }
 
-    div.current-options {
-      float:right;
-      margin-top:8px;
-      margin-right:12px;
-
-      a.feed-clear {
+    div.save-dialog {
+      display:none;
+      position:absolute;
+      top:30px;
+      z-index:10;
+      div.save-pointer-up {
+        width:30px;
+        height:30px;
+        background-image: url('/static/images/comparison-pointer-up.png');
+        background: contain;
         display:block;
+        margin-left:120px;
+        z-index:13;
       }
-
-      a.feed-save {
+      div.save-div {
         display:block;
+        position:relative;
+        top:-5px;
+        height: 100px;
+        width:200px;
+        @extend .box;
+        @include rounded(15px);
+        border-color:$red;
+        z-index:11;
+        background-color:white;
+
+        div.save-text {
+          margin: 10px 0 0 10px;
+        }
+        input.save_filter_input {
+          display:block;
+          margin-right:15px;
+          margin-top:7px;
+          margin-left:15px;
+          height:20px;
+          width:160px;
+          color:$black;
+        }
+        a.save-filter-button {
+          margin-top:5px;
+          margin-right:15px;
+          float:right;
+        }
       }
     }
 
   }
 
+  div#clear-save a.gray-button {
+    text-decoration:none;
+    color:white;
+    padding:8px;
+    margin:5px;
+    background-color: #adadad;
+  }
+
+  div#clear-save a.gray-button:hover {
+    color:white;
+    background-color:#e0e0e0;
+  }
+
 }
 
-div.group-menu {
-  width:120px;
-  padding-bottom:10px;
-}
 
 $linkborder: 2px;
 div.group-box {
@@ -491,7 +475,9 @@ div.pinterest-wrapper {
     float:left;
     width:320px;
     height:500px;
-    margin-top:20px;
+    margin-top:0px;
+    position:relative;
+    top: -5px;
   }
 
   div.pinterest-column-not-first {
@@ -532,6 +518,7 @@ div.pinterest_card {
 
       // below header
       div.pinterest-image {
+        text-align:center;
         margin: 15px 0px 0px 20px;
 
         div.img-wrapper {
@@ -575,10 +562,9 @@ div.pinterest_card {
 
       div.petition_bar {
 
-        margin: 20px 0 0 20px;
+        margin: 20px 20px 0 20px;
 
         div.bar-wrapper {
-          width:270px;
           height:14px;
           overflow:hidden;
           border: 2px solid $gray;
@@ -599,22 +585,49 @@ div.pinterest_card {
   }
 }
 
-div.menu-toggle.clicked {
-  background-color:$red;
+div.menu-toggle {
+  width:auto;
+  height:25px;
+  float:left;
+  padding:5px;
+  padding-left:10px;
+  padding-right:8px;
   p.menu-title {
-    color:white;
+    @include titleFont();
+    @include fontSize(18px);
+    float:left;
+    color:$red;
   }
   div.triangle-selector {
-    border-top-color: white;
+    background:contain;
+    background-image: url('/static/icons/down-arrow.png');
+    width:10px;
+    height:10px;
+    float:left;
+    margin-left:7px;
+    margin-top:7px;
+  }
+  div.menu {
+    width:100%;
+  }
+}
+
+div.menu-toggle.clicked {
+  cursor:pointer;
+  p.menu-title {
+    color:$red-light;
+  }
+  div.triangle-selector {
+    //background-image: url('/static/icons/down-arrow-white.png');
   }
 }
 div.menu-toggle:hover {
-  background-color:$red;
+  cursor:pointer;
   p.menu-title {
-    color:white;
+    color:$red-light;
   }
   div.triangle-selector {
-    border-top-color: white;
+    //background-image: url('/static/icons/down-arrow-white.png');
   }
 }
 
@@ -624,16 +637,6 @@ div.feed-topic-icon-wrapper {
   margin-left:10px;
   margin-bottom:10px;
 }
-
-
-div.right-sidebar {
-  width:250px;
-  display:none;
-  overflow:hidden;
-  float:left;
-  margin: 30px 0 0 0;
-}
-
 
 div.pinterest-top-comment {
   @extend .box;
@@ -699,111 +702,110 @@ div.header-middle {
 }
 
 // footer
-div.pinterest-footer {
-  height:50px;
-  border-top: 1px solid $light-gray;
-  margin: 15px 0px 0px 0px;
-
-  div.hearts {
-    float:left;
-    width:90px;
+div.feed-main-div {
+  div.social-bar{
     height:50px;
-    border-right: 1px solid $light-gray;
+    border-top: 1px solid $light-gray;
+    margin: 15px 0px 0px 0px;
 
-    div.hearts-wrapper {
-      position:relative;
-      margin-top: 12px;
-      width:100%;
-      text-align: center;
+    div.hearts {
+      width:90px;
+      float:left;
 
-      div.heart {
-        width:20px;
-        height:18px;
-        background:contain;
-      }
+      div.hearts-wrapper {
+        position:relative;
+        margin-top: 12px;
+        text-align: center;
 
-      div.heart_minus {
-        float:left;
-        margin: 3px 0 0 8px;
-      }
+        div.heart {
+          width:20px;
+          height:18px;
+          background:contain;
+        }
 
-      div.heart_plus {
-        float:right;
-        margin: 3px 8px 0 0;
-      }
+        div.heart_minus {
+          float:left;
+          margin: 3px 0 0 8px;
+        }
 
-      span.status {
-        @include really-big();
-        @include fontSize(20px);
-        color:#4c4c4c;
-        text-align:center;
-      }
+        div.heart_plus {
+          float:right;
+          margin: 3px 8px 0 0;
+        }
 
-    }
-
-  }
-
-  div.comments {
-    float:left;
-    width:130px;
-    height:50px;
-    border-right: 1px solid $light-gray;
-
-    a.comments-wrapper {
-      display:block;
-      width:100px;
-      height:30px;
-      margin: 8px 0 0 14px;
-      @include rounded(10px);
-      @extend .box;
-
-      div.text-wrapper {
-        foat:left;
-
-        div.comments-text {
+        span.status {
           @include really-big();
-          @include fontSize(12px);
-          margin: 2px 0 0 18px;
-          float:left;
-        }
-
-        div.comments-num {
-          float:left;
-          margin: 6px 0 0 5px;
-          color:$red;
+          @include fontSize(20px);
+          color:#4c4c4c;
+          text-align:center;
         }
       }
+
+
     }
 
-    a.comments-wrapper:hover {
-      border-color:$dark-gray;
+    div.comments {
+      border-left: 1px solid $gray;
+      float:left;
+      width:130px;
+      height:50px;
+
+      div.comments-bubble {
+        display:none;
+      }
+
+      a.comments-wrapper {
+
+        div.text-wrapper {
+          display:block;
+          width:100px;
+          height:30px;
+          margin: 8px 0 0 14px;
+          @include rounded(10px);
+          @extend .box;
+
+          div.comments-text {
+            margin: 6px 0 0 13px;
+            float:left;
+            color:$black;
+          }
+
+          div.comments-num {
+            float:left;
+            margin: 6px 0 0 5px;
+            color:$red;
+          }
+        }
+
+        div.text-wrapper:hover {
+          border-color:$dark-gray;
+        }
+      }
+
     }
 
+    div.share {
+      float:left;
+      width:97px;
+      height:50px;
+      border-left: 1px solid $light-gray;
+      text-align:center;
+      color:$red;
 
-
-  }
-
-  div.share {
-    float:left;
-    width:97px;
-    height:50px;
-    border-left: 1px solid $light-gray;
-    text-align:center;
-    color:$red;
-
-    p.share-text {
+      p.share-text {
         @include titleFont();
         @include fontSize(18px);
         margin: 14px 0 0 0;
+      }
+
     }
 
-  }
-
-  div.share:hover {
-    background-color:$gray;
-    cursor:pointer;
-    p.share-text {
-      color:white;
+    div.share:hover {
+      background-color:$red;
+      cursor:pointer;
+      p.share-text {
+        color:white;
+      }
     }
   }
 }

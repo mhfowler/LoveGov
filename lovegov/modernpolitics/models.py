@@ -353,6 +353,12 @@ class Content(Privacy, LocationLevel):
     def getImage(self):
         return self.getMainImage().image
 
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return self.getMainTopic().getUserImage()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1140,6 +1146,12 @@ class UserProfile(FacebookProfileModel, LGModel):
         else:
             return getDefaultImage()
 
+    def getProfileImageURL(self):
+        if self.basicinfo.profile_image:
+            return self.basicinfo.profile_image.image.url
+        else:
+            return DEFAULT_PROFILE_IMAGE_URL
+
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
@@ -1914,12 +1926,22 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
+
+                signed = Signed(user=user, content=self)
+                signed.autoSave()
+                action = Action(relationship=signed)
+                action.autoSave()
+                self.getCreator().notify(action)
+
                 self.current += 1
                 if self.current >= self.goal:
                     self.p_level += 1
                     self.goal = PETITION_LEVELS[self.p_level]
                 self.save()
+
                 return True
+        else:
+            return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Finalize petition for signing.
@@ -1952,6 +1974,15 @@ class Petition(Content):
         return self.signers.all()
     def numSigners(self):
         return self.signers.count()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Override getImageURL function to use default petition image
+    #-------------------------------------------------------------------------------------------------------------------
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_PETITION_IMAGE_URL
 
 #=======================================================================================================================
 # Event
@@ -1995,6 +2026,12 @@ class News(Content):
 
     def getImage(self):
         return self.link_screenshot
+
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_NEWS_IMAGE_URL
 
     # takes in a lovegov.com url and saves image file from that location
     def saveScreenShot(self, ref):
@@ -2800,6 +2837,12 @@ class Question(Content):
             super(Question, self).edit(field,value)
         self.save()
 
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_DISCUSSION_IMAGE_URL
+
 #=======================================================================================================================
 # NextQuestion is essentially a relation from one question to another, based on how you answered the first question.
 #
@@ -3278,6 +3321,7 @@ class Group(Content):
         topic = Topic.lg.get_or_none(alias=topic_alias)
         total = 0
         identical = 0
+        identical_uids = []
 
         for x in members:
             comparison = getUserUserComparison(user, x)
@@ -3291,8 +3335,10 @@ class Group(Content):
                 buckets[bucket]['u_ids'].append(x.id)
                 if comparison.result == 100:
                     identical += 1
+                    identical_uids.append(x.id)
 
-        return {'total':int(total), 'identical': identical, 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
+        return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
+                'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.
@@ -3455,6 +3501,12 @@ class Group(Content):
             num_questions += member.getView().responses.count()
         avg_questions = num_questions/self.members.count()
         return int(round(avg_questions))
+
+    def getImageURL(self):
+        if self.main_image:
+            return self.main_image.image.url
+        else:
+            return DEFAULT_GROUP_IMAGE_URL
 
 
 #=======================================================================================================================

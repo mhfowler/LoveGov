@@ -16,8 +16,9 @@
         {% endif %}
     </div>
     <span class="flag tooltip-top" data-commentid="{{comment.id}}" title="Flag this comment">⚐</span>
-    <span class="timestamp">
-        {{comment.created_when}}
+    <span class="timestamp tooltip-top" title="{{comment.created_when}}">
+        {% load humanize %}
+        {{comment.created_when|naturaltime}}
     </span>
     <div class="clearfix"></div>
     <div>

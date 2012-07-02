@@ -55,7 +55,7 @@ def viewWrapper(view, requires_login=False):
         vals['google'] = GOOGLE_LOVEGOV
         host_full = getHostHelper(request)
         vals['host_full'] = host_full
-        vals['defaultProfileImage'] = host_full + DEFAULT_IMAGE_URL
+        vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
@@ -296,7 +296,8 @@ def getUserWebResponsesJSON(request,vals={}):
                 weight = 5
             answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
-        toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"Idk",'childrenData':[]}
+        toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
+        if len(response) > 0 : toAddquestion['user_explanation'] = response[0].userresponse.explanation
         questionsArray[topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
 
@@ -345,15 +346,9 @@ def compareWeb(request,alias=None,vals={}):
             vals['viewer'] = user
             vals['json'] = comparison.toJSON()
             setPageTitle("lovegov: web2",vals)
-            if request.is_ajax():
-                html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
-                url = '/profile/web/' + alias + '/'
-                rebind = 'qaweb'
-                to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['pageTitle']}
-                return HttpResponse(json.dumps(to_return))
-            else:
-                frame(request, vals)
-                return renderToResponseCSRF(template='deployment/pages/web.html', vals=vals, request=request)
+            html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
+            url = '/profile/web/' + alias + '/'
+            return framedResponse(request, html, url, vals)
     if request.method == 'POST':
         if request.POST['action']:
             return actions.answer(request, vals)
@@ -610,6 +605,7 @@ def group(request, g_id=None, vals={}):
         bucket_uids[x] = []
     histogram_metadata = {'total':0,
                           'identical':0,
+                          'identical_uids':[],
                           'resolution':resolution,
                           'g_id':group.id,
                           'which':'mini',
@@ -679,6 +675,7 @@ def histogramDetail(request, g_id, vals={}):
         bucket_uids[x] = []
     histogram_metadata = {'total':0,
                           'identical':0,
+                          'identical_uids':[],
                           'resolution':resolution,
                           'g_id':group.id,
                           'which':'full',

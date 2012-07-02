@@ -5,20 +5,22 @@
     {% with width|add:"x"|add:height as geometry %}
 
         {% if private %}
+
             {% thumbnail defaultProfileImage geometry crop="center" as im %}
                 <img class="avatar-image" src="{{ im.url }}"/>
             {% endthumbnail %}
 
         {% else %}
-            {% thumbnail user.getProfileImage.image geometry crop="center" as im %}
-                <img class="has_hover_comparison avatar-image"  data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
-                     src="{{ im.url }}"/>
-            {% endthumbnail %}
+
+            {% with full_url=host_full|add:user.getProfileImageURL %}
+                {% thumbnail full_url geometry crop="center" as im %}
+                    <img class="has_hover_comparison avatar-image"  data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
+                         src="{{ im.url }}"/>
+                {% endthumbnail %}
+            {% endwith %}
 
         {% endif %}
 
     {% endwith %}
-
-
 
 </div>

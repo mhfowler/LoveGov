@@ -14,6 +14,7 @@
 div.topics-header span.content_header {
 	text-align: center;
 	font-size: 26px;
+    margin-bottom:5px;
 }
 
 div.sidebar-box {
@@ -59,7 +60,7 @@ div.sidebar-box {
 {
     float:left;
     border-top:1px solid #ccc;
-    margin-top:15px;
+    margin-top:13px;
 }
 
 
@@ -104,7 +105,14 @@ div.sidebar-box {
 .lower-title
 {
     float:left;
-    margin-top:20px;
+    width:100%;
+    text-align:center;
+    margin-bottom:8px;
+}
+
+.topic-div
+{
+  margin-top:20px;
 }
 
 #topics-title

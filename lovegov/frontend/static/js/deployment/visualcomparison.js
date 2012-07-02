@@ -77,7 +77,7 @@ var VisualComparison = Class.extend
         {
             if (self.dataObj['user_url'] != '')
             {
-                //ajaxLink(self.dataObj['user_url'],true);
+                ajaxLink(self.dataObj['user_url'],true);
             }
         });
         self.shapesLayer.add(circle);

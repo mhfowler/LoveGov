@@ -53,11 +53,18 @@
           }
 
           .label {
+            width:30px;
             margin-top:10px;
             text-align:center;
+            cursor:pointer;
+            padding:1px;
+            @include rounded(7px);
           }
           .label.clicked {
-            color:$blue;
+            background-color:$light-gray;
+          }
+          .label:hover {
+            background-color:$light-gray;
           }
         }
 
@@ -71,12 +78,26 @@
       width:980px;
       height:50px;
 
-      .histogram-title {
+      p {
         float:left;
         @include really-big();
         @include fontSize(30px);
         color:white;
         margin: 15px 0 0 20px;
+
+        a {
+          font-style:italic;
+          color: white;
+        }
+        a:hover {
+          color: $black;
+        }
+      }
+
+      p.breakdown {
+        display:block;
+        margin-left: 160px;
+        text-align:center;
       }
 
       .histogram-topic {
@@ -91,21 +112,54 @@
 
   }
 
+  div.members-header {
+    border-top: 1px solid $gray;
+    margin: 25px 0 0 0;
+    width:980px;
+
+    div.members-avatars-header {
+      padding-top:10px;
+      padding-bottom:4px;
+      float:left;
+      width:800px;
+      border-right:1px solid $gray;
+    }
+    div.identical-avatars-header {
+      padding-top:10px;
+      float:left;
+      margin:0 0 0 0;
+
+      h3.identical {
+        margin-left:25px;
+      }
+    }
+  }
+
   div.group-members-wrapper {
-    margin: 10px 0 0 0;
+    margin: 0 0 0 0;
     width: 980px;
-    height:500px;
+    border-top: 1px solid $gray;
+    text-align:center;
 
+    div.members-avatars {
+      float:left;
+      width:800px;
+      margin-bottom:20px;
+    }
 
-    div.histogram-avatar {
+    div.identical-avatars {
+      border-left:1px solid $gray;
+      margin:0 0 0 0;
+      float:left;
+      width:170px;
+      text-align:center;
+    }
+
+    a.histogram-avatar {
       float:left;
       margin: 20px 0 0 30px;
     }
 
-    a.get_more_members {
-      float:left;
-      margin: 35px 0 0 30px;
-    }
   }
-
 }
+

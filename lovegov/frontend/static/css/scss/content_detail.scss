@@ -2,9 +2,15 @@
 @import 'master-mixins';
 
 
-div#content-div h3 {
+div#content-div h3, div.content-left-side h3 {
     color: $red;
-    @include gillLight
+    @include titleFont;
+    margin-bottom: 20px;
+}
+
+div.content-left-side h3 {
+    font-size: 20px;
+    margin-top: 30px;
 }
 
 div#content
@@ -15,29 +21,133 @@ div#content
     margin-top:40px;
 }
 
-div#content-left
-{
-    width:700px;
-    float:left;
-}
-
 div.content-left-side {
     width:250px;
     float:left;
     padding: 0 30px 30px 0;
 }
 
+div#content-left {
+    width:700px;
+    float:left;
+    div.social-bar{
+      height:50px;
+      border: 1px solid $light-gray;
+      margin: 15px 0px 0px 0px;
+
+      div.hearts {
+        float:left;
+        width:90px;
+        height:50px;
+        border-right: 1px solid $light-gray;
+
+        div.hearts-wrapper {
+          position:relative;
+          margin-top: 12px;
+          width:100%;
+          text-align: center;
+
+          div.heart {
+            width:20px;
+            height:18px;
+            background:contain;
+          }
+
+          div.heart_minus {
+            float:left;
+            margin: 3px 0 0 8px;
+          }
+
+          div.heart_plus {
+            float:right;
+            margin: 3px 8px 0 0;
+          }
+
+          span.status {
+            @include really-big();
+            @include fontSize(20px);
+            color:#4c4c4c;
+            text-align:center;
+          }
+
+        }
+
+      }
+
+      div.comments {
+        float:left;
+        width:86px;
+        height:50px;
+
+        a.comments-wrapper {
+          display:block;
+
+          div.text-wrapper {
+            foat:left;
+            position: relative;
+
+            div.comments-text {
+              @include really-big();
+              @include fontSize(12px);
+              position: absolute;
+              top: 25px;
+              left:50%;
+              margin-left:-25px;
+            }
+
+            div.comments-num {
+              margin: 6px 0 0 5px;
+              color:$red;
+              position: absolute;
+              left: 50%;
+              margin-left:-10px;
+              font-size: 20px;
+            }
+          }
+        }
+
+        a.comments-wrapper:hover {
+          border-color:$dark-gray;
+        }
+
+
+
+      }
+
+      div.share {
+        float:left;
+        width:70px;
+        height:50px;
+        border-left: 1px solid $light-gray;
+        text-align:center;
+        color:$red;
+
+        p.share-text {
+            @include titleFont();
+            @include fontSize(18px);
+            margin: 14px 0 0 0;
+        }
+        &:hover {
+            background-color:$red;
+            cursor:pointer;
+            p.share-text {
+              color:white;
+            }
+        }
+      }
+    }
+}
+
+div.comments-bubble {
+    display: none;
+}
+
 div.content-left-side div.content-image-area {
-    background-size: 100%;
+    background-size: auto;
     height: 150px;
     width: 250px;
     position: relative;
-}
-
-div#content-div
-{
-    width:575px;
-    margin-left:25px;
+    background-repeat: no-repeat;
 }
 
 div.content_separator {
@@ -65,6 +175,8 @@ div.hearts_wrapper span.status {
 	color: $black;
 }
 
+// Deprecated
+/*
 div.social_bar {
 	width: 100%;
 	text-align: center;
@@ -78,12 +190,12 @@ div.social_bar {
 	    padding: 0;
 	    margin: 0;
 	    border-color: $light-gray;
-	    border: 1.5px solid $light-gray;
+	    border: 1px solid $light-gray;
 	    border-right: none;
 	    color: $deep-gray;
 	    
 	    &:last-child {
-		    border-right: 2px solid $light-gray;
+		    border-right: 1px solid $light-gray;
 		}
 		
 		&.social_bar_comments {
@@ -125,21 +237,8 @@ div.social_bar {
 		color: red;
 	}
 }
+*/
 
-div.hearts-wrapper {
-          div.heart {
-            width:20px;
-            height:18px;
-            background:contain;
-          }
-
-          span.status {
-            @include fontSize(20px);
-            width:20px;
-            overflow:hidden;
-            margin:auto;
-          }
-}
 
 div#thread
 {
@@ -152,7 +251,7 @@ span.discuss
 {
     font-size: 18px;
     color: $red;
-    @include gillLight;
+    @include titleFont;
     margin: 15px 0 10px 0;
     display: block;
 }
@@ -181,8 +280,26 @@ div.comment
 
 div#content-div p {
     color: $deep-gray;
-    @include gillLight;
-    font-size: 20px;
+    @include titleFont;
+    font-size: 18px;
+}
+
+div.petition_bar {
+
+    margin-top: 10px;
+  div.bar-wrapper {
+    width:100%;
+    height:14px;
+    border: 1px solid $red;
+    overflow:hidden;
+    div.red_bar {
+      height:14px;
+      background-color:$red;
+    }
+  }
+  div.goal-statement {
+    margin: 5px 0 0 0;
+  }
 }
 
 .comment-username
@@ -193,7 +310,7 @@ div#content-div p {
     margin-bottom:10px;
     float:left;
     cursor:pointer;
-    @include gillLight;
+    @include titleFont;
 }
 
 .comment-username a, .comment-username a:hover, .comment-username a:link, .comment-username a:visited, .comment-username a:active
@@ -208,7 +325,7 @@ div#content-div p {
 {
     position:relative;
     margin-top:10px;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #f0503b;
     font-size:13pt;
     cursor:pointer;
@@ -232,7 +349,7 @@ div#content-div p {
 {
     position:relative;
     float:right;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #ccc;
     font-size:10pt;
     padding-left:10px;
@@ -241,7 +358,7 @@ div#content-div p {
 
 .comment-textarea
 {
-    font-family:"Gill Sans Std", Verdana, sans-serif;
+    @include titleFont;
     font-size:11pt;
     border: 1px solid #ccc;
     height:100px;
@@ -295,6 +412,8 @@ span.collapse {
     float: left;
     z-index: 1;
     color: $deep-gray;
+    top: 85px;
+    left: 10px;
 }
 
 span.flag {
@@ -324,7 +443,7 @@ div.threaddiv {
 {
     float:left;
     position:relative;
-    width:575px;
+    width:400px;
 }
 
 #question h3
@@ -389,7 +508,7 @@ div.threaddiv {
     position: relative;
     margin-left: 10px;
     cursor:pointer;
-    width:550px;
+    width: 400px;
 }
 
 
@@ -419,7 +538,7 @@ div.threaddiv {
     position:relative;
     padding-bottom:5px;
     font-size:20pt;
-    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    @include titleFont;
     color:#0f5569;;
 }
 
@@ -456,7 +575,7 @@ div.threaddiv {
 
 .profile-header
 {
-    font-family:"Gill Sans Std Light", Helvetica, Verdana, sans-serif;
+    @include titleFont;
     color:#959595;
     font-size:14pt;
     margin-bottom:3px;
@@ -505,7 +624,7 @@ div.threaddiv {
 {
     padding-bottom:5px;
     font-size:14pt;
-    font-family:"Gill Sans Std", Helvetica, Verdana, sans-serif;
+    @include titleFont;
     color:#0f5569;
 }
 
@@ -555,7 +674,7 @@ div.threaddiv {
 {
     position:relative;
     top:10px;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #f0503b;
     font-size:13pt;
     cursor:pointer;
@@ -565,7 +684,7 @@ div.threaddiv {
 {
     position:relative;
     float:right;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
     color: #0F5569;
     font-size:10pt;
     padding-left:10px;
@@ -613,7 +732,7 @@ div.threaddiv {
     padding:10px;
     padding-bottom:7px;
     font-size:14pt;
-    font-family:"Gill Sans Std Light", Verdana, sans-serif;
+    @include titleFont;
 }
 .red-button:link
 {
@@ -643,6 +762,7 @@ div.threaddiv {
 {
     float:left;
     margin-bottom:40px;
+    width: 100%;
 }
 
 #signer-names
@@ -652,7 +772,6 @@ div.threaddiv {
 
 .signer-wrapper
 {
-    width:190px;
     float:left;
     margin-bottom:15px;
     height:40px;
@@ -663,16 +782,19 @@ div.threaddiv {
     float:left;
 }
 
-.signer-wrapper div
+.signer-wrapper div.signer-name
 {
-    width: 130px;
     float: left;
     margin-left: 10px;
+    height: 40px;
+    position: relative;
+    top: 10px;
 }
 
 .signer-wrapper a, .signer-wrapper a:link, .signer-wrapper a:hover, .signer-wrapper a:active
 {
     color:#0F5569;
+    font-size: 18px;
 }
 
 #finalize-button
@@ -685,11 +807,18 @@ div.threaddiv {
     margin-top:20px;
 }
 
-.sign
+.sign .red-button
 {
-    width:575px;
+    color: white;
+    width:100%;
+    display:block;
+    text-align: center;
     margin-top:25px;
-    float:right;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    &:hover {
+        background-color: $red-light;
+    }
 }
 
 #num-signers
@@ -711,7 +840,7 @@ div.threaddiv {
 
 .answer-container
 {
-    width:575px;
+    width:400px;
     margin-bottom:15px;
     float:left;
     border-radius:15px;

@@ -140,6 +140,7 @@
 	-khtml-border-radius:20px;
 	border-radius:20px;
 	padding:25px;
+    padding-bottom:15px;
 	border: 3px solid #A299CE;
 	background-color:#fff;
 	width:400px;
@@ -169,11 +170,11 @@
 	top:5px;
 }
 
+
 #answers ul
 {
 	line-height:200%;
 	list-style-type:none;
-	margin-left:-15px;
 }
 
 /* Analysis */
@@ -231,4 +232,8 @@
 	background-color:#D4D3EF;
 }
 
+#qa-buttons
+{
+    margin-top:20px;
+}
 
