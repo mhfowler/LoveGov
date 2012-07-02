@@ -1908,6 +1908,67 @@ function loadProfile()
     {
         setFollowPrivacy(event,1,$(this));
     });
+
+    $(".support_button").bindOnce('click.profile', function(event) {
+        event.preventDefault();
+        support($(this));
+    });
+
+    $(".message_button").click(function(event) {
+        event.preventDefault();
+        $(".message-dialogue").toggle();
+    });
+
+    $(".message_send").click(function(event) {
+        event.preventDefault();
+        var $wrapper = $(this).parents(".message-wrapper");
+        messageRep($wrapper);
+    });
+}
+
+
+/* sends a message to a representative */
+function messageRep($wrapper) {
+
+    var p_id = $wrapper.data('p_id');
+    var message = $wrapper.find(".message-textarea").val();
+
+    ajaxPost({
+        data: {'action':'messageRep', 'p_id':p_id, 'message':message
+        },
+        success: function(data) {
+            $wrapper.hide();
+            $(".message-sent").show();
+            $(".message-sent").fadeOut(1500);
+        },
+        error: null
+    });
+}
+
+/* supports a politician */
+function support(div) {
+
+    var p_id = div.data('p_id');
+    var confirmed = div.data('confirmed');
+
+    ajaxPost({
+        data: {'action':'support','p_id':p_id, 'confirmed':confirmed},
+        success: function(data)
+        {
+            if (confirmed == 0) {
+                $(".unsupport").hide();
+                $(".support").show();
+            }
+            else {
+                $(".support").hide();
+                $(".unsupport").show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
+    });
 }
 
 

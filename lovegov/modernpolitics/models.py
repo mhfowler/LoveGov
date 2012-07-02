@@ -4064,6 +4064,23 @@ class UserFollow(UURelationship, Invite):
         self.save()
 
 #=======================================================================================================================
+# Support a politician.
+#=======================================================================================================================
+class Supported(UURelationship):
+    confirmed = models.BooleanField(default=False)
+    def autoSave(self):
+        self.relationship_type = 'SU'
+        self.creator = self.user
+        self.save()
+
+class Messaged(UURelationship):
+    message = models.TextField()
+    def autoSave(self):
+        self.relationship_type = 'ME'
+        self.creator = self.user
+        self.save()
+
+#=======================================================================================================================
 # Linked, (relationships between two pieces of content)
 #
 #=======================================================================================================================
