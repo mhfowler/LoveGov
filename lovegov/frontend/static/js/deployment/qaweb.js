@@ -384,6 +384,7 @@ var QAWebHover = Class.extend
                 // CASE: user clicks a different question
                 else
                 {
+                    this.hide();
                     this._clickQuestion(node);
                 }
             }
