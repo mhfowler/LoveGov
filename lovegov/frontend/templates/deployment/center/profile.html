@@ -232,9 +232,11 @@
                     </td>
                     <td class="notification-text">
                         <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> requested to follow you
-                        <a href="" class="user-follow-response-y button-small-red">accept</a>
-                        <a href="" class="user-follow-response-n button-small-red">decline</a>
-                        <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
+                    </td>
+                    <td class="notification-buttons">
+                        <div class="notification-follow-response notification_follow_response_y">accept</div>
+                        <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
+                        <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>
                     </td>
 
                     {% if not forloop.last %}
@@ -275,6 +277,7 @@
 </div>
 
 <div id="profile_followers_modal" class="followers-modal">
+    <div class="modal-close followers_modal_close" ></div>
     <div class="modal-section-title">Followers:</div>
     <div class="modal-horizontal-separator"></div>
     <div class="followers-container">

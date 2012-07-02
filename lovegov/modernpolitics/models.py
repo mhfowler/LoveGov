@@ -64,7 +64,7 @@ class LGModel(models.Model):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=154)             # 154 is lovegov user
+    creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -594,6 +594,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                print "creator: "+str(self.creator)
                 self.creator.notify(action)
             return my_vote.value
         else:
@@ -1341,29 +1342,31 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 return False
 
         if action.type in AGGREGATE_NOTIFY_TYPES:
-            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
-            already = Notification.objects.filter(notify_user=self,
-                                                    when__gte=stale_date,
-                                                    action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('-when')
-            for notification in already:
-                if notification.action.relationship.getTo().id == relationship.getTo().id:
-                    notification.when = datetime.datetime.today()
-                    if notification.tally == 0:
-                        notification.addAggUser( notification.action.relationship.user )
-                    notification.addAggUser( relationship.user )
-                    return True
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            notification.addAggUser( relationship.user )
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+                already = Notification.objects.filter(notify_user=self,
+                                                        when__gte=stale_date,
+                                                        action__modifier=action.modifier,
+                                                        action__type=action.type ).order_by('-when')
+                for notification in already:
+                    if notification.action.relationship.getTo().id == relationship.getTo().id:
+                        notification.when = datetime.datetime.today()
+                        if notification.tally == 0:
+                            notification.addAggUser( notification.action.relationship.user )
+                        notification.addAggUser( relationship.user )
+                        return True
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                notification.addAggUser( relationship.user )
+                return True
 
         elif action.type in NOTIFY_TYPES:
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            return True
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                return True
 
-        else:
-            return False
+        return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)
@@ -2090,7 +2093,7 @@ class Comment(Content):
 
     root_content = models.ForeignKey(Content, related_name='root_content')
     on_content = models.ForeignKey(Content, related_name='comments')
-    text = models.TextField(max_length = 1000)
+    text = models.TextField(max_length = 10000)
     creator_name = models.CharField(max_length=50)
 
     def autoSave(self, creator=None, privacy='PUB'):

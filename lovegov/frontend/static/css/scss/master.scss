@@ -327,7 +327,7 @@ textarea:focus
 {
   @include rounded(5px);
   text-align: center;
-  padding: 3px;
+  padding: 5px;
 }
 
 .button-small-red, .button-small-red:link, .button-small-red:active, .button-small-red:visited
@@ -691,3 +691,21 @@ div.edit-link
   display: inline;
 }
 
+.modal-close-base
+{
+  float: right;
+  height: 10px;
+  width: 10px;
+}
+
+div.modal-close
+{
+  @extend .modal-close-base;
+  background-image: url('/static/icons/x.png');
+}
+
+div.modal-close:hover
+{
+  @extend .modal-close-base;
+  background-image: url('/static/icons/x_hover.png');
+}

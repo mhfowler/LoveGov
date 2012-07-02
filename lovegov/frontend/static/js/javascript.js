@@ -283,7 +283,7 @@ function groupFollow(event,div,follow)
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
-    var follow_id = div.siblings(".user-follow-id").val();
+    var follow_id = div.siblings(".user_follow_id").val();
     ajaxPost({
             data: {
                 'action':'followresponse',
@@ -1170,6 +1170,11 @@ function loadShareButton() {
         $('div.overdiv').hide();
         $('div.shareModal').hide();
     });
+
+    $('div.share_modal_close').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.shareModal').hide();
+    });
 }
 /***********************************************************************************************************************
  *
@@ -1364,7 +1369,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
@@ -1379,7 +1384,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1440,7 +1445,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             var content_id = $(this).children(".hidden_id").val();
             ajaxPost({
@@ -1455,7 +1460,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1639,10 +1644,10 @@ function unbindNotification()
 
 function loadNotification()
 {
-    $(".notification-user-follow").click( function(event)
+    $(".notification_user_follow").click( function(event)
     {
         event.preventDefault();
-        var follow_id = $(this).siblings(".user-follow-id").val();
+        var follow_id = $(this).siblings(".user_follow_id").val();
         alert( follow_id );
         ajaxPost({
                 data: {
@@ -1661,11 +1666,11 @@ function loadNotification()
         );
     });
 
-    $(".notification-follow-response-y").click( function(event) {
+    $(".notification_follow_response_y").click( function(event) {
         userFollowResponse(event,"Y",$(this));
     });
 
-    $(".notification-follow-response-n").click( function(event) {
+    $(".notification_follow_response_n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
 
@@ -1822,6 +1827,11 @@ function bindProfileFollowersButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#profile_followers_modal').hide();
+    });
+
+    $('div.followers_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div#profile_followers_modal').hide();
     });
@@ -2120,6 +2130,11 @@ function bindGroupRequestsButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#group_requests_modal').hide();
+    });
+
+    $('div.request_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div#group_requests_modal').hide();
     });
@@ -2577,16 +2592,33 @@ function getFilterByName(name) {
 /* heart stuff */
 function heartButtons()
 {
+    function upvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), 1);
+    }
+
+    function downvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), -1);
+    }
+
     $(".heart_minus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), -1);
+        if($(this).hasClass('clicked')) {
+            upvote(wrapper);
+        } else {
+            downvote(wrapper);
+        }
+        
     });
 
     $(".heart_plus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), 1);
+        if($(this).hasClass('clicked')) {
+            downvote(wrapper);
+        } else {
+            upvote(wrapper);
+        }
     });
 }
 
@@ -2608,6 +2640,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
+            alert('error');
         }
     });
 }
@@ -2988,6 +3021,11 @@ function bindCreateButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.create_modal').hide();
+    });
+
+    $('div.create_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
     });

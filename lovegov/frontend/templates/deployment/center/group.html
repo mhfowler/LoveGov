@@ -169,6 +169,8 @@
 </div>
 
 <div id="group_requests_modal" class="requests-modal">
+    <div class="modal-close request_modal_close" ></div>
+    <div class="modal-section-title">Requests to join {{ group.get_name }}:</div>
     <table class="group-request-table">
         {% for req in group_requests %}
             <tr>
@@ -179,7 +181,7 @@
                         {% endthumbnail %}
                     </a>
                 </td>
-                <td><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow {{ gropu.get_name }}:</td>
+                <td><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to join {{ group.get_name }}:</td>
                 <td>
                     <a href="" class="group-response-y button-red group-button">accept</a>
                     <a href="" class="group-response-n button-red group-button">decline</a>
