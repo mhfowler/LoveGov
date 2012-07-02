@@ -50,13 +50,13 @@ def reinviteUser(request,vals={}):
     userProfile.user.save()
     EMAIL_SENDER = 'info@lovegov.com'
     EMAIL_TEMPLATE = 'alphaInvite.html'
-    vals = {'firstname':userProfile.first_name,'message':userProfile.basicinfo.invite_message,'email':userProfile.username,'password':new_password}
-    send_email.sendTemplateEmail(userProfile.basicinfo.invite_subject,EMAIL_TEMPLATE,vals,EMAIL_SENDER,userProfile.username)
+    vals = {'firstname':userProfile.first_name,'message':userProfile.invite_message,'email':userProfile.username,'password':new_password}
+    send_email.sendTemplateEmail(userProfile.invite_subject,EMAIL_TEMPLATE,vals,EMAIL_SENDER,userProfile.username)
     return HttpResponse("+")
 
 def writeAllUsers(request,vals={}):
     allusers = UserProfile.objects.filter(user_type="U")
     for user in allusers:
-        vals = {'firstname':userProfile.first_name,'message':userProfile.basicinfo.invite_message,'email':userProfile.username,'password':new_password}
+        vals = {'firstname':userProfile.first_name,'message':userProfile.invite_message,'email':userProfile.username,'password':new_password}
 
 

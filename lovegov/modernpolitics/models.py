@@ -755,7 +755,7 @@ class UserImage(Content):
 # Stores basic info about a user.
 #
 #=======================================================================================================================
-class BasicInfo(LGModel):
+class BasicInfo(models.Model):
     profile_image = models.ForeignKey(UserImage, null=True)
     # ENUMS
     GENDER_CHOICES = ( ('M', 'Male'), ('F', 'Female'), ('N', 'None') )
@@ -765,10 +765,10 @@ class BasicInfo(LGModel):
     nick_name = models.CharField(max_length=100, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
     dob = models.DateField(null=True)
-    address = custom_fields.ListField()
+    address = custom_fields.ListField(default=[])
     state = models.CharField(max_length=2, blank=True)
     zipcode = models.CharField(max_length=15, blank=True)
-    url = custom_fields.ListField()
+    url = custom_fields.ListField(default=[])
     religion = models.CharField(max_length=200, blank=True)
     ethnicity = models.CharField(max_length=30, blank=True)
     party = models.CharField(max_length=100, blank=True)
@@ -776,6 +776,9 @@ class BasicInfo(LGModel):
     invite_message = models.CharField(max_length=10000, blank=True, default=DEFAULT_INVITE_MESSAGE)
     invite_subject = models.CharField(max_length=1000, blank=True, default=DEFAULT_INVITE_SUBJECT)
     bio = models.CharField(max_length=150, blank=True)
+
+    class Meta:
+        abstract = True
 
 #=======================================================================================================================
 # Tuple for storing a users involvement with content
@@ -927,16 +930,14 @@ class FacebookProfileModel(models.Model):
     '''
     about_me = models.TextField(blank=True)
     facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
-    access_token = models.TextField(
-        blank=True, help_text='Facebook token for offline access')
+    access_token = models.TextField(blank=True, help_text='Facebook token for offline access')
     facebook_name = models.CharField(max_length=255, blank=True)
     facebook_profile_url = models.TextField(blank=True)
     website_url = models.TextField(blank=True)
     blog_url = models.TextField(blank=True)
-    image = models.ImageField(blank=True, null=True,
+    fb_image = models.ImageField(blank=True, null=True,
         upload_to='profile_images', max_length=255)
     date_of_birth = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=1, choices=(('m', 'Male'), ('f', 'Female')), blank=True, null=True)
     raw_data = models.TextField(blank=True)
 
     def __unicode__(self):
@@ -959,7 +960,7 @@ def initView():
     view.save()
     return view
 
-class UserProfile(FacebookProfileModel, LGModel):
+class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
     # for downcasting
@@ -981,7 +982,6 @@ class UserProfile(FacebookProfileModel, LGModel):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
-    basicinfo = models.ForeignKey(BasicInfo, blank=True, null=True)
     view = models.ForeignKey("WorldView", default=initView)
     networks = models.ManyToManyField("Network", related_name='networks')
     location = models.ForeignKey(PhysicalAddress, null=True)
@@ -1141,14 +1141,14 @@ class UserProfile(FacebookProfileModel, LGModel):
     #-------------------------------------------------------------------------------------------------------------------
     def getProfileImage(self):
         from modernpolitics.backend import getDefaultImage
-        if self.basicinfo.profile_image:
-            return self.basicinfo.profile_image
+        if self.profile_image:
+            return self.profile_image
         else:
             return getDefaultImage()
 
     def getProfileImageURL(self):
-        if self.basicinfo.profile_image:
-            return self.basicinfo.profile_image.image.url
+        if self.profile_image:
+            return self.profile_image.image.url
         else:
             return DEFAULT_PROFILE_IMAGE_URL
 
@@ -1295,15 +1295,15 @@ class UserProfile(FacebookProfileModel, LGModel):
         """
         title =  self.get_name() + ' Image'
         summary = "This is me."
-        image = self.basicinfo.profile_image
+        image = self.profile_image
         if image:
             image.createImage(File(file))
         else:
             img = UserImage(title=title, summary=summary)
             img.createImage(File(file))
             img.autoSave(creator=self, privacy='PUB')
-            self.basicinfo.profile_image = img
-            self.basicinfo.save()
+            self.profile_image = img
+            self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates involvement tuple and adds it to myinvolvement if user is not already involved with inputted content
@@ -1758,15 +1758,15 @@ class ElectedOfficial(UserProfile):
             #representative.username = person['id']
         self.govtrack_id = personXML['id']
         if personXML.has_key('middlename'):
-            self.basicinfo.middle_name = personXML['middlename']
+            self.middle_name = personXML['middlename']
         if personXML.has_key('nickname'):
-            self.basicinfo.nick_name = personXML['nickname']
+            self.nick_name = personXML['nickname']
         if personXML.has_key('birthday'):
-            self.basicinfo.dob = parseDate(personXML['birthday'])
+            self.dob = parseDate(personXML['birthday'])
         if personXML.has_key('gender'):
-            self.basicinfo.gender = personXML['gender']
+            self.gender = personXML['gender']
         if personXML.has_key('religion'):
-            self.basicinfo.religion = personXML['religion']
+            self.religion = personXML['religion']
         if personXML.has_key('pvsid'):
             self.pvs_id = personXML['pvsid']
         if personXML.has_key('osid'):
@@ -1783,15 +1783,13 @@ class ElectedOfficial(UserProfile):
             self.facebook_id = personXML['facebookgraphid']
         self.start_date = parseDate(personXML.role['startdate'])
         self.end_date = parseDate(personXML.role['enddate'])
-        self.basicinfo.party = personXML.role['party']
-        self.basicinfo.political_role = 'E'
-        # representative.basicinfo.url = list(person.role['url'])
+        self.party = personXML.role['party']
+        self.political_role = 'E'
+        # representative.url = list(person.role['url'])
         self.confirmed = True
         self.save()
-        self.basicinfo.save()
 
 class Politician(UserProfile):
-    party = models.CharField(max_length=100)
     office_seeking = models.CharField(max_length=100)
 
 ########################################################################################################################

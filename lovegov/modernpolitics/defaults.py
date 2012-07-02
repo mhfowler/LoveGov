@@ -913,3 +913,15 @@ def initializeParties():
             full_ref = os.path.join(settings.PROJECT_PATH, ref)
             file = open(full_ref)
             party.party_label.save(photoKey(".png"), File(file))
+
+
+def updatePartyImages():
+    initializeParties()
+    for type in PARTY_TYPE:
+        print 'Updating ' + type[1] + ' party'
+        party = Party.lg.get_or_none(party_type=type[0])
+
+        ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
+        full_ref = os.path.join(settings.PROJECT_PATH, ref)
+        file = open(full_ref)
+        party.party_label.save(photoKey(".png"), File(file))

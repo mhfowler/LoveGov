@@ -2,7 +2,13 @@
 {% load humanize %}
 
 <div class="prof-image">
-    <a href="{{ creator.get_url }}">
+    <a
+            {% if item.getPublic %}
+            href="{{ creator.get_url }}"
+            {% else %}
+            href=""
+            {% endif %}
+            >
         {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" private=item.getPrivate %}
     </a>
 </div>
@@ -17,7 +23,7 @@
             <a href="" class="user-name"> Anonymous </a>
         {% endif %}
     </div>
-    <p class="submitted">
+    <p class="submitted tooltip-top" title="{{ item.created_when }}">
         {{ item.created_when|naturaltime }}
     </p>
 </div>

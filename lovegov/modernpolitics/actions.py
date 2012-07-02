@@ -345,15 +345,15 @@ def editAccount(request, vals={}):
 
         for party_type in PARTY_TYPE:
             if party_type[1] in request.POST:
-                party = Party.lg.get_or_none( alias=party_type[1] )
+                party = Party.lg.get_or_none( party_type=party_type[0] )
                 party.joinMember(viewer)
                 all_parties.remove(party)
 
         for party in all_parties:
             party.removeMember(viewer)
 
-        viewer.basicinfo.bio = request.POST['bio']
-        viewer.basicinfo.save()
+        viewer.bio = request.POST['bio']
+        viewer.save()
         return shortcuts.redirect('/account/profile/')
 
     return shortcuts.redirect('/account/')
@@ -957,7 +957,7 @@ def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
     user = vals['viewer']
-    thread = makeThread(request, content, user)
+    thread = makeThread(request, content, user, vals=vals)
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
 
