@@ -51,7 +51,7 @@ def getFeed(filter, start=0, stop=10, saved=False):
     if types:
         content = content.filter(type__in=types)
     if levels:
-        content = content.filter(level__in=levels)
+        content = content.filter(scale__in=levels)
     if groups:
         u_ids = []
         for g in groups:

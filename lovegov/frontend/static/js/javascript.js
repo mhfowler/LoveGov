@@ -2444,7 +2444,9 @@ function saveFilter(name) {
             'feed_name': feed_name
         },
         success: function(data) {
-            $(".save_filter_input").val("saved: " + feed_name);
+            $(".save_filter_input").val(feed_name);
+            $(".saved-message").show();
+            $(".saved-message").fadeOut();
         },
         error: null
     });
@@ -2743,7 +2745,8 @@ function loadNewFeed() {
     more_options_wrapper.css('height', '0px');
     more_options_wrapper.css('opacity', 0);
     more_options_wrapper.css("padding", "0px");
-    //$(".more-options-wrapper").css('overflow', 'visible');
+    //more_options_wrapper.show();
+    //more_options_wrapper.css("overflow", "visible");
     $(".more_options").click(function(event) {
         event.preventDefault();
         $(this).toggleClass("clicked");
@@ -2754,10 +2757,11 @@ function loadNewFeed() {
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
+            wrapper.find(".save-dialog").hide();
         }
         else {
             wrapper.show();
-            wrapper.animate({"height": '120px', 'padding':"10px",  'opacity':1.0}, 850,
+            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 850,
                 function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
@@ -2789,11 +2793,16 @@ function loadNewFeed() {
         refreshFeed(-1);
     });
 
+    $(".open_save_button").click(function(event) {
+        $(".save-dialog").show();
+    });
+
     $(".save_filter_button").click(function(event) {
         event.preventDefault();
         var name = $(".save_filter_input").val();
         if (name!='' && name!='enter a name for your filter.') {
             saveFilter(name);
+            $(".save-dialog").hide();
         }
         else {
             $(".save_filter_input").val('enter a name for your filter.');
@@ -2887,6 +2896,7 @@ function loadNewFeed() {
 
     bindCreateButton();
     loadCreate();
+
 }
 
 /***********************************************************************************************************************

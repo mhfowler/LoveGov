@@ -214,12 +214,23 @@
     -->
 
     <div id="clear-save">
-        <a href="#" class="feed_clear">
+        <a href="#" class="feed_clear gray-button">
             clear filter
         </a>
-        <a href="#" class="save_filter_button">
+        <a href="#" class="save-filter gray-button open_save_button">
             save filter
         </a>
+        <div class="save-dialog">
+            <div class="save-pointer-up" class="select-none"></div>
+            <div class="save-div">
+                <div class="save-text">
+                    Enter a name for this filter.
+                </div>
+                <input class='save_filter_input'/>
+                <a href="#" class="save_filter_button save-filter-button"> save </a>
+            </div>
+        </div>
+        <a class="saved-message"> saved </a>
     </div>
 
     <div style="clear:both"></div>
