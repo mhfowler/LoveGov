@@ -2414,6 +2414,7 @@ function getFeed(num)
             loadShareButton();
             petitionBar();
             loadHoverComparison();
+            bindTooltips();
 
         },
         error: null
