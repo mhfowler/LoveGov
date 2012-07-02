@@ -398,6 +398,26 @@ div.petition_bar {
     margin-left:20px;
 }
 
+div.content-submitted-by-wrapper {
+    margin-top: 40px;
+    padding: 6px;
+    @include rounded(5px);
+    &:hover {
+        background-color: $white-gray;
+    };
+    img {
+        float: left;
+        margin-right: 15px;
+    }
+    span.submit-time {
+        color: $deep-gray;
+    }
+    span.submitter {
+        @include titleFont;
+        font-size: 24px;
+    }
+}
+
 div.comment span.timestamp {
     float: left;
     font-size: 12px;

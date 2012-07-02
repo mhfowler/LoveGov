@@ -19,6 +19,13 @@
             </div>
             {% include 'deployment/center/feed/social_bar.html' with item=content %}
 
+            <div class="content-submitted-by-wrapper">
+                {% include 'deployment/snippets/avatar.html' with user=content.creator height='50' width='50' %}
+                {% load humanize %}
+                <span class="submitter">{{content.creator.get_name}}</span>
+                <br><span class="submit-time">Submitted <span class="tooltip-right" title="{{content.created_when}}">{{content.created_when|naturaltime}}</span></span>
+            </div>
+
             {% block petition_detail %}
 
             {% endblock %}
