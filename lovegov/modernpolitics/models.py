@@ -1064,9 +1064,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.user_type == 'P':
             return self.politician
         elif self.user_type == 'S':
-            return self.electedofficial.senator
+            return self.politician.electedofficial.senator
         elif self.user_type == 'R':
-            return self.electedofficial.representative
+            return self.politician.electedofficial.representative
         else:
             return self
 
@@ -1342,29 +1342,31 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 return False
 
         if action.type in AGGREGATE_NOTIFY_TYPES:
-            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
-            already = Notification.objects.filter(notify_user=self,
-                                                    when__gte=stale_date,
-                                                    action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('-when')
-            for notification in already:
-                if notification.action.relationship.getTo().id == relationship.getTo().id:
-                    notification.when = datetime.datetime.today()
-                    if notification.tally == 0:
-                        notification.addAggUser( notification.action.relationship.user )
-                    notification.addAggUser( relationship.user )
-                    return True
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            notification.addAggUser( relationship.user )
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+                already = Notification.objects.filter(notify_user=self,
+                                                        when__gte=stale_date,
+                                                        action__modifier=action.modifier,
+                                                        action__type=action.type ).order_by('-when')
+                for notification in already:
+                    if notification.action.relationship.getTo().id == relationship.getTo().id:
+                        notification.when = datetime.datetime.today()
+                        if notification.tally == 0:
+                            notification.addAggUser( notification.action.relationship.user )
+                        notification.addAggUser( relationship.user )
+                        return True
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                notification.addAggUser( relationship.user )
+                return True
 
         elif action.type in NOTIFY_TYPES:
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            return True
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                return True
 
-        else:
-            return False
+        return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)
@@ -1728,7 +1730,38 @@ class Notification(Privacy):
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 
-class ElectedOfficial(UserProfile):
+class Politician(UserProfile):
+    office_seeking = models.CharField(max_length=100)
+    num_supporters = models.IntegerField(default=0)
+    num_messages = models.IntegerField(default=0)
+
+    def getSupporters(self):
+        support = Supported.objects.filter(user=self, confirmed=True)
+        supporter_ids = support.values_list('to_user', flat=True)
+        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def support(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if not supported:
+            supported = Supported(user=user, to_user=self)
+            supported.autoSave()
+            self.num_supporters += 1
+            self.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            self.num_supporters += 1
+            self.save()
+
+    def unsupport(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            self.num_supporters -= 1
+            self.save()
+
+class ElectedOfficial(Politician):
     # ENUMS
     TITLE_CHOICES = ( ('S','Sen.'), ('R','Rep.'), ('M', 'Sel.') )
     # Name/Title
@@ -1789,9 +1822,6 @@ class ElectedOfficial(UserProfile):
         # representative.url = list(person.role['url'])
         self.confirmed = True
         self.save()
-
-class Politician(UserProfile):
-    office_seeking = models.CharField(max_length=100)
 
 ########################################################################################################################
 ################################################# Representatives ######################################################
@@ -4079,7 +4109,11 @@ class Messaged(UURelationship):
     def autoSave(self):
         self.relationship_type = 'ME'
         self.creator = self.user
+        to_user = self.to_user.downcast()
+        to_user.num_messages += 1
+        to_user.save()
         self.save()
+        return to_user.num_messages
 
 #=======================================================================================================================
 # Linked, (relationships between two pieces of content)

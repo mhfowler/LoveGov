@@ -309,22 +309,15 @@ def sign(request, vals={}):
 def support(request, vals={}):
 
     viewer = vals['viewer']
-    politicians = UserProfile.objects.exclude(user_type="U")
-    politician = politicians.get(id=request.POST['p_id'])
-
-    supported = Supported.lg.get_or_none(user=viewer, to_user=politician)
-    if not supported:
-        supported = Supported(user=viewer, to_user=politician)
-        supported.autoSave()
+    politician = Politician.objects.get(id=request.POST['p_id'])
 
     confirmed = int(request.POST['confirmed'])
     if confirmed:
-        supported.confirmed = True
+        politician.support(viewer)
     else:
-        supported.confirmed = False
-    supported.save()
+        politician.unsupport(viewer)
 
-    return HttpResponse('supported')
+    return HttpResponse(json.dumps({'num':politician.num_supporters}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Messages a politician.
@@ -332,14 +325,13 @@ def support(request, vals={}):
 def messageRep(request, vals={}):
 
     viewer = vals['viewer']
-    politicians = UserProfile.objects.exclude(user_type="U")
-    politician = politicians.get(id=request.POST['p_id'])
+    politician = Politician.objects.get(id=request.POST['p_id'])
     message = request.POST['message']
 
     message = Messaged(user=viewer, to_user=politician, message=message)
-    message.autoSave()
+    num_messages = message.autoSave()
 
-    return HttpResponse('messaged')
+    return HttpResponse(json.dumps({'num':num_messages}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
