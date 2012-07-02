@@ -2,10 +2,8 @@
 
 <a class="group_box" href="{{ group.get_url }}">
 
-    {% thumbnail group.getImage "40x40" as im %}
+    {% thumbnail group.getImage "40x40" crop="center" as im %}
         <img class="group-img" src="{{ im.url }}"/>
-    {% empty %}
-        <img class="group-img" src="/static/images/obama.jpg" width="40px" height="40px"/>
     {% endthumbnail %}
 
 </a>
