@@ -1056,13 +1056,14 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request,section="", vals={}):
+def account(request, section="", vals={}):
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
     vals['parties'] = Party.objects.all()
     vals['user_parties'] = user.parties.all()
 
     if section == "profile": vals['profile_message'] = " "
+
 
     if request.method == 'GET':
         setPageTitle("lovegov: account",vals)

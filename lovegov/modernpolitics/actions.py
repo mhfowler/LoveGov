@@ -341,20 +341,20 @@ def editAccount(request, vals={}):
             viewer.private_follow = False
         viewer.save()
 
-        all_parties = Party.objects.all()
-        if 'party' in request.POST:
-            parties = json.loads(request.POST['party'])
-            for party in parties:
+        all_parties = list( Party.objects.all() )
+
+        for party_type in PARTY_TYPE:
+            if party_type[1] in request.POST:
+                party = Party.lg.get_or_none( alias=party_type[1] )
                 party.joinMember(viewer)
                 all_parties.remove(party)
 
         for party in all_parties:
             party.removeMember(viewer)
 
-
-
         viewer.basicinfo.bio = request.POST['bio']
         viewer.basicinfo.save()
+        return shortcuts.redirect('/account/profile/')
 
     return shortcuts.redirect('/account/')
 

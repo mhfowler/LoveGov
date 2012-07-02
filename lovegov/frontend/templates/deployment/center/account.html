@@ -153,9 +153,9 @@
                                     <img class="party-choice" src="{{ im.url }}" data-input="#party-{{ party.alias }}"/>
                                 {% endthumbnail %}
                                 {% if party in user_parties %}
-                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="party" value="{{ party.alias }}" checked="checked">
+                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="{{ party.alias }}" value="true" checked="checked">
                                 {% else %}
-                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="party" value="{{ party.alias }}">
+                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="{{ party.alias }}" value="true">
                                 {% endif %}
                             {% endfor %}
                         </td>
