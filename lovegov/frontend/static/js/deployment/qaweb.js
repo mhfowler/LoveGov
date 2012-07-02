@@ -54,30 +54,38 @@ var QAWebHover = Class.extend
                 this._setPosition();
             }
         },
+
+        _saveAnswer: function()
+        {
+            var self = this;
+
+            if ($.trim( $('#answers-ul').html() ).length)
+            {
+                self.node.weight = $('#weight-input').val();
+                var $input = $('#answers-ul').find('input:checked');
+
+                for (var i=0; i<self.node.answers.length; i++)
+                {
+                    if (self.node.answers[i].answer_value == $input.val())
+                    {
+                        self.node.answers[i].weight = self.node.weight;
+                    }
+                }
+                var data = self._arrayToDictionary(".qaweb-answerform");
+                self.node.user_explanation = data['explanation'];
+                if (data.hasOwnProperty('choice'))
+                {
+                    ajaxPost({data:data,success:null,error:null});
+                }
+            }
+        },
+
         hide: function()
         {
             var self = this;
             if (self.node != null && !self.node.clicked)
             {
-                if ($.trim( $('#answers-ul').html() ).length)
-                {
-                    self.node.weight = $('#weight-input').val();
-                    var $input = $('#answers-ul').find('input:checked');
-
-                    for (var i=0; i<self.node.answers.length; i++)
-                    {
-                        if (self.node.answers[i].answer_value == $input.val())
-                        {
-                            self.node.answers[i].weight = self.node.weight;
-                        }
-                    }
-                    var data = self._arrayToDictionary(".qaweb-answerform");
-                    self.node.user_explanation = data['explanation'];
-                    if (data.hasOwnProperty('choice'))
-                    {
-                        ajaxPost({data:data,success:null,error:null});
-                    }
-                }
+                self._saveAnswer();
                 self._toggleButtons('hide');
                 self.node = null;
                 $('#answers-ul').empty();
@@ -384,7 +392,9 @@ var QAWebHover = Class.extend
                 // CASE: user clicks a different question
                 else
                 {
-                    this.hide();
+                    // save current answer data
+                    this._saveAnswer();
+                    // select new question
                     this._clickQuestion(node);
                 }
             }
