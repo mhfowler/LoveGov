@@ -92,27 +92,18 @@
             mouseMoveHandler : function(event) { // User is dragging
                 // How much did the mouse move?
 
-
-
                 var delta = {left: (event.clientX - event.data.lastCoord.left),
                     top: (event.clientY - event.data.lastCoord.top)};
 
                 acceleration = delta;
-
-
                 movedOnDrag = true;
 
-
                 // Set the scroll position relative to what ever the scroll is now
-
-
-
 
                 event.data.scrollable.scrollLeft(
                     event.data.scrollable.scrollLeft() - delta.left);
                 event.data.scrollable.scrollTop(
                     event.data.scrollable.scrollTop() - delta.top);
-
 
                 // Save where the cursor is
                 event.data.lastCoord={left: event.clientX, top: event.clientY};
@@ -123,10 +114,8 @@
 
                 event.data.qaWebHover.updatePosition();
 
-
             },
             mouseUpHandler : function(event) { // Stop scrolling
-
 
                 if (acceleration)
                 {
@@ -135,8 +124,6 @@
                      },{duration:200,step:function(a,b0){event.data.qaWebHover.updatePosition();}});
 
                 }
-
-
 
                 $.event.remove( document, "mousemove", dragscroll.mouseMoveHandler);
                 $.event.remove( document, "mouseup", dragscroll.mouseUpHandler);
@@ -156,9 +143,6 @@
                     event.preventDefault();
                     return false;
                 }
-
-
-
 
             }
         };
