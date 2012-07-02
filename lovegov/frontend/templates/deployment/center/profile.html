@@ -45,12 +45,12 @@
 
                 <div class="profile-summary">
                     <div class="inline-div inline_hide">
-                        {{ user_prof.user_title }}
+                        {{ user_prof.bio }}
                     </div>
                     {% if viewer.id == user_prof.id %}
                         <div class="edit-link edit_button"></div>
                         <div class="inline-edit-input inline_edit" data-model="UserProfile">
-                            <textarea type="text" maxlength="200" class="edit_input bio-inline-edit" name="user_title">{{ user_prof.user_title }}</textarea>
+                            <textarea type="text" maxlength="150" class="edit_input bio-inline-edit" name="bio">{{ user_prof.bio }}</textarea>
                             <a href="" class="edit-link submit_inline_edit">submit</a>
                             <a href="" class="edit-link cancel_inline_edit">cancel</a>
                         </div>

@@ -352,8 +352,8 @@ def editAccount(request, vals={}):
         for party in all_parties:
             party.removeMember(viewer)
 
-        viewer.basicinfo.bio = request.POST['bio']
-        viewer.basicinfo.save()
+        viewer.bio = request.POST['bio']
+        viewer.save()
         return shortcuts.redirect('/account/profile/')
 
     return shortcuts.redirect('/account/')
