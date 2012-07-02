@@ -235,7 +235,7 @@ function groupFollow(event,div,follow)
             {
                 if( data == "follow success")
                 {
-                    div.html("unfollow");
+                    div.html("leave");
                     div.click(
                         function(event)
                         {
@@ -255,7 +255,7 @@ function groupFollow(event,div,follow)
                 }
                 else if( data == "follow removed")
                 {
-                    div.html("follow");
+                    div.html("join");
                     div.click(
                         function(event)
                         {

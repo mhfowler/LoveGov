@@ -516,6 +516,7 @@ def profile(request, alias=None, vals={}):
             networks = user_prof.networks.all()
             vals['prof_locations'] = networks.filter(network_type='L')
             vals['prof_schools'] = networks.filter(network_type='S')
+            vals['prof_parties'] = user_prof.parties.all()
 
             vals['is_following_you'] = False
             if viewer.id != user_prof.id:
@@ -1055,12 +1056,14 @@ def getNextQuestion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
-def account(request,section="", vals={}):
+def account(request, section="", vals={}):
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
-    vals['party_labels'] = POLITICAL_PARTIES_IMAGES
+    vals['parties'] = Party.objects.all()
+    vals['user_parties'] = user.parties.all()
 
     if section == "profile": vals['profile_message'] = " "
+
 
     if request.method == 'GET':
         setPageTitle("lovegov: account",vals)

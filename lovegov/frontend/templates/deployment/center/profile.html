@@ -50,11 +50,24 @@
                     {% if viewer.id == user_prof.id %}
                         <div class="edit-link edit_button"></div>
                         <div class="inline-edit-input inline_edit" data-model="UserProfile">
-                            <input type="text" maxlength="200" value="{{ user_prof.user_title }}" class="edit_input" name="user_title"/>
+                            <textarea type="text" maxlength="200" class="edit_input bio-inline-edit" name="user_title">{{ user_prof.user_title }}</textarea>
                             <a href="" class="edit-link submit_inline_edit">submit</a>
                             <a href="" class="edit-link cancel_inline_edit">cancel</a>
                         </div>
                     {% endif %}
+                </div>
+
+                <div class="profile-parties">
+                    {% for party in prof_parties %}
+                        <div class="party-image">
+                            <a href="{{ party.get_url }}">
+                                {% thumbnail party.party_label "100x18" as im %}
+                                    <img src="{{ im.url }}" />
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endfor %}
+                    <div class="clear-both"></div>
                 </div>
 
                 <div class="profile-stats">
