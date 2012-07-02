@@ -72,6 +72,12 @@ div.middle-left
         color: $deep-gray;
         font-style: italic;
         width: 380px;
+
+        textarea.bio-inline-edit
+        {
+          height: 50px;
+          width: 350px;
+        }
       }
 
       div.profile-parties
