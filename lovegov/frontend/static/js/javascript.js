@@ -279,7 +279,7 @@ function groupFollow(event,div,follow)
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
-    var follow_id = div.siblings(".user-follow-id").val();
+    var follow_id = div.siblings(".user_follow_id").val();
     ajaxPost({
             data: {
                 'action':'followresponse',
@@ -1166,6 +1166,11 @@ function loadShareButton() {
         $('div.overdiv').hide();
         $('div.shareModal').hide();
     });
+
+    $('div.share_modal_close').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.shareModal').hide();
+    });
 }
 /***********************************************************************************************************************
  *
@@ -1635,10 +1640,10 @@ function unbindNotification()
 
 function loadNotification()
 {
-    $(".notification-user-follow").click( function(event)
+    $(".notification_user_follow").click( function(event)
     {
         event.preventDefault();
-        var follow_id = $(this).siblings(".user-follow-id").val();
+        var follow_id = $(this).siblings(".user_follow_id").val();
         alert( follow_id );
         ajaxPost({
                 data: {
@@ -1657,11 +1662,11 @@ function loadNotification()
         );
     });
 
-    $(".notification-follow-response-y").click( function(event) {
+    $(".notification_follow_response_y").click( function(event) {
         userFollowResponse(event,"Y",$(this));
     });
 
-    $(".notification-follow-response-n").click( function(event) {
+    $(".notification_follow_response_n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
 
@@ -1818,6 +1823,11 @@ function bindProfileFollowersButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#profile_followers_modal').hide();
+    });
+
+    $('div.followers_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div#profile_followers_modal').hide();
     });
@@ -2047,6 +2057,11 @@ function bindGroupRequestsButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#group_requests_modal').hide();
+    });
+
+    $('div.request_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div#group_requests_modal').hide();
     });
@@ -2914,6 +2929,11 @@ function bindCreateButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.create_modal').hide();
+    });
+
+    $('div.create_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
     });

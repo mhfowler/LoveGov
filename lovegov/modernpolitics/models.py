@@ -1341,29 +1341,31 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 return False
 
         if action.type in AGGREGATE_NOTIFY_TYPES:
-            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
-            already = Notification.objects.filter(notify_user=self,
-                                                    when__gte=stale_date,
-                                                    action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('-when')
-            for notification in already:
-                if notification.action.relationship.getTo().id == relationship.getTo().id:
-                    notification.when = datetime.datetime.today()
-                    if notification.tally == 0:
-                        notification.addAggUser( notification.action.relationship.user )
-                    notification.addAggUser( relationship.user )
-                    return True
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            notification.addAggUser( relationship.user )
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+                already = Notification.objects.filter(notify_user=self,
+                                                        when__gte=stale_date,
+                                                        action__modifier=action.modifier,
+                                                        action__type=action.type ).order_by('-when')
+                for notification in already:
+                    if notification.action.relationship.getTo().id == relationship.getTo().id:
+                        notification.when = datetime.datetime.today()
+                        if notification.tally == 0:
+                            notification.addAggUser( notification.action.relationship.user )
+                        notification.addAggUser( relationship.user )
+                        return True
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                notification.addAggUser( relationship.user )
+                return True
 
         elif action.type in NOTIFY_TYPES:
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            return True
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                return True
 
-        else:
-            return False
+        return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)

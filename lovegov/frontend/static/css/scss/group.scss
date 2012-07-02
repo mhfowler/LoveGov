@@ -399,6 +399,12 @@ div.requests-modal
   margin-right: 20%;
   padding: 50px;
 
+  div.modal-section-title
+  {
+    @extend div.profile-section-title;
+    margin-bottom: 10px;
+  }
+
   table.group-request-table
   {
     td

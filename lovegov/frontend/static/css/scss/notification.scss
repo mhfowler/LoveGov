@@ -3,6 +3,10 @@
 div.notification
 {
   padding: 15px 0px 15px 10px;
+
+  table {
+    width: 100%;
+  }
 }
 
 div.notification:hover
@@ -10,17 +14,44 @@ div.notification:hover
   background-color: $light-gray;
 }
 
+div.notification-follow-response
+{
+  border: $gray solid 1px;
+  background-color: white;
+  padding: 5px;
+  color: $red;
+  text-align: center;
+  cursor: pointer;
+}
+
+div.bottom
+{
+  border-width: 0 1px 1px 1px;
+}
+
+div.notification-follow-response:hover
+{
+  color: white;
+  background-color: $red;
+}
+
+td.notification-buttons
+{
+  text-align: right;
+  padding-right: 10px;
+  width: 50px;
+}
+
 td.notification-thumbnail
 {
   padding-right: 10px;
   width: 25px;
-  text-align: center;
   height: 25px;
   vertical-align: middle;
 }
 
 td.notification-text
 {
-  width: 250px;
   vertical-align: middle;
+  padding-right: 10px;
 }
