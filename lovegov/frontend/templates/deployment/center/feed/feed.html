@@ -103,7 +103,7 @@
             <div class="triangle-selector"></div>
             <div class="group-menu menu">
                 {% for g in my_groups %}
-                    <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
+                    <div class="group-box feed_group_selector tooltip-top" data-g_id="{{ g.id }}" title="{{ g.title }}">
                         {% include 'deployment/snippets/group_box.html' with group=g %}
                     </div>
                 {% empty %}
@@ -119,7 +119,7 @@
             <div class="triangle-selector"></div>
             <div class="group-menu menu">
                 {% for g in my_networks %}
-                    <div class="group-box feed_group_selector" data-g_id="{{ g.id }}">
+                    <div class="group-box feed_group_selector tooltip-top" data-g_id="{{ g.id }}" title="{{ g.title }}">
                         {% include 'deployment/snippets/group_box.html' with group=g %}
                     </div>
                 {% empty %}

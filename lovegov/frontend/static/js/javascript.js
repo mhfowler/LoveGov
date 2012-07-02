@@ -2794,7 +2794,7 @@ function loadNewFeed() {
     });
 
     $(".open_save_button").click(function(event) {
-        $(".save-dialog").show();
+        $(".save-dialog").toggle();
     });
 
     $(".save_filter_button").click(function(event) {
