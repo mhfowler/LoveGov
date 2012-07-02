@@ -957,7 +957,7 @@ def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
     user = vals['viewer']
-    thread = makeThread(request, content, user)
+    thread = makeThread(request, content, user, vals=vals)
     to_return = {'html':thread}
     return HttpResponse(json.dumps(to_return))
 
