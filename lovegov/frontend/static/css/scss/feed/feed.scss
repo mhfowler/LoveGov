@@ -21,7 +21,7 @@
 
 .feed-header {
 
-  margin-bottom:10px;
+  padding-top:10px;
 
   p.your-feed {
     @include really-big();
@@ -218,11 +218,9 @@
     float:right;
     font-size:22px;
     background-color:#EF503B;
-    padding:5px;
-    padding-left:12px;
-    padding-right:12px;
+    padding: 8px 12px 5px 12px;
     color: white;
-    margin-top:9px;
+    margin-top:6px;
     margin-right:10px;
     margin-left:10px;
     text-decoration:none;
@@ -253,9 +251,9 @@
 div.more-options-wrapper {
 
   display:none;
-  margin-top:0px;
+  margin-top:10px;
   padding:10px;
-  height:100px;
+  height:105px;
   @extend .box;
   overflow:hidden;
 
@@ -328,9 +326,64 @@ div.more-options-wrapper {
     @include titleFont();
     margin-right:10px;
     margin-bottom:0px;
+    position: relative;
+
+    a.saved-message {
+      display:none;
+      position:absolute;
+      top:25px;
+      left:145px;
+    }
+
+    div.save-dialog {
+      display:none;
+      position:absolute;
+      top:30px;
+      z-index:10;
+      div.save-pointer-up {
+        width:30px;
+        height:30px;
+        background-image: url('/static/images/comparison-pointer-up.png');
+        background: contain;
+        display:block;
+        margin-left:120px;
+        z-index:13;
+      }
+      div.save-div {
+        display:block;
+        position:relative;
+        top:-5px;
+        height: 100px;
+        width:200px;
+        @extend .box;
+        @include rounded(15px);
+        border-color:$red;
+        z-index:11;
+        background-color:white;
+
+        div.save-text {
+          margin: 10px 0 0 10px;
+        }
+        input.save_filter_input {
+          display:block;
+          margin-right:15px;
+          margin-top:7px;
+          margin-left:15px;
+          height:20px;
+          width:160px;
+          color:$black;
+        }
+        a.save-filter-button {
+          margin-top:5px;
+          margin-right:15px;
+          float:right;
+        }
+      }
+    }
+
   }
 
-  div#clear-save a {
+  div#clear-save a.gray-button {
     text-decoration:none;
     color:white;
     padding:8px;
@@ -338,18 +391,9 @@ div.more-options-wrapper {
     background-color: #adadad;
   }
 
-  div#clear-save a:hover {
+  div#clear-save a.gray-button:hover {
     color:white;
     background-color:#e0e0e0;
-  }
-
-  input.save_filter_input {
-    float:right;
-    margin-right:15px;
-    margin-top:10px;
-    margin-left:0px;
-    height:30px;
-    color:blue;
   }
 
 }
@@ -432,6 +476,8 @@ div.pinterest-wrapper {
     width:320px;
     height:500px;
     margin-top:0px;
+    position:relative;
+    top: -5px;
   }
 
   div.pinterest-column-not-first {
