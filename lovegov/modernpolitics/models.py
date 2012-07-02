@@ -1063,9 +1063,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.user_type == 'P':
             return self.politician
         elif self.user_type == 'S':
-            return self.electedofficial.senator
+            return self.politician.electedofficial.senator
         elif self.user_type == 'R':
-            return self.electedofficial.representative
+            return self.politician.electedofficial.representative
         else:
             return self
 
@@ -1727,7 +1727,38 @@ class Notification(Privacy):
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 
-class ElectedOfficial(UserProfile):
+class Politician(UserProfile):
+    office_seeking = models.CharField(max_length=100)
+    num_supporters = models.IntegerField(default=0)
+    num_messages = models.IntegerField(default=0)
+
+    def getSupporters(self):
+        support = Supported.objects.filter(user=self, confirmed=True)
+        supporter_ids = support.values_list('to_user', flat=True)
+        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def support(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if not supported:
+            supported = Supported(user=user, to_user=self)
+            supported.autoSave()
+            self.num_supporters += 1
+            self.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            self.num_supporters += 1
+            self.save()
+
+    def unsupport(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            self.num_supporters -= 1
+            self.save()
+
+class ElectedOfficial(Politician):
     # ENUMS
     TITLE_CHOICES = ( ('S','Sen.'), ('R','Rep.'), ('M', 'Sel.') )
     # Name/Title
@@ -1788,9 +1819,6 @@ class ElectedOfficial(UserProfile):
         # representative.url = list(person.role['url'])
         self.confirmed = True
         self.save()
-
-class Politician(UserProfile):
-    office_seeking = models.CharField(max_length=100)
 
 ########################################################################################################################
 ################################################# Representatives ######################################################
@@ -4078,7 +4106,11 @@ class Messaged(UURelationship):
     def autoSave(self):
         self.relationship_type = 'ME'
         self.creator = self.user
+        to_user = self.to_user.downcast()
+        to_user.num_messages += 1
+        to_user.save()
         self.save()
+        return to_user.num_messages
 
 #=======================================================================================================================
 # Linked, (relationships between two pieces of content)

@@ -1940,6 +1940,10 @@ function messageRep($wrapper) {
             $wrapper.hide();
             $(".message-sent").show();
             $(".message-sent").fadeOut(1500);
+
+            var returned = eval('(' + data + ')');
+            var num = returned.num;
+            $(".messages-number").text(num);
         },
         error: null
     });
@@ -1955,6 +1959,10 @@ function support(div) {
         data: {'action':'support','p_id':p_id, 'confirmed':confirmed},
         success: function(data)
         {
+            var returned = eval('(' + data + ')');
+            var num = returned.num;
+            $(".supporters-number").text(num);
+
             if (confirmed == 0) {
                 $(".unsupport").hide();
                 $(".support").show();

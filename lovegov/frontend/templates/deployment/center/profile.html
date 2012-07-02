@@ -69,22 +69,35 @@
                 </div>
 
                 <div class="profile-stats">
-                    <div class="stat-box followers-stat" id="profile_followers">
-                        <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
-                        <div class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</div>
-                    </div>
+                    {% if user_prof.user_type == "U" %}
+                        <div class="stat-box followers-stat" id="profile_followers">
+                            <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
+                            <div class="profile-stats-title">follower{{ prof_follow_me|pluralize }}</div>
+                        </div>
+                    {% else %}
+                        <div class="stat-box profile-stat" id="profile_supporters">
+                            <div class="profile-stats-number supporters-number">{{ user_prof.num_supporters }}</div>
+                            <div class="profile-stats-title">supporter{{ user_prof.num_supporters|pluralize }}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="profile-stats-number messages-number">{{ user_prof.num_messages }}</div>
+                            <div class="profile-stats-title">message{{ user_prof.num_messages|pluralize }}</div>
+                        </div>
+                    {% endif %}
                     <div class="stat-box">
                         <div class="profile-stats-number">{{ responses }}</div>
-                        <div class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</div>
+                        <div class="profile-stats-title">question{{ responses|pluralize }}</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
-                        <div class="profile-stats-title">petition{% if user_prof.num_petitions != 1 %}s{% endif %}</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
-                        <div class="profile-stats-title">article{% if user_prof.num_articles != 1 %}s{% endif %}</div>
-                    </div>
+                    {% if user_prof.user_type == "U" %}
+                        <div class="stat-box">
+                            <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
+                            <div class="profile-stats-title">petition{{ user_prof.num_petitions|pluralize }}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
+                            <div class="profile-stats-title">article{{ user_prof.num_articles|pluralize }}</div>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="profile-buttons">
                     {% if viewer.id != user_prof.id %}

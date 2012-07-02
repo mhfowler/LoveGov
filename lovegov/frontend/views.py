@@ -467,7 +467,7 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias)
+            user_prof = UserProfile.objects.get(alias=alias).downcast()
             comparison = getUserUserComparison(viewer, user_prof)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
@@ -475,31 +475,20 @@ def profile(request, alias=None, vals={}):
             vals['json'] = jsonData
             setPageTitle("lovegov: " + user_prof.get_name(),vals)
 
-            # Get user's top 5 similar followers
-            prof_follow_me = list(user_prof.getFollowMe())
-            for follow_me in prof_follow_me:
-                comparison = getUserUserComparison(user_prof, follow_me)
-                follow_me.compare = comparison.toJSON()
-                follow_me.result = comparison.result
-            prof_follow_me.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_follow_me'] = prof_follow_me[0:5]
+            # Get users followers
+            if user_prof.user_type == "U":
+                prof_follow_me = list(user_prof.getFollowMe())
+                for follow_me in prof_follow_me:
+                    comparison = getUserUserComparison(user_prof, follow_me)
+                    follow_me.compare = comparison.toJSON()
+                    follow_me.result = comparison.result
+                prof_follow_me.sort(key=lambda x:x.result,reverse=True)
+                vals['prof_follow_me'] = prof_follow_me[0:5]
+            else:       # get politician supporters
+                user_prof = user_prof.downcast()
+                prof_support_me = user_prof.getSupporters()
+                vals['prof_support_me'] = prof_support_me[0:5]
 
-            # Get user's top 5 similar follows
-#            prof_i_follow = list(user_prof.getIFollow())
-#            for i_follow in prof_i_follow:
-#                comparison = getUserUserComparison(user_prof, i_follow)
-#                i_follow.compare = comparison.toJSON()
-#                i_follow.result = comparison.result
-#            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
-#            vals['prof_i_follow'] = prof_i_follow[0:5]
-
-            # Get user's random 5 followers
-            #vals['prof_follow_me'] = user_prof.getFollowMe(5)
-
-            # Get user's random 5 follows
-            #vals['prof_i_follow'] = user_prof.getIFollow(5)
-
-            # Get user's top 5 similar groups
 
             num_groups = GROUP_INCREMENT
             vals['prof_groups'] = user_prof.getUserGroups(num=num_groups)
