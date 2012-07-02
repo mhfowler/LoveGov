@@ -102,12 +102,20 @@ div#about-content
   margin-top:25px;
   display:inline-block;
 
+  li
+  {
+    border:0;
+  }
+
   p.privacy_p
   {
     margin-top:5px;
     margin-bottom:25px;
     margin-left:25px;
     margin-right:25px;
+
+
+
   }
 
   div.privacy-column

@@ -10,8 +10,6 @@
                 <div class="profile-img">
                     {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
                         <img src="{{ im.url }}" class="icon-really-big"/>
-                    {% empty %}
-                        <p> no pic </p>
                     {% endthumbnail %}
                 </div>
                 {% if viewer.id != user_prof.id and is_following_you%}
@@ -90,18 +88,40 @@
                 </div>
                 <div class="profile-buttons">
                     {% if viewer.id != user_prof.id %}
-                        {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
-                            <a href="" class="button-red float-left" id="user_follow_button">
-                                follow
-                            </a>
+                        {% if user_prof.user_type == 'U' %}
+                            {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                                <a href="" class="button-red float-left" id="user_follow_button">
+                                    follow
+                                </a>
+                            {% else %}
+                                <a href="" class="button-red float-left user-unfollow-button">
+                                    {% if is_user_confirmed %}
+                                        unfollow
+                                    {% elif is_user_requested %}
+                                        un-request
+                                    {% endif %}
+                                </a>
+                            {% endif %}
                         {% else %}
-                            <a href="" class="button-red float-left user-unfollow-button">
-                                {% if is_user_confirmed %}
-                                    unfollow
-                                {% elif is_user_requested %}
-                                    un-request
-                                {% endif %}
+                                <a href="" class="button-red float-left support_button politician-button unsupport"
+                                   data-p_id="{{ user_prof.id }}" data-confirmed="0"
+                                        {% if not yousupport %} style="display:none" {% endif %}>
+                                    unsupport
+                                </a>
+                                <a href="" class="button-red float-left support_button politician-button support"
+                                   data-p_id="{{ user_prof.id }}" data-confirmed="1"
+                                        {% if yousupport %} style="display:none" {% endif %}>
+                                    support
+                                </a>
+                            <a href="" class="button-red float-left message_button politician-button">
+                                message
                             </a>
+                            <a class="message-sent"> message sent. </a>
+                            <div class="message-dialogue message-wrapper"  data-p_id="{{ user_prof.id }}">
+                                <h4 class="message-header"> Send a message to {{ user_prof.get_name }}</h4>
+                                <textarea class="message-textarea"> Dear {{ user_prof.get_name }}, </textarea>
+                                <a href="#" class="message-send message_send button-red"> send </a>
+                            </div>
                         {% endif %}
                     {% endif %}
                 </div>

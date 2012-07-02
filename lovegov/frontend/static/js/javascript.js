@@ -14,21 +14,25 @@ function rebindFunction()
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
     bindTooltips();                                             // bind all tooltip classes
     bindInlineEdits();
+    loadShareButton();
     switch (rebind)
     {
         case 'question':                                        // /question/#
             loadThread();
             loadQuestion();
             loadRightSideBar();
+            loadShareButton();
             break;
         case 'petition':                                        // /petition/#
             loadPetition();
             loadThread();
             loadRightSideBar();
+            loadShareButton();
             break;
         case 'news':                                            // /news/#
             loadThread();
             loadRightSideBar();
+            loadShareButton();
             break;
         case 'topic':                                           // /topic/<topic_name>
             loadRightSideBar();
@@ -1365,7 +1369,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
@@ -1380,7 +1384,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1441,7 +1445,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             var content_id = $(this).children(".hidden_id").val();
             ajaxPost({
@@ -1456,7 +1460,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1913,6 +1917,67 @@ function loadProfile()
     $(".private-follow").click( function(event)
     {
         setFollowPrivacy(event,1,$(this));
+    });
+
+    $(".support_button").bindOnce('click.profile', function(event) {
+        event.preventDefault();
+        support($(this));
+    });
+
+    $(".message_button").click(function(event) {
+        event.preventDefault();
+        $(".message-dialogue").toggle();
+    });
+
+    $(".message_send").click(function(event) {
+        event.preventDefault();
+        var $wrapper = $(this).parents(".message-wrapper");
+        messageRep($wrapper);
+    });
+}
+
+
+/* sends a message to a representative */
+function messageRep($wrapper) {
+
+    var p_id = $wrapper.data('p_id');
+    var message = $wrapper.find(".message-textarea").val();
+
+    ajaxPost({
+        data: {'action':'messageRep', 'p_id':p_id, 'message':message
+        },
+        success: function(data) {
+            $wrapper.hide();
+            $(".message-sent").show();
+            $(".message-sent").fadeOut(1500);
+        },
+        error: null
+    });
+}
+
+/* supports a politician */
+function support(div) {
+
+    var p_id = div.data('p_id');
+    var confirmed = div.data('confirmed');
+
+    ajaxPost({
+        data: {'action':'support','p_id':p_id, 'confirmed':confirmed},
+        success: function(data)
+        {
+            if (confirmed == 0) {
+                $(".unsupport").hide();
+                $(".support").show();
+            }
+            else {
+                $(".support").hide();
+                $(".unsupport").show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
     });
 }
 
@@ -2429,6 +2494,7 @@ function getFeed(num)
             loadShareButton();
             petitionBar();
             loadHoverComparison();
+            bindTooltips();
 
         },
         error: null
@@ -2518,16 +2584,33 @@ function getFilterByName(name) {
 /* heart stuff */
 function heartButtons()
 {
+    function upvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), 1);
+    }
+
+    function downvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), -1);
+    }
+
     $(".heart_minus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), -1);
+        if($(this).hasClass('clicked')) {
+            upvote(wrapper);
+        } else {
+            downvote(wrapper);
+        }
+        
     });
 
     $(".heart_plus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), 1);
+        if($(this).hasClass('clicked')) {
+            downvote(wrapper);
+        } else {
+            upvote(wrapper);
+        }
     });
 }
 
@@ -2549,6 +2632,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
+            alert('error');
         }
     });
 }

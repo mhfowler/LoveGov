@@ -180,13 +180,13 @@ div.shareModal {
     display: block;
     background-color: #fff;
     z-index: 103;
-    position: absolute;
     -moz-box-shadow: 10px 10px 5px #888;
     -webkit-box-shadow: 10px 10px 5px #888;
     box-shadow: 10px 10px 5px #888;
     -moz-border-radius: 5px;
     border-radius: 5px;
     display: none;
+    position: fixed;
 }
 
 div.shareModal div.share_content {

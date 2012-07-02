@@ -556,6 +556,12 @@ def profile(request, alias=None, vals={}):
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 
+            # get politician page values
+            if user_prof.user_type != "U":
+                supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
+                if supported:
+                    vals['yousupport'] = supported.confirmed
+
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
             html = ajaxRender('deployment/center/profile.html', vals, request)
@@ -882,6 +888,12 @@ def contentDetail(request, content, vals):
     creator = content.getCreator()
     vals['creator'] = creator
     vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
+    user_votes = Voted.objects.filter(user=vals['viewer'])
+    my_vote = user_votes.filter(content=content) 
+    if my_vote:
+        vals['my_vote'] = my_vote[0].value
+    else:
+        vals['my_vote'] = 0
     vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------

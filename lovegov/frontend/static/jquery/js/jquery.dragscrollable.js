@@ -59,8 +59,17 @@
             },options || {});
 
 
+        var movedOnDrag;
+        var acceleration;
+        var coefficient = 2.5;
+
         var dragscroll= {
             mouseDownHandler : function(event) {
+
+                $('#qawebhover').unbind();
+                acceleration = false;
+                movedOnDrag = false;
+
                 // mousedown, left click, check propagation
                 if (event.which!=1 ||
                     (!event.data.acceptPropagatedEvent && event.target != this)){
@@ -78,13 +87,19 @@
                     event.preventDefault();
                     return false;
                 }
+
             },
             mouseMoveHandler : function(event) { // User is dragging
                 // How much did the mouse move?
+
                 var delta = {left: (event.clientX - event.data.lastCoord.left),
                     top: (event.clientY - event.data.lastCoord.top)};
 
+                acceleration = delta;
+                movedOnDrag = true;
+
                 // Set the scroll position relative to what ever the scroll is now
+
                 event.data.scrollable.scrollLeft(
                     event.data.scrollable.scrollLeft() - delta.left);
                 event.data.scrollable.scrollTop(
@@ -101,12 +116,34 @@
 
             },
             mouseUpHandler : function(event) { // Stop scrolling
+
+                if (acceleration)
+                {
+                    event.data.scrollable.stop().animate({
+                        scrollTop: event.data.scrollable.scrollTop() - (coefficient * acceleration.top),  scrollLeft: event.data.scrollable.scrollLeft() - (coefficient * acceleration.left)
+                     },{duration:200,step:function(a,b0){event.data.qaWebHover.updatePosition();}});
+
+                }
+
                 $.event.remove( document, "mousemove", dragscroll.mouseMoveHandler);
                 $.event.remove( document, "mouseup", dragscroll.mouseUpHandler);
+
+                if (!movedOnDrag)
+                {
+                    $('#qawebhover').bind('clickoutside',function(event)
+                    {
+                        if (!$('#' + event.target.id).hasClass("question-node-img") && qaWebHover.node != null)
+                        {
+                            qaWebHover.toggleQuestion(qaWebHover.node);
+                        }
+                    });
+                }
+
                 if (event.data.preventDefault) {
                     event.preventDefault();
                     return false;
                 }
+
             }
         };
 

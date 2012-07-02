@@ -23,7 +23,7 @@
             <a href="" class="user-name"> Anonymous </a>
         {% endif %}
     </div>
-    <p class="submitted">
+    <p class="submitted tooltip-top" title="{{ item.created_when }}">
         {{ item.created_when|naturaltime }}
     </p>
 </div>
