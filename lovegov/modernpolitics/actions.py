@@ -304,6 +304,44 @@ def sign(request, vals={}):
     return HttpResponse(json.dumps(vals))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Support a politician.
+#-----------------------------------------------------------------------------------------------------------------------
+def support(request, vals={}):
+
+    viewer = vals['viewer']
+    politicians = UserProfile.objects.exclude(user_type="U")
+    politician = politicians.get(id=request.POST['p_id'])
+
+    supported = Supported.lg.get_or_none(user=viewer, to_user=politician)
+    if not supported:
+        supported = Supported(user=viewer, to_user=politician)
+        supported.autoSave()
+
+    confirmed = int(request.POST['confirmed'])
+    if confirmed:
+        supported.confirmed = True
+    else:
+        supported.confirmed = False
+    supported.save()
+
+    return HttpResponse('supported')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Messages a politician.
+#-----------------------------------------------------------------------------------------------------------------------
+def messageRep(request, vals={}):
+
+    viewer = vals['viewer']
+    politicians = UserProfile.objects.exclude(user_type="U")
+    politician = politicians.get(id=request.POST['p_id'])
+    message = request.POST['message']
+
+    message = Messaged(user=viewer, to_user=politician, message=message)
+    message.autoSave()
+
+    return HttpResponse('messaged')
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
 #-----------------------------------------------------------------------------------------------------------------------
 def finalize(request, vals={}):
@@ -1508,7 +1546,9 @@ actions = { 'getLinkInfo': getLinkInfo,
             'flag': flag,
             'updateHistogram': updateHistogram,
             'getHistogramMembers': getHistogramMembers,
-            'getAllGroupMembers': getAllGroupMembers
+            'getAllGroupMembers': getAllGroupMembers,
+            'support': support,
+            'messageRep': messageRep
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

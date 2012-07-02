@@ -556,6 +556,12 @@ def profile(request, alias=None, vals={}):
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 
+            # get politician page values
+            if user_prof.user_type != "U":
+                supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
+                if supported:
+                    vals['yousupport'] = supported.confirmed
+
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
             html = ajaxRender('deployment/center/profile.html', vals, request)

@@ -262,6 +262,8 @@ RELATIONSHIP_CHOICES = (
     ('CR', 'created'),
     ('ED', 'edited'),
     ('SI', 'signed'),
+    ('SU', 'supported'),
+    ('ME', 'messaged'),
     ('FC', 'followed content'),
     ('XX', 'deleted'),
     ('VO', 'voted'),                        # divided into like and dislike
