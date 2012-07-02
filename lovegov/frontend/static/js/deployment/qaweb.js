@@ -54,20 +54,38 @@ var QAWebHover = Class.extend
                 this._setPosition();
             }
         },
+
+        _saveAnswer: function()
+        {
+            var self = this;
+
+            if ($.trim( $('#answers-ul').html() ).length)
+            {
+                self.node.weight = $('#weight-input').val();
+                var $input = $('#answers-ul').find('input:checked');
+
+                for (var i=0; i<self.node.answers.length; i++)
+                {
+                    if (self.node.answers[i].answer_value == $input.val())
+                    {
+                        self.node.answers[i].weight = self.node.weight;
+                    }
+                }
+                var data = self._arrayToDictionary(".qaweb-answerform");
+                self.node.user_explanation = data['explanation'];
+                if (data.hasOwnProperty('choice'))
+                {
+                    ajaxPost({data:data,success:null,error:null});
+                }
+            }
+        },
+
         hide: function()
         {
             var self = this;
             if (self.node != null && !self.node.clicked)
             {
-                if ($.trim( $('#answers-ul').html() ).length)
-                {
-                    var data = self._arrayToDictionary(".qaweb-answerform");
-                    self.node.user_explanation = data['explanation'];
-                    if (data.hasOwnProperty('choice'))
-                    {
-                        ajaxPost({data:data,success:function(){alert("success");},error:null});
-                    }
-                }
+                self._saveAnswer();
                 self._toggleButtons('hide');
                 self.node = null;
                 $('#answers-ul').empty();
@@ -201,14 +219,16 @@ var QAWebHover = Class.extend
             {
                 var input = "<input style='display:none' type=radio name='choice' value='" + this.node.answers[i].answer_value + "'/>";
                 $('#answers-ul').append('<p class="answer-' + i + '">' + input + this.node.answers[i].answer_text + '</p>');
+
                 if (this.node.answers[i].user_answer)
                 {
-                    var value = this.node.answers[i].weight;
-                    self._moveSlider(value);
+                    this.node.weight =  this.node.answers[i].weight;
                     $('.answer-' + i + ' input').attr("checked", true);
                     $('.answer-' + i).addClass('answer-selected');
                 }
             }
+
+            self._moveSlider(this.node.weight);
         },
 
         _moveSlider: function(value)
@@ -236,28 +256,23 @@ var QAWebHover = Class.extend
             );
 
             $('#question-weight-slider').unbind("slidechange");
-            $('#question-weight-slider').bind("slidechange", function(event, ui)
+            $('#question-weight-slider').bind("slide", function(event, ui)
             {
-                if (event.originalEvent)
-                {
-                    var value = parseInt(ui.value);
-                    self._moveSlider(value);
-                    for (var i=0; i<self.node.answers.length; i++)
-                    {
-                        if (self.node.answers[i].user_answer) { self.node.answers[i].weight = value; }
-                    }
-                }
+                var value = parseInt(ui.value);
+                self._moveSlider(value);
+                self.node.weight = value;
             });
 
             $('#answers-ul p').click(function()
             {
                 if ($(this).children('input').attr("checked")) { var currentAnswer = true; }
                 $('#answers-ul p').children('input').attr('checked',false);
-                $('#answers-ul p').removeClass("answer-selected").css("background-color",'white');
+                $('#answers-ul p').removeClass("answer-selected").css("background-color",'white').css("color","#959595");
                 if (!currentAnswer)
                 {
-                    $(this).children('input').attr("checked","checked");
-                    $(this).addClass('answer-selected').css("background-color",'#EBEBEB');
+                    var $input = $(this).children('input');
+                    $input.attr("checked","checked");
+                    $(this).addClass('answer-selected').css("background-color",'#EBEBEB').css("color","black");
                     var data = self._arrayToDictionary(".qaweb-answerform");
                     self.node.HTML_selectRadioAnswer(data['choice']);
                     self.node.onAnswer();
@@ -377,6 +392,9 @@ var QAWebHover = Class.extend
                 // CASE: user clicks a different question
                 else
                 {
+                    // save current answer data
+                    this._saveAnswer();
+                    // select new question
                     this._clickQuestion(node);
                 }
             }
@@ -724,6 +742,7 @@ var Question = Node.extend
             this.height = 50;
             this.text = data['text'];
             this.id = data['id'];
+            this.weight = 5;
             this.answers = data['answers'];
             this.answered = this._checkAnswered();
             this.user_explanation = data['user_explanation'];
@@ -959,8 +978,6 @@ var Topic = Node.extend
             {
                 if (qaWebHover.node != null && qaWebHover.node.parents == this)
                 {
-                    alert("why are you firing?");
-                    alert(qaWebHover.node);
                     qaWebHover.toggleQuestion(qaWebHover.node);
                 }
                 self.clicked = false;
@@ -1096,10 +1113,6 @@ function initializeInitialView()
     $(DRAGGER_ID).css('height', draggerHeight + "px");
     $(QAWEB_ID).css('height',($(window).height() + 'px'));
     $('#qaweb-interactive').css('height',($(window).height()) + 'px');
-    // a small here delay fixes error where the qaweb div isn't fully initialized before trying to scroll
-    // resulting in an incorrect starting position
-    // setTimeout(function() {$(QAWEB_ID).scrollTop(offsety - ($(window).height()/2)+62);},175);
-    // setTimeout(function() {$(QAWEB_ID).scrollLeft(offsetx - ($(window).width()/2)+62);},175);
 }
 
 function initializejsPlumb()
@@ -1111,18 +1124,18 @@ function initializejsPlumb()
 function initializeQAWeb()
 {
     var root = new Root
-        ({
-            xpos:offsetx,
-            ypos:offsety,
-            angle:0,
-            ring:0,
-            clicked:true,
-            childrenData:[],
-            imgref:topicSwitch(0),
-            parents:null,
-            text:"",
-            color:colorSwitch(0)
-        });
+    ({
+        xpos:offsetx,
+        ypos:offsety,
+        angle:0,
+        ring:0,
+        clicked:true,
+        childrenData:[],
+        imgref:topicSwitch(0),
+        parents:null,
+        text:"",
+        color:colorSwitch(0)
+    });
     qaweb = new QAWeb(root);
     qaweb.toDisplay();
 }
@@ -1167,6 +1180,7 @@ function initializeButtonFunctionality()
         {
             qaWebHover.toggleQuestion(qaWebHover.node);
         }
+
     });
 }
 

@@ -20,9 +20,8 @@
             <div id="answer-div">
                 <form class="qaweb-answerform" action="" method="post">
                     <div id="question-weight-div" style="display:none;">
-                        <span style="float:left;margin-right:15px;font-size:13px">Importance</span>
-                        <div id="question-weight-slider" style="width:275px;float:left;"></div>
-                        <span style="margin-left:10px;font-size:13px"></span>
+                        <span style="margin-right:15px;font-size:13px">Importance</span>
+                        <div id="question-weight-slider" style="width:275px;display:inline-block"></div>
                         <input id="weight-input" type="hidden" name="weight" value="5"/>
                     </div>
                     <div id="answers">
@@ -31,8 +30,8 @@
                         </ul>
 
                         <div id="value_statement" style="display:none">
-                            <h6>Value Statement</h6>
-                            <textarea style="width:400px;height:70px" id="user_explanation" class="explanation" name="explanation"></textarea>
+                            <h6>Explanation</h6>
+                            <textarea style="width:400px;height:70px" id="user_explanation" class="explanation" name="explanation" placeholder="Enter your view on this question here in 500 characters or less."></textarea>
                         </div>
                         <input type="hidden" name="action" value="answer"/>
                         <input id="q_id" type="hidden" name="q_id" value=""/>
@@ -42,7 +41,7 @@
                     <div id="qa-buttons" style="display:none">
                         <a class="dialogue-buttons" href="">learn</a>
                         <a class="discuss dialogue-buttons" href="">discuss</a>
-                        <a class="dialogue-buttons" href="">next</a>
+                        <a id="next_button" class="dialogue-buttons" href="">next</a>
                     </div>
                 </form>
             </div>
