@@ -71,9 +71,9 @@ class CreateUserForm(forms.Form):
             subject = self.cleaned_data['subject']
             password = generateRandomPassword(8)
             controllingUser = createUser(name, email, password)
-            controllingUser.user_profile.basicinfo.invite_message = message
-            controllingUser.user_profile.basicinfo.invite_subject = subject
-            controllingUser.user_profile.basicinfo.save()
+            controllingUser.user_profile.invite_message = message
+            controllingUser.user_profile.invite_subject = subject
+            controllingUser.user_profile.save()
             vals = {'firstname':first_name,'email':email,'password':password,'message':message}
             send_email.sendTemplateEmail(subject,'alphaInvite.html',vals,'team@lovegov.com',email)
 

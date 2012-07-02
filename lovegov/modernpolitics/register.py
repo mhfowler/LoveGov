@@ -90,10 +90,6 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.view_id = world_view.id
     userProfile.save()
     userid = userProfile.id
-    # basic info
-    userBasicInfo = BasicInfo(id=userid)
-    userBasicInfo.save()
-    userProfile.basicinfo = userBasicInfo
     # profilePage
     userProfilePage = ProfilePage(person=userProfile)
     userProfilePage.save()
