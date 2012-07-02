@@ -505,6 +505,7 @@ def vote(request, vals):
     privacy = getPrivacy(request)
     content = Content.objects.get(id=request.POST['c_id'])
     vote = int(request.POST['vote'])
+    print user.id
     # save vote
     if vote == 1:
         value = content.like(user=user, privacy=privacy)

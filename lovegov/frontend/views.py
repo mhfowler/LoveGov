@@ -882,6 +882,12 @@ def contentDetail(request, content, vals):
     creator = content.getCreator()
     vals['creator'] = creator
     vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
+    user_votes = Voted.objects.filter(user=vals['viewer'])
+    my_vote = user_votes.filter(content=content) 
+    if my_vote:
+        vals['my_vote'] = my_vote[0].value
+    else:
+        vals['my_vote'] = 0
     vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------

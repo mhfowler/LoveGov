@@ -1364,7 +1364,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
@@ -1379,7 +1379,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1440,7 +1440,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             var content_id = $(this).children(".hidden_id").val();
             ajaxPost({
@@ -1455,7 +1455,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -2508,16 +2508,33 @@ function getFilterByName(name) {
 /* heart stuff */
 function heartButtons()
 {
+    function upvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), 1);
+    }
+
+    function downvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), -1);
+    }
+
     $(".heart_minus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), -1);
+        if($(this).hasClass('clicked')) {
+            upvote(wrapper);
+        } else {
+            downvote(wrapper);
+        }
+        
     });
 
     $(".heart_plus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), 1);
+        if($(this).hasClass('clicked')) {
+            downvote(wrapper);
+        } else {
+            upvote(wrapper);
+        }
     });
 }
 
@@ -2539,6 +2556,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
+            alert('error');
         }
     });
 }

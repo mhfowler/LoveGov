@@ -64,7 +64,7 @@ class LGModel(models.Model):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=154)             # 154 is lovegov user
+    creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -594,6 +594,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                print "creator: "+str(self.creator)
                 self.creator.notify(action)
             return my_vote.value
         else:
@@ -2062,7 +2063,7 @@ class Comment(Content):
 
     root_content = models.ForeignKey(Content, related_name='root_content')
     on_content = models.ForeignKey(Content, related_name='comments')
-    text = models.TextField(max_length = 1000)
+    text = models.TextField(max_length = 10000)
     creator_name = models.CharField(max_length=50)
 
     def autoSave(self, creator=None, privacy='PUB'):
