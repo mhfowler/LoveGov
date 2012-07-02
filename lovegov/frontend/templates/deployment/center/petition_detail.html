@@ -3,17 +3,19 @@
 
 {% block petition_detail %}
 
-<h3>Signers</h3>
+    <h3>Signers</h3>
 
-{% for signer in signers %}
-    {% include 'deployment/snippets/signer.html' %}
-{% empty %}
-    <span id="be-first-signer-message">Be the first to sign this petition.</span>
-{% endfor %}
+    {% for signer in signers %}
+        {% include 'deployment/snippets/signer.html' %}
+    {% empty %}
+        <span id="be-first-signer-message">Be the first to sign this petition.</span>
+    {% endfor %}
 
-<div style="clear: both"></div>
+    <div style="clear: both"></div>
 
-{% include 'deployment/snippets/petition_bar.html' with p=petition %}
+    {% if signers %}
+        {% include 'deployment/snippets/petition_bar.html' with p=petition %}
+    {% endif %}
 
 {% endblock %}
 
@@ -35,8 +37,6 @@
                 <div class="submit">
                     <a href="" class='red-button' id="finalize-button"> finalize </a>
                 </div>
-            {% else %}
-                This petition is finalized and ready to be signed.
             {% endif %}
         </div>
     {% endif %}
@@ -47,7 +47,7 @@
 
             <div class="sign">
                 {% if not i_signed %}
-                        <a href="" class='red-button' id="sign-button"> Sign </a>
+                    <a href="" class='red-button' id="sign-button"> Sign </a>
                 {% else %}
                     You have signed this petition.
                 {% endif %}
