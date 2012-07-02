@@ -14,21 +14,25 @@ function rebindFunction()
     loadMenuToggles();                                          // menu toggles, have triangle, when clicked show menu child
     bindTooltips();                                             // bind all tooltip classes
     bindInlineEdits();
+    loadShareButton();
     switch (rebind)
     {
         case 'question':                                        // /question/#
             loadThread();
             loadQuestion();
             loadRightSideBar();
+            loadShareButton();
             break;
         case 'petition':                                        // /petition/#
             loadPetition();
             loadThread();
             loadRightSideBar();
+            loadShareButton();
             break;
         case 'news':                                            // /news/#
             loadThread();
             loadRightSideBar();
+            loadShareButton();
             break;
         case 'topic':                                           // /topic/<topic_name>
             loadRightSideBar();

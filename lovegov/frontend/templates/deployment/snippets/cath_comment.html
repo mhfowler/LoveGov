@@ -2,13 +2,10 @@
     <div class="comment-username feed-username"> 
         {% load thumbnail %}
         {% if public and comment.active %}
-            {% thumbnail creator.getProfileImage.image "40x40" crop="center" as im %}
-                <img class="user-img" class="user-menu-pointer" src="{{ im.url }}"/>
-            {% empty %}
-            	<img class="user-img" class="user-menu-pointer" src="http://lovegov.com/static/images/profile_default.jpg" width="40px" height="40px"/>
-            {% endthumbnail %}
+            {% include 'deployment/snippets/avatar.html' with user=creator width='40' height='40' %}
         {% else %}
-        	<img class="user-img" class="user-menu-pointer" src="http://lovegov.com/static/images/profile_default.jpg" width="40px" height="40px"/>        {% endif %}
+        	<img class="user-img" class="user-menu-pointer" src="http://lovegov.com/static/images/profile_default.jpg" width="40px" height="40px"/>        
+        {% endif %}
         {% if comment.active %}
             <a href="{% if public %}{{creator.get_url}}{% endif %}">{{ display_name}}</a>
         {% else %}
@@ -44,7 +41,7 @@
         <div class="reply">
             reply
         </div>
-        <div class="share">
+        <div class="share share_button" data-share_id="{{comment.id}}">
         	share
         </div>
     {% if owner and comment.active %}
