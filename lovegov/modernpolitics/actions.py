@@ -345,7 +345,7 @@ def editAccount(request, vals={}):
 
         for party_type in PARTY_TYPE:
             if party_type[1] in request.POST:
-                party = Party.lg.get_or_none( alias=party_type[1] )
+                party = Party.lg.get_or_none( party_type=party_type[0] )
                 party.joinMember(viewer)
                 all_parties.remove(party)
 
