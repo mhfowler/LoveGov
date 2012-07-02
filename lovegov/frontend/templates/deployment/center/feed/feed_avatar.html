@@ -2,7 +2,13 @@
 {% load humanize %}
 
 <div class="prof-image">
-    <a href="{{ creator.get_url }}">
+    <a
+            {% if item.getPublic %}
+            href="{{ creator.get_url }}"
+            {% else %}
+            href=""
+            {% endif %}
+            >
         {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" private=item.getPrivate %}
     </a>
 </div>

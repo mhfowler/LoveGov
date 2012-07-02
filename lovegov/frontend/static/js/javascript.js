@@ -239,7 +239,7 @@ function groupFollow(event,div,follow)
             {
                 if( data == "follow success")
                 {
-                    div.html("unfollow");
+                    div.html("leave");
                     div.click(
                         function(event)
                         {
@@ -259,7 +259,7 @@ function groupFollow(event,div,follow)
                 }
                 else if( data == "follow removed")
                 {
-                    div.html("follow");
+                    div.html("join");
                     div.click(
                         function(event)
                         {
@@ -1160,7 +1160,8 @@ function loadShareButton() {
 
     $('.share_button').bindOnce('click.share', function(event) {
         event.preventDefault();
-        $("#share_id").data('share_id', $(this).data('share_id'));
+        var share_id = $(this).data('share_id');
+        $("#share_id").data('share_id', share_id);
         $('div.overdiv').fadeToggle("fast");
         $('div.shareModal').fadeToggle("fast");
     });
@@ -2448,7 +2449,9 @@ function saveFilter(name) {
             'feed_name': feed_name
         },
         success: function(data) {
-            $(".save_filter_input").val("saved: " + feed_name);
+            $(".save_filter_input").val(feed_name);
+            $(".saved-message").show();
+            $(".saved-message").fadeOut();
         },
         error: null
     });
@@ -2743,28 +2746,27 @@ function loadNewFeed() {
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
 
-    $(".more-options-wrapper").css('height', '0px');
-    //$(".more-options-wrapper").show();
-    //$(".more-options-wrapper").css('overflow', 'visible');
+    var more_options_wrapper = $(".more-options-wrapper");
+    more_options_wrapper.css('height', '0px');
+    more_options_wrapper.css('opacity', 0);
+    more_options_wrapper.css("padding", "0px");
+    //more_options_wrapper.show();
+    //more_options_wrapper.css("overflow", "visible");
     $(".more_options").click(function(event) {
         event.preventDefault();
         $(this).toggleClass("clicked");
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px'}, 850,
-                function() {
-                    wrapper.fadeOut();
-                    wrapper.css("border-width", "0px");
-                });
+            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 850);
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
+            wrapper.find(".save-dialog").hide();
         }
         else {
             wrapper.show();
-            wrapper.css("border-width", "1px");
-            wrapper.animate({"height": '120px', 'border-width': '1px'}, 850,
+            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 850,
                 function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
@@ -2796,11 +2798,16 @@ function loadNewFeed() {
         refreshFeed(-1);
     });
 
+    $(".open_save_button").click(function(event) {
+        $(".save-dialog").toggle();
+    });
+
     $(".save_filter_button").click(function(event) {
         event.preventDefault();
         var name = $(".save_filter_input").val();
         if (name!='' && name!='enter a name for your filter.') {
             saveFilter(name);
+            $(".save-dialog").hide();
         }
         else {
             $(".save_filter_input").val('enter a name for your filter.');
@@ -2894,6 +2901,7 @@ function loadNewFeed() {
 
     bindCreateButton();
     loadCreate();
+
 }
 
 /***********************************************************************************************************************

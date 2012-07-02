@@ -892,3 +892,36 @@ def superUserHelper(control):
     control.user_profile = user_profile
     control.save()
     return user_profile
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Checks each party and creates one if it doesn't exist
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeParties():
+    for type in PARTY_TYPE:
+        print 'Finding ' + type[1] + ' party'
+        already = Party.lg.get_or_none(party_type=type[0])
+
+        if not already:
+            print 'Party not found, creating ' + type[1] + ' party'
+
+            party = Party(alias=type[1],party_type=type[0])
+            party.title = type[1].capitalize() + " Party"
+            party.autoSave()
+
+            ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
+            full_ref = os.path.join(settings.PROJECT_PATH, ref)
+            file = open(full_ref)
+            party.party_label.save(photoKey(".png"), File(file))
+
+
+def updatePartyImages():
+    initializeParties()
+    for type in PARTY_TYPE:
+        print 'Updating ' + type[1] + ' party'
+        party = Party.lg.get_or_none(party_type=type[0])
+
+        ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
+        full_ref = os.path.join(settings.PROJECT_PATH, ref)
+        file = open(full_ref)
+        party.party_label.save(photoKey(".png"), File(file))

@@ -190,7 +190,7 @@ PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantom
 
 # editable fields
 USERPROFILE_EDITABLE_FIELDS = [
-    'user_title',
+    'bio',
 ]
 
 CONTENT_EDITABLE_FIELDS = [
@@ -310,6 +310,7 @@ GROUP_PRIVACY_CHOICES = (
 # types of groups
 GROUP_TYPE_CHOICES = (
     ('N','network'),
+    ('P','party'),
     ('U','user'),
 )
 
@@ -317,6 +318,16 @@ NETWORK_TYPE = (
     ('D','default'),
     ('S','school'),
     ('L','location')
+)
+
+PARTY_TYPE = (
+    ('A', 'pirate'),
+    ('D', 'democrat'),
+    ('G', 'green'),
+    ('R', 'republican'),
+    ('L', 'libertarian'),
+    ('P', 'progressive'),
+    ('I', 'independent'),
 )
 
 # types of users
