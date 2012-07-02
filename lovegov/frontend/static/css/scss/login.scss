@@ -150,6 +150,7 @@ p.privacy_p
   margin-bottom:25px;
   margin-left:25px;
   margin-right:25px;
+
 }
 
 #loginform
@@ -388,6 +389,12 @@ div.vertical-separator
 {
   float:left;
   margin-top:20px;
+
+  li
+  {
+    border:0;
+  }
+
 }
 
 #privacy-div div
