@@ -54,6 +54,12 @@
     z-index:99;
     position:relative;
     padding:30px;
+    padding-bottom:20px;
+}
+
+.left-side-main h2
+{
+    margin-bottom:10px;
 }
 
 .left-side-main-small
@@ -72,7 +78,6 @@
 .link
 {
     position:relative;
-    height:60px;
 }
 
 #link-text
@@ -159,18 +164,12 @@ textarea:focus
 
 #invite-form
 {
+    margin-bottom:20px;
 
 }
 
-#email-label
-{
-    float:left;
-}
 
-#email-input
-{
-    float:right;
-}
+
 
 .left-sidebar-button
 {
@@ -189,7 +188,6 @@ textarea:focus
     color:#FFFFFF;
     background-color:#f0503b;
     text-decoration:none;
-    float:right;
 }
 
 .left-sidebar-button:hover
