@@ -97,7 +97,7 @@ def scriptInitialize(args):
             name = args[1] + " " + args[2]
             email = args[3]
             password = args[4]
-            control = lgregister.createUser(name=name, email=email, password=password)
+            control = createUser(name=name, email=email, password=password)
             user_prof = control.user_profile
             user_prof.confirmed = True
             user_prof.save()
