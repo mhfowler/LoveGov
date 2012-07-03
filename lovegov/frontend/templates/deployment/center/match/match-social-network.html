@@ -21,55 +21,66 @@
             <div class="boxes">
 
                 <!-- Friends -->
-                <div class="match-social-network-entity-container match-social-network-entity-container-left">
-                    <div class="match-social-network-entity-container-wrapper">
-                        {% for friend in friends %}
-                            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
-                                {% include 'deployment/snippets/match/social-network-image.html' with entity=friend %}
-                            </div>
+                <div class="match-link-box">
+                    <a href="/friends/" class="match-link-box-header">
+                        <p class="header-words"> Friends </p>
+                        <div class="arrow"> > </div>
+                    </a>
+                    <div class="items-wrapper">
+                        {% for x in friends %}
+                            <a href="{{ x.get_url }}" class="mini-avatar">
+                                {% include 'deployment/snippets/avatar.html' with user=x width="20" height="20" hoveroff=1 %}
+                            </a>
                         {% empty %}
-                            &nbsp;
+                            <p> You haven't followed anyone on LoveGov yet. </p>
                         {% endfor %}
+                        <div style="clear:both"></div>
                     </div>
-                    <div class="match-social-network-entity-button">
-                        <p>Friends <img src="/static/images/match/link_arrow.png"/></p>
+                    <a href="/friends/" class="see-all"> see all </a>
+                </div>
+
+                <!-- Networks -->
+                <div class="match-link-box box-center">
+                    <a href="/networks/" class="match-link-box-header">
+                        <p class="header-words"> Networks </p>
+                        <div class="arrow"> > </div>
+                    </a>
+                    <div class="items-wrapper">
+                        {% for x in networks %}
+                            <a href="{{ x.get_url }}" class="network-choice"> {{ x.get_name|truncatechars:10 }} </a>
+                        {% empty %}
+                            <p> You aren't a member of any networks. </p>
+                        {% endfor %}
                     </div>
                 </div>
 
                 <!-- Groups -->
-                <div class="match-social-network-entity-container match-social-network-entity-container-center">
-                    <div class="match-social-network-entity-container-wrapper">
-                        {% for group in groups %}
-                            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
-                                {% include 'deployment/snippets/match/social-network-image.html' with entity=group %}
-                            </div>
+                <div class="match-link-box">
+                    <a href="/groups/" class="match-link-box-header">
+                        <p class="header-words"> Networks </p>
+                        <div class="arrow"> > </div>
+                    </a>
+                    <div class="items-wrapper">
+                        {% for x in groups %}
+                            <a href="{{ x.get_url }}" class="mini-avatar">
+                                {% include 'deployment/snippets/avatar.html' with user=x width="20" height="20" hoveroff=1 %}
+                            </a>
                         {% empty %}
-                            &nbsp;
+                            <p> You aren't a member of any groups. </p>
                         {% endfor %}
+                        <div style="clear:both"></div>
                     </div>
-
-                    <div class="match-social-network-entity-button">
-                        <p>Groups <img src="/static/images/match/link_arrow.png"/></p>
-                    </div>
-                </div>
-
-                <!-- Networks -->
-                <div class="match-social-network-entity-container match-social-network-entity-container-right">
-                    <div class="match-social-network-entity-container-wrapper">
-                        {% for network in networks %}
-                            <div class="match-social-network-entity {% cycle 'match-social-network-entity-left' 'match-social-network-entity-center' 'match-social-network-entity-right' %}">
-                                {% include 'deployment/snippets/match/social-network-image.html' with entity=network %}
-                            </div>
-                        {% empty %}
-                            &nbsp;
-                        {% endfor %}
-                    </div>
-                    <div class="match-social-network-entity-button">
-                        <p>Networks <img src="/static/images/match/link_arrow.png"/></p>
-                    </div>
+                    <a href="/groups/" class="see-all"> see all </a>
                 </div>
 
             </div>
+
+            <div class="or-text"> or </div>
+
+            <a href="#" class="import-friends">
+                Import Friends from Facebook
+            </a>
+
         </div>
     </div>
 </div>

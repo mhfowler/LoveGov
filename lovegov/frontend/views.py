@@ -935,6 +935,10 @@ def matchNew(request, vals={}):
 
 def newMatch(request,vals={}):
 
+    vals['friends'] = UserProfile.objects.all()[0:20]
+    vals['groups']  = Group.objects.all()[0:15]
+    vals['networks']  = Group.objects.all()[0:5]
+
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/match/match-new.html', vals, request)
     url = "/match/"
