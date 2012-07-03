@@ -15,7 +15,23 @@
             </div>
 
             <div id="match-ajax-content">
-                {% include 'deployment/center/match/match-social-network.html' %}
+
+                <div class="match-presidential match-section" data-sequence="0">
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Your 2012 Presidential Candidates" %}
+                </div>
+
+                <div class="match-massachusettes match-section" data-sequence="1" style="display:none">
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Your Massachusettes Senate Election" %}
+                </div>
+
+                <div class="match-social match-section" data-sequence="2" style="display:none">
+                    {% include 'deployment/center/match/match-social.html' %}
+                </div>
+
+                <div class="match-representatives match-section" data-sequence="3" style="display:none">
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Find Your Representatives" %}
+                </div>
+
             </div>
 
             <div id="match-arrow-right" class="match-arrow">
