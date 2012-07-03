@@ -40,14 +40,15 @@
                 </div>
 
                 <!-- Networks -->
-                <div class="match-link-box box-center">
+                <div class="match-link-box box-center network-box">
                     <a href="/networks/" class="match-link-box-header">
                         <p class="header-words"> Networks </p>
                         <div class="arrow"> > </div>
                     </a>
                     <div class="items-wrapper">
                         {% for x in networks %}
-                            <a href="{{ x.get_url }}" class="network-choice"> {{ x.get_name|truncatechars:10 }} </a>
+                            <a href="{{ x.get_url }}" class="network-choice
+                            {% if forloop.counter == 4 %} last {% endif %}"> {{ x.get_name|truncatechars:10 }} </a>
                         {% empty %}
                             <p> You aren't a member of any networks. </p>
                         {% endfor %}
@@ -57,7 +58,7 @@
                 <!-- Groups -->
                 <div class="match-link-box">
                     <a href="/groups/" class="match-link-box-header">
-                        <p class="header-words"> Networks </p>
+                        <p class="header-words"> Groups </p>
                         <div class="arrow"> > </div>
                     </a>
                     <div class="items-wrapper">
@@ -74,8 +75,6 @@
                 </div>
 
             </div>
-
-            <div class="or-text"> or </div>
 
             <a href="#" class="import-friends">
                 Import Friends from Facebook

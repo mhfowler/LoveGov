@@ -935,15 +935,20 @@ def matchNew(request, vals={}):
 
 def newMatch(request,vals={}):
 
-    vals['friends'] = UserProfile.objects.all()[0:20]
-    vals['groups']  = Group.objects.all()[0:15]
-    vals['networks']  = Group.objects.all()[0:5]
+    matchSocial(request, vals)
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/match/match-new.html', vals, request)
     url = "/match/"
     return framedResponse(request, html, url, vals)
 
+
+def matchSocial(request, vals={}):
+    viewer = vals['viewer']
+    vals['friends'] = viewer.getIFollow()[:15]
+    groups = viewer.getGroups()
+    vals['groups']  = groups.filter(group_type="U")[:15]
+    vals['networks']  = groups.filter(group_type="N")[:4]
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

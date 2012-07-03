@@ -265,12 +265,13 @@
         float:left;
         width:170px;
         height:160px;
-        border: 1px solid $gray;
+        border: 1px solid $light-gray;
         position:relative;
         @include rounded(15px);
         overflow:hidden;
 
         a.match-link-box-header {
+          @include rounded-top(15px);
           display:block;
           text-align:left;
           height:20px;
@@ -309,7 +310,7 @@
           a.network-choice {
             padding:4px;
             display:block;
-            height:20px;
+            height:21px;
             border-bottom:1px solid $gray;
             width:100%;
             @include titleFont();
@@ -318,6 +319,10 @@
           a.network-choice:hover {
             background-color:$gray;
           }
+          a.network-choice.last {
+            border:none;
+            @include rounded-bottom(15px);
+          }
         }
         a.see-all {
           position:absolute;
@@ -325,6 +330,13 @@
           left:125px;
         }
       }
+      div.network-box {
+        div.items-wrapper {
+          padding:0px;
+          padding-top:9px;
+        }
+      }
+
     }
 
     div.or-text {
