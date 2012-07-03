@@ -2614,7 +2614,7 @@ function heartButtons()
         } else {
             downvote(wrapper);
         }
-        
+
     });
 
     $(".heart_plus").bindOnce('click.vote', function(event) {
@@ -3872,143 +3872,94 @@ function getAllGroupMembers(start, num, g_id) {
  *      ~Match page
  *
  **********************************************************************************************************************/
+var match_hover_off = true;
 function loadNewMatch() {
 
     $('.match-item').hoverIntent(
         function() {
-        swapInHover($(this));
-    },
+            swapInHover($(this));
+        },
         function() {
         });
 
     var autoSwitch = setInterval(function()
     {
-        var currentSelected = $('.match_selection_box_selected');
-        var circle;
-        var next;
-        if (currentSelected.hasClass('match-selection-box-left'))
-        {
-            $('.circle-div-left').removeClass('circle-div-red').addClass('circle-div-gray');
-            $('.circle-div-center').removeClass('circle-div-gray').addClass('circle-div-red');
-            next = $('.match-selection-box-center');
-            next.addClass('match_selection_box_selected');
-            currentSelected.removeClass('match_selection_box_selected');
-            matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
+        if (match_hover_off) {
+            //swapFeatured("right");
         }
-        else if (currentSelected.hasClass("match-selection-box-center"))
-        {
-            $('.circle-div-center').removeClass('circle-div-red').addClass('circle-div-gray');
-            $('.circle-div-right').removeClass('circle-div-gray').addClass('circle-div-red');
-            next = $('.match-selection-box-right');
-            next.addClass('match_selection_box_selected');
-            currentSelected.removeClass('match_selection_box_selected');
-            matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
-        }
-        else
-        {
-            $('.circle-div-right').removeClass('circle-div-red').addClass('circle-div-gray');
-            $('.circle-div-left').removeClass('circle-div-gray').addClass('circle-div-red');
-            next = $('.match-selection-box-left');
-            next.addClass('match_selection_box_selected');
-            currentSelected.removeClass('match_selection_box_selected');
-            matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
-        }
-    },10000);
 
+    }, 1000);
 
-
-
-    $('.match-selection-box').bind('click',function(event)
-    {
-        clearInterval(autoSwitch);
-
-        var currentSelected = $('.match_selection_box_selected');
-        event.preventDefault();
-        $('.match-selection-box').removeClass('match_selection_box_selected');
-        $(this).addClass('match_selection_box_selected');
-        $('.circle-div').removeClass("circle-div-red").addClass("circle-div-gray");
-        var circle;
-        if ($(this).hasClass('match-selection-box-left'))
-        {
-            circle = $('.circle-div-left');
-            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,$(this));
-        }
-        else if ($(this).hasClass("match-selection-box-center"))
-        {
-            circle = $('.circle-div-center');
-            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,$(this));
-        }
-        else
-        {
-            circle = $('.circle-div-right');
-            matchAjaxRender($(this).parent('a').attr('href'),currentSelected,$(this));
-        }
-        circle.removeClass('circle-div-gray');
-        circle.addClass("circle-div-red");
+    $("#match-arrow-right").click(function(event) {
+        swapFeatured("right");
+    });
+    $("#match-arrow-left").click(function(event) {
+        swapFeatured("left");
     });
 
-    function matchAjaxRender(link,fromObj,toObj)
-    {
-        var directionFrom = null;
-        var directionTo = null;
-        if (fromObj.hasClass("match-selection-box-left"))
-        {
-            if (!toObj.hasClass("match-selection-box-left"))
-            {
-                directionFrom = "left";
-                directionTo = "right";
-            }
+    $("#match-mid-content").hover(
+        function() {
+            match_hover_off = false;
+        },
+        function() {
+            match_hover_off = true;
         }
-        else if (fromObj.hasClass("match-selection-box-center"))
-        {
-            if (toObj.hasClass("match-selection-box-left"))
-            {
-                directionFrom = "right";
-                directionTo = "left";
-            }
-            else if (toObj.hasClass("match-selection-box-right"))
-            {
-                directionFrom = "left";
-                directionTo = "right";
-            }
-        }
-        else
-        {
-            if (toObj.hasClass("match-selection-box-left"))
-            {
-                directionFrom = "right";
-                directionTo = "left";
-            }
-            else if (toObj.hasClass("match-selection-box-center"))
-            {
-                directionFrom = "left";
-                directionTo = "right";
-            }
-        }
-        var getData = new QueryData(link.substring(link.indexOf('?')+1));
+    );
 
-        ajaxPost({
-            data: {'action':'matchSection','section':getData.section},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')' );
-                if (directionFrom != null)
-                {
-                    $('#match-ajax-content').hide({effect:'slide',speed:2500, direction:directionFrom});
-                    setTimeout(function()
-                    {
-                        $('#match-ajax-content').html(returned.html);
-                    },300);
-                    $('#match-ajax-content').show({effect:'slide',speed:2000,direction:directionTo});
-                }
-                else
-                {
-                    $('#match-ajax-content').html(returned.html);
-                }
-            },
-            error: null
-        });
+    $(".circle-div").click(function(event) {
+        swapFeatured($(this).data('sequence'));
+    });
+
+}
+
+var match_current_section = 0;
+function swapFeatured(direction) {
+    if (direction=='right') {
+        var match_next_section = nextSection();
     }
+    else {
+        if (direction=='left') {
+            var match_next_section = previousSection();
+        }
+        else {
+            var match_next_section = direction;
+        }
+    }
+    var current = getSection(match_current_section);
+    var next = getSection(match_next_section);
+    current.hide();
+    next.show();
+    var current_circle = getCircle(match_current_section);
+    var next_circle = getCircle(match_next_section);
+    current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
+    next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
+    match_current_section = match_next_section;
+}
+
+function nextSection() {
+    if (match_current_section==3) {
+        var next_num = 0;
+    }
+    else {
+        var next_num = match_current_section + 1;
+    }
+    return next_num;
+}
+function previousSection() {
+    if (match_current_section==0) {
+        var next_num = 3;
+    }
+    else {
+        var next_num = match_current_section - 1;
+    }
+    return next_num;
+}
+
+function getSection(num) {
+    return $(".match-section[data-sequence=" + num + "]");
+}
+function getCircle(num) {
+    return $(".circle-div[data-sequence=" + num + "]");
 }
 
 function swapInHover(div) {
@@ -4021,11 +3972,11 @@ function swapInHover(div) {
             success: function(data)
             {
                 var $wrapper = $('.match-box-div-wrapper');
-                $wrapper.hide({effect:'slide',speed:2000,direction:'down'});
+                //$wrapper.hide({effect:'slide',speed:2000,direction:'down'});
                 $wrapper.promise().done(function() {
                     var returned = eval('(' + data + ')');
                     $wrapper.html(returned.html);
-                    $wrapper.show({effect:'slide',speed:2000,direction:"up"});
+                    //$wrapper.show({effect:'slide',speed:2000,direction:"up"});
                 });
             },
             error: function(error, textStatus, errorThrown)
