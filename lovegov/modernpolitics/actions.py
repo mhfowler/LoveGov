@@ -355,7 +355,6 @@ def sign(request, vals={}):
     return HttpResponse(json.dumps(vals))
 
 #-----------------------------------------------------------------------------------------------------------------------
-<<<<<<< HEAD
 # Support a politician.
 #-----------------------------------------------------------------------------------------------------------------------
 def support(request, vals={}):
@@ -402,8 +401,6 @@ def submitAddress(request, vals={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-=======
->>>>>>> aad47783ed9196a71e03f7c80ea3d39ae03460e5
 # Finalizes a petition.
 #-----------------------------------------------------------------------------------------------------------------------
 def finalize(request, vals={}):
@@ -1605,14 +1602,10 @@ actions = { 'getLinkInfo': getLinkInfo,
             'flag': flag,
             'updateHistogram': updateHistogram,
             'getHistogramMembers': getHistogramMembers,
-<<<<<<< HEAD
             'getAllGroupMembers': getAllGroupMembers,
             'support': support,
             'messageRep': messageRep,
             'submitAddress':submitAddress
-=======
-            'getAllGroupMembers': getAllGroupMembers
->>>>>>> aad47783ed9196a71e03f7c80ea3d39ae03460e5
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
