@@ -5,7 +5,7 @@
     <div class="match-content">
 
         <div id="social-comparison" class="match-box-div-wrapper">
-            {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
+            {% include 'deployment/center/match/match-new-box.html' with item=viewer %}
         </div>
 
         <div class="page-right">
@@ -28,8 +28,8 @@
                     </a>
                     <div class="items-wrapper">
                         {% for friend in friends %}
-                            <a href="{{ friend.get_url }}" class="mini-avatar">
-                                {% include 'deployment/snippets/avatar.html' with user=friend width="20" height="20" hoveroff=1 %}
+                            <a href="{{ friend.get_url }}" class="mini-avatar match-item">
+                                {% include 'deployment/snippets/avatar.html' with user=x width="40" height="40" hoveroff=1 %}
                             </a>
                         {% empty %}
                             <br>
@@ -48,7 +48,7 @@
                     </a>
                     <div class="items-wrapper">
                         {% for network in networks %}
-                            <a href="{{ network.get_url }}" class="network-choice
+                            <a href="{{ network.get_url }}" class="network-choice match-item
                             {% if forloop.counter == 4 %} last {% endif %}"> {{ network.get_name|truncatechars:10 }} </a>
                         {% empty %}
                             <p> You aren't a member of any networks. </p>
@@ -64,8 +64,8 @@
                     </a>
                     <div class="items-wrapper">
                         {% for group in groups %}
-                            <a href="{{ group.get_url }}" class="mini-avatar">
-                                {% include 'deployment/snippets/avatar.html' with user=group width="35" height="35" hoveroff=1 %}
+                            <a href="{{ group.get_url }}" class="mini-avatar match-item">
+                                {% include 'deployment/snippets/avatar.html' with user=group width="40" height="40" hoveroff=1 %}
                             </a>
                         {% empty %}
                             <p> You aren't a member of any groups. </p>
@@ -85,54 +85,4 @@
     </div>
 </div>
 
-    <script type="text/javascript">
-
-        (function()
-        {
-            var currentDiv;
-
-            $('.match-social-network-entity').hoverIntent(function()
-            {
-                var check = $(this); currentDiv = $(this);
-                $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
-                $.ajax
-                        ({
-                            type:'POST',
-                            url:"/action/",
-                            data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
-                            success: function(data)
-                            {
-                                if (check.is(currentDiv))
-                                {
-                                    var returned = eval('(' + data + ')');
-                                    $('.match-box-div').promise().done(function()
-                                    {
-                                        $('.match-box-div').html(returned.html);
-                                        $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
-                                    });
-                                }
-                            },
-                            error: function(a,b,c)
-                            {
-
-                            }
-                        })
-
-
-            }, function()
-            {
-
-            });
-
-
-
-            $('.match-social-network-entity-button').hover(function()
-            {
-
-            }, function()
-            {
-
-            })
-
-        })();
-    </script>
+<script> rebind="newMatch"; </script>

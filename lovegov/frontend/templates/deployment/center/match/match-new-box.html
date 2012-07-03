@@ -1,36 +1,26 @@
-{% load thumbnail %}
 <div class="match-box-div">
 
     <div class="match-user-info">
-        {% thumbnail user_prof.getProfileImage.image "65x65" crop="center" as img %}
-            <img class="match-user-image" src="{{ img.url }}" />
-            {% empty %}
-            <img class="match-user-image" src="{{ defaultProfileImage }}"/>
-        {% endthumbnail %}
+        <a href="{{ item.get_url }}" class="card-avatar">
+            {% include 'deployment/snippets/avatar.html' with user=item width="50" height="50" hoveroff=1%}
+        </a>
         <div class="match-user-text">
-            <div class="match-user-name">
-                <h4>Barack Obama</h4>
-            </div>
-            <div class="match-user-party">
-                {% comment %}
-                {% thumbnail user_prof.getProfileImage.image "65x65" crop="center" as img %}
-                    <img class="match-user-image" src="{{ img.url }}" />
-                {% empty %}
-                    <img class="match-user-image" src="{{ defaultProfileImage }}"/>
-                {% endthumbnail %}
-                {% endcomment %}
-                <h5>Party: <a href="" class="invert_link">Democrat</a></h5>
-            </div>
+            <p> {{ item.get_name }} </p>
+            {% if item.type == "U" %}
+                party:
+            {% elif item.type == "G" %}
+                members:
+            {% endif %}
         </div>
     </div>
 
     <div class="qaweb">
-        <div id="{{ user_prof.title|slugify }}-canvas"></div>
+        <div id="{{ item.get_name|slugify }}-canvas"></div>
     </div>
 
     <script>
-        var json = eval('(' + '{{ user_prof.compare|escapejs }}' + ')');
-        new VisualComparison("{{ user_prof.title|slugify }}-canvas",json).draw();
+        var json = eval('(' + '{{ item.compare|escapejs }}' + ')');
+        new VisualComparison("{{ item.get_name|slugify }}-canvas",json).draw();
     </script>
 
 </div>

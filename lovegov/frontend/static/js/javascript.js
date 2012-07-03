@@ -72,6 +72,9 @@ function rebindFunction()
         case 'friends':
             loadHistogram();
             break;
+        case 'newMatch':
+            loadNewMatch();
+            break;
         default:
             break
     }
@@ -3859,4 +3862,50 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
+}
+
+
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Match page
+ *
+ **********************************************************************************************************************/
+function loadNewMatch() {
+
+    $('.match-item').hoverIntent(
+        function() {
+        swapInHover($(this));
+    },
+        function() {
+            alert('off!');
+        });
+
+}
+
+function swapInHover(div) {
+    var item_url = div.attr('href');
+    ajaxPost({
+            data: {
+                'action':'matchComparison',
+                'item_url': item_url
+            },
+            success: function(data)
+            {
+                alert(data);
+                $('.match-box-div').hide({effect:'slide',speed:2000,direction:'down'});
+                var returned = eval('(' + data + ')');
+                $('.match-box-div').promise().done(function()
+                {
+                    $('.match-box-div').html(returned.html);
+                    $('.match-box-div').show({effect:'slide',speed:2000,direction:"up"});
+                });
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
 }
