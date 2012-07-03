@@ -1,8 +1,119 @@
 <div id="qaweb-interactive">
     <div id="dragger">
+
+        <div id="first_user" class="first-user-box">
+
+            <div id="first_user_intro">
+
+                <h4>Welcome to the Q&A Web</h4>
+                <p class="first-user-text">
+                    Define your political beliefs by answering
+                    questions about political issues. Questions are
+                    based off legislation that has appeared in
+                    congress over the past few years.
+                </p>
+                <p class="small-margin">
+                    <a id="learn_how_it_works" class="button-red">Learn how it works</a>
+                <p>
+                <p class="no-margin">
+                    or <a id="skip_qaweb" class="text-underline red-link">skip</a>
+                </p>
+
+            </div>
+            <div id="first_user_progress" style="display:none">
+
+                <div id="progress_number">
+                    <h2>1</h2>
+                </div>
+
+                <div class="first_user_progress_text">
+                    <span class="bold">Topic </span><span class="no-bold">- click one of the topic icons to see questions</span>
+                </div>
+
+                <div id="progress_bar">
+
+                </div>
+
+            </div>
+
+        </div>
+
         <!-- QAWeb graphical components go here -->
     </div>
 </div>
+
+<script type="text/javascript">
+    var progressBar =  '<div class="progress_bar_fill" style="width:13.42%">&nbsp;</div>';
+    var progressBarDivider = '<div class="progress_bar_divider" style="width:1%">&nbsp;</div>';
+    var progressNum = 1;
+
+    function firstUserExperience()
+    {
+
+        $('#skip_qaweb').click(function()
+        {
+            $('#first_user').fadeOut('slow');
+        });
+
+        $('#learn_how_it_works').click(function()
+        {
+            var div = $('#first_user');
+            var offset = div.offset();
+            $('#qaweb-interactive').parent().append(div.detach().offset(offset));
+            var newPosition = $('.top-logo').offset();
+            newPosition.top+=70;
+            div.animate(newPosition);
+            $('#first_user_intro').hide();
+            $('#first_user_progress').show();
+            $('._topic_label').show('bounce',300);
+        });
+    }
+    firstUserExperience();
+
+    function nextStep()
+    {
+        $('#progress_bar').append(progressBar).append(progressBarDivider);
+        $('#progress_number h2').text(++progressNum);
+    }
+
+    function stepTwo()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Question ");
+        $('.first_user_progress_text').children(".no-bold").text("- Unanswered questions appear as question marks, once answered a check mark graphic appears.");
+    }
+
+    function stepThree()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Importance ");
+        $('.first_user_progress_text').children(".no-bold").text("- Adjusting the importance affects how we weight your answers and help us match you more accurately.");
+    }
+
+    function stepFour()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Answers ");
+        $('.first_user_progress_text').children(".no-bold").text("- These answers are the basis for comparisons between politicians, friends and networks.");
+    }
+
+    function stepFive()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Navigate ");
+        $('.first_user_progress_text').children(".no-bold").text("- click and drag your mouse to move around the web.  It's like Google Maps! ");
+    }
+
+    function stepSix()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Navigate ");
+        $('.first_user_progress_text').children(".no-bold").text("- click and drag your mouse to move around the web.  It's like Google Maps! ");
+    }
+
+
+
+</script>
 
 <div id="qawebhover" class="everything" style="cursor:default;position:absolute;display:none;z-index:500;">
     <div class="dialogue-wrapper">
@@ -31,7 +142,7 @@
 
                         <div id="value_statement" style="display:none">
                             <h6>Explanation</h6>
-                            <textarea style="width:400px;height:70px" id="user_explanation" class="explanation" name="explanation" placeholder="Enter your view on this question here in 500 characters or less."></textarea>
+                            <textarea style="width:400px;height:70px" id="user_explanation" class="explanation" name="explanation" placeholder="(Optional) Enter your view on this question here."></textarea>
                         </div>
                         <input type="hidden" name="action" value="answer"/>
                         <input id="q_id" type="hidden" name="q_id" value=""/>
@@ -39,7 +150,8 @@
                     </div>
 
                     <div id="qa-buttons" style="display:none">
-                        <a class="dialogue-buttons" href="">learn</a>
+                        <span id="answer-saved" style="float:left;display:none">Answer Saved</span>
+                        <a class="dialogue-buttons" href="">learn more</a>
                         <a class="discuss dialogue-buttons" href="">discuss</a>
                         <a id="next_button" class="dialogue-buttons" href="">next</a>
                     </div>
@@ -76,6 +188,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script type="text/javascript">
     rebind = 'qaweb';

@@ -32,8 +32,10 @@ var QAWebHover = Class.extend
     ({
         init: function()
         {
+            this.questionArray = new Array();
             this.node = null;
             this.state;
+            this.lastParent = null;
             this.position = null;
             this.idDiv = '#qawebhover';
             this.hoverTimer = false;
@@ -89,6 +91,7 @@ var QAWebHover = Class.extend
                 self._toggleButtons('hide');
                 self.node = null;
                 $('#answers-ul').empty();
+                $('._topic_label').hide();
                 $('#value_statement').hide();
                 $('#question-weight-div').hide();
                 $(self.idDiv).fadeOut(10);
@@ -193,8 +196,9 @@ var QAWebHover = Class.extend
                     $(this).css('backgroundColor',color['default']);
                 }
             );
-             $('#user_explanation').css('outline-color',color['hover']);
-             $('#user_explanation').css('border','2px solid ' + color['hover']);
+            $('#user_explanation').css('outline-color',color['hover']);
+            $('#user_explanation').css('border','2px solid ' + color['hover']);
+
         },
 
         _toggleButtons: function(switchString)
@@ -258,9 +262,43 @@ var QAWebHover = Class.extend
             $('#question-weight-slider').unbind("slidechange");
             $('#question-weight-slider').bind("slide", function(event, ui)
             {
+                if ($('.step-three').length)
+                {
+                    var topicSelected = $('.step-three');
+                    topicSelected.removeClass("step-three").addClass("step-four");
+                    topicSelected.children('p').text("Click an answer to define your stance on this question.");
+                    var offset = $('.answer-1').offset();
+                    offset.top-=(topicSelected.height()/2);
+                    offset.left = topicSelected.offset().left;
+                    topicSelected.offset(offset);
+                    stepFour();
+                }
                 var value = parseInt(ui.value);
                 self._moveSlider(value);
                 self.node.weight = value;
+            });
+
+
+            $('#next_button').unbind();
+            $('#next_button').bind('click',function(event)
+            {
+                event.preventDefault();
+                var index = $.inArray(self.node,self.questionArray) + 1;
+                if (index == self.questionArray.length - 1) { index = 0 }
+
+                var question = self.questionArray[index];
+                if (!question.parents.clicked)
+                {
+                    question.parents._click();
+                }
+                if (self.lastParent != null && question.parents !== self.lastParent)
+                {
+                    self.lastParent._click();
+                }
+
+                self.lastParent = question.parents;
+                self.toggleQuestion(question);
+
             });
 
             $('#answers-ul p').click(function()
@@ -286,6 +324,16 @@ var QAWebHover = Class.extend
                         self.node.answers[j].user_answer = false;
                     }
                 }
+
+                if ($('.step-four').length)
+                {
+                    $('.step-four').addClass("step-five").removeClass("step-four").hide();
+                    stepFive();
+                }
+
+                self._saveAnswer();
+                $('#answer-saved').show();
+                $('#answer-saved').fadeOut(3000);
 
 
                 /*
@@ -363,6 +411,11 @@ var QAWebHover = Class.extend
                 this._toggleButtons('show');
                 this.showHover(node);
                 this.showAnswers(node);
+                if (!$('.step-five').length)
+                {
+                    $('._topic_label').show();
+                }
+
             }
         },
 
@@ -575,14 +628,14 @@ var Node = Class.extend
         {
             var self = this;
             return jsPlumb.connect
-                ({
-                    source:self.idDiv,
-                    target:self.parents.idDiv,
-                    anchor:[0.5, 0.5, 0.5, 0.5],
-                    connector:["Straight"],
-                    paintStyle:{strokeStyle:self.color['default'], lineWidth:self.connectLineWidth * ZOOM},
-                    endpoint:["Rectangle", { width:1, height:1 }]
-                });
+            ({
+                source:self.idDiv,
+                target:self.parents.idDiv,
+                anchor:[0.5, 0.5, 0.5, 0.5],
+                connector:["Straight"],
+                paintStyle:{strokeStyle:self.color['default'], lineWidth:self.connectLineWidth * ZOOM},
+                endpoint:["Rectangle", { width:1, height:1 }]
+            });
         },
 
         /**
@@ -611,6 +664,16 @@ var Node = Class.extend
             self.ypos = (Math.sin(self.angle) * self.skew * ZOOM) + self.parents.ypos+(13*ZOOM);
             self.width = self.base_width * ZOOM;
             self.height = self.base_height * ZOOM;
+
+
+            if (self instanceof Topic)
+            {
+                var div= $('#' + self.text.replace(" ","") + '_label');
+                var xpos = (Math.cos(self.angle) * (self.skew+(div.width()/3)) * ZOOM) + self.xpos-10;
+                var ypos = (Math.sin(self.angle) * (self.skew-div.height()) * ZOOM) + self.ypos + div.height()/2;
+                $('#' + self.text.replace(" ","") + '_label').css({left:xpos,top:ypos});
+            }
+
 
             // repaints jsplumb connectors
             if (self.connection != null)
@@ -719,7 +782,8 @@ var Node = Class.extend
             self.idDivObj.animate({left:self.xpos,top:self.ypos},{duration:250,step: function(now, fx)
                 {
                     jsPlumb.repaint(self.idDiv);
-                }}
+                    qaWebHover.updatePosition();
+                }, complete: function(){  qaWebHover.updatePosition();}}
             );
             setTimeout(function(){jsPlumb.repaint(self.idDiv);},250);
             this.$_onClick();
@@ -747,6 +811,7 @@ var Question = Node.extend
             this.answered = this._checkAnswered();
             this.user_explanation = data['user_explanation'];
             this._super(data);
+            qaWebHover.questionArray.push(this);
         },
 
         toDisplay: function()
@@ -795,7 +860,7 @@ var Question = Node.extend
             var width = "width:50px;";
             var height = "height:50px;";
             var style = 'style="position:absolute;' + left + top + zindex + width + height + '"';
-            $(DRAGGER_ID).append("<div id='" + self.idDiv + "' " + style + "></div>");
+            $(DRAGGER_ID).append("<div class='_question' id='" + self.idDiv + "' " + style + "></div>");
             this.idDivObj = $('#' + this.idDiv);
         },
 
@@ -850,7 +915,51 @@ var Question = Node.extend
         // UI FUNCTIONALITY
         _click: function()
         {
+            var self = this;
             qaWebHover.toggleQuestion(this);
+
+            var topicSelected;
+            if ($('.step-two').length)
+            {
+                var offset = $('#question-weight-div span').offset();
+                offset.left-=250;
+                offset.top-=10;
+                topicSelected = $('.step-two').detach();
+                $('#qawebhover').append(topicSelected);
+                topicSelected.offset(offset);
+                var pointer = '<div class="label-pointer"><div class="border"></div><div class="inner"></div></div>';
+                topicSelected.html("<p class='no-margin'>How important is this question to you? Adjust the slider accordingly.</p>");
+                topicSelected.append(pointer);
+                topicSelected.children(".label-pointer").children(".border").css("border-color",'transparent transparent transparent ' + self.color.default);
+                topicSelected.children(".label-pointer").children(".inner").css("border-color",'transparent transparent transparent ' + self.color.default);
+                topicSelected.removeClass("step-two").addClass("step-three");
+                stepThree();
+            }
+
+            if ($('.step-three').length)
+            {
+                topicSelected = $('.step-three');
+                var offset = $('#question-weight-div span').offset();
+                offset.left-=250;
+                offset.top-=10;
+                topicSelected.offset(offset);
+                topicSelected.css("background-color",self.color.default);
+                topicSelected.children(".label-pointer").children(".border").css("border-color",'transparent transparent transparent ' + self.color.default);
+                topicSelected.children(".label-pointer").children(".inner").css("border-color",'transparent transparent transparent ' + self.color.default);
+            }
+
+            if ($('.step-four').length)
+            {
+                topicSelected = $('.step-four');
+                var offset = $('.answer-1').offset();
+                offset.top-=(topicSelected.height()/2);
+                offset.left = topicSelected.offset().left;
+                topicSelected.offset(offset);
+                topicSelected.css("background-color",self.color.default);
+                topicSelected.children(".label-pointer").children(".border").css("border-color",'transparent transparent transparent ' + self.color.default);
+                topicSelected.children(".label-pointer").children(".inner").css("border-color",'transparent transparent transparent ' + self.color.default);
+            }
+
         },
         _mouseEnter: function()
         {
@@ -928,7 +1037,13 @@ var Topic = Node.extend
             var zindex = "z-index:60;";
             var size = "width:" + this.base_width + "px; height:" + this.base_height + "px;";
             var style = 'style="position:absolute;' + left + top + zindex + size + '"';
-            $(DRAGGER_ID).append("<div id='" + self.idDiv + "' " + style + "></div>");
+            $(DRAGGER_ID).append("<div class='_topic' id='" + self.idDiv + "' " + style + "></div>");
+
+            var color = "background-color:" + this.color.default + ";color:white";
+            left = 'left:' + self.xpos + "px;";
+            var label_style = 'style="display:none;position:absolute;' + left + top + color + '"';
+            $(DRAGGER_ID).append("<div id='" + this.text.replace(" ","") + "_label' class='_topic_label step-one'" + label_style + ">" + this.text + "</div>");
+
             this.idDivObj = $('#' + this.idDiv);
         },
 
@@ -974,6 +1089,18 @@ var Topic = Node.extend
         _click: function()
         {
             var self = this;
+
+
+            if ($('.step-one').length)
+            {
+                $('._topic_label').each(function()
+                {
+                    if ($(this).attr('id').replace("_label","") != self.text.replace(" ","")) { $(this).hide('explode').delay(1000).remove() }
+                    else { $(this).removeClass("step-one").addClass("step-two").text("Click a ?");  }
+                });
+                stepTwo();
+            }
+
             if (self.clicked)
             {
                 if (qaWebHover.node != null && qaWebHover.node.parents == this)
@@ -991,6 +1118,8 @@ var Topic = Node.extend
                 self._expand();
             }
         }
+
+
 
     });
 
