@@ -7,22 +7,19 @@
 
     <!-- Content Section -->
     <div id="match-mid">
-        {% comment %}
-        <div id="match-mid-content">
-            <div id="match-arrow-left" class="match-arrow">
-                <img src="/static/images/match/arrow_left_light.png"/>
-            </div>
 
-            <div id="match-ajax-content">
-                {% include 'deployment/center/match/match-election-center.html' %}
-            </div>
-
-
-            <div id="match-arrow-right" class="match-arrow">
-                <img src="/static/images/match/arrow_right_light.png"/>
-            </div>
+        <div id="match-arrow-left" class="match-arrow">
+            <img src="/static/images/match/arrow_left_light.png"/>
         </div>
-        {% endcomment %}
+
+        <div id="match-ajax-content">
+            {% include 'deployment/center/match/match-presidents.html' %}
+        </div>
+
+        <div id="match-arrow-right" class="match-arrow">
+            <img src="/static/images/match/arrow_right_light.png"/>
+        </div>
+
     </div>
 
     <!-- Red/Gray Circles -->
@@ -33,13 +30,4 @@
 
 </div>
 
-<script type="text/javascript">
-    $('.match-arrow img').hover(function()
-    {
-        $(this).css({'background-color':'#F0F0F0'});
-    },function()
-    {
-        $(this).css({'background-color':'#FFFFFF'});
-    });
-</script>
 

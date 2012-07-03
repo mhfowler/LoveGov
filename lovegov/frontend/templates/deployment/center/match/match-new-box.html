@@ -2,16 +2,12 @@
     <div class="match-user-info">
         {% load thumbnail %}
         {% thumbnail entity.getProfileImage.image "85x85" crop="center" as img %}
-            <img class="match-user-img" src="{{ img.url }}"/>
+            <img class="match-user-img" src="{{ img.url }}" />
+            {% empty %}
+            <img src="" />
         {% endthumbnail %}
-        <div style="float:left">
-            <span class="match-user-info-span">{{ entity.get_name }}</span>
-            <ul>
-                <li>Party: <span style="color: #959595;">Republican</span></li>
-                <li>Roll:</li>
-                <li>Website:</li>
-            </ul>
-        </div>
+        <h4>Barack Obama</h4>
+
     </div>
     <div id="{{ entity.alias }}-canvas" style="clear:both">
 

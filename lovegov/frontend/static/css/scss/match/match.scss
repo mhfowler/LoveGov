@@ -13,11 +13,57 @@
 
 #match-mid
 {
-  width:960px;
-  margin: 0px 15px;
-  height: 400px;
-  border: 5px solid $gray;
-  @include rounded;
+  text-align:center;
+}
+
+#match-ajax-content
+{
+  float:left;
+  text-align:center;
+}
+
+.match-arrow
+{
+  width:36px;
+  height:435px;
+  float:left;
+}
+
+.match-arrow img
+{
+  margin-top:180px;
+  padding:8px;
+  cursor:pointer;
+}
+
+#match-arrow-left img
+{
+  border-radius:10px 0 0 10px;
+}
+
+#match-arrow-right img
+{
+  border-radius:0 10px 10px 0;
+}
+
+.match-box-div-wrapper
+{
+  float:left;
+  width:300px;
+  padding:0px;
+  height:450px;
+}
+
+.match-box-div
+{
+  float:left;
+  width:300px;
+  padding:0px;
+  border-radius:15px;
+  -moz-border-radius:15px;
+  -webkit-border-radius:15px;
+  -khtml-border-radius:15px;
+  border:1px solid #DBDBDB;
 }
 
 #match-selection-line-break-container

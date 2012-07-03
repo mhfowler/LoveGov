@@ -1265,7 +1265,7 @@ def matchSection(request, vals={}):
 
         # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-election-center.html', vals, request)
+        html = ajaxRender('deployment/center/match/match-presidents.html', vals, request)
 
     elif section == 'social':
         user = vals['viewer']
