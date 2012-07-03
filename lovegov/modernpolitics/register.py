@@ -60,6 +60,11 @@ def createUser(name, email, password, type='userProfile',active=True):
             return createUser(name, email, password, type, active)
         else:
             print ("email duplicate!" + email)
+            if splitted[1] == "lovegov.com":
+                print ("deletes! " + email)
+                c = ControllingUser.objects.get(username=email)
+                c.delete()
+                return createUser(name, email, password, type, active)
 
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
