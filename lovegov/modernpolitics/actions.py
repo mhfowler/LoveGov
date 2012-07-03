@@ -990,14 +990,12 @@ def addEmailList(request):
 # returns match of user
 #-----------------------------------------------------------------------------------------------------------------------
 def matchComparison(request,vals={}):
-    user = vals['viewer']
-    object = urlToObject(request.POST['entity_url'])
 
-    if object.type == "U": object.compare = getUserUserComparison(user, object).toJSON()
-    elif object.type == "G": object.compare = getUserGroupComparison(user, object).toJSON()
-    else: object.compare =  getUserContentComparison(user, object).toJSON()
+    viewer = vals['viewer']
+    object = urlToObject(request.POST['item_url'])
+    object.compare = object.getComparison(viewer).toJSON()
 
-    vals['entity'] = object
+    vals['item'] = object
     html = ajaxRender('deployment/center/match/match-new-box.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1285,7 +1283,7 @@ def matchSection(request, vals={}):
 
         # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-election-center.html', vals, request)
+        html = ajaxRender('deployment/center/match/match-tryptic-template.html', vals, request)
 
     elif section == 'social':
         user = vals['viewer']

@@ -16,10 +16,10 @@ def createPoliticianProfiles(sheet):
             print "Creating " + fullname
             email = firstname + "@lovegov.com"
             password = 'president'
-            politician = lgregister.createUser(fullname,email,password,type="politician")
+            politician = createUser(fullname,email,password,type="politician")
             politician.user_profile.confirmed = True
             politician.user_profile.save()
-            image_path = os.path.join(settings.PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + lastname.lower() + ".jpg")
+            image_path = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/presidentialCandidates/' + lastname.lower() + ".jpg")
             politician.user_profile.setProfileImage(file(image_path))
             print "Successfully created and confirmed " + fullname
 

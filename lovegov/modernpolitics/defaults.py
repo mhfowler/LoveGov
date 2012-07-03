@@ -10,7 +10,7 @@
 # lovegov
 import traceback
 from BeautifulSoup import BeautifulStoneSoup
-
+from django import db
 from lovegov.modernpolitics.helpers import *
 
 def get_or_none(model, **kwargs):
@@ -780,7 +780,6 @@ def initializePersistentDebate():
     debate.turns_total = 4
     debate.save()
     debate.topics.add(topic)
-
 
 def filecount(path):
     count = 0

@@ -21,6 +21,18 @@
   -khtml-border-bottom-left-radius: $radius;
 }
 
+@mixin rounded-top($radius: 20px)
+{
+  border-top-right-radius: $radius;
+  border-top-left-radius: $radius;
+  -moz-border-top-right-radius: $radius;
+  -moz-border-top-left-radius: $radius;
+  -webkit-border-top-right-radius: $radius;
+  -webkit-border-top-left-radius: $radius;
+  -khtml-border-top-right-radius: $radius;
+  -khtml-border-top-left-radius: $radius;
+}
+
 @mixin fontSize($fontSize: 20px)
 {
   font-size:$fontSize;

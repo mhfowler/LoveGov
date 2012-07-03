@@ -389,6 +389,84 @@ def theFeed(request, vals={}):
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your friends comparisons
+#-----------------------------------------------------------------------------------------------------------------------
+def iFollow(request, vals={}):
+
+    viewer = vals['viewer']
+
+    group = viewer.i_follow
+    vals['ifollow'] = group
+
+    friends = list(viewer.getIFollow())
+    for x in friends:
+        comparison = x.getComparison(viewer)
+        x.result = comparison.result
+    friends.sort(key=lambda x:x.result,reverse=True)
+    vals['friends'] = friends
+
+    loadHistogram(5, group.id, 'mini', vals)
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/friends.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your groups
+#-----------------------------------------------------------------------------------------------------------------------
+def groups(request, vals={}):
+
+    viewer = vals['viewer']
+
+    mygroups = viewer.getUserGroups()
+    vals['mygroups'] = mygroups
+
+    mygroups_ids = mygroups.values_list("id", flat=True)
+    groups = list(UserGroup.objects.all())
+    for x in groups:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+        x.you_are_member = (x.id in mygroups_ids)
+    groups.sort(key=lambda x:x.result,reverse=True)
+    vals['groups'] = groups
+
+    vals['what'] = "Groups"
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your networks
+#-----------------------------------------------------------------------------------------------------------------------
+def networks(request, vals={}):
+
+    viewer = vals['viewer']
+
+    mygroups = viewer.getNetworks()
+    vals['mygroups'] = mygroups
+
+    mygroups_ids = mygroups.values_list("id", flat=True)
+    groups = list(Network.objects.all())
+    for x in groups:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+        x.you_are_member = (x.id in mygroups_ids)
+    groups.sort(key=lambda x:x.result,reverse=True)
+    vals['groups'] = groups
+
+    vals['what'] = "Networks"
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
@@ -591,24 +669,7 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # histogram
-    resolution = 5
-    bucket_list = getBucketList(resolution)
-    vals['buckets'] = bucket_list
-    bucket_uids = {}
-    for x in bucket_list:
-        bucket_uids[x] = []
-    histogram_metadata = {'total':0,
-                          'identical':0,
-                          'identical_uids':[],
-                          'resolution':resolution,
-                          'g_id':group.id,
-                          'which':'mini',
-                          'increment':1,
-                          'topic_alias':'all',
-                          'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
-    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+    loadHistogram(5, group.id, 'mini', vals)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -641,6 +702,9 @@ def group(request, g_id=None, vals={}):
     if not group.group_privacy == 'S':
         vals['is_visible'] = True
 
+    if group == viewer.i_follow:
+        vals['is_visible'] = True
+
     vals['is_user_admin'] = False
     admins = list( group.admins.all() )
     for admin in admins:
@@ -662,7 +726,15 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
     vals['group'] = group
 
-    resolution = 20
+    loadHistogram(20, group.id, 'full', vals)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
+
+
+def loadHistogram(resolution, g_id, which, vals={}):
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}
@@ -672,18 +744,13 @@ def histogramDetail(request, g_id, vals={}):
                           'identical':0,
                           'identical_uids':[],
                           'resolution':resolution,
-                          'g_id':group.id,
-                          'which':'full',
+                          'g_id':g_id,
+                          'which':which,
                           'increment':1,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 }
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
-
-    setPageTitle("lovegov: " + group.title,vals)
-    html = ajaxRender('deployment/center/histogram.html', vals, request)
-    url = group.getHistogramURL()
-    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -747,6 +814,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', vals=vals, request=request)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # All Users Link
@@ -845,6 +913,7 @@ def matchNew(request, vals={}):
     if request.method == 'GET':
         vals['defaultImage'] = getDefaultImage().image
         user = vals['viewer']
+
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -864,6 +933,25 @@ def matchNew(request, vals={}):
         return framedResponse(request, html, url, vals)
 
 
+def newMatch(request,vals={}):
+
+    viewer = vals['viewer']
+    viewer.compare = viewer.getComparison(viewer).toJSON()
+
+    matchSocial(request, vals)
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/center/match/match-new.html', vals, request)
+    url = "/match/"
+    return framedResponse(request, html, url, vals)
+
+
+def matchSocial(request, vals={}):
+    viewer = vals['viewer']
+    vals['friends'] = viewer.getIFollow()[:15]
+    groups = viewer.getGroups()
+    vals['groups']  = groups.filter(group_type="U")[:15]
+    vals['networks']  = groups.filter(group_type="N")[:4]
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail
@@ -1165,6 +1253,16 @@ def facebookAction(request, to_page="/web/", vals={}):
         auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
         vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
 
+    elif fb_action == 'make_friends':
+        vals['success'] = fbMakeFriends(request, vals) #Make Friends Success Boolean (puts errors in vals[fb_error])
+        vals['fb_scope'] = 'email' #Scope Needed if wall share fails
+        action_path = request.path #Path for this action
+        action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
+        vals['auth_to_page'] = action_path + action_query #Build authorization to_page
+        auth_path = '/fb/authorize/' #Path to authorization
+        auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
+        vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
+
     if request.is_ajax(): #Return AJAX response
         return_vals = { 'success':vals['success'], #Only return important dictionary values
             'fb_auth_path':vals['fb_auth_path'] } #Add authorization path to return dictionary
@@ -1173,11 +1271,18 @@ def facebookAction(request, to_page="/web/", vals={}):
         ajax_response = HttpResponse(json.dumps(return_vals)) #Build Ajax Response
         ajax_response.set_cookie('auth_to_page',vals['auth_to_page']) #Add authorization to_page cookie
         return ajax_response
+
     else: #Return regular response
-        action_to_page = request.GET.get('action_to_page') #Look for an action to_page
-        if action_to_page: #If there is one
-            to_page = action_to_page #Set the to_page as the action to_page
-        return shortcuts.redirect(to_page)
+        if vals['success']:
+            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
+            if action_to_page: #If there is one
+                to_page = action_to_page #Set the to_page as the action to_page
+            return shortcuts.redirect(to_page)
+        else:
+            to_page = vals['fb_auth_path']
+            response = shortcuts.redirect(to_page)
+            response.set_cookie('auth_to_page',vals['auth_to_page'])
+            return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # learn about our widget

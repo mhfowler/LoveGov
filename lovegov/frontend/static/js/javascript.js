@@ -69,6 +69,12 @@ function rebindFunction()
         case 'histogram':
             loadHistogram();                                // histogram detail
             break;
+        case 'friends':
+            loadHistogram();
+            break;
+        case 'newMatch':
+            loadNewMatch();
+            break;
         default:
             break
     }
@@ -2608,7 +2614,7 @@ function heartButtons()
         } else {
             downvote(wrapper);
         }
-        
+
     });
 
     $(".heart_plus").bindOnce('click.vote', function(event) {
@@ -3856,4 +3862,126 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
+}
+
+
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Match page
+ *
+ **********************************************************************************************************************/
+var match_hover_off = true;
+function loadNewMatch() {
+
+    $('.match-item').hoverIntent(
+        function() {
+            swapInHover($(this));
+        },
+        function() {
+        });
+
+    var autoSwitch = setInterval(function()
+    {
+        if (match_hover_off) {
+            //swapFeatured("right");
+        }
+
+    }, 1000);
+
+    $("#match-arrow-right").click(function(event) {
+        swapFeatured("right");
+    });
+    $("#match-arrow-left").click(function(event) {
+        swapFeatured("left");
+    });
+
+    $("#match-mid-content").hover(
+        function() {
+            match_hover_off = false;
+        },
+        function() {
+            match_hover_off = true;
+        }
+    );
+
+    $(".circle-div").click(function(event) {
+        swapFeatured($(this).data('sequence'));
+    });
+}
+
+var match_current_section = 0;
+function swapFeatured(direction) {
+    if (direction=='right') {
+        var match_next_section = nextSection();
+    }
+    else {
+        if (direction=='left') {
+            var match_next_section = previousSection();
+        }
+        else {
+            var match_next_section = direction;
+        }
+    }
+    var current = getSection(match_current_section);
+    var next = getSection(match_next_section);
+    current.hide();
+    next.show();
+    var current_circle = getCircle(match_current_section);
+    var next_circle = getCircle(match_next_section);
+    current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
+    next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
+    match_current_section = match_next_section;
+}
+
+function nextSection() {
+    if (match_current_section==3) {
+        var next_num = 0;
+    }
+    else {
+        var next_num = match_current_section + 1;
+    }
+    return next_num;
+}
+function previousSection() {
+    if (match_current_section==0) {
+        var next_num = 3;
+    }
+    else {
+        var next_num = match_current_section - 1;
+    }
+    return next_num;
+}
+
+function getSection(num) {
+    return $(".match-section[data-sequence=" + num + "]");
+}
+function getCircle(num) {
+    return $(".circle-div[data-sequence=" + num + "]");
+}
+
+function swapInHover(div) {
+    var item_url = div.attr('href');
+    ajaxPost({
+            data: {
+                'action':'matchComparison',
+                'item_url': item_url
+            },
+            success: function(data)
+            {
+                var $wrapper = $('.match-box-div-wrapper');
+                //$wrapper.hide({effect:'slide',speed:2000,direction:'down'});
+                $wrapper.promise().done(function() {
+                    var returned = eval('(' + data + ')');
+                    $wrapper.html(returned.html);
+                    //$wrapper.show({effect:'slide',speed:2000,direction:"up"});
+                });
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
 }

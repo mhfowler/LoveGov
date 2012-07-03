@@ -359,7 +359,7 @@ class Content(Privacy, LocationLevel):
         elif self.main_image:
             return self.main_image.image.url
         else:
-            return self.getMainTopic().getUserImage()
+            return self.getMainTopic().getUserImage().image.url
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
@@ -764,21 +764,21 @@ class BasicInfo(models.Model):
     GENDER_CHOICES = ( ('M', 'Male'), ('F', 'Female'), ('N', 'None') )
     ROLE_CHOICES = ( ('V', 'Voter'), ('E', 'Elected Official') )
     # FIELDS
-    middle_name = models.CharField(max_length=100, blank=True)
-    nick_name = models.CharField(max_length=100, blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
+    nick_name = models.CharField(max_length=100, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     dob = models.DateField(null=True)
     address = custom_fields.ListField(default=[])
-    state = models.CharField(max_length=2, blank=True)
-    zipcode = models.CharField(max_length=15, blank=True)
+    state = models.CharField(max_length=2, blank=True, null=True)
+    zipcode = models.CharField(max_length=15, blank=True, null=True)
     url = custom_fields.ListField(default=[])
-    religion = models.CharField(max_length=200, blank=True)
-    ethnicity = models.CharField(max_length=30, blank=True)
-    party = models.CharField(max_length=100, blank=True)
-    political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True)
+    religion = models.CharField(max_length=200, blank=True, null=True)
+    ethnicity = models.CharField(max_length=30, blank=True, null=True)
+    party = models.CharField(max_length=100, blank=True, null=True)
+    political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
     invite_message = models.CharField(max_length=10000, blank=True, default=DEFAULT_INVITE_MESSAGE)
     invite_subject = models.CharField(max_length=1000, blank=True, default=DEFAULT_INVITE_SUBJECT)
-    bio = models.CharField(max_length=150, blank=True)
+    bio = models.CharField(max_length=150, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -1155,6 +1155,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return DEFAULT_PROFILE_IMAGE_URL
 
+    def getImage(self):
+        return self.getProfileImage()
+
+    def getImageURL(self):
+        return self.getProfileImageURL()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
@@ -1245,11 +1251,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
         if not self.i_follow:
             self.createIFollowGroup()
-        self.i_follow.members.add(to_user)
+        self.i_follow.joinMember(to_user)
 
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
-        to_user.follow_me.members.add(self)
+        to_user.follow_me.joinMember(self)
 
         #Check and Make Relationship A
         if not relationship:
@@ -1500,7 +1506,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a list of all Users who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
-        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('user', flat=True)
+        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('to_user', flat=True)
         followers = UserProfile.objects.filter(id__in=f_ids)
         if num != -1:
             followers = followers[:num]
