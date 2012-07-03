@@ -183,8 +183,8 @@ for imgRef in os.listdir(os.path.join(settings.PROJECT_PATH, 'frontend/static/im
 
 ########################################### PROCESS PATHS ##############################################################
 
-PHANTOMJS = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
-PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
+#PHANTOMJS = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
+#PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
 
 ########################################## CHOICES #####################################################################
 
