@@ -357,7 +357,7 @@ class Content(Privacy, LocationLevel):
         if self.main_image:
             return self.main_image.image.url
         else:
-            return self.getMainTopic().getUserImage()
+            return self.getMainTopic().getUserImage().image.url
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
@@ -1152,6 +1152,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self.profile_image.image.url
         else:
             return DEFAULT_PROFILE_IMAGE_URL
+
+    def getImage(self):
+        return self.getProfileImage()
+
+    def getImageURL(self):
+        return self.getProfileImageURL()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data

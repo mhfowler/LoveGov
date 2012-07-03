@@ -83,6 +83,8 @@ urlpatterns += patterns('',
     (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^friends/$', viewWrapper(views.iFollow, requires_login=True)),
+    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^networks/$', viewWrapper(views.networks, requires_login=True)),
 
     # ajax pages
     (r'^logout/$', viewWrapper(views.logout, requires_login=True)),                            # logout

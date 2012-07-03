@@ -414,6 +414,57 @@ def iFollow(request, vals={}):
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your groups
+#-----------------------------------------------------------------------------------------------------------------------
+def groups(request, vals={}):
+
+    viewer = vals['viewer']
+
+    mygroups = viewer.getUserGroups()
+    vals['mygroups'] = mygroups
+
+    mygroups_ids = mygroups.values_list("id", flat=True)
+    groups = list(UserGroup.objects.all())
+    for x in groups:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+        x.you_are_member = (x.id in mygroups_ids)
+    groups.sort(key=lambda x:x.result,reverse=True)
+    vals['groups'] = groups
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your networks
+#-----------------------------------------------------------------------------------------------------------------------
+def networks(request, vals={}):
+
+    viewer = vals['viewer']
+
+    mygroups = viewer.getNetworks()
+    vals['mygroups'] = mygroups
+
+    mygroups_ids = mygroups.values_list("id", flat=True)
+    groups = list(Network.objects.all())
+    for x in groups:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+        x.you_are_member = (x.id in mygroups_ids)
+    groups.sort(key=lambda x:x.result,reverse=True)
+    vals['groups'] = groups
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, vals={}):
