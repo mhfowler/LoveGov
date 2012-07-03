@@ -1,0 +1,41 @@
+<div id="content">
+<h1>Search results for "{{term}}"</h1>
+{{num_results}} results.
+
+{% if userProfiles %}
+<h2>Users</h2>
+<ul>
+{% for user in userProfiles %}
+<li><a href='{{user.get_url}}'>{{user.get_name}}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if petitions %}
+<h2>Petitions</h2>
+<ul>
+{% for petition in petitions %}
+<li><a href='{{petition.get_url}}'>{{petition.title}}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if news %}
+<h2>News</h2>
+<ul>
+{% for article in news %}
+<li><a href='{{article.get_url}}'>{{article.title}}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if questions %}
+<h2>Questions</h2>
+<ul>
+{% for question in questions %}
+<li><a href='{{question.get_url}}'>{{question.title}}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+</div>

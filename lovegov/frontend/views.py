@@ -1354,6 +1354,21 @@ def facebookAction(request, to_page="/web/", vals={}):
 def widgetAbout(request, vals={}):
     return HttpResponse("Get our widget!")
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Search page
+#-----------------------------------------------------------------------------------------------------------------------
+def search(request, term='', vals={}):
+    userProfiles, petitions, questions, news = lovegovSearch(term)
+    vals['num_results'] = sum(map(len, (userProfiles, petitions, questions, news)))
+    vals['userProfiles'] = userProfiles
+    vals['petitions'] = petitions
+    vals['questions'] = questions
+    vals['news'] = news
+    vals['term'] = term
+    html = ajaxRender('deployment/center/search.html', vals, request)
+    url = '/search/' + term
+    return framedResponse(request, html, url, vals)
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------

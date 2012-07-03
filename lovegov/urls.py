@@ -62,8 +62,14 @@ urlpatterns += patterns('',
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
+<<<<<<< HEAD
     (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                           # match page
     (r'^match/(\w+)/$', viewWrapper(views.newMatch, requires_login=True)),                    # match page
+=======
+    (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                             # match page
+    (r'^matchNew/$', viewWrapper(views.matchNew, requires_login=True)),
+    (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
+>>>>>>> aad47783ed9196a71e03f7c80ea3d39ae03460e5
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail

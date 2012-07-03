@@ -1,0 +1,15 @@
+{% load customtags %}
+{% load thumbnail %}
+<a href="{{ petition.getUrl }}">
+    <div class="autocomplete-petition autocomplete-div">
+    	{% with full_url=host_full|add:petition.getMainTopic.getImageRef %}
+	    	{% thumbnail full_url "20x20" crop="center" format="PNG" as im %}
+	    	<img src="{{im.url}}">
+	    	{% endthumbnail %}
+    	{% endwith %}
+        <div class="autocomplete-name">
+            {{petition.title|truncate_chars:80}}
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</a>
