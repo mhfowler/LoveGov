@@ -90,6 +90,36 @@
   user-select: none;
 }
 
+@mixin div-button-padding($radius:10px,$padding:10px,$font-size:18px,$color:white,$background-color:$red,$hover-color:$red-light)
+{
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+  border-radius: $radius;
+  padding:$padding;
+  font-size: $font-size;
+  font-family: $title-font;
+  background-color:$background-color;
+  color: $color;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  &:hover
+  {
+    background-color:$hover-color;
+  }
+
+}
+
+
 @mixin horizontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
 {
   border-bottom: 1px solid $color;
@@ -195,7 +225,7 @@
   {
     $border-color-border: transparent transparent transparent $color-border;
     $border-color-inner: transparent transparent transparent $color-inner;
-    right:($width*-2)+-1;
+    right:($width*-2);
     top:$offset;
   }
 

@@ -394,10 +394,12 @@ def submitAddress(request, vals={}):
     zip = request.POST['zip']
 
     viewer = vals['viewer']
-    viewer.location.address_string = address
-    viewer.location.zip = zip
+    location = viewer.getLocation()
+    location.address_string = address
+    location.zip = zip
+    location.save()
 
-    
+    return HttpResponse("yea!")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1541,6 +1543,12 @@ def getAllGroupMembers(request, vals={}):
 
     return HttpResponse(json.dumps(to_return))
 
+def likeThis(request, vals={}):
+
+    html = ajaxRender('deployment/pieces/like_this.html', vals, request)
+    to_return = {'html':html}
+
+    return HttpResponse(json.dumps(to_return))
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1605,7 +1613,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getAllGroupMembers': getAllGroupMembers,
             'support': support,
             'messageRep': messageRep,
-            'submitAddress':submitAddress
+            'submitAddress':submitAddress,
+            'likeThis':likeThis
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
