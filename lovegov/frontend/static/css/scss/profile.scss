@@ -100,8 +100,11 @@ div.middle-left
 
         div.stat-box
         {
-          @include rounded-box;
+          @include rounded-box(70px);
           @include float-left;
+          padding: 0px 5px 0px 5px;
+          width:auto;
+          min-width:60px;
           border-width: 2px;
           border-color: $gray;
           border-style: solid;

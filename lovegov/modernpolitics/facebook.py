@@ -33,8 +33,9 @@ def fbMakeFriends(request, vals={}):
             if friend:
                 user.follow( friend , fb=True )
                 friend.follow( user , fb=True )
-    else:
-        print 'data'
+        return True
+    return False
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.

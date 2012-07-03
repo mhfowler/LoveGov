@@ -54,14 +54,14 @@
   .match-box-div
   {
     float:left;
-    width:290px;
-    padding: 2px;
-    margin: 7px;
+    width: 300px;
+    padding: 0px;
+    margin: 4px;
     border-radius:15px;
     -moz-border-radius:15px;
     -webkit-border-radius:15px;
     -khtml-border-radius:15px;
-    border:1px solid #DBDBDB;
+    border: 1px solid #DBDBDB;
     text-align: left;
     position:relative;
 
@@ -71,25 +71,16 @@
       margin-left:15px;
       margin-top:15px;
 
-      .card-avatar {
+      .match-user-img {
         float:left;
+        @include rounded(10px);
       }
       .match-user-text
       {
+        margin-top:5px;
         float:left;
         margin-left:10px;
       }
-    }
-
-    .qaweb
-    {
-      display:block;
-      margin-top:20px;
-      position:relative;
-      width:280px;
-      height:300px;
-      left:-165px;
-      top: 30px;
     }
   }
 }
@@ -230,13 +221,10 @@
 
 #match-featured-social-network {
 
-  div.match-box-div-wrapper {
+  div.match-box-div-wrapper
+  {
     float:left;
     margin-left: 20px;
-    div.match-box-div {
-      width:280px;
-      height:350px;
-    }
   }
 
   div.page-right {

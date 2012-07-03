@@ -1253,6 +1253,16 @@ def facebookAction(request, to_page="/web/", vals={}):
         auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
         vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
 
+    elif fb_action == 'make_friends':
+        vals['success'] = fbMakeFriends(request, vals) #Make Friends Success Boolean (puts errors in vals[fb_error])
+        vals['fb_scope'] = 'email' #Scope Needed if wall share fails
+        action_path = request.path #Path for this action
+        action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
+        vals['auth_to_page'] = action_path + action_query #Build authorization to_page
+        auth_path = '/fb/authorize/' #Path to authorization
+        auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
+        vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
+
     if request.is_ajax(): #Return AJAX response
         return_vals = { 'success':vals['success'], #Only return important dictionary values
             'fb_auth_path':vals['fb_auth_path'] } #Add authorization path to return dictionary
@@ -1261,11 +1271,18 @@ def facebookAction(request, to_page="/web/", vals={}):
         ajax_response = HttpResponse(json.dumps(return_vals)) #Build Ajax Response
         ajax_response.set_cookie('auth_to_page',vals['auth_to_page']) #Add authorization to_page cookie
         return ajax_response
+
     else: #Return regular response
-        action_to_page = request.GET.get('action_to_page') #Look for an action to_page
-        if action_to_page: #If there is one
-            to_page = action_to_page #Set the to_page as the action to_page
-        return shortcuts.redirect(to_page)
+        if vals['success']:
+            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
+            if action_to_page: #If there is one
+                to_page = action_to_page #Set the to_page as the action to_page
+            return shortcuts.redirect(to_page)
+        else:
+            to_page = vals['fb_auth_path']
+            response = shortcuts.redirect(to_page)
+            response.set_cookie('auth_to_page',vals['auth_to_page'])
+            return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # learn about our widget
