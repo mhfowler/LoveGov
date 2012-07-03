@@ -225,3 +225,117 @@
     border-color:$gray;
   }
 }
+
+
+#match-featured-social-network {
+
+  div.match-box-div-wrapper {
+    float:left;
+    div.match-box-div {
+      width:280px;
+      height:350px;
+    }
+  }
+
+  div.page-right {
+    float:left;
+    margin-left:30px;
+
+    div.page-summary {
+      text-align:left;
+      display:block;
+      width:550px;
+      margin-top:30px;
+      @include titleFont();
+      @include fontSize(20px);
+      color:$dark-gray;
+    }
+
+    div.boxes {
+      display:block;
+      width:560px;
+      height:180px;
+      margin-top:20px;
+
+      div.box-center {
+        margin-left:20px;
+        margin-right:20px;
+      }
+      div.match-link-box {
+        float:left;
+        width:170px;
+        height:160px;
+        border: 1px solid $gray;
+        position:relative;
+        @include rounded(15px);
+        overflow:hidden;
+
+        a.match-link-box-header {
+          display:block;
+          text-align:left;
+          height:20px;
+          padding: 10px 0 10px 0;
+          width:100%;
+          background-color:$light-gray;
+          color:$black;
+          @include fontSize(18px);
+
+          p.header-words {
+            margin-left:15px;
+            float:left;
+            text-transform:uppercase;
+            text-spacing: 1px;
+          }
+          div.arrow {
+            float:right;
+            margin-right:15px;
+          }
+        }
+        a.match-link-box-header:hover {
+          background-color:$dark-gray;
+          border-color:$black;
+        }
+
+        div.items-wrapper {
+          display:block;
+          padding:10px 10px 10px 10px;
+          position:relative;
+          top:-9px;
+          a.mini-avatar {
+            float:left;
+            margin-right:10px;
+            margin-top:10px;
+          }
+          a.network-choice {
+            padding:4px;
+            display:block;
+            height:20px;
+            border-bottom:1px solid $gray;
+            width:100%;
+            @include titleFont();
+            @include fontSize(14px);
+          }
+          a.network-choice:hover {
+            background-color:$gray;
+          }
+        }
+        a.see-all {
+          position:absolute;
+          top:140px;
+          left:125px;
+        }
+      }
+    }
+
+    div.or-text {
+      display:block;
+    }
+
+    a.import-friends {
+      display:block;
+      margin-top:30px;
+      @include fontSize(20px);
+    }
+
+  }
+}
