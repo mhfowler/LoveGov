@@ -389,6 +389,15 @@ def theFeed(request, vals={}):
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your friends comparisons
+#-----------------------------------------------------------------------------------------------------------------------
+def iFollow(request, vals={}):
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/friends.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds

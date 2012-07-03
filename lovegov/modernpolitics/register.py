@@ -51,6 +51,8 @@ def createUser(name, email, password, type='userProfile',active=True):
         control.user_profile = user_profile
         control.save()
         return control
+    else:
+        print (email + "already exits..")
     logger.debug("user already exists!")
 
 #-------------------------------------------------------------------------------------------------------------------
