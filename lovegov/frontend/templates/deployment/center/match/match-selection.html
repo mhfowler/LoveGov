@@ -1,7 +1,7 @@
 <div id="match-selection">
 
     <a href="/matchNew/?section=election" style="color:black">
-        <div class="match-selection-box match-selection-box-left match-selection-box-selected">
+        <div class="match-selection-box match-selection-box-left match_selection_box_selected">
             <div class="match-selection-box-inner">
                 <h2>Election Center</h2>
                 <div class="match-selection-box-inner-content">
@@ -49,7 +49,7 @@
 
     var autoSwitch = setInterval(function()
     {
-        var currentSelected = $('.match-selection-box-selected');
+        var currentSelected = $('.match_selection_box_selected');
         var circle;
         var next;
         if (currentSelected.hasClass('match-selection-box-left'))
@@ -57,8 +57,8 @@
             $('.circle-div-left').removeClass('circle-div-red').addClass('circle-div-gray');
             $('.circle-div-center').removeClass('circle-div-gray').addClass('circle-div-red');
             next = $('.match-selection-box-center');
-            next.addClass('match-selection-box-selected');
-            currentSelected.removeClass('match-selection-box-selected');
+            next.addClass('match_selection_box_selected');
+            currentSelected.removeClass('match_selection_box_selected');
             matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
         else if (currentSelected.hasClass("match-selection-box-center"))
@@ -66,8 +66,8 @@
             $('.circle-div-center').removeClass('circle-div-red').addClass('circle-div-gray');
             $('.circle-div-right').removeClass('circle-div-gray').addClass('circle-div-red');
             next = $('.match-selection-box-right');
-            next.addClass('match-selection-box-selected');
-            currentSelected.removeClass('match-selection-box-selected');
+            next.addClass('match_selection_box_selected');
+            currentSelected.removeClass('match_selection_box_selected');
             matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
         else
@@ -75,8 +75,8 @@
             $('.circle-div-right').removeClass('circle-div-red').addClass('circle-div-gray');
             $('.circle-div-left').removeClass('circle-div-gray').addClass('circle-div-red');
             next = $('.match-selection-box-left');
-            next.addClass('match-selection-box-selected');
-            currentSelected.removeClass('match-selection-box-selected');
+            next.addClass('match_selection_box_selected');
+            currentSelected.removeClass('match_selection_box_selected');
             matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
     },10000);
@@ -88,10 +88,10 @@
     {
         clearInterval(autoSwitch);
 
-        var currentSelected = $('.match-selection-box-selected');
+        var currentSelected = $('.match_selection_box_selected');
         event.preventDefault();
-        $('.match-selection-box').removeClass('match-selection-box-selected');
-        $(this).addClass('match-selection-box-selected');
+        $('.match-selection-box').removeClass('match_selection_box_selected');
+        $(this).addClass('match_selection_box_selected');
         $('.circle-div').removeClass("circle-div-red").addClass("circle-div-gray");
         var circle;
         if ($(this).hasClass('match-selection-box-left'))

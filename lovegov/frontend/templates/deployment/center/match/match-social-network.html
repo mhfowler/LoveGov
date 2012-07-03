@@ -27,11 +27,12 @@
                         <div class="arrow"> > </div>
                     </a>
                     <div class="items-wrapper">
-                        {% for x in friends %}
-                            <a href="{{ x.get_url }}" class="mini-avatar">
-                                {% include 'deployment/snippets/avatar.html' with user=x width="20" height="20" hoveroff=1 %}
+                        {% for friend in friends %}
+                            <a href="{{ friend.get_url }}" class="mini-avatar">
+                                {% include 'deployment/snippets/avatar.html' with user=friend width="20" height="20" hoveroff=1 %}
                             </a>
                         {% empty %}
+                            <br>
                             <p> You haven't followed anyone on LoveGov yet. </p>
                         {% endfor %}
                         <div style="clear:both"></div>
@@ -46,9 +47,9 @@
                         <div class="arrow"> > </div>
                     </a>
                     <div class="items-wrapper">
-                        {% for x in networks %}
-                            <a href="{{ x.get_url }}" class="network-choice
-                            {% if forloop.counter == 4 %} last {% endif %}"> {{ x.get_name|truncatechars:10 }} </a>
+                        {% for network in networks %}
+                            <a href="{{ network.get_url }}" class="network-choice
+                            {% if forloop.counter == 4 %} last {% endif %}"> {{ network.get_name|truncatechars:10 }} </a>
                         {% empty %}
                             <p> You aren't a member of any networks. </p>
                         {% endfor %}
@@ -62,9 +63,9 @@
                         <div class="arrow"> > </div>
                     </a>
                     <div class="items-wrapper">
-                        {% for x in groups %}
-                            <a href="{{ x.get_url }}" class="mini-avatar">
-                                {% include 'deployment/snippets/avatar.html' with user=x width="20" height="20" hoveroff=1 %}
+                        {% for group in groups %}
+                            <a href="{{ group.get_url }}" class="mini-avatar">
+                                {% include 'deployment/snippets/avatar.html' with user=group width="35" height="35" hoveroff=1 %}
                             </a>
                         {% empty %}
                             <p> You aren't a member of any groups. </p>
