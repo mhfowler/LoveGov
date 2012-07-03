@@ -3879,7 +3879,6 @@ function loadNewMatch() {
         swapInHover($(this));
     },
         function() {
-            alert('off!');
         });
 
 }
@@ -3893,13 +3892,12 @@ function swapInHover(div) {
             },
             success: function(data)
             {
-                alert(data);
-                $('.match-box-div').hide({effect:'slide',speed:2000,direction:'down'});
-                var returned = eval('(' + data + ')');
-                $('.match-box-div').promise().done(function()
-                {
-                    $('.match-box-div').html(returned.html);
-                    $('.match-box-div').show({effect:'slide',speed:2000,direction:"up"});
+                var $wrapper = $('.match-box-div-wrapper');
+                $wrapper.hide({effect:'slide',speed:2000,direction:'down'});
+                $wrapper.promise().done(function() {
+                    var returned = eval('(' + data + ')');
+                    $wrapper.html(returned.html);
+                    $wrapper.show({effect:'slide',speed:2000,direction:"up"});
                 });
             },
             error: function(error, textStatus, errorThrown)
