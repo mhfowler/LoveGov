@@ -2,19 +2,17 @@
     <div class="match-user-info">
         {% load thumbnail %}
         {% thumbnail entity.getProfileImage.image "85x85" crop="center" as img %}
-            <img class="match-user-img" src="{{ img.url }}" />
+            <img class="match-user-image" src="{{ img.url }}" />
             {% empty %}
-            <img src="" />
+            <img class="match-user-image" src="{{ defaultProfileImage }}"/>
         {% endthumbnail %}
+
         <h4>Barack Obama</h4>
 
     </div>
+
     <div id="{{ entity.alias }}-canvas" style="clear:both">
 
-    </div>
-
-    <div class="match-bottom-button">
-        Support
     </div>
 
     <script>

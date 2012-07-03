@@ -386,6 +386,11 @@ img.icon-small
   height: 25px;
 }
 
+img.rounded
+{
+  @include rounded(10px);
+}
+
 .no-margin
 {
   margin-bottom: 0;
