@@ -3909,7 +3909,6 @@ function loadNewMatch() {
     $(".circle-div").click(function(event) {
         swapFeatured($(this).data('sequence'));
     });
-
 }
 
 var match_current_section = 0;
