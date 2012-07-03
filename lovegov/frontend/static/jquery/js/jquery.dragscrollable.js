@@ -116,7 +116,8 @@
 
                 if ($('.step-five').length)
                 {
-                    $('.step-five').addClass("step-six").removeClass("step-five");
+                    $('#next_button').unbind("click.step_five");
+                    $('.step-five').remove();
                     stepSix();
                 }
 
