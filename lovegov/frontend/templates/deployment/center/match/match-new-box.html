@@ -1,7 +1,8 @@
+{% load thumbnail %}
 <div class="match-box-div">
+
     <div class="match-user-info">
-        {% load thumbnail %}
-        {% thumbnail entity.getProfileImage.image "65x65" crop="center" as img %}
+        {% thumbnail user_prof.getProfileImage.image "65x65" crop="center" as img %}
             <img class="match-user-image" src="{{ img.url }}" />
             {% empty %}
             <img class="match-user-image" src="{{ defaultProfileImage }}"/>
@@ -11,25 +12,25 @@
                 <h4>Barack Obama</h4>
             </div>
             <div class="match-user-party">
+                {% comment %}
+                {% thumbnail user_prof.getProfileImage.image "65x65" crop="center" as img %}
+                    <img class="match-user-image" src="{{ img.url }}" />
+                {% empty %}
+                    <img class="match-user-image" src="{{ defaultProfileImage }}"/>
+                {% endthumbnail %}
+                {% endcomment %}
                 <h5>Party: <a href="" class="invert_link">Democrat</a></h5>
             </div>
         </div>
-
-
     </div>
 
     <div class="qaweb">
-
-    </div>
-{% comment %}
-
-    <div id="{{ entity.alias }}-canvas" style="clear:both">
-
+        <div id="{{ user_prof.title|slugify }}-canvas"></div>
     </div>
 
     <script>
-        new VisualComparison("{{ entity.alias }}-canvas",eval('(' + '{{ entity.compare|escapejs }}' + ')')).draw();
+        var json = eval('(' + '{{ user_prof.compare|escapejs }}' + ')');
+        new VisualComparison("{{ user_prof.title|slugify }}-canvas",json).draw();
     </script>
-{% endcomment %}
 
 </div>
