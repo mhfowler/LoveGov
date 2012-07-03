@@ -14,70 +14,85 @@
 #match-mid
 {
   text-align:center;
-}
 
-#match-ajax-content
-{
-  float:left;
-  width:920px;
-  text-align: center;
-}
-
-.match-arrow
-{
-  width:40px;
-  height:435px;
-  float:left;
-}
-
-.match-arrow img
-{
-  margin-top:180px;
-  padding:8px;
-  cursor:pointer;
-}
-
-#match-arrow-left img
-{
-  border-radius:10px 0 0 10px;
-}
-
-#match-arrow-right img
-{
-  border-radius:0 10px 10px 0;
-}
-
-.match-title
-{
-
-}
-
-.match-content
-{
-  float: left;
-}
-
-.match-box-div
-{
-  float:left;
-  width:300px;
-  padding:10px;
-  margin: 10px;
-  border-radius:15px;
-  -moz-border-radius:15px;
-  -webkit-border-radius:15px;
-  -khtml-border-radius:15px;
-  border:1px solid #DBDBDB;
-
-  .match-user-image
+  #match-ajax-content
   {
     float:left;
-    margin-right:10px;
-    @include rounded(10px);
-    height: 50px;
-    width: 50px;
+    width:930px;
+    text-align: center;
+  }
+
+  .match-arrow
+  {
+    width:35px;
+    height:435px;
+    float:left;
+  }
+
+  .match-arrow img
+  {
+    margin-top:200px;
+    padding:8px;
+    cursor:pointer;
+  }
+
+  #match-arrow-left img
+  {
+    border-radius:10px 0 0 10px;
+  }
+
+  #match-arrow-right img
+  {
+    border-radius:0 10px 10px 0;
+  }
+
+  .match-content
+  {
+    float: left;
+  }
+
+  .match-box-div
+  {
+    float:left;
+    width:290px;
+    padding: 2px;
+    margin: 7px;
+    border-radius:15px;
+    -moz-border-radius:15px;
+    -webkit-border-radius:15px;
+    -khtml-border-radius:15px;
+    border:1px solid #DBDBDB;
+    text-align: left;
+
+    .match-user-info
+    {
+      margin-left:15px;
+      margin-top:15px;
+
+      .match-user-image
+      {
+        float:left;
+        margin-right:10px;
+        @include rounded(10px);
+        height: 65px;
+        width: 65px;
+      }
+
+      .match-user-text
+      {
+        margin-top:5px;
+        display:inline-block;
+      }
+    }
+
+    .qaweb
+    {
+      width:280px;
+      height:300px;
+    }
   }
 }
+
 
 #match-selection-line-break-container
 {
@@ -88,7 +103,7 @@
   .match-selection-line-break
   {
     float:left;
-    width:461px;
+    width:451px;
     height:7px;
     border-bottom:1px solid #CCC;
   }
@@ -120,11 +135,16 @@
 
   }
 
-  .circle-div-center
+  .circle-div-left-center
   {
     margin-left:3px;
     margin-right:3px;
+  }
 
+  .circle-div-right-center
+  {
+    margin-left:3px;
+    margin-right:3px;
   }
 
   .circle-div-right
@@ -138,38 +158,70 @@
 {
   width:960px;
   height:200px;
-  margin: 0px 15px 20px 0;
+  margin: 0px 20px 20px 20px;
   @include rounded;
 
   h3.quick-links-header {
   }
 
-  a.center {
-    margin-left:75px;
+  div.quick-links-column
+  {
+    float: left;
     margin-right:75px;
-  }
-
-  a.quick-link {
-    float:left;
-    margin-top: 20px;
-    padding: 10px;
-    padding-top:15px;
-    width: 250px;
-    background-color:$light-gray;
-    @include fontSize(24px);
-    color: $black;
-  }
-  a.quick-link:hover {
-    background-color:$gray;
-  }
-
-  p.quick-links-explanation {
-    text-align:left;
-    padding-left:20px;
-    float:left;
-    width:200px;
     margin-top:20px;
-    @include fontSize(15px);
+    @include rounded(13px);
+    width:260px;
+
+    div.quick-link-container
+    {
+      display: block;
+      padding: 10px;
+      background-color:$light-gray;
+      width: 240px;
+      margin-bottom:20px;
+      @include rounded(10px);
+      cursor: pointer;
+    }
+
+    div.quick-link-container-border
+    {
+      @include rounded-bottom(0px);
+      margin-bottom:0px;
+    }
+
+
+    div.quick-link-container:hover {
+      background-color:$gray;
+    }
+
+    a.quick-link {
+      @include fontSize(22px);
+      display:inline-block;
+      margin-top: 6px;
+      color: $black;
+    }
+
+    p.quick-links-explanation {
+      display:inline-block;
+      text-align:left;
+      padding-left:20px;
+      margin-top:10px;
+      margin-bottom:6px;
+      float:left;
+      width:220px;
+      @include fontSize(14px);
+    }
   }
 
+  div.quick-links-border
+  {
+    margin-right:0;
+    border: 2px $light-gray solid;
+    width: 260px;
+  }
+
+  div.quick-links-border:hover
+  {
+    border-color:$gray;
+  }
 }

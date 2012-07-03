@@ -1,15 +1,27 @@
 <div class="match-box-div">
     <div class="match-user-info">
         {% load thumbnail %}
-        {% thumbnail entity.getProfileImage.image "85x85" crop="center" as img %}
+        {% thumbnail entity.getProfileImage.image "65x65" crop="center" as img %}
             <img class="match-user-image" src="{{ img.url }}" />
             {% empty %}
             <img class="match-user-image" src="{{ defaultProfileImage }}"/>
         {% endthumbnail %}
+        <div class="match-user-text">
+            <div class="match-user-name">
+                <h4>Barack Obama</h4>
+            </div>
+            <div class="match-user-party">
+                <h5>Party: <a href="" class="invert_link">Democrat</a></h5>
+            </div>
+        </div>
 
-        <h4>Barack Obama</h4>
 
     </div>
+
+    <div class="qaweb">
+
+    </div>
+{% comment %}
 
     <div id="{{ entity.alias }}-canvas" style="clear:both">
 
@@ -18,4 +30,6 @@
     <script>
         new VisualComparison("{{ entity.alias }}-canvas",eval('(' + '{{ entity.compare|escapejs }}' + ')')).draw();
     </script>
+{% endcomment %}
+
 </div>
