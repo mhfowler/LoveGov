@@ -1,18 +1,22 @@
 <!-- HTML -->
 <div id="match-main">
 
+    <div id="match-mid-header">
+        <h5>Featured Matches</h5>
+    </div>
+
     <!-- Content Section -->
     <div id="match-mid">
         <div id="match-mid-header">
             <h5>Your Featured Matches</h5>
         </div>
 
+        {% comment %}
         <div id="match-mid-content">
             <div id="match-arrow-left" class="match-arrow">
                 <img src="/static/images/match/arrow_left_light.png"/>
             </div>
 
-            <!--- ze key ---->
             <div id="match-ajax-content">
                 {% include 'deployment/center/match/match-election-center.html' %}
             </div>
@@ -22,6 +26,8 @@
                 <img src="/static/images/match/arrow_right_light.png"/>
             </div>
         </div>
+        {% endcomment %}
+
     </div>
 
     <!-- Red/Gray Circles -->
