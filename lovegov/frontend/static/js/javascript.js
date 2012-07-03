@@ -3885,10 +3885,10 @@ function loadNewMatch() {
     var autoSwitch = setInterval(function()
     {
         if (match_hover_off) {
-            //swapFeatured("right");
+            swapFeatured("right");
         }
 
-    }, 1000);
+    }, 1500);
 
     $("#match-arrow-right").click(function(event) {
         swapFeatured("right");

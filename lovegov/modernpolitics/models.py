@@ -1071,6 +1071,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self
 
     #-------------------------------------------------------------------------------------------------------------------
+    # gets string represetning parties of user
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPartiesString(self):
+        parties = self.parties.all()
+        if not parties:
+            to_return = "None"
+        else:
+            to_return = ""
+            for x in parties:
+                to_return += x.title + " "
+        return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparison(self, viewer):
@@ -3485,6 +3498,9 @@ class Group(Content):
             return members[start:]
         else:
             return members[start:start+num]
+
+    def getNumMembers(self):
+        return self.members.all().count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.

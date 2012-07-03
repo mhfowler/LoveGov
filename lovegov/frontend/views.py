@@ -939,19 +939,75 @@ def newMatch(request,vals={}):
     viewer.compare = viewer.getComparison(viewer).toJSON()
 
     matchSocial(request, vals)
+    matchPresidential(request, vals)
+    matchSenate(request, vals)
+    matchRepresentatives(request, vals)
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/match/match-new.html', vals, request)
     url = "/match/"
     return framedResponse(request, html, url, vals)
 
-
 def matchSocial(request, vals={}):
     viewer = vals['viewer']
-    vals['friends'] = viewer.getIFollow()[:15]
+    vals['friends'] = viewer.getIFollow()[:6]
     groups = viewer.getGroups()
-    vals['groups']  = groups.filter(group_type="U")[:15]
+    vals['groups']  = groups.filter(group_type="U")[:6]
     vals['networks']  = groups.filter(group_type="N")[:4]
+
+def matchPresidential(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['presidential_users'] = list
+
+def matchSenate(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['massachusettes_users'] = list
+
+def matchRepresentatives(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['massachusettes_users'] = list
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail
