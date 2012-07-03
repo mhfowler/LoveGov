@@ -52,8 +52,12 @@ def createUser(name, email, password, type='userProfile',active=True):
         control.save()
         return control
     else:
-        print (email + "already exits..")
-    logger.debug("user already exists!")
+        splitted = email.split("@")
+        if len(splitted)==1:
+            print ("deletes! " + email)
+            c = ControllingUser.objects.get(username=email)
+            c.delete()
+            createUser(name, email, password, type, active)
 
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
