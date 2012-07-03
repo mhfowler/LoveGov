@@ -5,7 +5,7 @@
     <div class="match-content">
 
         <div id="social-comparison" class="match-box-div-wrapper">
-            {% include 'deployment/center/match/match-new-box.html' with entity=c1 %}
+            
         </div>
 
         <div class="page-right">
@@ -28,7 +28,7 @@
                     </a>
                     <div class="items-wrapper">
                         {% for x in friends %}
-                            <a href="{{ x.get_url }}" class="mini-avatar">
+                            <a href="{{ x.get_url }}" class="mini-avatar match-item">
                                 {% include 'deployment/snippets/avatar.html' with user=x width="20" height="20" hoveroff=1 %}
                             </a>
                         {% empty %}
@@ -47,7 +47,7 @@
                     </a>
                     <div class="items-wrapper">
                         {% for x in networks %}
-                            <a href="{{ x.get_url }}" class="network-choice
+                            <a href="{{ x.get_url }}" class="network-choice match-item
                             {% if forloop.counter == 4 %} last {% endif %}"> {{ x.get_name|truncatechars:10 }} </a>
                         {% empty %}
                             <p> You aren't a member of any networks. </p>
@@ -63,7 +63,7 @@
                     </a>
                     <div class="items-wrapper">
                         {% for x in groups %}
-                            <a href="{{ x.get_url }}" class="mini-avatar">
+                            <a href="{{ x.get_url }}" class="mini-avatar match-item">
                                 {% include 'deployment/snippets/avatar.html' with user=x width="20" height="20" hoveroff=1 %}
                             </a>
                         {% empty %}
@@ -84,54 +84,4 @@
     </div>
 </div>
 
-    <script type="text/javascript">
-
-        (function()
-        {
-            var currentDiv;
-
-            $('.match-social-network-entity').hoverIntent(function()
-            {
-                var check = $(this); currentDiv = $(this);
-                $('.match-box-div').hide({effect:'slide',speed:1500,direction:'down'});
-                $.ajax
-                        ({
-                            type:'POST',
-                            url:"/action/",
-                            data:{action:'matchComparison',entity_url:$(this).children('a').attr('href')},
-                            success: function(data)
-                            {
-                                if (check.is(currentDiv))
-                                {
-                                    var returned = eval('(' + data + ')');
-                                    $('.match-box-div').promise().done(function()
-                                    {
-                                        $('.match-box-div').html(returned.html);
-                                        $('.match-box-div').show({effect:'slide',speed:1500,direction:"up"});
-                                    });
-                                }
-                            },
-                            error: function(a,b,c)
-                            {
-
-                            }
-                        })
-
-
-            }, function()
-            {
-
-            });
-
-
-
-            $('.match-social-network-entity-button').hover(function()
-            {
-
-            }, function()
-            {
-
-            })
-
-        })();
-    </script>
+<script> rebind="newMatch"; </script>
