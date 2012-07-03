@@ -64,7 +64,7 @@ class LGModel(models.Model):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=154)             # 154 is lovegov user
+    creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -115,10 +115,10 @@ class UserPhysicalAddress(LGModel):
 class PhysicalAddress(LGModel):
     address_string = models.CharField(max_length=500, null=True)
     zip = models.CharField(max_length=20, null=True)
-    longitude = models.DecimalField(max_digits=30, decimal_places=15)
-    latitude = models.DecimalField(max_digits=30, decimal_places=15)
-    state = models.CharField(max_length=2)
-    district = models.IntegerField()
+    longitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
+    latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
+    state = models.CharField(max_length=2, null=True)
+    district = models.IntegerField(default=-1)
 
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
@@ -354,10 +354,12 @@ class Content(Privacy, LocationLevel):
         return self.getMainImage().image
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return self.getMainTopic().getUserImage()
+        elif self.main_image:
             return self.main_image.image.url
         else:
-            return self.getMainTopic().getUserImage()
+            return self.getMainTopic().getUserImage().image.url
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
@@ -594,6 +596,7 @@ class Content(Privacy, LocationLevel):
                 self.save()
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
+                print "creator: "+str(self.creator)
                 self.creator.notify(action)
             return my_vote.value
         else:
@@ -761,21 +764,21 @@ class BasicInfo(models.Model):
     GENDER_CHOICES = ( ('M', 'Male'), ('F', 'Female'), ('N', 'None') )
     ROLE_CHOICES = ( ('V', 'Voter'), ('E', 'Elected Official') )
     # FIELDS
-    middle_name = models.CharField(max_length=100, blank=True)
-    nick_name = models.CharField(max_length=100, blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
+    nick_name = models.CharField(max_length=100, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     dob = models.DateField(null=True)
     address = custom_fields.ListField(default=[])
-    state = models.CharField(max_length=2, blank=True)
-    zipcode = models.CharField(max_length=15, blank=True)
+    state = models.CharField(max_length=2, blank=True, null=True)
+    zipcode = models.CharField(max_length=15, blank=True, null=True)
     url = custom_fields.ListField(default=[])
-    religion = models.CharField(max_length=200, blank=True)
-    ethnicity = models.CharField(max_length=30, blank=True)
-    party = models.CharField(max_length=100, blank=True)
-    political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True)
+    religion = models.CharField(max_length=200, blank=True, null=True)
+    ethnicity = models.CharField(max_length=30, blank=True, null=True)
+    party = models.CharField(max_length=100, blank=True, null=True)
+    political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
     invite_message = models.CharField(max_length=10000, blank=True, default=DEFAULT_INVITE_MESSAGE)
     invite_subject = models.CharField(max_length=1000, blank=True, default=DEFAULT_INVITE_SUBJECT)
-    bio = models.CharField(max_length=150, blank=True)
+    bio = models.CharField(max_length=150, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -1063,11 +1066,37 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.user_type == 'P':
             return self.politician
         elif self.user_type == 'S':
-            return self.electedofficial.senator
+            return self.politician.electedofficial.senator
         elif self.user_type == 'R':
-            return self.electedofficial.representative
+            return self.politician.electedofficial.representative
         else:
             return self
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # gets string represetning parties of user
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPartiesString(self):
+        parties = self.parties.all()
+        if not parties:
+            to_return = "None"
+        else:
+            to_return = ""
+            for x in parties:
+                to_return += x.title + " "
+        return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets users location object
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocation(self):
+        if self.location:
+            return self.location
+        else:
+            location = PhysicalAddress()
+            location.save()
+            self.location = location
+            self.save()
+            return location
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.
@@ -1151,6 +1180,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self.profile_image.image.url
         else:
             return DEFAULT_PROFILE_IMAGE_URL
+
+    def getImage(self):
+        return self.getProfileImage()
+
+    def getImageURL(self):
+        return self.getProfileImageURL()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
@@ -1242,11 +1277,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
         if not self.i_follow:
             self.createIFollowGroup()
-        self.i_follow.members.add(to_user)
+        self.i_follow.joinMember(to_user)
 
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
-        to_user.follow_me.members.add(self)
+        to_user.follow_me.joinMember(self)
 
         #Check and Make Relationship A
         if not relationship:
@@ -1341,29 +1376,31 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 return False
 
         if action.type in AGGREGATE_NOTIFY_TYPES:
-            stale_date = datetime.datetime.today() - STALE_TIME_DELTA
-            already = Notification.objects.filter(notify_user=self,
-                                                    when__gte=stale_date,
-                                                    action__modifier=action.modifier,
-                                                    action__type=action.type ).order_by('-when')
-            for notification in already:
-                if notification.action.relationship.getTo().id == relationship.getTo().id:
-                    notification.when = datetime.datetime.today()
-                    if notification.tally == 0:
-                        notification.addAggUser( notification.action.relationship.user )
-                    notification.addAggUser( relationship.user )
-                    return True
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            notification.addAggUser( relationship.user )
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+                already = Notification.objects.filter(notify_user=self,
+                                                        when__gte=stale_date,
+                                                        action__modifier=action.modifier,
+                                                        action__type=action.type ).order_by('-when')
+                for notification in already:
+                    if notification.action.relationship.getTo().id == relationship.getTo().id:
+                        notification.when = datetime.datetime.today()
+                        if notification.tally == 0:
+                            notification.addAggUser( notification.action.relationship.user )
+                        notification.addAggUser( relationship.user )
+                        return True
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                notification.addAggUser( relationship.user )
+                return True
 
         elif action.type in NOTIFY_TYPES:
-            notification = Notification(action=action, notify_user=self)
-            notification.autoSave()
-            return True
+            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+                notification = Notification(action=action, notify_user=self)
+                notification.autoSave()
+                return True
 
-        else:
-            return False
+        return False
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add debate result, takes in debate and result (as integer)
@@ -1495,7 +1532,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a list of all Users who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
-        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('user', flat=True)
+        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('to_user', flat=True)
         followers = UserProfile.objects.filter(id__in=f_ids)
         if num != -1:
             followers = followers[:num]
@@ -1727,7 +1764,38 @@ class Notification(Privacy):
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 
-class ElectedOfficial(UserProfile):
+class Politician(UserProfile):
+    office_seeking = models.CharField(max_length=100)
+    num_supporters = models.IntegerField(default=0)
+    num_messages = models.IntegerField(default=0)
+
+    def getSupporters(self):
+        support = Supported.objects.filter(user=self, confirmed=True)
+        supporter_ids = support.values_list('to_user', flat=True)
+        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def support(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if not supported:
+            supported = Supported(user=user, to_user=self)
+            supported.autoSave()
+            self.num_supporters += 1
+            self.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            self.num_supporters += 1
+            self.save()
+
+    def unsupport(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            self.num_supporters -= 1
+            self.save()
+
+class ElectedOfficial(Politician):
     # ENUMS
     TITLE_CHOICES = ( ('S','Sen.'), ('R','Rep.'), ('M', 'Sel.') )
     # Name/Title
@@ -1788,9 +1856,6 @@ class ElectedOfficial(UserProfile):
         # representative.url = list(person.role['url'])
         self.confirmed = True
         self.save()
-
-class Politician(UserProfile):
-    office_seeking = models.CharField(max_length=100)
 
 ########################################################################################################################
 ################################################# Representatives ######################################################
@@ -1977,7 +2042,9 @@ class Petition(Content):
     # Override getImageURL function to use default petition image
     #-------------------------------------------------------------------------------------------------------------------
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_PETITION_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_PETITION_IMAGE_URL
@@ -2026,7 +2093,9 @@ class News(Content):
         return self.link_screenshot
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_NEWS_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_NEWS_IMAGE_URL
@@ -2062,7 +2131,7 @@ class Comment(Content):
 
     root_content = models.ForeignKey(Content, related_name='root_content')
     on_content = models.ForeignKey(Content, related_name='comments')
-    text = models.TextField(max_length = 1000)
+    text = models.TextField(max_length = 10000)
     creator_name = models.CharField(max_length=50)
 
     def autoSave(self, creator=None, privacy='PUB'):
@@ -2836,7 +2905,9 @@ class Question(Content):
         self.save()
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_DISCUSSION_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_DISCUSSION_IMAGE_URL
@@ -3449,6 +3520,9 @@ class Group(Content):
         else:
             return members[start:start+num]
 
+    def getNumMembers(self):
+        return self.members.all().count()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
@@ -3501,7 +3575,9 @@ class Group(Content):
         return int(round(avg_questions))
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_GROUP_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_GROUP_IMAGE_URL
@@ -4062,6 +4138,27 @@ class UserFollow(UURelationship, Invite):
         self.creator = self.user
         self.relationship_type = 'FO'
         self.save()
+
+#=======================================================================================================================
+# Support a politician.
+#=======================================================================================================================
+class Supported(UURelationship):
+    confirmed = models.BooleanField(default=False)
+    def autoSave(self):
+        self.relationship_type = 'SU'
+        self.creator = self.user
+        self.save()
+
+class Messaged(UURelationship):
+    message = models.TextField()
+    def autoSave(self):
+        self.relationship_type = 'ME'
+        self.creator = self.user
+        to_user = self.to_user.downcast()
+        to_user.num_messages += 1
+        to_user.save()
+        self.save()
+        return to_user.num_messages
 
 #=======================================================================================================================
 # Linked, (relationships between two pieces of content)

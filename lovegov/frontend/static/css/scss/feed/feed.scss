@@ -1,4 +1,4 @@
-  @import 'linear_feed.scss';
+@import 'linear_feed.scss';
 
   .border {
     border:solid;
@@ -350,6 +350,9 @@
           width:30px;
           height:30px;
           background-image: url('/static/images/comparison-pointer-up.png');
+          background-repeat:no-repeat;
+          position:relative;
+          border-bottom: 1px solid white;
           background: contain;
           display:block;
           margin-left:120px;

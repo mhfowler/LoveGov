@@ -389,6 +389,84 @@ def theFeed(request, vals={}):
     url = '/feed/'
     return framedResponse(request, html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your friends comparisons
+#-----------------------------------------------------------------------------------------------------------------------
+def iFollow(request, vals={}):
+
+    viewer = vals['viewer']
+
+    group = viewer.i_follow
+    vals['ifollow'] = group
+
+    friends = list(viewer.getIFollow())
+    for x in friends:
+        comparison = x.getComparison(viewer)
+        x.result = comparison.result
+    friends.sort(key=lambda x:x.result,reverse=True)
+    vals['friends'] = friends
+
+    loadHistogram(5, group.id, 'mini', vals)
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/friends.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your groups
+#-----------------------------------------------------------------------------------------------------------------------
+def groups(request, vals={}):
+
+    viewer = vals['viewer']
+
+    mygroups = viewer.getUserGroups()
+    vals['mygroups'] = mygroups
+
+    mygroups_ids = mygroups.values_list("id", flat=True)
+    groups = list(UserGroup.objects.all())
+    for x in groups:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+        x.you_are_member = (x.id in mygroups_ids)
+    groups.sort(key=lambda x:x.result,reverse=True)
+    vals['groups'] = groups
+
+    vals['what'] = "Groups"
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# page to display all of your networks
+#-----------------------------------------------------------------------------------------------------------------------
+def networks(request, vals={}):
+
+    viewer = vals['viewer']
+
+    mygroups = viewer.getNetworks()
+    vals['mygroups'] = mygroups
+
+    mygroups_ids = mygroups.values_list("id", flat=True)
+    groups = list(Network.objects.all())
+    for x in groups:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+        x.you_are_member = (x.id in mygroups_ids)
+    groups.sort(key=lambda x:x.result,reverse=True)
+    vals['groups'] = groups
+
+    vals['what'] = "Networks"
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    url = '/friends/'
+    return framedResponse(request, html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # home page with feeds
@@ -467,7 +545,7 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias)
+            user_prof = UserProfile.objects.get(alias=alias).downcast()
             comparison = getUserUserComparison(viewer, user_prof)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
@@ -475,31 +553,20 @@ def profile(request, alias=None, vals={}):
             vals['json'] = jsonData
             setPageTitle("lovegov: " + user_prof.get_name(),vals)
 
-            # Get user's top 5 similar followers
-            prof_follow_me = list(user_prof.getFollowMe())
-            for follow_me in prof_follow_me:
-                comparison = getUserUserComparison(user_prof, follow_me)
-                follow_me.compare = comparison.toJSON()
-                follow_me.result = comparison.result
-            prof_follow_me.sort(key=lambda x:x.result,reverse=True)
-            vals['prof_follow_me'] = prof_follow_me[0:5]
+            # Get users followers
+            if user_prof.user_type == "U":
+                prof_follow_me = list(user_prof.getFollowMe())
+                for follow_me in prof_follow_me:
+                    comparison = getUserUserComparison(user_prof, follow_me)
+                    follow_me.compare = comparison.toJSON()
+                    follow_me.result = comparison.result
+                prof_follow_me.sort(key=lambda x:x.result,reverse=True)
+                vals['prof_follow_me'] = prof_follow_me[0:5]
+            else:       # get politician supporters
+                user_prof = user_prof.downcast()
+                prof_support_me = user_prof.getSupporters()
+                vals['prof_support_me'] = prof_support_me[0:5]
 
-            # Get user's top 5 similar follows
-#            prof_i_follow = list(user_prof.getIFollow())
-#            for i_follow in prof_i_follow:
-#                comparison = getUserUserComparison(user_prof, i_follow)
-#                i_follow.compare = comparison.toJSON()
-#                i_follow.result = comparison.result
-#            prof_i_follow.sort(key=lambda x:x.result,reverse=True)
-#            vals['prof_i_follow'] = prof_i_follow[0:5]
-
-            # Get user's random 5 followers
-            #vals['prof_follow_me'] = user_prof.getFollowMe(5)
-
-            # Get user's random 5 follows
-            #vals['prof_i_follow'] = user_prof.getIFollow(5)
-
-            # Get user's top 5 similar groups
 
             num_groups = GROUP_INCREMENT
             vals['prof_groups'] = user_prof.getUserGroups(num=num_groups)
@@ -556,6 +623,12 @@ def profile(request, alias=None, vals={}):
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 
+            # get politician page values
+            if user_prof.user_type != "U":
+                supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
+                if supported:
+                    vals['yousupport'] = supported.confirmed
+
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
             html = ajaxRender('deployment/center/profile.html', vals, request)
@@ -596,24 +669,7 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # histogram
-    resolution = 5
-    bucket_list = getBucketList(resolution)
-    vals['buckets'] = bucket_list
-    bucket_uids = {}
-    for x in bucket_list:
-        bucket_uids[x] = []
-    histogram_metadata = {'total':0,
-                          'identical':0,
-                          'identical_uids':[],
-                          'resolution':resolution,
-                          'g_id':group.id,
-                          'which':'mini',
-                          'increment':1,
-                          'topic_alias':'all',
-                          'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
-    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+    loadHistogram(5, group.id, 'mini', vals)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -646,6 +702,9 @@ def group(request, g_id=None, vals={}):
     if not group.group_privacy == 'S':
         vals['is_visible'] = True
 
+    if group == viewer.i_follow:
+        vals['is_visible'] = True
+
     vals['is_user_admin'] = False
     admins = list( group.admins.all() )
     for admin in admins:
@@ -667,7 +726,15 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
     vals['group'] = group
 
-    resolution = 20
+    loadHistogram(20, group.id, 'full', vals)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
+
+
+def loadHistogram(resolution, g_id, which, vals={}):
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}
@@ -677,18 +744,13 @@ def histogramDetail(request, g_id, vals={}):
                           'identical':0,
                           'identical_uids':[],
                           'resolution':resolution,
-                          'g_id':group.id,
-                          'which':'full',
+                          'g_id':g_id,
+                          'which':which,
                           'increment':1,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 }
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
-
-    setPageTitle("lovegov: " + group.title,vals)
-    html = ajaxRender('deployment/center/histogram.html', vals, request)
-    url = group.getHistogramURL()
-    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -752,6 +814,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', vals=vals, request=request)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # All Users Link
@@ -850,6 +913,7 @@ def matchNew(request, vals={}):
     if request.method == 'GET':
         vals['defaultImage'] = getDefaultImage().image
         user = vals['viewer']
+
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -869,6 +933,92 @@ def matchNew(request, vals={}):
         return framedResponse(request, html, url, vals)
 
 
+def newMatch(request,start='presidential', vals={}):
+
+    sections = {'presidential':0,
+                'senate':1,
+                'social':2,
+                'representatives':3}
+    vals['start_sequence'] = sections[start]
+
+    viewer = vals['viewer']
+    viewer.compare = viewer.getComparison(viewer).toJSON()
+
+    matchSocial(request, vals)
+    matchPresidential(request, vals)
+    matchSenate(request, vals)
+    matchRepresentatives(request, vals)
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/center/match/match-new.html', vals, request)
+    url = "/match/"
+    return framedResponse(request, html, url, vals)
+
+def matchSocial(request, vals={}):
+    viewer = vals['viewer']
+    vals['friends'] = viewer.getIFollow()[:6]
+    groups = viewer.getGroups()
+    vals['groups']  = groups.filter(group_type="U")[:6]
+    vals['networks']  = groups.filter(group_type="N")[:4]
+
+def matchPresidential(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['presidential_users'] = list
+
+def matchSenate(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['massachusettes_users'] = list
+
+def matchRepresentatives(request, vals={}):
+
+    viewer = vals['viewer']
+
+    if viewer.location:
+        address = viewer.location
+        congressmen = []
+        representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
+        if representative:
+            representative.compare = representative.getComparison(viewer).toJSON()
+            congressmen.append(representative)
+        senators = Senator.objects.filter(congresssessions=112,state=address.state)
+        for senator in senators:
+            senator.compare = senator.getComparison(viewer).toJSON()
+            congressmen.append(senator)
+        vals['congressmen'] = congressmen
+        vals['state'] = address.state
+        vals['district'] = address.district
+        vals['latitude'] = address.latitude
+        vals['longitude'] = address.longitude
+        if not congressmen:
+            vals['invalid_address'] = True
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail
@@ -882,6 +1032,12 @@ def contentDetail(request, content, vals):
     creator = content.getCreator()
     vals['creator'] = creator
     vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
+    user_votes = Voted.objects.filter(user=vals['viewer'])
+    my_vote = user_votes.filter(content=content) 
+    if my_vote:
+        vals['my_vote'] = my_vote[0].value
+    else:
+        vals['my_vote'] = 0
     vals['iown'] = (creator == vals['viewer'])
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1164,6 +1320,16 @@ def facebookAction(request, to_page="/web/", vals={}):
         auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
         vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
 
+    elif fb_action == 'make_friends':
+        vals['success'] = fbMakeFriends(request, vals) #Make Friends Success Boolean (puts errors in vals[fb_error])
+        vals['fb_scope'] = 'email' #Scope Needed if wall share fails
+        action_path = request.path #Path for this action
+        action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
+        vals['auth_to_page'] = action_path + action_query #Build authorization to_page
+        auth_path = '/fb/authorize/' #Path to authorization
+        auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
+        vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
+
     if request.is_ajax(): #Return AJAX response
         return_vals = { 'success':vals['success'], #Only return important dictionary values
             'fb_auth_path':vals['fb_auth_path'] } #Add authorization path to return dictionary
@@ -1172,17 +1338,39 @@ def facebookAction(request, to_page="/web/", vals={}):
         ajax_response = HttpResponse(json.dumps(return_vals)) #Build Ajax Response
         ajax_response.set_cookie('auth_to_page',vals['auth_to_page']) #Add authorization to_page cookie
         return ajax_response
+
     else: #Return regular response
-        action_to_page = request.GET.get('action_to_page') #Look for an action to_page
-        if action_to_page: #If there is one
-            to_page = action_to_page #Set the to_page as the action to_page
-        return shortcuts.redirect(to_page)
+        if vals['success']:
+            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
+            if action_to_page: #If there is one
+                to_page = action_to_page #Set the to_page as the action to_page
+            return shortcuts.redirect(to_page)
+        else:
+            to_page = vals['fb_auth_path']
+            response = shortcuts.redirect(to_page)
+            response.set_cookie('auth_to_page',vals['auth_to_page'])
+            return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # learn about our widget
 #-----------------------------------------------------------------------------------------------------------------------
 def widgetAbout(request, vals={}):
     return HttpResponse("Get our widget!")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Search page
+#-----------------------------------------------------------------------------------------------------------------------
+def search(request, term='', vals={}):
+    userProfiles, petitions, questions, news = lovegovSearch(term)
+    vals['num_results'] = sum(map(len, (userProfiles, petitions, questions, news)))
+    vals['userProfiles'] = userProfiles
+    vals['petitions'] = petitions
+    vals['questions'] = questions
+    vals['news'] = news
+    vals['term'] = term
+    html = ajaxRender('deployment/center/search.html', vals, request)
+    url = '/search/' + term
+    return framedResponse(request, html, url, vals)
 
 
 

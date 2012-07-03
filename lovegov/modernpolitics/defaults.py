@@ -10,7 +10,7 @@
 # lovegov
 import traceback
 from BeautifulSoup import BeautifulStoneSoup
-
+from django import db
 from lovegov.modernpolitics.helpers import *
 
 def get_or_none(model, **kwargs):
@@ -477,6 +477,7 @@ def initializeDB():
     initializeAdmin()
     initializeUsers()
     initializeNormalBob()
+    initializeGeorgeBush()
     initializeContent()
     # valid emails
     initializeValidEmails()
@@ -624,6 +625,12 @@ def initializeQ():
     q1.answers.add(a1)
     q1.answers.add(a2)
 
+def initializeGeorgeBush():
+    from lovegov.modernpolitics.register import createUser
+    normal = createUser(name="George Bush", email="george@gmail.com", password="george", type="politician")
+    normal.user_profile.confirmed = True
+    normal.user_profile.save()
+    print "initialized: George Bush"
 
 def initializeQuestions():
     # QUESTION 1
@@ -774,7 +781,6 @@ def initializePersistentDebate():
     debate.save()
     debate.topics.add(topic)
 
-
 def filecount(path):
     count = 0
     for f in os.listdir(path):
@@ -782,6 +788,7 @@ def filecount(path):
     return count
 
 def initializeCongress():
+    from lovegov.modernpolitics.register import createUser
     for num in range(109,113):
         pathXML = '/data/govtrack/' + str(num) + "/people.xml"
         fileXML = open(pathXML)

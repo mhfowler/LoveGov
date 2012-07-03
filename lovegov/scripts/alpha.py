@@ -97,7 +97,7 @@ def scriptInitialize(args):
             name = args[1] + " " + args[2]
             email = args[3]
             password = args[4]
-            control = lgregister.createUser(name=name, email=email, password=password)
+            control = createUser(name=name, email=email, password=password)
             user_prof = control.user_profile
             user_prof.confirmed = True
             user_prof.save()
@@ -195,14 +195,14 @@ def scriptAddAlphaUser(args):
 #   answers questions for them
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptCreatePresidentialCandidates(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'alpha/excel/Presidential_Candidates.xls')
+    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/Presidential_Candidates.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
     createPoliticianProfiles(sheet)
     answerQuestions(sheet)
 
 def scriptCreateCongressAnswers(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'alpha/excel/congress.xls')
+    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/congress.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(3)
     metrics = {}
@@ -273,7 +273,7 @@ def scriptCreateCongressAnswers(args=None):
 
 
 def scriptCreateResponses(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'alpha/excel/' + args[0])
+    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
     for row in range(1,sheet.nrows):

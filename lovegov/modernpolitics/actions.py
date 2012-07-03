@@ -142,13 +142,64 @@ def getCongressmen(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
+# that match given term.
+#-----------------------------------------------------------------------------------------------------------------------
+def lovegovSearch(term):
+    userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=term)
+    news = SearchQuerySet().models(News).filter(content=term)
+    questions = SearchQuerySet().models(Question).filter(content=term)
+    petitions = SearchQuerySet().models(Petition).filter(content=term)
+
+    # Get lists of actual objects
+    userProfiles = [x.object for x in userProfiles]
+    petitions = [x.object for x in petitions]
+    questions = [x.object for x in questions]
+    news = [x.object for x in news]
+
+    return userProfiles, petitions, questions, news
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Returns json of list of results which match inputted 'term'. For jquery autocomplete.
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def searchAutoComplete(request,vals={},limit=5):
     string = request.POST['string'].lstrip().rstrip()
-    userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=string)
-    vals['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
+
+    userProfiles, petitions, questions, news = lovegovSearch(string)
+
+    total_results = sum(map(len, (userProfiles, petitions, questions, news)))
+
+    results_length = 0
+
+    userProfile_results = []
+    petition_results = []
+    question_results = []
+    news_results = []
+
+    # If total results is less than the given limit, 
+    # show up to the number of actual results
+    limit = min(limit, total_results)
+
+    # Get one of each type of result, or as many as will fit until limit is reached
+    while results_length < limit:
+        if len(userProfiles) > 0:
+            userProfile_results.append(userProfiles.pop(0))
+        if len(petitions) > 0:
+            petition_results.append(petitions.pop(0))
+        if len(questions) > 0:
+            question_results.append(questions.pop(0))
+        if len(news) > 0:
+            news_results.append(news.pop(0))
+        results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
+    
+    # Store results in context values
+    vals['userProfiles'], vals['petitions'], vals['questions'], vals['news'] = \
+        userProfile_results, petition_results, question_results, news_results
+    vals['search_string'] = string
+    vals['num_results'] = total_results
+    vals['shown'] = results_length
     html = ajaxRender('deployment/pieces/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -302,6 +353,54 @@ def sign(request, vals={}):
     else:
         vals = {"success":False, "error": "You must be in public mode to sign a petition."}
     return HttpResponse(json.dumps(vals))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Support a politician.
+#-----------------------------------------------------------------------------------------------------------------------
+def support(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = Politician.objects.get(id=request.POST['p_id'])
+
+    confirmed = int(request.POST['confirmed'])
+    if confirmed:
+        politician.support(viewer)
+    else:
+        politician.unsupport(viewer)
+
+    return HttpResponse(json.dumps({'num':politician.num_supporters}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Messages a politician.
+#-----------------------------------------------------------------------------------------------------------------------
+def messageRep(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = Politician.objects.get(id=request.POST['p_id'])
+    message = request.POST['message']
+
+    message = Messaged(user=viewer, to_user=politician, message=message)
+    num_messages = message.autoSave()
+
+    return HttpResponse(json.dumps({'num':num_messages}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# changes address for a user
+#-----------------------------------------------------------------------------------------------------------------------
+def submitAddress(request, vals={}):
+
+    address = request.POST['address']
+    city = request.POST['city']
+    zip = request.POST['zip']
+
+    viewer = vals['viewer']
+    location = viewer.getLocation()
+    location.address_string = address
+    location.zip = zip
+    location.save()
+
+    return HttpResponse("yea!")
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
@@ -939,14 +1038,12 @@ def addEmailList(request):
 # returns match of user
 #-----------------------------------------------------------------------------------------------------------------------
 def matchComparison(request,vals={}):
-    user = vals['viewer']
-    object = urlToObject(request.POST['entity_url'])
 
-    if object.type == "U": object.compare = getUserUserComparison(user, object).toJSON()
-    elif object.type == "G": object.compare = getUserGroupComparison(user, object).toJSON()
-    else: object.compare =  getUserContentComparison(user, object).toJSON()
+    viewer = vals['viewer']
+    object = urlToObject(request.POST['item_url'])
+    object.compare = object.getComparison(viewer).toJSON()
 
-    vals['entity'] = object
+    vals['item'] = object
     html = ajaxRender('deployment/center/match/match-new-box.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1234,7 +1331,7 @@ def matchSection(request, vals={}):
 
         # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-election-center.html', vals, request)
+        html = ajaxRender('deployment/center/match/match-tryptic-template.html', vals, request)
 
     elif section == 'social':
         user = vals['viewer']
@@ -1446,6 +1543,12 @@ def getAllGroupMembers(request, vals={}):
 
     return HttpResponse(json.dumps(to_return))
 
+def likeThis(request, vals={}):
+
+    html = ajaxRender('deployment/pieces/like_this.html', vals, request)
+    to_return = {'html':html}
+
+    return HttpResponse(json.dumps(to_return))
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1507,7 +1610,11 @@ actions = { 'getLinkInfo': getLinkInfo,
             'flag': flag,
             'updateHistogram': updateHistogram,
             'getHistogramMembers': getHistogramMembers,
-            'getAllGroupMembers': getAllGroupMembers
+            'getAllGroupMembers': getAllGroupMembers,
+            'support': support,
+            'messageRep': messageRep,
+            'submitAddress':submitAddress,
+            'likeThis':likeThis
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

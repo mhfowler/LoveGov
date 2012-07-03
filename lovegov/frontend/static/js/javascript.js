@@ -69,6 +69,12 @@ function rebindFunction()
         case 'histogram':
             loadHistogram();                                // histogram detail
             break;
+        case 'friends':
+            loadHistogram();
+            break;
+        case 'newMatch':
+            loadNewMatch();
+            break;
         default:
             break
     }
@@ -283,7 +289,7 @@ function groupFollow(event,div,follow)
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
-    var follow_id = div.siblings(".user-follow-id").val();
+    var follow_id = div.siblings(".user_follow_id").val();
     ajaxPost({
             data: {
                 'action':'followresponse',
@@ -1170,6 +1176,11 @@ function loadShareButton() {
         $('div.overdiv').hide();
         $('div.shareModal').hide();
     });
+
+    $('div.share_modal_close').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.shareModal').hide();
+    });
 }
 /***********************************************************************************************************************
  *
@@ -1364,7 +1375,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
@@ -1379,7 +1390,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1440,7 +1451,7 @@ function loadThread()
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
         var comment_text_length = comment_text.length;
-        if (comment_text_length <= 1000)
+        if (comment_text_length <= 10000)
         {
             var content_id = $(this).children(".hidden_id").val();
             ajaxPost({
@@ -1455,7 +1466,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 1000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1639,10 +1650,10 @@ function unbindNotification()
 
 function loadNotification()
 {
-    $(".notification-user-follow").click( function(event)
+    $(".notification_user_follow").click( function(event)
     {
         event.preventDefault();
-        var follow_id = $(this).siblings(".user-follow-id").val();
+        var follow_id = $(this).siblings(".user_follow_id").val();
         alert( follow_id );
         ajaxPost({
                 data: {
@@ -1661,11 +1672,11 @@ function loadNotification()
         );
     });
 
-    $(".notification-follow-response-y").click( function(event) {
+    $(".notification_follow_response_y").click( function(event) {
         userFollowResponse(event,"Y",$(this));
     });
 
-    $(".notification-follow-response-n").click( function(event) {
+    $(".notification_follow_response_n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
 
@@ -1825,6 +1836,11 @@ function bindProfileFollowersButton()
         $('div.overdiv').hide();
         $('div#profile_followers_modal').hide();
     });
+
+    $('div.followers_modal_close').click(function() {
+        $('div.overdiv').hide();
+        $('div#profile_followers_modal').hide();
+    });
 }
 
 function loadProfile()
@@ -1907,6 +1923,75 @@ function loadProfile()
     $(".private-follow").click( function(event)
     {
         setFollowPrivacy(event,1,$(this));
+    });
+
+    $(".support_button").bindOnce('click.profile', function(event) {
+        event.preventDefault();
+        support($(this));
+    });
+
+    $(".message_button").click(function(event) {
+        event.preventDefault();
+        $(".message-dialogue").toggle();
+    });
+
+    $(".message_send").click(function(event) {
+        event.preventDefault();
+        var $wrapper = $(this).parents(".message-wrapper");
+        messageRep($wrapper);
+    });
+}
+
+
+/* sends a message to a representative */
+function messageRep($wrapper) {
+
+    var p_id = $wrapper.data('p_id');
+    var message = $wrapper.find(".message-textarea").val();
+
+    ajaxPost({
+        data: {'action':'messageRep', 'p_id':p_id, 'message':message
+        },
+        success: function(data) {
+            $wrapper.hide();
+            $(".message-sent").show();
+            $(".message-sent").fadeOut(1500);
+
+            var returned = eval('(' + data + ')');
+            var num = returned.num;
+            $(".messages-number").text(num);
+        },
+        error: null
+    });
+}
+
+/* supports a politician */
+function support(div) {
+
+    var p_id = div.data('p_id');
+    var confirmed = div.data('confirmed');
+
+    ajaxPost({
+        data: {'action':'support','p_id':p_id, 'confirmed':confirmed},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            var num = returned.num;
+            $(".supporters-number").text(num);
+
+            if (confirmed == 0) {
+                $(".unsupport").hide();
+                $(".support").show();
+            }
+            else {
+                $(".support").hide();
+                $(".unsupport").show();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("body").html(jqXHR.responseText);
+        }
     });
 }
 
@@ -2051,6 +2136,11 @@ function bindGroupRequestsButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#group_requests_modal').hide();
+    });
+
+    $('div.request_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div#group_requests_modal').hide();
     });
@@ -2508,16 +2598,33 @@ function getFilterByName(name) {
 /* heart stuff */
 function heartButtons()
 {
+    function upvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), 1);
+    }
+
+    function downvote(wrapper) {
+        vote(wrapper, wrapper.data('c_id'), -1);
+    }
+
     $(".heart_minus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), -1);
+        if($(this).hasClass('clicked')) {
+            upvote(wrapper);
+        } else {
+            downvote(wrapper);
+        }
+
     });
 
     $(".heart_plus").bindOnce('click.vote', function(event) {
         var wrapper = $(this).parents(".hearts-wrapper");
         event.preventDefault();
-        vote(wrapper, wrapper.data('c_id'), 1);
+        if($(this).hasClass('clicked')) {
+            downvote(wrapper);
+        } else {
+            upvote(wrapper);
+        }
     });
 }
 
@@ -2539,6 +2646,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
+            alert('error');
         }
     });
 }
@@ -2743,6 +2851,29 @@ function bindFeedItems()
 var feed_metadata;
 function loadNewFeed() {
 
+    $(".how-does").click(function(event) {
+        event.preventDefault();
+        ajaxPost({
+            data: {'action':'likeThis'},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var old = $("body").html();
+                $("body").html(returned.html);
+                setTimeout(function() {
+                    $("body").html(old);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                }, 2000);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
     // parse json for metadata
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
@@ -2919,6 +3050,11 @@ function bindCreateButton()
     });
 
     $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div.create_modal').hide();
+    });
+
+    $('div.create_modal_close').click(function() {
         $('div.overdiv').hide();
         $('div.create_modal').hide();
     });
@@ -3749,4 +3885,162 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
+}
+
+
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Match page
+ *
+ **********************************************************************************************************************/
+var match_hover_off = true;
+var match_autoswitch;
+function loadNewMatch() {
+
+    swapFeatured(match_current_section);
+
+    $('.match-item').hoverIntent(
+        function() {
+            swapInHover($(this));
+        },
+        function() {
+        });
+
+    clearInterval(match_autoswitch);
+    match_autoswitch= setInterval(function()
+    {
+        if (match_hover_off) {
+            //swapFeatured("right");
+        }
+
+    }, 2000);
+
+    $("#match-arrow-right").click(function(event) {
+        swapFeatured("right");
+    });
+    $("#match-arrow-left").click(function(event) {
+        swapFeatured("left");
+    });
+
+    $("#match-mid-content").hover(
+        function() {
+            match_hover_off = false;
+        },
+        function() {
+            match_hover_off = true;
+        }
+    );
+
+    $(".circle-div").click(function(event) {
+        swapFeatured($(this).data('sequence'));
+    });
+
+    $(".find_out_now").click(function(event) {
+        submitAddress($(this).parents(".address-box"));
+    });
+}
+
+function submitAddress(wrapper) {
+    var address = wrapper.find(".address-input").val();
+    var city = wrapper.find(".city-input").val();
+    var zip = wrapper.find(".zip-input").val();
+    ajaxPost({
+            data: {
+                'action':'submitAddress',
+                'address':address,
+                'city':city,
+                'zip':zip
+            },
+            success: function(data)
+            {
+                location.reload();
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+    });
+}
+
+var match_current_section;
+function swapFeatured(direction) {
+    if (direction=='right') {
+        var match_next_section = nextSection();
+    }
+    else {
+        if (direction=='left') {
+            var match_next_section = previousSection();
+        }
+        else {
+            var match_next_section = direction;
+        }
+    }
+    var current = getSection(match_current_section);
+    var next = getSection(match_next_section);
+    current.hide();
+    next.show();
+    var current_circle = getCircle(match_current_section);
+    var next_circle = getCircle(match_next_section);
+    current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
+    next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
+    match_current_section = match_next_section;
+    var sections = {0:'presidential',
+                    1:'senate',
+                    2:'social',
+                    3:'representatives'};
+    var url = sections[match_current_section];
+    History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
+}
+
+function nextSection() {
+    if (match_current_section==3) {
+        var next_num = 0;
+    }
+    else {
+        var next_num = match_current_section + 1;
+    }
+    return next_num;
+}
+function previousSection() {
+    if (match_current_section==0) {
+        var next_num = 3;
+    }
+    else {
+        var next_num = match_current_section - 1;
+    }
+    return next_num;
+}
+
+function getSection(num) {
+    return $(".match-section[data-sequence=" + num + "]");
+}
+function getCircle(num) {
+    return $(".circle-div[data-sequence=" + num + "]");
+}
+
+function swapInHover(div) {
+    var item_url = div.attr('href');
+    ajaxPost({
+            data: {
+                'action':'matchComparison',
+                'item_url': item_url
+            },
+            success: function(data)
+            {
+                var $wrapper = $('.match-box-div-wrapper');
+                //$wrapper.hide({effect:'slide',speed:2000,direction:'down'});
+                $wrapper.promise().done(function() {
+                    var returned = eval('(' + data + ')');
+                    $wrapper.html(returned.html);
+                    //$wrapper.show({effect:'slide',speed:2000,direction:"up"});
+                });
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
 }

@@ -10,8 +10,6 @@
                 <div class="profile-img">
                     {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
                         <img src="{{ im.url }}" class="icon-really-big"/>
-                    {% empty %}
-                        <p> no pic </p>
                     {% endthumbnail %}
                 </div>
                 {% if viewer.id != user_prof.id and is_following_you%}
@@ -71,37 +69,72 @@
                 </div>
 
                 <div class="profile-stats">
-                    <div class="stat-box followers-stat" id="profile_followers">
-                        <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
-                        <div class="profile-stats-title">follower{% if prof_follow_me|length != 1 %}s{% endif %}</div>
-                    </div>
+                    {% if user_prof.user_type == "U" %}
+                        <div class="stat-box followers-stat" id="profile_followers">
+                            <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
+                            <div class="profile-stats-title">follower{{ prof_follow_me|pluralize }}</div>
+                        </div>
+                    {% else %}
+                        <div class="stat-box profile-stat" id="profile_supporters">
+                            <div class="profile-stats-number supporters-number">{{ user_prof.num_supporters }}</div>
+                            <div class="profile-stats-title">supporter{{ user_prof.num_supporters|pluralize }}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="profile-stats-number messages-number">{{ user_prof.num_messages }}</div>
+                            <div class="profile-stats-title">message{{ user_prof.num_messages|pluralize }}</div>
+                        </div>
+                    {% endif %}
                     <div class="stat-box">
                         <div class="profile-stats-number">{{ responses }}</div>
-                        <div class="profile-stats-title">question{% if responses != 1 %}s{% endif %}</div>
+                        <div class="profile-stats-title">question{{ responses|pluralize }}</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
-                        <div class="profile-stats-title">petition{% if user_prof.num_petitions != 1 %}s{% endif %}</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
-                        <div class="profile-stats-title">article{% if user_prof.num_articles != 1 %}s{% endif %}</div>
-                    </div>
+                    {% if user_prof.user_type == "U" %}
+                        <div class="stat-box">
+                            <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
+                            <div class="profile-stats-title">petition{{ user_prof.num_petitions|pluralize }}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
+                            <div class="profile-stats-title">article{{ user_prof.num_articles|pluralize }}</div>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="profile-buttons">
                     {% if viewer.id != user_prof.id %}
-                        {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
-                            <a href="" class="button-red float-left" id="user_follow_button">
-                                follow
-                            </a>
+                        {% if user_prof.user_type == 'U' %}
+                            {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                                <a href="" class="button-red float-left" id="user_follow_button">
+                                    follow
+                                </a>
+                            {% else %}
+                                <a href="" class="button-red float-left user-unfollow-button">
+                                    {% if is_user_confirmed %}
+                                        unfollow
+                                    {% elif is_user_requested %}
+                                        un-request
+                                    {% endif %}
+                                </a>
+                            {% endif %}
                         {% else %}
-                            <a href="" class="button-red float-left user-unfollow-button">
-                                {% if is_user_confirmed %}
-                                    unfollow
-                                {% elif is_user_requested %}
-                                    un-request
-                                {% endif %}
+                                <a href="" class="button-red float-left support_button politician-button unsupport"
+                                   data-p_id="{{ user_prof.id }}" data-confirmed="0"
+                                        {% if not yousupport %} style="display:none" {% endif %}>
+                                    unsupport
+                                </a>
+                                <a href="" class="button-red float-left support_button politician-button support"
+                                   data-p_id="{{ user_prof.id }}" data-confirmed="1"
+                                        {% if yousupport %} style="display:none" {% endif %}>
+                                    support
+                                </a>
+                            <a href="" class="button-red float-left message_button politician-button">
+                                message
                             </a>
+                            <a class="message-sent"> message sent. </a>
+                            <div class="message-dialogue message-wrapper"  data-p_id="{{ user_prof.id }}">
+                                <h4 class="message-header"> Send a message to {{ user_prof.get_name }}</h4>
+                                <textarea class="message-textarea"> Dear {{ user_prof.get_name }}, </textarea>
+                                <a href="#" class="message-send message_send button-red"> send </a>
+                            </div>
                         {% endif %}
                     {% endif %}
                 </div>
@@ -199,9 +232,11 @@
                     </td>
                     <td class="notification-text">
                         <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> requested to follow you
-                        <a href="" class="user-follow-response-y button-small-red">accept</a>
-                        <a href="" class="user-follow-response-n button-small-red">decline</a>
-                        <input type="hidden" class="user-follow-id" value="{{ req.getFrom.id }}"/>
+                    </td>
+                    <td class="notification-buttons">
+                        <div class="notification-follow-response notification_follow_response_y">accept</div>
+                        <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
+                        <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>
                     </td>
 
                     {% if not forloop.last %}
@@ -242,6 +277,7 @@
 </div>
 
 <div id="profile_followers_modal" class="followers-modal">
+    <div class="modal-close followers_modal_close" ></div>
     <div class="modal-section-title">Followers:</div>
     <div class="modal-horizontal-separator"></div>
     <div class="followers-container">

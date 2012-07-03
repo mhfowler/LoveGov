@@ -1,4 +1,35 @@
+{% load customtags %}
 <img id="autocomplete-loading-gif" src="/static/images/ajax-loader.gif" style="display:none"/>
+
 {% for userProfile in userProfiles %}
-    {% include 'deployment/snippets/autocomplete-div.html' with userProfile=userProfile %}
+    {% include 'deployment/snippets/autocomplete-user.html' with userProfile=userProfile %}
 {% endfor %}
+
+{% if questions %}
+<div class="autocomplete-div autocomplete-header">Discussions</div>
+{% endif %}
+{% for question in questions %}
+	{% include 'deployment/snippets/autocomplete-question.html' with question=question %}
+{% endfor %}
+
+{% if news %}
+<div class="autocomplete-div autocomplete-header">News</div>
+{% endif %}
+{% for article in news %}
+	{% include 'deployment/snippets/autocomplete-news.html' with news=article %}
+{% endfor %}
+
+{% if petitions %}
+<div class="autocomplete-div autocomplete-header">Petitions</div>
+{% endif %}
+{% for petition in petitions %}
+	{% include 'deployment/snippets/autocomplete-petition.html' with petition=petition %}
+{% endfor %}
+
+{% if num_results|subtract:shown > 0 %}
+<a href="/search/{{search_string}}"> 
+<div class="autocomplete-div autocomplete-more-results">
+		More results for "{{search_string}}" ({{num_results}} total)<span style="float:right">→</span>
+</div>
+{% endif %}
+</a>

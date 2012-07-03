@@ -183,8 +183,8 @@ for imgRef in os.listdir(os.path.join(settings.PROJECT_PATH, 'frontend/static/im
 
 ########################################### PROCESS PATHS ##############################################################
 
-PHANTOMJS = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
-PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
+#PHANTOMJS = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
+#PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
 
 ########################################## CHOICES #####################################################################
 
@@ -262,6 +262,8 @@ RELATIONSHIP_CHOICES = (
     ('CR', 'created'),
     ('ED', 'edited'),
     ('SI', 'signed'),
+    ('SU', 'supported'),
+    ('ME', 'messaged'),
     ('FC', 'followed content'),
     ('XX', 'deleted'),
     ('VO', 'voted'),                        # divided into like and dislike
@@ -296,6 +298,11 @@ ACTION_MODIFIERS = (
 # types of action which user should be notified about
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO', 'SH']
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO', 'SH']
+NOTIFY_MODIFIERS = {
+    'VO': ['L'],
+}
+
+
 
 # Timedelta that it takes for aggregate notifications to go stale.
 STALE_TIME_DELTA = datetime.timedelta(14)
@@ -379,7 +386,7 @@ DEFAULT_IMAGE = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/prof
 DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
 DEFAULT_NEWS_IMAGE_URL = '/static/icons/content-big/news.png'
 DEFAULT_PETITION_IMAGE_URL = '/static/icons/content-big/petition.png'
-DEFAULT_GROUP_IMAGE_URL = 'static/icons/content-big/group.png'
+DEFAULT_GROUP_IMAGE_URL = '/static/icons/content-big/group.png'
 DEFAULT_DISCUSSION_IMAGE_URL = '/static/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'

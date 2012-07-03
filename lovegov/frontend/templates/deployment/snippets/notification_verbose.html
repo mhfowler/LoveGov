@@ -8,7 +8,7 @@
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="notification-thumbnail">
-            {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
+            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
@@ -73,45 +73,43 @@
     {% elif type == 'FO' %}
         {% if modifier == 'R' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" />
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 requested to follow
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-                {% if not follow.rejected and not follow.confirmed and follow.requested %}
-                    <div class="notification-follow-response">
-                        <a href="" class="notification-follow-response-y button-small-red">accept</a>
-                        <a href="" class="notification-follow-response-n button-small-red">decline</a>
-                        <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
-                    </div>
-                {% endif %}
             </td>
+            {% if not follow.rejected and not follow.confirmed and follow.requested %}
+                <td class="notification-buttons">
+                    <div class="notification-follow-response notification_follow_response_y">accept</div>
+                    <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
+                    <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>
+                </td>
+            {% endif %}
         {% elif modifier == 'D' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" />
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 followed
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
-                {% if not reverse_follow.confirmed and not reverse_follow.requested %}
-                    <div class="notification-follow">
-                        <a href="" class="button-small-red notification-user-follow">
-                            follow
-                        </a>
-                        <input type="hidden" class="user-follow-id" value="{{ from_user.id }}"/>
-                    </div>
-                {% endif %}
             </td>
+                {% if not reverse_follow.confirmed and not reverse_follow.requested %}
+                    <td class="notification-buttons">
+                        <div class="notification-follow-response notification_user_follow">follow</div>
+                        <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>
+                    </td>
+                {% endif %}
         {% elif modifier == 'A' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" />
+                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -122,8 +120,8 @@
             </td>
         {% elif modifier == 'X' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" />
+                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -137,8 +135,8 @@
             </td>
         {% elif modifier == 'S' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getProfileImage.image "35x35" crop="center" as im %}
-                    <img src="{{ im.url }}" />
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
             <td class="notification-text">
@@ -159,16 +157,23 @@
             {% endif %}
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% elif modifier == 'R' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            requested to join
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <td class="notification-thumbnail">
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                requested to follow
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
             {% if not group_join.rejected and not group_join.confirmed and group_join.requested %}
-                <div class="notification-follow-response">
-                    <a href="" class="notification_group_response_y button-small-red">accept</a>
-                    <a href="" class="notification_group_response_n button-small-red">decline</a>
+                <td class="notification-buttons">
+                    <div class="notification-follow-response notification_group_response_y">accept</div>
+                    <div class="notification-follow-response bottom notification_group_response_n">decline</div>
                     <input type="hidden" class="follow-id" value="{{ from_user.id }}"/>
                     <input type="hidden" class="group-id" value="{{ to_user.id }}"/>
-                </div>
+                </td>
             {% endif %}
         {% elif modifier == 'A' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true %}

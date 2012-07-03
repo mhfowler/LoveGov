@@ -21,6 +21,18 @@
   -khtml-border-bottom-left-radius: $radius;
 }
 
+@mixin rounded-top($radius: 20px)
+{
+  border-top-right-radius: $radius;
+  border-top-left-radius: $radius;
+  -moz-border-top-right-radius: $radius;
+  -moz-border-top-left-radius: $radius;
+  -webkit-border-top-right-radius: $radius;
+  -webkit-border-top-left-radius: $radius;
+  -khtml-border-top-right-radius: $radius;
+  -khtml-border-top-left-radius: $radius;
+}
+
 @mixin fontSize($fontSize: 20px)
 {
   font-size:$fontSize;
@@ -146,6 +158,13 @@
   border-bottom: solid 1px;
   border-color: $gray;
   background-color: white;
+}
+
+@mixin borderBox
+{
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 @mixin round-rectangle($width,$height,$radius,$background-color)

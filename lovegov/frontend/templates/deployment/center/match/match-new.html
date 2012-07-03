@@ -1,44 +1,69 @@
 <!-- HTML -->
 <div id="match-main">
 
+    <div id="match-mid-header">
+        <h5>Featured Matches</h5>
+    </div>
+
     <!-- Content Section -->
     <div id="match-mid">
-        <div id="match-mid-header">
-            <h5>Your Featured Matches</h5>
-            <!--<h2>Address: 1307 Elizabeth Street</h2>-->
-        </div>
 
         <div id="match-mid-content">
+
             <div id="match-arrow-left" class="match-arrow">
                 <img src="/static/images/match/arrow_left_light.png"/>
             </div>
 
             <div id="match-ajax-content">
-                {% include 'deployment/center/match/match-election-center.html' %}
+
+                <div class="match-presidential match-section" data-sequence="0">
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Your 2012 Presidential Candidates" %}
+                </div>
+
+                <div class="match-massachusettes match-section" data-sequence="1">
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Your Massachusettes Senate Election" %}
+                </div>
+
+                <div class="match-social match-section" data-sequence="2">
+                    {% include 'deployment/center/match/match-social.html' %}
+                </div>
+
+                <div class="match-representatives match-section" data-sequence="3">
+                    {% if congressmen %}
+                        {% include 'deployment/center/match/match-tryptic-template.html' with prof1=congressmen.0 prof2=congressmen.1 prof3=congressmen.2 match_title="Find Your Representatives" %}
+                    {% else %}
+                        <div class="match-title">
+                            <h3> Find Your Representatives. </h3>
+                        </div>
+                        {% if invalid_address %}
+                            <p> We could not find any congressmen associated with the last address you entered. You could try entering the
+                            address again or lookup a different one. </p>
+                        {% endif %}
+                        {% include 'deployment/center/match/address.html' %}
+                    {% endif %}
+                </div>
+
             </div>
 
-            <div id="match-arrow-right" class="match-arrow">
-                <img src="/static/images/match/arrow_right_light.png"/>
-            </div>
+        </div>
+
+        <div id="match-arrow-right" class="match-arrow">
+            <img src="/static/images/match/arrow_right_light.png"/>
         </div>
 
     </div>
 
-    <!-- Red/Gray Circles -->
-    {% include 'deployment/center/match/match-selection-line-break.html' %}
+    <div class="clear-both"></div>
 
-    <!-- Select Match Section -->
-    {% include 'deployment/center/match/match-selection.html' %}
+<!-- Red/Gray Circles -->
+{% include 'deployment/center/match/match-selection-line-break.html' %}
+
+<!-- QuickLinks -->
+{% include 'deployment/center/match/match-quicklinks.html' %}
 
 </div>
 
-<script type="text/javascript">
-    $('.match-arrow img').hover(function()
-    {
-        $(this).css({'background-color':'#F0F0F0'});
-    },function()
-    {
-        $(this).css({'background-color':'#FFFFFF'});
-    });
-</script>
+<script> match_current_section={{ start_sequence }};</script>
+
+
 
