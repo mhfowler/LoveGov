@@ -346,6 +346,9 @@ div.petition_bar {
 	    float: right;
 	    margin-right: 12px;
     }
+    div:hover {
+        color: $red-light;
+    }
 }
 
 
@@ -411,6 +414,7 @@ div.content-submitted-by-wrapper {
     }
     span.submit-time {
         color: $deep-gray;
+        font-size: 12px;
     }
     span.submitter {
         @include titleFont;

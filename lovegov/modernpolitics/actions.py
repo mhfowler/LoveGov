@@ -142,13 +142,64 @@ def getCongressmen(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
+# that match given term.
+#-----------------------------------------------------------------------------------------------------------------------
+def lovegovSearch(term):
+    userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=term)
+    news = SearchQuerySet().models(News).filter(content=term)
+    questions = SearchQuerySet().models(Question).filter(content=term)
+    petitions = SearchQuerySet().models(Petition).filter(content=term)
+
+    # Get lists of actual objects
+    userProfiles = [x.object for x in userProfiles]
+    petitions = [x.object for x in petitions]
+    questions = [x.object for x in questions]
+    news = [x.object for x in news]
+
+    return userProfiles, petitions, questions, news
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Returns json of list of results which match inputted 'term'. For jquery autocomplete.
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def searchAutoComplete(request,vals={},limit=5):
     string = request.POST['string'].lstrip().rstrip()
-    userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=string)
-    vals['userProfiles'] = [userProfile.object for userProfile in userProfiles][:limit]
+
+    userProfiles, petitions, questions, news = lovegovSearch(string)
+
+    total_results = sum(map(len, (userProfiles, petitions, questions, news)))
+
+    results_length = 0
+
+    userProfile_results = []
+    petition_results = []
+    question_results = []
+    news_results = []
+
+    # If total results is less than the given limit, 
+    # show up to the number of actual results
+    limit = min(limit, total_results)
+
+    # Get one of each type of result, or as many as will fit until limit is reached
+    while results_length < limit:
+        if len(userProfiles) > 0:
+            userProfile_results.append(userProfiles.pop(0))
+        if len(petitions) > 0:
+            petition_results.append(petitions.pop(0))
+        if len(questions) > 0:
+            question_results.append(questions.pop(0))
+        if len(news) > 0:
+            news_results.append(news.pop(0))
+        results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
+    
+    # Store results in context values
+    vals['userProfiles'], vals['petitions'], vals['questions'], vals['news'] = \
+        userProfile_results, petition_results, question_results, news_results
+    vals['search_string'] = string
+    vals['num_results'] = total_results
+    vals['shown'] = results_length
     html = ajaxRender('deployment/pieces/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -302,36 +353,6 @@ def sign(request, vals={}):
     else:
         vals = {"success":False, "error": "You must be in public mode to sign a petition."}
     return HttpResponse(json.dumps(vals))
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Support a politician.
-#-----------------------------------------------------------------------------------------------------------------------
-def support(request, vals={}):
-
-    viewer = vals['viewer']
-    politician = Politician.objects.get(id=request.POST['p_id'])
-
-    confirmed = int(request.POST['confirmed'])
-    if confirmed:
-        politician.support(viewer)
-    else:
-        politician.unsupport(viewer)
-
-    return HttpResponse(json.dumps({'num':politician.num_supporters}))
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Messages a politician.
-#-----------------------------------------------------------------------------------------------------------------------
-def messageRep(request, vals={}):
-
-    viewer = vals['viewer']
-    politician = Politician.objects.get(id=request.POST['p_id'])
-    message = request.POST['message']
-
-    message = Messaged(user=viewer, to_user=politician, message=message)
-    num_messages = message.autoSave()
-
-    return HttpResponse(json.dumps({'num':num_messages}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
@@ -535,7 +556,6 @@ def vote(request, vals):
     privacy = getPrivacy(request)
     content = Content.objects.get(id=request.POST['c_id'])
     vote = int(request.POST['vote'])
-    print user.id
     # save vote
     if vote == 1:
         value = content.like(user=user, privacy=privacy)
@@ -1538,9 +1558,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'flag': flag,
             'updateHistogram': updateHistogram,
             'getHistogramMembers': getHistogramMembers,
-            'getAllGroupMembers': getAllGroupMembers,
-            'support': support,
-            'messageRep': messageRep
+            'getAllGroupMembers': getAllGroupMembers
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

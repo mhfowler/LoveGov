@@ -354,7 +354,9 @@ class Content(Privacy, LocationLevel):
         return self.getMainImage().image
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return self.getMainTopic().getUserImage()
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return self.getMainTopic().getUserImage()
@@ -2008,7 +2010,9 @@ class Petition(Content):
     # Override getImageURL function to use default petition image
     #-------------------------------------------------------------------------------------------------------------------
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_PETITION_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_PETITION_IMAGE_URL
@@ -2057,7 +2061,9 @@ class News(Content):
         return self.link_screenshot
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_NEWS_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_NEWS_IMAGE_URL
@@ -2867,7 +2873,9 @@ class Question(Content):
         self.save()
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_DISCUSSION_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_DISCUSSION_IMAGE_URL
@@ -3532,7 +3540,9 @@ class Group(Content):
         return int(round(avg_questions))
 
     def getImageURL(self):
-        if self.main_image:
+        if self.main_image_id < 0:
+            return DEFAULT_GROUP_IMAGE_URL
+        elif self.main_image:
             return self.main_image.image.url
         else:
             return DEFAULT_GROUP_IMAGE_URL

@@ -64,6 +64,7 @@ urlpatterns += patterns('',
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
     (r'^match/$', viewWrapper(views.match, requires_login=True)),                             # match page
     (r'^matchNew/$', viewWrapper(views.matchNew, requires_login=True)),
+    (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail

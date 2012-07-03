@@ -118,6 +118,13 @@
   background-color: white;
 }
 
+@mixin borderBox
+{
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 @mixin round-rectangle($width,$height,$radius,$background-color)
 {
   width:$width;
