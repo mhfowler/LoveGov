@@ -57,7 +57,7 @@ def createUser(name, email, password, type='userProfile',active=True):
             print ("deletes! " + email)
             c = ControllingUser.objects.get(username=email)
             c.delete()
-            createUser(name, email, password, type, active)
+            return createUser(name, email, password, type, active)
 
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
