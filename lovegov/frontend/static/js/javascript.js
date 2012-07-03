@@ -69,6 +69,9 @@ function rebindFunction()
         case 'histogram':
             loadHistogram();                                // histogram detail
             break;
+        case 'friends':
+            loadHistogram();
+            break;
         default:
             break
     }

@@ -395,7 +395,18 @@ def theFeed(request, vals={}):
 def iFollow(request, vals={}):
 
     viewer = vals['viewer']
-    vals['friends'] = viewer.getIFollow()
+
+    group = viewer.i_follow
+    vals['ifollow'] = group
+
+    friends = list(viewer.getIFollow())
+    for x in friends:
+        comparison = x.getComparison(viewer)
+        x.result = comparison.result
+    friends.sort(key=lambda x:x.result,reverse=True)
+    vals['friends'] = friends
+
+    loadHistogram(5, group.id, 'mini', vals)
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/friends.html', vals, request)
@@ -603,24 +614,7 @@ def group(request, g_id=None, vals={}):
     jsonData = comparison.toJSON()
     vals['json'] = jsonData
 
-    # histogram
-    resolution = 5
-    bucket_list = getBucketList(resolution)
-    vals['buckets'] = bucket_list
-    bucket_uids = {}
-    for x in bucket_list:
-        bucket_uids[x] = []
-    histogram_metadata = {'total':0,
-                          'identical':0,
-                          'identical_uids':[],
-                          'resolution':resolution,
-                          'g_id':group.id,
-                          'which':'mini',
-                          'increment':1,
-                          'topic_alias':'all',
-                          'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
-    vals['histogram_metadata'] = json.dumps(histogram_metadata)
+    loadHistogram(5, group.id, 'mini', vals)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -653,6 +647,9 @@ def group(request, g_id=None, vals={}):
     if not group.group_privacy == 'S':
         vals['is_visible'] = True
 
+    if group == viewer.i_follow:
+        vals['is_visible'] = True
+
     vals['is_user_admin'] = False
     admins = list( group.admins.all() )
     for admin in admins:
@@ -674,7 +671,15 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
     vals['group'] = group
 
-    resolution = 20
+    loadHistogram(20, group.id, 'full', vals)
+
+    setPageTitle("lovegov: " + group.title,vals)
+    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    url = group.getHistogramURL()
+    return framedResponse(request, html, url, vals)
+
+
+def loadHistogram(resolution, g_id, which, vals={}):
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}
@@ -684,18 +689,13 @@ def histogramDetail(request, g_id, vals={}):
                           'identical':0,
                           'identical_uids':[],
                           'resolution':resolution,
-                          'g_id':group.id,
-                          'which':'full',
+                          'g_id':g_id,
+                          'which':which,
                           'increment':1,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 }
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
-
-    setPageTitle("lovegov: " + group.title,vals)
-    html = ajaxRender('deployment/center/histogram.html', vals, request)
-    url = group.getHistogramURL()
-    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

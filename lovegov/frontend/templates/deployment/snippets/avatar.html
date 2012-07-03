@@ -16,6 +16,8 @@
                 {% thumbnail full_url geometry crop="center" as im %}
                     <img class="has_hover_comparison avatar-image"  data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
                          src="{{ im.url }}"/>
+                {% empty %}
+                    {{ full_url }}
                 {% endthumbnail %}
             {% endwith %}
 

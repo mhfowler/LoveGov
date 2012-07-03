@@ -1243,11 +1243,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
         if not self.i_follow:
             self.createIFollowGroup()
-        self.i_follow.members.add(to_user)
+        self.i_follow.joinMember(to_user)
 
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
-        to_user.follow_me.members.add(self)
+        to_user.follow_me.joinMember(self)
 
         #Check and Make Relationship A
         if not relationship:
@@ -1498,7 +1498,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a list of all Users who this user is (confirmed) following.
     #-------------------------------------------------------------------------------------------------------------------
     def getIFollow(self, num=-1):
-        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('user', flat=True)
+        f_ids = UserFollow.objects.filter(user=self, confirmed=True ).values_list('to_user', flat=True)
         followers = UserProfile.objects.filter(id__in=f_ids)
         if num != -1:
             followers = followers[:num]
