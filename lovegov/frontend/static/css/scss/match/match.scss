@@ -125,7 +125,38 @@
 {
   width:960px;
   height:200px;
-  margin: 0px 15px;
-  border: 5px solid $gray;
+  margin: 0px 15px 20px 0;
   @include rounded;
+
+  h3.quick-links-header {
+  }
+
+  a.center {
+    margin-left:75px;
+    margin-right:75px;
+  }
+
+  a.quick-link {
+    float:left;
+    margin-top: 20px;
+    padding: 10px;
+    padding-top:15px;
+    width: 250px;
+    background-color:$light-gray;
+    @include fontSize(24px);
+    color: $black;
+  }
+  a.quick-link:hover {
+    background-color:$gray;
+  }
+
+  p.quick-links-explanation {
+    text-align:left;
+    padding-left:20px;
+    float:left;
+    width:200px;
+    margin-top:20px;
+    @include fontSize(15px);
+  }
+
 }
