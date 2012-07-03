@@ -1004,9 +1004,10 @@ def matchRepresentatives(request, vals={}):
     if viewer.location:
         address = viewer.location
         congressmen = []
-        representative = Representative.objects.get(congresssessions=112,state=address.state,district=address.district)
-        representative.compare = representative.getComparison(viewer).toJSON()
-        congressmen.append(representative)
+        representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
+        if representative:
+            representative.compare = representative.getComparison(viewer).toJSON()
+            congressmen.append(representative)
         senators = Senator.objects.filter(congresssessions=112,state=address.state)
         for senator in senators:
             senator.compare = senator.getComparison(viewer).toJSON()
@@ -1016,6 +1017,8 @@ def matchRepresentatives(request, vals={}):
         vals['district'] = address.district
         vals['latitude'] = address.latitude
         vals['longitude'] = address.longitude
+        if not congressmen:
+            vals['invalid_address'] = True
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

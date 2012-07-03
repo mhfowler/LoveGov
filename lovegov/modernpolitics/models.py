@@ -115,10 +115,10 @@ class UserPhysicalAddress(LGModel):
 class PhysicalAddress(LGModel):
     address_string = models.CharField(max_length=500, null=True)
     zip = models.CharField(max_length=20, null=True)
-    longitude = models.DecimalField(max_digits=30, decimal_places=15)
-    latitude = models.DecimalField(max_digits=30, decimal_places=15)
-    state = models.CharField(max_length=2)
-    district = models.IntegerField()
+    longitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
+    latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
+    state = models.CharField(max_length=2, null=True)
+    district = models.IntegerField(default=-1)
 
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
@@ -1084,6 +1084,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             for x in parties:
                 to_return += x.title + " "
         return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets users location object
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocation(self):
+        if self.location:
+            return self.location
+        else:
+            location = PhysicalAddress()
+            location.save()
+            self.location = location
+            self.save()
+            return location
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.

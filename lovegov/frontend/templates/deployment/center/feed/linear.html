@@ -13,13 +13,11 @@
                     {% include 'deployment/center/feed/feed_image.html' %}
 
                     <div class="header-topic">
-                        <a href="{{ item.getMainTopic.get_url }}">
                             {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
                                 <img src="{{ im.url }}"/>
                             {% empty %}
                                 <p> ? </p>
                             {% endthumbnail %}
-                        </a>
                     </div>
 
                 </div>

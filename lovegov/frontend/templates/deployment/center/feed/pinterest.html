@@ -14,11 +14,9 @@
                     {% include 'deployment/center/feed/feed_avatar.html' %}
 
                     <div class="header-topic">
-                        <a href="{{ item.getMainTopic.get_url }}">
-                            {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
-                                <img src="{{ im.url }}"/>
-                            {% endthumbnail %}
-                        </a>
+                        {% thumbnail item.getMainTopic.image "50x50" format="PNG" as im %}
+                            <img src="{{ im.url }}"/>
+                        {% endthumbnail %}
                     </div>
 
                     <div style="clear:both"></div>

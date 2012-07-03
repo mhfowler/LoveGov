@@ -2851,6 +2851,29 @@ function bindFeedItems()
 var feed_metadata;
 function loadNewFeed() {
 
+    $(".how-does").click(function(event) {
+        event.preventDefault();
+        ajaxPost({
+            data: {'action':'likeThis'},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var old = $("body").html();
+                $("body").html(returned.html);
+                setTimeout(function() {
+                    $("body").html(old);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                }, 2000);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
     // parse json for metadata
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
@@ -3932,7 +3955,7 @@ function submitAddress(wrapper) {
             },
             success: function(data)
             {
-                alert("success");
+                location.reload();
             },
             error: function(error, textStatus, errorThrown)
             {
