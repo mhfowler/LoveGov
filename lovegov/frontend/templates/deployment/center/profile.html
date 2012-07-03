@@ -71,7 +71,7 @@
                 <div class="profile-stats">
                     {% if user_prof.user_type == "U" %}
                         <div class="stat-box followers-stat" id="profile_followers">
-                            <div class="profile-stats-number followers-number">738</div>
+                            <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
                             <div class="profile-stats-title">follower{{ prof_follow_me|pluralize }}</div>
                         </div>
                     {% else %}
