@@ -815,6 +815,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg'] = leg
     return renderToResponseCSRF(template='deployment/pages/legislation-view.html', vals=vals, request=request)
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 # All Users Link
 #-----------------------------------------------------------------------------------------------------------------------
@@ -912,6 +913,7 @@ def matchNew(request, vals={}):
     if request.method == 'GET':
         vals['defaultImage'] = getDefaultImage().image
         user = vals['viewer']
+
         c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
         c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
 
@@ -930,6 +932,13 @@ def matchNew(request, vals={}):
         url = '/match/'
         return framedResponse(request, html, url, vals)
 
+
+def newMatch(request,vals={}):
+
+    setPageTitle("lovegov: beta",vals)
+    html = ajaxRender('deployment/center/match/match-new.html', vals, request)
+    url = "/match/"
+    return framedResponse(request, html, url, vals)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -62,7 +62,7 @@ urlpatterns += patterns('',
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
-    (r'^match/$', viewWrapper(views.match, requires_login=True)),                             # match page
+    (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                             # match page
     (r'^matchNew/$', viewWrapper(views.matchNew, requires_login=True)),
 
     # content pages

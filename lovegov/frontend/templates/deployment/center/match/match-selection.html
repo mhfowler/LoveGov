@@ -47,7 +47,6 @@
 <script type="text/javascript">
 
 
-
     var autoSwitch = setInterval(function()
     {
         var currentSelected = $('.match-selection-box-selected');
@@ -80,7 +79,7 @@
             currentSelected.removeClass('match-selection-box-selected');
             matchAjaxRender(next.parent('a').attr('href'),currentSelected,next);
         }
-    },3750);
+    },10000);
 
 
 
