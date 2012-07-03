@@ -935,6 +935,9 @@ def matchNew(request, vals={}):
 
 def newMatch(request,vals={}):
 
+    viewer = vals['viewer']
+    viewer.compare = viewer.getComparison(viewer).toJSON()
+
     matchSocial(request, vals)
 
     setPageTitle("lovegov: beta",vals)
