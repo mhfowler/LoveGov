@@ -433,6 +433,8 @@ def groups(request, vals={}):
     groups.sort(key=lambda x:x.result,reverse=True)
     vals['groups'] = groups
 
+    vals['what'] = "Groups"
+
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
     url = '/friends/'
@@ -457,6 +459,8 @@ def networks(request, vals={}):
         x.you_are_member = (x.id in mygroups_ids)
     groups.sort(key=lambda x:x.result,reverse=True)
     vals['groups'] = groups
+
+    vals['what'] = "Networks"
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
