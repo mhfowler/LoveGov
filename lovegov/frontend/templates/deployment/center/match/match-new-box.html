@@ -1,17 +1,20 @@
+{% load thumbnail %}
 <div class="match-box-div">
 
     <div class="match-user-info">
-        <a href="{{ item.get_url }}" class="card-avatar">
-            {% include 'deployment/snippets/avatar.html' with user=item width="50" height="50" hoveroff=1%}
-        </a>
+        {% thumbnail item.getProfileImage.image "65x65" crop="center" as im %}
+            <img src="{{ im.url }}" class="match-user-img"/>
+        {% endthumbnail %}
+
         <div class="match-user-text">
-            <p> {{ item.get_name }} </p>
+            <h4>{{ item.get_name }}</h4>
             {% if item.type == "U" %}
-                party:
+                <h5>Party:</h5>
             {% elif item.type == "G" %}
-                members:
+                <h5>Members:</h5>
             {% endif %}
         </div>
+        <div class="clear-both"></div>
     </div>
 
     <div class="qaweb">
