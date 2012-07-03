@@ -394,6 +394,9 @@ def theFeed(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def iFollow(request, vals={}):
 
+    viewer = vals['viewer']
+    vals['friends'] = viewer.getIFollow()
+
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/friends.html', vals, request)
     url = '/friends/'
