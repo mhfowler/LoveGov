@@ -3873,7 +3873,10 @@ function getAllGroupMembers(start, num, g_id) {
  *
  **********************************************************************************************************************/
 var match_hover_off = true;
+var match_autoswitch;
 function loadNewMatch() {
+
+    swapFeatured(match_current_section);
 
     $('.match-item').hoverIntent(
         function() {
@@ -3882,13 +3885,14 @@ function loadNewMatch() {
         function() {
         });
 
-    var autoSwitch = setInterval(function()
+    clearInterval(match_autoswitch);
+    match_autoswitch= setInterval(function()
     {
         if (match_hover_off) {
-            swapFeatured("right");
+            //swapFeatured("right");
         }
 
-    }, 1500);
+    }, 2000);
 
     $("#match-arrow-right").click(function(event) {
         swapFeatured("right");
@@ -3909,9 +3913,35 @@ function loadNewMatch() {
     $(".circle-div").click(function(event) {
         swapFeatured($(this).data('sequence'));
     });
+
+    $(".find_out_now").click(function(event) {
+        submitAddress($(this).parents(".address-box"));
+    });
 }
 
-var match_current_section = 0;
+function submitAddress(wrapper) {
+    var address = wrapper.find(".address-input").val();
+    var city = wrapper.find(".city-input").val();
+    var zip = wrapper.find(".zip-input").val();
+    ajaxPost({
+            data: {
+                'action':'submitAddress',
+                'address':address,
+                'city':city,
+                'zip':zip
+            },
+            success: function(data)
+            {
+                alert("success");
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+    });
+}
+
+var match_current_section;
 function swapFeatured(direction) {
     if (direction=='right') {
         var match_next_section = nextSection();
@@ -3933,6 +3963,12 @@ function swapFeatured(direction) {
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
+    var sections = {0:'presidential',
+                    1:'senate',
+                    2:'social',
+                    3:'representatives'};
+    var url = sections[match_current_section];
+    History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
 }
 
 function nextSection() {

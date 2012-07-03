@@ -933,7 +933,13 @@ def matchNew(request, vals={}):
         return framedResponse(request, html, url, vals)
 
 
-def newMatch(request,vals={}):
+def newMatch(request,start='presidential', vals={}):
+
+    sections = {'presidential':0,
+                'senate':1,
+                'social':2,
+                'representatives':3}
+    vals['start_sequence'] = sections[start]
 
     viewer = vals['viewer']
     viewer.compare = viewer.getComparison(viewer).toJSON()
@@ -992,22 +998,24 @@ def matchSenate(request, vals={}):
     vals['massachusettes_users'] = list
 
 def matchRepresentatives(request, vals={}):
+
     viewer = vals['viewer']
-    if not LOCAL:
-        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
-        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
-        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
-    else:
-        obama = viewer
-        paul = viewer
-        romney = viewer
-    list = [obama,paul,romney]
-    for presidential_user in list:
-        comparison = getUserUserComparison(viewer, presidential_user)
-        presidential_user.compare = comparison.toJSON()
-        presidential_user.result = comparison.result
-    list.sort(key=lambda x:x.result,reverse=True)
-    vals['massachusettes_users'] = list
+
+    if viewer.location:
+        address = viewer.location
+        congressmen = []
+        representative = Representative.objects.get(congresssessions=112,state=address.state,district=address.district)
+        representative.compare = representative.getComparison(viewer).toJSON()
+        congressmen.append(representative)
+        senators = Senator.objects.filter(congresssessions=112,state=address.state)
+        for senator in senators:
+            senator.compare = senator.getComparison(viewer).toJSON()
+            congressmen.append(senator)
+        vals['congressmen'] = congressmen
+        vals['state'] = address.state
+        vals['district'] = address.district
+        vals['latitude'] = address.latitude
+        vals['longitude'] = address.longitude
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

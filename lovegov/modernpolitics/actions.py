@@ -334,6 +334,22 @@ def messageRep(request, vals={}):
     return HttpResponse(json.dumps({'num':num_messages}))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# changes address for a user
+#-----------------------------------------------------------------------------------------------------------------------
+def submitAddress(request, vals={}):
+
+    address = request.POST['address']
+    city = request.POST['city']
+    zip = request.POST['zip']
+
+    viewer = vals['viewer']
+    viewer.location.address_string = address
+    viewer.location.zip = zip
+
+    
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
 #-----------------------------------------------------------------------------------------------------------------------
 def finalize(request, vals={}):
@@ -1538,7 +1554,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getHistogramMembers': getHistogramMembers,
             'getAllGroupMembers': getAllGroupMembers,
             'support': support,
-            'messageRep': messageRep
+            'messageRep': messageRep,
+            'submitAddress':submitAddress
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
