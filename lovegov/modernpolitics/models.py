@@ -1865,17 +1865,16 @@ class ElectedOfficial(Politician):
             self.youtube_id = personXML['youtubeid']
         if personXML.has_key('twitterid'):
             self.twitter_id = personXML['twitterid']
-        try:
-            if personXML.has_key('facebookgraphid'):
-                self.facebook_id = personXML['facebookgraphid']
-        except:
-            self.facebook_id = None
+        if personXML.has_key('facebookgraphid'):
+            self.facebook_id = personXML['facebookgraphid']
         self.start_date = parseDate(personXML.role['startdate'])
         self.end_date = parseDate(personXML.role['enddate'])
         self.party = personXML.role['party']
         self.political_role = 'E'
         # representative.url = list(person.role['url'])
         self.confirmed = True
+        if ElectedOfficial.objects.filter(facebook_id=self.facebook_id).exists():
+            self.facebook_id=None
         self.save()
 
 ########################################################################################################################
