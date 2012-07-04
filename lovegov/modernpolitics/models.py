@@ -2105,9 +2105,7 @@ class News(Content):
         return self.link_screenshot
 
     def getImageURL(self):
-        if self.link_screenshot_id < 0:
-            return DEFAULT_NEWS_IMAGE_URL
-        elif self.link_screenshot:
+        if self.link_screenshot:
             return self.link_screenshot.url
         else:
             return DEFAULT_NEWS_IMAGE_URL
