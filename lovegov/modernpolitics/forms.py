@@ -317,7 +317,7 @@ class CreateMotionForm(CreateContentForm):
 #=======================================================================================================================
 class CommentForm(forms.Form):
     # FIELDS
-    comment = forms.CharField(max_length=1000)
+    comment = forms.CharField(max_length=10000)
     c_id = forms.IntegerField()
     # SAVE
     def save(self, creator, privacy):
