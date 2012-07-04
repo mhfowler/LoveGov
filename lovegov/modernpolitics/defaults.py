@@ -905,6 +905,20 @@ def countLegislationAmendments():
         count += filecount(filePath)
     return count
 
+def countNonXMLAmendments():
+    count = 0
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
+        fileListing = os.listdir(filePath)
+        fileCount = filecount(filePath)
+        for infile in fileListing:
+            db.reset_queries()
+            if ".xml" in infile:
+                pass
+            else:
+                count += 1
+    return count
+
 # Initialize Voting Records
 def initializeVotingRecord():
     for num in range(109,113):
