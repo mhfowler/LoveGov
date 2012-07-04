@@ -2352,6 +2352,11 @@ class Legislation(Content):
         newLegislationStatus = LegislationStatus()
         newLegislationStatus.setSaveAttributes(parsedXML=parsedXML)
         self.bill_status = newLegislationStatus
+
+        already = Legislation.lg.get_or_none(bill_type=self.bill_type, bill_number=self.bill_number, bill_session=self.bill_session)
+        if already:
+            return False
+
         self.save()
         # Parses all tags for all relevant information
         for title in parsedXML.findAll('title'):
