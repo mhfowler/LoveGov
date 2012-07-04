@@ -332,8 +332,7 @@
                 and {{ tally|add:"-1" }} other people
             {% endif %}
             shared <a href="{{content.get_url}}"> {{ content.title }} </a>
-            with
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            with you
         </td>
 
     {% elif type == 'CR' %}
