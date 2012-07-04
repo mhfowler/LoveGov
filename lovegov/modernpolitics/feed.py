@@ -140,19 +140,22 @@ def updateLoveGovFeeds(debug=True):
 # Updates sitewide feeds [optimization].
 #-----------------------------------------------------------------------------------------------------------------------
 def updateSiteFeeds(debug=False):
-    content = Content.objects.filter(Q(type='P') | Q(type='N'))
-    # new_feed
-    new_feed = getNewFeed()
-    filter = getNewFilter()
-    updateFeedHelper(a_feed=new_feed, filter_setting=filter, content=content)
+    content = Content.objects.filter(in_feed=True)
+
     # hot_feed
     hot_feed = getHotFeed()
     filter = getHotFilter()
     updateFeedHelper(a_feed=hot_feed, filter_setting=filter, content=content)
+
+    # new_feed
+    # new_feed = getNewFeed()
+    # filter = getNewFilter()
+    # updateFeedHelper(a_feed=new_feed, filter_setting=filter, content=content)
+
     # best_feed
-    best_feed = getBestFeed()
-    filter = getBestFilter()
-    updateFeedHelper(a_feed=best_feed, filter_setting=filter, content=content)
+    # best_feed = getBestFeed()
+    # filter = getBestFilter()
+    # updateFeedHelper(a_feed=best_feed, filter_setting=filter, content=content)
 
 def getFeedItems(start, stop, feed_type=None, topics=None):
     if feed_type == 'N':
