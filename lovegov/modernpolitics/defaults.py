@@ -837,17 +837,23 @@ def initializeLegislation():
         fileCount = filecount(filePath)
         count = 1
         for infile in fileListing:
-            db.reset_queries()
-            #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-            fileXML = open(filePath + infile)
-            parsedXML = BeautifulStoneSoup(fileXML)
-            newLegislation = Legislation()
-            try:
-                newLegislation.setSaveAttributes(parsedXML)
-            except:
-                print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                traceback.print_exc()
-            count+=1
+
+            if count > 18000:
+
+                db.reset_queries()
+                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                fileXML = open(filePath + infile)
+                parsedXML = BeautifulStoneSoup(fileXML)
+                newLegislation = Legislation()
+                try:
+                    newLegislation.setSaveAttributes(parsedXML)
+                except:
+                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                    traceback.print_exc()
+                count+=1
+
+            else:
+                print count
 
 def initializeLegislationAmendments():
     for num in range(109,113):
