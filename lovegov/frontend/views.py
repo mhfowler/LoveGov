@@ -31,6 +31,8 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {}
+        # check browser
+        print "browser" + request.META['HTTP_USER_AGENT']
         if requires_login:
             try:
                 user = getUserProfile(request)
@@ -763,8 +765,9 @@ def loadHistogram(resolution, g_id, which, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
 #-----------------------------------------------------------------------------------------------------------------------
-def about(request, vals={}):
+def about(request, start="video", vals={}):
     if request.method == 'GET':
+        vals['start_page'] = start
         developers = UserProfile.objects.filter(developer=True)
         skew = 185
         side = 110

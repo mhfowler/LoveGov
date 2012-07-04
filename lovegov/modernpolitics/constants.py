@@ -72,7 +72,7 @@ NEWFILTER_DAYS = 14
 TIME_BONUS = 5          # this should be how many upvotes a day we think a good piece of content should get
 
 # constants for hot filter
-HOT_WINDOW = 2 # number of days to count votes within when using hot algo
+HOT_WINDOW = 3 # number of days to count votes within when using hot algo
 
 
 ########################################### DEFAULT SETTINGS ###########################################################

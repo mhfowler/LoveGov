@@ -1,10 +1,10 @@
-<div class="main-div">
+<div class="main-div data_start" data-start="{{ start_page }}">
 
     <div class="nav-top-div">
         <div class="top-nav-left">
-            <div class="div-button"><span>How it works?</span></div>
-            <div id="who-are-we-button" class="div-button"><span>Who are we?</span></div>
-            <div class="div-button"><span>Contact</span></div>
+            <div id="howitworks-button" class="div-button"><span>How it works</span></div>
+            <div id="whoarewe-button" class="div-button"><span>Who are we</span></div>
+            <div id="contact-button" class="div-button"><span>Contact</span></div>
             <div id="privacy-button" class="div-button"><span>Privacy</span></div>
         </div>
         <div class="top-nav-right">
@@ -24,8 +24,25 @@
 
     <div id="about-content">
 
-        {% include 'deployment/pages/login/login-privacy.html' %}
-        {% include 'deployment/center/about/who-are-we.html' %}
+        <div id="privacy-div" class="_fade">
+            {% include 'deployment/pages/privacy.html' %}
+        </div>
+
+        <div id="whoarewe-div" class="_fade">
+            {% include 'deployment/center/about/who-are-we.html' %}
+        </div>
+
+        <div id="howitworks-div" class="_fade">
+            {% include 'deployment/center/about/how-it-works.html' %}
+        </div>
+
+        <div id="contact-div" class="_fade">
+            {% include 'deployment/center/about/contact.html' %}
+        </div>
+
+        <div id="video-div" class="_fade">
+            {% include 'deployment/center/about/video.html' %}
+        </div>
 
     </div>
 
@@ -89,31 +106,38 @@
         developerDivs.each(function()
         {
             $(this).hover
-            (
-                function()
-                {
-                    var json = $(this).data('json');
-                    $(this).addClass($(this).attr("class") + '-hover');
-                    $('.who-are-we-circle-div-center').css('background-color','white');
-                    $('.who-are-we-circle-div-center div').show();
-                    $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
-                    $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
-                    h3.hide();
-                },
-                function()
-                {
-                    $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
-                    $('.who-are-we-circle-div-center').css('background-color','');
-                    $('.who-are-we-circle-div-center div').hide();
-                    h3.show();
-            });
+                    (
+                            function()
+                            {
+                                var json = $(this).data('json');
+                                $(this).addClass($(this).attr("class") + '-hover');
+                                $('.who-are-we-circle-div-center').css('background-color','white');
+                                $('.who-are-we-circle-div-center div').show();
+                                $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
+                                $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
+                                h3.hide();
+                            },
+                            function()
+                            {
+                                $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
+                                $('.who-are-we-circle-div-center').css('background-color','');
+                                $('.who-are-we-circle-div-center div').hide();
+                                h3.show();
+                            });
 
         });
 
         $('.div-button').click(function()
         {
+
+            $(".div-button").removeClass("clicked");
+            $(this).addClass("clicked");
+
             $('._fade').hide();
             var div = '#' + $(this).attr('id').replace('button','div');
+            var url = $(this).attr('id').replace('-button', '');
+            History.pushState( {k:1}, url, '/about/' + url + '/');
+
             $(div).show();
             if (div=='#who-are-we-div')
             {
@@ -124,7 +148,8 @@
                     $(this).animate({'left':json.x,'top':json.y});
                 });
 
-                $('.mission p').textFadeIn({'speed':10});
+                //$('.mission p').textFadeIn({'speed':10});
+                $('.mission p').show();
 
             }
             else
@@ -137,6 +162,22 @@
         });
     }
 
-    aboutPage();
+    $(document).ready(function()
+    {
+        aboutPage();
+
+        var start = $(".data_start").data('start');
+
+        if (start=='video') {
+            $("#video-div").show();
+        }
+        else {
+            var buttonid =  start + "-button";
+            var divid = start + "-div";
+
+            $("#" + buttonid).addClass("clicked");
+            $("#" + divid).show();
+        }
+    });
 
 </script>

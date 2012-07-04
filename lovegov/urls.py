@@ -19,10 +19,10 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-    ## SPLASH ###
-    (r'^comingsoon/$', views.splash),
-    (r'^learnmore/$', views.learnmore),
-    (r'^postEmail/$',views.postEmail))
+    # blog
+    (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$', viewWrapper(views.blog)),
+    (r'^blog/(?P<category>\S+)/$', viewWrapper(views.blog)),
+    (r'^blog/$', viewWrapper(views.blog)))
 
 # locally serve static and media
 if LOCAL:
@@ -48,11 +48,6 @@ urlpatterns += patterns('',
     (r'^twitter/redirect/$', viewWrapper(views.twitterRedirect)),
     (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
 
-     # blog
-    (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$', viewWrapper(views.blog)),
-    (r'^blog/(?P<category>\S+)/$', viewWrapper(views.blog)),
-    (r'^blog/$', viewWrapper(views.blog)),
-
     # under construction
     (r'^underconstruction/$', views.underConstruction),
 
@@ -60,6 +55,7 @@ urlpatterns += patterns('',
     (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
+    (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
     (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                           # match page

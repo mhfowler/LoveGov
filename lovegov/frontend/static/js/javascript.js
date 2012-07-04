@@ -677,8 +677,8 @@ function loadAjaxifyAnchors()
             ajaxLink($(elem), true);
             return false;
         }
-    }
-    $('.do-ajax-link').on('click',  ajaxClicked);
+    };
+    $('.do-ajax-link').bindOnce('click.ajax',  ajaxClicked);
 }
 /***********************************************************************************************************************
  *
@@ -768,7 +768,7 @@ function ajaxReload(theurl, loadimg)
 {
     $('#search-dropdown').hide();
     $('#main-content').hide();
-    if (loadimg) { $("#loading").show(); }
+    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},1000); }
     $.ajax
         ({
             url:theurl,
@@ -778,7 +778,7 @@ function ajaxReload(theurl, loadimg)
             {
                 var returned = eval('(' + data + ')');
                 History.pushState( {k:1}, returned.title, returned.url);
-                if (loadimg) { $("#loading").hide(); }
+                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
                 replaceCenter(returned.html);
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -1859,11 +1859,11 @@ function loadProfile()
         userFollow(event,$(this),false);
     });
 
-    $(".user-follow-response-y").click( function(event) {
+    $(".user_follow_response_y").click( function(event) {
         userFollowResponse(event,"Y",$(this));
     });
 
-    $(".user-follow-response-n").click( function(event) {
+    $(".user_follow_response_n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
 

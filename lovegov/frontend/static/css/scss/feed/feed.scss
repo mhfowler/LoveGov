@@ -500,21 +500,6 @@
   /* Pinterest Cards */
   div.pinterest_card {
 
-    &:hover
-    {
-      div.pinterest{
-        div.pinterest-main{
-          div.petition_bar {
-            div.bar-wrapper{
-              div.red_bar {
-                background-color:$red;
-              }
-            }
-          }
-        }
-      }
-    }
-
     div.pinterest {
 
       @extend .box;
@@ -595,7 +580,7 @@
             border: 1px solid $gray;
             div.red_bar {
               height:14px;
-              background-color:$gray;
+              background-color:$red;
             }
           }
           div.goal-statement {

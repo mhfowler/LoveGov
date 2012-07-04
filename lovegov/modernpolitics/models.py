@@ -1674,7 +1674,8 @@ class Action(Privacy):
                             'from_you':from_you,
                             'type':self.type,
                             'modifier':self.modifier,
-                            'true':True}
+                            'true':True,
+                            'timestamp':self.when}
         if self.type == 'FO' or self.type == 'JO':
             action_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
@@ -1746,7 +1747,8 @@ class Notification(Privacy):
                           'tally':self.tally,
                           'true':True,
                           'viewed':viewed,
-                          'anon':n_action.getPrivate()}
+                          'anon':n_action.getPrivate(),
+                          'timestamp':self.when}
         if n_action.type == 'FO':
             notification_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
@@ -2719,6 +2721,7 @@ class LegislationAmendment(LGModel):
     amends_sequence = models.IntegerField(null=True)
 
     def saveXML(self,xml):
+
         if xml.amendment:
             if xml.amendment.has_key('session'):
                 self.session = int(xml.amendment['session'])
@@ -2746,7 +2749,12 @@ class LegislationAmendment(LGModel):
             self.description = xml.description.contents[0]
         if xml.purpose:
             self.purpose = xml.purpose.contents[0]
-        self.save()
+
+        already = LegislationAmendment.lg.get_or_none(session=self.session, chamber=self.chamber, number=self.number, updated=self.updated)
+        if not already:
+            self.save()
+        else:
+            return False
 
 #=======================================================================================================================
 #

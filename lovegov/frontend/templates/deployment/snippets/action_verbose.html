@@ -1,12 +1,13 @@
+{% load humanize %}
 {% load thumbnail %}
 <div class="action">
-<table>
+<table class="action-container">
 <tr>
 
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="action-thumbnail">
-            {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+            {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
@@ -44,7 +45,7 @@
     <!-- Followed -->
     {% elif type == 'FO' %}
         <td class="action-thumbnail">
-            {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+            {% thumbnail to_user.getImage "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
@@ -82,6 +83,12 @@
 
     <!-- Group Follow -->
     {% elif type == 'JO' %}
+        <td class="action-thumbnail">
+            {% thumbnail to_user.getImage "25x25" crop="center" as im %}
+                <img src="{{ im.url }}" class="icon-small"/>
+            {% endthumbnail %}
+        </td>
+        <td class="action-text">
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
         {% if modifier == 'I' %}
             {% if from_you %}
@@ -111,6 +118,7 @@
             {% endif %}
         {% endif %}
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     <!-- Events -->
     {% elif type == 'AE' %}
@@ -185,17 +193,21 @@
         </td>
 
     {% elif type == 'SH' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        {% if tally == 2 %}
-            and one other person
-        {% elif tally > 2 %}
-            and {{ tally|add:"-1" }} other people
-        {% endif %}
-        shared
-        <a href="{{to_user.get_url}}"> {{ to_user.get_name }} </a>
+        <td class="action-thumbnail"><img src="/static/images/feed/share.png"/></td>
+        <td class="action-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            {% if tally == 2 %}
+                and one other person
+            {% elif tally > 2 %}
+                and {{ tally|add:"-1" }} other people
+            {% endif %}
+            shared
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true %}
+        </td>
 
     {% elif type == 'CR' %}
         {% if to_user.type == 'R' %}
+            <td class="action-thumbnail"><img src="/static/images/feed/answered.png"/></td>
             <td class="action-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 answered
@@ -210,6 +222,17 @@
             </td>
         {% elif to_user.type == 'N' %}
             <td class="action-thumbnail"><img src="/static/images/feed/news-small.png"/></td>
+            <td class="action-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                created
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+        {% elif to_user.type == 'G' %}
+            <td class="action-thumbnail">
+                {% thumbnail to_user.getImage "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
             <td class="action-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 created
@@ -232,6 +255,11 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% endif %}
+</tr>
+<tr>
+    <td colspan="3" class="action-timestamp">
+        {{ timestamp|naturaltime }}
+    </td>
 </tr>
 </table>
 </div>
