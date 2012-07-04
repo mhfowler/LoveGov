@@ -35,6 +35,34 @@
                 var fontSize = self.css('font-size');
 
                 self.data('blinker').css({'height':height,'padding-left':padding,'padding-top':padding,'padding-bottom':padding,'font-size':fontSize});
+
+                self.data('blinker').bind('paste',function()
+                {
+                    if (self.attr("type") == "text" && self.data('state') == "password")
+                    {
+                        var inputText = self.clone();
+                        inputText.attr("type","password");
+                        inputText.data("state","password");
+                        self.parent().replaceWith(inputText);
+                        inputText.inputFade();
+                        inputText.val("");
+                        inputText.focus();
+                        inputText.removeClass("input_default").removeClass("input_focus").addClass("input_typing");
+                    }
+                    else
+                    {
+                        self.val(self.data('blinker').val());
+                        if (self.hasClass("input_focus"))
+                        {
+                            self.removeClass("input_focus");
+                            self.addClass("input_typing");
+                        }
+                        self.focus();
+                        self.data('blinker').val("");
+                        self.data('blinker').addClass('select-none');
+                    }
+                });
+
                 self.data('blinker').keypress(function(event)
                 {
                     if (self.attr("type") == "text" && self.data('state') == "password")

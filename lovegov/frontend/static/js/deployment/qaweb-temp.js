@@ -63,6 +63,7 @@ var QAWebHover = Class.extend
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
                 $('#question-weight-div').hide();
+                $('#value_statement').hide();
             }
         },
         showHover: function(node)
@@ -84,6 +85,7 @@ var QAWebHover = Class.extend
 
         showAnswers: function(node)
         {
+            $('#value_statement').show();
             $('#question-weight-div').show();
             this._printAnswers();
             //this._bindAnswers();
@@ -1056,7 +1058,7 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
-            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2,16);
+            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2+3,16);
 
 
             layer.add(circle);

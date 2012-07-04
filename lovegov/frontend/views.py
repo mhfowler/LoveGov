@@ -345,8 +345,13 @@ def compareWeb(request,alias=None,vals={}):
             vals['viewer'] = UserProfile.objects.get(alias=alias)
             comparison = getUserUserComparison(user, vals['viewer'])
             getUserWebResponsesJSON(request,vals)
-            vals['viewer'] = user
             vals['json'] = comparison.toJSON()
+
+            vals['viewer'] = user
+            tempvals = {'viewer':user}
+            getUserWebResponsesJSON(request,vals=tempvals)
+            vals['viewerAnswers'] = tempvals['questionsArray']
+
             setPageTitle("lovegov: web2",vals)
             html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
             url = '/profile/web/' + alias + '/'
