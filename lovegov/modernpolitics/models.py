@@ -1650,6 +1650,7 @@ class Action(Privacy):
             relationship = self.relationship
         except:
             return ''
+        
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1702,9 +1703,8 @@ class Notification(Privacy):
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
 
     def getVerbose(self,view_user):
-        n_action = self.action
-
         try:
+            n_action = self.action
             relationship = n_action.relationship
         except:
             return ''
