@@ -956,10 +956,9 @@ def newMatch(request,start='presidential', vals={}):
 
 def matchSocial(request, vals={}):
     viewer = vals['viewer']
-    vals['friends'] = viewer.getIFollow()[:6]
-    groups = viewer.getGroups()
-    vals['groups']  = groups.filter(group_type="U")[:6]
-    vals['networks']  = groups.filter(group_type="N")[:4]
+    vals['friends'] = viewer.getIFollow(num=6)
+    vals['groups'] = viewer.getUserGroups(num=6)
+    vals['networks'] = viewer.getNetworks()[:4]
 
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']
