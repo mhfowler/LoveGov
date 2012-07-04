@@ -1182,7 +1182,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return DEFAULT_PROFILE_IMAGE_URL
 
     def getImage(self):
-        return self.getProfileImage()
+        return self.getProfileImage().image
 
     def getImageURL(self):
         return self.getProfileImageURL()
@@ -3412,6 +3412,7 @@ class Group(Content):
 
         return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
                 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.
