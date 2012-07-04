@@ -176,7 +176,7 @@ def initializeLoveGovUser():
         lovegov.last_name = 'Gov'
         user_profile = superUserHelper(lovegov)
         print "initialized: lovegov user"
-        return user_profiledef initiali
+        return user_profile
 
 
 #-----------------------------------------------------------------------------------------------------------------------
