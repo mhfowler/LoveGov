@@ -1,10 +1,10 @@
-<div class="main-div">
+<div class="main-div data_start" data-start="{{ start_page }}">
 
     <div class="nav-top-div">
         <div class="top-nav-left">
-            <div class="div-button"><span>How it works?</span></div>
-            <div id="who-are-we-button" class="div-button"><span>Who are we?</span></div>
-            <div class="div-button"><span>Contact</span></div>
+            <div id="howitworks-button" class="div-button"><span>How it works?</span></div>
+            <div id="whoarewe-button" class="div-button"><span>Who are we?</span></div>
+            <div id="contact-button" class="div-button"><span>Contact</span></div>
             <div id="privacy-button" class="div-button"><span>Privacy</span></div>
         </div>
         <div class="top-nav-right">
@@ -26,6 +26,10 @@
 
         {% include 'deployment/pages/login/login-privacy.html' %}
         {% include 'deployment/center/about/who-are-we.html' %}
+        {% include 'deployment/center/about/how-it-works.html' %}
+        {% include 'deployment/center/about/contact.html' %}
+
+        {% include 'deployment/center/about/video.html' %}
 
     </div>
 
@@ -112,31 +116,55 @@
 
         $('.div-button').click(function()
         {
-            $('._fade').hide();
-            var div = '#' + $(this).attr('id').replace('button','div');
-            $(div).show();
-            if (div=='#who-are-we-div')
-            {
 
-                developerDivs.each(function()
+                $(".div-button").removeClass("clicked");
+                $(this).addClass("clicked");
+
+                $('._fade').hide();
+                var div = '#' + $(this).attr('id').replace('button','div');
+                var url = $(this).attr('id').replace('-button', '');
+                History.pushState( {k:1}, url, '/about/' + url + '/');
+
+                $(div).show();
+                if (div=='#who-are-we-div')
                 {
-                    var json = $(this).data('json');
-                    $(this).animate({'left':json.x,'top':json.y});
-                });
 
-                $('.mission p').textFadeIn({'speed':10});
+                    developerDivs.each(function()
+                    {
+                        var json = $(this).data('json');
+                        $(this).animate({'left':json.x,'top':json.y});
+                    });
 
-            }
-            else
-            {
-                developerDivs.each(function()
+                    //$('.mission p').textFadeIn({'speed':10});
+                    $('.mission p').show();
+
+                }
+                else
                 {
-                    $(this).css({'left':center_x,'top':center_y});
-                });
-            }
+                    developerDivs.each(function()
+                    {
+                        $(this).css({'left':center_x,'top':center_y});
+                    });
+                }
         });
     }
 
-    aboutPage();
+    $(document).ready(function()
+    {
+        aboutPage();
+
+        var start = $(".data_start").data('start');
+
+        if (start=='video') {
+            $("#video-div").show();
+        }
+        else {
+            var buttonid =  start + "-button";
+            var divid = start + "-div";
+
+            $("#" + buttonid).addClass("clicked");
+            $("#" + divid).show();
+        }
+    });
 
 </script>

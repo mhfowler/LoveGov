@@ -868,24 +868,34 @@ def countLegislation():
     return count
 
 def initializeLegislationAmendments():
+
+    total = 0
+    already = LegislationAmendment.objects.all().count() - 5
+
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
         fileListing = os.listdir(filePath)
         fileCount = filecount(filePath)
         count = 1
         for infile in fileListing:
-            db.reset_queries()
-            #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-            if ".xml" in infile:
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
-                newLegislation = LegislationAmendment()
-                try:
-                    newLegislation.saveXML(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-                count+=1
+
+            if total > already:
+                db.reset_queries()
+                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                if ".xml" in infile:
+                    fileXML = open(filePath + infile)
+                    parsedXML = BeautifulStoneSoup(fileXML)
+                    newLegislation = LegislationAmendment()
+                    try:
+                        newLegislation.saveXML(parsedXML)
+                    except:
+                        print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                        traceback.print_exc()
+                    count+=1
+            else:
+                print total
+                
+            total += 1
 
 def countLegislationAmendments():
     count = 0
