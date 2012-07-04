@@ -1,3 +1,4 @@
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -877,7 +878,6 @@ def initializeLegislationAmendments():
         fileCount = filecount(filePath)
         count = 1
         for infile in fileListing:
-
             if total > already:
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
@@ -891,6 +891,8 @@ def initializeLegislationAmendments():
                         print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
                         traceback.print_exc()
                     count+=1
+                    print "success: " + str(total)
+
             else:
                 print total
 

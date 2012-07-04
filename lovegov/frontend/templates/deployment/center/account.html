@@ -149,7 +149,7 @@
                         <td class="left"><h3>parties</h3></td>
                         <td>
                             {% for party in parties %}
-                                {% thumbnail party.party_label "100x18" as im %}
+                                {% thumbnail party.party_label "100x20" as im %}
                                     <img class="party-choice" src="{{ im.url }}" data-input="#party-{{ party.alias }}"/>
                                 {% endthumbnail %}
                                 {% if party in user_parties %}
