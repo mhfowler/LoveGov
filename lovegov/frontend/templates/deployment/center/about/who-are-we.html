@@ -1,50 +1,43 @@
 {% load customtags %}
 {% load thumbnail %}
 
-<div id="whoarewe-div" class="_fade">
+<div class="who-are-we-circle" id="who_are_we_circle">
+    {% for developer in developers %}
+        <div class="who-are-we-circle-div {% cycle_list colors_cycle as color %}{{ color }}"
+             style="left:{{ x|add:side_half }}px;top:{{ y|add:side_half }}px;width:{{ side }}px;height:{{ side }}px;border-radius:{{ side_half }}px;z-index:2"
+             data-json='{"first_name":"{{developer.first_name}}","last_name":"{{ developer.last_name }}","user_title":"{{ developer.user_title }}","x":"{{ developer.x }}","y":"{{ developer.y }}"}' >
+            {% thumbnail developer.getProfileImage.image "300x300" crop="center" format="PNG" as img %}
+                <img src="{{ img.url }}" style="border-radius:{{ side_half }}px;width:{{ side }}px"/>
+            {% endthumbnail %}
+        </div>
 
-    <div class="who-are-we-circle" id="who_are_we_circle">
-        {% for developer in developers %}
-            <div class="who-are-we-circle-div {% cycle_list colors_cycle as color %}{{ color }}"
-                 style="left:{{ x|add:side_half }}px;top:{{ y|add:side_half }}px;width:{{ side }}px;height:{{ side }}px;border-radius:{{ side_half }}px;z-index:2"
-                 data-json='{"first_name":"{{developer.first_name}}","last_name":"{{ developer.last_name }}","user_title":"{{ developer.user_title }}","x":"{{ developer.x }}","y":"{{ developer.y }}"}' >
-                {% thumbnail developer.getProfileImage.image "300x300" crop="center" format="PNG" as img %}
-                    <img src="{{ img.url }}" style="border-radius:{{ side_half }}px;width:{{ side }}px"/>
-                {% endthumbnail %}
-            </div>
+        {% cycle_list colors as col %}
 
-            {% cycle_list colors as col %}
+        <div style="-ms-transform:rotate({{ developer.angle }}deg);
+                -moz-transform:rotate({{ developer.angle }}deg);
+                -webkit-transform:rotate({{ developer.angle }}deg);
+                -o-transform:rotate({{ developer.angle }}deg);
+                background-color:{{ col }};
+                position:absolute;
+                top:{{ developer.y2|add:70 }}px;
+                left:{{ developer.x2 }}px;
+                width:{{ side }}px;
+                height:2px;
+                z-index:1;">
+        </div>
 
-            <div style="-ms-transform:rotate({{ developer.angle }}deg);
-                        -moz-transform:rotate({{ developer.angle }}deg);
-                        -webkit-transform:rotate({{ developer.angle }}deg);
-                        -o-transform:rotate({{ developer.angle }}deg);
-                        background-color:{{ col }};
-                        position:absolute;
-                        top:{{ developer.y2|add:70 }}px;
-                        left:{{ developer.x2 }}px;
-                        width:{{ side }}px;
-                        height:2px;
-                        z-index:1;">
-            </div>
-
-        {% endfor %}
-            <div class="who-are-we-circle-div-center" style="z-index:3;left:{{ x }}px;top:{{ y }}px;width:{{ main_side }}px;height:{{ main_side }}px;border-radius:{{ main_side_half }}px">
-                <div style="display:none; text-align:center; margin-top:70px;">
-                    <h5 class="text-blue"></h5>
-                    <h6></h6>
-                </div>
-                <h3 class="capitalize-text" style="position:relative;color:white;text-align:center;top:70px">The Team</h3>
-            </div>
-            &nbsp;
+    {% endfor %}
+    <div class="who-are-we-circle-div-center" style="z-index:3;left:{{ x }}px;top:{{ y }}px;width:{{ main_side }}px;height:{{ main_side }}px;border-radius:{{ main_side_half }}px">
+        <div style="display:none; text-align:center; margin-top:70px;">
+            <h5 class="text-blue"></h5>
+            <h6></h6>
+        </div>
+        <h3 class="capitalize-text" style="position:relative;color:white;text-align:center;top:70px">The Team</h3>
     </div>
-
-    <div class="mission">
-        <h2 class="capitalize-text bold small-margin">our mission</h2>
-        <p class="huge">It's simple, we want to put political participation online.  Our goals include helping people get informed about the issues, matching them with other like-minded people, and providing action tools so they can let government know their opinion.</p>
-    </div>
-
-    </div>
-
+    &nbsp;
 </div>
 
+<div class="mission">
+    <h2 class="capitalize-text bold small-margin">our mission</h2>
+    <p class="huge">It's simple, we want to put political participation online.  Our goals include helping people get informed about the issues, matching them with other like-minded people, and providing action tools so they can let government know their opinion.</p>
+</div>

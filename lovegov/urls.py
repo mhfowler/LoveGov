@@ -19,10 +19,10 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-    ## SPLASH ###
-    (r'^comingsoon/$', views.splash),
-    (r'^learnmore/$', views.learnmore),
-    (r'^postEmail/$',views.postEmail))
+    # blog
+    (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$', viewWrapper(views.blog)),
+    (r'^blog/(?P<category>\S+)/$', viewWrapper(views.blog)),
+    (r'^blog/$', viewWrapper(views.blog)))
 
 # locally serve static and media
 if LOCAL:
@@ -47,11 +47,6 @@ urlpatterns += patterns('',
     (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
     (r'^twitter/redirect/$', viewWrapper(views.twitterRedirect)),
     (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
-
-     # blog
-    (r'^blog/(?P<category>\S+)/(?P<number>\d+)/$', viewWrapper(views.blog)),
-    (r'^blog/(?P<category>\S+)/$', viewWrapper(views.blog)),
-    (r'^blog/$', viewWrapper(views.blog)),
 
     # under construction
     (r'^underconstruction/$', views.underConstruction),
