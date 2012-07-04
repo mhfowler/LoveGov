@@ -164,7 +164,7 @@
             </td>
             <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-                requested to follow
+                requested to join
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
             {% if not group_join.rejected and not group_join.confirmed and group_join.requested %}
@@ -176,26 +176,54 @@
                 </td>
             {% endif %}
         {% elif modifier == 'A' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true %}
-            accepted
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you possesive=true %}
-            join request
+            <td class="notification-thumbnail">
+                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you capital=true %}
+                accepted
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you possesive=true %}
+                join request
+            </td>
         {% elif modifier == 'D' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            joined
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <td class="notification-thumbnail">
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                joined
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% elif modifier == 'N' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            declined to join
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <td class="notification-thumbnail">
+                {% thumbnail from_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                declined to join
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% elif modifier == 'X' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            {% if from_you %}
-                were rejected from
-            {% else %}
-                was rejected from
-            {% endif %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            <td class="notification-thumbnail">
+                {% thumbnail to_user.getProfileImage.image "25x25" crop="center" as im %}
+                    <img src="{{ im.url }}" class="icon-small"/>
+                {% endthumbnail %}
+            </td>
+            <td class="notification-text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                {% if from_you %}
+                    were rejected from
+                {% else %}
+                    was rejected from
+                {% endif %}
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% elif modifier == 'S' %}
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             left

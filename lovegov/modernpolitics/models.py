@@ -1511,9 +1511,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getUserGroups(self, num=-1, start=0):
         if num == -1:
-            return self.getGroups().filter(group_type='U')[start:]
+            return self.getGroups().filter(group_type='U',system=False)[start:]
         else:
-            return self.getGroups().filter(group_type='U')[start:start+num]
+            return self.getGroups().filter(group_type='U',system=False)[start:start+num]
 
     def getNetworks(self):
         return self.networks.all()
@@ -1645,6 +1645,8 @@ class Action(Privacy):
         self.save()
 
     def getVerbose(self,view_user=None):
+        if not self.relationship:
+            return ''
         #Check for relationship
         relationship = self.relationship
         #Set default local variables
@@ -1700,6 +1702,8 @@ class Notification(Privacy):
 
     def getVerbose(self,view_user):
         n_action = self.action
+        if not n_action.relationship:
+            return ''
         relationship = n_action.relationship
         #Set default local variables
         from_you = False

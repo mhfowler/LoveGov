@@ -1795,7 +1795,7 @@ function getMoreGroups()
             success: function(data)
             {
                 var obj = eval('(' + data + ')');
-                $('#profile_activity_feed').append(obj.html);
+                $('#profile_group_feed').append(obj.html);
                 $('#num_groups').val(obj.num_groups);
                 if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
                 {

@@ -163,7 +163,7 @@
 
             <div class='profile-group-container'>
                 <div class="profile-section-title">Groups</div>
-                <div class='profile-groups'>
+                <div class='profile-groups' id="profile_group_feed">
                     {% for group in prof_groups %}
                         <a class="profile-group-link" href="{{ group.get_url }}">
                             {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
