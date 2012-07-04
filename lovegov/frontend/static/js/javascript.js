@@ -678,7 +678,7 @@ function loadAjaxifyAnchors()
             return false;
         }
     };
-    $('.do-ajax-link').on('click',  ajaxClicked);
+    $('.do-ajax-link').bindOnce('click.ajax',  ajaxClicked);
 }
 /***********************************************************************************************************************
  *
