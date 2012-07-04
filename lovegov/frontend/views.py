@@ -31,6 +31,8 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {}
+        # check browser
+        print "browser" + request.META['HTTP_USER_AGENT']
         if requires_login:
             try:
                 user = getUserProfile(request)
