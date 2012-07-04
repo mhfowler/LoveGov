@@ -1061,7 +1061,6 @@ var Root = Node.extend
 
             layer.add(circle);
             layer.add(text);
-            layer.draw();
             test.add(layer);
             this.idDivObj = $('#' + this.idDiv);
         },
