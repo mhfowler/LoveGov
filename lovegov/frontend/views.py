@@ -652,7 +652,12 @@ def network(request, alias=None, vals={}):
     if not alias:
         user = vals['viewer']
         return shortcuts.redirect(user.getNetwork().get_url())
-    network = Network.objects.get(alias=alias)
+    network = Network.lg.get_or_none(alias=alias)
+    if not network:
+        vals['basic_message'] = "No network matches the given network ID"
+        html = ajaxRender('deployment/center/basic_message.html', vals, request)
+        url = '/network/' + alias + '/'
+        return framedResponse(request, html, url, vals)
     return group(request,g_id=network.id,vals=vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
