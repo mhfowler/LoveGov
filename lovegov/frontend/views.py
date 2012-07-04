@@ -615,11 +615,13 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT*2
-                notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
+
+                num_notifications = NOTIFICATION_INCREMENT
+                notifications = viewer.getNotifications(num=num_notifications)
                 for notification in notifications:
                     notifications_text.append( notification.getVerbose(view_user=viewer) )
+
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 
@@ -933,25 +935,91 @@ def matchNew(request, vals={}):
         return framedResponse(request, html, url, vals)
 
 
-def newMatch(request,vals={}):
+def newMatch(request,start='presidential', vals={}):
+
+    sections = {'presidential':0,
+                'senate':1,
+                'social':2,
+                'representatives':3}
+    vals['start_sequence'] = sections[start]
 
     viewer = vals['viewer']
     viewer.compare = viewer.getComparison(viewer).toJSON()
 
     matchSocial(request, vals)
+    matchPresidential(request, vals)
+    matchSenate(request, vals)
+    matchRepresentatives(request, vals)
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/match/match-new.html', vals, request)
     url = "/match/"
     return framedResponse(request, html, url, vals)
 
-
 def matchSocial(request, vals={}):
     viewer = vals['viewer']
-    vals['friends'] = viewer.getIFollow()[:15]
-    groups = viewer.getGroups()
-    vals['groups']  = groups.filter(group_type="U")[:15]
-    vals['networks']  = groups.filter(group_type="N")[:4]
+    vals['friends'] = viewer.getIFollow(num=6)
+    vals['groups'] = viewer.getUserGroups(num=6)
+    vals['networks'] = viewer.getNetworks()[:4]
+
+def matchPresidential(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['presidential_users'] = list
+
+def matchSenate(request, vals={}):
+    viewer = vals['viewer']
+    if not LOCAL:
+        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
+        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
+        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
+    list = [obama,paul,romney]
+    for presidential_user in list:
+        comparison = getUserUserComparison(viewer, presidential_user)
+        presidential_user.compare = comparison.toJSON()
+        presidential_user.result = comparison.result
+    list.sort(key=lambda x:x.result,reverse=True)
+    vals['massachusettes_users'] = list
+
+def matchRepresentatives(request, vals={}):
+
+    viewer = vals['viewer']
+
+    if viewer.location:
+        address = viewer.location
+        congressmen = []
+        representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
+        if representative:
+            representative.compare = representative.getComparison(viewer).toJSON()
+            congressmen.append(representative)
+        senators = Senator.objects.filter(congresssessions=112,state=address.state)
+        for senator in senators:
+            senator.compare = senator.getComparison(viewer).toJSON()
+            congressmen.append(senator)
+        vals['congressmen'] = congressmen
+        vals['state'] = address.state
+        vals['district'] = address.district
+        vals['latitude'] = address.latitude
+        vals['longitude'] = address.longitude
+        if not congressmen:
+            vals['invalid_address'] = True
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail
@@ -1195,7 +1263,7 @@ def account(request, section="", vals={}):
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------
 def facebookHandle(request, to_page="/web/", vals={}):
-    if request.GET['state'] == request.COOKIES['fb_state']: #If this is the correct authorization state
+    if request.GET.get('state') == request.COOKIES.get('fb_state') and request.COOKIES.get('fb_state'): #If this is the correct authorization state
         code = request.GET.get('code') #Get the associated code
         redirect_uri = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
         access_token = fbGetAccessToken(request, code, redirect_uri) #Retrieve access token
@@ -1222,13 +1290,16 @@ def twitterHandle(request, vals={}):
 # Authorize permission from facebook
 # Inputs: GET[ fb_scope , fb_to_page ]
 #----------------------------------------------------------------------------------------------------------------------
-def facebookAuthorize(request, vals={}, scope="email"):
+def facebookAuthorize(request, vals={}, scope=""):
     auth_to_page = request.GET.get('auth_to_page') #Check for an authorization to_page
     fb_scope = request.GET.get('fb_scope') #Check for a scope
     if fb_scope: #Set the scope if there is one
         scope = fb_scope
     redir = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
-    fb_state = fbGetRedirect(request , vals , redir , scope) #Get the FB State and FB Link for the auth CODE
+    if not scope == "":
+        fb_state = fbGetRedirect(request , vals , redir , scope) #Get the FB State and FB Link for the auth CODE
+    else:
+        fb_state = fbGetRedirect(request , vals , redir) #Get the FB State and FB Link for the auth CODE
     response = shortcuts.redirect( vals['fb_link'] ) #Build a response to get authorization CODE
     response.set_cookie("fb_state", fb_state) #Set facebook state cookie
     if auth_to_page and not request.COOKIES.get('auth_to_page'): #If there is no authorization to_page in Cookies
@@ -1238,16 +1309,21 @@ def facebookAuthorize(request, vals={}, scope="email"):
 
 def facebookAction(request, to_page="/web/", vals={}):
     fb_action = request.GET.get('fb_action')
+    action_path = request.path #Path for this action
+    action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
 
-    if not fb_action:
+    if not fbLogin(request,vals):
+        vals['success'] = False #If the user cannot login with fb, authorization required
+        vals['auth_to_page'] = action_path + action_query #Build authorization to_page (If the user isn't authorized, try authorizing and repeat action)
+        vals['fb_auth_path'] = getRedirectURI( request , '/fb/authorize/' ) #Authorize me!
+
+    elif not fb_action:
         vals['success'] = False
         vals['fb_error'] = '200'
 
-    if fb_action == 'share': #Attempt a wall share!  Share destination (fb_share_to) and message specified in GET
+    elif fb_action == 'share': #Attempt a wall share!  Share destination (fb_share_to) and message specified in GET
         vals['success'] = fbWallShare(request, vals) #Wall Share Success Boolean (puts errors in vals[fb_error])
         vals['fb_scope'] = 'email,publish_stream' #Scope Needed if wall share fails
-        action_path = request.path #Path for this action
-        action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
         vals['auth_to_page'] = action_path + action_query #Build authorization to_page
         auth_path = '/fb/authorize/' #Path to authorization
         auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
@@ -1255,12 +1331,8 @@ def facebookAction(request, to_page="/web/", vals={}):
 
     elif fb_action == 'make_friends':
         vals['success'] = fbMakeFriends(request, vals) #Make Friends Success Boolean (puts errors in vals[fb_error])
-        vals['fb_scope'] = 'email' #Scope Needed if wall share fails
-        action_path = request.path #Path for this action
-        action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
         vals['auth_to_page'] = action_path + action_query #Build authorization to_page
         auth_path = '/fb/authorize/' #Path to authorization
-        auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path
         vals['fb_auth_path'] = getRedirectURI( request , auth_path ) #Add authorization path to dictionary
 
     if request.is_ajax(): #Return AJAX response

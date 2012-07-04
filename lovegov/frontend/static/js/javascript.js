@@ -1654,7 +1654,6 @@ function loadNotification()
     {
         event.preventDefault();
         var follow_id = $(this).siblings(".user_follow_id").val();
-        alert( follow_id );
         ajaxPost({
                 data: {
                     'action':'userfollow',
@@ -1795,7 +1794,7 @@ function getMoreGroups()
             success: function(data)
             {
                 var obj = eval('(' + data + ')');
-                $('#profile_activity_feed').append(obj.html);
+                $('#profile_group_feed').append(obj.html);
                 $('#num_groups').val(obj.num_groups);
                 if( obj.hasOwnProperty('error') && obj.error == 'No more groups' )
                 {
@@ -2851,6 +2850,29 @@ function bindFeedItems()
 var feed_metadata;
 function loadNewFeed() {
 
+    $(".how-does").click(function(event) {
+        event.preventDefault();
+        ajaxPost({
+            data: {'action':'likeThis'},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var old = $("body").html();
+                $("body").html(returned.html);
+                setTimeout(function() {
+                    $("body").html(old);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                }, 2000);
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $("body").html(jqXHR.responseText);
+            }
+        });
+    });
+
     // parse json for metadata
     feed_metadata = $("#feed_metadata").data('json');
     updateFeedVisual();
@@ -3873,7 +3895,10 @@ function getAllGroupMembers(start, num, g_id) {
  *
  **********************************************************************************************************************/
 var match_hover_off = true;
+var match_autoswitch;
 function loadNewMatch() {
+
+    swapFeatured(match_current_section);
 
     $('.match-item').hoverIntent(
         function() {
@@ -3882,13 +3907,14 @@ function loadNewMatch() {
         function() {
         });
 
-    var autoSwitch = setInterval(function()
+    clearInterval(match_autoswitch);
+    match_autoswitch= setInterval(function()
     {
         if (match_hover_off) {
             //swapFeatured("right");
         }
 
-    }, 1000);
+    }, 2000);
 
     $("#match-arrow-right").click(function(event) {
         swapFeatured("right");
@@ -3909,9 +3935,35 @@ function loadNewMatch() {
     $(".circle-div").click(function(event) {
         swapFeatured($(this).data('sequence'));
     });
+
+    $(".find_out_now").click(function(event) {
+        submitAddress($(this).parents(".address-box"));
+    });
 }
 
-var match_current_section = 0;
+function submitAddress(wrapper) {
+    var address = wrapper.find(".address-input").val();
+    var city = wrapper.find(".city-input").val();
+    var zip = wrapper.find(".zip-input").val();
+    ajaxPost({
+            data: {
+                'action':'submitAddress',
+                'address':address,
+                'city':city,
+                'zip':zip
+            },
+            success: function(data)
+            {
+                location.reload();
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+    });
+}
+
+var match_current_section;
 function swapFeatured(direction) {
     if (direction=='right') {
         var match_next_section = nextSection();
@@ -3933,6 +3985,12 @@ function swapFeatured(direction) {
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
+    var sections = {0:'presidential',
+                    1:'senate',
+                    2:'social',
+                    3:'representatives'};
+    var url = sections[match_current_section];
+    History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
 }
 
 function nextSection() {

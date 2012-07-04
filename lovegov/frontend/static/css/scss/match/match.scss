@@ -1,5 +1,4 @@
-@import 'master-variables';
-@import 'master-mixins';
+@import 'match-list.scss';
 
 #match-main
 {
@@ -11,10 +10,64 @@
   text-align: center;
 }
 
+
+div.address-box {
+  border: 1px solid $gray;
+  width:700px;
+  height:200px;
+  padding:20px;
+
+  h4.enter-your-address {
+    margin-top:10px;
+  }
+
+  div.wrapper {
+    width:450px;
+    margin-left:100px;
+    margin-top:20px;
+    div.inputs-wrapper {
+      width:300px;
+      float:left;
+      input {
+        float:left;
+        margin-top:10px;
+        width:140px;
+        height:25px;
+        color:$black;
+        @include titleFont();
+      }
+      input.address-input {
+        width:294px;
+      }
+      input.zip-input {
+        margin-left:10px;
+      }
+    }
+    a.find_out_now {
+      float:left;
+      margin-left:15px;
+      margin-top:25px;
+      background-color:$red;
+      padding:10px;
+      color:white;
+    }
+    a.find_out_now:hover {
+      background-color:$red-light;
+    }
+  }
+}
+
 #match-mid
 {
   text-align:center;
 
+  div.match-section {
+    display:none;
+    div.address-box {
+      margin-top:40px;
+      margin-left:100px;
+    }
+  }
   #match-ajax-content
   {
     float:left;

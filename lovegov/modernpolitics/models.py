@@ -115,10 +115,10 @@ class UserPhysicalAddress(LGModel):
 class PhysicalAddress(LGModel):
     address_string = models.CharField(max_length=500, null=True)
     zip = models.CharField(max_length=20, null=True)
-    longitude = models.DecimalField(max_digits=30, decimal_places=15)
-    latitude = models.DecimalField(max_digits=30, decimal_places=15)
-    state = models.CharField(max_length=2)
-    district = models.IntegerField()
+    longitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
+    latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
+    state = models.CharField(max_length=2, null=True)
+    district = models.IntegerField(default=-1)
 
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
@@ -1073,6 +1073,32 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self
 
     #-------------------------------------------------------------------------------------------------------------------
+    # gets string represetning parties of user
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPartiesString(self):
+        parties = self.parties.all()
+        if not parties:
+            to_return = "None"
+        else:
+            to_return = ""
+            for x in parties:
+                to_return += x.title + " "
+        return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Gets users location object
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocation(self):
+        if self.location:
+            return self.location
+        else:
+            location = PhysicalAddress()
+            location.save()
+            self.location = location
+            self.save()
+            return location
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparison(self, viewer):
@@ -1156,7 +1182,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return DEFAULT_PROFILE_IMAGE_URL
 
     def getImage(self):
-        return self.getProfileImage()
+        return self.getProfileImage().image
 
     def getImageURL(self):
         return self.getProfileImageURL()
@@ -1485,9 +1511,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getUserGroups(self, num=-1, start=0):
         if num == -1:
-            return self.getGroups().filter(group_type='U')[start:]
+            return self.getGroups().filter(group_type='U',system=False)[start:]
         else:
-            return self.getGroups().filter(group_type='U')[start:start+num]
+            return self.getGroups().filter(group_type='U',system=False)[start:start+num]
 
     def getNetworks(self):
         return self.networks.all()
@@ -1620,7 +1646,11 @@ class Action(Privacy):
 
     def getVerbose(self,view_user=None):
         #Check for relationship
-        relationship = self.relationship
+        relationship = Relationship.lg.get_or_none(id=self.relationship_id)
+        if not relationship:
+            print 'Action has no relationship: Action ID # =' + str(self.id)
+            return ''
+
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1673,8 +1703,16 @@ class Notification(Privacy):
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
 
     def getVerbose(self,view_user):
-        n_action = self.action
-        relationship = n_action.relationship
+
+        n_action = Action.lg.get_or_none(id=self.action_id)
+        if not n_action:
+            print 'Notification has no action: Notification ID # =' + str(self.id)
+            return ''
+        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
+        if not relationship:
+            print 'Notification action has no relationship: Notification ID # =' + str(self.id)
+            return ''
+
         #Set default local variables
         from_you = False
         to_you = False
@@ -2209,7 +2247,7 @@ class LegislationStatus(LGModel):
     roll = models.IntegerField(null=True)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
+    #  setSaveAttributes
     #   This method sets and saves attributes by extracting the information from parsedXML
     #   @arg    parsedXML   a legislation XML from govtrack.us
     #   @return void
@@ -3309,7 +3347,7 @@ class Group(Content):
     group_bestfeed = models.ManyToManyField(FeedItem, related_name='groupbest')
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
-    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
+    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
     democratic = models.BooleanField(default=False)
     system = models.BooleanField(default=False)     # means you can't leave
 
@@ -3382,6 +3420,7 @@ class Group(Content):
 
         return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
                 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.
@@ -3493,6 +3532,9 @@ class Group(Content):
             return members[start:]
         else:
             return members[start:start+num]
+
+    def getNumMembers(self):
+        return self.members.all().count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.

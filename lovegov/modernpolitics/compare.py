@@ -423,7 +423,7 @@ class Comparison:
         total_weight = 0.0
         for q in questions:
             responseA = self.responsesA.filter(question=q)
-            responseB = self.responsesB.filter(question=q)
+            responseB = self.responsesB.filter(question=q, privacy="PUB")
             if responseA and responseB:
                 responseA = responseA[0]
                 responseB = responseB[0]        # special case for aggregates

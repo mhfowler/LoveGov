@@ -355,6 +355,54 @@ def sign(request, vals={}):
     return HttpResponse(json.dumps(vals))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Support a politician.
+#-----------------------------------------------------------------------------------------------------------------------
+def support(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = Politician.objects.get(id=request.POST['p_id'])
+
+    confirmed = int(request.POST['confirmed'])
+    if confirmed:
+        politician.support(viewer)
+    else:
+        politician.unsupport(viewer)
+
+    return HttpResponse(json.dumps({'num':politician.num_supporters}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Messages a politician.
+#-----------------------------------------------------------------------------------------------------------------------
+def messageRep(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = Politician.objects.get(id=request.POST['p_id'])
+    message = request.POST['message']
+
+    message = Messaged(user=viewer, to_user=politician, message=message)
+    num_messages = message.autoSave()
+
+    return HttpResponse(json.dumps({'num':num_messages}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# changes address for a user
+#-----------------------------------------------------------------------------------------------------------------------
+def submitAddress(request, vals={}):
+
+    address = request.POST['address']
+    city = request.POST['city']
+    zip = request.POST['zip']
+
+    viewer = vals['viewer']
+    location = viewer.getLocation()
+    location.address_string = address
+    location.zip = zip
+    location.save()
+
+    return HttpResponse("yea!")
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
 #-----------------------------------------------------------------------------------------------------------------------
 def finalize(request, vals={}):
@@ -1495,6 +1543,12 @@ def getAllGroupMembers(request, vals={}):
 
     return HttpResponse(json.dumps(to_return))
 
+def likeThis(request, vals={}):
+
+    html = ajaxRender('deployment/pieces/like_this.html', vals, request)
+    to_return = {'html':html}
+
+    return HttpResponse(json.dumps(to_return))
 
 ########################################################################################################################
 ########################################################################################################################
@@ -1556,7 +1610,11 @@ actions = { 'getLinkInfo': getLinkInfo,
             'flag': flag,
             'updateHistogram': updateHistogram,
             'getHistogramMembers': getHistogramMembers,
-            'getAllGroupMembers': getAllGroupMembers
+            'getAllGroupMembers': getAllGroupMembers,
+            'support': support,
+            'messageRep': messageRep,
+            'submitAddress':submitAddress,
+            'likeThis':likeThis
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

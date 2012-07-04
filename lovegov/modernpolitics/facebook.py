@@ -24,6 +24,8 @@ import oauth2 as oauth
 #-----------------------------------------------------------------------------------------------------------------------
 def fbMakeFriends(request, vals={}):
     user = vals['viewer']
+    if user.getFBAlias() == '':
+        return False
     path = user.getFBAlias() + '/friends'
     response =  fbGet(request, path)
     if 'data' in response:

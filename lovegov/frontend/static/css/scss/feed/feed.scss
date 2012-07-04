@@ -1,4 +1,4 @@
-  @import 'linear_feed.scss';
+@import 'linear_feed.scss';
 
   .border {
     border:solid;
@@ -350,6 +350,9 @@
           width:30px;
           height:30px;
           background-image: url('/static/images/comparison-pointer-up.png');
+          background-repeat:no-repeat;
+          position:relative;
+          border-bottom: 1px solid white;
           background: contain;
           display:block;
           margin-left:120px;
@@ -497,6 +500,21 @@
   /* Pinterest Cards */
   div.pinterest_card {
 
+    &:hover
+    {
+      div.pinterest{
+        div.pinterest-main{
+          div.petition_bar {
+            div.bar-wrapper{
+              div.red_bar {
+                background-color:$red;
+              }
+            }
+          }
+        }
+      }
+    }
+
     div.pinterest {
 
       @extend .box;
@@ -574,7 +592,7 @@
           div.bar-wrapper {
             height:14px;
             overflow:hidden;
-            border: 2px solid $gray;
+            border: 1px solid $gray;
             div.red_bar {
               height:14px;
               background-color:$gray;

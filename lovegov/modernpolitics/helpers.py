@@ -84,7 +84,7 @@ def urlToObject(url):
     if type == 'profile':
         return UserProfile.lg.get_or_none(alias=alias)
     elif type == 'network':
-        return Network.lg.get_or_none(name=alias)
+        return Network.lg.get_or_none(alias=alias)
     elif type == 'group':
         return Group.lg.get_or_none(id=alias)
     elif type == 'blog':
