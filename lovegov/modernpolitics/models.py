@@ -1427,7 +1427,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createIFollowGroup(self):
-        title = "Group who " + self.get_name() + " follows."
+        title = "People who " + self.get_name() + " follows"
         group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
         self.i_follow = group
@@ -1438,7 +1438,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createFollowMeGroup(self):
-        title = "Group who follows "  + self.get_name()
+        title = "People who follow " + self.get_name()
         group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
         self.follow_me = group

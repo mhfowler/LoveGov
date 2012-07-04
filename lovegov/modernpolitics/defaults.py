@@ -790,7 +790,8 @@ def filecount(path):
 
 def initializeCongress():
     from lovegov.modernpolitics.register import createUser
-    for num in range(109,113):
+    for num in range(112,108,-1):
+        print num
         pathXML = '/data/govtrack/' + str(num) + "/people.xml"
         fileXML = open(pathXML)
         parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
@@ -819,7 +820,7 @@ def initializeCongress():
 
 
 def initializeCommittees():
-    for num in range(109,113):
+    for num in range(112,108,-1):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
         fileXML = open(filePath)
         BeautifulStoneSoup.NESTABLE_TAGS["member"] = []
@@ -898,6 +899,7 @@ def initializeLegislationAmendments():
 
             total += 1
 
+
 def countLegislationAmendments():
     count = 0
     for num in range(109,113):
@@ -905,7 +907,7 @@ def countLegislationAmendments():
         count += filecount(filePath)
     return count
 
-def countNonXMLAmendments():
+def countXMLAmendments():
     count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
@@ -914,9 +916,9 @@ def countNonXMLAmendments():
         for infile in fileListing:
             db.reset_queries()
             if ".xml" in infile:
-                pass
-            else:
                 count += 1
+            else:
+                pass
     return count
 
 # Initialize Voting Records
