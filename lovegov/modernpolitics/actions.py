@@ -1617,7 +1617,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'support': support,
             'messageRep': messageRep,
             'submitAddress':submitAddress,
-            'likeThis':likeThis
+            'likeThis':likeThis,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
