@@ -1645,10 +1645,11 @@ class Action(Privacy):
         self.save()
 
     def getVerbose(self,view_user=None):
-        if not self.relationship:
-            return ''
         #Check for relationship
-        relationship = self.relationship
+        try:
+            relationship = self.relationship
+        except:
+            return ''
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1702,9 +1703,12 @@ class Notification(Privacy):
 
     def getVerbose(self,view_user):
         n_action = self.action
-        if not n_action.relationship:
+
+        try:
+            relationship = n_action.relationship
+        except:
             return ''
-        relationship = n_action.relationship
+
         #Set default local variables
         from_you = False
         to_you = False
