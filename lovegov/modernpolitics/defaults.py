@@ -799,22 +799,26 @@ def initializeCongress():
         newSession.save()
         for personXML in parsedXML.findAll('person'):
             if not ElectedOfficial.objects.filter(govtrack_id=int(personXML['id'])).exists():
-                role_type = personXML.role['type']
-                if role_type == "rep": role_type = "representative"
-                else: role_type = "senator"
                 name = personXML['firstname']+ " " + personXML['lastname']
-                email = personXML['lastname'] + "_" + personXML['id']
-                print "initializing " + email.encode('utf-8','ignore')
-                password = "congress"
-                congressControl = createUser(name,email,password,type=role_type)
-                congressControl.user_profile.autoSave(personXML)
-                electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
-                image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
-                try:
-                    electedofficial.setProfileImage(file(image_path))
-                except:
-                    print "no image here: " + image_path
-                newSession.people.add(congressControl.user_profile)
+                if not ElectedOfficial.objects.filter(name=name).exists():
+                    role_type = personXML.role['type']
+                    if role_type == "rep": role_type = "representative"
+                    else: role_type = "senator"
+                    name = personXML['firstname']+ " " + personXML['lastname']
+                    email = personXML['lastname'] + "_" + personXML['id']
+                    print "initializing " + email.encode('utf-8','ignore')
+                    password = "congress"
+                    congressControl = createUser(name,email,password,type=role_type)
+                    congressControl.user_profile.autoSave(personXML)
+                    electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
+                    image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
+                    try:
+                        electedofficial.setProfileImage(file(image_path))
+                    except:
+                        print "no image here: " + image_path
+                    newSession.people.add(congressControl.user_profile)
+                else:
+                    newSession.people.add(ElectedOfficial.objects.get(name=name))
             else:
                 newSession.people.add(ElectedOfficial.objects.get(govtrack_id=int(personXML['id'])))
 
