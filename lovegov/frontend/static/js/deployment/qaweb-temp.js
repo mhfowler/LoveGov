@@ -202,7 +202,18 @@ var QAWebHover = Class.extend
                     self._moveSlider(value);
                     $('.answer-' + i + ' input').attr("checked", true);
                     $('.answer-' + i).addClass('answer-selected');
+                    if (this.node.diffAnswer)
+                    {
+                        var userAnswer;
+                        if (i==0) { userAnswer=1; }
+                        else { userAnswer=0; }
+
+                        $('.answer-' + userAnswer).addClass('answer-selected');
+
+                    }
+
                 }
+
             }
         },
 
@@ -721,6 +732,7 @@ var Question = Node.extend
             this.id = data['id'];
             this.answers = data['answers'];
             this.answered = this._checkAnswered();
+            this.diffAnswer = true;
             this.user_explanation = data['user_explanation'];
             this._super(data);
         },
@@ -778,6 +790,22 @@ var Question = Node.extend
         HTML_appendImg: function()
         {
             var self = this;
+
+
+            var questions = userAnswers[this.parents.text];
+            for (var j=0;j<questions.length;j++)
+            {
+                if (questions[j].id == self.id)
+                {
+                    for (var z=0;z<self.answers.length;z++)
+                    {
+                        if (questions[j].answers[z].user_answer == self.answers[z].user_answer)
+                        {
+                            self.diffAnswer = false;
+                        }
+                    }
+                }
+            }
             var src = 'src="' + self.getImage('default') + '"';
             var style = 'style="position:absolute;width:' + this.base_width + 'px"';
             $('#' + self.idDiv).append("<img class='question-node-img' id='" + self.idImg + "' " + src + style + " " + "/>");
@@ -806,21 +834,20 @@ var Question = Node.extend
 
         getImage: function(state)
         {
+            var stateString = "";
             switch(state)
             {
                 case 'hover':
-                    if (this.answered) return this.imgref['answeredHover'].src;
-                    else return this.imgref['unansweredHover'].src;
-                    break;
+                    stateString = "Hover"; break;
                 case 'default':
-                    if (this.answered) return this.imgref['answeredDefault'].src;
-                    else return this.imgref['unansweredDefault'].src;
-                    break;
+                    stateString = "Default"; break;
                 case 'answering':
-                    if (this.answered){ return this.imgref['answeredAnswering'].src; }
-                    else{ return this.imgref['unansweredAnswering'].src; }
-                    break;
+                    stateString = "Answering"; break;
             }
+
+            if (this.answered && !this.diffAnswer) return this.imgref['answered' + stateString].src;
+            else if (this.answered && this.diffAnswer) return this.imgref['diffanswer' + stateString].src;
+            else return this.imgref['unanswered' + stateString].src;
         },
 
         // UI FUNCTIONALITY
