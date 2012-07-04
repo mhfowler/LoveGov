@@ -895,7 +895,7 @@ def initializeLegislationAmendments():
 
             else:
                 print total
-                
+
             total += 1
 
 def countLegislationAmendments():
