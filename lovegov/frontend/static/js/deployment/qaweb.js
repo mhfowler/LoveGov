@@ -145,10 +145,7 @@ var QAWebHover = Class.extend
                 }
                 var data = self._arrayToDictionary(".qaweb-answerform");
                 self.node.user_explanation = data['explanation'];
-                if (data.hasOwnProperty('choice'))
-                {
-                    ajaxPost({data:data,success:null,error:null});
-                }
+                ajaxPost({data:data,success:null,error:null});
             }
         },
 
