@@ -27,9 +27,13 @@ div.content-left-side {
     padding: 0 30px 30px 0;
 }
 
-div#content-left {
-    width:700px;
-    float:left;
+div.content-left {
+    width: 700px;
+}
+
+div#content-wrapper {
+    width:1000px;
+    float: left;
     div.social-bar{
       height:50px;
       border: 1px solid $light-gray;
@@ -286,6 +290,12 @@ div#content-div p {
     color: $deep-gray;
     @include titleFont;
     font-size: 18px;
+    clear: right;
+}
+
+div#content-div {
+    width: auto;
+    height: auto;
 }
 
 div.petition_bar {
