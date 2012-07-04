@@ -878,20 +878,20 @@ def initializeLegislationAmendments():
         fileCount = filecount(filePath)
         count = 1
         for infile in fileListing:
-            if total > already:
-                db.reset_queries()
-                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                if ".xml" in infile:
-                    fileXML = open(filePath + infile)
-                    parsedXML = BeautifulStoneSoup(fileXML)
-                    newLegislation = LegislationAmendment()
-                    try:
-                        newLegislation.saveXML(parsedXML)
-                    except:
-                        print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                        traceback.print_exc()
-                    count+=1
-                    print "success: " + str(total)
+            #if total > already:
+            db.reset_queries()
+            #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
+            if ".xml" in infile:
+                fileXML = open(filePath + infile)
+                parsedXML = BeautifulStoneSoup(fileXML)
+                newLegislation = LegislationAmendment()
+                try:
+                    newLegislation.saveXML(parsedXML)
+                except:
+                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                    traceback.print_exc()
+                count+=1
+                print "success: " + str(total)
 
             else:
                 print total
@@ -903,6 +903,20 @@ def countLegislationAmendments():
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
         count += filecount(filePath)
+    return count
+
+def countNonXMLAmendments():
+    count = 0
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
+        fileListing = os.listdir(filePath)
+        fileCount = filecount(filePath)
+        for infile in fileListing:
+            db.reset_queries()
+            if ".xml" in infile:
+                pass
+            else:
+                count += 1
     return count
 
 # Initialize Voting Records
