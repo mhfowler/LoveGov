@@ -1,44 +1,48 @@
 <div id="content">
-    <div id="content-left">
-    {% if content.active %}
-        <div class="row"><div class="tencol"><a href='/feed'><span class='content_header'>Back to Your Feed</span></a></div></div>
-        <div class="content-left-side">
-        	{% load thumbnail %}
-            {% with full_url=host_full|add:content.getImageURL %}
-        	{% thumbnail full_url "250x150" upscale=False format="PNG" crop="center" as im %}
-            	<div class="content-image-area" style="background-image: url('{{im.url}}')">
-            {% endthumbnail %}
-            {% endwith %}
-            {% with topic=content.getMainTopic %}
-                <a href="{{topic.get_url}}">
-                    <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
-                        <img src="{{ topic.getImageRef }}"/>
-                    </div>
-                </a>
-            {% endwith %}
+    <div id="content-wrapper">
+        {% if content.active %}
+            <div class="row"><div class="tencol"><a href='/feed'><span class='content_header'>Back to Your Feed</span></a></div></div>
+            <div class="content-left-side">
+            	{% load thumbnail %}
+                {% with full_url=host_full|add:content.getImageURL %}
+            	{% thumbnail full_url "250x150" upscale=False format="PNG" crop="center" as im %}
+                	<div class="content-image-area" style="background-image: url('{{im.url}}')">
+                {% endthumbnail %}
+                {% endwith %}
+                {% with topic=content.getMainTopic %}
+                    <a href="{{topic.get_url}}">
+                        <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
+                            <img src="{{ topic.getImageRef }}"/>
+                        </div>
+                    </a>
+                {% endwith %}
+                </div>
+                {% include 'deployment/center/feed/social_bar.html' with item=content %}
+
+                <div class="content-submitted-by-wrapper">
+                    {% include 'deployment/snippets/avatar.html' with user=content.creator height='50' width='50' %}
+                    {% load humanize %}
+                    <span class="submitter">{{content.creator.get_name}}</span>
+                    <br><span class="submit-time">Submitted <span class="tooltip-right" title="{{content.created_when}}">{{content.created_when|naturaltime}}</span></span>
+                </div>
+
+                {% block petition_detail %}
+
+                {% endblock %}
             </div>
-            {% include 'deployment/center/feed/social_bar.html' with item=content %}
 
-            <div class="content-submitted-by-wrapper">
-                {% include 'deployment/snippets/avatar.html' with user=content.creator height='50' width='50' %}
-                {% load humanize %}
-                <span class="submitter">{{content.creator.get_name}}</span>
-                <br><span class="submit-time">Submitted <span class="tooltip-right" title="{{content.created_when}}">{{content.created_when|naturaltime}}</span></span>
+            <div id="content-div">
+                {% block content_detail %}
+                    <!-- content detail -->
+                {% endblock %}
             </div>
 
-            {% block petition_detail %}
-
-            {% endblock %}
+        <!-- content-wrapper -->
         </div>
 
-        <div id="content-div">
-            {% block content_detail %}
-                <!-- content detail -->
-            {% endblock %}
-        </div>
+        <!-- Right Block -->
 
         <div class="content_separator"></div>
-
 
         <div id="comment-thread">
 
@@ -55,8 +59,9 @@
             <div id="thread">
                 {{ thread_html|safe }}
             </div>
-
         </div>
+
+        {% include 'deployment/pieces/right_sidebar.html' %}
 
     {% else %}
         <h3> This content has been deleted. </h3>
@@ -65,9 +70,6 @@
 </div>
 
 {% include "deployment/snippets/comparison_hover.html" %}
-
-<!-- Right Block -->
-{% include 'deployment/pieces/right_sidebar.html' %}
 
 <!-- created by makeThreadHTML -->
 <!-- <div id="threadHTML" style="margin-top:30px">             </div> -->

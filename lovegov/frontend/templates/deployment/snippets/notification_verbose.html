@@ -1,10 +1,13 @@
 {% load thumbnail %}
-<div class="notification">
-<table>
-<tr>
 {% if not viewed %}
-<b>
+    <div class="notification" style="font-weight:bold">
+{% else %}
+    <div class="notification">
 {% endif %}
+
+<table>
+
+<tr>
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="notification-thumbnail">
@@ -364,9 +367,10 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% endif %}
-{% if not viewed %}
-</b>
-{% endif %}
 </tr>
 </table>
-</div>
+{% if not viewed %}
+    </div>
+{% else %}
+    </div>
+{% endif %}

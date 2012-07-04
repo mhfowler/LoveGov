@@ -615,11 +615,13 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT*2
-                notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
+
+                num_notifications = NOTIFICATION_INCREMENT
+                notifications = viewer.getNotifications(num=num_notifications)
                 for notification in notifications:
                     notifications_text.append( notification.getVerbose(view_user=viewer) )
+
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 
@@ -650,7 +652,12 @@ def network(request, alias=None, vals={}):
     if not alias:
         user = vals['viewer']
         return shortcuts.redirect(user.getNetwork().get_url())
-    network = Network.objects.get(alias=alias)
+    network = Network.lg.get_or_none(alias=alias)
+    if not network:
+        vals['basic_message'] = "No network matches the given network ID"
+        html = ajaxRender('deployment/center/basic_message.html', vals, request)
+        url = '/network/' + alias + '/'
+        return framedResponse(request, html, url, vals)
     return group(request,g_id=network.id,vals=vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
