@@ -2105,10 +2105,8 @@ class News(Content):
         return self.link_screenshot
 
     def getImageURL(self):
-        if self.main_image_id < 0:
-            return DEFAULT_NEWS_IMAGE_URL
-        elif self.main_image:
-            return self.main_image.image.url
+        if self.link_screenshot:
+            return self.link_screenshot.url
         else:
             return DEFAULT_NEWS_IMAGE_URL
 
@@ -2352,6 +2350,11 @@ class Legislation(Content):
         newLegislationStatus = LegislationStatus()
         newLegislationStatus.setSaveAttributes(parsedXML=parsedXML)
         self.bill_status = newLegislationStatus
+
+        already = Legislation.lg.get_or_none(bill_type=self.bill_type, bill_number=self.bill_number, bill_session=self.bill_session)
+        if already:
+            return False
+
         self.save()
         # Parses all tags for all relevant information
         for title in parsedXML.findAll('title'):

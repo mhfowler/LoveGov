@@ -1,4 +1,5 @@
 {% load thumbnail %}
+{% load customtags %}
 
 <div class="pinterest-top-comment">
 
@@ -33,7 +34,7 @@
     </div>
 
     <div class="comment-text">
-        "{{ top_comment.text }}"
+        "{{ top_comment.text|truncate_chars:200 }}"
     </div>
 
 </div>
