@@ -509,6 +509,7 @@ input[type="text"].input_typing { color:$black }
 div.heart {
   display: inline-block;
   background-size: 100%;
+  cursor: pointer;
 }
 
 div.heart_minus {
