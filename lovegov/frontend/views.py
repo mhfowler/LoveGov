@@ -32,7 +32,8 @@ def viewWrapper(view, requires_login=False):
     def new_view(request, *args, **kwargs):
         vals = {}
         # check browser
-        print "browser" + request.META['HTTP_USER_AGENT']
+        if not checkBrowserCompatible(request):
+            return shortcuts.redirect("/upgrade/")
         if requires_login:
             try:
                 user = getUserProfile(request)
@@ -83,6 +84,14 @@ def learnmore(request):
 
 def underConstruction(request):
     return render_to_response('deployment/pages/microcopy/construction.html')
+
+def upgrade(request):
+    return render_to_response('deployment/pages/upgrade.html')
+
+def continueAtOwnRisk(request):
+    response = shortcuts.redirect("/web/")
+    response.set_cookie('atyourownrisk', 'yes')
+    return response
 
 def splashForm(request,templateURL):
     vals = {}
@@ -388,7 +397,7 @@ def theFeed(request, vals={}):
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
-    url = '/feed/'
+    url = '/home/'
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -986,7 +995,7 @@ def matchPresidential(request, vals={}):
         presidential_user.compare = comparison.toJSON()
         presidential_user.result = comparison.result
     list.sort(key=lambda x:x.result,reverse=True)
-    vals['presidential_users'] = list
+    vals['presidential'] = list
 
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
@@ -1004,7 +1013,7 @@ def matchSenate(request, vals={}):
         presidential_user.compare = comparison.toJSON()
         presidential_user.result = comparison.result
     list.sort(key=lambda x:x.result,reverse=True)
-    vals['massachusettes_users'] = list
+    vals['senate'] = list
 
 def matchRepresentatives(request, vals={}):
 

@@ -16,6 +16,10 @@ import os.path
 import datetime
 import os
 
+########################################## PROHIBITED BROWSERS #########################################################
+
+PROHIBITED_BROWSERS = "MSIE"
+
 ########################################## EMAIL LISTS #################################################################
 
 TEAM_EMAILS =  ['clay@lovegov.com','max_fowler@brown.edu','jonathanvkoh@gmail.com','loweth.g@gmail.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
