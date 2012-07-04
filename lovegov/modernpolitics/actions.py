@@ -670,7 +670,7 @@ def answer(request, vals={}):
         if my_response:
             response = my_response[0]
             response.delete()
-        return shortcuts.redirect(question.get_url())
+        return HttpResponse("+")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
