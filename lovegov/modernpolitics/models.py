@@ -1646,11 +1646,11 @@ class Action(Privacy):
 
     def getVerbose(self,view_user=None):
         #Check for relationship
-        try:
-            relationship = self.relationship
-        except:
+        relationship = Relationship.lg.get_or_none(id=self.relationship_id)
+        if not relationship:
+            print 'Action has no relationship: Action ID # =' + str(self.id)
             return ''
-        
+
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1703,10 +1703,14 @@ class Notification(Privacy):
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
 
     def getVerbose(self,view_user):
-        try:
-            n_action = self.action
-            relationship = n_action.relationship
-        except:
+
+        n_action = Action.lg.get_or_none(id=self.action_id)
+        if not n_action:
+            print 'Notification has no action: Notification ID # =' + str(self.id)
+            return ''
+        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
+        if not relationship:
+            print 'Notification action has no relationship: Notification ID # =' + str(self.id)
             return ''
 
         #Set default local variables
