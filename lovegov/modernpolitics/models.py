@@ -2746,7 +2746,7 @@ class LegislationAmendment(LGModel):
         if xml.purpose:
             self.purpose = xml.purpose.contents[0]
 
-        already = LegislationAmendment.lg.get_or_none(session=self.session, chamber=self.chamber, number=self.number)
+        already = LegislationAmendment.lg.get_or_none(session=self.session, chamber=self.chamber, number=self.number, updated=self.updated)
         if not already:
             self.save()
         else:
