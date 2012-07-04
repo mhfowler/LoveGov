@@ -1,3 +1,4 @@
+{% load humanize %}
 {% load thumbnail %}
 {% if not viewed %}
     <div class="notification" style="font-weight:bold">
@@ -5,7 +6,7 @@
     <div class="notification">
 {% endif %}
 
-<table>
+<table class="notification-container">
 
 <tr>
     <!-- Commented -->
@@ -321,7 +322,7 @@
 
     {% elif type == 'SH' %}
         <td class="notification-thumbnail">
-            <img src="/static/images/feed/check-small.png"/>
+            <img src="/static/images/feed/share.png"/>
         </td>
         <td class="notification-text">
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -337,9 +338,12 @@
 
     {% elif type == 'CR' %}
         {% if to_user.type == 'R' %}
+            <td class="notification-thumbnail"><img src="/static/images/feed/answered.png"/></td>
+            <td class="notification-text">
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             answered
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
         {% elif to_user.type == 'P' %}
             <td class="notification-thumbnail"><img src="/static/images/feed/petition-small.png"/></td>
             <td class="notification-text">
@@ -367,6 +371,12 @@
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
 
     {% endif %}
+</tr>
+<tr>
+    <td></td>
+    <td class="action-timestamp">
+        {{ timestamp|naturaltime }}
+    </td>
 </tr>
 </table>
 {% if not viewed %}
