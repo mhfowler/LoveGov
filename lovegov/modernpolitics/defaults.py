@@ -859,6 +859,13 @@ def initializeLegislation():
 
             total+=1
 
+def countLegislation():
+    count = 0
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/bills/"
+        count += filecount(filePath)
+    return count
+
 def initializeLegislationAmendments():
 
     total = 0
@@ -886,6 +893,13 @@ def initializeLegislationAmendments():
                     count+=1
             total += 1
 
+def countLegislationAmendments():
+    count = 0
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
+        count += filecount(filePath)
+    return count
+
 # Initialize Voting Records
 def initializeVotingRecord():
     for num in range(109,113):
@@ -902,6 +916,14 @@ def initializeVotingRecord():
             except:
                 print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
                 traceback.print_exc()
+
+def countVotingRecords():
+    count = 0
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/rolls/"
+        count += filecount(filePath)
+    return count
+
 
 #-------------------------------------------------------------------------------------------------------------------
 # Wrapper for create user helper which makes a superuser.

@@ -670,7 +670,7 @@ def answer(request, vals={}):
         if my_response:
             response = my_response[0]
             response.delete()
-        return shortcuts.redirect(question.get_url())
+        return HttpResponse("+")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
@@ -824,6 +824,9 @@ def userFollowRequest(request, vals={}):
 def userFollowResponse(request, vals={}):
     to_user = vals['viewer']
     response = request.POST['response']
+    from_id = request.POST.get('p_id')
+    if not from_id:
+        return HttpResponse("Invalid user id given")
     from_user = UserProfile.objects.get(id=request.POST['p_id'])
     already = UserFollow.objects.filter(user=from_user, to_user=to_user)
     if already:

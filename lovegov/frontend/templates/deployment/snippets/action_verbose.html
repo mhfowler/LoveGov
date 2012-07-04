@@ -88,6 +88,7 @@
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
+        <td class="action-text">
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
         {% if modifier == 'I' %}
             {% if from_you %}
@@ -117,6 +118,7 @@
             {% endif %}
         {% endif %}
         {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     <!-- Events -->
     {% elif type == 'AE' %}
@@ -255,8 +257,7 @@
     {% endif %}
 </tr>
 <tr>
-    <td></td>
-    <td class="action-timestamp">
+    <td colspan="3" class="action-timestamp">
         {{ timestamp|naturaltime }}
     </td>
 </tr>
