@@ -1,0 +1,228 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+div#first_user_intro
+{
+  width:350px;
+  padding-left:20px;
+  padding-right:20px;
+  padding-bottom:20px;
+}
+
+div#first_user_progress
+{
+  width:370px;
+  text-align:left;
+
+  div#progress_number
+  {
+    $side:45px;
+    width:$side;
+    height:$side;
+    @include rounded($side/2);
+    background-color:$red;
+    position:absolute;
+    left:-15px;
+    top:-15px;
+    text-align:center;
+
+    h2
+    {
+      margin-top:5px;
+      color:white;
+    }
+  }
+
+  div.first_user_progress_text
+  {
+    padding-left:40px;
+    padding-top:10px;
+    padding-right:20px;
+
+  }
+
+  p
+  {
+    font-size:16px;
+    color:$red;
+    text-align:center;
+    padding:0 15px;
+  }
+
+  h2
+  {
+    text-align:center;
+    margin-top:10px;
+
+  }
+
+  span
+  {
+    font-size:16px;
+    color:$red;
+  }
+
+  span.bold
+  {
+    font-weight:bold;
+  }
+
+  div#progress_bar
+  {
+    margin-top:15px;
+    height:10px;
+    border-top:2px $red solid;
+
+    div.progress_bar_base
+    {
+      float:left;
+      height:10px;
+    }
+
+    div.progress_bar_fill
+    {
+      @extend div.progress_bar_base;
+      background-color:$red;
+    }
+
+    div.progress_bar_divider
+    {
+      @extend div.progress_bar_base;
+      background-color:white;
+    }
+
+  }
+
+}
+
+div.first-user-box
+{
+  background-color:white;
+  opacity:0.85;
+  border: 2px $red solid;
+  text-align:center;
+
+  position:absolute;
+  left:1150px;
+  top:910px;
+  z-index:2000;
+
+  h4
+  {
+    margin-top:25px;
+    font-weight:bold;
+    margin-bottom:5px;
+  }
+
+  h5
+  {
+    text-align:left;
+  }
+
+  p.first-user-text
+  {
+    color:$red;
+    @include fontSize(16px);
+    margin-bottom:25px;
+  }
+
+  a
+  {
+    margin-bottom:20px;
+  }
+
+  a:hover
+  {
+    color:white;
+  }
+
+  a.red-link
+  {
+    text-decoration:underline;
+  }
+
+  a.red-link:hover
+  {
+    text-decoration:underline;
+    color:$red-light;
+  }
+
+
+}
+
+div._topic_label
+{
+  @include rounded(5px);
+  padding:7px;
+  font-weight:bold;
+  z-index:700;
+  max-width:220px;
+
+  div.label-pointer
+  {
+    @include trianglePointer($direction:'right',$width:10px,$color-inner:#FFFFFF,$color-border:#FFFFFF,$offset:9px);
+  }
+
+}
+
+div.topic-progress-div
+{
+  $width:100px;
+  $height:485px;
+  border:1px $gray solid;
+  width:$width;
+  margin-left:auto;
+  margin-right:auto;
+  position:fixed;
+  top:100px;
+  right:0;
+  background-color:white;
+  z-index:50;
+
+  span
+  {
+    color:$deep-gray;
+  }
+
+  div.progress-div
+  {
+    margin-left:5px;
+    margin-right:5px;
+    margin-top:5px;
+
+  }
+
+  div#topic_progress_fill
+  {
+    background-color:white;
+    height:4px;
+
+    div
+    {
+      height:4px;
+      width:0;
+      background-color:$red;
+    }
+
+  }
+
+
+  div.progress_topic_bar
+  {
+    height:25px;
+    width:35px;
+  }
+
+  div#progress-canvas-div
+  {
+    margin-top:5px;
+    width:$width;
+    height:$height;
+  }
+
+}
+
+
+
+

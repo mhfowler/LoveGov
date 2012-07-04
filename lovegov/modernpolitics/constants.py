@@ -300,6 +300,8 @@ NOTIFY_TYPES = ['FO','SI','JO','CO','VO', 'SH']
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO', 'SH']
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
+    'JO': ['A','D','R','X'],
+    'FO': ['A','D','R','X']
 }
 
 

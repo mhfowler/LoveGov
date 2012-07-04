@@ -51,6 +51,7 @@
                             <a href="{{ network.get_url }}" class="network-choice match-item
                             {% if forloop.counter == 4 %} last {% endif %}"> {{ network.get_name|truncatechars:10 }} </a>
                         {% empty %}
+                            <br>
                             <p> You aren't a member of any networks. </p>
                         {% endfor %}
                     </div>
@@ -68,6 +69,7 @@
                                 {% include 'deployment/snippets/avatar.html' with user=group width="40" height="40" hoveroff=1 %}
                             </a>
                         {% empty %}
+                            <br>
                             <p> You aren't a member of any groups. </p>
                         {% endfor %}
                         <div style="clear:both"></div>
@@ -77,8 +79,8 @@
 
             </div>
 
-            <a href="/fb/action/?fb_action=make_friends&action_to_page=/match/" class="import-friends">
-                Import Friends from Facebook
+            <a href="/fb/action/?fb_action=make_friends&action_to_page=/match/social/" class="import-friends">
+                <img src="/static/images/find-friends.png" />
             </a>
 
         </div>

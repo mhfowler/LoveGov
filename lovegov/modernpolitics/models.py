@@ -1182,7 +1182,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return DEFAULT_PROFILE_IMAGE_URL
 
     def getImage(self):
-        return self.getProfileImage()
+        return self.getProfileImage().image
 
     def getImageURL(self):
         return self.getProfileImageURL()
@@ -1511,9 +1511,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getUserGroups(self, num=-1, start=0):
         if num == -1:
-            return self.getGroups().filter(group_type='U')[start:]
+            return self.getGroups().filter(group_type='U',system=False)[start:]
         else:
-            return self.getGroups().filter(group_type='U')[start:start+num]
+            return self.getGroups().filter(group_type='U',system=False)[start:start+num]
 
     def getNetworks(self):
         return self.networks.all()
@@ -1646,7 +1646,11 @@ class Action(Privacy):
 
     def getVerbose(self,view_user=None):
         #Check for relationship
-        relationship = self.relationship
+        relationship = Relationship.lg.get_or_none(id=self.relationship_id)
+        if not relationship:
+            print 'Action has no relationship: Action ID # =' + str(self.id)
+            return ''
+
         #Set default local variables
         action_verbose = ' no action '
         from_you = False
@@ -1699,8 +1703,16 @@ class Notification(Privacy):
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
 
     def getVerbose(self,view_user):
-        n_action = self.action
-        relationship = n_action.relationship
+
+        n_action = Action.lg.get_or_none(id=self.action_id)
+        if not n_action:
+            print 'Notification has no action: Notification ID # =' + str(self.id)
+            return ''
+        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
+        if not relationship:
+            print 'Notification action has no relationship: Notification ID # =' + str(self.id)
+            return ''
+
         #Set default local variables
         from_you = False
         to_you = False
@@ -3408,6 +3420,7 @@ class Group(Content):
 
         return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
                 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get url of histogram detail.

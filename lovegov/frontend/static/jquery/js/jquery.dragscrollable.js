@@ -61,7 +61,7 @@
 
         var movedOnDrag;
         var acceleration;
-        var coefficient = 2.5;
+        var coefficient = 5;
 
         var dragscroll= {
             mouseDownHandler : function(event) {
@@ -113,6 +113,13 @@
                 }
 
                 event.data.qaWebHover.updatePosition();
+
+                if ($('.step-five').length)
+                {
+                    $('#next_button').unbind("click.step_five");
+                    $('.step-five').remove();
+                    stepSix();
+                }
 
             },
             mouseUpHandler : function(event) { // Stop scrolling

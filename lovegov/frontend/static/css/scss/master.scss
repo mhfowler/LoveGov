@@ -60,6 +60,15 @@
   color: $deep-gray;
 }
 
+a.text-red
+{
+  color: $red;
+  &:hover
+  {
+    color:$red-light;
+  }
+}
+
 *
 {
   margin:0;
@@ -695,6 +704,7 @@ div.edit-link
 {
   display: inline;
 }
+
 
 .modal-close-base
 {
