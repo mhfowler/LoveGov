@@ -891,6 +891,9 @@ def initializeLegislationAmendments():
                         print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
                         traceback.print_exc()
                     count+=1
+            else:
+                print total
+                
             total += 1
 
 def countLegislationAmendments():
