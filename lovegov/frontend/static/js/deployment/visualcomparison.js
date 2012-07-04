@@ -82,7 +82,7 @@ var VisualComparison = Class.extend
         });
         self.shapesLayer.add(circle);
 
-        var percentText = createText((percentage*100).toFixed() + '%',x,y+8,16);
+        var percentText = createText((percentage*100).toFixed() + '%',x,y+3,16);
         percentText.on("mouseover",function()
         {
             self.textLayer.add(textobj);
@@ -289,7 +289,7 @@ function createText(string,x,y,fontSize)
     ({
         text:string,
         fontSize:fontSize,
-        fontFamily:"Gill Sans Std Light",
+        fontFamily:"Helvetica",
         textFill:"black",
         x:x,
         y:y,
