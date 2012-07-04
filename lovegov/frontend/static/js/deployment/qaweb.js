@@ -7,7 +7,7 @@ var QAWeb = Class.extend
             this.nodeList = new Array();
             this.root = rootNode;
             this.selectedQuestion = null;
-
+            this.answered = 0;
             this.progressCanvas = new Kinetic.Stage('progress-canvas-div',$('#progress-canvas-div').width(),$('#progress-canvas-div').height());
             this.circleLayer = new Kinetic.Layer();
             this.imageLayer = new Kinetic.Layer();
@@ -21,16 +21,14 @@ var QAWeb = Class.extend
             var divWidth = $('#topic_progress_fill').width();
             var currentWidth = $('#topic_progress_fill div').width();
             var delta = Math.ceil(divWidth/this.getNodeCount());
-            if (state == -1)
-            {
-                $('#topic_progress_fill div').width(currentWidth-delta);
-            }
-            else
-            {
-                $('#topic_progress_fill div').width(currentWidth+delta);
-            }
+            if (state == -1) { $('#topic_progress_fill div').width(currentWidth-delta); this.answered--; }
+            else if (state == 1) { $('#topic_progress_fill div').width(currentWidth+delta); this.answered++; }
 
-            var colorObj = {'default':parentTopic.color['default'],'light':parentTopic.color['hover']};
+            if (this.answered < 15) { $('#match_strength').text("Weak Matches"); }
+            else if (this.answered < 30) { $('#match_strength').text("OK Matches"); }
+            else { $('#match_strength').text("Good Matches"); }
+
+
             if (parentTopic.kineticCircle != null) { qaweb.circleLayer.remove(parentTopic.kineticCircle) }
             var answered = 0;
             var childrenSize = parentTopic.children.length;
@@ -44,13 +42,13 @@ var QAWeb = Class.extend
 
             var x = $('#progress-canvas-div').width()/2;
             var y = (parentTopic.order*this.circleRadius*2.3)+this.circleRadius+5;
+            var colorObj = {'default':parentTopic.color['default'],'light':parentTopic.color['hover']};
 
             parentTopic.kineticCircle = createCircle(x,y,colorObj,this.circleRadius,answered/childrenSize);
             qaweb.circleLayer.add(parentTopic.kineticCircle);
 
             this.circleLayer.draw();
             var self = this;
-
 
             var imageObj = new Image();
             imageObj.onload = function()
@@ -77,9 +75,12 @@ var QAWeb = Class.extend
             this.root.toDisplay();
             for (var j = 0; j<this.getNodeCount(); j++)
             {
-                if (this.nodeList[j] instanceof Question && this.nodeList[j]._checkAnswered())
+                if (this.nodeList[j] instanceof Question)
                 {
-                    this.updateProgress(1, this.nodeList[j].parents);
+                    var incre;
+                    if (this.nodeList[j]._checkAnswered()) { incre=1 }
+                    else { incre=0}
+                    this.updateProgress(incre, this.nodeList[j].parents);
                 }
             }
         },
@@ -1156,8 +1157,6 @@ var Topic = Node.extend
             left = 'left:' + self.xpos + "px;";
             var label_style = 'style="display:none;position:absolute;' + left + top + color + '"';
             $(DRAGGER_ID).append("<div class='_topic_label' id='" + self.text.replace(" ","") + "_label' " + label_style + ">" + self.text + "</div>");
-
-            var colorObj = {'default':this.color['default'],'light':this.color['hover']};
 
             this.idDivObj = $('#' + this.idDiv);
         },
