@@ -799,8 +799,7 @@ def initializeCongress():
         newSession.save()
         for personXML in parsedXML.findAll('person'):
             if not ElectedOfficial.objects.filter(govtrack_id=int(personXML['id'])).exists():
-                name = personXML['firstname']+ " " + personXML['lastname']
-                if not ElectedOfficial.objects.filter(name=name).exists():
+                if not ElectedOfficial.objects.filter(first_name=personXML['firstname'], last_name=personXML['lastname']).exists():
                     role_type = personXML.role['type']
                     if role_type == "rep": role_type = "representative"
                     else: role_type = "senator"
@@ -818,7 +817,7 @@ def initializeCongress():
                         print "no image here: " + image_path
                     newSession.people.add(congressControl.user_profile)
                 else:
-                    newSession.people.add(ElectedOfficial.objects.get(name=name))
+                    newSession.people.add(ElectedOfficial.objects.get(first_name=personXML['firstname'], last_name=personXML['lastname']))
             else:
                 newSession.people.add(ElectedOfficial.objects.get(govtrack_id=int(personXML['id'])))
 
