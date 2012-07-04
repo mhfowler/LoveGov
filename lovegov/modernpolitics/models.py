@@ -62,6 +62,10 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
+def initCreator():
+    from lovegov.beta.modernpolitics.backend import getLoveGovUser
+    return getLoveGovUser()
+
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
     creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
@@ -1423,7 +1427,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createIFollowGroup(self):
-        title = "Group who " + self.get_name() + " follows."
+        title = "People who " + self.get_name() + " follows"
         group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
         self.i_follow = group
@@ -1434,7 +1438,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createFollowMeGroup(self):
-        title = "Group who follows "  + self.get_name()
+        title = "People who follow " + self.get_name()
         group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
         group.autoSave()
         self.follow_me = group

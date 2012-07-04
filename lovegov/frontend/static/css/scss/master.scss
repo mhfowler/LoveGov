@@ -509,6 +509,7 @@ input[type="text"].input_typing { color:$black }
 div.heart {
   display: inline-block;
   background-size: 100%;
+  cursor: pointer;
 }
 
 div.heart_minus {
@@ -767,12 +768,14 @@ div.autocomplete-user
 
 div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question {
   padding: 5px;
-  img {
+  position: relative;
+  div.autocomplete-image-wrapper {
+    height: 100%;
     float: left;
-    margin-right: 5px;
+    margin-right: 10px;
   }
   div.autocomplete-name {
-    font-size: 16px;
+    font-size: 14px;
     @include titleFont;
     color: $deep-gray;
     strong {

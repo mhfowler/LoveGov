@@ -63,6 +63,7 @@ var QAWebHover = Class.extend
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
                 $('#question-weight-div').hide();
+                $('#value_statement').hide();
             }
         },
         showHover: function(node)
@@ -84,6 +85,7 @@ var QAWebHover = Class.extend
 
         showAnswers: function(node)
         {
+            $('#value_statement').show();
             $('#question-weight-div').show();
             this._printAnswers();
             //this._bindAnswers();
@@ -129,7 +131,7 @@ var QAWebHover = Class.extend
             {
                 this.state = "BOTTOM";
                 $('.dialogue-wrapper').prepend(pointer);
-                $('#dialogue-pointer').css('top','6px');
+                $('#dialogue-pointer').css('top','3px');
                 $('#dialogue-pointer img').css({'-webkit-transform': 'rotate(180deg)','-moz-transform': 'rotate(180deg)','-ms-transform':'rotate(180deg)','-o-transform':'rotate(180deg)'});
                 position.top+=$(this.node.idDivObj).height();
             }
@@ -200,7 +202,18 @@ var QAWebHover = Class.extend
                     self._moveSlider(value);
                     $('.answer-' + i + ' input').attr("checked", true);
                     $('.answer-' + i).addClass('answer-selected');
+                    if (this.node.diffAnswer)
+                    {
+                        var userAnswer;
+                        if (i==0) { userAnswer=1; }
+                        else { userAnswer=0; }
+
+                        $('.answer-' + userAnswer).addClass('answer-selected');
+
+                    }
+
                 }
+
             }
         },
 
@@ -719,6 +732,7 @@ var Question = Node.extend
             this.id = data['id'];
             this.answers = data['answers'];
             this.answered = this._checkAnswered();
+            this.diffAnswer = true;
             this.user_explanation = data['user_explanation'];
             this._super(data);
         },
@@ -776,6 +790,22 @@ var Question = Node.extend
         HTML_appendImg: function()
         {
             var self = this;
+
+
+            var questions = userAnswers[this.parents.text];
+            for (var j=0;j<questions.length;j++)
+            {
+                if (questions[j].id == self.id)
+                {
+                    for (var z=0;z<self.answers.length;z++)
+                    {
+                        if (questions[j].answers[z].user_answer == self.answers[z].user_answer)
+                        {
+                            self.diffAnswer = false;
+                        }
+                    }
+                }
+            }
             var src = 'src="' + self.getImage('default') + '"';
             var style = 'style="position:absolute;width:' + this.base_width + 'px"';
             $('#' + self.idDiv).append("<img class='question-node-img' id='" + self.idImg + "' " + src + style + " " + "/>");
@@ -804,21 +834,20 @@ var Question = Node.extend
 
         getImage: function(state)
         {
+            var stateString = "";
             switch(state)
             {
                 case 'hover':
-                    if (this.answered) return this.imgref['answeredHover'].src;
-                    else return this.imgref['unansweredHover'].src;
-                    break;
+                    stateString = "Hover"; break;
                 case 'default':
-                    if (this.answered) return this.imgref['answeredDefault'].src;
-                    else return this.imgref['unansweredDefault'].src;
-                    break;
+                    stateString = "Default"; break;
                 case 'answering':
-                    if (this.answered){ return this.imgref['answeredAnswering'].src; }
-                    else{ return this.imgref['unansweredAnswering'].src; }
-                    break;
+                    stateString = "Answering"; break;
             }
+
+            if (this.answered && !this.diffAnswer) return this.imgref['answered' + stateString].src;
+            else if (this.answered && this.diffAnswer) return this.imgref['diffanswer' + stateString].src;
+            else return this.imgref['unanswered' + stateString].src;
         },
 
         // UI FUNCTIONALITY
@@ -1056,7 +1085,11 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
+            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2+3,16);
+
+
             layer.add(circle);
+            layer.add(text);
             test.add(layer);
             this.idDivObj = $('#' + this.idDiv);
         },
@@ -1286,8 +1319,8 @@ function topicSwitch(topicID)
 function questionSwitch(topicID)
 {
     var types = ['Default','Hover','Answering'];
-    var states = ['unanswered','answered'];
-    var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');;
+    var states = ['unanswered','answered','diffanswer'];
+    var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');
     return makeQuestionImageArray(topicString,states,types);
 }
 

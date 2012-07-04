@@ -790,7 +790,8 @@ def filecount(path):
 
 def initializeCongress():
     from lovegov.modernpolitics.register import createUser
-    for num in range(109,113):
+    for num in range(112,108,-1):
+        print num
         pathXML = '/data/govtrack/' + str(num) + "/people.xml"
         fileXML = open(pathXML)
         parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
@@ -798,28 +799,31 @@ def initializeCongress():
         newSession.save()
         for personXML in parsedXML.findAll('person'):
             if not ElectedOfficial.objects.filter(govtrack_id=int(personXML['id'])).exists():
-                role_type = personXML.role['type']
-                if role_type == "rep": role_type = "representative"
-                else: role_type = "senator"
-                name = personXML['firstname']+ " " + personXML['lastname']
-                email = personXML['lastname'] + "_" + personXML['id']
-                print "initializing " + email.encode('utf-8','ignore')
-                password = "congress"
-                congressControl = createUser(name,email,password,type=role_type)
-                congressControl.user_profile.autoSave(personXML)
-                electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
-                image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
-                try:
-                    electedofficial.setProfileImage(file(image_path))
-                except:
-                    print "no image here: " + image_path
-                newSession.people.add(congressControl.user_profile)
+                if not ElectedOfficial.objects.filter(first_name=personXML['firstname'], last_name=personXML['lastname']).exists():
+                    role_type = personXML.role['type']
+                    if role_type == "rep": role_type = "representative"
+                    else: role_type = "senator"
+                    name = personXML['firstname']+ " " + personXML['lastname']
+                    email = personXML['lastname'] + "_" + personXML['id']
+                    print "initializing " + email.encode('utf-8','ignore')
+                    password = "congress"
+                    congressControl = createUser(name,email,password,type=role_type)
+                    congressControl.user_profile.autoSave(personXML)
+                    electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
+                    image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
+                    try:
+                        electedofficial.setProfileImage(file(image_path))
+                    except:
+                        print "no image here: " + image_path
+                    newSession.people.add(congressControl.user_profile)
+                else:
+                    newSession.people.add(ElectedOfficial.objects.get(first_name=personXML['firstname'], last_name=personXML['lastname']))
             else:
                 newSession.people.add(ElectedOfficial.objects.get(govtrack_id=int(personXML['id'])))
 
 
 def initializeCommittees():
-    for num in range(109,113):
+    for num in range(112,108,-1):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
         fileXML = open(filePath)
         BeautifulStoneSoup.NESTABLE_TAGS["member"] = []
@@ -898,6 +902,7 @@ def initializeLegislationAmendments():
 
             total += 1
 
+
 def countLegislationAmendments():
     count = 0
     for num in range(109,113):
@@ -905,7 +910,7 @@ def countLegislationAmendments():
         count += filecount(filePath)
     return count
 
-def countNonXMLAmendments():
+def countXMLAmendments():
     count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
@@ -914,9 +919,9 @@ def countNonXMLAmendments():
         for infile in fileListing:
             db.reset_queries()
             if ".xml" in infile:
-                pass
-            else:
                 count += 1
+            else:
+                pass
     return count
 
 # Initialize Voting Records
