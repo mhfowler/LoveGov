@@ -958,8 +958,8 @@ def matchSocial(request, vals={}):
     viewer = vals['viewer']
     vals['friends'] = viewer.getIFollow()[:6]
     groups = viewer.getGroups()
-    vals['groups']  = groups.filter(group_type="U")[:6]
-    vals['networks']  = groups.filter(group_type="N")[:4]
+    vals['groups']  = groups.filter(group_type="U", system=False)[:6]
+    vals['networks']  = viewer.networks.all()
 
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']

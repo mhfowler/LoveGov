@@ -2235,7 +2235,7 @@ class LegislationStatus(LGModel):
     roll = models.IntegerField(null=True)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
+    #  setSaveAttributes
     #   This method sets and saves attributes by extracting the information from parsedXML
     #   @arg    parsedXML   a legislation XML from govtrack.us
     #   @return void
@@ -3335,7 +3335,7 @@ class Group(Content):
     group_bestfeed = models.ManyToManyField(FeedItem, related_name='groupbest')
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
-    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
+    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
     democratic = models.BooleanField(default=False)
     system = models.BooleanField(default=False)     # means you can't leave
 

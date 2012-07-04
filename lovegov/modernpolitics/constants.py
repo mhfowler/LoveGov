@@ -319,6 +319,7 @@ GROUP_TYPE_CHOICES = (
     ('N','network'),
     ('P','party'),
     ('U','user'),
+    ('S', 'system')
 )
 
 NETWORK_TYPE = (
