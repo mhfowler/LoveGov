@@ -841,7 +841,7 @@ def initializeLegislation():
         count = 1
         for infile in fileListing:
 
-            if total > 18000:
+            if total > 30000:
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
                 fileXML = open(filePath + infile)
