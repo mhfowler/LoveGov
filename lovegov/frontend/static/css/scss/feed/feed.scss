@@ -502,10 +502,14 @@
 
     &:hover
     {
-      div.petition_bar {
-        div.bar-wrapper{
-          div.red_bar {
-            background-color:$red;
+      div.pinterest{
+        div.pinterest-main{
+          div.petition_bar {
+            div.bar-wrapper{
+              div.red_bar {
+                background-color:$red;
+              }
+            }
           }
         }
       }
