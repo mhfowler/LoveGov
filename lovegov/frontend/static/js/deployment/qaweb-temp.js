@@ -1056,11 +1056,12 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
-            var text = createText((percentage).toFixed() + '%',self.base_width,self.base_height,16);
+            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2,16);
 
 
             layer.add(circle);
             layer.add(text);
+            layer.draw();
             test.add(layer);
             this.idDivObj = $('#' + this.idDiv);
         },
