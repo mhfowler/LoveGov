@@ -8,7 +8,7 @@
     <!-- Commented -->
     {% if type == 'CO' %}
         <td class="notification-thumbnail">
-            {% thumbnail from_user.getImage.image "25x25" crop="center" as im %}
+            {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
@@ -73,7 +73,7 @@
     {% elif type == 'FO' %}
         {% if modifier == 'R' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -91,7 +91,7 @@
             {% endif %}
         {% elif modifier == 'D' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -108,7 +108,7 @@
                 {% endif %}
         {% elif modifier == 'A' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail to_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -120,7 +120,7 @@
             </td>
         {% elif modifier == 'X' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail to_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -158,7 +158,7 @@
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% elif modifier == 'R' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -177,7 +177,7 @@
             {% endif %}
         {% elif modifier == 'A' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail to_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -189,7 +189,7 @@
             </td>
         {% elif modifier == 'D' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -200,7 +200,7 @@
             </td>
         {% elif modifier == 'N' %}
             <td class="notification-thumbnail">
-                {% thumbnail from_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail from_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
@@ -211,7 +211,7 @@
             </td>
         {% elif modifier == 'X' %}
             <td class="notification-thumbnail">
-                {% thumbnail to_user.getImage.image "25x25" crop="center" as im %}
+                {% thumbnail to_user.getImage "25x25" crop="center" as im %}
                     <img src="{{ im.url }}" class="icon-small"/>
                 {% endthumbnail %}
             </td>
