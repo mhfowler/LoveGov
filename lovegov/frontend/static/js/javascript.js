@@ -1859,11 +1859,11 @@ function loadProfile()
         userFollow(event,$(this),false);
     });
 
-    $(".user-follow-response-y").click( function(event) {
+    $(".user_follow_response_y").click( function(event) {
         userFollowResponse(event,"Y",$(this));
     });
 
-    $(".user-follow-response-n").click( function(event) {
+    $(".user_follow_response_n").click( function(event) {
         userFollowResponse(event,"N",$(this));
     });
 
