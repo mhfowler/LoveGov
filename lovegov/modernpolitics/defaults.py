@@ -833,6 +833,7 @@ def initializeCommittees():
 def initializeLegislation():
 
     total = 0
+    already = Legislation.objects.all().count() - 10
 
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills/"
@@ -841,7 +842,7 @@ def initializeLegislation():
         count = 1
         for infile in fileListing:
 
-            if total > 30000:
+            if total > already:
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
                 fileXML = open(filePath + infile)
