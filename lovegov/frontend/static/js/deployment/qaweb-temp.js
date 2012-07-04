@@ -129,7 +129,7 @@ var QAWebHover = Class.extend
             {
                 this.state = "BOTTOM";
                 $('.dialogue-wrapper').prepend(pointer);
-                $('#dialogue-pointer').css('top','6px');
+                $('#dialogue-pointer').css('top','3px');
                 $('#dialogue-pointer img').css({'-webkit-transform': 'rotate(180deg)','-moz-transform': 'rotate(180deg)','-ms-transform':'rotate(180deg)','-o-transform':'rotate(180deg)'});
                 position.top+=$(this.node.idDivObj).height();
             }
@@ -1056,7 +1056,11 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
+            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2,16);
+
+
             layer.add(circle);
+            layer.add(text);
             test.add(layer);
             this.idDivObj = $('#' + this.idDiv);
         },
@@ -1286,8 +1290,8 @@ function topicSwitch(topicID)
 function questionSwitch(topicID)
 {
     var types = ['Default','Hover','Answering'];
-    var states = ['unanswered','answered'];
-    var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');;
+    var states = ['unanswered','answered','diffanswer'];
+    var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');
     return makeQuestionImageArray(topicString,states,types);
 }
 

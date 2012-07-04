@@ -24,9 +24,6 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
 {
   @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
   margin-bottom:15px;
-
-
-
   span
   {
     display:inline-block;
@@ -42,7 +39,7 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
   }
 }
 
-div-button.clicked {
+div.div-button.clicked {
   color:white;
   background-color:$red;
 }
@@ -215,11 +212,16 @@ div#contact-div {
   div.press-wrapper {
     width:700px;
     margin: 20px 0 0 0;
+    h4 {
+      @include fontSize(30px);
+    }
     p.press-text {
+      margin: 10px 0 0 0;
       @include fontSize(26px);
     }
   }
   h4.find-us {
+    @include fontSize(30px);
     margin:40px 0 60px 0;
   }
 }
