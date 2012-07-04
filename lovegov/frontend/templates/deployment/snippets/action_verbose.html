@@ -88,6 +88,7 @@
                 <img src="{{ im.url }}" class="icon-small"/>
             {% endthumbnail %}
         </td>
+        <td class="action-text">
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
         {% if modifier == 'I' %}
             {% if from_you %}
@@ -116,7 +117,8 @@
                 was accepted to join
             {% endif %}
         {% endif %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you
+        </td>
 
     <!-- Events -->
     {% elif type == 'AE' %}
