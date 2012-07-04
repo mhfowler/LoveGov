@@ -839,7 +839,6 @@ def initializeLegislation():
         for infile in fileListing:
 
             if count > 18000:
-
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
                 fileXML = open(filePath + infile)
@@ -850,10 +849,10 @@ def initializeLegislation():
                 except:
                     print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
                     traceback.print_exc()
-                count+=1
-
             else:
                 print count
+
+            count+=1
 
 def initializeLegislationAmendments():
     for num in range(109,113):
