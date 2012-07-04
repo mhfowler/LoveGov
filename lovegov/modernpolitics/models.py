@@ -2717,6 +2717,7 @@ class LegislationAmendment(LGModel):
     amends_sequence = models.IntegerField(null=True)
 
     def saveXML(self,xml):
+
         if xml.amendment:
             if xml.amendment.has_key('session'):
                 self.session = int(xml.amendment['session'])
@@ -2744,7 +2745,12 @@ class LegislationAmendment(LGModel):
             self.description = xml.description.contents[0]
         if xml.purpose:
             self.purpose = xml.purpose.contents[0]
-        self.save()
+
+        already = LegislationAmendment.lg.get_or_none(session=self.session, chamber=self.chamber, number=self.number)
+        if not already:
+            self.save()
+        else:
+            return False
 
 #=======================================================================================================================
 #
