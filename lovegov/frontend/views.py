@@ -615,11 +615,13 @@ def profile(request, alias=None, vals={}):
 
             # Get Notifications
             if viewer.id == user_prof.id:
-                num_notifications = NOTIFICATION_INCREMENT*2
-                notifications = viewer.getNotifications(num=num_notifications)
                 notifications_text = []
+
+                num_notifications = NOTIFICATION_INCREMENT
+                notifications = viewer.getNotifications(num=num_notifications)
                 for notification in notifications:
                     notifications_text.append( notification.getVerbose(view_user=viewer) )
+
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
 

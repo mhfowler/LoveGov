@@ -176,7 +176,7 @@ def initializeLoveGovUser():
         lovegov.last_name = 'Gov'
         user_profile = superUserHelper(lovegov)
         print "initialized: lovegov user"
-        return user_profile
+        return user_profiledef initiali
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ def initializeCongressNetwork():
     if Network.objects.filter(name="congress"):
         print ("...congress network already initialized")
     else:
-        network = Network(name="congress")
+        network = Network(alias="congress")
         network.title = "Congress Network"
         network.summary = "Network of all members of Congress."
         network.autoSave()

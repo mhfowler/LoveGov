@@ -1654,7 +1654,6 @@ function loadNotification()
     {
         event.preventDefault();
         var follow_id = $(this).siblings(".user_follow_id").val();
-        alert( follow_id );
         ajaxPost({
                 data: {
                     'action':'userfollow',
