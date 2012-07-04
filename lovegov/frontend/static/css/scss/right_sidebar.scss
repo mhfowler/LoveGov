@@ -166,40 +166,6 @@ div.topics-header
     padding-right:50px;
 }
 
-.share-button {
-    background-color: #EBEBEB;
-    margin-bottom: 10px;
-}
-
-div.shareModal {
-    margin-left: 20%;
-    margin-right: 20%;
-    margin-top: 20%;
-    width: 60%;
-    height: 40%;
-    display: block;
-    background-color: #fff;
-    z-index: 103;
-    -moz-box-shadow: 10px 10px 5px #888;
-    -webkit-box-shadow: 10px 10px 5px #888;
-    box-shadow: 10px 10px 5px #888;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    display: none;
-    position: fixed;
-}
-
-div.shareModal div.share_content {
-    margin: 20px;
-}
-div.shareModal span.share_header {
-    text-align: center;
-}
-
-select.share_select {
-    width: 600px;
-}
-
 div.action {
     td.action-text {
         width: auto;
