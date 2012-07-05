@@ -36,6 +36,7 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
+        $('#' + divID).append('<a class="do-ajax-link" href="' + self.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt" style="position:absolute;top:15px;right:15px;"/></a>')
     },
 
     /**
@@ -73,13 +74,14 @@ var VisualComparison = Class.extend
             self.textLayer.remove(textobj);
             self.textLayer.draw();
         });
+        /*
         circle.on('click',function()
         {
             if (self.dataObj['user_url'] != '')
             {
                 ajaxLink(self.dataObj['user_url'],true);
             }
-        });
+        });*/
         self.shapesLayer.add(circle);
 
         var percentText = createText((percentage*100).toFixed() + '%',x,y+3,15);
