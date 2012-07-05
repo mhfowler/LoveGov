@@ -1169,14 +1169,33 @@ def getNotifications(request, vals={}):
     num_notifications = 0
     if 'num_notifications' in request.POST:
         num_notifications = int(request.POST['num_notifications'])
-    notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
-    if not notifications:
-        return HttpResponse(json.dumps({'error':'No more notifications'}))
+
     notifications_text = []
-    for notification in notifications:
-        notifications_text.append( notification.getVerbose(view_user=viewer) )
+
+    if 'dropdown' in request.POST:
+        new_notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT+2,start=num_notifications,new=True)
+        old_notifications = None
+        diff = NOTIFICATION_INCREMENT - new_notifications.count()
+        if diff > 0:
+            old_notifications = viewer.getNotifications(num=diff,start=num_notifications,old=True)
+        elif diff < 0:
+            diff = 0
+        for notification in new_notifications:
+            notifications_text.append( notification.getVerbose(view_user=viewer) )
+        if old_notifications:
+            for notification in old_notifications:
+                notifications_text.append( notification.getVerbose(view_user=viewer) )
+        num_notifications += diff + new_notifications.count()
+
+    else:
+        notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
+        if not notifications:
+            return HttpResponse(json.dumps({'error':'No more notifications'}))
+        for notification in notifications:
+            notifications_text.append( notification.getVerbose(view_user=viewer) )
+        num_notifications += NOTIFICATION_INCREMENT
+
     vals['dropdown_notifications_text'] = notifications_text
-    num_notifications += NOTIFICATION_INCREMENT
     vals['num_notifications'] = num_notifications
     html = ajaxRender('deployment/snippets/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:

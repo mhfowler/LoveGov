@@ -1462,9 +1462,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
-    def getNotifications(self, start=0, num=-1, new=False):
+    def getNotifications(self, start=0, num=-1, new=False, old=False):
         if new:
             notifications = Notification.objects.filter(notify_user=self, viewed=False).order_by('-when')
+        elif old:
+            notifications = Notification.objects.filter(notify_user=self, viewed=True).order_by('-when')
         else:
             notifications = Notification.objects.filter(notify_user=self).order_by('-when')
         if num != -1:
