@@ -104,6 +104,17 @@ function bindTooltips() {
 
 /***********************************************************************************************************************
  *
+ *      ~Header links
+ *
+ ***********************************************************************************************************************/
+function selectHeaderLink(div) {
+    $(".header-link").removeClass("clicked");
+    $("#" + div).addClass("clicked");
+}
+
+
+/***********************************************************************************************************************
+ *
  *      ~Menu and Icon Display
  *
  ***********************************************************************************************************************/
@@ -3718,7 +3729,8 @@ function updateHistogram(recursive) {
                 'num': histogram.increment,
                 'topic_alias':histogram.topic_alias,
                 'g_id': histogram.g_id,
-                'resolution': histogram.resolution
+                'resolution': histogram.resolution,
+                'log-ignore': true
             },
             success: function(data)
             {
@@ -3801,7 +3813,8 @@ function getHistogramMembersHelper(identical) {
         ajaxPost({
                 data: {
                     'action':'getHistogramMembers',
-                    'u_ids': u_ids
+                    'u_ids': u_ids,
+                    'log-ignore': true
                 },
                 success: function(data)
                 {
@@ -3860,7 +3873,8 @@ function getAllGroupMembers(start, num, g_id) {
             'action':'getAllGroupMembers',
             'start':start,
             'num':num,
-            'g_id':g_id
+            'g_id':g_id,
+            'log-ignore': true
         },
         success: function(data)
         {
@@ -3883,11 +3897,6 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
-}
-
-function selectHeaderLink(div) {
-    $(".header-link").removeClass("clicked");
-    $("#" + div).addClass("clicked");
 }
 
 
@@ -4032,7 +4041,8 @@ function swapInHover(div) {
     ajaxPost({
             data: {
                 'action':'matchComparison',
-                'item_url': item_url
+                'item_url': item_url,
+                'log-ignore': true
             },
             success: function(data)
             {
