@@ -227,11 +227,21 @@ var QAWebHover = Class.extend
                     }
                     else
                     {
+                        if (!this.node.answeredByViewer)
+                        {
+                            $('#same_pointer span').text(compareUserProfile + "'s answer");
+                        }
+                        else
+                        {
+                            $('#same_pointer span').text("You both chose this answer");
+                        }
+
                         var offset2 = $('.answer-' + i).offset();
                         offset2.top+= $('.answer-' + i).height()/2 - $('.qaweb-pointer-box').height()/2;
                         offset2.left-=$('.qaweb-pointer-box').width() + 10;
                         $('#same_pointer').show().offset(offset2).show('slide');
                         break;
+
                     }
                 }
             }
@@ -754,6 +764,7 @@ var Question = Node.extend
             this.answers = data['answers'];
             this.answered = this._checkAnswered();
             this.diffAnswer = true;
+            this.answeredByViewer = false;
             this.user_explanation = data['user_explanation'];
             this._super(data);
         },
@@ -812,14 +823,14 @@ var Question = Node.extend
         {
             var self = this;
 
-
-            var questions = questionsArray[this.parents.text];
+            var questions = userAnswers[this.parents.text];
             for (var j=0;j<questions.length;j++)
             {
                 if (questions[j].id == self.id)
                 {
                     for (var z=0;z<self.answers.length;z++)
                     {
+                        if (questions[j].answers[z].user_answer) { self.answeredByViewer = true; }
                         if (questions[j].answers[z].user_answer == self.answers[z].user_answer)
                         {
                             self.diffAnswer = false;
@@ -1106,7 +1117,7 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
-            var text = createText((percentage*100).toFixed() + '%',self.base_width/2,self.base_height/2+3,15);
+            var text = createText((percentage*100).toFixed() + '%',self.base_width/2,self.base_height/2+3,1);
 
 
             layer.add(circle);
