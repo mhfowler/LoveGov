@@ -59,6 +59,7 @@ function rebindFunction()
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfile();
+            hideFooter();
             if( p_id != view_id )
             {
                 loadProfileComparison();
@@ -67,6 +68,7 @@ function rebindFunction()
         case 'group':
             loadProfileComparison();
             loadGroup();
+            hideFooter();
             break;
         case 'account':                                         // /account
             loadAccount();
@@ -97,6 +99,17 @@ function bindTooltips() {
     $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
     $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
     $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Header links
+ *
+ ***********************************************************************************************************************/
+function selectHeaderLink(div) {
+    $(".header-link").removeClass("clicked");
+    $("#" + div).addClass("clicked");
 }
 
 
@@ -3716,7 +3729,8 @@ function updateHistogram(recursive) {
                 'num': histogram.increment,
                 'topic_alias':histogram.topic_alias,
                 'g_id': histogram.g_id,
-                'resolution': histogram.resolution
+                'resolution': histogram.resolution,
+                'log-ignore': true
             },
             success: function(data)
             {
@@ -3799,7 +3813,8 @@ function getHistogramMembersHelper(identical) {
         ajaxPost({
                 data: {
                     'action':'getHistogramMembers',
-                    'u_ids': u_ids
+                    'u_ids': u_ids,
+                    'log-ignore': true
                 },
                 success: function(data)
                 {
@@ -3858,7 +3873,8 @@ function getAllGroupMembers(start, num, g_id) {
             'action':'getAllGroupMembers',
             'start':start,
             'num':num,
-            'g_id':g_id
+            'g_id':g_id,
+            'log-ignore': true
         },
         success: function(data)
         {
@@ -3881,11 +3897,6 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
-}
-
-function selectHeaderLink(div) {
-    $(".header-link").removeClass("clicked");
-    $("#" + div).addClass("clicked");
 }
 
 
@@ -4030,7 +4041,8 @@ function swapInHover(div) {
     ajaxPost({
             data: {
                 'action':'matchComparison',
-                'item_url': item_url
+                'item_url': item_url,
+                'log-ignore': true
             },
             success: function(data)
             {
@@ -4060,7 +4072,7 @@ function bindChangeContentPrivacy() {
         ajaxPost({
             data: {
                 'action': 'changeContentPrivacy',
-                'content_id': content_id,
+                'content_id': content_id
             },
             success: function(data) {
                 var returned = eval('('+data+')');

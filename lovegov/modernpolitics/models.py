@@ -3787,12 +3787,13 @@ class PageAccess(LGModel):
     login = models.BooleanField(default=True)
 
     def autoSave(self, request):
+        from lovegov.modernpolitics.helpers import getSourcePath
         if not LOCAL:
             user_prof = ControllingUser.lg.get_or_none(id=request.user.id)
             if user_prof:
                 user_prof = user_prof.user_profile
                 self.user = user_prof
-                self.page = request.path
+                self.page = getSourcePath(request)
                 self.ipaddress = request.META['REMOTE_ADDR']
                 if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
                     newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
