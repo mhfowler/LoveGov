@@ -1427,22 +1427,24 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createIFollowGroup(self):
-        title = "People who " + self.get_name() + " follows"
-        group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
-        group.autoSave()
-        self.i_follow = group
-        self.save()
+        if not self.i_follow:
+            title = "People who " + self.get_name() + " follows"
+            group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
+            group.autoSave()
+            self.i_follow = group
+            self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createFollowMeGroup(self):
-        title = "People who follow " + self.get_name()
-        group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
-        group.autoSave()
-        self.follow_me = group
-        self.save()
+        if not self.follow_me:
+            title = "People who follow " + self.get_name()
+            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+            group.autoSave()
+            self.follow_me = group
+            self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------

@@ -1125,3 +1125,27 @@ def recalculateAllUserStats():
     users = UserProfile.objects.filter(user_type="U").all()
     for user in users:
         userStatsRecalculate(user)
+
+
+
+def userFollowRecalculate(user):
+    following = user.getIFollow()
+    followers = user.getFollowMe()
+    for follow in following:
+        user.follow(follow)
+    for follower in followers:
+        follower.follow(user)
+
+def recalculateFollowGroups():
+    users = UserProfile.objects.filter(user_type="U").all()
+    for user in users:
+        userFollowRecalculate(user)
+
+
+def recalculateAllVotes():
+    content = Content.objects.all()
+    for c in content:
+        recalculatedVotes(c)
+
+#def recalculateVotes(content):
+
