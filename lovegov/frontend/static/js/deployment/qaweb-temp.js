@@ -63,7 +63,6 @@ var QAWebHover = Class.extend
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
                 $('#question-weight-div').hide();
-                $('.qaweb-pointer-box').hide();
                 $('#value_statement').hide();
             }
         },
@@ -192,7 +191,6 @@ var QAWebHover = Class.extend
         {
             var self = this;
             $('#answers-ul').empty();
-            $('.qaweb-pointer-box').hide();
             $('#answers-ul p').removeClass('answer-selected');
             for (var i=0; i<this.node.answers.length; i++)
             {
@@ -385,6 +383,7 @@ var QAWebHover = Class.extend
          */
         toggleQuestion: function(node)
         {
+            $('.qaweb-pointer-box').hide();
             // CASE: user clicks the same question or hasn't clicked a question yet
             if (this.node == null || !this.node.clicked)
             {
