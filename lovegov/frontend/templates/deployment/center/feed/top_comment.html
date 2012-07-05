@@ -8,18 +8,10 @@
             <div class="comment-image">
                 {% if top_comment.getPublic %}
                     <a href="{{ creator.get_url }}">
-                        {% thumbnail creator.getProfileImage.image "20x20" crop="center" as im %}
-                            <img src="{{ im.url }}"/>
-                        {% empty %}
-                            <img src="/static/images/obama.jpg" width="20px" height="20px">
-                        {% endthumbnail %}
+                        {% include 'deployment/snippets/avatar.html' with user=creator width=20 height=20 %}
                     </a>
                 {% else %}
-                    {% thumbnail defaultImage "20x20" format="PNG" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% empty %}
-                        <img src="/static/images/obama.jpg" width="20px" height="20px">
-                    {% endthumbnail %}
+                    {% include 'deployment/snippets/avatar.html' with user=creator width=20 height=20 private=1 %}
                 {% endif %}
             </div>
 

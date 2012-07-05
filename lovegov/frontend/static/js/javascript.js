@@ -459,7 +459,7 @@ function unbindInlineEdits()
 
 function bindInlineEdits()
 {
-    $(".edit_button").click(
+    $(".edit_button").bindOnce('click.edit',
         function(event)
         {
             event.preventDefault();
@@ -469,7 +469,7 @@ function bindInlineEdits()
         }
     );
 
-    $(".submit_inline_edit").click(
+    $(".submit_inline_edit").bindOnce('click.edit',
         function(event)
         {
             event.preventDefault();
@@ -499,7 +499,7 @@ function bindInlineEdits()
         }
     );
 
-    $(".cancel_inline_edit").click(
+    $(".cancel_inline_edit").bindOnce("click.edit",
         function(event)
         {
             event.preventDefault();
