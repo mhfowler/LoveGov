@@ -38,12 +38,11 @@ def viewWrapper(view, requires_login=False):
             try:
                 user = getUserProfile(request)
                 # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE and not user.developer and not LOCAL:
-                    return shortcuts.redirect("/underconstruction/")
-                # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
-                elif not request.user.is_authenticated():
-                    print request.path
-                    return HttpResponseRedirect('/login' + request.path)
+                #if UPDATE and not user.developer and not LOCAL:
+                if not request.user.is_authenticated():
+		    return HttpResponseRedirect('/login' + request.path)
+		elif UPDATE and not user.developer and not LOCAL:
+			return shortcuts.redirect("/underconstruction/")
                 # ELSE AUTHENTICATED
                 else:
                     vals['user'] = user
