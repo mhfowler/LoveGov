@@ -1,5 +1,14 @@
+{% load thumbnail %}
+
+<div class="comparison_web_header" style="position:absolute;z-index:300">
+    {% thumbnail compareUserProfile.getProfileImage.image "25x25" crop="center" as img %}
+        <img style="float:left" src="{{ img.url }}"/>
+    {% endthumbnail %}
+    <h5 style="float:left;margin-left:5px">Browse your Comparison with {{ compareUserProfile.get_name }}</h5>
+</div>
 <div id="qaweb-interactive">
     <div id="dragger">
+
         <!-- QAWeb graphical components go here -->
     </div>
 </div>
@@ -104,6 +113,11 @@
 </div>
 
 <script type="text/javascript">
+
+
+    var headerPosition = $('.top-logo').offset();
+    headerPosition.top+=60;
+    $('.comparison_web_header').offset(headerPosition);
 
     rebind = 'qaweb';
     $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20, disabled:true});
