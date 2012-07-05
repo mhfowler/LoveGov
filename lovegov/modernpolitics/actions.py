@@ -298,7 +298,7 @@ def invite(request, vals={}):
         valid.save()
     subject = user_name + " has invited you to join them on LoveGov"
     dictionary = {'user_name':user_name}
-    send_email.sendTemplateEmail(subject,'userInvite.html', dictionary,"team@lovegov.com",email)
+    sendTemplateEmail(subject,'userInvite.html', dictionary,"team@lovegov.com",email)
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------

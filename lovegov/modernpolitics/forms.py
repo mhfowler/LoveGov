@@ -75,7 +75,7 @@ class CreateUserForm(forms.Form):
             controllingUser.user_profile.invite_subject = subject
             controllingUser.user_profile.save()
             vals = {'firstname':first_name,'email':email,'password':password,'message':message}
-            send_email.sendTemplateEmail(subject,'alphaInvite.html',vals,'team@lovegov.com',email)
+            sendTemplateEmail(subject,'alphaInvite.html',vals,'team@lovegov.com',email)
 
 #=======================================================================================================================
 # Form for search
@@ -155,7 +155,7 @@ class RegisterForm(forms.Form):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()
         vals = {'firstname':firstname,'link':user.user_profile.confirmation_link}
-        send_email.sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)
+        sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)
 
 #=======================================================================================================================
 # Form for logging in.

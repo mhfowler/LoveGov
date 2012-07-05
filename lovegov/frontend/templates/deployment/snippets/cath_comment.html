@@ -26,8 +26,7 @@
     <div>
         <div class="comment-text inline_hide">
             {% if comment.active %}
-                {{ comment.text|linebreaks }}
-
+                {{ comment.text|urlize|linebreaks }}
             {% else %}
                 deleted
         {% endif %}
