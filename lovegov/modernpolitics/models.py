@@ -285,6 +285,18 @@ class Content(Privacy, LocationLevel):
         self.status = self.upvotes - self.downvotes
         self.save()
 
+    def contentCommentsRecalculate(self):
+        direct_comments = Comment.objects.filter(on_content=self)
+        num_comments = 0
+
+        if direct_comments:
+            for comment in direct_comments:
+                num_comments += comment.contentCommentsRecalculate()
+
+        self.num_comments = num_comments
+        self.save()
+        return num_comments
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
     #-------------------------------------------------------------------------------------------------------------------
