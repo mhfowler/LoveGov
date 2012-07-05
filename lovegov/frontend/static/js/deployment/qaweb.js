@@ -388,6 +388,34 @@ var QAWebHover = Class.extend
                 self.node.weight = value;
             });
 
+            $('#privacy-image').unbind('click');
+            $('#privacy-image').bind("click", function()
+            {
+                if (self.node.privacy == "PUB")
+                {
+                    $.cookie('privacy','PRI', {path:'/'});
+                    $(".security_setting").each(function()
+                    {
+                        if ($(this).is('img'))
+                        {
+                            $(this).attr("src","/static/images/user-menu/lockgray.png");
+                            $(this).attr('data-original-title',priMessage);
+                        }
+                    });
+
+                }
+                else
+                {
+                    $.cookie('privacy','PUB', {path:'/'});
+                    $(".security_setting").each(function()
+                    {
+                        if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                            $(this).attr('data-original-title',pubMessage);}
+                    });
+                }
+
+            });
+
 
             $('#next_button').unbind('click');
             $('#next_button').bind('click',function(event)
