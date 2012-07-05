@@ -567,8 +567,8 @@
         div.pinterest-top-comment {
           padding: 12px 12px 15px 15px;
           margin: 20px 20px 0px 20px;
-
         }
+
 
         div.petition_bar {
 
@@ -675,6 +675,9 @@
       clear:both;
       margin: 13px 0px 0px 0px;
     }
+  }
+  div.pinterest-top-comment:hover {
+    border-color:$black;
   }
 
   div.prof-image{

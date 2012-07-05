@@ -1,32 +1,34 @@
 {% load thumbnail %}
 {% load customtags %}
 
-<div class="pinterest-top-comment">
+<a href="{{ item.get_url }}">
+    <div class="pinterest-top-comment">
 
-    <div class="comment-header">
-        {% with creator=top_comment.getCreator %}
-            <div class="comment-image">
-                {% if top_comment.getPublic %}
-                    <a href="{{ creator.get_url }}">
-                        {% include 'deployment/snippets/avatar.html' with user=creator width="20" height="20" %}
-                    </a>
-                {% else %}
-                    {% include 'deployment/snippets/avatar.html' with user=creator width="20" height="20" private=1 %}
-                {% endif %}
-            </div>
+        <div class="comment-header">
+            {% with creator=top_comment.getCreator %}
+                <div class="comment-image">
+                    {% if top_comment.getPublic %}
+                        <a href="{{ creator.get_url }}">
+                            {% include 'deployment/snippets/avatar.html' with user=creator width="20" height="20" %}
+                        </a>
+                    {% else %}
+                        {% include 'deployment/snippets/avatar.html' with user=creator width="20" height="20" private=1 %}
+                    {% endif %}
+                </div>
 
-            <div class="comment-creator">
-                {% if top_comment.getPublic %}
-                    <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said,
-                {% else %}
-                    Anonymous said,
-                {% endif %}
-            </div>
-        {% endwith %}
+                <div class="comment-creator">
+                    {% if top_comment.getPublic %}
+                        <a href="{{ creator.get_url}}"> {{ creator.get_name }}</a> said,
+                    {% else %}
+                        Anonymous said,
+                    {% endif %}
+                </div>
+            {% endwith %}
+        </div>
+
+        <div class="comment-text">
+            "{{ top_comment.text|truncate_chars:800 }}"
+        </div>
+
     </div>
-
-    <div class="comment-text">
-        "{{ top_comment.text|truncate_chars:800 }}"
-    </div>
-
-</div>
+</a>
