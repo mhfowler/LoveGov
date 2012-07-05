@@ -1130,6 +1130,11 @@ def createAllFollowGroups():
         user.createFollowMeGroup()
         user.createIFollowGroup()
 
+def recalculatePetitions():
+    for p in Petition.objects.all():
+        signed = Signed.objects.filter(content=p)
+        p.current = signed.count()
+        p.save()
 
 def recalculateEverything():
     print "Recalculating Stats..."
@@ -1138,3 +1143,4 @@ def recalculateEverything():
     recalculateAllFollowGroups()
     print "Recalculating Votes..."
     recalculateAllVotes()
+
