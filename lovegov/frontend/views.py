@@ -38,9 +38,8 @@ def viewWrapper(view, requires_login=False):
             try:
                 user = getUserProfile(request)
                 # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE:
-                    if not user or (not user.developer):
-                        return shortcuts.redirect("/underconstruction/")
+                if UPDATE and not user.developer and not LOCAL:
+                    return shortcuts.redirect("/underconstruction/")
                 # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
                 elif not request.user.is_authenticated():
                     print request.path
@@ -787,7 +786,8 @@ def loadHistogram(resolution, g_id, which, vals={}):
 def about(request, start="video", vals={}):
     if request.method == 'GET':
         vals['start_page'] = start
-        developers = UserProfile.objects.filter(developer=True).reverse()
+        developers = UserProfile.objects.filter(developer=True).order_by('id')
+        developers = developers.reverse()
         skew = 185
         side = 110
         main_side = 165
