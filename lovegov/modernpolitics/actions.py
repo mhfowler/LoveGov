@@ -21,7 +21,6 @@ from django.utils import simplejson
 
 # python
 import urllib2
-from googlemaps import GoogleMaps
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
@@ -89,57 +88,30 @@ def getLinkInfo(request, vals={}, html="",URL=""):
 #-----------------------------------------------------------------------------------------------------------------------
 def getCongressmen(request, vals={}):
     # POST variables from POST request and formats data
-    user = vals['viewer']
+    viewer = vals['viewer']
     address = request.POST['address']
     zip = request.POST['zip']
-    if zip is None: zip = ""
-    if address is None: address= ""
 
-    # Load from database if we have this address or zip code stored already
-    if address != "" and zip != "" and UserPhysicalAddress.objects.filter(Q(address_string=address)&Q(zip=zip)).exists():
-        address = UserPhysicalAddress.objects.filter(Q(address_string=address)&Q(zip=zip))[0]
-        coordinates = (address.latitude,address.longitude)
-        state_district = [{'state':address.state,'number':address.district}]
-    elif address == "" and zip != "" and UserPhysicalAddress.objects.filter(Q(zip=zip)).exists():
-        address = UserPhysicalAddress.objects.filter(zip=zip)[0]
-        coordinates = (address.latitude,address.longitude)
-        state_district = [{'state':address.state,'number':address.district}]
-    elif address != "" and zip == "" and UserPhysicalAddress.objects.filter(Q(address_string=address)).exists():
-        address = UserPhysicalAddress.objects.filter(address_string=address)[0]
-        coordinates = (address.latitude,address.longitude)
-        state_district = [{'state':address.state,'number':address.district}]
-    else: # Load from Google Maps and Sunlight if we don't have this address or zip code stored
-        if address== "" and zip != "": address=zip
-        gmaps = GoogleMaps(GOOGLEMAPS_API_KEY)
-        coordinates = gmaps.address_to_latlng(address)
-        state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
-        try:
-            address = UserPhysicalAddress(user=user.id,address_string=address,zip=zip,latitude=coordinates[0],longitude=coordinates[1],state=state_district[0]['state'],district=state_district[0]['number'])
-            address.save()
-        except:
-            pass
-    user.userAddress = address
-    user.save()
-    # Get congressmen objects and generate comparisons
+    location = locationHelper(address, zip)
+
     congressmen = []
-    for s_d in state_district:
-        representative = Representative.objects.get(congresssessions=112,state=s_d['state'],district=s_d['number'])
-        representative.json = getUserUserComparison(user,representative).toJSON()
-        congressmen.append(representative)
-    senators = Senator.objects.filter(congresssessions=112,state=state_district[0]['state'])
+    representative = Representative.objects.get(congresssessions=112,state=location.state,district=location.district)
+    representative.json = representative.getComparison(viewer).toJSON()
+    congressmen.append(representative)
+    senators = Senator.objects.filter(congresssessions=112,state=location.state)
     for senator in senators:
-        senator.json = getUserUserComparison(user,senator).toJSON()
+        senator.json = senator.getComparison(viewer).toJSON()
         congressmen.append(senator)
 
-    # Generate HTML and send back HTML to user via ajax
-    vals['userProfile'] = user
+    vals['userProfile'] = viewer
     vals['congressmen'] = congressmen
     vals['state'] = state_district[0]['state']
     vals['district'] = state_district[0]['number']
-    vals['latitude'] = coordinates[0]
-    vals['longitude'] = coordinates[1]
+    vals['latitude'] = location.latitude
+    vals['longitude'] = location.longitude
     html = ajaxRender('deployment/snippets/match-compare-div.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
@@ -393,11 +365,11 @@ def submitAddress(request, vals={}):
     city = request.POST['city']
     zip = request.POST['zip']
 
+    location = locationHelper(address, zip)
+
     viewer = vals['viewer']
-    location = viewer.getLocation()
-    location.address_string = address
-    location.zip = zip
-    location.save()
+    viewer.location = location
+    viewer.save()
 
     return HttpResponse("yea!")
 
@@ -1553,6 +1525,35 @@ def likeThis(request, vals={}):
 
     return HttpResponse(json.dumps(to_return))
 
+def changeContentPrivacy(request, vals={}):
+    html = ''
+    viewer = vals['viewer']
+    content_id = request.POST.get('content_id')
+    error = ''
+    if content_id:
+        if Content.lg.get_or_none(id=content_id):
+            content = Content.lg.get_or_none(id=content_id)
+            if viewer==content.creator:
+                if content.privacy == 'PRI':
+                    content.privacy = 'PUB'
+                elif content.privacy == 'PUB':
+                    content.privacy = 'PRI'
+                else:
+                    error = 'Content set to invalid privacy type.'
+            else:
+                error = 'You are not the owner of this content.'
+        else:
+            error = 'The given content identifier is invalid.'
+    else:
+        error = 'No content identifier given.'
+    if error=='':
+        content.save()
+        vals['content'] = content
+        html =ajaxRender('deployment/snippets/content-privacy.html', vals, request)
+    to_return = {'html':html, 'error': error}
+    print "to_return: "+str(to_return)
+    return HttpResponse(json.dumps(to_return))
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1618,6 +1619,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'messageRep': messageRep,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
+            'changeContentPrivacy': changeContentPrivacy,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

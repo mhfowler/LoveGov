@@ -15,6 +15,7 @@ function rebindFunction()
     bindTooltips();                                             // bind all tooltip classes
     bindInlineEdits();
     loadShareButton();
+    bindChangeContentPrivacy();
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -4047,4 +4048,34 @@ function swapInHover(div) {
             }
         }
     );
+}
+
+
+function bindChangeContentPrivacy() {
+
+    $('div.change-privacy').bindOnce('click', function() {
+        var content_id = $(this).data('content_id');
+        var meDiv = $(this);
+        $(this).tooltip('hide');
+        ajaxPost({
+            data: {
+                'action': 'changeContentPrivacy',
+                'content_id': content_id,
+            },
+            success: function(data) {
+                var returned = eval('('+data+')');
+                if(returned.error) {
+                    alert("Error: "+data.error);
+                } else {
+                    meDiv.parent().html(returned.html);
+                }
+                bindChangeContentPrivacy();
+                bindTooltips();
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        });
+    });
 }

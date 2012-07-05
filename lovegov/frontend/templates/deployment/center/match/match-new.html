@@ -41,6 +41,21 @@
                         {% endif %}
                         {% include 'deployment/center/match/address.html' %}
                     {% endif %}
+                    <div style="clear:both"></div>
+                    <div class="address-wrapper">
+                        <p class="address-text">
+                            {{ state }} /
+                            {{ district }} /
+                            {{ latitude }} /
+                            {{ longitude }}
+                        </p>
+
+                        {% if not invalid_address %}
+                            <div class="new-address-wrapper">
+                                {% include 'deployment/center/match/address.html' %}
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
 
             </div>
