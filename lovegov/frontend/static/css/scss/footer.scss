@@ -5,10 +5,9 @@ footer.sticky-footer {
 	$footer-height: 180px;
 	border-top: 1px solid $gray;
 	position: relative;
-	margin-top: -$footer-height;
 	height: $footer-height;
 	clear: both;
-	margin-top: 200px;
+	margin-top: 600px;
 	padding: 30px 150px 30px 150px;
 	@include titleFont;
 

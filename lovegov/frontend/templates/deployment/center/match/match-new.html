@@ -43,12 +43,12 @@
                     {% endif %}
                     <div style="clear:both"></div>
                     <div class="address-wrapper">
-                        <p class="address-text">
-                            {{ state }} /
-                            {{ district }} /
-                            {{ latitude }} /
-                            {{ longitude }}
-                        </p>
+
+                        {% if state and district and longitude and latitude %}
+                        <div id="map_canvas" style='width:930px;height:500px'>
+
+                        </div>
+                        {% endif %}
 
                         {% if invalid_address %}
                             <div class="new-address-wrapper">
@@ -78,7 +78,16 @@
 
 </div>
 
-<script> match_current_section={{ start_sequence }};</script>
+<script>
+    match_current_section={{ start_sequence }};
+        {% if state and district and longitude and latitude %}
+        var match_state = "{{ state }}";
+        var match_district = {{ district }};
+        var match_longtitude = {{ longitude }};
+        var match_latitude = {{ latitude }};
+        loadGoogleMap();
+    {% endif %}
+</script>
 
 
 

@@ -16,6 +16,7 @@ function rebindFunction()
     bindInlineEdits();
     loadShareButton();
     bindChangeContentPrivacy();
+    showFooter();                                               // By default, show footer. Hide footer in indvidual cases.
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -42,6 +43,7 @@ function rebindFunction()
         case 'feed':                                            // /feed
             loadNewFeed();
             loadRightSideBar();
+            hideFooter();
             break;
         case 'about':                                           // /about
             loadAbout();
@@ -52,6 +54,7 @@ function rebindFunction()
             break;
         case 'qaweb':                                           // /web
             loadQAWeb();
+            hideFooter();
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfile();
@@ -1573,7 +1576,7 @@ function loadGoogleMap()
         var myOptions =
         {
             zoom: 10,
-            center: new google.maps.LatLng(latitude, longtitude),
+            center: new google.maps.LatLng(match_latitude, match_longtitude),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             panControl: false,
             zoomControl: true,
@@ -1583,38 +1586,14 @@ function loadGoogleMap()
         };
         map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, state, district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, state, district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
     }
 
-
-    var map_canvas = "<div id='map_canvas' style='width:600px;height:750px'></div>";
-    if (!$("#map_canvas").length) { $('#main-content').append(map_canvas); }
     initialize();
-    if (!$('#map_canvas').hasClass('ui-dialog-content'))
-    {
-        $('#map_canvas').dialog
-            ({
-                height:600,
-                width:750,
-                resizable:false,
-                autoOpen:false
-            });
-        $(".ui-dialog").bind("clickoutside", function(event) { if (event.target.id != 'see-congressional-map' && event.target.id != "map_canvas") { $("#map_canvas").dialog("close");  } });
-    }
-
-    $("#see-congressional-map").click(function(event)
-    {
-        if ($('#map_canvas').dialog("isOpen") == false)
-        {
-            $('#map_canvas').dialog('open');
-            google.maps.event.trigger(map, 'resize');
-        }
-    });
-
 
 }
 /***********************************************************************************************************************
@@ -4078,4 +4057,12 @@ function bindChangeContentPrivacy() {
             }
         });
     });
+}
+
+function showFooter() {
+    $('footer').show();
+}
+
+function hideFooter() {
+    $('footer').hide();
 }
