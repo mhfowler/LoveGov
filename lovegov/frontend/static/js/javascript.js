@@ -3901,6 +3901,10 @@ function loadNewMatch() {
 
     }, 2000);
 
+    $('body').bindOnce("click.auto", function(event) {
+        clearInterval(match_autoswitch);
+    });
+
     $("#match-arrow-right").click(function(event) {
         swapFeatured("right");
     });
