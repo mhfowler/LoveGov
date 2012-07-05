@@ -309,8 +309,9 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
         if len(response) > 0 : toAddquestion['user_explanation'] = response[0].userresponse.explanation
+
         if not webCompare and len(response) > 0: toAddquestion['security'] = response[0].userresponse.privacy
-        else: toAddQuestion['security'] = ""
+        else: toAddquestion['security'] = ""
         questionsArray[topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
 
