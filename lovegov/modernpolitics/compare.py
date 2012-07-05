@@ -32,6 +32,7 @@ def updateGroupViews(debug=False):
 
     groups = Group.objects.exclude(alias="congress")
     for g in groups:
+        print g.title
         updateGroupView(g)
 
     """
