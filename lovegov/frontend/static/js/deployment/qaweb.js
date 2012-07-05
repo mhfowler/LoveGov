@@ -147,6 +147,7 @@ var QAWebHover = Class.extend
                 }
                 var data = self._arrayToDictionary(".qaweb-answerform");
                 self.node.user_explanation = data['explanation'];
+                data['questionPRI'] = self.node.security;
                 ajaxPost({data:data,success:null,error:null});
             }
         },
