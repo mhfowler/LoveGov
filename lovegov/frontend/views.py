@@ -1020,7 +1020,9 @@ def matchSenate(request, vals={}):
         x.compare = comparison.toJSON()
         x.result = comparison.result
     list.sort(key=lambda x:x.result,reverse=True)
-    vals['senate'] = list
+    vals['elizabeth'] = elizabeth
+    vals['brown'] = brown
+    vals['mass'] = voters
 
 def matchRepresentatives(request, vals={}):
 
