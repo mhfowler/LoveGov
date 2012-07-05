@@ -4007,6 +4007,7 @@ function swapFeatured(direction) {
                     2:'social',
                     3:'representatives'};
     var url = sections[match_current_section];
+    if (match_current_section = 3) { loadGoogleMap(); }
     History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
 }
 
