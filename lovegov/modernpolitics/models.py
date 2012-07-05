@@ -1210,9 +1210,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
 
     def userStatsRecalculate(self):
-        userPetitionsRecalculate(self)
-        userNewsRecalculate(self)
-        userCommentsRecalculate(self)
+        self.userPetitionsRecalculate()
+        self.userNewsRecalculate()
+        self.userCommentsRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data

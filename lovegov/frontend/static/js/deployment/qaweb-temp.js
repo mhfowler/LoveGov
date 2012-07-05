@@ -1114,15 +1114,16 @@ var Root = Node.extend
             var percentage = topicObj['result']/100;
 
 
-            var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
+            var stage = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
-            var text = createText((percentage*100).toFixed() + '%',self.base_width/2,self.base_height/2+3,1);
+            var text = createText((percentage*100).toFixed() + '%',self.base_width/2,self.base_height/2+2,13);
 
 
             layer.add(circle);
             layer.add(text);
-            test.add(layer);
+            stage.add(layer);
+
             this.idDivObj = $('#' + this.idDiv);
         },
         zoomResize: function(self)
