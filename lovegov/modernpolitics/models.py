@@ -31,7 +31,6 @@ from lovegov.modernpolitics.constants import *
 
 import logging
 
-
 logger = logging.getLogger('filelogger')
 scheduled_logger = logging.getLogger('scheduledlogger')
 
