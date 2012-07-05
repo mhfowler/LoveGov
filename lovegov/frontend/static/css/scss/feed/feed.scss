@@ -564,7 +564,7 @@
           }
         }
 
-        div.pinterest-top-comment {
+        a.pinterest-top-comment {
           padding: 12px 12px 15px 15px;
           margin: 20px 20px 0px 20px;
         }
@@ -648,7 +648,8 @@
     margin-bottom:10px;
   }
 
-  div.pinterest-top-comment {
+  a.pinterest-top-comment {
+    display:block;
     @extend .box;
     @include rounded(10px);
 
@@ -676,7 +677,7 @@
       margin: 13px 0px 0px 0px;
     }
   }
-  div.pinterest-top-comment:hover {
+  a.pinterest-top-comment:hover {
     border-color:$dark-gray;
     cursor:pointer;
   }
