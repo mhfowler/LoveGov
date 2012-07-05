@@ -53,7 +53,7 @@ MIDDLEWARE_CLASSES = (
 ########################################################################################################################
 
 # different projects will use different root
-STATIC_ROOT = '/static/'            # !!!!!
+STATIC_ROOT = '/static/'
 
 # URL prefix for static files.
 STATIC_URL = '/static/'
