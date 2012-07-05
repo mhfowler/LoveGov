@@ -12,6 +12,16 @@
 
         <div class="match-user-text">
             <h4>{{ item.get_name|truncatechars:20 }}</h4>
+
+            {% if item.type == "U" %}
+                {% if item.user_type == "S" %}
+                    <h5>Senator</h5>
+                {% endif %}
+                {% if item.user_type == "R" %}
+                    <h5>Representative</h5>
+                {% endif %}
+            {% endif %}
+
             {% if item.type == "U" %}
                 {% for party in item.parties.all %}
                 <div class="party-image">
