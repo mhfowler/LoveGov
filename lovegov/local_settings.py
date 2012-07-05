@@ -26,7 +26,7 @@ DATABASES = {
 }
 
 
-STATIC_ROOT = '/static/'
+STATIC_ROOT = settings.STATIC_ROOT
 
 
 LOGGING = {
