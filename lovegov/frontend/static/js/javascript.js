@@ -223,7 +223,7 @@ function userFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -282,7 +282,7 @@ function groupFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -305,7 +305,7 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -327,7 +327,7 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -374,7 +374,7 @@ function setFollowPrivacy(event,private_follow,div)
             }
             else
             {
-                alert(data);
+                //alert(data);
             }
 
         },
@@ -1135,7 +1135,7 @@ function loadLeftSidebar()
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                alert("failure");
+                //alert("failure");
             }
         });
     });
@@ -1487,7 +1487,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1518,7 +1518,7 @@ function loadThread()
                     $(this).css("color", "red");
                 },
                 error: function(data) {
-                    alert("Flagging comment failed.");
+                    //alert("Flagging comment failed.");
                 }
             });
         }
@@ -1658,7 +1658,7 @@ function loadNotification()
                 },
                 success: function(data)
                 {
-                    alert(data);
+                    //alert(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -2156,7 +2156,7 @@ function groupFollowResponse(event,response,div,g_id)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -2642,7 +2642,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
-            alert('error');
+            //alert('error');
         }
     });
 }
@@ -4062,12 +4062,12 @@ function bindChangeContentPrivacy() {
         ajaxPost({
             data: {
                 'action': 'changeContentPrivacy',
-                'content_id': content_id,
+                'content_id': content_id
             },
             success: function(data) {
                 var returned = eval('('+data+')');
                 if(returned.error) {
-                    alert("Error: "+data.error);
+                    //alert("Error: "+data.error);
                 } else {
                     meDiv.parent().html(returned.html);
                 }
