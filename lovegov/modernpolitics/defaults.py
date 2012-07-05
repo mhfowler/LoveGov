@@ -993,20 +993,77 @@ def countXMLAmendments():
 
 # Initialize Voting Records
 def initializeVotingRecord():
+    total = 0
+    already = LegislationAmendment.objects.all().count() - 5
+
     for num in range(109,113):
-        filePath = '/data/govtrack/' + str(num) + "/rolls/"
-        fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
-        for infile in fileListing:
-            db.reset_queries()
-            fileXML = open(filePath + infile)
-            parsedXML = BeautifulStoneSoup(fileXML)
-            congressRoll = CongressRoll()
-            try:
-                congressRoll.setSaveAttributes(parsedXML)
-            except:
-                print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                traceback.print_exc()
+        total += 1
+        if total > already:
+            filePath = '/data/govtrack/' + str(num) + "/rolls/"
+            fileListing = os.listdir(filePath)
+            fileCount = filecount(filePath)
+            for infile in fileListing:
+                db.reset_queries()
+                fileXML = open(filePath + infile)
+                parsedXML = BeautifulStoneSoup(fileXML)
+                congressRoll = CongressRoll()
+                try:
+                    congressRoll.setSaveAttributes(parsedXML)
+                except:
+                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                    traceback.print_exc()
+
+
+# Initialize Voting Records
+def initializeVotingRecord():
+    total = 0
+    already = LegislationAmendment.objects.all().count() - 5
+
+    for num in range(109,113):
+        total += 1
+        if total > already:
+            filePath = '/data/govtrack/' + str(num) + "/rolls/"
+            fileListing = os.listdir(filePath)
+            fileCount = filecount(filePath)
+            for infile in fileListing:
+                db.reset_queries()
+                fileXML = open(filePath + infile)
+                parsedXML = BeautifulStoneSoup(fileXML)
+                congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
+                if not congressRoll:
+                    congressRoll = CongressRoll()
+                try:
+                    congressRoll.setSaveAttributes(parsedXML)
+                except:
+                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                    traceback.print_exc()
+
+def initializeVotingRecordFast():
+    total = 0
+
+    for num in range(109,113):
+        total += 1
+        if total > already:
+            filePath = '/data/govtrack/' + str(num) + "/rolls/"
+            fileListing = os.listdir(filePath)
+            fileCount = filecount(filePath)
+            for infile in fileListing:
+                db.reset_queries()
+                fileXML = open(filePath + infile)
+                parsedXML = BeautifulStoneSoup(fileXML)
+
+                bill_tuple = (parsedXML.bill['session'],parsedXML.bill['type'] + parsedXML.bill['number'])
+                if bill_tuple in IMPORTANT_LEGISLATION or bill_tuple in IMPORTANT_AMENDMENTS:
+
+                    congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
+                    if not congressRoll:
+                        congressRoll = CongressRoll()
+                    try:
+                        congressRoll.setSaveAttributes(parsedXML)
+                    except:
+                        print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                        traceback.print_exc()
+
 
 def countVotingRecords():
     count = 0

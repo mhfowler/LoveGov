@@ -2839,8 +2839,12 @@ class CongressRoll(LGModel):
                 newOption.save()
             self.options.add(RollOption.objects.get(key=option['key']))
         for voterXML in parsedXML.findAll('voter'):
-            newVotingRecord = VotingRecord()
-            newVotingRecord.setSaveAttributes(voterXML,self,self.bill,self.amendment)
+            eoff = ElectedOfficial.lg.get_or_none(govtrack_id=int(parsedXML['id']))
+            if eoff:
+                already = VotingRecord.lg.get_or_none(bill=self.bill,amendment=self.amendment,roll=self,electedofficial=eoff)
+                if not already:
+                    newVotingRecord = VotingRecord()
+                    newVotingRecord.setSaveAttributes(voterXML,self,self.bill,self.amendment)
 
 
 #=======================================================================================================================
