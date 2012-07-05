@@ -1105,28 +1105,36 @@ def updatePartyImages():
 def recalculateAllUserStats():
     users = UserProfile.objects.filter(user_type="U").all()
     for user in users:
+        print "Calculating Stats For " + user.get_name()
         user.userStatsRecalculate()
 
 
 def recalculateAllFollowGroups():
     users = UserProfile.objects.filter(user_type="U").all()
     for user in users:
+        print "Calculating Follow Groups For " + user.get_name()
         user.userFollowRecalculate()
 
 
 def recalculateAllVotes():
     content = Content.objects.all()
     for c in content:
+        print "Calculating Votes For " + c.get_name()
         c.recalculateVotes()
 
 
 def createAllFollowGroups():
     users = UserProfile.objects.all()
     for user in users:
+        print "Creating for " + user.get_name()
         user.createFollowMeGroup()
         user.createIFollowGroup()
 
+
 def recalculateEverything():
+    print "Recalculating Stats..."
     recalculateAllUserStats()
+    print "Recalculating Follow Groups..."
     recalculateAllFollowGroups()
+    print "Recalculating Votes..."
     recalculateAllVotes()
