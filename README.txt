@@ -113,6 +113,9 @@ pip install oauth2
 sass
 gem install sass
 
+httpagentparser
+git clone https://github.com/shon/httpagentparser.git
+
 ********** GETTING STARTED ************
 
 Now that you have checked out a version of the project and installed all the dependencies you should be pretty much ready to go. 

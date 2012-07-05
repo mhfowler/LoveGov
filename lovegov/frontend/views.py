@@ -1005,18 +1005,18 @@ def matchPresidential(request, vals={}):
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
-        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
-        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+        elizabeth = viewer
+        brown = viewer
+        voters = viewer
     else:
-        obama = viewer
-        paul = viewer
-        romney = viewer
-    list = [obama,paul,romney]
-    for presidential_user in list:
-        comparison = getUserUserComparison(viewer, presidential_user)
-        presidential_user.compare = comparison.toJSON()
-        presidential_user.result = comparison.result
+        elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+        brown = ElectedOfficial.objects.get(first_name="Scott", last_name="Brown")
+        voters = getLoveGovGroup()
+    list = [elizabeth, brown, voters]
+    for x in list:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
     list.sort(key=lambda x:x.result,reverse=True)
     vals['senate'] = list
 
