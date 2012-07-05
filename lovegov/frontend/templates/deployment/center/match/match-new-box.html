@@ -14,7 +14,7 @@
             <h4>{{ item.get_name|truncatechars:20 }}</h4>
 
             {% if item.type == "U" %}
-                {% if item.user_type == "S" %}
+                {% if item.user_type == "S" and item.first_name != "Barack" %}
                     <h5>Senator</h5>
                 {% endif %}
                 {% if item.user_type == "R" %}
