@@ -408,7 +408,7 @@ a, a:link, a:visited, a:active
 #loading
 {
     position:absolute;
-    top:37%;
+    top:20%;
     left:37%;
     display:none;
     z-index:100;
