@@ -439,7 +439,7 @@ function editContent(c_id,info,edit_div)
             var obj = eval('(' + data + ')');
             if( obj.success )
             {
-                edit_div.text(obj.value);
+                edit_div.html(obj.value);
                 edit_div.show();
             }
         },
@@ -4074,6 +4074,7 @@ function swapInHover(div) {
 function bindChangeContentPrivacy() {
 
     $('div.change-privacy').bindOnce('click', function() {
+        alert('clicky');
         var content_id = $(this).data('content_id');
         var meDiv = $(this);
         $(this).tooltip('hide');
