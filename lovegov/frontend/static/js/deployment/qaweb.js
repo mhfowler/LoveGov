@@ -134,6 +134,7 @@ var QAWebHover = Class.extend
 
             if ($.trim( $('#answers-ul').html() ).length)
             {
+                self.node.security = $.cookie('privacy');
                 self.node.weight = $('#weight-input').val();
                 var $input = $('#answers-ul').find('input:checked');
 
