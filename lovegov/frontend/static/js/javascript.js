@@ -3997,7 +3997,7 @@ function swapFeatured(direction) {
     var next = getSection(match_next_section);
     current.hide();
     next.show();
-    if (match_current_section == 3) { loadGoogleMap(); }
+    if (match_current_section == 3) { alert("loading Google maps"); loadGoogleMap(); }
     var current_circle = getCircle(match_current_section);
     var next_circle = getCircle(match_next_section);
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
