@@ -813,7 +813,7 @@ var Question = Node.extend
             var self = this;
 
 
-            var questions = userAnswers[this.parents.text];
+            var questions = questionsArray[this.parents.text];
             for (var j=0;j<questions.length;j++)
             {
                 if (questions[j].id == self.id)
