@@ -234,6 +234,7 @@ var QAWebHover = Class.extend
                         $('#same_pointer').show().offset(offset2).show('slide');
                         break;
                     }
+                }
             }
         },
 
