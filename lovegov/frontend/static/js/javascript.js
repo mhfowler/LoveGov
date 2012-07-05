@@ -104,6 +104,17 @@ function bindTooltips() {
 
 /***********************************************************************************************************************
  *
+ *      ~Header links
+ *
+ ***********************************************************************************************************************/
+function selectHeaderLink(div) {
+    $(".header-link").removeClass("clicked");
+    $("#" + div).addClass("clicked");
+}
+
+
+/***********************************************************************************************************************
+ *
  *      ~Menu and Icon Display
  *
  ***********************************************************************************************************************/
@@ -223,7 +234,7 @@ function userFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -282,7 +293,7 @@ function groupFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -305,7 +316,7 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -327,7 +338,7 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -374,7 +385,7 @@ function setFollowPrivacy(event,private_follow,div)
             }
             else
             {
-                alert(data);
+                //alert(data);
             }
 
         },
@@ -1135,7 +1146,7 @@ function loadLeftSidebar()
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                alert("failure");
+                //alert("failure");
             }
         });
     });
@@ -1487,7 +1498,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1518,7 +1529,7 @@ function loadThread()
                     $(this).css("color", "red");
                 },
                 error: function(data) {
-                    alert("Flagging comment failed.");
+                    //alert("Flagging comment failed.");
                 }
             });
         }
@@ -1658,7 +1669,7 @@ function loadNotification()
                 },
                 success: function(data)
                 {
-                    alert(data);
+                    //alert(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -2156,7 +2167,7 @@ function groupFollowResponse(event,response,div,g_id)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -2642,7 +2653,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
-            alert('error');
+            //alert('error');
         }
     });
 }
@@ -3718,7 +3729,8 @@ function updateHistogram(recursive) {
                 'num': histogram.increment,
                 'topic_alias':histogram.topic_alias,
                 'g_id': histogram.g_id,
-                'resolution': histogram.resolution
+                'resolution': histogram.resolution,
+                'log-ignore': true
             },
             success: function(data)
             {
@@ -3801,7 +3813,8 @@ function getHistogramMembersHelper(identical) {
         ajaxPost({
                 data: {
                     'action':'getHistogramMembers',
-                    'u_ids': u_ids
+                    'u_ids': u_ids,
+                    'log-ignore': true
                 },
                 success: function(data)
                 {
@@ -3860,7 +3873,8 @@ function getAllGroupMembers(start, num, g_id) {
             'action':'getAllGroupMembers',
             'start':start,
             'num':num,
-            'g_id':g_id
+            'g_id':g_id,
+            'log-ignore': true
         },
         success: function(data)
         {
@@ -3883,11 +3897,6 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
-}
-
-function selectHeaderLink(div) {
-    $(".header-link").removeClass("clicked");
-    $("#" + div).addClass("clicked");
 }
 
 
@@ -4032,7 +4041,8 @@ function swapInHover(div) {
     ajaxPost({
             data: {
                 'action':'matchComparison',
-                'item_url': item_url
+                'item_url': item_url,
+                'log-ignore': true
             },
             success: function(data)
             {
@@ -4062,12 +4072,12 @@ function bindChangeContentPrivacy() {
         ajaxPost({
             data: {
                 'action': 'changeContentPrivacy',
-                'content_id': content_id,
+                'content_id': content_id
             },
             success: function(data) {
                 var returned = eval('('+data+')');
                 if(returned.error) {
-                    alert("Error: "+data.error);
+                    //alert("Error: "+data.error);
                 } else {
                     meDiv.parent().html(returned.html);
                 }
