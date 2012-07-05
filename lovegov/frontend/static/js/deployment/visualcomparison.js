@@ -38,7 +38,7 @@ var VisualComparison = Class.extend
         this.skew = 100;
         if (this.dataObj['user_url'] != '')
         {
-            $('#' + divID).append('<a class="do-ajax-link" href="' + this.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt" style="position:absolute;top:15px;right:15px;"/></a>')
+            $('#' + divID).append('<a class="do-ajax-link" href="' + this.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt.png" style="position:absolute;top:15px;right:15px;"/></a>')
         }
 
     },
