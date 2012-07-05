@@ -1,6 +1,6 @@
 {% load thumbnail %}
 
-<div class="comparison_web_header" style="position:absolute;z-index:300">
+<div class="comparison_web_header">
     {% thumbnail compareUserProfile.getProfileImage.image "25x25" crop="center" as img %}
         <img style="float:left" src="{{ img.url }}"/>
     {% endthumbnail %}
