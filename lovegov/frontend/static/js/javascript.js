@@ -52,7 +52,8 @@ function rebindFunction()
             loadUserList();
             loadGoogleMap();
             break;
-        case 'qaweb':                                           // /web
+        case 'qaweb':
+            selectHeaderLink("web-link");                        // /web
             loadQAWeb();
             hideFooter();
             break;
@@ -2844,6 +2845,8 @@ function bindFeedItems()
 var feed_metadata;
 function loadNewFeed() {
 
+    selectHeaderLink("home-link");
+
     $(".how-does").click(function(event) {
         event.preventDefault();
         ajaxPost({
@@ -3895,7 +3898,7 @@ var match_hover_off = true;
 var match_autoswitch;
 function loadNewMatch() {
 
-    selectHeaderLink("match-link")
+    selectHeaderLink("match-link");
 
     swapFeatured(match_current_section);
 
@@ -3910,7 +3913,7 @@ function loadNewMatch() {
     match_autoswitch= setInterval(function()
     {
         if (match_hover_off) {
-            swapFeatured("right");
+            //swapFeatured("right");
         }
 
     }, 2000);
