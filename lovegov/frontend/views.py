@@ -343,6 +343,8 @@ def compareWeb(request,alias=None,vals={}):
         if alias:
             user = vals['viewer']
             vals['viewer'] = UserProfile.objects.get(alias=alias)
+            vals['compareUserProfile'] = vals['viewer']
+
             comparison = getUserUserComparison(user, vals['viewer'])
             getUserWebResponsesJSON(request,vals)
             vals['json'] = comparison.toJSON()

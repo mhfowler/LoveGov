@@ -63,6 +63,7 @@ var QAWebHover = Class.extend
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
                 $('#question-weight-div').hide();
+                $('.qaweb-pointer-box').hide();
                 $('#value_statement').hide();
             }
         },
@@ -208,10 +209,23 @@ var QAWebHover = Class.extend
                         if (i==0) { userAnswer=1; }
                         else { userAnswer=0; }
 
-                        $('.answer-' + userAnswer).addClass('answer-selected');
+                        var offset = $('.answer-' + userAnswer).offset();
+                        offset.top+= $('.answer-' + i).height()/2 - $('.qaweb-pointer-box').height()/2;
+                        offset.left-=$('.qaweb-pointer-box').width() + 10;
+                        $('#your_pointer').show().offset(offset).show('slide');
 
+                        var offset2 = $('.answer-' + i).offset();
+                        offset2.top+= $('.answer-' + i).height()/2- $('.qaweb-pointer-box').height()/2;
+                        offset2.left-=$('.qaweb-pointer-box').width() + 10;
+                        $('#compare_pointer').show().offset(offset2).show('slide');
                     }
-
+                    else
+                    {
+                        var offset2 = $('.answer-' + i).offset();
+                        offset2.top+= $('.answer-' + i).height()/2 - $('.qaweb-pointer-box').height()/2;
+                        offset2.left-=$('.qaweb-pointer-box').width() + 10;
+                        $('#same_pointer').show().offset(offset2).show('slide');
+                    }
                 }
 
             }
