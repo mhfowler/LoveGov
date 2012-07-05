@@ -1039,7 +1039,9 @@ def initializeVotingRecord():
                     traceback.print_exc()
 
 def initializeVotingRecordFast():
+    count = 0
     for num in range(109,113):
+        count += 1
         filePath = '/data/govtrack/' + str(num) + "/rolls/"
         fileListing = os.listdir(filePath)
         fileCount = filecount(filePath)
