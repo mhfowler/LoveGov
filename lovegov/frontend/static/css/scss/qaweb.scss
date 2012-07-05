@@ -224,5 +224,26 @@ div.topic-progress-div
 }
 
 
+div.qaweb-pointer-box
+{
+  position:absolute;
+  width:200px;
+  height:25px;
+  background-color:$red;
+  color:white;
+  text-align:center;
+  font-size:14px;
+  padding-top:5px;
+
+  @include rounded(5px);
+
+  div.qaweb-pointer
+  {
+    @include trianglePointer($direction:'right',$width:7px,$color-inner:$red,$color-border:$red,$offset:9px);
+  }
+
+}
+
+
 
 

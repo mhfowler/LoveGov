@@ -26,6 +26,31 @@
                         <input id="weight-input" type="hidden" name="weight" value="5"/>
                     </div>
                     <div id="answers">
+
+                        <div id="your_pointer" class="qaweb-pointer-box" style="display:none">
+                            <div class="qaweb-pointer">
+                                <div class="border"></div>
+                                <div class="inner"></div>
+                            </div>
+                            Your Answer
+                        </div>
+
+                        <div id="compare_pointer" class="qaweb-pointer-box" style="display:none">
+                            <div class="qaweb-pointer">
+                                <div class="border"></div>
+                                <div class="inner"></div>
+                            </div>
+                            {{ compareUserProfile.get_first_name }}'s Answer
+                        </div>
+
+                        <div id="same_pointer" class="qaweb-pointer-box" style="display:none">
+                            <div class="qaweb-pointer">
+                                <div class="border"></div>
+                                <div class="inner"></div>
+                            </div>
+                            You both chose this answer.
+                        </div>
+
                         <ul id="answers-ul">
                             <!-- answer choices go here -->
                         </ul>
