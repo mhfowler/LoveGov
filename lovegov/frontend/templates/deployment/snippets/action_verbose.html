@@ -245,9 +245,12 @@
         {% endif %}
 
     {% elif type == 'ED' %}
-        {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-        edited
-        {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        <td class="action-thumbnail"><img src="/static/images/feed/edit-feed.png"/></td>
+        <td class="action-text">
+            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            edited
+            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
 
     {% elif type == 'XX' %}
         {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}

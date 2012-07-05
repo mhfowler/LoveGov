@@ -397,6 +397,11 @@ def editAccount(request, vals={}):
     if box == 'basic_info':
         viewer.first_name = request.POST['first_name']
         viewer.last_name = request.POST['last_name']
+
+        address = request.POST['address']
+        zip = address
+
+        viewer.location = locationHelper(address, zip)
         viewer.save()
 
     elif box == 'profile':

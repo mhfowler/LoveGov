@@ -88,34 +88,44 @@ def getRedirectURI(request, redirect):
 # Handles access token, and log in, register or deny appropriately
 #-----------------------------------------------------------------------------------------------------------------------
 def fbLogin(request, vals={}):
+
     from lovegov.modernpolitics.register import createFBUser
     me = fbGet(request, 'me')
-    if me:
+
+    if not me:
+        return False
+    else:
         fb_id = me['id']
         fb_email = me['email']
         user_prof = UserProfile.lg.get_or_none(facebook_id=fb_id)
         logging.debug("fb")
+        refresh = True
         # if there is not lg user with fb id, check for user with same email
         if not user_prof:
             logging.debug("fb - by email")
             user_prof = UserProfile.lg.get_or_none(email=fb_email)
-            # if there is no user with facebook email
+
+            # REGISTER
             if not user_prof:
+                refresh = False
                 logging.debug("fb - register")
                 name = me['first_name'] + " " + me['last_name']
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
-            vals['viewer'] = user_prof
-            user_prof.facebook_id = fb_id
+                vals['viewer'] = user_prof
+                user_prof.facebook_id = fb_id
+                user_prof.refreshFB(me)
+                fbMakeFriends(request, vals)
+                user_prof.save()
+
+        if refresh:                     # if not register and user.first_login=True
             user_prof.refreshFB(me)
-            fbMakeFriends(request, vals)
-            user_prof.save()
+
+        # login
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
         return True
-    else:
-        return False
 
 
 #-----------------------------------------------------------------------------------------------------------------------
