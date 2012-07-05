@@ -401,8 +401,11 @@ def editAccount(request, vals={}):
         if 'address' in request.POST:
             address = request.POST['address']
             zip = address
-            viewer.location = locationHelper(address, zip)
-            viewer.save()
+            try:
+                viewer.location = locationHelper(address, zip)
+                viewer.save()
+            except:
+                pass
 
     elif box == 'profile':
         if 'image' in request.FILES:
