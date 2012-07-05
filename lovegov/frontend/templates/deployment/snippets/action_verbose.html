@@ -47,6 +47,10 @@
         <td class="action-thumbnail">
             {% thumbnail to_user.getImage "25x25" crop="center" as im %}
                 <img src="{{ im.url }}" class="icon-small"/>
+            {% empty %}
+                {% thumbnail defaultProfileImage geometry crop="center" as img %}
+                    <img class="avatar-image" src="{{ img.url }}"/>
+                {% endthumbnail %}
             {% endthumbnail %}
         </td>
         <td class="action-text">
