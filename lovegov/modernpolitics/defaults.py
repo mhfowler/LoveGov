@@ -1050,7 +1050,10 @@ def initializeVotingRecordFast():
             fileXML = open(filePath + infile)
             parsedXML = BeautifulStoneSoup(fileXML)
 
-            bill_tuple = (parsedXML.bill.get('session'),parsedXML.bill.get('type') + parsedXML.bill.get('number'))
+            bill_tuple = None
+            if parsedXML.bill:
+                bill_tuple = (parsedXML.bill['session'],parsedXML.bill['type'] + parsedXML.bill['number'])
+                
             if bill_tuple in IMPORTANT_LEGISLATION or bill_tuple in IMPORTANT_AMENDMENTS:
 
                 congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
