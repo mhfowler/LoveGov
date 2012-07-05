@@ -439,7 +439,7 @@ function editContent(c_id,info,edit_div)
             var obj = eval('(' + data + ')');
             if( obj.success )
             {
-                edit_div.text(obj.value);
+                edit_div.html(obj.value);
                 edit_div.show();
             }
         },
@@ -1010,32 +1010,39 @@ function loadHeader()
     }
 
 
-    $(".security_setting").click(function(event)
+    $(".security_setting").each(function(event)
     {
-        switch($.cookie('privacy'))
+        if (!$(this).hasClass("has_security_setting"))
         {
-            case "PUB":
-                $.cookie('privacy','PRI', {path:'/'});
-                $(".security_setting").each(function()
+            $(this).bind("click", function()
+            {
+                switch($.cookie('privacy'))
                 {
-                    if ($(this).is('img'))
-                    {
-                        $(this).attr("src","/static/images/user-menu/lockgray.png");
-                        $(this).attr('data-original-title',priMessage);
-                    }
-                });
-                break;
-            case "PRI":
-                $.cookie('privacy','PUB', {path:'/'});
-                $(".security_setting").each(function()
-                {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
-                        $(this).attr('data-original-title',pubMessage);}
-                });
-                break;
+                    case "PUB":
+                        $.cookie('privacy','PRI', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img'))
+                            {
+                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr('data-original-title',priMessage);
+                            }
+                        });
+                        break;
+                    case "PRI":
+                        $.cookie('privacy','PUB', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                                $(this).attr('data-original-title',pubMessage);}
+                        });
+                        break;
+                }
+            });
+
+            $(this).addClass("has_security_setting");
         }
     });
-
 
     /**
      * Handles styling of header links
@@ -4067,6 +4074,7 @@ function swapInHover(div) {
 function bindChangeContentPrivacy() {
 
     $('div.change-privacy').bindOnce('click', function() {
+        alert('clicky');
         var content_id = $(this).data('content_id');
         var meDiv = $(this);
         $(this).tooltip('hide');

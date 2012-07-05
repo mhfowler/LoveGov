@@ -114,7 +114,6 @@
 
 <script type="text/javascript">
 
-
     var headerPosition = $('.top-logo').offset();
     headerPosition.top+=60;
     $('.comparison_web_header').offset(headerPosition);
@@ -123,9 +122,7 @@
     $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20, disabled:true});
     var userAnswers = eval('(' + "{{ userAnswers|escapejs }}" + ')');
     var questionsArray = eval('(' + "{{ questionsArray|escapejs }}" + ')');
-
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
-
     var compareUserProfile = "{{ compareUserProfile.get_first_name }}";
 
 </script>
