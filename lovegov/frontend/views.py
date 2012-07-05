@@ -1045,7 +1045,7 @@ def matchRepresentatives(request, vals={}):
         comparison = x.getComparison(viewer)
         x.compare = comparison.toJSON()
         x.result = comparison.result
-    list.sort(key=lambda x:x.result,reverse=True)
+    congressmen.sort(key=lambda x:x.result,reverse=True)
 
     if not congressmen:
         vals['invalid_address'] = True
