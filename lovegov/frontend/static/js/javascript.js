@@ -4030,7 +4030,8 @@ function swapInHover(div) {
     ajaxPost({
             data: {
                 'action':'matchComparison',
-                'item_url': item_url
+                'item_url': item_url,
+                'log-ignore': true
             },
             success: function(data)
             {
@@ -4060,7 +4061,7 @@ function bindChangeContentPrivacy() {
         ajaxPost({
             data: {
                 'action': 'changeContentPrivacy',
-                'content_id': content_id,
+                'content_id': content_id
             },
             success: function(data) {
                 var returned = eval('('+data+')');
