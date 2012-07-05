@@ -952,6 +952,9 @@ function loadHeader()
         event.stopPropagation();
     });
 
+    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
+    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
+
 
     if ($.cookie('privacy'))
     {
@@ -962,14 +965,18 @@ function loadHeader()
                 $(".security_setting").each(function()
                 {
                     if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
-
+                    $(this).attr('data-original-title',pubMessage);
                 });
                 break;
             case "PRI":
                 $.cookie('privacy','PRI', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+                    if ($(this).is('img'))
+                    {
+                        $(this).attr("src","/static/images/user-menu/lockgray.png") ;
+                        $(this).attr('data-original-title',priMessage);
+                    }
                 });
                 break;
         }
@@ -979,7 +986,11 @@ function loadHeader()
         $.cookie('privacy','PUB', {path:'/'});
         $(".security_setting").each(function()
         {
-            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+            if ($(this).is('img'))
+            {
+                $(this).attr("src","/static/images/public.png");
+                $(this).attr('data-original-title',pubMessage);
+            }
 
         });
     }
@@ -995,14 +1006,19 @@ function loadHeader()
                 $.cookie('privacy','PRI', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/user-menu/lockgray.png") }
+                    if ($(this).is('img'))
+                    {
+                        $(this).attr("src","/static/images/user-menu/lockgray.png");
+                        $(this).attr('data-original-title',priMessage);
+                    }
                 });
                 break;
             case "PRI":
                 $.cookie('privacy','PUB', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                        $(this).attr('data-original-title',pubMessage);}
                 });
                 break;
         }

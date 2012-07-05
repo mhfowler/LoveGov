@@ -120,7 +120,7 @@ def getOtherNetwork():
         return initializeOtherNetwork()
 
 def getCongressNetwork():
-    to_return = Network.lg.get_or_none(name="congress")
+    to_return = Network.lg.get_or_none(alias="congress")
     if to_return:
         return to_return
     else:
@@ -418,19 +418,18 @@ def initializeOtherNetwork():
 # Initialize network for congress
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongressNetwork():
-    if Network.objects.filter(name="congress"):
+    if Network.objects.filter(alias="congress"):
         print ("...congress network already initialized")
     else:
         network = Network(alias="congress")
-        network.title = "Congress Network"
-        network.summary = "Network of all members of Congress."
+        network.title = "Congress"
+        network.summary = "all members of Congress."
         network.autoSave()
         # join all members
-        congress = UserProfile.objects.filter(Q(user_type='S') | Q(user_type='R'))
+        congress = ElectedOfficial.objects.all()
         for u in congress:
             network.members.add(u)
-            u.network_id = network.id
-            u.save()
+            u.networks.add(network)
         print ("initialized: Congress Network")
         return network
 
@@ -990,29 +989,6 @@ def countXMLAmendments():
             else:
                 pass
     return count
-
-# Initialize Voting Records
-def initializeVotingRecord():
-    total = 0
-    already = LegislationAmendment.objects.all().count() - 5
-
-    for num in range(109,113):
-        total += 1
-        if total > already:
-            filePath = '/data/govtrack/' + str(num) + "/rolls/"
-            fileListing = os.listdir(filePath)
-            fileCount = filecount(filePath)
-            for infile in fileListing:
-                db.reset_queries()
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
-                congressRoll = CongressRoll()
-                try:
-                    congressRoll.setSaveAttributes(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-
 
 # Initialize Voting Records
 def initializeVotingRecord():

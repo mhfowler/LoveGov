@@ -261,7 +261,11 @@ def scriptCreateCongressAnswers(args=None):
                                     response = UserResponse.lg.get_or_none(responder=electedofficial,question=question)
                                     if not response:
                                         response = UserResponse(responder=electedofficial,question=question,answer_val=answer_val,explanation="")
-                                    response.autoSave(creator=electedofficial)
+                                        response.autoSave(creator=electedofficial)
+                                    else:
+                                        response.answer_val = answer_val
+                                        response.save()
+
                                     #print "WORKED FOR " + electedofficial.get_name().encode('utf-8','ignore')
                                     metrics[metricName]+= 1
                                 else:
