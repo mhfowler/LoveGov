@@ -96,7 +96,7 @@ STATUS_SHARE = 0
 STATUS_FOLLOW = 0
 
 NOTIFICATION_INCREMENT = 5
-MEMBER_INCREMENT = 25
+MEMBER_INCREMENT = 24
 GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']

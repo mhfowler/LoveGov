@@ -742,6 +742,8 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = group.getMembers(num=num_members)
     vals['num_members'] = num_members
 
+    vals['num_group_members'] = group.members.count()
+
     setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/center/group.html', vals, request)
     url = group.get_url()
