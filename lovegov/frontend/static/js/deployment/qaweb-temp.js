@@ -222,6 +222,7 @@ var QAWebHover = Class.extend
                     offset2.top+= $('.answer-' + i).height()/2- $('.qaweb-pointer-box').height()/2;
                     offset2.left-=$('.qaweb-pointer-box').width() + 10;
                     $('#compare_pointer').show().offset(offset2).show('slide');
+                    break;
                 }
                 else
                 {
@@ -229,6 +230,7 @@ var QAWebHover = Class.extend
                     offset2.top+= $('.answer-' + i).height()/2 - $('.qaweb-pointer-box').height()/2;
                     offset2.left-=$('.qaweb-pointer-box').width() + 10;
                     $('#same_pointer').show().offset(offset2).show('slide');
+                    break;
                 }
             }
         },
