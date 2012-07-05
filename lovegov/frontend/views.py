@@ -32,7 +32,8 @@ def viewWrapper(view, requires_login=False):
     def new_view(request, *args, **kwargs):
         vals = {}
         # check browser
-        print "browser" + request.META['HTTP_USER_AGENT']
+        if not checkBrowserCompatible(request):
+            return shortcuts.redirect("/upgrade/")
         if requires_login:
             try:
                 user = getUserProfile(request)
@@ -83,6 +84,14 @@ def learnmore(request):
 
 def underConstruction(request):
     return render_to_response('deployment/pages/microcopy/construction.html')
+
+def upgrade(request):
+    return render_to_response('deployment/pages/upgrade.html')
+
+def continueAtOwnRisk(request):
+    response = shortcuts.redirect("/web/")
+    response.set_cookie('atyourownrisk', 'yes')
+    return response
 
 def splashForm(request,templateURL):
     vals = {}
@@ -343,10 +352,17 @@ def compareWeb(request,alias=None,vals={}):
         if alias:
             user = vals['viewer']
             vals['viewer'] = UserProfile.objects.get(alias=alias)
+            vals['compareUserProfile'] = vals['viewer']
+
             comparison = getUserUserComparison(user, vals['viewer'])
             getUserWebResponsesJSON(request,vals)
-            vals['viewer'] = user
             vals['json'] = comparison.toJSON()
+
+            vals['viewer'] = user
+            tempvals = {'viewer':user}
+            getUserWebResponsesJSON(request,vals=tempvals)
+            vals['viewerAnswers'] = tempvals['questionsArray']
+
             setPageTitle("lovegov: web2",vals)
             html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
             url = '/profile/web/' + alias + '/'
@@ -388,7 +404,7 @@ def theFeed(request, vals={}):
 
     setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/center/feed/feed.html', vals, request)
-    url = '/feed/'
+    url = '/home/'
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -986,25 +1002,27 @@ def matchPresidential(request, vals={}):
         presidential_user.compare = comparison.toJSON()
         presidential_user.result = comparison.result
     list.sort(key=lambda x:x.result,reverse=True)
-    vals['presidential_users'] = list
+    vals['presidential'] = list
 
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
-        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
-        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+        elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+        brown = ElectedOfficial.objects.get(first_name="Scott", last_name="Brown")
+        voters = getLoveGovGroup()
     else:
-        obama = viewer
-        paul = viewer
-        romney = viewer
-    list = [obama,paul,romney]
-    for presidential_user in list:
-        comparison = getUserUserComparison(viewer, presidential_user)
-        presidential_user.compare = comparison.toJSON()
-        presidential_user.result = comparison.result
+        elizabeth = viewer
+        brown = viewer
+        voters = viewer
+    list = [elizabeth, brown, voters]
+    for x in list:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
     list.sort(key=lambda x:x.result,reverse=True)
-    vals['massachusettes_users'] = list
+    vals['elizabeth'] = elizabeth
+    vals['brown'] = brown
+    vals['mass'] = voters
 
 def matchRepresentatives(request, vals={}):
 

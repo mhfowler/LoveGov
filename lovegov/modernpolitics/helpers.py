@@ -18,6 +18,32 @@ from django.template import loader
 # python
 import string
 import datetime
+import httpagentparser
+
+#-----------------------------------------------------------------------------------------------------------------------
+# takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
+# is the referer if it is an ajax request.
+#-----------------------------------------------------------------------------------------------------------------------
+def checkBrowserCompatible(request):
+
+    to_return = True
+
+    cookie = request.COOKIES.get('atyourownrisk')
+    if cookie:
+        if cookie == 'yes':
+            return True
+
+    user_agent = request.META['HTTP_USER_AGENT']
+    parsed = httpagentparser.detect(user_agent)
+    browser = parsed.get('browser')
+    if browser:
+        browser_name = browser.get('name')
+        print "name " + browser_name
+        if browser_name in PROHIBITED_BROWSERS:
+            to_return = False
+
+    return to_return
+
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
 # is the referer if it is an ajax request.

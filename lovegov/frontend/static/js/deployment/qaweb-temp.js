@@ -63,6 +63,7 @@ var QAWebHover = Class.extend
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
                 $('#question-weight-div').hide();
+                $('#value_statement').hide();
             }
         },
         showHover: function(node)
@@ -84,6 +85,7 @@ var QAWebHover = Class.extend
 
         showAnswers: function(node)
         {
+            $('#value_statement').show();
             $('#question-weight-div').show();
             this._printAnswers();
             //this._bindAnswers();
@@ -200,6 +202,37 @@ var QAWebHover = Class.extend
                     self._moveSlider(value);
                     $('.answer-' + i + ' input').attr("checked", true);
                     $('.answer-' + i).addClass('answer-selected');
+                }
+            }
+            for (var i=0; i<this.node.answers.length;i++)
+            {
+                if (this.node.answers[i].user_answer)
+                {
+                    if (this.node.diffAnswer)
+                    {
+                        var userAnswer;
+                        if (i==0) { userAnswer=1; }
+                        else { userAnswer=0; }
+
+                        var offset = $('.answer-' + userAnswer).offset();
+                        offset.top+= $('.answer-' + userAnswer).height()/2 - $('.qaweb-pointer-box').height()/2;
+                        offset.left-=$('.qaweb-pointer-box').width() + 10;
+                        $('#your_pointer').show().offset(offset).show('slide');
+
+                        var offset2 = $('.answer-' + i).offset();
+                        offset2.top+= $('.answer-' + i).height()/2- $('.qaweb-pointer-box').height()/2;
+                        offset2.left-=$('.qaweb-pointer-box').width() + 10;
+                        $('#compare_pointer').show().offset(offset2).show('slide');
+                        break;
+                    }
+                    else
+                    {
+                        var offset2 = $('.answer-' + i).offset();
+                        offset2.top+= $('.answer-' + i).height()/2 - $('.qaweb-pointer-box').height()/2;
+                        offset2.left-=$('.qaweb-pointer-box').width() + 10;
+                        $('#same_pointer').show().offset(offset2).show('slide');
+                        break;
+                    }
                 }
             }
         },
@@ -350,6 +383,7 @@ var QAWebHover = Class.extend
          */
         toggleQuestion: function(node)
         {
+            $('.qaweb-pointer-box').hide();
             // CASE: user clicks the same question or hasn't clicked a question yet
             if (this.node == null || !this.node.clicked)
             {
@@ -719,6 +753,7 @@ var Question = Node.extend
             this.id = data['id'];
             this.answers = data['answers'];
             this.answered = this._checkAnswered();
+            this.diffAnswer = true;
             this.user_explanation = data['user_explanation'];
             this._super(data);
         },
@@ -776,6 +811,22 @@ var Question = Node.extend
         HTML_appendImg: function()
         {
             var self = this;
+
+
+            var questions = userAnswers[this.parents.text];
+            for (var j=0;j<questions.length;j++)
+            {
+                if (questions[j].id == self.id)
+                {
+                    for (var z=0;z<self.answers.length;z++)
+                    {
+                        if (questions[j].answers[z].user_answer == self.answers[z].user_answer)
+                        {
+                            self.diffAnswer = false;
+                        }
+                    }
+                }
+            }
             var src = 'src="' + self.getImage('default') + '"';
             var style = 'style="position:absolute;width:' + this.base_width + 'px"';
             $('#' + self.idDiv).append("<img class='question-node-img' id='" + self.idImg + "' " + src + style + " " + "/>");
@@ -804,21 +855,20 @@ var Question = Node.extend
 
         getImage: function(state)
         {
+            var stateString = "";
             switch(state)
             {
                 case 'hover':
-                    if (this.answered) return this.imgref['answeredHover'].src;
-                    else return this.imgref['unansweredHover'].src;
-                    break;
+                    stateString = "Hover"; break;
                 case 'default':
-                    if (this.answered) return this.imgref['answeredDefault'].src;
-                    else return this.imgref['unansweredDefault'].src;
-                    break;
+                    stateString = "Default"; break;
                 case 'answering':
-                    if (this.answered){ return this.imgref['answeredAnswering'].src; }
-                    else{ return this.imgref['unansweredAnswering'].src; }
-                    break;
+                    stateString = "Answering"; break;
             }
+
+            if (this.answered && !this.diffAnswer) return this.imgref['answered' + stateString].src;
+            else if (this.answered && this.diffAnswer) return this.imgref['diffanswer' + stateString].src;
+            else return this.imgref['unanswered' + stateString].src;
         },
 
         // UI FUNCTIONALITY
@@ -1056,7 +1106,7 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
-            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2,16);
+            var text = createText((percentage*100).toFixed() + '%',self.base_width/2,self.base_height/2+3,15);
 
 
             layer.add(circle);

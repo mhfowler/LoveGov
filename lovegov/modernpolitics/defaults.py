@@ -790,7 +790,8 @@ def filecount(path):
 
 def initializeCongress():
     from lovegov.modernpolitics.register import createUser
-    for num in range(109,113):
+    for num in range(112,108,-1):
+        print num
         pathXML = '/data/govtrack/' + str(num) + "/people.xml"
         fileXML = open(pathXML)
         parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
@@ -819,7 +820,7 @@ def initializeCongress():
 
 
 def initializeCommittees():
-    for num in range(109,113):
+    for num in range(112,108,-1):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
         fileXML = open(filePath)
         BeautifulStoneSoup.NESTABLE_TAGS["member"] = []
@@ -847,6 +848,39 @@ def initializeLegislation():
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
                 fileXML = open(filePath + infile)
+                parsedXML = BeautifulStoneSoup(fileXML)
+                newLegislation = Legislation()
+                try:
+                    newLegislation.setSaveAttributes(parsedXML)
+                except:
+                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                    traceback.print_exc()
+                    count += 1
+            else:
+                print total
+
+            total+=1
+
+
+def initializeLegislationFast():
+    total = 0
+    acceptable_files = []
+    for legislation in IMPORTANT_LEGISLATION:
+        path = '/data/govtrack/' + legislation[0] + "/bills/" + legislation[1] + ".xml"
+        acceptable_files.append(path)
+
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/bills/"
+        fileListing = os.listdir(filePath)
+        fileCount = filecount(filePath)
+        count = 1
+        for infile in fileListing:
+            full_file_path = filePath + infile
+            if full_file_path in acceptable_files:
+                print 'AMERICA - FUCK YEAH'
+                db.reset_queries()
+                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                fileXML = open(full_file_path)
                 parsedXML = BeautifulStoneSoup(fileXML)
                 newLegislation = Legislation()
                 try:
@@ -898,6 +932,44 @@ def initializeLegislationAmendments():
 
             total += 1
 
+
+def initializeLegislationAmendmentsFast():
+    total = 0
+    acceptable_files = []
+
+    for amend in IMPORTANT_AMENDMENTS:
+        path = '/data/govtrack/' + amend[0] + "/bills.amdt/" + amend[1] + ".xml"
+        acceptable_files.append(path)
+
+    for num in range(109,113):
+        filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
+        fileListing = os.listdir(filePath)
+        fileCount = filecount(filePath)
+        count = 1
+        for infile in fileListing:
+            full_file_path = filePath + infile
+            if full_file_path in acceptable_files:
+                print 'do it now'
+                db.reset_queries()
+                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                if ".xml" in infile:
+                    fileXML = open(full_file_path)
+                    parsedXML = BeautifulStoneSoup(fileXML)
+                    newLegislation = LegislationAmendment()
+                    try:
+                        newLegislation.saveXML(parsedXML)
+                    except:
+                        print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                        traceback.print_exc()
+                    count+=1
+                    print "success: " + str(total)
+
+            else:
+                print total
+
+            total += 1
+
+
 def countLegislationAmendments():
     count = 0
     for num in range(109,113):
@@ -905,7 +977,7 @@ def countLegislationAmendments():
         count += filecount(filePath)
     return count
 
-def countNonXMLAmendments():
+def countXMLAmendments():
     count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
@@ -914,9 +986,9 @@ def countNonXMLAmendments():
         for infile in fileListing:
             db.reset_queries()
             if ".xml" in infile:
-                pass
-            else:
                 count += 1
+            else:
+                pass
     return count
 
 # Initialize Voting Records

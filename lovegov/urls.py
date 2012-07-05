@@ -50,6 +50,8 @@ urlpatterns += patterns('',
 
     # under construction
     (r'^underconstruction/$', views.underConstruction),
+    (r'^upgrade/$', views.upgrade),
+    (r'^continue/$', views.continueAtOwnRisk),
 
     # main pages
     (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds

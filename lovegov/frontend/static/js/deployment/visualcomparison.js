@@ -36,6 +36,8 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
+        if (this.dataObj['user_url'] != '') { $('#' + divID).append('<a style="position:absolute;top:15px;right:15px;z-index:5000" class="do-ajax-link" href="' + this.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt.png" style="width:25px"/></a>')}
+        loadAjaxifyAnchors();
     },
 
     /**
@@ -44,7 +46,7 @@ var VisualComparison = Class.extend
     draw: function()
     {
         var self = this;
-        $('#' + this.divID).css({height:self.height,width:self.width});
+        $('#' + this.divID).css({height:self.height,width:self.width,position:"relative"});
         this.stage = new Kinetic.Stage(self.divID,self.width,self.height);
         this.drawTopics();
         this.drawMiddle();
@@ -73,16 +75,17 @@ var VisualComparison = Class.extend
             self.textLayer.remove(textobj);
             self.textLayer.draw();
         });
+        /*
         circle.on('click',function()
         {
             if (self.dataObj['user_url'] != '')
             {
                 ajaxLink(self.dataObj['user_url'],true);
             }
-        });
+        });*/
         self.shapesLayer.add(circle);
 
-        var percentText = createText((percentage*100).toFixed() + '%',x,y+3,16);
+        var percentText = createText((percentage*100).toFixed() + '%',x,y+3,15);
         percentText.on("mouseover",function()
         {
             self.textLayer.add(textobj);

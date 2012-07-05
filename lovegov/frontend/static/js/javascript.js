@@ -1017,25 +1017,25 @@ function loadHeader()
         linkElement.css({color:'#ffffff','padding-top':"10px",'padding-bottom':"6px",'background-color':'#f0503b'});
     }
     // ajax link home page
-    $("#home-link").click(function(event)
+    $("#about-link").click(function(event)
     {
         $('.top-links').children('a').removeAttr('style');
         return false;
     });
     // ajax link home page
-    $("#web-link").click(function(event)
+    $("#home-link").click(function(event)
     {
         applySelectLinkStyle($(this));
         return false;
     });
     // ajax link home page
-    $("#about-link").click(function(event)
+    $("#match-link").click(function(event)
     {
         applySelectLinkStyle($(this));
         return false;
     });
     // ajax link match page
-    $("#match-link").click(function(event)
+    $("#web-link").click(function(event)
     {
         applySelectLinkStyle($(this));
         return false;
@@ -3887,7 +3887,10 @@ function getAllGroupMembers(start, num, g_id) {
     });
 }
 
-
+function selectHeaderLink(div) {
+    $(".header-link").removeClass("clicked");
+    $("#" + div).addClass("clicked");
+}
 
 
 /***********************************************************************************************************************
@@ -3898,6 +3901,8 @@ function getAllGroupMembers(start, num, g_id) {
 var match_hover_off = true;
 var match_autoswitch;
 function loadNewMatch() {
+
+    selectHeaderLink("match-link")
 
     swapFeatured(match_current_section);
 
