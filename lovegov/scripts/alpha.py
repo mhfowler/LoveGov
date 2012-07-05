@@ -259,7 +259,9 @@ def scriptCreateCongressAnswers(args=None):
                                 answer_val = answer.value
                                 if Question.objects.filter(answers__answer_text=answer_text).exists():
                                     question = Question.objects.get(answers__answer_text=answer_text)
-                                    response = UserResponse(responder=electedofficial,question=question,answer_val=answer_val,explanation="")
+                                    response = UserResponse.lg.get_or_none(responder=electedofficial,question=question)
+                                    if not response:
+                                        response = UserResponse(responder=electedofficial,question=question,answer_val=answer_val,explanation="")
                                     response.autoSave(creator=electedofficial)
                                     #print "WORKED FOR " + electedofficial.get_name().encode('utf-8','ignore')
                                     metrics[metricName]+= 1

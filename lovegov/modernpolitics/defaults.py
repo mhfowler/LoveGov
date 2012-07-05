@@ -1062,7 +1062,6 @@ def initializeVotingRecordFast():
                     congressRoll = CongressRoll()
                 try:
                     congressRoll.setSaveAttributes(parsedXML)
-                    print "yay!"
                 except:
                     print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
                     traceback.print_exc()
