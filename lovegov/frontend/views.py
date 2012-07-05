@@ -299,7 +299,7 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
                 questionsArray[topic_text] = []
         answerArray = []
         for answer in question.answers.all():
-            if len(response) > 0 and not webCompare:
+            if len(response) > 0 and (not webCompare or response[0].userresponse.privacy == "PUB") :
                 checked = (answer.value == response[0].userresponse.answer_val)
                 weight = response[0].userresponse.weight
             else:
