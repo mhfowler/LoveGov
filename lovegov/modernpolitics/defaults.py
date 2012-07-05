@@ -1120,4 +1120,13 @@ def recalculateAllVotes():
         c.recalculateVotes()
 
 
+def createAllFollowGroups():
+    users = UserProfile.objects.all()
+    for user in users:
+        user.createFollowMeGroup()
+        user.createIFollowGroup()
 
+def recalculateEverything():
+    recalculateAllUserStats()
+    recalculateAllFollowGroups()
+    recalculateAllVotes()

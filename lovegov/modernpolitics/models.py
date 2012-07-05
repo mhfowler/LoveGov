@@ -1452,7 +1452,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def createIFollowGroup(self):
         if not Group.lg.get_or_none(id=self.i_follow_id):
             title = "People who " + self.get_name() + " follows"
-            group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
+            group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_feed=False)
             group.autoSave()
             self.i_follow = group
             self.save()
@@ -1464,7 +1464,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def createFollowMeGroup(self):
         if not Group.lg.get_or_none(id=self.follow_me_id):
             title = "People who follow " + self.get_name()
-            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_feed=False)
             group.autoSave()
             self.follow_me = group
             self.save()
@@ -3539,6 +3539,7 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
+        self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)
 
