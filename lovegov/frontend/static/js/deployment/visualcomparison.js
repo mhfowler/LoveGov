@@ -46,7 +46,7 @@ var VisualComparison = Class.extend
     draw: function()
     {
         var self = this;
-        $('#' + this.divID).css({height:self.height,width:self.width});
+        $('#' + this.divID).css({height:self.height,width:self.width,position:"relative"});
         this.stage = new Kinetic.Stage(self.divID,self.width,self.height);
         this.drawTopics();
         this.drawMiddle();
