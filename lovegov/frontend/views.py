@@ -291,7 +291,7 @@ def setPageTitle(title,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses proper format for web
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserWebResponsesJSON(request,vals={}):
+def getUserWebResponsesJSON(request,vals={},webCompare=False):
     questionsArray = {}
     for (question,response) in vals['viewer'].getUserResponses():
         for topic in question.topics.all():
@@ -300,7 +300,7 @@ def getUserWebResponsesJSON(request,vals={}):
                 questionsArray[topic_text] = []
         answerArray = []
         for answer in question.answers.all():
-            if len(response) > 0:
+            if len(response) > 0 and (not webCompare or response[0].userresponse.privacy == "PUB") :
                 checked = (answer.value == response[0].userresponse.answer_val)
                 weight = response[0].userresponse.weight
             else:
@@ -309,7 +309,9 @@ def getUserWebResponsesJSON(request,vals={}):
             answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
-        if len(response) > 0 : toAddquestion['user_explanation'] = response[0].userresponse.explanation
+        if len(response) > 0  : toAddquestion['user_explanation'] = response[0].userresponse.explanation
+        if not webCompare and len(response) > 0: toAddquestion['security'] = response[0].userresponse.privacy
+        else: toAddquestion['security'] = ""
         questionsArray[topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
 
@@ -353,17 +355,16 @@ def compareWeb(request,alias=None,vals={}):
     if request.method == 'GET':
         if alias:
             user = vals['viewer']
-            vals['viewer'] = UserProfile.objects.get(alias=alias)
-            vals['compareUserProfile'] = vals['viewer']
+            getUserWebResponsesJSON(request,vals=vals)
+            vals['userAnswers'] = vals['questionsArray']
 
-            comparison = getUserUserComparison(user, vals['viewer'])
-            getUserWebResponsesJSON(request,vals)
+            tempvals = {}
+            tempvals['viewer'] = UserProfile.objects.get(alias=alias)
+            comparison = getUserUserComparison(user,tempvals['viewer'])
             vals['json'] = comparison.toJSON()
-
-            vals['viewer'] = user
-            tempvals = {'viewer':user}
-            getUserWebResponsesJSON(request,vals=tempvals)
-            vals['viewerAnswers'] = tempvals['questionsArray']
+            getUserWebResponsesJSON(request,vals=tempvals,webCompare=True)
+            vals['questionsArray'] = tempvals['questionsArray']                     # populates questionsArray with user from profile page that you are looking at.
+            vals['compareUserProfile'] = tempvals['viewer']
 
             setPageTitle("lovegov: web2",vals)
             html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)

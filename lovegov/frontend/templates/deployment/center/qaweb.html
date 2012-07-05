@@ -182,6 +182,7 @@
                     <div id="qa-buttons" style="display:none">
                         <span id="answer-saved" style="float:left;display:none;font-weight:bold;color:#EF503B">Answer Saved</span>
                         <!--<a class="dialogue-buttons" href="">learn more</a>-->
+                        <img id="privacy-image" class="security_setting" src="/static/images/public.png" style="width:25px;height:25px"/>
                         <a class="discuss dialogue-buttons" href="">discuss</a>
                         <a id="next_button" class="dialogue-buttons" href="">next</a>
                     </div>
@@ -230,6 +231,46 @@
     {% else %}
         var firstLogin = false;
     {% endif %}
+
+    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
+    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
+
+
+
+    $(".security_setting").each(function(event)
+    {
+        if (!$(this).hasClass("has_security_setting"))
+        {
+            $(this).bind("click", function()
+            {
+                switch($.cookie('privacy'))
+                {
+                    case "PUB":
+                        $.cookie('privacy','PRI', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img'))
+                            {
+                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr('data-original-title',priMessage);
+                            }
+                        });
+                        break;
+                    case "PRI":
+                        $.cookie('privacy','PUB', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                                $(this).attr('data-original-title',pubMessage);}
+                        });
+                        break;
+                }
+            });
+
+            $(this).addClass("has_security_setting");
+        }
+    });
+
 </script>
 
 <!-- Web -->
