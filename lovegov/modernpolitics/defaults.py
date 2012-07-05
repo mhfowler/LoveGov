@@ -1006,29 +1006,6 @@ def initializeVotingRecord():
                 db.reset_queries()
                 fileXML = open(filePath + infile)
                 parsedXML = BeautifulStoneSoup(fileXML)
-                congressRoll = CongressRoll()
-                try:
-                    congressRoll.setSaveAttributes(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-
-
-# Initialize Voting Records
-def initializeVotingRecord():
-    total = 0
-    already = LegislationAmendment.objects.all().count() - 5
-
-    for num in range(109,113):
-        total += 1
-        if total > already:
-            filePath = '/data/govtrack/' + str(num) + "/rolls/"
-            fileListing = os.listdir(filePath)
-            fileCount = filecount(filePath)
-            for infile in fileListing:
-                db.reset_queries()
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
                 congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
                 if not congressRoll:
                     congressRoll = CongressRoll()
