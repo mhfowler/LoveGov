@@ -1453,11 +1453,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def createIFollowGroup(self):
         if not self.i_follow:
             title = "People who " + self.get_name() + " follows"
-            group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
+            group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_feed=False)
             group.autoSave()
             self.i_follow = group
             self.save()
-        return group
+        return self.i_follow
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
@@ -1465,11 +1465,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def createFollowMeGroup(self):
         if not self.follow_me:
             title = "People who follow " + self.get_name()
-            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_feed=False)
             group.autoSave()
             self.follow_me = group
             self.save()
-        return group
+        return self.follow_me
 
     #-------------------------------------------------------------------------------------------------------------------
     # Adds user to lovegov group.
@@ -3540,6 +3540,7 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
+        self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)
 
