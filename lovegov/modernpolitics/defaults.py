@@ -1126,3 +1126,9 @@ def createAllFollowGroups():
     for user in users:
         user.createFollowMeGroup()
         user.createIFollowGroup()
+
+
+def recalculateEverything():
+    recalculateAllUserStats()
+    recalculateAllFollowGroups()
+    recalculateAllVotes()
