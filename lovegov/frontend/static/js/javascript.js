@@ -1962,6 +1962,11 @@ function loadProfile()
         var $wrapper = $(this).parents(".message-wrapper");
         messageRep($wrapper);
     });
+
+    $(".message_x").bindOnce("click.message", function(event) {
+        event.preventDefault();
+        $(this).parents(".message-wrapper").hide();
+    });
 }
 
 

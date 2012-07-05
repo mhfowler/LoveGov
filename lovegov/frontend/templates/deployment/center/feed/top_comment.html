@@ -7,7 +7,7 @@
         {% with creator=top_comment.getCreator %}
             <div class="comment-image">
                 {% if top_comment.getPublic %}
-                    <div class="bind_link" data-url="{{ creator.get_url }}">
+                    <div class="bind_link top-comment-name" data-url="{{ creator.get_url }}">
                         {% include 'deployment/snippets/avatar.html' with user=creator width="20" height="20" %}
                     </div>
                 {% else %}

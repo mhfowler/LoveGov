@@ -191,8 +191,26 @@ div.middle-left
           text-align:center;
 
 
-          h4.message-header {
+          div.message-header-wrapper {
             display:block;
+            h4.message-header {
+              float:left;
+              margin-left:30px;
+            }
+            div.message_x {
+              float:right;
+              width:12px;
+              height:12px;
+              background-image: url('/static/icons/x.png');
+              background-size:cover;
+            }
+            div.message_x.clicked {
+              background-image: url('/static/icons/x_hover.png');
+            }
+            div.message_x:hover {
+              background-image: url('/static/icons/x_hover.png');
+              cursor:pointer;
+            }
           }
           textarea.message-textarea {
             margin-top: 15px;
