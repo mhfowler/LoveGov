@@ -50,7 +50,7 @@
                             {{ longitude }}
                         </p>
 
-                        {% if not invalid_address %}
+                        {% if invalid_address %}
                             <div class="new-address-wrapper">
                                 {% include 'deployment/center/match/address.html' %}
                             </div>

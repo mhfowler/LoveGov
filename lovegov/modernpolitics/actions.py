@@ -364,6 +364,7 @@ def submitAddress(request, vals={}):
     address = request.POST['address']
     city = request.POST['city']
     zip = request.POST['zip']
+    address = address + ', ' + city
 
     location = locationHelper(address, zip)
 
