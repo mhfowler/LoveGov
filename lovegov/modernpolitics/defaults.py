@@ -1041,12 +1041,12 @@ def initializeVotingRecord():
 def initializeVotingRecordFast():
     count = 0
     for num in range(109,113):
-        count += 1
-        print count
         filePath = '/data/govtrack/' + str(num) + "/rolls/"
         fileListing = os.listdir(filePath)
         fileCount = filecount(filePath)
         for infile in fileListing:
+            count += 1
+            print count
             db.reset_queries()
             fileXML = open(filePath + infile)
             parsedXML = BeautifulStoneSoup(fileXML)
@@ -1062,6 +1062,7 @@ def initializeVotingRecordFast():
                     congressRoll = CongressRoll()
                 try:
                     congressRoll.setSaveAttributes(parsedXML)
+                    print "yay!"
                 except:
                     print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
                     traceback.print_exc()
