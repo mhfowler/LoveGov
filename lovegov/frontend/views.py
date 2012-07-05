@@ -38,7 +38,7 @@ def viewWrapper(view, requires_login=False):
             try:
                 user = getUserProfile(request)
                 # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE and not LOCAL:
+                if UPDATE:
                     if not user:
                         return shortcuts.redirect("/login/")
                     elif not user.developer:
