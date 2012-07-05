@@ -1039,30 +1039,26 @@ def initializeVotingRecord():
                     traceback.print_exc()
 
 def initializeVotingRecordFast():
-    total = 0
-
     for num in range(109,113):
-        total += 1
-        if total > already:
-            filePath = '/data/govtrack/' + str(num) + "/rolls/"
-            fileListing = os.listdir(filePath)
-            fileCount = filecount(filePath)
-            for infile in fileListing:
-                db.reset_queries()
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
+        filePath = '/data/govtrack/' + str(num) + "/rolls/"
+        fileListing = os.listdir(filePath)
+        fileCount = filecount(filePath)
+        for infile in fileListing:
+            db.reset_queries()
+            fileXML = open(filePath + infile)
+            parsedXML = BeautifulStoneSoup(fileXML)
 
-                bill_tuple = (parsedXML.bill['session'],parsedXML.bill['type'] + parsedXML.bill['number'])
-                if bill_tuple in IMPORTANT_LEGISLATION or bill_tuple in IMPORTANT_AMENDMENTS:
+            bill_tuple = (parsedXML.bill['session'],parsedXML.bill['type'] + parsedXML.bill['number'])
+            if bill_tuple in IMPORTANT_LEGISLATION or bill_tuple in IMPORTANT_AMENDMENTS:
 
-                    congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
-                    if not congressRoll:
-                        congressRoll = CongressRoll()
-                    try:
-                        congressRoll.setSaveAttributes(parsedXML)
-                    except:
-                        print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                        traceback.print_exc()
+                congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
+                if not congressRoll:
+                    congressRoll = CongressRoll()
+                try:
+                    congressRoll.setSaveAttributes(parsedXML)
+                except:
+                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
+                    traceback.print_exc()
 
 
 def countVotingRecords():
