@@ -1132,10 +1132,12 @@ def createAllFollowGroups():
 
 def recalculatePetitions():
     for p in Petition.objects.all():
+        print p.title
         signed = Signed.objects.filter(content=p)
         p.current = signed.count()
         p.save()
         for x in p.signers.all():
+            print "resign: " + x.get_name()
             already = Signed.lg.get_or_none(user=x, content=p)
             if not already:
                 p.signers.remove(x)
