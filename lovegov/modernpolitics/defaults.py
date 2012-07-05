@@ -1119,3 +1119,5 @@ def recalculateAllVotes():
     for c in content:
         c.recalculateVotes()
 
+
+

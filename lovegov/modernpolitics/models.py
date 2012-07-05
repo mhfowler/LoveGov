@@ -1450,25 +1450,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createIFollowGroup(self):
-        if not self.i_follow:
+        if not Group.lg.get_or_none(id=self.i_follow_id):
             title = "People who " + self.get_name() + " follows"
             group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
             group.autoSave()
             self.i_follow = group
             self.save()
-        return group
+        return self.i_follow
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createFollowMeGroup(self):
-        if not self.follow_me:
+        if not Group.lg.get_or_none(id=self.follow_me_id):
             title = "People who follow " + self.get_name()
             group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
             group.autoSave()
             self.follow_me = group
             self.save()
-        return group
+        return self.follow_me
 
     #-------------------------------------------------------------------------------------------------------------------
     # Adds user to lovegov group.
