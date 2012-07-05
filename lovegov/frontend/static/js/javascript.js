@@ -1006,7 +1006,7 @@ function loadHeader()
                 $.cookie('privacy','PRI', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) 
+                    if ($(this).is('img'))
                     {
                         $(this).attr("src","/static/images/user-menu/lockgray.png");
                         $(this).data('original-title',priMessage);
