@@ -50,7 +50,7 @@
                         </div>
                         {% endif %}
 
-                        {% if invalid_address %}
+                        {% if not invalid_address %}
                             <div class="new-address-wrapper">
                                 {% include 'deployment/center/match/address.html' %}
                             </div>
