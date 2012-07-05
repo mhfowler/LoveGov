@@ -43,8 +43,8 @@ def viewWrapper(view, requires_login=False):
                         return shortcuts.redirect("/login/")
                     elif not user.developer:
                         return shortcuts.redirect('/underconstruction/')
-                # ELIF NOT AUTHENTICATED REDIRECT TO LOGIN
-                elif not request.user.is_authenticated():
+                # IF NOT AUTHENTICATED REDIRECT TO LOGIN
+                if not request.user.is_authenticated():
                     print request.path
                     return HttpResponseRedirect('/login' + request.path)
                 # ELSE AUTHENTICATED
