@@ -52,8 +52,8 @@
 
                 <div class="group-stats">
                     <div class="stat-box members-stat">
-                        <div class="group-stats-number members-number">{{ group_members|length }}</div>
-                        <div class="group-stats-title">member{% if group_members|length != 1 %}s{% endif %}</div>
+                        <div class="group-stats-number members-number">{{ num_group_members }}</div>
+                        <div class="group-stats-title">member{% if num_group_members != 1 %}s{% endif %}</div>
                     </div>
                     <div class="stat-box">
                         <div class="group-stats-number">{{ group.getAverageQuestions }}</div>
