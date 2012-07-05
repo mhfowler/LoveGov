@@ -1,6 +1,11 @@
 <div class="address-box">
-    <h3 class="enter-your-address"> To find and compare yourself with your congressional representatives,
-        enter your address below. </h3>
+
+    {% if invalid_address %}
+        <h3 class="enter-your-address"> To find and compare yourself with your congressional representatives,
+            enter your address below. </h3>
+    {% else %}
+        <h3 class="enter-your-address"> Enter a new address below. </h3>
+    {% endif %}
 
     <div class="wrapper">
         <div class="inputs-wrapper">
