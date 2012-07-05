@@ -102,6 +102,14 @@ function bindTooltips() {
 }
 
 
+function bindLinks() {
+    $(".bind_link").bindOnce("click.link", function(event) {
+        event.preventDefault();
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+}
+
 /***********************************************************************************************************************
  *
  *      ~Header links
@@ -2523,6 +2531,7 @@ function getFeed(num)
             petitionBar();
             loadHoverComparison();
             bindTooltips();
+            bindLinks();
 
         },
         error: null

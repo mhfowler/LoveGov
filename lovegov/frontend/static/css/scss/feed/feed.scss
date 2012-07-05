@@ -845,3 +845,12 @@
     width: 60%;
   }
 
+
+div.bind_link {
+  float:left;
+  margin-right: 5px;
+  color:$text-blue;
+}
+div.bind_link:hover {
+  color:$black;
+}
