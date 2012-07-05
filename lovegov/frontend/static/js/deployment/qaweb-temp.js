@@ -192,6 +192,7 @@ var QAWebHover = Class.extend
         {
             var self = this;
             $('#answers-ul').empty();
+            $('.qaweb-pointer-box').hide();
             $('#answers-ul p').removeClass('answer-selected');
             for (var i=0; i<this.node.answers.length; i++)
             {
