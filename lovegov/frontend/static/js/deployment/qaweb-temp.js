@@ -210,7 +210,7 @@ var QAWebHover = Class.extend
                         else { userAnswer=0; }
 
                         var offset = $('.answer-' + userAnswer).offset();
-                        offset.top+= $('.answer-' + i).height()/2 - $('.qaweb-pointer-box').height()/2;
+                        offset.top+= $('.answer-' + userAnswer).height()/2 - $('.qaweb-pointer-box').height()/2;
                         offset.left-=$('.qaweb-pointer-box').width() + 10;
                         $('#your_pointer').show().offset(offset).show('slide');
 
