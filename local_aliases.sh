@@ -12,6 +12,7 @@ alias lgpull="cd $LG && git pull && cd -"
 alias lgcommit="cd $LG && git commit -a && cd -"
 alias lgpush="cd $LG && git push && cd -"
 alias lgpull="cd $LG && git pull && cd -"
+alias mastermerge="$LG/local_merge.sh"
 
 # functionality
 alias lgscript='python $LG/lovegov/scripts/scheduled.py'
