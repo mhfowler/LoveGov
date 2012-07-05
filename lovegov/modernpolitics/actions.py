@@ -1525,6 +1525,35 @@ def likeThis(request, vals={}):
 
     return HttpResponse(json.dumps(to_return))
 
+def changeContentPrivacy(request, vals={}):
+    html = ''
+    viewer = vals['viewer']
+    content_id = request.POST.get('content_id')
+    error = ''
+    if content_id:
+        if Content.lg.get_or_none(id=content_id):
+            content = Content.lg.get_or_none(id=content_id)
+            if viewer==content.creator:
+                if content.privacy == 'PRI':
+                    content.privacy = 'PUB'
+                elif content.privacy == 'PUB':
+                    content.privacy = 'PRI'
+                else:
+                    error = 'Content set to invalid privacy type.'
+            else:
+                error = 'You are not the owner of this content.'
+        else:
+            error = 'The given content identifier is invalid.'
+    else:
+        error = 'No content identifier given.'
+    if error=='':
+        content.save()
+        vals['content'] = content
+        html =ajaxRender('deployment/snippets/content-privacy.html', vals, request)
+    to_return = {'html':html, 'error': error}
+    print "to_return: "+str(to_return)
+    return HttpResponse(json.dumps(to_return))
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1590,6 +1619,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'messageRep': messageRep,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
+            'changeContentPrivacy': changeContentPrivacy,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
