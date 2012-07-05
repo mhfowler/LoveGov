@@ -354,17 +354,16 @@ def compareWeb(request,alias=None,vals={}):
     if request.method == 'GET':
         if alias:
             user = vals['viewer']
-            vals['viewer'] = UserProfile.objects.get(alias=alias)
-            vals['compareUserProfile'] = vals['viewer']
+            getUserWebResponsesJSON(request,vals=vals)
+            vals['userAnswers'] = vals['questionsArray']
 
-            comparison = getUserUserComparison(user, vals['viewer'])
-            getUserWebResponsesJSON(request,vals=vals,webCompare=True)
+            tempvals = {}
+            tempvals['viewer'] = UserProfile.objects.get(alias=alias)
+            comparison = getUserUserComparison(user,tempvals['viewer'])
             vals['json'] = comparison.toJSON()
-
-            vals['viewer'] = user
-            tempvals = {'viewer':user}
-            getUserWebResponsesJSON(request,vals=tempvals)
-            vals['viewerAnswers'] = tempvals['questionsArray']
+            getUserWebResponsesJSON(request,vals=tempvals,webCompare=True)
+            vals['questionsArray'] = tempvals['questionsArray']                     # populates questionsArray with user from profile page that you are looking at.
+            vals['compareUserProfile'] = tempvals['viewer']
 
             setPageTitle("lovegov: web2",vals)
             html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)

@@ -48,7 +48,7 @@
                                 <div class="border"></div>
                                 <div class="inner"></div>
                             </div>
-                            You both chose this answer.
+                            <span>You both chose this answer.</span>
                         </div>
 
                         <ul id="answers-ul">
@@ -107,9 +107,12 @@
 
     rebind = 'qaweb';
     $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20, disabled:true});
-    var userAnswers = eval('(' + "{{ viewerAnswers|escapejs }}" + ')');
+    var userAnswers = eval('(' + "{{ userAnswers|escapejs }}" + ')');
     var questionsArray = eval('(' + "{{ questionsArray|escapejs }}" + ')');
+
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+
+    var compareUserProfile = "{{ compareUserProfile.get_first_name }}";
 
 </script>
 
