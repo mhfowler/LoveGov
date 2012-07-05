@@ -205,7 +205,7 @@ var QAWebHover = Class.extend
                     $('.answer-' + i).addClass('answer-selected');
                 }
             }
-            for (var j=0; j<this.node.answers.length;j++)
+            for (var i=0; i<this.node.answers.length;i++)
             {
                 if (this.node.diffAnswer && this.node.answers[i].user_answer)
                 {
