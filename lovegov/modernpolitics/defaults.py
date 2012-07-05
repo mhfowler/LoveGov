@@ -938,7 +938,7 @@ def initializeLegislationAmendmentsFast():
     acceptable_files = []
 
     for amend in IMPORTANT_AMENDMENTS:
-        path = '/data/govtrack/' + legislation[0] + "/bills.amdt/" + legislation[1] + ".xml"
+        path = '/data/govtrack/' + amend[0] + "/bills.amdt/" + amend[1] + ".xml"
         acceptable_files.append(path)
 
     for num in range(109,113):
