@@ -336,7 +336,6 @@ var QAWebHover = Class.extend
                 if (this.node.security == "PUB") { src = '/static/images/public.png'; }
                 else { src = '/static/images/user-menu/lockgray.png'; }
                 $('#privacy-image').attr("src",src).show();
-
             }
 
 
