@@ -36,7 +36,11 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
-        $('#' + divID).append('<a class="do-ajax-link" href="' + self.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt" style="position:absolute;top:15px;right:15px;"/></a>')
+        if (self.dataObj['user_url'] != '')
+        {
+            $('#' + divID).append('<a class="do-ajax-link" href="' + self.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt" style="position:absolute;top:15px;right:15px;"/></a>')
+        }
+
     },
 
     /**
