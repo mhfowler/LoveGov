@@ -405,7 +405,8 @@ def editAccount(request, vals={}):
                 viewer.location = locationHelper(address, zip)
                 viewer.save()
             except:
-                pass
+                viewer.location = None
+                viewer.save()
 
     elif box == 'profile':
         if 'image' in request.FILES:
