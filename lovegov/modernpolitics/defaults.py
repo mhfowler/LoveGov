@@ -120,7 +120,7 @@ def getOtherNetwork():
         return initializeOtherNetwork()
 
 def getCongressNetwork():
-    to_return = Network.lg.get_or_none(name="congress")
+    to_return = Network.lg.get_or_none(alias="congress")
     if to_return:
         return to_return
     else:
@@ -418,19 +418,18 @@ def initializeOtherNetwork():
 # Initialize network for congress
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongressNetwork():
-    if Network.objects.filter(name="congress"):
+    if Network.objects.filter(alias="congress"):
         print ("...congress network already initialized")
     else:
         network = Network(alias="congress")
-        network.title = "Congress Network"
-        network.summary = "Network of all members of Congress."
+        network.title = "Congress"
+        network.summary = "all members of Congress."
         network.autoSave()
         # join all members
-        congress = UserProfile.objects.filter(Q(user_type='S') | Q(user_type='R'))
+        congress = ElectedOfficial.objects.all()
         for u in congress:
             network.members.add(u)
-            u.network_id = network.id
-            u.save()
+            u.networks.add(network)
         print ("initialized: Congress Network")
         return network
 
