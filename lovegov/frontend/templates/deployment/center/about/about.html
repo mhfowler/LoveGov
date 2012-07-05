@@ -175,6 +175,14 @@
         else {
             var buttonid =  start + "-button";
             var divid = start + "-div";
+            if (divid == 'whoarewe-div')
+            {
+                $('.who-are-we-circle-div').each(function()
+                {
+                    var json = $(this).data('json');
+                    $(this).animate({'left':json.x,'top':json.y});
+                });
+            }
 
             $("#" + buttonid).addClass("clicked");
             $("#" + divid).show();
