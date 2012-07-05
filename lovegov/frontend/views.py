@@ -328,6 +328,7 @@ def web(request, vals={}):
     if request.method == 'GET':
         getUserWebResponsesJSON(request,vals)
         setPageTitle("lovegov: web",vals)
+        vals['firstLogin'] = vals['viewer'].checkFirstLogin()
         html = ajaxRender('deployment/center/qaweb.html', vals, request)
         url = '/web/'
         return framedResponse(request, html, url, vals)
@@ -1014,12 +1015,12 @@ def matchSenate(request, vals={}):
         elizabeth = viewer
         brown = viewer
         voters = viewer
-    list = [elizabeth, brown, voters]
-    for x in list:
+
+    for x in [elizabeth, brown, voters]:
         comparison = x.getComparison(viewer)
         x.compare = comparison.toJSON()
         x.result = comparison.result
-    list.sort(key=lambda x:x.result,reverse=True)
+
     vals['elizabeth'] = elizabeth
     vals['brown'] = brown
     vals['mass'] = voters
@@ -1027,6 +1028,7 @@ def matchSenate(request, vals={}):
 def matchRepresentatives(request, vals={}):
 
     viewer = vals['viewer']
+    congressmen = []
 
     if viewer.location:
         address = viewer.location
@@ -1044,8 +1046,16 @@ def matchRepresentatives(request, vals={}):
         vals['district'] = address.district
         vals['latitude'] = address.latitude
         vals['longitude'] = address.longitude
-        if not congressmen:
-            vals['invalid_address'] = True
+
+    for x in congressmen:
+        comparison = x.getComparison(viewer)
+        x.compare = comparison.toJSON()
+        x.result = comparison.result
+    congressmen.sort(key=lambda x:x.result,reverse=True)
+
+    if not congressmen:
+        vals['invalid_address'] = True
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

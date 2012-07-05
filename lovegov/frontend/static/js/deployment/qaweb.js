@@ -523,7 +523,7 @@ var QAWebHover = Class.extend
                 this._toggleButtons('show');
                 this.showHover(node);
                 this.showAnswers(node);
-                if (!$('.step-five').length)
+                if (!$('.step-five').length && firstLogin)
                 {
                     $('._topic_label').show();
                 }
