@@ -26,14 +26,24 @@ def getBucketList(resolution=10):
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for all groups
 #-----------------------------------------------------------------------------------------------------------------------
-def updateGroupViews(debug=False):
+def updateGroupViews(debug=False, fast=True):
 
     scheduled_logger.debug("UPDATE GROUP VIEWS")
 
-    groups = Group.objects.exclude(alias="congress")
-    for g in groups:
-        print g.title
-        updateGroupView(g)
+    if fast:
+        groups = UserGroup.objects.all()
+        for g in groups:
+            print g.title
+            updateGroupView(g)
+        networks = Network.objects.exclude(alias="congress")
+        for g in networks:
+            print g.title
+            updateGroupView(g)
+    else:
+        groups = Group.objects.exclude(alias="congress")
+        for g in groups:
+            print g.title
+            updateGroupView(g)
 
     """
     networks = Network.objects.exclude(name="congress")
