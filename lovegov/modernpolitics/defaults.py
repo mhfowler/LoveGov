@@ -880,7 +880,7 @@ def initializeLegislationFast():
                 print 'AMERICA - FUCK YEAH'
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                fileXML = open()
+                fileXML = open(full_file_path)
                 parsedXML = BeautifulStoneSoup(fileXML)
                 newLegislation = Legislation()
                 try:
@@ -953,7 +953,7 @@ def initializeLegislationAmendmentsFast():
                 db.reset_queries()
                 #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
                 if ".xml" in infile:
-                    fileXML = open(filePath + infile)
+                    fileXML = open(full_file_path)
                     parsedXML = BeautifulStoneSoup(fileXML)
                     newLegislation = LegislationAmendment()
                     try:
