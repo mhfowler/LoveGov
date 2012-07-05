@@ -19,6 +19,8 @@ from django.template import loader
 import string
 import datetime
 import httpagentparser
+from googlemaps import GoogleMaps
+import sunlight
 
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
@@ -43,6 +45,29 @@ def checkBrowserCompatible(request):
             to_return = False
 
     return to_return
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Returns location from address string and zipcode.
+#-----------------------------------------------------------------------------------------------------------------------
+def locationHelper(address, zip):
+
+    location = PhysicalAddress.lg.get_or_none(address_string=address, zip=zip)
+    if not location:
+        if (not address) and zip:
+            address_string = zip
+        else:
+            address_string = address
+        gmaps = GoogleMaps(GOOGLEMAPS_API_KEY)
+        coordinates = gmaps.address_to_latlng(address_string)
+        state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
+        try:
+            location = PhysicalAddress(address_string=address,zip=zip,latitude=coordinates[0],
+                longitude=coordinates[1],state=state_district[0]['state'],district=state_district[0]['number'])
+            location.save()
+        except:
+            print "failure!"
+
+    return location
 
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this

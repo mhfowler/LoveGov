@@ -63,7 +63,6 @@ var QAWebHover = Class.extend
                 $(self.idDiv).fadeOut(10);
                 $('#answers-ul').empty();
                 $('#question-weight-div').hide();
-                $('.qaweb-pointer-box').hide();
                 $('#value_statement').hide();
             }
         },
@@ -384,6 +383,7 @@ var QAWebHover = Class.extend
          */
         toggleQuestion: function(node)
         {
+            $('.qaweb-pointer-box').hide();
             // CASE: user clicks the same question or hasn't clicked a question yet
             if (this.node == null || !this.node.clicked)
             {
@@ -1106,7 +1106,7 @@ var Root = Node.extend
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,{light:'#ff8575', default:'#ef553f'},self.base_width/2-2, percentage);
-            var text = createText((percentage).toFixed() + '%',self.base_width/2,self.base_height/2+3,16);
+            var text = createText((percentage*100).toFixed() + '%',self.base_width/2,self.base_height/2+3,15);
 
 
             layer.add(circle);
