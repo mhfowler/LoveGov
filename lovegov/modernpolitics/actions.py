@@ -395,14 +395,14 @@ def editAccount(request, vals={}):
     box = request.POST['box']
 
     if box == 'basic_info':
-        viewer.first_name = request.POST['first_name']
-        viewer.last_name = request.POST['last_name']
+        if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
+        if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
 
-        address = request.POST['address']
-        zip = address
-
-        viewer.location = locationHelper(address, zip)
-        viewer.save()
+        if 'address' in request.POST:
+            address = request.POST['address']
+            zip = address
+            viewer.location = locationHelper(address, zip)
+            viewer.save()
 
     elif box == 'profile':
         if 'image' in request.FILES:
