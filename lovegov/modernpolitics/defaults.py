@@ -1103,49 +1103,20 @@ def updatePartyImages():
 #-----------------------------------------------------------------------------------------------------------------------
 # Petition clear and recount functions (a.k.a. recalculate)
 #-----------------------------------------------------------------------------------------------------------------------
-def userPetitionsRecalculate(user):
-    user.num_petitions = Created.objects.filter(user=user,content__type="P").count()
-    user.save()
-
-def userNewsRecalculate(user):
-    user.num_articles = Created.objects.filter(user=user,content__type="N").count()
-    user.save()
-
-def userCommentsRecalculate(user):
-    user.num_comments = Created.objects.filter(user=user,content__type="C").count()
-    user.save()
-
-def userStatsRecalculate(user):
-    userPetitionsRecalculate(user)
-    userNewsRecalculate(user)
-    userCommentsRecalculate(user)
-
-
 def recalculateAllUserStats():
     users = UserProfile.objects.filter(user_type="U").all()
     for user in users:
-        userStatsRecalculate(user)
+        user.userStatsRecalculate()
 
 
-
-def userFollowRecalculate(user):
-    following = user.getIFollow()
-    followers = user.getFollowMe()
-    for follow in following:
-        user.follow(follow)
-    for follower in followers:
-        follower.follow(user)
-
-def recalculateFollowGroups():
+def recalculateAllFollowGroups():
     users = UserProfile.objects.filter(user_type="U").all()
     for user in users:
-        userFollowRecalculate(user)
+        user.userFollowRecalculate()
 
 
 def recalculateAllVotes():
     content = Content.objects.all()
     for c in content:
-        recalculatedVotes(c)
-
-#def recalculateVotes(content):
+        c.recalculateVotes()
 
