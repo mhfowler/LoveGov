@@ -3,9 +3,15 @@
 </div>
 
 <div class="match-content">
-    {% include 'deployment/center/match/match-new-box.html' with item=prof1 %}
+    {% if prof1 %}
+        {% include 'deployment/center/match/match-new-box.html' with item=prof1 %}
+    {% endif %}
 
-    {% include 'deployment/center/match/match-new-box.html' with item=prof2 %}
+    {% if prof2 %}
+        {% include 'deployment/center/match/match-new-box.html' with item=prof2 %}
+    {% endif %}
 
-    {% include 'deployment/center/match/match-new-box.html' with item=prof3 %}
+    {% if prof3 %}
+        {% include 'deployment/center/match/match-new-box.html' with item=prof3 %}
+    {% endif %}
 </div>

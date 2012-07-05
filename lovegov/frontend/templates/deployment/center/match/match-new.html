@@ -30,28 +30,27 @@
 
                 <div class="match-representatives match-section" data-sequence="3">
                     {% if congressmen %}
-                        {% include 'deployment/center/match/match-tryptic-template.html' with prof1=congressmen.0 prof2=congressmen.1 prof3=congressmen.2 match_title="Find Your Representatives" %}
+                        {% include 'deployment/center/match/match-tryptic-template.html' with prof1=congressmen.0 prof2=congressmen.1 prof3=congressmen.2 match_title="Find Your Congressmen" %}
                     {% else %}
                         <div class="match-title">
-                            <h3> Find Your Representatives. </h3>
+                            <h3>Find Your Congressmen</h3>
                         </div>
                         {% if invalid_address %}
-                            <p> We could not find any congressmen associated with the last address you entered. You could try entering the
-                            address again or lookup a different one. </p>
+                            <p>
+                                We could not find any congressmen associated with the last address you entered. You could try entering the
+                                address again or lookup a different one.
+                            </p>
                         {% endif %}
                         {% include 'deployment/center/match/address.html' %}
                     {% endif %}
                     <div style="clear:both"></div>
                     <div class="address-wrapper">
-                        <p class="address-text">
-                            {{ state }} /
-                            {{ district }} /
-                            {{ latitude }} /
-                            {{ longitude }}
-                        </p>
-                        <div id="map_canvas" style='width:600px;height:750px'>
+
+                        {% if state and district and longitude and latitude %}
+                        <div id="map_canvas" style='width:930px;height:500px'>
 
                         </div>
+                        {% endif %}
 
                         {% if not invalid_address %}
                             <div class="new-address-wrapper">
@@ -83,11 +82,13 @@
 
 <script>
     match_current_section={{ start_sequence }};
-    var match_state = "{{ state }}";
-    var match_district = {{ district }};
-    var match_longtitude = {{ longitude }};
-    var match_latitude = {{ latitude }};
-    loadGoogleMap();
+        {% if state and district and longitude and latitude %}
+        var match_state = "{{ state }}";
+        var match_district = {{ district }};
+        var match_longtitude = {{ longitude }};
+        var match_latitude = {{ latitude }};
+        loadGoogleMap();
+    {% endif %}
 </script>
 
 
