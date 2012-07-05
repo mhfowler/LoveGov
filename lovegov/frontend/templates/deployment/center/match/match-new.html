@@ -30,14 +30,16 @@
 
                 <div class="match-representatives match-section" data-sequence="3">
                     {% if congressmen %}
-                        {% include 'deployment/center/match/match-tryptic-template.html' with prof1=congressmen.0 prof2=congressmen.1 prof3=congressmen.2 match_title="Find Your Representatives" %}
+                        {% include 'deployment/center/match/match-tryptic-template.html' with prof1=congressmen.0 prof2=congressmen.1 prof3=congressmen.2 match_title="Find Your Congressmen" %}
                     {% else %}
                         <div class="match-title">
-                            <h3> Find Your Representatives. </h3>
+                            <h3>Find Your Congressmen</h3>
                         </div>
                         {% if invalid_address %}
-                            <p> We could not find any congressmen associated with the last address you entered. You could try entering the
-                            address again or lookup a different one. </p>
+                            <p>
+                                We could not find any congressmen associated with the last address you entered. You could try entering the
+                                address again or lookup a different one.
+                            </p>
                         {% endif %}
                         {% include 'deployment/center/match/address.html' %}
                     {% endif %}
