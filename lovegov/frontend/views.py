@@ -1007,13 +1007,13 @@ def matchPresidential(request, vals={}):
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        elizabeth = viewer
-        brown = viewer
-        voters = viewer
-    else:
         elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
         brown = ElectedOfficial.objects.get(first_name="Scott", last_name="Brown")
         voters = getLoveGovGroup()
+    else:
+        elizabeth = viewer
+        brown = viewer
+        voters = viewer
     list = [elizabeth, brown, voters]
     for x in list:
         comparison = x.getComparison(viewer)
