@@ -1014,7 +1014,7 @@ def matchSenate(request, vals={}):
         elizabeth = viewer
         brown = viewer
         voters = viewer
-        
+
     for x in [elizabeth, brown, voters]:
         comparison = x.getComparison(viewer)
         x.compare = comparison.toJSON()
