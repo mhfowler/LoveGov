@@ -17,11 +17,11 @@
             <div id="match-ajax-content">
 
                 <div class="match-presidential match-section" data-sequence="0">
-                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Your 2012 Presidential Candidates" %}
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=presidential.0 prof2=presidential.1 prof3=presidential.2 match_title="Your 2012 Presidential Candidates" %}
                 </div>
 
                 <div class="match-massachusettes match-section" data-sequence="1">
-                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=viewer prof2=viewer prof3=viewer match_title="Your Massachusettes Senate Election" %}
+                    {% include 'deployment/center/match/match-tryptic-template.html' with prof1=senate.0 prof2=senate.1 prof3=senate.2 match_title="Your Massachusettes Senate Election" %}
                 </div>
 
                 <div class="match-social match-section" data-sequence="2">
