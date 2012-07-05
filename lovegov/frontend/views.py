@@ -328,6 +328,7 @@ def web(request, vals={}):
     if request.method == 'GET':
         getUserWebResponsesJSON(request,vals)
         setPageTitle("lovegov: web",vals)
+        vals['firstLogin'] = vals['viewer'].checkFirstLogin()
         html = ajaxRender('deployment/center/qaweb.html', vals, request)
         url = '/web/'
         return framedResponse(request, html, url, vals)
