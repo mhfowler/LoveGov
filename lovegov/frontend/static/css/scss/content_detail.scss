@@ -284,6 +284,9 @@ div.comment
     &.toplevel {
 	    margin-top: 10px;
     }
+    div.change-privacy {
+        float:left;
+    }
 }
 
 div#content-div p {
@@ -414,11 +417,12 @@ div.petition_bar {
 div.content-submitted-by-wrapper {
     margin-top: 40px;
     padding: 6px;
+    position: relative;
     @include rounded(5px);
     &:hover {
         background-color: $white-gray;
     };
-    img {
+    div.avatar-box {
         float: left;
         margin-right: 15px;
     }
@@ -426,9 +430,25 @@ div.content-submitted-by-wrapper {
         color: $deep-gray;
         font-size: 12px;
     }
-    span.submitter {
+    span.submitter a {
         @include titleFont;
         font-size: 24px;
+        color: $black;
+    }
+    div.change-privacy {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}
+
+div.change-privacy {
+    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+    @include rounded(5px);
+    &:hover {
+        background-color: $light-gray;
     }
 }
 

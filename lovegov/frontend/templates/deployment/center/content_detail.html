@@ -20,8 +20,14 @@
                 <div class="content-submitted-by-wrapper">
                     {% include 'deployment/snippets/avatar.html' with user=content.creator height='50' width='50' %}
                     {% load humanize %}
-                    <span class="submitter">{{content.creator.get_name}}</span>
+                    <span class="submitter"><a href="{{content.creator.get_url}}">{{content.creator.get_name}}</a></span>
+                    {% ifequal viewer content.creator %}
+                        <div class="content-privacy-wrapper">
+                            {% include 'deployment/snippets/content-privacy.html' with content=content %}
+                        </div>
+                    {% endifequal %}
                     <br><span class="submit-time">Submitted <span class="tooltip-right" title="{{content.created_when}}">{{content.created_when|naturaltime}}</span></span>
+                    <div style="clear:both"></div>
                 </div>
 
                 {% block petition_detail %}

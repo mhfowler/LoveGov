@@ -12,6 +12,11 @@
             <a> deleted </a>
         {% endif %}
     </div>
+    {% ifequal viewer comment.creator %}
+        <div class="content-privacy-wrapper">
+            {% include 'deployment/snippets/content-privacy.html' with content=comment %}
+        </div>
+    {% endifequal %}
     <span class="flag tooltip-top" data-commentid="{{comment.id}}" title="Flag this comment">⚐</span>
     <span class="timestamp tooltip-top" title="{{comment.created_when}}">
         {% load humanize %}

@@ -39,6 +39,9 @@ footer.sticky-footer {
 		&.highlight {
 			color: $text-blue;
 		}
+		&.notyethere {
+			display:none;
+		}
 	}
 	div.social_button {
 		float: left;
