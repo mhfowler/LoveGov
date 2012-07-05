@@ -49,6 +49,15 @@
                             {{ latitude }} /
                             {{ longitude }}
                         </p>
+                        <div id="map_canvas" style='width:600px;height:750px'>
+
+                        </div>
+
+                        {% if not invalid_address %}
+                            <div class="new-address-wrapper">
+                                {% include 'deployment/center/match/address.html' %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -72,7 +81,14 @@
 
 </div>
 
-<script> match_current_section={{ start_sequence }};</script>
+<script>
+    match_current_section={{ start_sequence }};
+    var match_state = "{{ state }}";
+    var match_district = {{ district }};
+    var match_longtitude = {{ longitude }};
+    var match_latitude = {{ latitude }};
+    loadGoogleMap();
+</script>
 
 
 
