@@ -299,7 +299,7 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
                 questionsArray[topic_text] = []
         answerArray = []
         for answer in question.answers.all():
-            if len(response) > 0 and not webCompare:
+            if len(response) > 0 and (not webCompare or response[0].userresponse.privacy == "PUB") :
                 checked = (answer.value == response[0].userresponse.answer_val)
                 weight = response[0].userresponse.weight
             else:
@@ -308,7 +308,9 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
             answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
-        if len(response) > 0 : toAddquestion['user_explanation'] = response[0].userresponse.explanation
+        if len(response) > 0  : toAddquestion['user_explanation'] = response[0].userresponse.explanation
+        if not webCompare and len(response) > 0: toAddquestion['security'] = response[0].userresponse.privacy
+        else: toAddquestion['security'] = ""
         questionsArray[topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
 
