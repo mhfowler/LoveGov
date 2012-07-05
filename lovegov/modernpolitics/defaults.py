@@ -1098,3 +1098,30 @@ def updatePartyImages():
         full_ref = os.path.join(settings.PROJECT_PATH, ref)
         file = open(full_ref)
         party.party_label.save(photoKey(".png"), File(file))
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Petition clear and recount functions (a.k.a. recalculate)
+#-----------------------------------------------------------------------------------------------------------------------
+def userPetitionsRecalculate(user):
+    user.num_petitions = Created.objects.filter(user=user,content__type="P").count()
+    user.save()
+
+def userNewsRecalculate(user):
+    user.num_articles = Created.objects.filter(user=user,content__type="N").count()
+    user.save()
+
+def userCommentsRecalculate(user):
+    user.num_comments = Created.objects.filter(user=user,content__type="C").count()
+    user.save()
+
+def userStatsRecalculate(user):
+    userPetitionsRecalculate(user)
+    userNewsRecalculate(user)
+    userCommentsRecalculate(user)
+
+
+def recalculateAllUserStats():
+    users = UserProfile.objects.filter(user_type="U").all()
+    for user in users:
+        userStatsRecalculate(user)
