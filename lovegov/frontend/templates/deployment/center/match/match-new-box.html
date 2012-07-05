@@ -20,6 +20,9 @@
                 {% if item.user_type == "R" %}
                     <h5>Representative</h5>
                 {% endif %}
+                {% if item.first_name == "Barack" %}
+                    <h5>President</h5>
+                {% endif %}
             {% endif %}
 
             {% if item.type == "U" %}
