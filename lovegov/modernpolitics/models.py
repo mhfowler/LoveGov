@@ -279,6 +279,13 @@ class Content(Privacy, LocationLevel):
 
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Recalculate status for this content.
+    #-------------------------------------------------------------------------------------------------------------------
+    def recalculateVotes(self):
+        self.status = self.upvotes - self.downvotes
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
     #-------------------------------------------------------------------------------------------------------------------
     def getMainTopic(self):
@@ -1190,6 +1197,23 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getImageURL(self):
         return self.getProfileImageURL()
 
+    def userPetitionsRecalculate(self):
+        self.num_petitions = Created.objects.filter(user=self,content__type="P").count()
+        self.save()
+
+    def userNewsRecalculate(self):
+        self.num_articles = Created.objects.filter(user=self,content__type="N").count()
+        self.save()
+
+    def userCommentsRecalculate(self):
+        self.num_comments = Created.objects.filter(user=self,content__type="C").count()
+        self.save()
+
+    def userStatsRecalculate(self):
+        userPetitionsRecalculate(self)
+        userNewsRecalculate(self)
+        userCommentsRecalculate(self)
+
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
@@ -1426,22 +1450,24 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createIFollowGroup(self):
-        title = "People who " + self.get_name() + " follows"
-        group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
-        group.autoSave()
-        self.i_follow = group
-        self.save()
+        if not self.i_follow:
+            title = "People who " + self.get_name() + " follows"
+            group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_calc=False)
+            group.autoSave()
+            self.i_follow = group
+            self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createFollowMeGroup(self):
-        title = "People who follow " + self.get_name()
-        group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
-        group.autoSave()
-        self.follow_me = group
-        self.save()
+        if not self.follow_me:
+            title = "People who follow " + self.get_name()
+            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_calc=False)
+            group.autoSave()
+            self.follow_me = group
+            self.save()
         return group
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1542,6 +1568,17 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if num != -1:
             followers = followers[:num]
         return followers
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Refreshes the users follow groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def userFollowRecalculate(self):
+        following = self.getIFollow()
+        followers = self.getFollowMe()
+        for follow in following:
+            self.follow(follow)
+        for follower in followers:
+            follower.follow(self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns query set of all UserFollow who are (confirmed) following this user and are fb friends with this user.

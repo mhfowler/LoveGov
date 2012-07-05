@@ -134,6 +134,7 @@ var QAWebHover = Class.extend
 
             if ($.trim( $('#answers-ul').html() ).length)
             {
+                self.node.security = $.cookie('privacy');
                 self.node.weight = $('#weight-input').val();
                 var $input = $('#answers-ul').find('input:checked');
 
@@ -146,6 +147,7 @@ var QAWebHover = Class.extend
                 }
                 var data = self._arrayToDictionary(".qaweb-answerform");
                 self.node.user_explanation = data['explanation'];
+                data['questionPRI'] = self.node.security;
                 ajaxPost({data:data,success:null,error:null});
             }
         },
@@ -328,6 +330,18 @@ var QAWebHover = Class.extend
                 }
             }
 
+            $('#privacy-image').hide();
+
+            if (this.node.security != "")
+            {
+                var src;
+                if (this.node.security == "PUB") { src = '/static/images/public.png'; }
+                else { src = '/static/images/user-menu/lockgray.png'; }
+                $('#privacy-image').attr("src",src).show();
+            }
+
+
+
             self._moveSlider(this.node.weight);
         },
 
@@ -373,7 +387,6 @@ var QAWebHover = Class.extend
                 self._moveSlider(value);
                 self.node.weight = value;
             });
-
 
             $('#next_button').unbind('click');
             $('#next_button').bind('click',function(event)
@@ -717,7 +730,8 @@ var Node = Class.extend
                         text:this.childrenData[j]['text'],
                         answers:this.childrenData[j]['answers'],
                         id:this.childrenData[j]['id'],
-                        user_explanation:this.childrenData[j]['user_explanation']
+                        user_explanation:this.childrenData[j]['user_explanation'],
+                        security:this.childrenData[j]['security']
                     });
                     test.toDisplay();
                     this.children.push(test);
@@ -922,6 +936,7 @@ var Question = Node.extend
             this.answers = data['answers'];
             this.answered = this._checkAnswered();
             this.user_explanation = data['user_explanation'];
+            this.security = data['security'];
             this._super(data);
             qaWebHover.questionArray.push(this);
         },
