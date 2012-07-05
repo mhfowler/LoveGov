@@ -82,7 +82,7 @@ var VisualComparison = Class.extend
         });
         self.shapesLayer.add(circle);
 
-        var percentText = createText((percentage*100).toFixed() + '%',x,y+3,16);
+        var percentText = createText((percentage*100).toFixed() + '%',x,y+3,15);
         percentText.on("mouseover",function()
         {
             self.textLayer.add(textobj);
