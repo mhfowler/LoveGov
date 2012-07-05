@@ -952,8 +952,8 @@ function loadHeader()
         event.stopPropagation();
     });
 
-    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues.";
-    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to be anonymous.";
+    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
+    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
 
 
     if ($.cookie('privacy'))
