@@ -952,8 +952,8 @@ function loadHeader()
         event.stopPropagation();
     });
 
-    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues."
-    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to be anonymous."
+    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues.";
+    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to be anonymous.";
 
 
     if ($.cookie('privacy'))
@@ -965,7 +965,7 @@ function loadHeader()
                 $(".security_setting").each(function()
                 {
                     if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
-                    $(this).data('original-title',pubMessage);
+                    $(this).attr('data-original-title',pubMessage);
                 });
                 break;
             case "PRI":
@@ -975,7 +975,7 @@ function loadHeader()
                     if ($(this).is('img'))
                     {
                         $(this).attr("src","/static/images/user-menu/lockgray.png") ;
-                        $(this).data('original-title',priMessage);
+                        $(this).attr('data-original-title',priMessage);
                     }
                 });
                 break;
@@ -988,8 +988,8 @@ function loadHeader()
         {
             if ($(this).is('img'))
             {
-                $(this).attr("src","/static/images/public.png")
-                $(this).data('original-title',pubMessage);
+                $(this).attr("src","/static/images/public.png");
+                $(this).attr('data-original-title',pubMessage);
             }
 
         });
@@ -1009,7 +1009,7 @@ function loadHeader()
                     if ($(this).is('img'))
                     {
                         $(this).attr("src","/static/images/user-menu/lockgray.png");
-                        $(this).data('original-title',priMessage);
+                        $(this).attr('data-original-title',priMessage);
                     }
                 });
                 break;
@@ -1018,7 +1018,7 @@ function loadHeader()
                 $(".security_setting").each(function()
                 {
                     if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
-                        $(this).data('original-title',pubMessage);}
+                        $(this).attr('data-original-title',pubMessage);}
                 });
                 break;
         }
