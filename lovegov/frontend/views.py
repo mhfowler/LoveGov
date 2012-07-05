@@ -290,7 +290,7 @@ def setPageTitle(title,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses proper format for web
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserWebResponsesJSON(request,vals={}):
+def getUserWebResponsesJSON(request,vals={},webCompare=False):
     questionsArray = {}
     for (question,response) in vals['viewer'].getUserResponses():
         for topic in question.topics.all():
@@ -299,7 +299,7 @@ def getUserWebResponsesJSON(request,vals={}):
                 questionsArray[topic_text] = []
         answerArray = []
         for answer in question.answers.all():
-            if len(response) > 0:
+            if len(response) > 0 and not webCompare:
                 checked = (answer.value == response[0].userresponse.answer_val)
                 weight = response[0].userresponse.weight
             else:
@@ -356,7 +356,7 @@ def compareWeb(request,alias=None,vals={}):
             vals['compareUserProfile'] = vals['viewer']
 
             comparison = getUserUserComparison(user, vals['viewer'])
-            getUserWebResponsesJSON(request,vals)
+            getUserWebResponsesJSON(request,vals=vals,webCompare=True)
             vals['json'] = comparison.toJSON()
 
             vals['viewer'] = user
