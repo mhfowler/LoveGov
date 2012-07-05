@@ -30,6 +30,11 @@ def updateGroupViews(debug=False):
 
     scheduled_logger.debug("UPDATE GROUP VIEWS")
 
+    groups = Group.objects.exclude(alias="congress")
+    for g in groups:
+        updateGroupView(g)
+
+    """
     networks = Network.objects.exclude(name="congress")
     for g in networks:
         updateGroupView(g)
@@ -42,7 +47,9 @@ def updateGroupViews(debug=False):
         updateGroupView(g)
         if debug:
             print "updated: " + enc(g.title) + " aggregate-view"
-    print "updated usergroups."
+    print "updated usergroups." """
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.
