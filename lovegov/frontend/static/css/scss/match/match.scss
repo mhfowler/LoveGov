@@ -57,6 +57,16 @@ div.address-box {
   }
 }
 
+div.match-representatives {
+  div.address-wrapper {
+    margin-top:30px;
+    border-top: 1px solid $gray;
+    p.address-text {
+      margin-top:20px;
+    }
+  }
+}
+
 #match-mid
 {
   text-align:center;
