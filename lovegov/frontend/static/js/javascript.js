@@ -16,6 +16,7 @@ function rebindFunction()
     bindInlineEdits();
     loadShareButton();
     bindChangeContentPrivacy();
+    showFooter();                                               // By default, show footer. Hide footer in indvidual cases.
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -42,6 +43,7 @@ function rebindFunction()
         case 'feed':                                            // /feed
             loadNewFeed();
             loadRightSideBar();
+            hideFooter();
             break;
         case 'about':                                           // /about
             loadAbout();
@@ -52,6 +54,7 @@ function rebindFunction()
             break;
         case 'qaweb':                                           // /web
             loadQAWeb();
+            hideFooter();
             break;
         case 'profile':                                         // /profile/<alias>
             loadProfile();
@@ -4078,4 +4081,12 @@ function bindChangeContentPrivacy() {
             }
         });
     });
+}
+
+function showFooter() {
+    $('footer').show();
+}
+
+function hideFooter() {
+    $('footer').hide();
 }

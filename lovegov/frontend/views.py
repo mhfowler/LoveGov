@@ -1082,14 +1082,14 @@ def topicDetail(request, topic_alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def petitionDetail(request, p_id, vals={}):
+def petitionDetail(request, p_id, vals={}, signerLimit=8):
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
     vals['pageTitle'] = "lovegov: " + petition.title
     vals['petition'] = petition
     signers = petition.getSigners()
-    vals['signers'] = signers
+    vals['signers'] = signers[:signerLimit]
     vals['i_signed'] = (vals['viewer'] in signers)
     contentDetail(request=request, content=petition, vals=vals)
     setPageTitle("lovegov: " + petition.title,vals)

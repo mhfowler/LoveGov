@@ -115,6 +115,7 @@ gem install sass
 
 httpagentparser
 git clone https://github.com/shon/httpagentparser.git
+then run "python setup.py install"
 
 ********** GETTING STARTED ************
 
