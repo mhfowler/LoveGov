@@ -998,31 +998,27 @@ function loadHeader()
 
     $(".security_setting").click(function(event)
     {
-        if (!$(this).hasClass("has_security_setting"))
+        switch($.cookie('privacy'))
         {
-            switch($.cookie('privacy'))
-            {
-                case "PUB":
-                    $.cookie('privacy','PRI', {path:'/'});
-                    $(".security_setting").each(function()
+            case "PUB":
+                $.cookie('privacy','PRI', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img'))
                     {
-                        if ($(this).is('img'))
-                        {
-                            $(this).attr("src","/static/images/user-menu/lockgray.png");
-                            $(this).attr('data-original-title',priMessage);
-                        }
-                    });
-                    break;
-                case "PRI":
-                    $.cookie('privacy','PUB', {path:'/'});
-                    $(".security_setting").each(function()
-                    {
-                        if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
-                            $(this).attr('data-original-title',pubMessage);}
-                    });
-                    break;
-            }
-            $(this).addClass("has_security_setting");
+                        $(this).attr("src","/static/images/user-menu/lockgray.png");
+                        $(this).attr('data-original-title',priMessage);
+                    }
+                });
+                break;
+            case "PRI":
+                $.cookie('privacy','PUB', {path:'/'});
+                $(".security_setting").each(function()
+                {
+                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                        $(this).attr('data-original-title',pubMessage);}
+                });
+                break;
         }
     });
 
