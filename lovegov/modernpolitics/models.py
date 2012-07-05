@@ -291,7 +291,7 @@ class Content(Privacy, LocationLevel):
 
         if direct_comments:
             for comment in direct_comments:
-                num_comments += comment.contentCommentsRecalculate()
+                num_comments += comment.contentCommentsRecalculate() + 1
 
         self.num_comments = num_comments
         self.save()

@@ -1124,7 +1124,7 @@ def recalculateAllVotes():
 
 
 def recalculateAllComments():
-    commentable = ['C','P','N',]
+    commentable = ['C','P','N','Q']
     content = Content.objects.filter(type__in=commentable)
 
     for c in content:
