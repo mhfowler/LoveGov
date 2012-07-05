@@ -1,7 +1,7 @@
 import os
 PROJECT_PATH = os.path.dirname(__file__)
 DEBUG = False
-UPDATE = False
+UPDATE = True
 SHOW_TOOLBAR = False
 
 

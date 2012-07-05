@@ -189,7 +189,6 @@ def scriptAddAlphaUser(args):
         send_email.sendTemplateEmail("Welcome to LoveGov Alpha",'alphaInvite.html',vals,'team@lovegov.com',email)
 
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 #   generates Politician objects for each candidates in spreadsheet
 #   answers questions for them
@@ -343,7 +342,7 @@ for x in sys.argv:
     command += x + ' '
 to_save = Script(command=command, user=getpass.getuser())
 to_save.save()
-time = datetime.now()
+time = datetime.datetime.now()
 
 print len(sys.argv)
 # check at least one tag

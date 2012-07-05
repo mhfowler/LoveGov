@@ -26,7 +26,6 @@ from datetime import datetime
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
-from lovegov.modernpolitics import send_email
 from lovegov.local_manage import LOCAL
 from lovegov.modernpolitics.constants import *
 
@@ -4378,6 +4377,7 @@ class ResetPassword(LGModel):
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()
                 vals = {'firstname':userProfile.first_name, 'url':reseturl}
+                from lovegov.modernpolitics import send_email
                 send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',vals,'info@lovegov.com',userProfile.username)
                 return True
             except:
