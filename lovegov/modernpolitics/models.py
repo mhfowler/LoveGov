@@ -288,7 +288,7 @@ class Content(Privacy, LocationLevel):
         self.save()
 
     def contentCommentsRecalculate(self):
-        direct_comments = Comment.objects.filter(on_content=self)
+        direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
 
         if direct_comments:
