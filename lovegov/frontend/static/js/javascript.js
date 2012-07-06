@@ -1051,7 +1051,7 @@ function loadHeader()
     // header links
     $(".header-link").bindOnce("click.header", function(event)
     {
-        headerLink($(this));
+        selectHeaderLink($(this));
         event.stopPropagation();
     });
 }
