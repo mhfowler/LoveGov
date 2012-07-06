@@ -123,7 +123,7 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.save()
     if type=="userProfile":
         from modernpolitics.send_email import sendYayRegisterEmail
-        sendYayRegisterEmail(userProfile)
+        # sendYayRegisterEmail(userProfile)
         # return control
     return userProfile
 
