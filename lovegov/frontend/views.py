@@ -755,7 +755,9 @@ def histogramDetail(request, g_id, vals={}):
 
     viewer = vals['viewer']
     group = Group.objects.get(id=g_id)
+
     vals['group'] = group
+    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
 
     loadHistogram(20, group.id, 'full', vals)
 

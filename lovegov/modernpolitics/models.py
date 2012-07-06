@@ -129,7 +129,7 @@ class PhysicalAddress(LGModel):
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
 class LocationLevel(models.Model):
-    location = models.ForeignKey(PhysicalAddress, null=True)
+    location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
     scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
     class Meta:
         abstract = True
@@ -230,13 +230,13 @@ class Content(Privacy, LocationLevel):
     # FIELDS
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     topics = models.ManyToManyField(Topic)
-    main_topic = models.ForeignKey(Topic, null=True, related_name="maintopic")
+    main_topic = models.ForeignKey(Topic, null=True, related_name="maintopic", blank=True)
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey("UserImage", null=True)
+    main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
-    calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
+    calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
