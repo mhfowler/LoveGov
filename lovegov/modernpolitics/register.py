@@ -26,7 +26,7 @@ def resetPassword(user):
 # args: name, email
 #-----------------------------------------------------------------------------------------------------------------------
 def createAlphaUser(name, email):
-    password = passwordAutogen()
+    password = generateRandomPassword(10)
     createUser(name, email, password)
     sendAlphaTesterEmail(name, email, password)
 
