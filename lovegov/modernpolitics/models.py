@@ -3608,7 +3608,7 @@ class Group(Content):
             return members[start:start+num]
 
     def getNumMembers(self):
-        return self.members.all().count()
+        return self.members.count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
