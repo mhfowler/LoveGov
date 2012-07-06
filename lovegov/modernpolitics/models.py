@@ -129,7 +129,7 @@ class PhysicalAddress(LGModel):
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
 class LocationLevel(models.Model):
-    location = models.ForeignKey(PhysicalAddress, null=True)
+    location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
     scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
     class Meta:
         abstract = True
