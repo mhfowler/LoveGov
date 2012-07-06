@@ -26,14 +26,17 @@ div#top
   div.top-logo
   {
     @extend .top-div;
-    padding-left:10px;
+    margin-left:20px;
+    padding-left:20px;
     padding-right:5px;
-
-    img#logo-img
-    {
-      cursor:pointer;
-    }
-
+    width:110px;
+    height:45px;
+    background-image: url('/static/images/top-logo-default.png');
+    background-size:contain;
+  }
+  div.top-logo:hover {
+    cursor:pointer;
+    background-image: url('/static/images/top-logo-hover.png');
   }
 
   div.link-wrapper
@@ -64,6 +67,12 @@ div#top
 
       a:hover
       {
+        padding-top:10px;
+        padding-bottom:10px;
+        background-color:$red;
+        color:white;
+      }
+      a.clicked {
         padding-top:10px;
         padding-bottom:10px;
         background-color:$red;
@@ -534,9 +543,8 @@ div#user-upload-avatar-modal
   {
     padding: 75px;
   }
-
-
 }
+
 
 
 

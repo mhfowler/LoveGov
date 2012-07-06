@@ -75,7 +75,9 @@ def getLinkInfo(request, vals={}, html="",URL=""):
             list.append(first_image)
 
         if len(list) == 0:
-            list.append({'path':open('/static/dev/images/top-logo-default.png','r+')})
+            rel_path = 'images/top-logo-default.png'
+            this_path = os.path.join(settings.STATIC_ROOT, rel_path)
+            list.append({'path':open(this_path,'r+')})
 
         vals['imglink'] = list
 
@@ -395,14 +397,18 @@ def editAccount(request, vals={}):
     box = request.POST['box']
 
     if box == 'basic_info':
-        viewer.first_name = request.POST['first_name']
-        viewer.last_name = request.POST['last_name']
+        if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
+        if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
 
-        address = request.POST['address']
-        zip = address
-
-        viewer.location = locationHelper(address, zip)
-        viewer.save()
+        if 'address' in request.POST:
+            address = request.POST['address']
+            zip = address
+            try:
+                viewer.location = locationHelper(address, zip)
+                viewer.save()
+            except:
+                viewer.location = None
+                viewer.save()
 
     elif box == 'profile':
         if 'image' in request.FILES:
@@ -979,7 +985,7 @@ def feedback(request,vals={}):
     def sendFeedbackEmail(text,user):
         vals = {'text':text,'name':name}
         for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
+            sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
         return
     user = vals['viewer']
     page = request.POST['path']
@@ -988,6 +994,7 @@ def feedback(request,vals={}):
     feedback = Feedback(user=user,page=page,feedback=text)
     feedback.save()
     thread.start_new_thread(sendFeedbackEmail,(text,name,))
+    temp_logger.debug("feedback sent.")
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1497,7 +1504,7 @@ def flag(request,vals={}):
     c = Comment.lg.get_or_none(id=c_id)
     val_data = {'flagger': vals['viewer'].get_name(), 'comment': c}
     for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
+            sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
     return HttpResponse("Comment has been flagged successfully.")
 
 #-----------------------------------------------------------------------------------------------------------------------

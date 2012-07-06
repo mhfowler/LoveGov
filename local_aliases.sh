@@ -25,6 +25,9 @@ alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/fron
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
 alias lgindex="python $LG/lovegov/local_manage.py rebuild_index"
 
+alias masterpull="git pull origin master"
+alias masterpush="git push origin master"
+
 # permission
 alias projectpermission="sudo chmod -R 770 $LG"
 alias jpermission="sudo chown jvkoh -R $LG && sudo chmod -R 770 $LG"

@@ -68,6 +68,30 @@ LOGGING = {
             'backupCount': 5,
             'formatter':'standard',
             },
+        'normal_handler': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': '/log/live/normal.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'standard',
+            },
+        'errors_handler': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': '/log/live/errors.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'standard',
+            },
+        'temp_handler': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': '/log/live/temp.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'standard',
+            },
         },
     'loggers': {
 
@@ -83,6 +107,21 @@ LOGGING = {
         },
         'filelogger': {
             'handlers': ['file_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'normallogger': {
+            'handlers': ['normal_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'errrorslogger': {
+            'handlers': ['errors_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'templogger': {
+            'handlers': ['temp_handler'],
             'level': 'DEBUG',
             'propagate': False
         },

@@ -46,14 +46,15 @@ function rebindFunction()
             hideFooter();
             break;
         case 'about':                                           // /about
+            selectHeaderLink($("#about-link"));
             loadAbout();
             break;
         case 'match':                                           // /match
-            loadUserList();
-            loadGoogleMap();
+            selectHeaderLink($("#match-link"));
+            loadNewMatch();
             break;
         case 'qaweb':
-            selectHeaderLink("web-link");                        // /web
+            selectHeaderLink($("#web-link"));                        // /web
             loadQAWeb();
             hideFooter();
             break;
@@ -79,9 +80,6 @@ function rebindFunction()
         case 'friends':
             loadHistogram();
             break;
-        case 'newMatch':
-            loadNewMatch();
-            break;
         default:
             break
     }
@@ -102,16 +100,23 @@ function bindTooltips() {
 }
 
 
+function bindLinks() {
+    $(".bind_link").bindOnce("click.link", function(event) {
+        event.preventDefault();
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+}
+
 /***********************************************************************************************************************
  *
  *      ~Header links
  *
  ***********************************************************************************************************************/
 function selectHeaderLink(div) {
-    $(".header-link").removeClass("clicked");
-    $("#" + div).addClass("clicked");
+    $(".header_link").removeClass("clicked");
+    div.addClass("clicked");
 }
-
 
 /***********************************************************************************************************************
  *
@@ -459,7 +464,7 @@ function unbindInlineEdits()
 
 function bindInlineEdits()
 {
-    $(".edit_button").click(
+    $(".edit_button").bindOnce('click.edit',
         function(event)
         {
             event.preventDefault();
@@ -469,7 +474,7 @@ function bindInlineEdits()
         }
     );
 
-    $(".submit_inline_edit").click(
+    $(".submit_inline_edit").bindOnce('click.edit',
         function(event)
         {
             event.preventDefault();
@@ -499,7 +504,7 @@ function bindInlineEdits()
         }
     );
 
-    $(".cancel_inline_edit").click(
+    $(".cancel_inline_edit").bindOnce("click.edit",
         function(event)
         {
             event.preventDefault();
@@ -510,7 +515,6 @@ function bindInlineEdits()
         }
     );
 }
-
 
 
 /***********************************************************************************************************************
@@ -678,7 +682,6 @@ function showTopicIcon(wrapper) {
 
 function loadAjaxifyAnchors()
 {
-    $('.do-ajax-link').off('click',  ajaxClicked);
     var ajaxClicked = function(event) {
         var elem = event.target;
         var href = $(elem).attr('href');
@@ -689,7 +692,6 @@ function loadAjaxifyAnchors()
                 href != "#")
         {
             event.preventDefault();
-            if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
             $('#comparison-hover').empty();
             $('#comparison-hover-div').hide();
             ajaxLink($(elem), true);
@@ -934,7 +936,7 @@ function loadHeader()
     });
 
 
-    $('#logo-img').hover
+    $('#logo-link').hover
         (
             function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
             function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
@@ -1010,66 +1012,43 @@ function loadHeader()
     }
 
 
-    $(".security_setting").click(function(event)
+    $(".security_setting").each(function(event)
     {
-        switch($.cookie('privacy'))
+        if (!$(this).hasClass("has_security_setting"))
         {
-            case "PUB":
-                $.cookie('privacy','PRI', {path:'/'});
-                $(".security_setting").each(function()
+            $(this).bind("click", function()
+            {
+                switch($.cookie('privacy'))
                 {
-                    if ($(this).is('img'))
-                    {
-                        $(this).attr("src","/static/images/user-menu/lockgray.png");
-                        $(this).attr('data-original-title',priMessage);
-                    }
-                });
-                break;
-            case "PRI":
-                $.cookie('privacy','PUB', {path:'/'});
-                $(".security_setting").each(function()
-                {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
-                        $(this).attr('data-original-title',pubMessage);}
-                });
-                break;
+                    case "PUB":
+                        $.cookie('privacy','PRI', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img'))
+                            {
+                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr('data-original-title',priMessage);
+                            }
+                        });
+                        break;
+                    case "PRI":
+                        $.cookie('privacy','PUB', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                                $(this).attr('data-original-title',pubMessage);}
+                        });
+                        break;
+                }
+            });
+
+            $(this).addClass("has_security_setting");
         }
     });
 
-
-    /**
-     * Handles styling of header links
-     *
-     * @param linkElement
-     */
-    function applySelectLinkStyle(linkElement)
-    {
-        $('.top-links').children('a').removeAttr('style');
-        linkElement.css({color:'#ffffff','padding-top':"10px",'padding-bottom':"6px",'background-color':'#f0503b'});
-    }
-    // ajax link home page
-    $("#about-link").click(function(event)
-    {
-        $('.top-links').children('a').removeAttr('style');
-        return false;
-    });
-    // ajax link home page
-    $("#home-link").click(function(event)
-    {
-        applySelectLinkStyle($(this));
-        return false;
-    });
-    // ajax link home page
-    $("#match-link").click(function(event)
-    {
-        applySelectLinkStyle($(this));
-        return false;
-    });
-    // ajax link match page
-    $("#web-link").click(function(event)
-    {
-        applySelectLinkStyle($(this));
-        return false;
+    // header links
+    $(".header_link").bindOnce('click.header', function(event) {
+        selectHeaderLink($(this));
     });
 }
 
@@ -1631,18 +1610,143 @@ function loadGoogleMap()
  ***********************************************************************************************************************/
 function loadAbout()
 {
-    $(".about-element").hover
-        (
-            function(){ $(this).css("background-color","#F0F0F0")},
-            function(){ $(this).css("background-color","#FFFFFF")}
-        );
 
-    $(".about-hover-element").hover
-        (
-            function(){ $(this).css("background-color","#F0F0F0") },
-            function(){ $(this).css("background-color","#FFFFFF") }
-        );
+    teamSection();
+
+    var start = $(".data_start").data('start');
+
+    if (start=='video') {
+        $("#video-div").show();
+    }
+    else {
+        var buttonid =  start + "-button";
+        var divid = start + "-div";
+
+        if (divid == 'whoarewe-div')
+        {
+            $('.who-are-we-circle-div').each(function()
+            {
+                var json = $(this).data('json');
+                $(this).animate({'left':json.x,'top':json.y});
+            });
+        }
+
+        $("#" + buttonid).addClass("clicked");
+        $("#" + divid).show();
+    }
 }
+
+(function( $ )
+{
+    $.fn.textFadeIn = function(options)
+    {
+        var settings = $.extend({
+            'speed'         : 25
+        }, options);
+
+        var self = this;
+        var full_text = self.data('full_text');
+        var timeouts = self.data("timeouts");
+
+        if (!full_text) { self.data('full_text', self.text()); }
+
+        if (timeouts)
+        {
+            for (var j=0;j<self.data('timeouts').length;j++)
+            {
+                clearTimeout(self.data('timeouts')[j]);
+            }
+        }
+        else { self.data('timeouts',new Array()); }
+
+        var textSplit = self.data('full_text').split('');
+        var counter = 0;
+        this.empty();
+
+        function countdown()
+        {
+            if(counter < textSplit.length)
+            {
+                self.append('<span style="display:none" id="fadespan' + counter + '">' + textSplit[counter] + '</span');
+                $('#fadespan' + counter).fadeIn('slow').replaceWith(function(){return this.innerHTML;});
+                self.text(self.text());
+                counter++;
+                var t = setTimeout(countdown, settings.speed);
+                self.data('timeouts').push(t);
+            }
+        }
+        countdown();
+    };
+})( jQuery );
+
+function teamSection()
+{
+
+    var developerDivs = $('.who-are-we-circle-div');
+    var h3 = $('.who-are-we-circle-div-center h3');
+
+    var text = $('.mission p').text();
+
+    developerDivs.each(function()
+    {
+        $(this).hover
+            (
+                function()
+                {
+                    var json = $(this).data('json');
+                    $(this).addClass($(this).attr("class") + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','white');
+                    $('.who-are-we-circle-div-center div').show();
+                    $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
+                    $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
+                    h3.hide();
+                },
+                function()
+                {
+                    $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','');
+                    $('.who-are-we-circle-div-center div').hide();
+                    h3.show();
+                });
+
+    });
+
+    $('.div-button').click(function()
+    {
+
+        $(".div-button").removeClass("clicked");
+        $(this).addClass("clicked");
+
+        $('._fade').hide();
+        var div = '#' + $(this).attr('id').replace('button','div');
+        var url = $(this).attr('id').replace('-button', '');
+        History.pushState( {k:1}, url, '/about/' + url + '/');
+
+
+        $(div).show();
+        if (div=='#whoarewe-div')
+        {
+
+            developerDivs.each(function()
+            {
+                var json = $(this).data('json');
+                $(this).animate({'left':json.x,'top':json.y});
+            });
+
+            //$('.mission p').textFadeIn({'speed':10});
+            $('.mission p').show();
+
+        }
+        else
+        {
+            developerDivs.each(function()
+            {
+                $(this).css({'left':about_center_x,'top':about_center_y});
+            });
+        }
+    });
+}
+
 
 /***********************************************************************************************************************
  *
@@ -1946,6 +2050,11 @@ function loadProfile()
         event.preventDefault();
         var $wrapper = $(this).parents(".message-wrapper");
         messageRep($wrapper);
+    });
+
+    $(".message_x").bindOnce("click.message", function(event) {
+        event.preventDefault();
+        $(this).parents(".message-wrapper").hide();
     });
 }
 
@@ -2516,6 +2625,7 @@ function getFeed(num)
             petitionBar();
             loadHoverComparison();
             bindTooltips();
+            bindLinks();
 
         },
         error: null
@@ -2857,8 +2967,6 @@ function bindFeedItems()
 /* binds everyting */
 var feed_metadata;
 function loadNewFeed() {
-
-    selectHeaderLink("home-link");
 
     $(".how-does").click(function(event) {
         event.preventDefault();
@@ -3909,8 +4017,6 @@ var match_hover_off = true;
 var match_autoswitch;
 function loadNewMatch() {
 
-    selectHeaderLink("match-link");
-
     swapFeatured(match_current_section);
 
     $('.match-item').hoverIntent(
@@ -3963,20 +4069,20 @@ function submitAddress(wrapper) {
     var city = wrapper.find(".city-input").val();
     var zip = wrapper.find(".zip-input").val();
     ajaxPost({
-            data: {
-                'action':'submitAddress',
-                'address':address,
-                'city':city,
-                'zip':zip
-            },
-            success: function(data)
-            {
-                location.reload();
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
-            }
+        data: {
+            'action':'submitAddress',
+            'address':address,
+            'city':city,
+            'zip':zip
+        },
+        success: function(data)
+        {
+            location.reload();
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
+        }
     });
 }
 
@@ -4004,9 +4110,9 @@ function swapFeatured(direction) {
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
     var sections = {0:'presidential',
-                    1:'senate',
-                    2:'social',
-                    3:'representatives'};
+        1:'senate',
+        2:'social',
+        3:'representatives'};
     var url = sections[match_current_section];
     History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
 }
