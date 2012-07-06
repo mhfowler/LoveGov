@@ -2226,8 +2226,18 @@ class Comment(Content):
         self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
-        # add parent topics
         self.setMainTopic(self.root_content.main_topic)
+        # update on_content
+        root_content = self.root_content
+        root_content.num_comments += 1
+        root_content.status += STATUS_COMMENT
+        root_content.save()
+        on_content = self.on_content
+        if on_content != root_content:
+            on_content.num_comments += 1
+            on_content.status += STATUS_COMMENT
+            on_content.save()
+
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
@@ -4108,8 +4118,6 @@ class Commented(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CO'
         self.creator = self.user
-        content = self.comment.root_content
-        content.num_comments += 1
         content.save()
         self.save()
 
