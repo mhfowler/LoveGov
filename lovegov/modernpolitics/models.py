@@ -3488,7 +3488,7 @@ class Group(Content):
         identical_uids = []
 
         for x in members:
-            comparison = getUserUserComparison(user, x)
+            comparison = x.getComparison(user)
             if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
