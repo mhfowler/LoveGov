@@ -1185,6 +1185,17 @@ def getFilter(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
+def getNumNotifications(request, vals={}):
+
+    viewer = vals['viewer']
+    new_notifications = viewer.getNotifications(new=True)
+    num = new_notifications.count()
+
+    return HttpResponse('wooo')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets notifications
+#-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
     viewer = vals['viewer']

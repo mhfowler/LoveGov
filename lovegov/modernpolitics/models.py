@@ -95,6 +95,36 @@ class Privacy(LGModel):
             return getLoveGovUser() 
         return creator
 
+    def getCreatorDisplay(self, viewer=None):
+        from lovegov.modernpolitics.defaults import getDefaultImage
+
+        def getNameAnon():
+            return 'Anonymous'
+        def getImageAnon():
+            return getDefaultImage()
+        def getImageURLAnon():
+            return getDefaultImage().image.url
+        def getUrlAnon():
+            return ''
+
+        if self.getPublic():
+            return self.getCreator()
+        else:
+            creator = self.getCreator()
+            creator.get_name = getNameAnon
+            creator.get_url = getUrlAnon
+            creator.getImage = getImageAnon
+            creator.getImageURL = getImageURLAnon
+
+            if viewer:
+                creator.you = (viewer.id == creator.id)
+            else:
+                creator.you = None
+
+            creator.id = None
+
+            return creator
+
     #-------------------------------------------------------------------------------------------------------------------
     # Return boolean based on privacy.
     #-------------------------------------------------------------------------------------------------------------------

@@ -1212,7 +1212,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     i_vote = my_vote[0].value
                 else: i_vote = 0
                 i_own = user_comments.filter(id=c.id) # check if i own comment
-                creator = c.getCreator()
+                creator = c.getCreatorDisplay()
                 vals.update({'comment': c,
                         'my_vote': i_vote,
                         'owner': i_own,
