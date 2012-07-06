@@ -122,7 +122,8 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.user = control
     userProfile.save()
     if type=="userProfile":
-        sendYayRegisterEmail(userProfile)
+        pass
+        #sendYayRegisterEmail(userProfile)
     # return user prof
     return userProfile
 
