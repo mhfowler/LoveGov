@@ -98,7 +98,7 @@
                 followed
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
-                {% if not reverse_follow.confirmed and not reverse_follow.requested %}
+                {% if not anon and not reverse_follow.confirmed and not reverse_follow.requested %}
                     <td class="notification-buttons">
                         <div class="notification-follow-response notification_user_follow">follow</div>
                         <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>

@@ -1551,7 +1551,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('-when')
+        actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
         print len( actions )
         if num != -1:
             actions = actions[start:start+num]
@@ -1803,15 +1803,15 @@ class Notification(Privacy):
 
         #Set default local variables
         to_you = False
-        from_you = False
+        from_you = from_user.you
 
         if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
             from_user = self.recent_user
+            if from_user.id == view_user.id:
+                from_you = True
 
         #check to see if the viewing user is the to or from user
-        if from_user.id == view_user.id:
-            from_you = True
-        elif to_user.id == view_user.id:
+        if to_user.id == view_user.id:
             to_you = True
 
 
@@ -1820,8 +1820,6 @@ class Notification(Privacy):
             viewed = False
             self.viewed = True
             self.save()
-
-        print from_user.get_name()
 
         notification_context = {'to_user':to_user,
                           'to_you':to_you,
@@ -1833,6 +1831,7 @@ class Notification(Privacy):
                           'true':True,
                           'viewed':viewed,
                           'timestamp':self.when,
+                          'anon':n_action.getPrivate(),
                           'hover_off':1 }
 
         if n_action.type == 'FO':
@@ -3680,7 +3679,7 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
         gmembers = self.members.all()
-        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('-when')
+        actions = Action.objects.filter(relationship__user__in=gmembers, privacy='PUB').order_by('-when')
         if num != 1:
             return actions[start:start+num]
         return actions[start:]

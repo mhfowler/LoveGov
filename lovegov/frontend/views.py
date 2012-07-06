@@ -1105,7 +1105,7 @@ def contentDetail(request, content, vals):
     vals['content'] = content
     creator = content.getCreator()
     vals['creator'] = creator
-    vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
+    vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
     my_vote = user_votes.filter(content=content) 
     if my_vote:
