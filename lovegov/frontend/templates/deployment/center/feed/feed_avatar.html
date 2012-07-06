@@ -9,19 +9,15 @@
             href=""
             {% endif %}
             >
-        {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" private=item.getPrivate %}
+        {% include 'deployment/snippets/avatar.html' with user=creator width="50" height="50" %}
     </a>
 </div>
 
 <div class="header-middle">
     <div class="user-name">
-        {% if item.getPublic %}
-            <a href="{{ creator.get_url }}" class="user-name">
-                {{ creator.get_name }}
-            </a>
-        {% else %}
-            <a href="" class="user-name"> Anonymous </a>
-        {% endif %}
+        <a href="{{ creator.get_url }}" class="user-name">
+            {{ creator.get_name }}
+        </a>
     </div>
     <p class="submitted">
         <a class="text-gray tooltip-top" style="cursor:default" title="{{ item.created_when }}">{{ item.created_when|naturaltime }}</a>

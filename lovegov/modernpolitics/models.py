@@ -95,6 +95,35 @@ class Privacy(LGModel):
             return getLoveGovUser() 
         return creator
 
+    def getCreatorDisplay(self, viewer=None):
+        from lovegov.modernpolitics.defaults import getDefaultImage
+
+        def getNameAnon():
+            return 'Anonymous'
+        def getImageAnon():
+            return getDefaultImage()
+        def getImageURLAnon():
+            return getDefaultImage().image.url
+        def getUrlAnon():
+            return ''
+
+
+        creator = self.getCreator()
+
+        if viewer:
+            creator.you = (viewer.id == creator.id)
+        else:
+            creator.you = None
+
+        if self.getPrivate():
+            creator.get_name = getNameAnon
+            creator.get_url = getUrlAnon
+            creator.getImage = getImageAnon
+            creator.getImageURL = getImageURLAnon
+            creator.id = None
+
+        return creator
+
     #-------------------------------------------------------------------------------------------------------------------
     # Return boolean based on privacy.
     #-------------------------------------------------------------------------------------------------------------------
@@ -129,7 +158,7 @@ class PhysicalAddress(LGModel):
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
 class LocationLevel(models.Model):
-    location = models.ForeignKey(PhysicalAddress, null=True)
+    location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
     scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
     class Meta:
         abstract = True
@@ -230,13 +259,13 @@ class Content(Privacy, LocationLevel):
     # FIELDS
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     topics = models.ManyToManyField(Topic)
-    main_topic = models.ForeignKey(Topic, null=True, related_name="maintopic")
+    main_topic = models.ForeignKey(Topic, null=True, related_name="maintopic", blank=True)
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey("UserImage", null=True)
+    main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
-    calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
+    calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
@@ -288,7 +317,7 @@ class Content(Privacy, LocationLevel):
         self.save()
 
     def contentCommentsRecalculate(self):
-        direct_comments = Comment.objects.filter(on_content=self)
+        direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
 
         if direct_comments:
@@ -1428,11 +1457,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                         notification.when = datetime.datetime.today()
                         if notification.tally == 0:
                             notification.addAggUser( notification.action.relationship.user )
-                        notification.addAggUser( relationship.user )
+                        notification.addAggUser( relationship.user , action.privacy )
                         return True
                 notification = Notification(action=action, notify_user=self)
                 notification.autoSave()
-                notification.addAggUser( relationship.user )
+                notification.addAggUser( relationship.user , action.privacy )
                 return True
 
         elif action.type in NOTIFY_TYPES:
@@ -1698,7 +1727,7 @@ class Action(Privacy):
     def autoSave(self):
         relationship = self.relationship
         self.type = relationship.relationship_type
-        self.privacy = relationship.privacy
+        self.creator = relationship.creator
         self.save()
 
     def getVerbose(self,view_user=None):
@@ -1746,6 +1775,7 @@ class Notification(Privacy):
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
+    anon_users = models.ManyToManyField(UserProfile, related_name = "anonymous_notify_agg_users")
     recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
@@ -1770,15 +1800,18 @@ class Notification(Privacy):
         #Set to and from users
         to_user = relationship.getTo()
         from_user = n_action.getCreatorDisplay(view_user)
+
+        #Set default local variables
+        to_you = False
+        from_you = False
+
         if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
             from_user = self.recent_user
 
-        #Set default local variables
-        from_you = from_user.you
-        to_you = False
-
         #check to see if the viewing user is the to or from user
-        if to_user.id == view_user.id:
+        if from_user.id == view_user.id:
+            from_you = True
+        elif to_user.id == view_user.id:
             to_you = True
 
 
@@ -1787,6 +1820,8 @@ class Notification(Privacy):
             viewed = False
             self.viewed = True
             self.save()
+
+        print from_user.get_name()
 
         notification_context = {'to_user':to_user,
                           'to_you':to_you,
@@ -1818,12 +1853,20 @@ class Notification(Privacy):
         notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',vals)
         return notification_verbose
 
-    def addAggUser(self,agg_user):
-        already = self.users.filter(alias=agg_user.alias)
-        if not already:
-            self.users.add(agg_user)
+    def addAggUser(self,agg_user,privacy="PUB"):
+        already = self.users.filter(id=agg_user.id)
+        already2 = self.anon_users.filter(id=agg_user.id)
+
+        if not already and not already2:
+            if privacy == "PUB":
+                self.users.add(agg_user)
+            else:
+                self.anon_users.add(agg_user)
             self.tally += 1
-        self.recent_user = agg_user
+
+        if privacy == "PUB":
+            self.recent_user = agg_user
+
         self.viewed = False
         self.save()
 
@@ -2228,8 +2271,18 @@ class Comment(Content):
         self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
-        # add parent topics
         self.setMainTopic(self.root_content.main_topic)
+        # update on_content
+        root_content = self.root_content
+        root_content.num_comments += 1
+        root_content.status += STATUS_COMMENT
+        root_content.save()
+        on_content = self.on_content
+        if on_content != root_content:
+            on_content.num_comments += 1
+            on_content.status += STATUS_COMMENT
+            on_content.save()
+
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
@@ -3480,7 +3533,7 @@ class Group(Content):
         identical_uids = []
 
         for x in members:
-            comparison = getUserUserComparison(user, x)
+            comparison = x.getComparison(user)
             if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
@@ -3610,7 +3663,7 @@ class Group(Content):
             return members[start:start+num]
 
     def getNumMembers(self):
-        return self.members.all().count()
+        return self.members.count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -4110,9 +4163,6 @@ class Commented(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CO'
         self.creator = self.user
-        content = self.comment.root_content
-        content.num_comments += 1
-        content.save()
         self.save()
 
 #=======================================================================================================================

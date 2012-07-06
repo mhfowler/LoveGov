@@ -31,7 +31,7 @@
                 <div class="header-notifications select-none">
                     <div id="notifications-dropdown-button">
                         <div id="notifications-number">
-                            <h5>{{ new_notification_count }}</h5>
+                            <h5 id="notifications-number-text">{{ new_notification_count }}</h5>
                         </div>
                     </div>
                 </div>
@@ -77,6 +77,7 @@
                     <h5 class="user-menu-dashboard-avatar-overlay" style="display:none">change<br>avatar</h5>
                 {% empty %}
                 {% endthumbnail %}
+
                 <script type="text/javascript">
                     $('#user-menu-dashboard-avatar').hover(
                         function(event) { $('.user-menu-dashboard-avatar-overlay').show(); },
@@ -92,7 +93,6 @@
                         event.stopPropagation();
                         ajaxLink('/account/profile/',true);
                     });
-
                 </script>
 
                 <div class="user-menu-dashboard-right">

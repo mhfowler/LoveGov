@@ -506,9 +506,18 @@ def edit(request, vals={}):
 def delete(request, vals={}):
     user = vals['viewer']
     content = Content.objects.get(id=request.POST['c_id'])
-    if user == content.getCreator():
+    if user == content.getCreator() and content.active:
         content.active = False
         content.save()
+        if content.type == 'C':
+            comment = content.downcast()
+            root_content = comment.root_content
+            root_content.num_comments -= 1
+            root_content.save()
+            on_content = comment.on_content
+            if on_content != root_content:
+                on_content.num_comments -= 1
+                on_content.save()
         deleted = Deleted(user=user, content=content, privacy=getPrivacy(request))
         deleted.autoSave()
         return HttpResponse("successfully deleted content with id:" + request.POST['c_id'])
@@ -532,8 +541,6 @@ def comment(request, vals={}):
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():
         comment = comment_form.save(creator=user, privacy=privacy)
-        comment.on_content.status += STATUS_COMMENT
-        comment.on_content.save()
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
@@ -1178,6 +1185,17 @@ def getFilter(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
+def getNumNotifications(request, vals={}):
+
+    viewer = vals['viewer']
+    new_notifications = viewer.getNotifications(new=True)
+    num = new_notifications.count()
+
+    return HttpResponse('wooo')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets notifications
+#-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
     viewer = vals['viewer']
@@ -1186,11 +1204,18 @@ def getNotifications(request, vals={}):
         num_notifications = int(request.POST['num_notifications'])
 
     notifications_text = []
+    num_still_new = 0
 
     if 'dropdown' in request.POST:
-        new_notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT+2,start=num_notifications,new=True)
+
+        new_notifications = viewer.getNotifications(new=True)
+        num_new = len(new_notifications)
+        new_notifications = new_notifications[0:NOTIFICATION_INCREMENT+2]
+        num_returned = len(new_notifications)
+        num_still_new = num_new - num_returned
+
         old_notifications = None
-        diff = NOTIFICATION_INCREMENT - new_notifications.count()
+        diff = NOTIFICATION_INCREMENT - num_returned
         if diff > 0:
             old_notifications = viewer.getNotifications(num=diff,start=num_notifications,old=True)
         elif diff < 0:
@@ -1199,8 +1224,8 @@ def getNotifications(request, vals={}):
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         if old_notifications:
             for notification in old_notifications:
-                notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
-        num_notifications += diff + new_notifications.count()
+                notifications_text.append( notification.getVerbose(view_user=viewer) )
+        num_notifications += diff + num_returned
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
@@ -1215,7 +1240,7 @@ def getNotifications(request, vals={}):
     html = ajaxRender('deployment/snippets/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
         html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
+    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets user activity feed

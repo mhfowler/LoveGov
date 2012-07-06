@@ -797,7 +797,7 @@ function ajaxReload(theurl, loadimg)
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, returned.title, returned.url);
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
                 replaceCenter(returned.html);
             },
@@ -903,6 +903,7 @@ function loadHeader()
                         unbindNotification();
                         loadNotification();
                         loadAjaxifyAnchors();
+                        $("#notifications-number-text").text(obj.num_still_new);
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
@@ -1720,7 +1721,7 @@ function teamSection()
         $('._fade').hide();
         var div = '#' + $(this).attr('id').replace('button','div');
         var url = $(this).attr('id').replace('-button', '');
-        History.pushState( {k:1}, url, '/about/' + url + '/');
+        History.pushState( {k:1}, "LoveGov: Beta", '/about/' + url + '/');
 
 
         $(div).show();
@@ -4114,7 +4115,7 @@ function swapFeatured(direction) {
         2:'social',
         3:'representatives'};
     var url = sections[match_current_section];
-    History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
+    History.pushState( {k:1}, "LoveGov: Beta", '/match/' + url + '/');
 }
 
 function nextSection() {

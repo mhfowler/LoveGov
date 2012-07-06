@@ -6,8 +6,20 @@
         <a href="{{ item.get_url }}" class="comments-wrapper">
 
             <div class="text-wrapper">
-                <div class="comments-text"> comments </div>
-                <div class="comments-num"> {{ item.num_comments }} </div>
+                <div class="comments-text">
+                    {% if item.type != "G" %}
+                        comments
+                    {% else %}
+                        members
+                    {% endif %}
+                </div>
+                <div class="comments-num">
+                    {% if item.type != "G" %}
+                        {{ item.num_comments }}
+                    {% else %}
+                        {{ item.getNumMembers }}
+                    {% endif %}
+                </div>
                 <div style="clear:both;"></div>
             </div>
 
@@ -19,6 +31,6 @@
         </a>
     </div>
     <div class="share share_button" data-share_id={{item.id}}>
-           <p class="share-text"> share </p>
+        <p class="share-text"> share </p>
     </div>
 </div>
