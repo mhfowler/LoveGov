@@ -69,6 +69,12 @@ div#top
         background-color:$red;
         color:white;
       }
+      a.clicked {
+        padding-top:10px;
+        padding-bottom:10px;
+        background-color:$red;
+        color:white;
+      }
     }
   }
 
@@ -534,9 +540,8 @@ div#user-upload-avatar-modal
   {
     padding: 75px;
   }
-
-
 }
+
 
 
 

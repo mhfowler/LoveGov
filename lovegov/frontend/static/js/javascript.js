@@ -46,14 +46,15 @@ function rebindFunction()
             hideFooter();
             break;
         case 'about':                                           // /about
+            selectHeaderLink($("#about-link"));
             loadAbout();
             break;
         case 'match':                                           // /match
-            loadUserList();
-            loadGoogleMap();
+            selectHeaderLink($("#match-link"));
+            loadNewMatch();
             break;
         case 'qaweb':
-            selectHeaderLink("web-link");                        // /web
+            selectHeaderLink($("#web-link"));                        // /web
             loadQAWeb();
             hideFooter();
             break;
@@ -78,9 +79,6 @@ function rebindFunction()
             break;
         case 'friends':
             loadHistogram();
-            break;
-        case 'newMatch':
-            loadNewMatch();
             break;
         default:
             break
@@ -117,9 +115,8 @@ function bindLinks() {
  ***********************************************************************************************************************/
 function selectHeaderLink(div) {
     $(".header-link").removeClass("clicked");
-    $("#" + div).addClass("clicked");
+    div.addClass("clicked");
 }
-
 
 /***********************************************************************************************************************
  *
@@ -518,7 +515,6 @@ function bindInlineEdits()
         }
     );
 }
-
 
 
 /***********************************************************************************************************************
@@ -942,7 +938,7 @@ function loadHeader()
     });
 
 
-    $('#logo-img').hover
+    $('#logo-link').hover
         (
             function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
             function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
@@ -1052,39 +1048,11 @@ function loadHeader()
         }
     });
 
-    /**
-     * Handles styling of header links
-     *
-     * @param linkElement
-     */
-    function applySelectLinkStyle(linkElement)
+    // header links
+    $(".header-link").bindOnce("click.header", function(event)
     {
-        $('.top-links').children('a').removeAttr('style');
-        linkElement.css({color:'#ffffff','padding-top':"10px",'padding-bottom':"6px",'background-color':'#f0503b'});
-    }
-    // ajax link home page
-    $("#about-link").click(function(event)
-    {
-        $('.top-links').children('a').removeAttr('style');
-        return false;
-    });
-    // ajax link home page
-    $("#home-link").click(function(event)
-    {
-        applySelectLinkStyle($(this));
-        return false;
-    });
-    // ajax link home page
-    $("#match-link").click(function(event)
-    {
-        applySelectLinkStyle($(this));
-        return false;
-    });
-    // ajax link match page
-    $("#web-link").click(function(event)
-    {
-        applySelectLinkStyle($(this));
-        return false;
+        headerLink($(this));
+        event.stopPropagation();
     });
 }
 
@@ -1646,18 +1614,143 @@ function loadGoogleMap()
  ***********************************************************************************************************************/
 function loadAbout()
 {
-    $(".about-element").hover
-        (
-            function(){ $(this).css("background-color","#F0F0F0")},
-            function(){ $(this).css("background-color","#FFFFFF")}
-        );
 
-    $(".about-hover-element").hover
-        (
-            function(){ $(this).css("background-color","#F0F0F0") },
-            function(){ $(this).css("background-color","#FFFFFF") }
-        );
+    teamSection();
+
+    var start = $(".data_start").data('start');
+
+    if (start=='video') {
+        $("#video-div").show();
+    }
+    else {
+        var buttonid =  start + "-button";
+        var divid = start + "-div";
+
+        if (divid == 'whoarewe-div')
+        {
+            $('.who-are-we-circle-div').each(function()
+            {
+                var json = $(this).data('json');
+                $(this).animate({'left':json.x,'top':json.y});
+            });
+        }
+
+        $("#" + buttonid).addClass("clicked");
+        $("#" + divid).show();
+    }
 }
+
+(function( $ )
+{
+    $.fn.textFadeIn = function(options)
+    {
+        var settings = $.extend({
+            'speed'         : 25
+        }, options);
+
+        var self = this;
+        var full_text = self.data('full_text');
+        var timeouts = self.data("timeouts");
+
+        if (!full_text) { self.data('full_text', self.text()); }
+
+        if (timeouts)
+        {
+            for (var j=0;j<self.data('timeouts').length;j++)
+            {
+                clearTimeout(self.data('timeouts')[j]);
+            }
+        }
+        else { self.data('timeouts',new Array()); }
+
+        var textSplit = self.data('full_text').split('');
+        var counter = 0;
+        this.empty();
+
+        function countdown()
+        {
+            if(counter < textSplit.length)
+            {
+                self.append('<span style="display:none" id="fadespan' + counter + '">' + textSplit[counter] + '</span');
+                $('#fadespan' + counter).fadeIn('slow').replaceWith(function(){return this.innerHTML;});
+                self.text(self.text());
+                counter++;
+                var t = setTimeout(countdown, settings.speed);
+                self.data('timeouts').push(t);
+            }
+        }
+        countdown();
+    };
+})( jQuery );
+
+function teamSection()
+{
+
+    var developerDivs = $('.who-are-we-circle-div');
+    var h3 = $('.who-are-we-circle-div-center h3');
+
+    var text = $('.mission p').text();
+
+    developerDivs.each(function()
+    {
+        $(this).hover
+            (
+                function()
+                {
+                    var json = $(this).data('json');
+                    $(this).addClass($(this).attr("class") + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','white');
+                    $('.who-are-we-circle-div-center div').show();
+                    $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
+                    $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
+                    h3.hide();
+                },
+                function()
+                {
+                    $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','');
+                    $('.who-are-we-circle-div-center div').hide();
+                    h3.show();
+                });
+
+    });
+
+    $('.div-button').click(function()
+    {
+
+        $(".div-button").removeClass("clicked");
+        $(this).addClass("clicked");
+
+        $('._fade').hide();
+        var div = '#' + $(this).attr('id').replace('button','div');
+        var url = $(this).attr('id').replace('-button', '');
+        History.pushState( {k:1}, url, '/about/' + url + '/');
+
+
+        $(div).show();
+        if (div=='#whoarewe-div')
+        {
+
+            developerDivs.each(function()
+            {
+                var json = $(this).data('json');
+                $(this).animate({'left':json.x,'top':json.y});
+            });
+
+            //$('.mission p').textFadeIn({'speed':10});
+            $('.mission p').show();
+
+        }
+        else
+        {
+            developerDivs.each(function()
+            {
+                $(this).css({'left':about_center_x,'top':about_center_y});
+            });
+        }
+    });
+}
+
 
 /***********************************************************************************************************************
  *
@@ -2879,8 +2972,6 @@ function bindFeedItems()
 var feed_metadata;
 function loadNewFeed() {
 
-    selectHeaderLink("home-link");
-
     $(".how-does").click(function(event) {
         event.preventDefault();
         ajaxPost({
@@ -3930,8 +4021,6 @@ var match_hover_off = true;
 var match_autoswitch;
 function loadNewMatch() {
 
-    selectHeaderLink("match-link");
-
     swapFeatured(match_current_section);
 
     $('.match-item').hoverIntent(
@@ -3984,20 +4073,20 @@ function submitAddress(wrapper) {
     var city = wrapper.find(".city-input").val();
     var zip = wrapper.find(".zip-input").val();
     ajaxPost({
-            data: {
-                'action':'submitAddress',
-                'address':address,
-                'city':city,
-                'zip':zip
-            },
-            success: function(data)
-            {
-                location.reload();
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
-            }
+        data: {
+            'action':'submitAddress',
+            'address':address,
+            'city':city,
+            'zip':zip
+        },
+        success: function(data)
+        {
+            location.reload();
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
+        }
     });
 }
 
@@ -4025,9 +4114,9 @@ function swapFeatured(direction) {
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
     var sections = {0:'presidential',
-                    1:'senate',
-                    2:'social',
-                    3:'representatives'};
+        1:'senate',
+        2:'social',
+        3:'representatives'};
     var url = sections[match_current_section];
     History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
 }
