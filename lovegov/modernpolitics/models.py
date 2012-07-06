@@ -4118,7 +4118,6 @@ class Commented(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CO'
         self.creator = self.user
-        content.save()
         self.save()
 
 #=======================================================================================================================
