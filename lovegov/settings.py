@@ -242,10 +242,11 @@ CACHES = {
 #EMAIL_FILE_PATH = '/log/emails'
 
 #EMAIL DURING LIVE
-EMAIL_HOST = 'smtpout.secureserver.net'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'team@lovegov.com'
-EMAIL_HOST_PASSWORD = 'freeGOV'
-EMAIL_PORT = '25'
+EMAIL_HOST_PASSWORD = 'freeGOV2'
+EMAIL_PORT = 587
 
 ########################################################################################################################
 #    misc settings

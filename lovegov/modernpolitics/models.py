@@ -129,7 +129,7 @@ class PhysicalAddress(LGModel):
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
 class LocationLevel(models.Model):
-    location = models.ForeignKey(PhysicalAddress, null=True)
+    location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
     scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
     class Meta:
         abstract = True
@@ -230,13 +230,13 @@ class Content(Privacy, LocationLevel):
     # FIELDS
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     topics = models.ManyToManyField(Topic)
-    main_topic = models.ForeignKey(Topic, null=True, related_name="maintopic")
+    main_topic = models.ForeignKey(Topic, null=True, related_name="maintopic", blank=True)
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey("UserImage", null=True)
+    main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
-    calculated_view = models.ForeignKey("WorldView", null=True)     # foreign key to worldview
+    calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
@@ -288,7 +288,7 @@ class Content(Privacy, LocationLevel):
         self.save()
 
     def contentCommentsRecalculate(self):
-        direct_comments = Comment.objects.filter(on_content=self)
+        direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
 
         if direct_comments:
@@ -2226,8 +2226,18 @@ class Comment(Content):
         self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
-        # add parent topics
         self.setMainTopic(self.root_content.main_topic)
+        # update on_content
+        root_content = self.root_content
+        root_content.num_comments += 1
+        root_content.status += STATUS_COMMENT
+        root_content.save()
+        on_content = self.on_content
+        if on_content != root_content:
+            on_content.num_comments += 1
+            on_content.status += STATUS_COMMENT
+            on_content.save()
+
 
     def getAlphaDisplayName(self):
         if self.privacy=='PUB':
@@ -3608,7 +3618,7 @@ class Group(Content):
             return members[start:start+num]
 
     def getNumMembers(self):
-        return self.members.all().count()
+        return self.members.count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
@@ -4108,9 +4118,6 @@ class Commented(UCRelationship):
     def autoSave(self):
         self.relationship_type = 'CO'
         self.creator = self.user
-        content = self.comment.root_content
-        content.num_comments += 1
-        content.save()
         self.save()
 
 #=======================================================================================================================

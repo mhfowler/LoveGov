@@ -1204,32 +1204,33 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if comments:
         to_return = ''
         for c in comments:
-            margin = 30*(depth+1)
-            to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
-            my_vote = user_votes.filter(content=c) # check if i like comment
-            if my_vote:
-                i_vote = my_vote[0].value
-            else: i_vote = 0
-            i_own = user_comments.filter(id=c.id) # check if i own comment
-            creator = c.getCreator()
-            vals.update({'comment': c,
-                    'my_vote': i_vote,
-                    'owner': i_own,
-                    'votes': c.upvotes - c.downvotes,
-                    'creator': creator,
-                    'display_name': c.getCreatorDisplayName(user, getSourcePath(request)),
-                    'public': c.getPublic(),
-                    'margin': margin,
-                    'width': 690-(30*depth+1)-30,
-                    'defaultImage':getDefaultImage().image,
-                    'depth':depth})
-                    
-            context = RequestContext(request,vals)
-            template = loader.get_template('deployment/snippets/cath_comment.html')
-            comment_string = template.render(context)  # render comment html
-            to_return += comment_string
-            to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
-            to_return += "</div>"   # close list
+            if c.active or c.num_comments:
+                margin = 30*(depth+1)
+                to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
+                my_vote = user_votes.filter(content=c) # check if i like comment
+                if my_vote:
+                    i_vote = my_vote[0].value
+                else: i_vote = 0
+                i_own = user_comments.filter(id=c.id) # check if i own comment
+                creator = c.getCreator()
+                vals.update({'comment': c,
+                        'my_vote': i_vote,
+                        'owner': i_own,
+                        'votes': c.upvotes - c.downvotes,
+                        'creator': creator,
+                        'display_name': c.getCreatorDisplayName(user, getSourcePath(request)),
+                        'public': c.getPublic(),
+                        'margin': margin,
+                        'width': 690-(30*depth+1)-30,
+                        'defaultImage':getDefaultImage().image,
+                        'depth':depth})
+
+                context = RequestContext(request,vals)
+                template = loader.get_template('deployment/snippets/cath_comment.html')
+                comment_string = template.render(context)  # render comment html
+                to_return += comment_string
+                to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
+                to_return += "</div>"   # close list
         return to_return
     else:
         return ''

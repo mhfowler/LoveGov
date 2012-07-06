@@ -506,9 +506,18 @@ def edit(request, vals={}):
 def delete(request, vals={}):
     user = vals['viewer']
     content = Content.objects.get(id=request.POST['c_id'])
-    if user == content.getCreator():
+    if user == content.getCreator() and content.active:
         content.active = False
         content.save()
+        if content.type == 'C':
+            comment = content.downcast()
+            root_content = comment.root_content
+            root_content.num_comments -= 1
+            root_content.save()
+            on_content = comment.on_content
+            if on_content != root_content:
+                on_content.num_comments -= 1
+                on_content.save()
         deleted = Deleted(user=user, content=content, privacy=getPrivacy(request))
         deleted.autoSave()
         return HttpResponse("successfully deleted content with id:" + request.POST['c_id'])
@@ -532,8 +541,6 @@ def comment(request, vals={}):
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():
         comment = comment_form.save(creator=user, privacy=privacy)
-        comment.on_content.status += STATUS_COMMENT
-        comment.on_content.save()
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
