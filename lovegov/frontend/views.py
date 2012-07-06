@@ -49,9 +49,9 @@ def viewWrapper(view, requires_login=False):
                     return HttpResponseRedirect('/login' + request.path)
                 # ELSE AUTHENTICATED
                 else:
+                    logger.debug('logged in:' + str(request.user.id))
                     vals['user'] = user
                     vals['viewer'] = user
-                    rightSideBar(None, vals)
                     vals['new_notification_count'] = user.getNumNewNotifications()
             except ImproperlyConfigured:
                 response = shortcuts.redirect('/login' + request.path)
@@ -1100,6 +1100,7 @@ def topicDetail(request, topic_alias=None, vals={}):
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def petitionDetail(request, p_id, vals={}, signerLimit=8):
+
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
@@ -1108,6 +1109,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     signers = petition.getSigners()
     vals['signers'] = signers[:signerLimit]
     vals['i_signed'] = (vals['viewer'] in signers)
+
     contentDetail(request=request, content=petition, vals=vals)
     setPageTitle("lovegov: " + petition.title,vals)
     html = ajaxRender('deployment/center/petition_detail.html', vals, request)
