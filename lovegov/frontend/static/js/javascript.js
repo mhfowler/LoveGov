@@ -4067,7 +4067,6 @@ function swapInHover(div) {
 function bindChangeContentPrivacy() {
 
     $('div.change-privacy').bindOnce('click', function() {
-        alert('clicky');
         var content_id = $(this).data('content_id');
         var meDiv = $(this);
         $(this).tooltip('hide');
