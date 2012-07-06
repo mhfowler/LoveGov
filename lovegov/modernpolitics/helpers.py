@@ -154,14 +154,19 @@ def ajaxRender(template, vals, request):
 # Gets a user profile from a request or id.
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserProfile(request=None, control_id=None):
+    #Try and get a ControllingUser
     if control_id:
         control = ControllingUser.lg.get_or_none(id=control_id)
     else:
         control = ControllingUser.lg.get_or_none(id=request.user.id)
-    if control:
-        return control.user_profile
-    else:
-        return None
+
+    user_prof = None
+    if control:     #Try and get a user profile from that Control if it exists
+        user_prof = UserProfile.lg.get_or_none(id=control.user_profile_id)
+        if not user_prof:
+            errors_logger.error("Controlling User: " + str(control.id) + " does not have a userProfile")
+
+    return user_prof #and return it
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets privacy from cookies.

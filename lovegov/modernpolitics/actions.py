@@ -747,7 +747,7 @@ def groupInviteResponse(request, vals={}):
     response = request.POST['response']
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupJoined.objects.filter(user=from_user, group=group)
+    already = GroupJoined.objects.filter(user=from_user, group=group, privacy=getPrivacy(request))
     if already:
         group_joined = already[0]
         if group_joined.confirmed:
@@ -784,7 +784,7 @@ def userFollowRequest(request, vals={}):
         if user_follow.confirmed: #If you're confirmed following already, you're done
             return HttpResponse("already following this person")
     else: #If there's no follow relationship, make one
-        user_follow = UserFollow(user=from_user, to_user=to_user)
+        user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
         user_follow.autoSave()
     # If this user is public follow
     if not to_user.private_follow:
@@ -846,7 +846,7 @@ def userFollowStop(request, vals={}):
     if to_user:
         already = UserFollow.objects.filter(user=from_user, to_user=to_user)
         if not already:
-            user_follow = UserFollow(user=from_user, to_user=to_user)
+            user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
             user_follow.autoSave()
         else:
             user_follow = already[0]
@@ -1196,10 +1196,10 @@ def getNotifications(request, vals={}):
         elif diff < 0:
             diff = 0
         for notification in new_notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer) )
+            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         if old_notifications:
             for notification in old_notifications:
-                notifications_text.append( notification.getVerbose(view_user=viewer) )
+                notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         num_notifications += diff + new_notifications.count()
 
     else:
@@ -1207,7 +1207,7 @@ def getNotifications(request, vals={}):
         if not notifications:
             return HttpResponse(json.dumps({'error':'No more notifications'}))
         for notification in notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer) )
+            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         num_notifications += NOTIFICATION_INCREMENT
 
     vals['dropdown_notifications_text'] = notifications_text

@@ -239,7 +239,7 @@ function userFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -298,7 +298,7 @@ function groupFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -321,7 +321,7 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -343,7 +343,7 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -390,7 +390,7 @@ function setFollowPrivacy(event,private_follow,div)
             }
             else
             {
-                alert(data);
+                //alert(data);
             }
 
         },
@@ -1125,7 +1125,7 @@ function loadLeftSidebar()
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                alert("failure");
+                //alert("failure");
             }
         });
     });
@@ -1773,7 +1773,7 @@ function loadNotification()
                 },
                 success: function(data)
                 {
-                    alert(data);
+                    //alert(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -2276,7 +2276,7 @@ function groupFollowResponse(event,response,div,g_id)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -4173,7 +4173,6 @@ function swapInHover(div) {
 function bindChangeContentPrivacy() {
 
     $('div.change-privacy').bindOnce('click', function() {
-        alert('clicky');
         var content_id = $(this).data('content_id');
         var meDiv = $(this);
         $(this).tooltip('hide');
