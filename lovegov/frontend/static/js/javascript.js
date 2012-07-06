@@ -903,6 +903,7 @@ function loadHeader()
                         unbindNotification();
                         loadNotification();
                         loadAjaxifyAnchors();
+                        $("#notifications-number-text").text(obj.num_still_new);
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {

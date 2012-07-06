@@ -1193,11 +1193,18 @@ def getNotifications(request, vals={}):
         num_notifications = int(request.POST['num_notifications'])
 
     notifications_text = []
+    num_still_new = 0
 
     if 'dropdown' in request.POST:
-        new_notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT+2,start=num_notifications,new=True)
+
+        new_notifications = viewer.getNotifications(new=True)
+        num_new = len(new_notifications)
+        new_notifications = new_notifications[0:NOTIFICATION_INCREMENT+2]
+        num_returned = len(new_notifications)
+        num_still_new = num_new - num_returned
+
         old_notifications = None
-        diff = NOTIFICATION_INCREMENT - new_notifications.count()
+        diff = NOTIFICATION_INCREMENT - num_returned
         if diff > 0:
             old_notifications = viewer.getNotifications(num=diff,start=num_notifications,old=True)
         elif diff < 0:
@@ -1207,7 +1214,7 @@ def getNotifications(request, vals={}):
         if old_notifications:
             for notification in old_notifications:
                 notifications_text.append( notification.getVerbose(view_user=viewer) )
-        num_notifications += diff + new_notifications.count()
+        num_notifications += diff + num_returned
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
@@ -1222,7 +1229,7 @@ def getNotifications(request, vals={}):
     html = ajaxRender('deployment/snippets/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
         html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
+    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets user activity feed
