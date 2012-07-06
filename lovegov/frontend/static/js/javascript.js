@@ -797,7 +797,7 @@ function ajaxReload(theurl, loadimg)
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, returned.title, returned.url);
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
                 replaceCenter(returned.html);
             },
