@@ -114,7 +114,7 @@ function bindLinks() {
  *
  ***********************************************************************************************************************/
 function selectHeaderLink(div) {
-    $(".header-link").removeClass("clicked");
+    $(".header_link").removeClass("clicked");
     div.addClass("clicked");
 }
 
@@ -682,7 +682,6 @@ function showTopicIcon(wrapper) {
 
 function loadAjaxifyAnchors()
 {
-    $('.do-ajax-link').off('click',  ajaxClicked);
     var ajaxClicked = function(event) {
         var elem = event.target;
         var href = $(elem).attr('href');
@@ -693,7 +692,6 @@ function loadAjaxifyAnchors()
                 href != "#")
         {
             event.preventDefault();
-            if (!$(elem).parent().hasClass("top-links")) { $('.top-links').children('a').removeAttr('style'); }
             $('#comparison-hover').empty();
             $('#comparison-hover-div').hide();
             ajaxLink($(elem), true);
@@ -1049,10 +1047,8 @@ function loadHeader()
     });
 
     // header links
-    $(".header-link").bindOnce("click.header", function(event)
-    {
+    $(".header_link").bindOnce('click.header', function(event) {
         selectHeaderLink($(this));
-        event.stopPropagation();
     });
 }
 
