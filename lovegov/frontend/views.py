@@ -49,7 +49,6 @@ def viewWrapper(view, requires_login=False):
                     return HttpResponseRedirect('/login' + request.path)
                 # ELSE AUTHENTICATED
                 else:
-                    logger.debug('logged in:' + str(request.user.id))
                     vals['user'] = user
                     vals['viewer'] = user
                     vals['new_notification_count'] = user.getNumNewNotifications()

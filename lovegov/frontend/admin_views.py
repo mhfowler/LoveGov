@@ -3,7 +3,6 @@ from lovegov.modernpolitics.backend import *
 
 ### Python ###
 from django.http import *
-from modernpolitics import send_email
 
 
 def adminHome(request,vals={}):
@@ -51,7 +50,7 @@ def reinviteUser(request,vals={}):
     EMAIL_SENDER = 'info@lovegov.com'
     EMAIL_TEMPLATE = 'alphaInvite.html'
     vals = {'firstname':userProfile.first_name,'message':userProfile.invite_message,'email':userProfile.username,'password':new_password}
-    send_email.sendTemplateEmail(userProfile.invite_subject,EMAIL_TEMPLATE,vals,EMAIL_SENDER,userProfile.username)
+    sendTemplateEmail(userProfile.invite_subject,EMAIL_TEMPLATE,vals,EMAIL_SENDER,userProfile.username)
     return HttpResponse("+")
 
 def writeAllUsers(request,vals={}):

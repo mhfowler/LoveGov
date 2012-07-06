@@ -985,7 +985,7 @@ def feedback(request,vals={}):
     def sendFeedbackEmail(text,user):
         vals = {'text':text,'name':name}
         for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
+            sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
         return
     user = vals['viewer']
     page = request.POST['path']
@@ -994,6 +994,7 @@ def feedback(request,vals={}):
     feedback = Feedback(user=user,page=page,feedback=text)
     feedback.save()
     thread.start_new_thread(sendFeedbackEmail,(text,name,))
+    temp_logger.debug("feedback sent.")
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1503,7 +1504,7 @@ def flag(request,vals={}):
     c = Comment.lg.get_or_none(id=c_id)
     val_data = {'flagger': vals['viewer'].get_name(), 'comment': c}
     for team_member in TEAM_EMAILS:
-            send_email.sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
+            sendTemplateEmail("LoveGov Flag",'flag.html',val_data,"team@lovegov.com",team_member)
     return HttpResponse("Comment has been flagged successfully.")
 
 #-----------------------------------------------------------------------------------------------------------------------

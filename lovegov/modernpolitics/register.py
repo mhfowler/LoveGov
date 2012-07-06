@@ -9,7 +9,6 @@
 
 # lovegov
 from lovegov.modernpolitics.defaults import *
-from lovegov.modernpolitics.send_email import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Resets a users password and sends an email.
@@ -123,8 +122,7 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.user = control
     userProfile.save()
     if type=="userProfile":
-        from lovegov.modernpolitics.send_email import sendYayRegisterEmail
-        #sendYayRegisterEmail(userProfile)
-        # return control
+        sendYayRegisterEmail(userProfile)
+    # return user prof
     return userProfile
 
