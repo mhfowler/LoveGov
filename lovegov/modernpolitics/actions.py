@@ -75,7 +75,9 @@ def getLinkInfo(request, vals={}, html="",URL=""):
             list.append(first_image)
 
         if len(list) == 0:
-            list.append({'path':open('/static/dev/images/top-logo-default.png','r+')})
+            rel_path = 'images/top-logo-default.png'
+            this_path = os.path.join(settings.STATIC_ROOT, rel_path)
+            list.append({'path':open(this_path,'r+')})
 
         vals['imglink'] = list
 
@@ -298,7 +300,7 @@ def invite(request, vals={}):
         valid.save()
     subject = user_name + " has invited you to join them on LoveGov"
     dictionary = {'user_name':user_name}
-    send_email.sendTemplateEmail(subject,'userInvite.html', dictionary,"team@lovegov.com",email)
+    sendTemplateEmail(subject,'userInvite.html', dictionary,"team@lovegov.com",email)
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -395,14 +397,18 @@ def editAccount(request, vals={}):
     box = request.POST['box']
 
     if box == 'basic_info':
-        viewer.first_name = request.POST['first_name']
-        viewer.last_name = request.POST['last_name']
+        if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
+        if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
 
-        address = request.POST['address']
-        zip = address
-
-        viewer.location = locationHelper(address, zip)
-        viewer.save()
+        if 'address' in request.POST:
+            address = request.POST['address']
+            zip = address
+            try:
+                viewer.location = locationHelper(address, zip)
+                viewer.save()
+            except:
+                viewer.location = None
+                viewer.save()
 
     elif box == 'profile':
         if 'image' in request.FILES:

@@ -41,6 +41,7 @@ urlpatterns += patterns('',
 
     # outside of login
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                             # login
+    (r'^login/$', viewWrapper(views.login)),
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm
     (r'^fb/authorize/$', views.facebookAuthorize),
     (r'^fb/handle/$', viewWrapper(views.facebookHandle)),

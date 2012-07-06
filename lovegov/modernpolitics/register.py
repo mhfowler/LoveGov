@@ -8,8 +8,8 @@
 ########################################################################################################################
 
 # lovegov
-from modernpolitics.defaults import *
-from modernpolitics.send_email import *
+from lovegov.modernpolitics.defaults import *
+from lovegov.modernpolitics.send_email import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Resets a users password and sends an email.
@@ -33,7 +33,8 @@ def createAlphaUser(name, email):
 def createFBUser(name, email):
     password = generateRandomPassword(10)
     control = createUser(name, email, password)
-    sendFBRegisterEmail(name, email, password)
+    vals = {'name':name,'email':email,'password':password}
+    sendTemplateEmail(subject="Welcome to LoveGov", template="facebookRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
     return control
 
 #-------------------------------------------------------------------------------------------------------------------
@@ -122,8 +123,8 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.user = control
     userProfile.save()
     if type=="userProfile":
-        from modernpolitics.send_email import sendYayRegisterEmail
-        # sendYayRegisterEmail(userProfile)
+        from lovegov.modernpolitics.send_email import sendYayRegisterEmail
+        #sendYayRegisterEmail(userProfile)
         # return control
     return userProfile
 

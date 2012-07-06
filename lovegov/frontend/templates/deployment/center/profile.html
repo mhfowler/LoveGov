@@ -131,7 +131,10 @@
                             </a>
                             <a class="message-sent"> message sent. </a>
                             <div class="message-dialogue message-wrapper"  data-p_id="{{ user_prof.id }}">
-                                <h4 class="message-header"> Send a message to {{ user_prof.get_name }}</h4>
+                                <div class="message-header-wrapper">
+                                    <h4 class="message-header"> Send a message to {{ user_prof.get_name }}</h4>
+                                    <div class="message_x"> </div>
+                                </div>
                                 <textarea class="message-textarea"> Dear {{ user_prof.get_name }}, </textarea>
                                 <a href="#" class="message-send message_send button-red"> send </a>
                             </div>

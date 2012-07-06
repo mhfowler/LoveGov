@@ -564,11 +564,11 @@
           }
         }
 
-        div.pinterest-top-comment {
+        a.pinterest-top-comment {
           padding: 12px 12px 15px 15px;
           margin: 20px 20px 0px 20px;
-
         }
+
 
         div.petition_bar {
 
@@ -648,7 +648,8 @@
     margin-bottom:10px;
   }
 
-  div.pinterest-top-comment {
+  a.pinterest-top-comment {
+    display:block;
     @extend .box;
     @include rounded(10px);
 
@@ -675,6 +676,10 @@
       clear:both;
       margin: 13px 0px 0px 0px;
     }
+  }
+  a.pinterest-top-comment:hover {
+    border-color:$dark-gray;
+    cursor:pointer;
   }
 
   div.prof-image{
@@ -840,3 +845,12 @@
     width: 60%;
   }
 
+
+div.bind_link {
+  float:left;
+  margin-right: 5px;
+  color:$text-blue;
+}
+div.bind_link:hover {
+  color:$black;
+}

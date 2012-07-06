@@ -102,6 +102,14 @@ function bindTooltips() {
 }
 
 
+function bindLinks() {
+    $(".bind_link").bindOnce("click.link", function(event) {
+        event.preventDefault();
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+}
+
 /***********************************************************************************************************************
  *
  *      ~Header links
@@ -234,7 +242,7 @@ function userFollow(event,div,follow)
                 }
                 else
                 {
-                    //alert(data);
+                    alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -293,7 +301,7 @@ function groupFollow(event,div,follow)
                 }
                 else
                 {
-                    //alert(data);
+                    alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -316,7 +324,7 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                //alert(data);
+                alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -338,7 +346,7 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                //alert(data);
+                alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -385,7 +393,7 @@ function setFollowPrivacy(event,private_follow,div)
             }
             else
             {
-                //alert(data);
+                alert(data);
             }
 
         },
@@ -439,7 +447,7 @@ function editContent(c_id,info,edit_div)
             var obj = eval('(' + data + ')');
             if( obj.success )
             {
-                edit_div.text(obj.value);
+                edit_div.html(obj.value);
                 edit_div.show();
             }
         },
@@ -459,7 +467,7 @@ function unbindInlineEdits()
 
 function bindInlineEdits()
 {
-    $(".edit_button").click(
+    $(".edit_button").bindOnce('click.edit',
         function(event)
         {
             event.preventDefault();
@@ -469,7 +477,7 @@ function bindInlineEdits()
         }
     );
 
-    $(".submit_inline_edit").click(
+    $(".submit_inline_edit").bindOnce('click.edit',
         function(event)
         {
             event.preventDefault();
@@ -499,7 +507,7 @@ function bindInlineEdits()
         }
     );
 
-    $(".cancel_inline_edit").click(
+    $(".cancel_inline_edit").bindOnce("click.edit",
         function(event)
         {
             event.preventDefault();
@@ -1010,32 +1018,39 @@ function loadHeader()
     }
 
 
-    $(".security_setting").click(function(event)
+    $(".security_setting").each(function(event)
     {
-        switch($.cookie('privacy'))
+        if (!$(this).hasClass("has_security_setting"))
         {
-            case "PUB":
-                $.cookie('privacy','PRI', {path:'/'});
-                $(".security_setting").each(function()
+            $(this).bind("click", function()
+            {
+                switch($.cookie('privacy'))
                 {
-                    if ($(this).is('img'))
-                    {
-                        $(this).attr("src","/static/images/user-menu/lockgray.png");
-                        $(this).attr('data-original-title',priMessage);
-                    }
-                });
-                break;
-            case "PRI":
-                $.cookie('privacy','PUB', {path:'/'});
-                $(".security_setting").each(function()
-                {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
-                        $(this).attr('data-original-title',pubMessage);}
-                });
-                break;
+                    case "PUB":
+                        $.cookie('privacy','PRI', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img'))
+                            {
+                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr('data-original-title',priMessage);
+                            }
+                        });
+                        break;
+                    case "PRI":
+                        $.cookie('privacy','PUB', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                                $(this).attr('data-original-title',pubMessage);}
+                        });
+                        break;
+                }
+            });
+
+            $(this).addClass("has_security_setting");
         }
     });
-
 
     /**
      * Handles styling of header links
@@ -1146,7 +1161,7 @@ function loadLeftSidebar()
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                //alert("failure");
+                alert("failure");
             }
         });
     });
@@ -1498,7 +1513,7 @@ function loadThread()
         }
         else
         {
-            alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
+            alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
         }
     });
 
@@ -1529,7 +1544,7 @@ function loadThread()
                     $(this).css("color", "red");
                 },
                 error: function(data) {
-                    //alert("Flagging comment failed.");
+                    alert("Flagging comment failed.");
                 }
             });
         }
@@ -1669,7 +1684,7 @@ function loadNotification()
                 },
                 success: function(data)
                 {
-                    //alert(data);
+                    alert(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -1947,6 +1962,11 @@ function loadProfile()
         var $wrapper = $(this).parents(".message-wrapper");
         messageRep($wrapper);
     });
+
+    $(".message_x").bindOnce("click.message", function(event) {
+        event.preventDefault();
+        $(this).parents(".message-wrapper").hide();
+    });
 }
 
 
@@ -2167,7 +2187,7 @@ function groupFollowResponse(event,response,div,g_id)
             },
             success: function(data)
             {
-                //alert(data);
+                alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -2516,6 +2536,7 @@ function getFeed(num)
             petitionBar();
             loadHoverComparison();
             bindTooltips();
+            bindLinks();
 
         },
         error: null
@@ -2653,7 +2674,7 @@ function vote(wrapper, content_id, v)
         error: function(jqXHR, textStatus, errorThrown)
         {
             $("body").html(jqXHR.responseText);
-            //alert('error');
+            alert('error');
         }
     });
 }
@@ -3997,6 +4018,7 @@ function swapFeatured(direction) {
     var next = getSection(match_next_section);
     current.hide();
     next.show();
+    if (match_next_section == 3) { loadGoogleMap(); }
     var current_circle = getCircle(match_current_section);
     var next_circle = getCircle(match_next_section);
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
@@ -4066,6 +4088,7 @@ function swapInHover(div) {
 function bindChangeContentPrivacy() {
 
     $('div.change-privacy').bindOnce('click', function() {
+        alert('clicky');
         var content_id = $(this).data('content_id');
         var meDiv = $(this);
         $(this).tooltip('hide');
@@ -4077,7 +4100,7 @@ function bindChangeContentPrivacy() {
             success: function(data) {
                 var returned = eval('('+data+')');
                 if(returned.error) {
-                    //alert("Error: "+data.error);
+                    alert("Error: "+data.error);
                 } else {
                     meDiv.parent().html(returned.html);
                 }
