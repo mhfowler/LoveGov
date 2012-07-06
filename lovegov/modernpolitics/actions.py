@@ -650,7 +650,7 @@ def answer(request, vals={}):
             if agg:
                 agg = agg[0].aggregateresponse
                 choice = agg.responses.filter(answer_val=int(request.POST['choice']))
-                if agg.total:
+                if agg.total and choice:
                     percent_agreed = float(choice[0].tally) / float(agg.total)
                 else:
                     percent_agreed = 0
