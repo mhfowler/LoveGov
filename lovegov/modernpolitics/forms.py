@@ -10,7 +10,6 @@
 # lovegov
 from lovegov.modernpolitics.forms_fields import *
 from lovegov.modernpolitics.defaults import *
-from lovegov.modernpolitics.send_email import *
 
 # django
 from django.contrib import auth

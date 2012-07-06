@@ -33,6 +33,9 @@ import logging
 
 logger = logging.getLogger('filelogger')
 scheduled_logger = logging.getLogger('scheduledlogger')
+normal_logger = logging.getLogger('filelogger')
+errors_logger = logging.getLogger('errorslogger')
+temp_logger = logging.getLogger('templogger')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Useful manager for all our models.
