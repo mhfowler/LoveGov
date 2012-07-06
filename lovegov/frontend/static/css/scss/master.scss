@@ -680,6 +680,14 @@ input.tab-button, a.tab-button, span.tab-button {
   color:$gray;
 }
 
+span#email-label
+{
+  font-family:$title-font;
+  font-weight:normal;
+  font-size:24px;
+  color:$text-blue;
+}
+
 .inline-edit-input
 {
   display: none;
