@@ -69,7 +69,7 @@ def getLoveGovUser():
         return initializeLoveGovUser()
 
 def getAnonUser():
-    to_return = UserProfile.lg.get_or_none(alias="anonymouswho")
+    to_return = UserProfile.lg.get_or_none(alias="anonymous")
     if to_return:
         return to_return
     else:
@@ -200,12 +200,12 @@ def initializeLoveGovGroup():
 # Initializes a user which represents all anonymous users on the site.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeAnonymous():
-    if UserProfile.objects.filter("anonymouswho"):
+    if UserProfile.objects.filter(alias="anonymous"):
         print("...anon user already initialized.")
     else:
         anon = ControllingUser.objects.create_user(username='anon',email='anon@lovegov.com',password='theANON')
         anon.first_name = "Anonymous"
-        anon.last_name = "Who"
+        anon.last_name = ""
         userprof = superUserHelper(anon)
         print("initialized: anon user")
         return userprof

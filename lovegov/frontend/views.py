@@ -1074,8 +1074,9 @@ def contentDetail(request, content, vals):
     vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
-    creator = content.getCreator()
-    vals['creator'] = creator
+    viewer = vals['viewer']
+    creator_display = content.getCreatorDisplay(viewer)
+    vals['creator'] = creator_display
     vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
     my_vote = user_votes.filter(content=content) 
@@ -1083,7 +1084,7 @@ def contentDetail(request, content, vals):
         vals['my_vote'] = my_vote[0].value
     else:
         vals['my_vote'] = 0
-    vals['iown'] = (creator == vals['viewer'])
+    vals['iown'] = (creator_display.you)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # displays a list of all questions of that topic, along with attached forum
@@ -1201,6 +1202,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_comments:
         user_comments = Comment.objects.filter(creator=user)
     comments = Comment.objects.filter(on_content=object).order_by('-status')
+    viewer = vals['viewer']
     if comments:
         to_return = ''
         for c in comments:
@@ -1212,13 +1214,12 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     i_vote = my_vote[0].value
                 else: i_vote = 0
                 i_own = user_comments.filter(id=c.id) # check if i own comment
-                creator = c.getCreatorDisplay()
                 vals.update({'comment': c,
                         'my_vote': i_vote,
                         'owner': i_own,
                         'votes': c.upvotes - c.downvotes,
-                        'creator': creator,
-                        'display_name': c.getCreatorDisplayName(user, getSourcePath(request)),
+                        'display_name': c.getThreadDisplayName(viewer, getSourcePath(request)),
+                        'creator': c.getCreatorDisplay(viewer),
                         'public': c.getPublic(),
                         'margin': margin,
                         'width': 690-(30*depth+1)-30,

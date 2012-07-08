@@ -3,29 +3,29 @@
         {% if content.active %}
             <div class="row"><div class="tencol"><a href='/feed'><span class='content_header'>Back to Your Feed</span></a></div></div>
             <div class="content-left-side">
-            	{% load thumbnail %}
+                {% load thumbnail %}
                 {% with full_url=host_full|add:content.getImageURL %}
-            	{% thumbnail full_url "250x150" upscale=False format="PNG" crop="center" as im %}
-                	<div class="content-image-area" style="background-image: url('{{im.url}}')">
-                {% endthumbnail %}
+                    {% thumbnail full_url "250x150" upscale=False format="PNG" crop="center" as im %}
+                        <div class="content-image-area" style="background-image: url('{{im.url}}')">
+                    {% endthumbnail %}
                 {% endwith %}
                 {% with topic=content.getMainTopic %}
-                        <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
-                            <img src="{{ topic.getImageRef }}"/>
-                        </div>
+                    <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
+                        <img src="{{ topic.getImageRef }}"/>
+                    </div>
                 {% endwith %}
                 </div>
                 {% include 'deployment/center/feed/social_bar.html' with item=content %}
 
                 <div class="content-submitted-by-wrapper">
-                    {% include 'deployment/snippets/avatar.html' with user=content.creator height='50' width='50' %}
+                    {% include 'deployment/snippets/avatar.html' with user=creator height='50' width='50' %}
                     {% load humanize %}
-                    <span class="submitter"><a href="{{content.creator.get_url}}">{{content.creator.get_name}}</a></span>
-                    {% ifequal viewer content.creator %}
+                    <span class="submitter"><a href="{{creator.get_url}}">{{creator.get_name}}</a></span>
+                    {% if creator.you %}
                         <div class="content-privacy-wrapper">
                             {% include 'deployment/snippets/content-privacy.html' with content=content %}
                         </div>
-                    {% endifequal %}
+                    {% endif %}
                     <br><span class="submit-time">Submitted <span class="tooltip-right" title="{{content.created_when}}">{{content.created_when|naturaltime}}</span></span>
                     <div style="clear:both"></div>
                 </div>
@@ -41,37 +41,37 @@
                 {% endblock %}
             </div>
 
-        <!-- content-wrapper -->
-        </div>
-
-        <!-- Right Block -->
-
-        <div class="content_separator"></div>
-
-        <div id="comment-thread">
-
-            <span class="discuss">Discuss</span>
-
-            <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
-                <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment" placeholder="what's your opinion?"></textarea>
-                <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
-                <br>
-                <input class="tab-button" type="submit" value="Save" style="float: right;" /><div class="clearfix"></div>
-            </form>
-
-            <!-- comment thread -->
-            <div id="thread">
-                {{ thread_html|safe }}
+            <!-- content-wrapper -->
             </div>
-        </div>
 
-        {% include 'deployment/pieces/right_sidebar.html' %}
+            <!-- Right Block -->
 
-    {% else %}
-        <h3> This content has been deleted. </h3>
-    {% endif %}
-    </div>
+            <div class="content_separator"></div>
+
+            <div id="comment-thread">
+
+                <span class="discuss">Discuss</span>
+
+                <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
+                    <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment" placeholder="what's your opinion?"></textarea>
+                    <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
+                    <br>
+                    <input class="tab-button" type="submit" value="Save" style="float: right;" /><div class="clearfix"></div>
+                </form>
+
+                <!-- comment thread -->
+                <div id="thread">
+                    {{ thread_html|safe }}
+                </div>
+            </div>
+
+            {% include 'deployment/pieces/right_sidebar.html' %}
+
+        {% else %}
+            <h3> This content has been deleted. </h3>
+        {% endif %}
 </div>
+
 
 {% include "deployment/snippets/comparison_hover.html" %}
 

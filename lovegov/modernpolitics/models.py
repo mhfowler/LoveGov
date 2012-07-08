@@ -96,34 +96,17 @@ class Privacy(LGModel):
         return creator
 
     def getCreatorDisplay(self, viewer=None):
-        from lovegov.modernpolitics.defaults import getDefaultImage
-
-        def getNameAnon():
-            return 'Anonymous'
-        def getImageAnon():
-            return getDefaultImage()
-        def getImageURLAnon():
-            return getDefaultImage().image.url
-        def getUrlAnon():
-            return ''
-
+        from lovegov.modernpolitics.defaults import getAnonUser
         if self.getPublic():
-            return self.getCreator()
-        else:
             creator = self.getCreator()
-            creator.get_name = getNameAnon
-            creator.get_url = getUrlAnon
-            creator.getImage = getImageAnon
-            creator.getImageURL = getImageURLAnon
+        else:
+            creator = getAnonUser()
+        if viewer:
+            creator.you = (self.creator == viewer)
+        else:
+            creator.you = None
 
-            if viewer:
-                creator.you = (viewer.id == creator.id)
-            else:
-                creator.you = None
-
-            creator.id = None
-
-            return creator
+        return creator
 
     #-------------------------------------------------------------------------------------------------------------------
     # Return boolean based on privacy.
@@ -578,7 +561,7 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Get creator name if viewing user has permission.
     #-------------------------------------------------------------------------------------------------------------------
-    def getCreatorDisplayName(self, user, url=None):
+    def getThreadDisplayName(self, user, url=None):
         if self.getPublic():
             return self.getCreator().get_name()
         else:
@@ -1083,6 +1066,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def get_name(self):
         try:
             to_return = (self.first_name + " " + self.last_name)
+            if self.alias == 'anonymous':
+                try:
+                    if self.you:
+                        to_return += "(You)"
+                except:
+                    pass
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
