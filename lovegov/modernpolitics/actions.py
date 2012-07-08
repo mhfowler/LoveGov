@@ -241,7 +241,7 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        action = Action(relationship=c.getCreatedRelationship())
+        action = Action(privacy=getPrivacy(request),relationship=c.getCreatedRelationship())
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
@@ -544,7 +544,7 @@ def comment(request, vals={}):
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
-        action = Action(relationship=rel)
+        action = Action(privacy=getPrivacy(request),relationship=rel)
         action.autoSave()
         comment.on_content.getCreator().notify(action)
         return HttpResponse("+")
@@ -630,7 +630,7 @@ def answer(request, vals={}):
                 weight = weight,
                 explanation = explanation)
             response.autoSave(creator=user, privacy=privacy)
-            action = Action(relationship=response.getCreatedRelationship())
+            action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
             action.autoSave()
         # else update old response
         else:
@@ -641,7 +641,7 @@ def answer(request, vals={}):
             user_response.explanation = explanation
             # update creation relationship
             user_response.saveEdited(privacy)
-            action = Action(relationship=user_response.getCreatedRelationship())
+            action = Action(privacy=getPrivacy(request),relationship=user_response.getCreatedRelationship())
             action.autoSave()
         if request.is_ajax():
             url = response.get_url()
@@ -689,7 +689,7 @@ def joinGroupRequest(request, vals={}):
         group_joined.autoSave()
     if group_joined.invited:
         group.joinMember(from_user, privacy=getPrivacy(request))
-        action = Action(relationship=group_joined,modifier="D")
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -700,7 +700,7 @@ def joinGroupRequest(request, vals={}):
     #If the group type is open...
     if group.group_privacy == 'O':
         group.joinMember(from_user, privacy=getPrivacy(request))
-        action = Action(relationship=group_joined,modifier="D")
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -711,7 +711,7 @@ def joinGroupRequest(request, vals={}):
             return HttpResponse("you have already requested to join this group")
         group_joined.clear()
         group_joined.request()
-        action = Action(relationship=group_joined,modifier='R')
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier='R')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -734,13 +734,13 @@ def joinGroupResponse(request, vals={}):
         elif group_joined.requested:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(relationship=group_joined,modifier="A")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="A")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now in your group")
             elif response == 'N':
                 group_joined.reject()
-                action = Action(relationship=group_joined,modifier="X")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="X")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected their join request")
@@ -754,7 +754,7 @@ def groupInviteResponse(request, vals={}):
     response = request.POST['response']
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupJoined.objects.filter(user=from_user, group=group)
+    already = GroupJoined.objects.filter(user=from_user, group=group, privacy=getPrivacy(request))
     if already:
         group_joined = already[0]
         if group_joined.confirmed:
@@ -762,13 +762,13 @@ def groupInviteResponse(request, vals={}):
         if group_joined.invited:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(relationship=group_joined,modifier="D")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have joined this group!")
             elif response == 'N':
                 group_joined.reject()
-                action = Action(relationship=group_joined,modifier="N")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected this group invitation")
@@ -791,12 +791,12 @@ def userFollowRequest(request, vals={}):
         if user_follow.confirmed: #If you're confirmed following already, you're done
             return HttpResponse("already following this person")
     else: #If there's no follow relationship, make one
-        user_follow = UserFollow(user=from_user, to_user=to_user)
+        user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
         user_follow.autoSave()
     # If this user is public follow
     if not to_user.private_follow:
         from_user.follow(to_user)
-        action = Action(relationship=user_follow,modifier='D')
+        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='D')
         action.autoSave()
         to_user.notify(action)
         return HttpResponse("follow success")
@@ -807,7 +807,7 @@ def userFollowRequest(request, vals={}):
     else:
         user_follow.clear()
         user_follow.request()
-        action = Action(relationship=user_follow,modifier='R')
+        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='R')
         action.autoSave()
         to_user.notify(action)
         return HttpResponse("follow request")
@@ -829,13 +829,13 @@ def userFollowResponse(request, vals={}):
             if response == 'Y':
                 # Create follow relationship!
                 from_user.follow(to_user)
-                action = Action(relationship=user_follow,modifier='A')
+                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='A')
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now following you")
             elif response == 'N':
                 user_follow.reject()
-                action = Action(relationship=user_follow,modifier='X')
+                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='X')
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected their follow request")
@@ -853,12 +853,12 @@ def userFollowStop(request, vals={}):
     if to_user:
         already = UserFollow.objects.filter(user=from_user, to_user=to_user)
         if not already:
-            user_follow = UserFollow(user=from_user, to_user=to_user)
+            user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
             user_follow.autoSave()
         else:
             user_follow = already[0]
         from_user.unfollow(to_user)
-        action = Action(relationship=user_follow,modifier='S')
+        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='S')
         action.autoSave()
         to_user.notify(action)
         # to_user.notify(action)
@@ -912,7 +912,7 @@ def leaveGroup(request, vals={}):
                 group.save()
             for member in members:
                 group.admins.add(member)
-        action = Action(relationship=group_joined,modifier='S')
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier='S')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -1221,7 +1221,7 @@ def getNotifications(request, vals={}):
         elif diff < 0:
             diff = 0
         for notification in new_notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer) )
+            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         if old_notifications:
             for notification in old_notifications:
                 notifications_text.append( notification.getVerbose(view_user=viewer) )
@@ -1232,7 +1232,7 @@ def getNotifications(request, vals={}):
         if not notifications:
             return HttpResponse(json.dumps({'error':'No more notifications'}))
         for notification in notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer) )
+            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         num_notifications += NOTIFICATION_INCREMENT
 
     vals['dropdown_notifications_text'] = notifications_text
