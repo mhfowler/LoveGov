@@ -102,7 +102,7 @@ class Privacy(LGModel):
         else:
             creator = getAnonUser()
         if viewer:
-            creator.you = (self.creator == viewer)
+            creator.you = (self.getCreator() == viewer)
         else:
             creator.you = None
 
@@ -1796,7 +1796,8 @@ class Notification(Privacy):
         from_you = from_user.you
 
         if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
-            from_user = self.recent_user
+            if self.recent_user:
+                from_user = self.recent_user
             if from_user.id == view_user.id:
                 from_you = True
 

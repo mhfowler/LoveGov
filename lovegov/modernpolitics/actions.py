@@ -1185,12 +1185,11 @@ def getFilter(request, vals={}):
 # gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
 def getNumNotifications(request, vals={}):
-
     viewer = vals['viewer']
     new_notifications = viewer.getNotifications(new=True)
     num = new_notifications.count()
 
-    return HttpResponse('wooo')
+    return HttpResponse(json.dumps({'num':num}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
@@ -1223,7 +1222,7 @@ def getNotifications(request, vals={}):
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         if old_notifications:
             for notification in old_notifications:
-                notifications_text.append( notification.getVerbose(view_user=viewer) )
+                notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         num_notifications += diff + num_returned
 
     else:
@@ -1679,6 +1678,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
+            'getNumNotifications': getNumNotifications,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
