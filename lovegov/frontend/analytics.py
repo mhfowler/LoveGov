@@ -41,16 +41,24 @@ def userActivity(user):
 
     pa = PageAccess.objects.filter(user=user).order_by("when")
 
-    when = datetime.MINYEAR
+    when = datetime.datetime.min
     to_return = "User Summary for " + user.get_name() + ": \n"
 
     for x in pa:
-        delta = x.when - when
-        if delta.hours > 0:
-            to_return += "---------------------------------  " + when + "\n"
-            to_return +=
 
-    return "ok"
+        delta = x.when - when
+        if delta.total_seconds() > (60*60):
+            to_return += "\n---------------------------------  " + str(when) + "\n"  # if new session page break
+        else:
+            to_return += " (" + str(delta.total_seconds()) + ")\n"               # else print time delta from last page
+
+        to_return += x.page
+        if x.action:
+            to_return += ":" + x.action
+
+        when = x.when
+
+    return True
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a printout summarizing all user activity for the day.
