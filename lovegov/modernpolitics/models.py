@@ -1009,6 +1009,7 @@ def initView():
 class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
+    created_when = models.DateTimeField(auto_now_add=True)
     # for downcasting
     user_type = models.CharField(max_length=1, choices=USER_CHOICES, default='G')
     # twitter integration

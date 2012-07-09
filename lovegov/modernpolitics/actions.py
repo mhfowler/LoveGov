@@ -159,13 +159,21 @@ def searchAutoComplete(request,vals={},limit=5):
     # Get one of each type of result, or as many as will fit until limit is reached
     while results_length < limit:
         if len(userProfiles) > 0:
-            userProfile_results.append(userProfiles.pop(0))
+            popped = userProfiles.pop(0)
+            if popped:
+                userProfile_results.append(popped)
         if len(petitions) > 0:
-            petition_results.append(petitions.pop(0))
+            popped = petitions.pop(0)
+            if popped:
+                petition_results.append(popped)
         if len(questions) > 0:
-            question_results.append(questions.pop(0))
+            popped = questions.pop(0)
+            if popped:
+                question_results.append(popped)
         if len(news) > 0:
-            news_results.append(news.pop(0))
+            popped = news.pop(0)
+            if popped:
+                news_results.append(popped)
         results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
     
     # Store results in context values
