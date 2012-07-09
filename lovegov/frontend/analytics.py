@@ -58,7 +58,8 @@ def userActivity(user):
 
         when = x.when
 
-    return True
+    print to_return
+    return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a printout summarizing all user activity for the day.
