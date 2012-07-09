@@ -41,7 +41,7 @@ def userActivity(user):
 
     pa = PageAccess.objects.filter(user=user).order_by("when")
 
-    when = datetime.date.min
+    when = datetime.datetime.min
     to_return = "User Summary for " + user.get_name() + ": \n"
 
     for x in pa:
