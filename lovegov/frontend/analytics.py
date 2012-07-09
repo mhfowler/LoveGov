@@ -60,7 +60,10 @@ def userActivity(user, file=None):
 
     if file:
         with open(file, 'a') as f:
-            f.write(to_return)
+            try:
+                f.write(to_return)
+            except UnicodeEncodeError:
+                print "unicode encode error for " + user.get_name()
     else:
         print to_return
 
