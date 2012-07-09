@@ -14,7 +14,6 @@
 
         {% else %}
             {% with full_url=host_full|add:user.getImageURL %}
-
                 {% thumbnail full_url geometry crop="center" as im %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"
                          data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"

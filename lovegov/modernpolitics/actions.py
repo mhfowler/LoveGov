@@ -159,13 +159,21 @@ def searchAutoComplete(request,vals={},limit=5):
     # Get one of each type of result, or as many as will fit until limit is reached
     while results_length < limit:
         if len(userProfiles) > 0:
-            userProfile_results.append(userProfiles.pop(0))
+            popped = userProfiles.pop(0)
+            if popped:
+                userProfile_results.append(popped)
         if len(petitions) > 0:
-            petition_results.append(petitions.pop(0))
+            popped = petitions.pop(0)
+            if popped:
+                petition_results.append(popped)
         if len(questions) > 0:
-            question_results.append(questions.pop(0))
+            popped = questions.pop(0)
+            if popped:
+                question_results.append(popped)
         if len(news) > 0:
-            news_results.append(news.pop(0))
+            popped = news.pop(0)
+            if popped:
+                news_results.append(popped)
         results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
     
     # Store results in context values
@@ -1208,7 +1216,7 @@ def getNotifications(request, vals={}):
     num_still_new = 0
 
     if 'dropdown' in request.POST:
-        new_notifications = viewer.getNotifications(new=True)
+        new_notifications = list(viewer.getNotifications(new=True))
         num_new = len(new_notifications)
         new_notifications = new_notifications[0:NOTIFICATION_INCREMENT+2]
         num_returned = len(new_notifications)
@@ -1217,14 +1225,16 @@ def getNotifications(request, vals={}):
         old_notifications = None
         diff = NOTIFICATION_INCREMENT - num_returned
         if diff > 0:
-            old_notifications = viewer.getNotifications(num=diff,old=True)
+            old_notifications = list(viewer.getNotifications(num=diff,old=True))
 
         for notification in new_notifications:
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+            print notification.id
 
         if old_notifications:
             for notification in old_notifications:
                 notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+                print notification.id
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
@@ -1613,6 +1623,40 @@ def changeContentPrivacy(request, vals={}):
     print "to_return: "+str(to_return)
     return HttpResponse(json.dumps(to_return))
 
+
+def getAggregateNotificationUsers(request, vals={}):
+    # Get Notification first
+    viewer = vals['viewer']
+    n_id = request.POST.get('n_id')
+
+    if not n_id:
+        errors_logger.error('No notification supplied for retrieving aggregate notifications users.  User ID = #' + str(viewer.id) )
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    agg_notification = Notification.lg.get_or_none(id=n_id)
+    if not agg_notification:
+        errors_logger.error('Invalid notification ID given to function getAggregateNotificationsUsers. Invalid ID = #' + str(n_id) + ' and Viewer ID = #' + str(viewer.id))
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    n_action = Action.lg.get_or_none(id=agg_notification.action_id)
+    if not n_action:
+        errors_logger.error('Invalid action in Notification given to function getAggregateNotificationsUsers. Notification ID = #' + str(n_id) )
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
+    if not relationship:
+        errors_logger.error('Invalid relationship in action given to function getAggregateNotificationsUsers. action ID = #' + str(n_action.id) + ' and Notification ID = #' + str(n_id) )
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    vals['agg_notification_type'] = n_action.type
+    vals['agg_notification_content'] = relationship.getTo()
+    vals['agg_notification_users'] = agg_notification.users.all()
+    vals['agg_notification_anon'] = agg_notification.anon_users.count()
+
+    html = ajaxRender('deployment/snippets/aggregate-notifications-popup.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1679,7 +1723,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
-            'updatePage': updatePage
+            'updatePage': updatePage,
+            'getaggregatenotificationusers': getAggregateNotificationUsers
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

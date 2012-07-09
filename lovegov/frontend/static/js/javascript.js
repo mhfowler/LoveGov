@@ -1821,6 +1821,39 @@ function loadNotification()
         groupFollowResponse(event,"N",$(this));
         wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
+
+    $("a.agg_popup").bindOnce("click.agg_notification_modal",
+        function(event)
+        {
+            event.preventDefault();
+            var n_id = $(this).data('n_id');
+            ajaxPost({
+                'data': {'action':'getaggregatenotificationusers',
+                        'n_id': n_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('div#agg_notification_modal').html(obj.html);
+                    $('div.overdiv').fadeIn(300);
+                    $('div#agg_notification_modal').fadeIn(300);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            })
+        }
+    );
+
+    $('div.overdiv').click(function() {
+        $('div.overdiv').hide();
+        $('div#agg_notification_modal').hide();
+    });
+
+    $('div.agg_notification_modal_close').click(function() {
+        $('div.overdiv').hide();
+        $('div#agg_notification_modal').hide();
+    });
 }
 
 

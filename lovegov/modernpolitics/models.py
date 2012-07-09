@@ -431,7 +431,10 @@ class Content(Privacy, LocationLevel):
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveEdited(self, privacy):
-        created = Created.objects.filter(content=self)[0]
+        created = Created.lg.get_or_none(content=self)
+        if not created:
+            errors_logger.error( "Edited Content does not exist.  Content ID = #" + str(self.id) )
+            return None
         created.privacy = privacy
         created.save()
         self.privacy = privacy
@@ -1006,6 +1009,7 @@ def initView():
 class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
+    created_when = models.DateTimeField(auto_now_add=True)
     # for downcasting
     user_type = models.CharField(max_length=1, choices=USER_CHOICES, default='G')
     # twitter integration
@@ -1789,7 +1793,6 @@ class Notification(Privacy):
             errors_logger.error('Notification action has no relationship: Notification ID # =' + str(self.id))
             return ''
 
-
         #Set to and from users
         to_user = relationship.getTo()
         from_user = n_action.getCreatorDisplay(view_user)
@@ -1826,6 +1829,7 @@ class Notification(Privacy):
                           'viewed':viewed,
                           'timestamp':self.when,
                           'anon':n_action.getPrivate(),
+                          'n_id':self.id,
                           'hover_off':1 }
 
         if n_action.type == 'FO':
