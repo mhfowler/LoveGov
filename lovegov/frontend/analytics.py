@@ -66,6 +66,11 @@ def userActivity(user, file=None):
 
     return to_return
 
+def allUserActivity(file):
+    u = UserProfile.objects.filter(user_type="U")
+    for x in u:
+        userActivity(x, file)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a printout summarizing all user activity for the day.
 #-----------------------------------------------------------------------------------------------------------------------
