@@ -101,7 +101,6 @@ def getSourcePath(request):
             path = splitted[1]
     else:
         path = request.path
-    print "path: " + path
     return path
 
 def getHostHelper(request):
