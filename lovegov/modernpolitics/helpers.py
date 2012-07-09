@@ -22,7 +22,9 @@ import datetime
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
+import pprint
 
+browser_logger = logging.getLogger('browserlogger')
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
 # is the referer if it is an ajax request.
@@ -43,6 +45,7 @@ def checkBrowserCompatible(request):
         browser_name = browser.get('name')
         if browser_name in PROHIBITED_BROWSERS:
             to_return = False
+        browser_logger.debug('useragent: ' + pprint.pformat(parsed))
 
     return to_return
 

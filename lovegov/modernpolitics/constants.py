@@ -18,7 +18,8 @@ import os
 
 ########################################## PROHIBITED BROWSERS #########################################################
 
-PROHIBITED_BROWSERS = "MSIE"
+PROHIBITED_BROWSERS = ["MSIE"]
+ALLOWED_BROWSERS = ["Chrome","Mozilla"]
 
 ########################################## EMAIL LISTS #################################################################
 

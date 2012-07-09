@@ -153,72 +153,134 @@ DEBUG_TOOLBAR_CONFIG = {
 #    logging (different settings use different logging)
 #
 ########################################################################################################################
-LOGGING = {      # !!!!!
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-        },
-        },
-    'handlers': {
-        'default': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/default.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'request_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/django_request.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'file_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/django.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'scheduled_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/scheduled.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        },
-    'loggers': {
+LOG_ROOT = '/log/'
 
-        '': {
-            'handlers': ['default'],
-            'level': 'ERROR',
-            'propagate': True
-        },
-        'django.request': { # Stop SQL debug from logging to main logger
-                            'handlers': ['request_handler'],
-                            'level': 'DEBUG',
-                            'propagate': False
-        },
-        'filelogger': {
-            'handlers': ['file_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        'scheduledlogger': {
-            'handlers': ['scheduled_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
+def setLogging(log_root):
+    return {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+            },
+            },
+        'handlers': {
+            'default': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'default.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'mail_admins': {
+                'class': 'django.utils.log.AdminEmailHandler',
+                'level': 'ERROR',
+                'include_html': True,
+                },
+            'request_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'django_request.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'file_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'django.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'scheduled_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'scheduled.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'normal_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'normal.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'errors_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'errors.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'temp_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'temp.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            'browser_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'browser.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'standard',
+                },
+            },
+        'loggers': {
+
+            'django.request': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+                },
+            '': {
+                'handlers': ['default'],
+                'level': 'ERROR',
+                'propagate': True
+            },
+            'filelogger': {
+                'handlers': ['file_handler'],
+                'level': 'DEBUG',
+                'propagate': False
+            },
+            'normallogger': {
+                'handlers': ['normal_handler'],
+                'level': 'DEBUG',
+                'propagate': False
+            },
+            'errrorslogger': {
+                'handlers': ['errors_handler'],
+                'level': 'DEBUG',
+                'propagate': False
+            },
+            'templogger': {
+                'handlers': ['temp_handler'],
+                'level': 'DEBUG',
+                'propagate': False
+            },
+            'scheduledlogger': {
+                'handlers': ['scheduled_handler'],
+                'level': 'DEBUG',
+                'propagate': False
+            },
+            'browserlogger': {
+                'handlers': ['browser_handler'],
+                'level': 'DEBUG',
+                'propagate': False
+            },
+            }
         }
-}
+
+LOGGING = setLogging(LOG_ROOT)
 
 ########################################################################################################################
 #    caching
