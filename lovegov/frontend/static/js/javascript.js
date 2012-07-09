@@ -824,6 +824,7 @@ function replaceCenter(stuff)
  *     ~Header
  *
  **********************************************************************************************************************/
+var notification_update;
 function loadHeader()
 {
 
@@ -1051,6 +1052,11 @@ function loadHeader()
     $(".header_link").bindOnce('click.header', function(event) {
         selectHeaderLink($(this));
     });
+
+
+    // check notifications on interval
+    clearInterval(notification_update);
+    notification_update = setInterval(updateNotificationsNum,30000);
 }
 
 /***********************************************************************************************************************
@@ -1798,6 +1804,22 @@ function loadNotification()
 
     $(".notification_group_response_n").click( function(event) {
         groupFollowResponse(event,"N",$(this));
+    });
+}
+
+
+function updateNotificationsNum() {
+    ajaxPost({
+        'data': {'action':'getNumNotifications', 'log-ignore':true},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            $('#num_notifications').val(obj.num);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
     });
 }
 

@@ -1190,7 +1190,7 @@ def getNumNotifications(request, vals={}):
     new_notifications = viewer.getNotifications(new=True)
     num = new_notifications.count()
 
-    return HttpResponse('wooo')
+    return HttpResponse(json.dumps({'num':num}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
@@ -1679,6 +1679,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
+            'getNumNotifications': getNumNotifications
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
