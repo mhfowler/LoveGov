@@ -1167,6 +1167,14 @@ def recalculateTopics():
             print count
         count += 1
 
+# delete all topics which are not main topics or root
+def purgeTopics():
+    topics = Topic.objects.exclude(topic_text__in=MAIN_TOPICS)
+    for x in topics:
+        if x.topic_text != "Root":
+            print x.topic_text
+            x.delete()
+
 def recalculateEverything():
     print "Recalculating Stats..."
     recalculateAllUserStats()
