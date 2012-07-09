@@ -37,12 +37,16 @@ def userSummary(user, request, days=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # new user
 #-----------------------------------------------------------------------------------------------------------------------
-def userActivity(user, file=None):
+def userActivity(user, file=None,  min=None, max=None):
 
-    pa = PageAccess.objects.filter(user=user).order_by("when")
+    pa = PageAccess.objects.filter(user=user).exclude(page="/answer/").order_by("when")
+    if min:
+        pa.filter(when__gt=min)
+    if max:
+        pa.filter(when__lt=max)
 
     when = datetime.datetime.min
-    to_return = "User Summary for " + user.get_name() + ": \n"
+    to_return = "\nUser Summary for " + user.get_name() + ": \n"
 
     for x in pa:
 
@@ -69,10 +73,10 @@ def userActivity(user, file=None):
 
     return to_return
 
-def allUserActivity(file):
+def allUserActivity(file, min=None, max=None):
     u = UserProfile.objects.filter(user_type="U")
     for x in u:
-        userActivity(x, file)
+        userActivity(x, file, min, max)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a printout summarizing all user activity for the day.
