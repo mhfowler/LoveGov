@@ -744,11 +744,16 @@ $(document).ready(function()
     rebindFunction()
 });
 
-// load universal frame
+
+var page_auto_update;
 function rebindUniversalFrame()
 {
     loadHeader();
     loadLeftSidebar();
+
+    // check notifications on interval
+    clearInterval(page_auto_update);
+    page_auto_update = setInterval(updatePage, 10000);
 }
 
 /**
@@ -824,7 +829,6 @@ function replaceCenter(stuff)
  *     ~Header
  *
  **********************************************************************************************************************/
-var notification_update;
 function loadHeader()
 {
 
@@ -1053,10 +1057,6 @@ function loadHeader()
         selectHeaderLink($(this));
     });
 
-
-    // check notifications on interval
-    clearInterval(notification_update);
-    notification_update = setInterval(updateNotificationsNum,10000);
 }
 
 /***********************************************************************************************************************
@@ -1815,7 +1815,6 @@ function updateNotificationsNum() {
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            alert(obj.num);
             $("#notifications-number-text").text(obj.num);
         },
         error: function(jqXHR, textStatus, errorThrown)
@@ -1823,6 +1822,26 @@ function updateNotificationsNum() {
             $('body').html(jqXHR.responseText);
         }
     });
+}
+
+
+function updatePage() {
+
+    ajaxPost({
+        'data': {'action':'updatePage', 'log-ignore':true},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+
+            // update notifications num
+            $("#notifications-number-text").text(obj.notifications_num);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+
 }
 
 
