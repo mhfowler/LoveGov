@@ -1056,7 +1056,7 @@ function loadHeader()
 
     // check notifications on interval
     clearInterval(notification_update);
-    notification_update = setInterval(updateNotificationsNum,30000);
+    notification_update = setInterval(updateNotificationsNum,10000);
 }
 
 /***********************************************************************************************************************
@@ -1815,6 +1815,7 @@ function updateNotificationsNum() {
         success: function(data)
         {
             var obj = eval('(' + data + ')');
+            alert(obj.num);
             $("#notifications-number-text").text(obj.num);
         },
         error: function(jqXHR, textStatus, errorThrown)
