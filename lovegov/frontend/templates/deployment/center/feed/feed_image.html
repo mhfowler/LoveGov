@@ -2,12 +2,18 @@
 
 <div class="pinterest-image">
     {% if item.type == 'N' %}
-        {% thumbnail item.link_screenshot "250x500" as im %}
+        {% thumbnail item.link_screenshot "300x500" as im %}
             <img src="{{ im.url }}"/>
         {% endthumbnail %}
     {% elif item.type == 'G' %}
-        {% thumbnail item.getImage "250x500" as im %}
+        {% thumbnail item.getImage "300x500" as im %}
             <img src="{{ im.url }}" data-height="{{ im.height }}"/>
+        {% endthumbnail %}
+    {% elif item.type == 'P' %}
+        {% thumbnail item.getImage "300x500" as im %}
+            <img src="{{ im.url }}" data-height="{{ im.height }}"/>
+        {% empty %}
+            ?
         {% endthumbnail %}
     {% endif %}
 </div>

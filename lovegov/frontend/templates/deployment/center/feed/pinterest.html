@@ -26,7 +26,9 @@
 
                 <!-- image -->
                 {% if item.type == 'N' or item.type == 'G' %}
-                    {% include 'deployment/center/feed/feed_image.html' %}
+                    <a href="{{item.get_url}}">
+                        {% include 'deployment/center/feed/feed_image.html' %}
+                    </a>
                 {% endif %}
 
                 <!-- title -->

@@ -207,6 +207,8 @@ def initializeAnonymous():
         anon.first_name = "Anonymous"
         anon.last_name = ""
         userprof = superUserHelper(anon)
+        userprof.developer = False
+        userprof.save()
         print("initialized: anon user")
         return userprof
 
