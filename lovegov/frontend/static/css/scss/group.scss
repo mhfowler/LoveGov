@@ -418,6 +418,28 @@ div.requests-modal
     }
   }
 
+  div.modal-horizontal-separator
+  {
+    @include horizontalSeparator(100%);
+  }
+
+  div.followers-container
+  {
+    margin-top:20px;
+
+    table.group-request-table
+    {
+      margin-right: 20px;
+      @include float-left;
+
+      td
+      {
+        vertical-align: middle;
+        padding: 10px 10px 10px 2px;
+      }
+    }
+  }
+
   div.group-request-append
   {
     color: $dark-gray;

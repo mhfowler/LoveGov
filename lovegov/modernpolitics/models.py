@@ -1792,7 +1792,6 @@ class Notification(Privacy):
             errors_logger.error('Notification action has no relationship: Notification ID # =' + str(self.id))
             return ''
 
-
         #Set to and from users
         to_user = relationship.getTo()
         from_user = n_action.getCreatorDisplay(view_user)
@@ -1829,6 +1828,7 @@ class Notification(Privacy):
                           'viewed':viewed,
                           'timestamp':self.when,
                           'anon':n_action.getPrivate(),
+                          'n_id':self.id,
                           'hover_off':1 }
 
         if n_action.type == 'FO':

@@ -1,5 +1,5 @@
 <div class="aggregate-notifications-modal">
-    <div class="modal-close followers_modal_close" ></div>
+    <div class="modal-close agg_notification_modal_close" ></div>
     <div class="modal-section-title">
         People who
         {% if agg_notification_type == "CO" %}
@@ -13,7 +13,7 @@
         {% else %}
             prodded
         {% endif %}
-        <a href="agg_notification_content.get_url">{{ agg_notification_content.get_name }}</a>:
+        <a href="agg_notification_content.get_url" class="invert_link">{{ agg_notification_content.get_name }}</a>
     </div>
     <div class="modal-horizontal-separator"></div>
     <div class="aggregate-users-container">
@@ -25,7 +25,7 @@
                 <td>Anonymous Users</td>
             </tr>
         </table>
-        {% for user in aggregate_notification_users %}
+        {% for user in agg_notification_users %}
             <table class="user-container">
                 <tr>
                     <td>
