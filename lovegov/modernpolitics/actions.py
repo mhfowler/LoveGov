@@ -1226,7 +1226,7 @@ def getNotifications(request, vals={}):
         diff = NOTIFICATION_INCREMENT - num_returned
         if diff > 0:
             old_notifications = list(viewer.getNotifications(num=diff,old=True))
-            
+
         for notification in new_notifications:
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
             print notification.id
@@ -1631,22 +1631,22 @@ def getAggregateNotificationUsers(request, vals={}):
 
     if not n_id:
         errors_logger.error('No notification supplied for retrieving aggregate notifications users.  User ID = #' + str(viewer.id) )
-        return HttpResponse('An error occured.  The authorities have been notified')
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
 
     agg_notification = Notification.lg.get_or_none(id=n_id)
     if not agg_notification:
         errors_logger.error('Invalid notification ID given to function getAggregateNotificationsUsers. Invalid ID = #' + str(n_id) + ' and Viewer ID = #' + str(viewer.id))
-        return HttpResponse('An error occured.  The authorities have been notified')
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
 
     n_action = Action.lg.get_or_none(id=agg_notification.action_id)
     if not n_action:
         errors_logger.error('Invalid action in Notification given to function getAggregateNotificationsUsers. Notification ID = #' + str(n_id) )
-        return HttpResponse('An error occured.  The authorities have been notified')
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
 
     relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
     if not relationship:
         errors_logger.error('Invalid relationship in action given to function getAggregateNotificationsUsers. action ID = #' + str(n_action.id) + ' and Notification ID = #' + str(n_id) )
-        return HttpResponse('An error occured.  The authorities have been notified')
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
 
     vals['agg_notification_type'] = n_action.type
     vals['agg_notification_content'] = relationship.getTo()
