@@ -1229,12 +1229,10 @@ def getNotifications(request, vals={}):
 
         for notification in new_notifications:
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
-            print notification.id
 
         if old_notifications:
             for notification in old_notifications:
                 notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
-                print notification.id
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)

@@ -1836,6 +1836,11 @@ function loadNotification()
                     $('div#agg_notification_modal').html(obj.html);
                     $('div.overdiv').fadeIn(300);
                     $('div#agg_notification_modal').fadeIn(300);
+
+                    $('div.agg_notification_modal_close').click(function(event) {
+                        $('div.overdiv').hide();
+                        $('div#agg_notification_modal').hide();
+                    });
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -1845,12 +1850,7 @@ function loadNotification()
         }
     );
 
-    $('div.overdiv').click(function() {
-        $('div.overdiv').hide();
-        $('div#agg_notification_modal').hide();
-    });
-
-    $('div.agg_notification_modal_close').click(function() {
+    $('div.overdiv').click(function(event) {
         $('div.overdiv').hide();
         $('div#agg_notification_modal').hide();
     });
