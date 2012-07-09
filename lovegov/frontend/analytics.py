@@ -47,14 +47,16 @@ def userActivity(user):
     for x in pa:
 
         delta = x.when - when
-        if delta.hours > 0:
+        if delta.total_seconds() > (60*60):
             to_return += "\n---------------------------------  " + when + "\n"  # if new session page break
         else:
-            to_return += " (" + delta + ")\n"                                   # else print time delta from last page
+            to_return += " (" + delta.total_seconds() + ")\n"               # else print time delta from last page
 
         to_return += x.page
         if x.action:
             to_return += ":" + x.action
+
+        when = x.when
 
     return True
 
