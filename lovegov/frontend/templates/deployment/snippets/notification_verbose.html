@@ -77,13 +77,15 @@
             <td class="notification-thumbnail">
                 {% include "deployment/snippets/avatar.html" with user=from_user width="25" height="25" hoveroff=hover_off %}
             </td>
-            <td class="notification-text">
+            <td class="notification-text notification_text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 requested to follow
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+                <div class='notification-append notification_append_y'>They are now following you</div>
+                <div class='notification-append notification_append_n'>Request declined</div>
             </td>
             {% if not follow.rejected and not follow.confirmed and follow.requested %}
-                <td class="notification-buttons">
+                <td class="notification-buttons notification_buttons">
                     <div class="notification-follow-response notification_follow_response_y">accept</div>
                     <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
                     <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>
@@ -93,13 +95,14 @@
             <td class="notification-thumbnail">
                 {% include "deployment/snippets/avatar.html" with user=from_user width="25" height="25" hoveroff=hover_off %}
             </td>
-            <td class="notification-text">
+            <td class="notification-text notification_text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 followed
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+                <div class='notification-append notification_append'>You have followed them back</div>
             </td>
                 {% if not anon and not reverse_follow.confirmed and not reverse_follow.requested %}
-                    <td class="notification-buttons">
+                    <td class="notification-buttons notification_buttons">
                         <div class="notification-follow-response notification_user_follow">follow</div>
                         <input type="hidden" class="user_follow_id" value="{{ from_user.id }}"/>
                     </td>
@@ -142,13 +145,15 @@
             <td class="notification-thumbnail">
                 {% include "deployment/snippets/avatar.html" with user=from_user width="25" height="25" hoveroff=hover_off %}
             </td>
-            <td class="notification-text">
+            <td class="notification-text notification_text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 requested to join
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+                <div class='notification-append notification_append_y'>They have joined your group</div>
+                <div class='notification-append notification_append_n'>Request declined</div>
             </td>
             {% if not group_join.rejected and not group_join.confirmed and group_join.requested %}
-                <td class="notification-buttons">
+                <td class="notification-buttons notification_buttons">
                     <div class="notification-follow-response notification_group_response_y">accept</div>
                     <div class="notification-follow-response bottom notification_group_response_n">decline</div>
                     <input type="hidden" class="follow-id" value="{{ from_user.id }}"/>
