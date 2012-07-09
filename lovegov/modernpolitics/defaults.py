@@ -1158,6 +1158,15 @@ def recalculatePetitions():
         p.goal = PETITION_LEVELS[level]
         p.save()
 
+def recalculateTopics():
+    c = Content.objects.all()
+    count = 0
+    for x in c:
+        x.setMainTopic()
+        if (count%20==0):
+            print count
+        count += 1
+
 def recalculateEverything():
     print "Recalculating Stats..."
     recalculateAllUserStats()
