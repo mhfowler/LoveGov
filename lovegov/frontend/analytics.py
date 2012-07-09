@@ -37,20 +37,47 @@ def userSummary(user, request, days=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # new user
 #-----------------------------------------------------------------------------------------------------------------------
-def userActivity(user):
+def userActivity(user, file=None,  min=None, max=None):
 
-    pa = PageAccess.objects.filter(user=user).order_by("when")
+    pa = PageAccess.objects.filter(user=user).exclude(page="/answer/").order_by("when")
+    if min:
+        pa.filter(when__gt=min)
+    if max:
+        pa.filter(when__lt=max)
 
-    when = datetime.MINYEAR
-    to_return = "User Summary for " + user.get_name() + ": \n"
+    when = datetime.datetime.min
+    to_return = "\nUser Summary for " + user.get_name() + ": \n"
 
     for x in pa:
-        delta = x.when - when
-        if delta.hours > 0:
-            to_return += "---------------------------------  " + when + "\n"
-            to_return +=
 
-    return "ok"
+        delta = x.when - when
+        when = x.when
+        
+        if delta.total_seconds() > (60*60):
+            to_return += "\n---------------------------------  " + str(when) + "\n"  # if new session page break
+        else:
+            to_return += " (" + str(delta.total_seconds()) + ")\n"               # else print time delta from last page
+
+        to_return += x.page
+        if x.action:
+            to_return += ":" + x.action
+
+
+    if file:
+        with open(file, 'a') as f:
+            try:
+                f.write(to_return)
+            except UnicodeEncodeError:
+                print "unicode encode error for " + user.get_name()
+    else:
+        print to_return
+
+    return to_return
+
+def allUserActivity(file, min=None, max=None):
+    u = UserProfile.objects.filter(user_type="U")
+    for x in u:
+        userActivity(x, file, min, max)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a printout summarizing all user activity for the day.

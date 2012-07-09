@@ -1159,13 +1159,23 @@ def recalculatePetitions():
         p.save()
 
 def recalculateTopics():
-    c = Content.objects.all()
+    mt_ids = getMainTopics().values_list('id', flat=True)
+    c = Content.objects.exclude(main_topic_id__in=mt_ids)
     count = 0
     for x in c:
         x.setMainTopic()
         if (count%20==0):
             print count
         count += 1
+
+# set parent topics to none and delete all topics which are not main topics
+def purgeTopics():
+    for t in getMainTopics():
+        t.parent_topic = None
+    for t in Topic.objects.all():
+        if t not in getMainTopics():
+            print "Deleting topic "+t.topic_text
+            t.delete()
 
 def recalculateEverything():
     print "Recalculating Stats..."
