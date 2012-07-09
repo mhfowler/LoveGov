@@ -321,7 +321,7 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                //alert(data);
+                return true;
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -329,6 +329,7 @@ function userFollowResponse(event,response,div)
             }
         }
     );
+    return false;
 }
 
 function groupInviteResponse(event,response,div)
@@ -343,7 +344,7 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                //alert(data);
+                return true;
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -351,6 +352,7 @@ function groupInviteResponse(event,response,div)
             }
         }
     );
+    return false;
 }
 
 function setFollowPrivacy(event,private_follow,div)
@@ -1773,6 +1775,8 @@ function loadNotification()
     {
         event.preventDefault();
         var follow_id = $(this).siblings(".user_follow_id").val();
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         ajaxPost({
                 data: {
                     'action':'userfollow',
@@ -1780,7 +1784,7 @@ function loadNotification()
                 },
                 success: function(data)
                 {
-                    //alert(data);
+                    wrapper.siblings(".notification_text").children('.notification_append').fadeIn(600);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -1791,19 +1795,31 @@ function loadNotification()
     });
 
     $(".notification_follow_response_y").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         userFollowResponse(event,"Y",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
     });
 
     $(".notification_follow_response_n").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         userFollowResponse(event,"N",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
 
     $(".notification_group_response_y").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"Y",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
     });
 
     $(".notification_group_response_n").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"N",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
 }
 
@@ -2013,14 +2029,6 @@ function loadProfile()
     $(".user-unfollow-button").click( function(event)
     {
         userFollow(event,$(this),false);
-    });
-
-    $(".user_follow_response_y").click( function(event) {
-        userFollowResponse(event,"Y",$(this));
-    });
-
-    $(".user_follow_response_n").click( function(event) {
-        userFollowResponse(event,"N",$(this));
     });
 
     $(".group-invite-response-y").click( function(event) {
@@ -2470,12 +2478,18 @@ function loadGroup()
 
     bindGroupRequestsButton();
 
-    $(".group-response-y").click( function(event) {
+    $(".group_response_y").click( function(event) {
+        var wrapper = $(this).parent(".group_request_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"Y",$(this),g_id);
+        wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
     });
 
     $(".group-response-n").click( function(event) {
+        var wrapper = $(this).parent(".group_request_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"N",$(this),g_id);
+        wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
     });
 
     $("#group_follow").click( function(event) {

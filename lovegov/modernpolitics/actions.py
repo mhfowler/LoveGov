@@ -1208,7 +1208,6 @@ def getNotifications(request, vals={}):
     num_still_new = 0
 
     if 'dropdown' in request.POST:
-
         new_notifications = viewer.getNotifications(new=True)
         num_new = len(new_notifications)
         new_notifications = new_notifications[0:NOTIFICATION_INCREMENT+2]
@@ -1218,15 +1217,14 @@ def getNotifications(request, vals={}):
         old_notifications = None
         diff = NOTIFICATION_INCREMENT - num_returned
         if diff > 0:
-            old_notifications = viewer.getNotifications(num=diff,start=num_notifications,old=True)
-        elif diff < 0:
-            diff = 0
+            old_notifications = viewer.getNotifications(num=diff,old=True)
+
         for notification in new_notifications:
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+
         if old_notifications:
             for notification in old_notifications:
                 notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
-        num_notifications += diff + num_returned
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)

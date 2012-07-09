@@ -343,6 +343,7 @@ PARTY_TYPE = (
     ('L', 'libertarian'),
     ('P', 'progressive'),
     ('I', 'independent'),
+    ('T', 'tea')
 )
 
 # types of users
