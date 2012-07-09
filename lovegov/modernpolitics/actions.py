@@ -1223,7 +1223,7 @@ def getNotifications(request, vals={}):
             notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         if old_notifications:
             for notification in old_notifications:
-                notifications_text.append( notification.getVerbose(view_user=viewer) )
+                notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         num_notifications += diff + num_returned
 
     else:
