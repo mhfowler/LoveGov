@@ -1,4 +1,4 @@
-if [ -f /srv/dev/server/shared.bashrc ]; then
-    . /srv/dev/server/shared.bashrc
+# source shared.bashrc
+if [ -f /srv/server/shared.bashrc ]; then
+    . /srv/server/shared.bashrc
 fi
-
