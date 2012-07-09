@@ -1811,7 +1811,6 @@ class Notification(Privacy):
         if to_user.id == view_user.id:
             to_you = True
 
-
         viewed = True
         if not self.viewed:
             viewed = False
@@ -1833,15 +1832,18 @@ class Notification(Privacy):
                           'hover_off':1 }
 
         if n_action.type == 'FO':
+            notification_context['from_user'] = relationship.getFrom()
             notification_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
             if reverse_follow:
                 notification_context['reverse_follow'] = reverse_follow
 
         if n_action.type == 'JO':
+            notification_context['from_user'] = relationship.getFrom()
             notification_context['group_join'] = relationship.downcast()
 
         if n_action.type == 'SH':
+            notification_context['from_user'] = relationship.getFrom()
             notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
             notification_context['content'] = relationship.getTo()
 
