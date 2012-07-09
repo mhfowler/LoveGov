@@ -1184,12 +1184,15 @@ def getFilter(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
-def getNumNotifications(request, vals={}):
-    viewer = vals['viewer']
-    new_notifications = viewer.getNotifications(new=True)
-    num = new_notifications.count()
+def updatePage(request, vals={}):
 
-    return HttpResponse(json.dumps({'num':num}))
+    viewer = vals['viewer']
+    to_return = {}
+
+    new_notifications = viewer.getNotifications(new=True)
+    to_return['notifications_num'] = new_notifications.count()
+
+    return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
@@ -1678,7 +1681,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
-            'getNumNotifications': getNumNotifications,
+            'updatePage': updatePage
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
