@@ -46,13 +46,13 @@ def userActivity(user, file=None,  min=None, max=None):
         pa.filter(when__lt=max)
 
     when = datetime.datetime.min
-    to_return = "\nUser Summary for " + user.get_name() + ": \n"
+    to_return = "\n\nUser Summary for " + user.get_name() + ": \n"
 
     for x in pa:
 
         delta = x.when - when
         when = x.when
-        
+
         if delta.total_seconds() > (60*60):
             to_return += "\n---------------------------------  " + str(when) + "\n"  # if new session page break
         else:
