@@ -2160,6 +2160,12 @@ class Petition(Content):
         else:
             return DEFAULT_PETITION_IMAGE_URL
 
+    def getFeedImage(self):
+        if self.main_image_id >= 0:
+            return self.main_image.image
+        else:
+            return None
+
 #=======================================================================================================================
 # Event
 #

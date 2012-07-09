@@ -10,10 +10,14 @@
             <img src="{{ im.url }}" data-height="{{ im.height }}"/>
         {% endthumbnail %}
     {% elif item.type == 'P' %}
-        {% thumbnail item.getImage "300x500" as im %}
-            <img src="{{ im.url }}" data-height="{{ im.height }}"/>
-        {% empty %}
-            ?
-        {% endthumbnail %}
+        {% with image=item.getFeedImage %}
+            {% if image %}
+                {% thumbnail image "300x500" as im %}
+                    <img src="{{ im.url }}" data-height="{{ im.height }}"/>
+                {% empty %}
+                    ?
+                {% endthumbnail %}
+            {% endif %}
+        {% endwith %}
     {% endif %}
 </div>
