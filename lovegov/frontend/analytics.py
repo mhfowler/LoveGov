@@ -37,7 +37,7 @@ def userSummary(user, request, days=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # new user
 #-----------------------------------------------------------------------------------------------------------------------
-def userActivity(user):
+def userActivity(user, file=None):
 
     pa = PageAccess.objects.filter(user=user).order_by("when")
 
@@ -58,7 +58,12 @@ def userActivity(user):
 
         when = x.when
 
-    print to_return
+    if file:
+        with open(file, 'a') as f:
+            f.write(to_return)
+    else:
+        print to_return
+
     return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
