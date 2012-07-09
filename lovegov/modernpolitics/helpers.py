@@ -41,7 +41,6 @@ def checkBrowserCompatible(request):
     browser = parsed.get('browser')
     if browser:
         browser_name = browser.get('name')
-        print "name " + browser_name
         if browser_name in PROHIBITED_BROWSERS:
             to_return = False
 
