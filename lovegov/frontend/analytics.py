@@ -45,12 +45,18 @@ def userActivity(user):
     to_return = "User Summary for " + user.get_name() + ": \n"
 
     for x in pa:
+
         delta = x.when - when
         if delta.hours > 0:
-            to_return += "---------------------------------  " + when + "\n"
-            to_return +=
+            to_return += "\n---------------------------------  " + when + "\n"  # if new session page break
+        else:
+            to_return += " (" + delta + ")\n"                                   # else print time delta from last page
 
-    return "ok"
+        to_return += x.page
+        if x.action:
+            to_return += ":" + x.action
+
+    return True
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a printout summarizing all user activity for the day.

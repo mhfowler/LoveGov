@@ -1159,7 +1159,8 @@ def recalculatePetitions():
         p.save()
 
 def recalculateTopics():
-    c = Content.objects.all()
+    mt_ids = getMainTopics().values_list('id', flat=True)
+    c = Content.objects.exclude(main_topic_id__in=mt_ids)
     count = 0
     for x in c:
         x.setMainTopic()
