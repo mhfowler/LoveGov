@@ -431,7 +431,10 @@ class Content(Privacy, LocationLevel):
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveEdited(self, privacy):
-        created = Created.objects.filter(content=self)[0]
+        created = Created.lg.get_or_none(content=self)
+        if not created:
+            errors_logger.error( "Edited Content does not exist.  Content ID = #" + str(self.id) )
+            return None
         created.privacy = privacy
         created.save()
         self.privacy = privacy

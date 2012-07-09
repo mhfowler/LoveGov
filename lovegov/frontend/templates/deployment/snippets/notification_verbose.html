@@ -17,9 +17,9 @@
         <td class="notification-text">
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             {% if tally == 2 %}
-                and one other person
+                and <a href="" class="agg_popup">one other person</a>
             {% elif tally > 2 %}
-                and {{ tally|add:"-1" }} other people
+                and <a href="" class="agg_popup">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             commented on
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
@@ -34,9 +34,9 @@
             <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
-                    and one other person
+                    and <a href="" class="agg_popup">one other person</a>
                 {% elif tally > 2 %}
-                    and {{ tally|add:"-1" }} other people
+                    and <a href="" class="agg_popup">{{ tally|add:"-1" }} other people</a>
                 {% endif %}
                 liked
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
@@ -48,9 +48,9 @@
             <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
-                    and one other person
+                    and <a href="" class="agg_popup">one other person</a>
                 {% elif tally > 2 %}
-                    and {{ tally|add:"-1" }} other people
+                    and <a href="" class="agg_popup">{{ tally|add:"-1" }} other people</a>
                 {% endif %}
                 disliked
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
@@ -62,9 +62,9 @@
             <td class="notification-text">
                 {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
                 {% if tally == 2 %}
-                    and one other person
+                    and <a href="" class="agg_popup">one other person</a>
                 {% elif tally > 2 %}
-                    and {{ tally|add:"-1" }} other people
+                    and <a href="" class="agg_popup">{{ tally|add:"-1" }} other people</a>
                 {% endif %}
                 unvoted
                 {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
@@ -283,9 +283,9 @@
         <td class="notification-text">
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             {% if tally == 2 %}
-                and one other person
+                and <a href="" class="agg_popup">one other person</a>
             {% elif tally > 2 %}
-                and {{ tally|add:"-1" }} other people
+                and <a href="" class="agg_popup">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             signed
             {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
@@ -298,9 +298,9 @@
         <td class="notification-text">
             {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             {% if tally == 2 %}
-                and one other person
+                and <a href="" class="agg_popup">one other person</a>
             {% elif tally > 2 %}
-                and {{ tally|add:"-1" }} other people
+                and <a href="" class="agg_popup">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             shared <a href="{{content.get_url}}"> {{ content.title }} </a>
             with you

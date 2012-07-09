@@ -1613,6 +1613,39 @@ def changeContentPrivacy(request, vals={}):
     print "to_return: "+str(to_return)
     return HttpResponse(json.dumps(to_return))
 
+
+def getAggregateNotificationsUsers(request, vals={}):
+    # Get Notification first
+    viewer = vals['viewer']
+    n_id = request.POST.get('n_id')
+    if not n_id:
+        errors_logger.error('No notification supplied for retrieving aggregate notifications users.  User ID = #' + str(viewer.id) )
+        return HttpResponse('An error occured.  The authorities have been notified')
+
+    agg_notification = Notification.lg.get_or_none(id=n_id)
+    if not agg_notification:
+        errors_logger.error('Invalid notification ID given to function getAggregateNotificationsUsers. Invalid ID = #' + str(n_id) + ' and Viewer ID = #' + str(viewer.id))
+        return HttpResponse('An error occured.  The authorities have been notified')
+
+    action = Action.lg.get_or_none(id=agg_notification.action_id)
+    if not action:
+        errors_logger.error('Invalid action in Notification given to function getAggregateNotificationsUsers. Notification ID = #' + str(n_id) )
+        return HttpResponse('An error occured.  The authorities have been notified')
+
+    relationship = Action.lg.get_or_none(id=action.relationship_id)
+    if not relationship:
+        errors_logger.error('Invalid relationship in action given to function getAggregateNotificationsUsers. action ID = #' + str(action.id) + ' and Notification ID = #' + str(n_id) )
+        return HttpResponse('An error occured.  The authorities have been notified')
+
+    vals['agg_notification_type'] = action.type
+    vals['agg_notification_content'] = relationship.getTo()
+    vals['agg_notification_users'] = agg_notification.users.all()
+    vals['agg_notification_anon'] = agg_notification.anon_users.count()
+
+    html = ajaxRender('deployment/snippets/aggregate-notifications-popup.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
