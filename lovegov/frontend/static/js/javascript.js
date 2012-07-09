@@ -1809,12 +1809,13 @@ function loadNotification()
 
 
 function updateNotificationsNum() {
+
     ajaxPost({
         'data': {'action':'getNumNotifications', 'log-ignore':true},
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            $('#num_notifications').val(obj.num);
+            $("#notifications-number-text").text(obj.num);
         },
         error: function(jqXHR, textStatus, errorThrown)
         {

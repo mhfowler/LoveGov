@@ -1185,7 +1185,6 @@ def getFilter(request, vals={}):
 # gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
 def getNumNotifications(request, vals={}):
-
     viewer = vals['viewer']
     new_notifications = viewer.getNotifications(new=True)
     num = new_notifications.count()
@@ -1679,7 +1678,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
-            'getNumNotifications': getNumNotifications
+            'getNumNotifications': getNumNotifications,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
