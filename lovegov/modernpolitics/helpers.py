@@ -42,10 +42,12 @@ def checkBrowserCompatible(request):
     parsed = httpagentparser.detect(user_agent)
     browser = parsed.get('browser')
     if browser:
-        browser_name = browser.get('name')
-        if browser_name in PROHIBITED_BROWSERS:
-            to_return = False
         browser_logger.debug('useragent: ' + pprint.pformat(parsed))
+        browser_name = browser.get('name')
+        if browser_name == "Microsoft Internet Explorer":
+            version = float(browser.get('version'))
+            if version < 9.0:
+                to_return = False
 
     return to_return
 

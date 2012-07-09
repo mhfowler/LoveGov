@@ -102,7 +102,7 @@ class Privacy(LGModel):
         else:
             creator = getAnonUser()
         if viewer:
-            creator.you = (self.creator == viewer)
+            creator.you = (self.getCreator() == viewer)
         else:
             creator.you = None
 
