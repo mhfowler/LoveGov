@@ -4,6 +4,8 @@
     {% if item.type == 'N' %}
         {% thumbnail item.link_screenshot "300x500" as im %}
             <img src="{{ im.url }}"/>
+        {% empty %}
+            ?
         {% endthumbnail %}
     {% elif item.type == 'G' %}
         {% thumbnail item.getImage "300x500" as im %}
