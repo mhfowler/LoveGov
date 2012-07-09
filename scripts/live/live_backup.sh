@@ -5,6 +5,6 @@
 # mysqldump live -u root -ptexers787 --default-character-set=utf8 --compatible=ansi --skip-opt --ignore-table=live.django_content_type > $1
 
 # full backup
-mysqldump live -u root -p --complete-insert --ignore-table=live.django_site --ignore-table=live.auth_permission --ignore-table=live.django_content_type > $1
+mysqldump live -u root -p --complete-insert > $1
 
 echo "$(date)" 
