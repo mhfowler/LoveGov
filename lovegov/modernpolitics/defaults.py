@@ -1151,6 +1151,13 @@ def recalculatePetitions():
                 p.signers.remove(x)
                 p.sign(x)
 
+        level = 0
+        while p.current >= PETITION_LEVELS[level]:
+            level += 1
+        p.p_level = level
+        p.goal = PETITION_LEVELS[level]
+        p.save()
+
 def recalculateEverything():
     print "Recalculating Stats..."
     recalculateAllUserStats()

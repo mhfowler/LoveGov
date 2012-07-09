@@ -60,13 +60,14 @@ def locationHelper(address, zip):
             address_string = address
         gmaps = GoogleMaps(GOOGLEMAPS_API_KEY)
         coordinates = gmaps.address_to_latlng(address_string)
-        state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
         try:
+            state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
             location = PhysicalAddress(address_string=address,zip=zip,latitude=coordinates[0],
                 longitude=coordinates[1],state=state_district[0]['state'],district=state_district[0]['number'])
             location.save()
-        except:
-            print "failure!"
+        except BadRequestException as e:
+            error = "sunlight error: ", e
+            errors_logger.error(error)
 
     return location
 

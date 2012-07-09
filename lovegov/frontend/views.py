@@ -1202,8 +1202,9 @@ def valsQuestion(request, q_id, vals={}):
         agg = agg[0].aggregateresponse
     for a in question.answers.all():
         if agg:
-            tuple = agg.responses.get(answer_val=a.value)
-            if agg.total:
+            tuple = agg.responses.filter(answer_val=a.value)
+            if tuple and agg.total:
+                tuple = tuple[0]
                 percent = int(100*float(tuple.tally)/float(agg.total))
             else:
                 percent = 0

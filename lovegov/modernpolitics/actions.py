@@ -611,9 +611,8 @@ def answer(request, vals={}):
     """ Saves a users answer to a question."""
     user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
-    if request.POST['questionPRI'] != "":
-        privacy = request.POST['questionPRI']
-    else:
+    privacy = request.POST.get('questionPRI')
+    if not privacy:
         privacy = getPrivacy(request)
     my_response = user.getView().responses.filter(question=question)
     # save new response

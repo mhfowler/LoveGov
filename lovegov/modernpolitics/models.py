@@ -2077,7 +2077,7 @@ class Petition(Content):
     finalized = models.BooleanField(default=False)
     current = models.IntegerField(default=0)
     goal = models.IntegerField(default=10)
-    p_level = models.IntegerField(default=0)
+    p_level = models.IntegerField(default=1)
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
