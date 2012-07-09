@@ -95,7 +95,7 @@ def underConstruction(request):
     return render_to_response('deployment/pages/microcopy/construction.html')
 
 def upgrade(request):
-    return render_to_response('deployment/pages/upgrade.html')
+    return render_to_response('deployment/pages/microcopy/upgrade.html')
 
 def continueAtOwnRisk(request):
     response = shortcuts.redirect("/web/")
