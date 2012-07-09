@@ -392,7 +392,7 @@ class Content(Privacy, LocationLevel):
 
     def getImageURL(self):
         if self.main_image_id < 0:
-            return self.getMainTopic().getUserImage()
+            return self.getMainTopic().getUserImage().image.url
         elif self.main_image:
             return self.main_image.image.url
         else:
