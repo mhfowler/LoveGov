@@ -25,6 +25,14 @@ import sunlight
 import pprint
 
 browser_logger = logging.getLogger('browserlogger')
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets query set of main topics
+#-----------------------------------------------------------------------------------------------------------------------
+def getMainTopics():
+    return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
 # is the referer if it is an ajax request.

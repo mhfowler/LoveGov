@@ -228,6 +228,9 @@ class Topic(LGModel):
         self.alias = alias
         self.save()
 
+    def getImageURL(self):
+        return self.image.url
+
 
 #=======================================================================================================================
 # Content
@@ -392,11 +395,11 @@ class Content(Privacy, LocationLevel):
 
     def getImageURL(self):
         if self.main_image_id < 0:
-            return self.getMainTopic().getUserImage()
+            return self.getMainTopic().getImageURL()
         elif self.main_image:
             return self.main_image.image.url
         else:
-            return self.getMainTopic().getUserImage().image.url
+            return self.getMainTopic().getImageURL()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
@@ -1796,7 +1799,8 @@ class Notification(Privacy):
         from_you = from_user.you
 
         if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
-            from_user = self.recent_user
+            if self.recent_user:
+                from_user = self.recent_user
             if from_user.id == view_user.id:
                 from_you = True
 
