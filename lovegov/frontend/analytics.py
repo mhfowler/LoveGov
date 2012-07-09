@@ -51,6 +51,8 @@ def userActivity(user, file=None,  min=None, max=None):
     for x in pa:
 
         delta = x.when - when
+        when = x.when
+        
         if delta.total_seconds() > (60*60):
             to_return += "\n---------------------------------  " + str(when) + "\n"  # if new session page break
         else:
@@ -60,7 +62,6 @@ def userActivity(user, file=None,  min=None, max=None):
         if x.action:
             to_return += ":" + x.action
 
-        when = x.when
 
     if file:
         with open(file, 'a') as f:
