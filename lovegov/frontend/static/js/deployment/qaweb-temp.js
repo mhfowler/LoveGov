@@ -839,7 +839,7 @@ var Question = Node.extend
                 }
             }
             var src = 'src="' + self.getImage('default') + '"';
-            var style = 'style="position:absolute;background-color:white;border-radius:5px;width:' + this.base_width + 'px"';
+            var style = 'style="position:absolute;background-color:white;border-radius:15px;width:' + this.base_width + 'px"';
             $('#' + self.idDiv).append("<img class='question-node-img' id='" + self.idImg + "' " + src + style + " " + "/>");
             this.idImgObj = $('#' + this.idImg);
         },

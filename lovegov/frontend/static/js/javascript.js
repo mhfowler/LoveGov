@@ -63,7 +63,7 @@ function rebindFunction()
             hideFooter();
             if( p_id != view_id )
             {
-                loadProfileComparison();
+               // loadProfileComparison();
             }
             break;
         case 'group':
