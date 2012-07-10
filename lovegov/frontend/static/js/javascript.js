@@ -4171,16 +4171,28 @@ function submitAddress(wrapper) {
     var address = wrapper.find(".address-input").val();
     var city = wrapper.find(".city-input").val();
     var zip = wrapper.find(".zip-input").val();
+    var state = wrapper.find(".state-input").val();
     ajaxPost({
         data: {
             'action':'submitAddress',
             'address':address,
             'city':city,
-            'zip':zip
+            'zip':zip,
+            'state':state
         },
         success: function(data)
         {
-            location.reload();
+            var returned = eval('('+data+')');
+            if( returned != 'success' )
+            {
+                $('#address_input_error').html(returned);
+                $('#address_input_error').fadeIn(300);
+            }
+            else
+            {
+                $('#address_input_error').hide();
+                location.reload();
+            }
         },
         error: function(error, textStatus, errorThrown)
         {
