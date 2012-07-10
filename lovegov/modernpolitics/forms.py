@@ -258,8 +258,9 @@ class CreateContentForm(forms.ModelForm):
         privacy = getPrivacy(request)
         object.autoSave(creator=creator, privacy=privacy)
         self.save_m2m()
-        if object.topics:
-            object.main_topic = object.topics.all()[0]
+        topics = object.topics.all()
+        if topics:
+            object.main_topic = topics[0]
         object.save()
         return object
     action = forms.CharField(widget=forms.HiddenInput(), initial='create')
