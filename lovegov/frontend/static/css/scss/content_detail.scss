@@ -862,8 +862,10 @@ div.threaddiv {
 }
 
 #finalize {
-  margin: 20px;
+  margin: 20px 0 0 0;
+  padding: 0 0 0 0;
   float:left;
+  width:100%;
   #finalize-button
   {
     float:left;

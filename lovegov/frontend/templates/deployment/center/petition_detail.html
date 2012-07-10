@@ -3,18 +3,22 @@
 
 {% block petition_detail %}
 
-    <h3>Signers</h3>
+    {% if petition.finalized %}
 
-    {% for signer in signers %}
-        {% include 'deployment/snippets/signer.html' %}
-    {% empty %}
-        <span id="be-first-signer-message">Be the first to sign this petition.</span>
-    {% endfor %}
+        <h3>Signers</h3>
 
-    <div style="clear: both"></div>
+        {% for signer in signers %}
+            {% include 'deployment/snippets/signer.html' %}
+        {% empty %}
+            <span id="be-first-signer-message">Be the first to sign this petition.</span>
+        {% endfor %}
 
-    {% if signers %}
-        {% include 'deployment/snippets/petition_bar.html' with p=petition %}
+        <div style="clear: both"></div>
+
+        {% if signers %}
+            {% include 'deployment/snippets/petition_bar.html' with p=petition %}
+        {% endif %}
+        
     {% endif %}
 
 {% endblock %}
