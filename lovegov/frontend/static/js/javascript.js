@@ -61,13 +61,8 @@ function rebindFunction()
         case 'profile':                                         // /profile/<alias>
             loadProfile();
             hideFooter();
-            if( p_id != view_id )
-            {
-               // loadProfileComparison();
-            }
             break;
         case 'group':
-            loadProfileComparison();
             loadGroup();
             hideFooter();
             break;
@@ -613,7 +608,7 @@ function loadHoverComparison()
                         {
                             var obj = eval('(' + data + ')');
                             $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
+                            $('#comparison-hover').visualComparison(obj,true);
                         },
                         'error': function(jqXHR, textStatus, errorThrown)
                         {
@@ -3402,13 +3397,7 @@ function createGroupValidation( event )
     /* Scale */
     var scale = $('input:radio.group_scale:checked').length;
     var scale_error = $('#group_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a group scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple group scales.");
         scale_error.show();
@@ -3436,13 +3425,7 @@ function createGroupValidation( event )
     /* Topics */
     var topic = $('#group_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#group_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a group topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple group topics.");
         topic_error.show();
@@ -3498,13 +3481,7 @@ function createPetitionValidation( event )
     /* Scale */
     var scale = $('input:radio.petition_scale:checked').length;
     var scale_error = $('#petition_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a petition scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple petition scales.");
         scale_error.show();
@@ -3518,13 +3495,7 @@ function createPetitionValidation( event )
     /* Topics */
     var topic = $('#petition_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#petition_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a petition topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple petition topics.");
         topic_error.show();
@@ -3565,13 +3536,7 @@ function createNewsValidation( event )
     /* Scale */
     var scale = $('input:radio.news_scale:checked').length;
     var scale_error = $('#news_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a news scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple news scales.");
         scale_error.show();
@@ -3585,13 +3550,7 @@ function createNewsValidation( event )
     /* Topics */
     var topic = $('#news_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#news_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a news topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple news topics.");
         topic_error.show();
@@ -3783,7 +3742,7 @@ function loadCreate()
         {
             wrapper.find(".topic-radio").attr("checked",true);
         }
-        selectTopicSingle(wrapper);
+        toggleTopicSingle(wrapper);
     });
 
     function clearPetitionErrors()

@@ -304,7 +304,7 @@ class SelectTopicsField(forms.ModelMultipleChoiceField):
     def __init__(self,content_type, *args, **kwargs):
         topics = Topic.objects.all()
         super(SelectTopicsField, self).__init__(queryset=topics)
-        self.required=True
+        self.required=False
         self.widget = TopicCheckboxSelectMultiple(content_type=content_type, topic_count=Topic.objects.count())
         self.error_messages={'required': 'You must select a topic.'}
 

@@ -143,7 +143,7 @@ class PhysicalAddress(LGModel):
 #=======================================================================================================================
 class LocationLevel(models.Model):
     location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
-    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
+    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='A')
     class Meta:
         abstract = True
 
@@ -155,8 +155,10 @@ class LocationLevel(models.Model):
             return 'State'
         elif scale == 'F':
             return 'Federal'
+        elif scale == 'W':
+            return 'World'
         elif scale == 'A':
-            return 'Universal'
+            return 'Uncategorized'
         else:
             return 'None'
 
@@ -733,6 +735,10 @@ class Content(Privacy, LocationLevel):
     # Saves creation info.
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
+        from lovegov.modernpolitics.defaults import getGeneralTopic
+        if not self.main_topic:
+            self.main_topic = getGeneralTopic()
+            self.save()
         if not creator:
             self.saveDefaultCreated()
         else:
@@ -2264,7 +2270,7 @@ class Comment(Content):
             self.root_content = self.on_content.downcast().root_content
         else:
             self.root_content = self.on_content
-        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
+        self.title = self.creator_name + "'s comment on " + self.root_content.title
         self.type = 'C'
         self.summary = self.text
         self.in_feed = False
