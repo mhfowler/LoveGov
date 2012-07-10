@@ -426,19 +426,25 @@ div.content-submitted-by-wrapper {
         float: left;
         margin-right: 15px;
     }
-    span.submit-time {
-        color: $deep-gray;
-        font-size: 12px;
-    }
-    span.submitter a {
+    span.submitter {
+      float:left;
+      width:130px;
+      a {
         @include titleFont;
-        font-size: 24px;
+        font-size: 20px;
         color: $black;
+      }
     }
     div.change-privacy {
-        position: absolute;
+        float:left;
+        position: relative;
         top: 0;
         right: 0;
+    }
+    span.submit-time {
+      float:left;
+      color: $deep-gray;
+      font-size: 12px;
     }
 }
 
