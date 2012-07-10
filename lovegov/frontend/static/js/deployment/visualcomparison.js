@@ -3,14 +3,14 @@
  *
  * This object handles generating visual comparisons on LoveGov. This object is extremely easy to use. Just call:
  *
- * new VisualComparison(divID,comparisonJSON).draw()
+ * new VisualComparison(domEle,comparisonJSON).draw()
  *
  * Or, to be as explicit as possible, you may also reference the variable first before calling the draw method as such:
  *
- * var visualComparison = new VisualComparison(divID,comparisonJSON)
+ * var visualComparison = new VisualComparison(domEle,comparisonJSON)
  * visualComparison.draw()
  *
- * @param divID:            the ID of the div to house the KineticJS Stage, no # included
+ * @param domEle:            the ID of the div to house the KineticJS Stage, no # included
  * @param comparisonJSON:   the comparison data from the server.  This object is somewhat complicated so I will note its
  *                          structure here.  Check models.py, class ViewComparison, def toJSON() for backend data generation.
  *                          {'main':{'result':<number>,'num_q':<number>},
@@ -19,9 +19,9 @@
  */
 var VisualComparison = Class.extend
 ({
-    init: function(divID, comparisonJSON)
+    init: function(domEle, comparisonJSON)
     {
-        this.divID = divID;
+        this.domEle = domEle;
         this.stage = null;
         this.hoverShape = null;
         this.hoverText = null;
@@ -36,7 +36,7 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
-        if (this.dataObj['user_url'] != '') { $('#' + divID).append('<a style="position:absolute;top:15px;right:15px;z-index:5000" class="do-ajax-link" href="' + this.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt.png" style="width:25px"/></a>')}
+        if (this.dataObj['user_url'] != '') { this.domEle.append('<a style="position:absolute;top:15px;right:15px;z-index:5000" class="do-ajax-link" href="' + this.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt.png" style="width:25px"/></a>')}
         loadAjaxifyAnchors();
     },
 
@@ -46,8 +46,8 @@ var VisualComparison = Class.extend
     draw: function()
     {
         var self = this;
-        $('#' + this.divID).css({height:self.height,width:self.width,position:"relative"});
-        this.stage = new Kinetic.Stage(self.divID,self.width,self.height);
+        this.domEle.css({height:self.height,width:self.width,position:"relative"});
+        this.stage = new Kinetic.Stage(self.domEle.get(0),self.width,self.height);          // get(0) returns the underlying DOM element in the jQuery element.
         this.drawTopics();
         this.drawMiddle();
         this.addLayers();
@@ -63,6 +63,7 @@ var VisualComparison = Class.extend
         var colorObject = {light:'#ff8575', default:'#ef553f'};
         var percentage = self.dataObj['main']['result']/100;
         var num_q = self.dataObj['main']['num_q'];
+
         var circle = createCircle(x,y,colorObject,self.radiusMiddle,percentage);
         var textobj = createText(num_q.toString() + " Q",x,y+25,8);
         circle.on("mouseover",function()
@@ -75,14 +76,6 @@ var VisualComparison = Class.extend
             self.textLayer.remove(textobj);
             self.textLayer.draw();
         });
-        /*
-        circle.on('click',function()
-        {
-            if (self.dataObj['user_url'] != '')
-            {
-                ajaxLink(self.dataObj['user_url'],true);
-            }
-        });*/
         self.shapesLayer.add(circle);
 
         var percentText = createText((percentage*100).toFixed() + '%',x,y+2,13);
@@ -96,9 +89,6 @@ var VisualComparison = Class.extend
             self.textLayer.draw();
         });
         self.textLayer.add(percentText);
-
-
-        //
     },
 
     /**
@@ -244,20 +234,6 @@ function createCircle(x, y, colorObject, radius, percentage)
             ctx.lineWidth = this.lineWidth;
             ctx.stroke();
         }
-    });
-}
-
-function createBoxPercent(x,y,width,height,colorObject)
-{
-    return new Kinetic.Rect
-    ({
-        x:x,
-        y:y,
-        width:width,
-        height:height,
-        stroke: colorObject.default,
-        fill: colorObject.light,
-        zIndex:10
     });
 }
 

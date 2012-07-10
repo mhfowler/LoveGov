@@ -41,12 +41,17 @@
     </div>
 
     <div class="qaweb">
-        <div id="{{ item.get_name|slugify }}-canvas"></div>
+        <div class="{{ item.get_name|slugify }}-canvas"></div>
     </div>
 
     <script>
         var json = eval('(' + '{{ item.compare|escapejs }}' + ')');
-        new VisualComparison("{{ item.get_name|slugify }}-canvas",json).draw();
+        $("." + "{{ item.get_name|slugify }}" + "-canvas").each(function()
+        {
+            new VisualComparison($(this),json).draw();
+        });
+
+       // new VisualComparison("{{ item.get_name|slugify }}-canvas",json).draw();
     </script>
 
 </div>
