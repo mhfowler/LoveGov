@@ -3707,6 +3707,11 @@ function loadCreate()
                                     selectImageToggle();
                                 });
                             }
+                            else
+                            {
+                                $('#news-link-generation').hide();
+                                $('#news-summary').hide();
+                            }
                             currentURL = text;
                         },
                         error: null
