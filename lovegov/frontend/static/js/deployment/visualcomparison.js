@@ -12,21 +12,26 @@
 {
     $.fn.visualComparison = function(json,duplicate)
     {
-        this.each(function()
+        $(document).ready(function()
         {
-            if (!$(this).hasClass("has_visualComparison"))
+            this.each(function()
             {
-                var jsonData;
-                if (json) { jsonData = json; }
-                else { jsonData = $(this).data('json'); }
+                if (!$(this).hasClass("has_visualComparison"))
+                {
+                    var jsonData;
+                    if (json) { jsonData = json; }
+                    else { jsonData = $(this).data('json'); }
 
-                new VisualComparison($(this),jsonData).draw();
+                    new VisualComparison($(this),jsonData).draw();
 
-                if (!duplicate) { $(this).addClass("has_visualComparison"); }
-            }
+                    if (!duplicate) { $(this).addClass("has_visualComparison"); }
+                }
+            });
         });
     };
 })( jQuery );
+
+
 
 /**
  * @author Clay
@@ -199,7 +204,6 @@ var VisualComparison = Class.extend
         self.stage.add(self.textLayer);
         self.stage.add(self.hoverLayer);
         this.domEle.css({height:self.height,width:self.width,position:"relative"});
-        this.domEle.position();
     }
 });
 
