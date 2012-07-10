@@ -7,7 +7,6 @@
  * 4) Profit.
  *
  */
-
 (function( $ )
 {
     $.fn.visualComparison = function(json,duplicate)
@@ -27,7 +26,6 @@
         });
     };
 })( jQuery );
-
 
 
 /**
@@ -78,8 +76,8 @@ var VisualComparison = Class.extend
     draw: function()
     {
         var self = this;
-        this.domEle.css({height:self.height,width:self.width,position:"relative"});
-        this.stage = new Kinetic.Stage(self.domEle.get(0),self.width,self.height);          // get(0) returns the underlying DOM element in the jQuery element.
+        self.domEle.css({height:self.height,width:self.width,position:"relative",'text-align':'left'});  // text-align:left is needed as a crazy fix for canvas not appearing in the correct position on screen
+        this.stage = new Kinetic.Stage(self.domEle[0],self.width,self.height);          // get(0) returns the underlying DOM element in the jQuery element.
         this.drawTopics();
         this.drawMiddle();
         this.addLayers();
