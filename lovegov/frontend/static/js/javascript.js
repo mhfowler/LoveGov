@@ -2946,7 +2946,7 @@ function updateFeedVisual() {
 
     var feed_groups = $(".feed_group_selector");
     feed_groups.each(function(index) {
-        var this_group = $(this).data('level');
+        var this_group = $(this).data('g_id');
         var i = $.inArray(this_group, feed_metadata.groups);
         if (i != -1) {
             $(this).addClass("clicked");
@@ -3219,8 +3219,8 @@ function loadNewFeed() {
     });
 
     /* group and network menu  visual */
-    defaultHover($(".group-box"));
-    $(".group-box").click(function(event) {
+    defaultHover($(".group_box"));
+    $(".group_box").click(function(event) {
         event.preventDefault();
         defaultClick($(this));
         event.stopPropagation();
