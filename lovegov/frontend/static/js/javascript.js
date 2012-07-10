@@ -545,17 +545,30 @@ function loadHoverComparison()
 {
 
     var hoverTimer;
+    var hoverClearOK = true;
 
     function clearHover()
     {
-        $('#comparison-hover').empty();
-        $('#comparison-hover-div').fadeOut(100);
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
     }
 
-    $('#comparison-hover-div').hoverIntent
+    $('#comparison-hover-div').hover
         (
-            function() { clearTimeout(hoverTimer); },
-            function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                (
+                    function() { clearHover(); },
+                    300
+                );
+            }
         );
 
     function findHoverPosition(selector)
@@ -611,12 +624,11 @@ function loadHoverComparison()
             },
             function(event)
             {
-                hoverTimer = setTimeout(function()
-                {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
+                hoverTimer = setTimeout
+                (
+                    function(){ clearHover(); },
+                    1000
+                );
             }
         );
 }
