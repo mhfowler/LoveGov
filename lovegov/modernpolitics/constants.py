@@ -18,7 +18,8 @@ import os
 
 ########################################## PROHIBITED BROWSERS #########################################################
 
-PROHIBITED_BROWSERS = "MSIE"
+PROHIBITED_BROWSERS = ["MSIE"]
+ALLOWED_BROWSERS = ["Chrome","Mozilla"]
 
 ########################################## EMAIL LISTS #################################################################
 
@@ -300,12 +301,12 @@ ACTION_MODIFIERS = (
         )
 
 # types of action which user should be notified about
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO', 'SH']
-AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO', 'SH']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
+AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
-    'JO': ['A','D','R','X'],
-    'FO': ['A','D','R','X']
+    'JO': ['A','D','R'],
+    'FO': ['A','D','R']
 }
 
 
@@ -342,6 +343,7 @@ PARTY_TYPE = (
     ('L', 'libertarian'),
     ('P', 'progressive'),
     ('I', 'independent'),
+    ('T', 'tea')
 )
 
 # types of users

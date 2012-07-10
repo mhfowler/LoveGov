@@ -239,7 +239,7 @@ function userFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -298,7 +298,7 @@ function groupFollow(event,div,follow)
                 }
                 else
                 {
-                    alert(data);
+                    //alert(data);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -321,7 +321,7 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                return true;
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -329,6 +329,7 @@ function userFollowResponse(event,response,div)
             }
         }
     );
+    return false;
 }
 
 function groupInviteResponse(event,response,div)
@@ -343,7 +344,7 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                alert(data);
+                return true;
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -351,6 +352,7 @@ function groupInviteResponse(event,response,div)
             }
         }
     );
+    return false;
 }
 
 function setFollowPrivacy(event,private_follow,div)
@@ -390,7 +392,7 @@ function setFollowPrivacy(event,private_follow,div)
             }
             else
             {
-                alert(data);
+                //alert(data);
             }
 
         },
@@ -526,17 +528,30 @@ function loadHoverComparison()
 {
 
     var hoverTimer;
+    var hoverClearOK = true;
 
     function clearHover()
     {
-        $('#comparison-hover').empty();
-        $('#comparison-hover-div').fadeOut(100);
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
     }
 
-    $('#comparison-hover-div').hoverIntent
+    $('#comparison-hover-div').hover
         (
-            function() { clearTimeout(hoverTimer); },
-            function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                (
+                    function() { clearHover(); },
+                    300
+                );
+            }
         );
 
     function findHoverPosition(selector)
@@ -592,12 +607,11 @@ function loadHoverComparison()
             },
             function(event)
             {
-                hoverTimer = setTimeout(function()
-                {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
+                hoverTimer = setTimeout
+                (
+                    function(){ clearHover(); },
+                    1000
+                );
             }
         );
 }
@@ -744,11 +758,16 @@ $(document).ready(function()
     rebindFunction()
 });
 
-// load universal frame
+
+var page_auto_update;
 function rebindUniversalFrame()
 {
     loadHeader();
     loadLeftSidebar();
+
+    // check notifications on interval
+    clearInterval(page_auto_update);
+    page_auto_update = setInterval(updatePage, 10000);
 }
 
 /**
@@ -797,7 +816,7 @@ function ajaxReload(theurl, loadimg)
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, returned.title, returned.url);
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
                 replaceCenter(returned.html);
             },
@@ -903,6 +922,7 @@ function loadHeader()
                         unbindNotification();
                         loadNotification();
                         loadAjaxifyAnchors();
+                        $("#notifications-number-text").text(obj.num_still_new);
                     },
                     error: function(jqXHR, textStatus, errorThrown)
                     {
@@ -1050,6 +1070,7 @@ function loadHeader()
     $(".header_link").bindOnce('click.header', function(event) {
         selectHeaderLink($(this));
     });
+
 }
 
 /***********************************************************************************************************************
@@ -1125,7 +1146,7 @@ function loadLeftSidebar()
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                alert("failure");
+                //alert("failure");
             }
         });
     });
@@ -1720,7 +1741,7 @@ function teamSection()
         $('._fade').hide();
         var div = '#' + $(this).attr('id').replace('button','div');
         var url = $(this).attr('id').replace('-button', '');
-        History.pushState( {k:1}, url, '/about/' + url + '/');
+        History.pushState( {k:1}, "LoveGov: Beta", '/about/' + url + '/');
 
 
         $(div).show();
@@ -1766,6 +1787,8 @@ function loadNotification()
     {
         event.preventDefault();
         var follow_id = $(this).siblings(".user_follow_id").val();
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         ajaxPost({
                 data: {
                     'action':'userfollow',
@@ -1773,7 +1796,7 @@ function loadNotification()
                 },
                 success: function(data)
                 {
-                    alert(data);
+                    wrapper.siblings(".notification_text").children('.notification_append').fadeIn(600);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -1784,20 +1807,102 @@ function loadNotification()
     });
 
     $(".notification_follow_response_y").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         userFollowResponse(event,"Y",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
     });
 
     $(".notification_follow_response_n").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         userFollowResponse(event,"N",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
 
     $(".notification_group_response_y").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"Y",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
     });
 
     $(".notification_group_response_n").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"N",$(this));
+        wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
+
+    $("a.agg_popup").bindOnce("click.agg_notification_modal",
+        function(event)
+        {
+            event.preventDefault();
+            var n_id = $(this).data('n_id');
+            ajaxPost({
+                'data': {'action':'getaggregatenotificationusers',
+                        'n_id': n_id },
+                success: function(data)
+                {
+                    var obj = eval('(' + data + ')');
+                    $('div#agg_notification_modal').html(obj.html);
+                    $('div.overdiv').fadeIn(300);
+                    $('div#agg_notification_modal').fadeIn(300);
+
+                    $('div.agg_notification_modal_close').click(function(event) {
+                        $('div.overdiv').hide();
+                        $('div#agg_notification_modal').hide();
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $('body').html(jqXHR.responseText);
+                }
+            })
+        }
+    );
+
+    $('div.overdiv').click(function(event) {
+        $('div.overdiv').hide();
+        $('div#agg_notification_modal').hide();
+    });
+}
+
+
+function updateNotificationsNum() {
+
+    ajaxPost({
+        'data': {'action':'getNumNotifications', 'log-ignore':true},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            $("#notifications-number-text").text(obj.num);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
+
+
+function updatePage() {
+
+    ajaxPost({
+        'data': {'action':'updatePage', 'log-ignore':true},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+
+            // update notifications num
+            $("#notifications-number-text").text(obj.notifications_num);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+
 }
 
 
@@ -1969,14 +2074,6 @@ function loadProfile()
     $(".user-unfollow-button").click( function(event)
     {
         userFollow(event,$(this),false);
-    });
-
-    $(".user_follow_response_y").click( function(event) {
-        userFollowResponse(event,"Y",$(this));
-    });
-
-    $(".user_follow_response_n").click( function(event) {
-        userFollowResponse(event,"N",$(this));
     });
 
     $(".group-invite-response-y").click( function(event) {
@@ -2276,7 +2373,7 @@ function groupFollowResponse(event,response,div,g_id)
             },
             success: function(data)
             {
-                alert(data);
+                //alert(data);
             },
             error: function(error, textStatus, errorThrown)
             {
@@ -2426,12 +2523,18 @@ function loadGroup()
 
     bindGroupRequestsButton();
 
-    $(".group-response-y").click( function(event) {
+    $(".group_response_y").click( function(event) {
+        var wrapper = $(this).parent(".group_request_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"Y",$(this),g_id);
+        wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
     });
 
     $(".group-response-n").click( function(event) {
+        var wrapper = $(this).parent(".group_request_buttons");
+        wrapper.fadeOut(600);
         groupFollowResponse(event,"N",$(this),g_id);
+        wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
     });
 
     $("#group_follow").click( function(event) {
@@ -4114,7 +4217,7 @@ function swapFeatured(direction) {
         2:'social',
         3:'representatives'};
     var url = sections[match_current_section];
-    History.pushState( {k:1}, sections[match_current_section], '/match/' + url + '/');
+    History.pushState( {k:1}, "LoveGov: Beta", '/match/' + url + '/');
 }
 
 function nextSection() {

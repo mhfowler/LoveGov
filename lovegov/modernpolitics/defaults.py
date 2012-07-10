@@ -69,7 +69,7 @@ def getLoveGovUser():
         return initializeLoveGovUser()
 
 def getAnonUser():
-    to_return = UserProfile.lg.get_or_none(alias="anonymouswho")
+    to_return = UserProfile.lg.get_or_none(alias="anonymous")
     if to_return:
         return to_return
     else:
@@ -200,13 +200,15 @@ def initializeLoveGovGroup():
 # Initializes a user which represents all anonymous users on the site.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeAnonymous():
-    if UserProfile.objects.filter("anonymouswho"):
+    if UserProfile.objects.filter(alias="anonymous"):
         print("...anon user already initialized.")
     else:
         anon = ControllingUser.objects.create_user(username='anon',email='anon@lovegov.com',password='theANON')
         anon.first_name = "Anonymous"
-        anon.last_name = "Who"
+        anon.last_name = ""
         userprof = superUserHelper(anon)
+        userprof.developer = False
+        userprof.save()
         print("initialized: anon user")
         return userprof
 
@@ -1150,6 +1152,32 @@ def recalculatePetitions():
             if not already:
                 p.signers.remove(x)
                 p.sign(x)
+
+        level = 0
+        while p.current >= PETITION_LEVELS[level]:
+            level += 1
+        p.p_level = level
+        p.goal = PETITION_LEVELS[level]
+        p.save()
+
+def recalculateTopics():
+    mt_ids = getMainTopics().values_list('id', flat=True)
+    c = Content.objects.exclude(main_topic_id__in=mt_ids)
+    count = 0
+    for x in c:
+        x.setMainTopic()
+        if (count%20==0):
+            print count
+        count += 1
+
+# set parent topics to none and delete all topics which are not main topics
+def purgeTopics():
+    for t in getMainTopics():
+        t.parent_topic = None
+    for t in Topic.objects.all():
+        if t not in getMainTopics():
+            print "Deleting topic "+t.topic_text
+            t.delete()
 
 def recalculateEverything():
     print "Recalculating Stats..."

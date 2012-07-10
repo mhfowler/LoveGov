@@ -71,8 +71,8 @@ def fbGetAccessToken(request, code, redirect_uri=None):
         if key == 'access_token':
             print "access_token: " + splitted[1]
             return splitted[1]
-    print returned
-    return "access_token_error: no access token"
+    normal_logger.debug("Facebook Access Token Error (in fbGetAccessToken): " + str(returned))
+    return None
 
 def getRedirectURI(request, redirect):
     absolute_uri = request.build_absolute_uri()
@@ -87,28 +87,30 @@ def getRedirectURI(request, redirect):
 #-----------------------------------------------------------------------------------------------------------------------
 # Handles access token, and log in, register or deny appropriately
 #-----------------------------------------------------------------------------------------------------------------------
-def fbLogin(request, vals={}):
+def fbLogin(request, vals={}, refresh=False):
 
     from lovegov.modernpolitics.register import createFBUser
     me = fbGet(request, 'me')
 
-    if not me:
+    if not me: #If there's no access token
         return False
+
+    elif 'error' in me: #If there's
+        fb_error = "Facebook login error: " + pprint.pformat(me)
+        normal_logger.debug(fb_error)
+        return False
+
     else:
         fb_id = me['id']
         fb_email = me['email']
         user_prof = UserProfile.lg.get_or_none(facebook_id=fb_id)
-        logging.debug("fb")
-        refresh = True
         # if there is not lg user with fb id, check for user with same email
         if not user_prof:
-            logging.debug("fb - by email")
             user_prof = UserProfile.lg.get_or_none(email=fb_email)
 
             # REGISTER
             if not user_prof:
                 refresh = False
-                logging.debug("fb - register")
                 name = me['first_name'] + " " + me['last_name']
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile

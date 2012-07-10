@@ -159,13 +159,21 @@ def searchAutoComplete(request,vals={},limit=5):
     # Get one of each type of result, or as many as will fit until limit is reached
     while results_length < limit:
         if len(userProfiles) > 0:
-            userProfile_results.append(userProfiles.pop(0))
+            popped = userProfiles.pop(0)
+            if popped:
+                userProfile_results.append(popped)
         if len(petitions) > 0:
-            petition_results.append(petitions.pop(0))
+            popped = petitions.pop(0)
+            if popped:
+                petition_results.append(popped)
         if len(questions) > 0:
-            question_results.append(questions.pop(0))
+            popped = questions.pop(0)
+            if popped:
+                question_results.append(popped)
         if len(news) > 0:
-            news_results.append(news.pop(0))
+            popped = news.pop(0)
+            if popped:
+                news_results.append(popped)
         results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
     
     # Store results in context values
@@ -241,13 +249,13 @@ def create(request, val={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        action = Action(relationship=c.getCreatedRelationship())
+        action = Action(privacy=getPrivacy(request),relationship=c.getCreatedRelationship())
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
             if formtype == "N":
                 viewer.num_articles += 1
-                viewer.save();
+                viewer.save()
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
@@ -544,9 +552,11 @@ def comment(request, vals={}):
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
-        action = Action(relationship=rel)
+        action = Action(privacy=getPrivacy(request),relationship=rel)
         action.autoSave()
         comment.on_content.getCreator().notify(action)
+        if not comment.on_content == comment.root_content:
+            comment.root_content.getCreator().notify(action)
         return HttpResponse("+")
     else:
         if request.is_ajax():
@@ -611,9 +621,8 @@ def answer(request, vals={}):
     """ Saves a users answer to a question."""
     user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
-    if request.POST['questionPRI'] != "":
-        privacy = request.POST['questionPRI']
-    else:
+    privacy = request.POST.get('questionPRI')
+    if not privacy:
         privacy = getPrivacy(request)
     my_response = user.getView().responses.filter(question=question)
     # save new response
@@ -630,7 +639,7 @@ def answer(request, vals={}):
                 weight = weight,
                 explanation = explanation)
             response.autoSave(creator=user, privacy=privacy)
-            action = Action(relationship=response.getCreatedRelationship())
+            action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
             action.autoSave()
         # else update old response
         else:
@@ -641,7 +650,7 @@ def answer(request, vals={}):
             user_response.explanation = explanation
             # update creation relationship
             user_response.saveEdited(privacy)
-            action = Action(relationship=user_response.getCreatedRelationship())
+            action = Action(privacy=getPrivacy(request),relationship=user_response.getCreatedRelationship())
             action.autoSave()
         if request.is_ajax():
             url = response.get_url()
@@ -650,7 +659,7 @@ def answer(request, vals={}):
             if agg:
                 agg = agg[0].aggregateresponse
                 choice = agg.responses.filter(answer_val=int(request.POST['choice']))
-                if agg.total:
+                if agg.total and choice:
                     percent_agreed = float(choice[0].tally) / float(agg.total)
                 else:
                     percent_agreed = 0
@@ -689,7 +698,7 @@ def joinGroupRequest(request, vals={}):
         group_joined.autoSave()
     if group_joined.invited:
         group.joinMember(from_user, privacy=getPrivacy(request))
-        action = Action(relationship=group_joined,modifier="D")
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -700,7 +709,7 @@ def joinGroupRequest(request, vals={}):
     #If the group type is open...
     if group.group_privacy == 'O':
         group.joinMember(from_user, privacy=getPrivacy(request))
-        action = Action(relationship=group_joined,modifier="D")
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -711,7 +720,7 @@ def joinGroupRequest(request, vals={}):
             return HttpResponse("you have already requested to join this group")
         group_joined.clear()
         group_joined.request()
-        action = Action(relationship=group_joined,modifier='R')
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier='R')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -734,13 +743,13 @@ def joinGroupResponse(request, vals={}):
         elif group_joined.requested:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(relationship=group_joined,modifier="A")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="A")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now in your group")
             elif response == 'N':
                 group_joined.reject()
-                action = Action(relationship=group_joined,modifier="X")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="X")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected their join request")
@@ -754,7 +763,7 @@ def groupInviteResponse(request, vals={}):
     response = request.POST['response']
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupJoined.objects.filter(user=from_user, group=group)
+    already = GroupJoined.objects.filter(user=from_user, group=group, privacy=getPrivacy(request))
     if already:
         group_joined = already[0]
         if group_joined.confirmed:
@@ -762,13 +771,13 @@ def groupInviteResponse(request, vals={}):
         if group_joined.invited:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(relationship=group_joined,modifier="D")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have joined this group!")
             elif response == 'N':
                 group_joined.reject()
-                action = Action(relationship=group_joined,modifier="N")
+                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected this group invitation")
@@ -791,12 +800,12 @@ def userFollowRequest(request, vals={}):
         if user_follow.confirmed: #If you're confirmed following already, you're done
             return HttpResponse("already following this person")
     else: #If there's no follow relationship, make one
-        user_follow = UserFollow(user=from_user, to_user=to_user)
+        user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
         user_follow.autoSave()
     # If this user is public follow
     if not to_user.private_follow:
         from_user.follow(to_user)
-        action = Action(relationship=user_follow,modifier='D')
+        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='D')
         action.autoSave()
         to_user.notify(action)
         return HttpResponse("follow success")
@@ -807,7 +816,7 @@ def userFollowRequest(request, vals={}):
     else:
         user_follow.clear()
         user_follow.request()
-        action = Action(relationship=user_follow,modifier='R')
+        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='R')
         action.autoSave()
         to_user.notify(action)
         return HttpResponse("follow request")
@@ -829,13 +838,13 @@ def userFollowResponse(request, vals={}):
             if response == 'Y':
                 # Create follow relationship!
                 from_user.follow(to_user)
-                action = Action(relationship=user_follow,modifier='A')
+                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='A')
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("they're now following you")
             elif response == 'N':
                 user_follow.reject()
-                action = Action(relationship=user_follow,modifier='X')
+                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='X')
                 action.autoSave()
                 from_user.notify(action)
                 return HttpResponse("you have rejected their follow request")
@@ -853,12 +862,12 @@ def userFollowStop(request, vals={}):
     if to_user:
         already = UserFollow.objects.filter(user=from_user, to_user=to_user)
         if not already:
-            user_follow = UserFollow(user=from_user, to_user=to_user)
+            user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
             user_follow.autoSave()
         else:
             user_follow = already[0]
         from_user.unfollow(to_user)
-        action = Action(relationship=user_follow,modifier='S')
+        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='S')
         action.autoSave()
         to_user.notify(action)
         # to_user.notify(action)
@@ -912,7 +921,7 @@ def leaveGroup(request, vals={}):
                 group.save()
             for member in members:
                 group.admins.add(member)
-        action = Action(relationship=group_joined,modifier='S')
+        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier='S')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -1185,6 +1194,19 @@ def getFilter(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
 #-----------------------------------------------------------------------------------------------------------------------
+def updatePage(request, vals={}):
+
+    viewer = vals['viewer']
+    to_return = {}
+
+    new_notifications = viewer.getNotifications(new=True)
+    to_return['notifications_num'] = new_notifications.count()
+
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets notifications
+#-----------------------------------------------------------------------------------------------------------------------
 def getNotifications(request, vals={}):
     # Get Notifications
     viewer = vals['viewer']
@@ -1193,28 +1215,33 @@ def getNotifications(request, vals={}):
         num_notifications = int(request.POST['num_notifications'])
 
     notifications_text = []
+    num_still_new = 0
 
     if 'dropdown' in request.POST:
-        new_notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT+2,start=num_notifications,new=True)
+        new_notifications = list(viewer.getNotifications(new=True))
+        num_new = len(new_notifications)
+        new_notifications = new_notifications[0:NOTIFICATION_INCREMENT+2]
+        num_returned = len(new_notifications)
+        num_still_new = num_new - num_returned
+
         old_notifications = None
-        diff = NOTIFICATION_INCREMENT - new_notifications.count()
+        diff = NOTIFICATION_INCREMENT - num_returned
         if diff > 0:
-            old_notifications = viewer.getNotifications(num=diff,start=num_notifications,old=True)
-        elif diff < 0:
-            diff = 0
+            old_notifications = list(viewer.getNotifications(num=diff,old=True))
+
         for notification in new_notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer) )
+            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+
         if old_notifications:
             for notification in old_notifications:
-                notifications_text.append( notification.getVerbose(view_user=viewer) )
-        num_notifications += diff + new_notifications.count()
+                notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
         if not notifications:
             return HttpResponse(json.dumps({'error':'No more notifications'}))
         for notification in notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer) )
+            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
         num_notifications += NOTIFICATION_INCREMENT
 
     vals['dropdown_notifications_text'] = notifications_text
@@ -1222,7 +1249,7 @@ def getNotifications(request, vals={}):
     html = ajaxRender('deployment/snippets/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
         html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications}))
+    return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets user activity feed
@@ -1596,6 +1623,40 @@ def changeContentPrivacy(request, vals={}):
     print "to_return: "+str(to_return)
     return HttpResponse(json.dumps(to_return))
 
+
+def getAggregateNotificationUsers(request, vals={}):
+    # Get Notification first
+    viewer = vals['viewer']
+    n_id = request.POST.get('n_id')
+
+    if not n_id:
+        errors_logger.error('No notification supplied for retrieving aggregate notifications users.  User ID = #' + str(viewer.id) )
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    agg_notification = Notification.lg.get_or_none(id=n_id)
+    if not agg_notification:
+        errors_logger.error('Invalid notification ID given to function getAggregateNotificationsUsers. Invalid ID = #' + str(n_id) + ' and Viewer ID = #' + str(viewer.id))
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    n_action = Action.lg.get_or_none(id=agg_notification.action_id)
+    if not n_action:
+        errors_logger.error('Invalid action in Notification given to function getAggregateNotificationsUsers. Notification ID = #' + str(n_id) )
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
+    if not relationship:
+        errors_logger.error('Invalid relationship in action given to function getAggregateNotificationsUsers. action ID = #' + str(n_action.id) + ' and Notification ID = #' + str(n_id) )
+        return HttpResponse(json.dumps({'html':'An error occurred.  The developers have been notified'}))
+
+    vals['agg_notification_type'] = n_action.type
+    vals['agg_notification_content'] = relationship.getTo()
+    vals['agg_notification_users'] = agg_notification.users.all()
+    vals['agg_notification_anon'] = agg_notification.anon_users.count()
+
+    html = ajaxRender('deployment/snippets/aggregate-notifications-popup.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1662,6 +1723,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'submitAddress':submitAddress,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
+            'updatePage': updatePage,
+            'getaggregatenotificationusers': getAggregateNotificationUsers
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

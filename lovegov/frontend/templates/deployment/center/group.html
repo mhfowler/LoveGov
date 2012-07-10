@@ -177,10 +177,14 @@
                         {% endthumbnail %}
                     </a>
                 </td>
-                <td><a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to join {{ group.get_name }}:</td>
-                <td>
-                    <a href="" class="group-response-y button-red group-button">accept</a>
-                    <a href="" class="group-response-n button-red group-button">decline</a>
+                <td class="group_request_text">
+                    <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to join {{ group.get_name }}:
+                    <div class='group-request-append group_request_append_y'>They have joined your group</div>
+                    <div class='group-request-append group_request_append_n'>Request declined</div>
+                </td>
+                <td class="group_request_buttons">
+                    <a href="" class="group_response_y button-red group-button">accept</a>
+                    <a href="" class="group_response_n button-red group-button">decline</a>
                     <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
                     <input type="hidden" class="group-id" value="{{ req.getTo.id }}"/>
                 </td>

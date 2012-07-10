@@ -15,123 +15,16 @@ DATABASES = {
         'PASSWORD': 'texers787',
         'HOST':     '',
         'PORT':     '3306',
-    }
+        }
 }
 
 STATIC_ROOT = '/static/live/'
 
 MEDIA_ROOT = '/media/live/'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-        },
-    },
-    'handlers': {
-        'default': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/default.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'mail_admins': {
-            'class': 'django.utils.log.AdminEmailHandler',
-            'level': 'ERROR',
-            'include_html': True,
-            },
-        'request_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/django_request.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'file_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/django.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'scheduled_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/scheduled.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'normal_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/normal.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'errors_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/errors.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        'temp_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': '/log/live/temp.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
-            },
-        },
-    'loggers': {
+LOG_ROOT = "/log/live/"
 
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-            },
-        '': {
-            'handlers': ['default'],
-            'level': 'ERROR',
-            'propagate': True
-        },
-        'filelogger': {
-            'handlers': ['file_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        'normallogger': {
-            'handlers': ['normal_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        'errrorslogger': {
-            'handlers': ['errors_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        'templogger': {
-            'handlers': ['temp_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        'scheduledlogger': {
-            'handlers': ['scheduled_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        }
-}
+LOGGING = settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
 

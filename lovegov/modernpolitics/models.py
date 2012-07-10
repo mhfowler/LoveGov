@@ -95,6 +95,19 @@ class Privacy(LGModel):
             return getLoveGovUser() 
         return creator
 
+    def getCreatorDisplay(self, viewer=None):
+        from lovegov.modernpolitics.defaults import getAnonUser
+        if self.getPublic():
+            creator = self.getCreator()
+        else:
+            creator = getAnonUser()
+        if viewer:
+            creator.you = (self.getCreator() == viewer)
+        else:
+            creator.you = None
+
+        return creator
+
     #-------------------------------------------------------------------------------------------------------------------
     # Return boolean based on privacy.
     #-------------------------------------------------------------------------------------------------------------------
@@ -214,6 +227,9 @@ class Topic(LGModel):
             alias += str.lower(str(w))
         self.alias = alias
         self.save()
+
+    def getImageURL(self):
+        return self.image.url
 
 
 #=======================================================================================================================
@@ -379,11 +395,11 @@ class Content(Privacy, LocationLevel):
 
     def getImageURL(self):
         if self.main_image_id < 0:
-            return self.getMainTopic().getUserImage()
+            return self.getMainTopic().getImageURL()
         elif self.main_image:
             return self.main_image.image.url
         else:
-            return self.getMainTopic().getUserImage().image.url
+            return self.getMainTopic().getImageURL()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns WorldView associated with this content.
@@ -415,7 +431,10 @@ class Content(Privacy, LocationLevel):
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveEdited(self, privacy):
-        created = Created.objects.filter(content=self)[0]
+        created = Created.lg.get_or_none(content=self)
+        if not created:
+            errors_logger.error( "Edited Content does not exist.  Content ID = #" + str(self.id) )
+            return None
         created.privacy = privacy
         created.save()
         self.privacy = privacy
@@ -548,7 +567,7 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Get creator name if viewing user has permission.
     #-------------------------------------------------------------------------------------------------------------------
-    def getCreatorDisplayName(self, user, url=None):
+    def getThreadDisplayName(self, user, url=None):
         if self.getPublic():
             return self.getCreator().get_name()
         else:
@@ -990,6 +1009,7 @@ def initView():
 class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
+    created_when = models.DateTimeField(auto_now_add=True)
     # for downcasting
     user_type = models.CharField(max_length=1, choices=USER_CHOICES, default='G')
     # twitter integration
@@ -1053,6 +1073,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def get_name(self):
         try:
             to_return = (self.first_name + " " + self.last_name)
+            if self.alias == 'anonymous':
+                try:
+                    if self.you:
+                        to_return += "(You)"
+                except:
+                    pass
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
@@ -1428,11 +1454,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                         notification.when = datetime.datetime.today()
                         if notification.tally == 0:
                             notification.addAggUser( notification.action.relationship.user )
-                        notification.addAggUser( relationship.user )
+                        notification.addAggUser( relationship.user , action.privacy )
                         return True
                 notification = Notification(action=action, notify_user=self)
                 notification.autoSave()
-                notification.addAggUser( relationship.user )
+                notification.addAggUser( relationship.user , action.privacy )
                 return True
 
         elif action.type in NOTIFY_TYPES:
@@ -1522,7 +1548,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, relationship__privacy='PUB').order_by('-when')
+        actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
         print len( actions )
         if num != -1:
             actions = actions[start:start+num]
@@ -1698,17 +1724,17 @@ class Action(Privacy):
     def autoSave(self):
         relationship = self.relationship
         self.type = relationship.relationship_type
+        self.creator = relationship.creator
         self.save()
 
     def getVerbose(self,view_user=None):
         #Check for relationship
         relationship = Relationship.lg.get_or_none(id=self.relationship_id)
         if not relationship:
-            print 'Action has no relationship: Action ID # =' + str(self.id)
+            errors_logger.error('Action has no relationship: Action ID # = ' + str(self.id))
             return ''
 
         #Set default local variables
-        action_verbose = ' no action '
         from_you = False
         to_you = False
         #Set to and from users
@@ -1728,11 +1754,6 @@ class Action(Privacy):
                             'modifier':self.modifier,
                             'true':True,
                             'timestamp':self.when}
-        if self.type == 'FO' or self.type == 'JO':
-            action_context['follow'] = relationship.downcast()
-            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
-            if reverse_follow:
-                action_context['reverse_follow'] = reverse_follow
 
         action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
         return action_verbose
@@ -1751,6 +1772,7 @@ class Notification(Privacy):
     # for aggregating notifications like facebook
     tally = models.IntegerField(default=0)
     users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
+    anon_users = models.ManyToManyField(UserProfile, related_name = "anonymous_notify_agg_users")
     recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
     # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
     trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
@@ -1759,29 +1781,34 @@ class Notification(Privacy):
     type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
 
-    def getVerbose(self,view_user):
+    def getVerbose(self,view_user,vals={}):
 
         n_action = Action.lg.get_or_none(id=self.action_id)
         if not n_action:
-            print 'Notification has no action: Notification ID # =' + str(self.id)
-            return ''
-        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
-        if not relationship:
-            print 'Notification action has no relationship: Notification ID # =' + str(self.id)
+            errors_logger.error('Notification has no action: Notification ID # =' + str(self.id))
             return ''
 
-        #Set default local variables
-        from_you = False
-        to_you = False
+        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
+        if not relationship:
+            errors_logger.error('Notification action has no relationship: Notification ID # =' + str(self.id))
+            return ''
+
         #Set to and from users
         to_user = relationship.getTo()
-        from_user = relationship.getFrom()
+        from_user = n_action.getCreatorDisplay(view_user)
+
+        #Set default local variables
+        to_you = False
+        from_you = from_user.you
+
         if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
-            from_user = self.recent_user
+            if self.recent_user:
+                from_user = self.recent_user
+            if from_user.id == view_user.id:
+                from_you = True
+
         #check to see if the viewing user is the to or from user
-        if from_user.id == view_user.id:
-            from_you = True
-        elif to_user.id == view_user.id:
+        if to_user.id == view_user.id:
             to_you = True
 
         viewed = True
@@ -1799,29 +1826,46 @@ class Notification(Privacy):
                           'tally':self.tally,
                           'true':True,
                           'viewed':viewed,
+                          'timestamp':self.when,
                           'anon':n_action.getPrivate(),
-                          'timestamp':self.when}
+                          'n_id':self.id,
+                          'hover_off':1 }
+
         if n_action.type == 'FO':
+            notification_context['from_user'] = relationship.getFrom()
             notification_context['follow'] = relationship.downcast()
             reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
             if reverse_follow:
                 notification_context['reverse_follow'] = reverse_follow
+
         if n_action.type == 'JO':
+            notification_context['from_user'] = relationship.getFrom()
             notification_context['group_join'] = relationship.downcast()
 
         if n_action.type == 'SH':
+            notification_context['from_user'] = relationship.getFrom()
             notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
             notification_context['content'] = relationship.getTo()
 
-        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',notification_context)
+        vals.update(notification_context)
+
+        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',vals)
         return notification_verbose
 
-    def addAggUser(self,agg_user):
-        already = self.users.filter(alias=agg_user.alias)
-        if not already:
-            self.users.add(agg_user)
+    def addAggUser(self,agg_user,privacy="PUB"):
+        already = self.users.filter(id=agg_user.id)
+        already2 = self.anon_users.filter(id=agg_user.id)
+
+        if not already and not already2:
+            if privacy == "PUB":
+                self.users.add(agg_user)
+            else:
+                self.anon_users.add(agg_user)
             self.tally += 1
-        self.recent_user = agg_user
+
+        if privacy == "PUB":
+            self.recent_user = agg_user
+
         self.viewed = False
         self.save()
 
@@ -2043,7 +2087,7 @@ class Petition(Content):
     finalized = models.BooleanField(default=False)
     current = models.IntegerField(default=0)
     goal = models.IntegerField(default=10)
-    p_level = models.IntegerField(default=0)
+    p_level = models.IntegerField(default=1)
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -3488,7 +3532,7 @@ class Group(Content):
         identical_uids = []
 
         for x in members:
-            comparison = getUserUserComparison(user, x)
+            comparison = x.getComparison(user)
             if topic and topic_alias != 'all':
                 comparison = comparison.bytopic.get(topic=topic)
             if comparison.num_q:
@@ -3635,7 +3679,7 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
         gmembers = self.members.all()
-        actions = Action.objects.filter(relationship__user__in=gmembers, relationship__privacy='PUB').order_by('-when')
+        actions = Action.objects.filter(relationship__user__in=gmembers, privacy='PUB').order_by('-when')
         if num != 1:
             return actions[start:start+num]
         return actions[start:]

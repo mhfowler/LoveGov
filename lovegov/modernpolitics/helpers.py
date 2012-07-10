@@ -22,6 +22,16 @@ import datetime
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
+import pprint
+
+browser_logger = logging.getLogger('browserlogger')
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets query set of main topics
+#-----------------------------------------------------------------------------------------------------------------------
+def getMainTopics():
+    return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
@@ -40,10 +50,12 @@ def checkBrowserCompatible(request):
     parsed = httpagentparser.detect(user_agent)
     browser = parsed.get('browser')
     if browser:
+        browser_logger.debug('useragent: ' + pprint.pformat(parsed))
         browser_name = browser.get('name')
-        print "name " + browser_name
-        if browser_name in PROHIBITED_BROWSERS:
-            to_return = False
+        if browser_name == "Microsoft Internet Explorer":
+            version = float(browser.get('version'))
+            if version < 9.0:
+                to_return = False
 
     return to_return
 
@@ -60,13 +72,14 @@ def locationHelper(address, zip):
             address_string = address
         gmaps = GoogleMaps(GOOGLEMAPS_API_KEY)
         coordinates = gmaps.address_to_latlng(address_string)
-        state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
         try:
+            state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
             location = PhysicalAddress(address_string=address,zip=zip,latitude=coordinates[0],
                 longitude=coordinates[1],state=state_district[0]['state'],district=state_district[0]['number'])
             location.save()
-        except:
-            print "failure!"
+        except BadRequestException as e:
+            error = "sunlight error: ", e
+            errors_logger.error(error)
 
     return location
 
@@ -98,7 +111,6 @@ def getSourcePath(request):
             path = splitted[1]
     else:
         path = request.path
-    print "path: " + path
     return path
 
 def getHostHelper(request):
@@ -154,14 +166,19 @@ def ajaxRender(template, vals, request):
 # Gets a user profile from a request or id.
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserProfile(request=None, control_id=None):
+    #Try and get a ControllingUser
     if control_id:
         control = ControllingUser.lg.get_or_none(id=control_id)
     else:
         control = ControllingUser.lg.get_or_none(id=request.user.id)
-    if control:
-        return control.user_profile
-    else:
-        return None
+
+    user_prof = None
+    if control:     #Try and get a user profile from that Control if it exists
+        user_prof = UserProfile.lg.get_or_none(id=control.user_profile_id)
+        if not user_prof:
+            errors_logger.error("Controlling User: " + str(control.id) + " does not have a userProfile")
+
+    return user_prof #and return it
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets privacy from cookies.

@@ -34,29 +34,36 @@ def viewWrapper(view, requires_login=False):
         # check browser
         if not checkBrowserCompatible(request):
             return shortcuts.redirect("/upgrade/")
+
+        # if login is required
         if requires_login:
-            try:
+            try: # Get this user profile
                 user = getUserProfile(request)
+
+                if not user:
+                    return shortcuts.redirect('/login' + request.path)
+
                 # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
                 if UPDATE:
-                    if not user:
-                        return shortcuts.redirect("/login/")
-                    elif not user.developer:
-                        return shortcuts.redirect('/underconstruction/')
-                # IF NOT AUTHENTICATED REDIRECT TO LOGIN
-                if not request.user.is_authenticated():
+                    if not user.developer: # Return construction if the user doesn't exist, or isn't a developer
+                        return shortcuts.redirect('/underconstruction/') # Otherwise continue logging in
+
+                # IF NOT AUTHENTICATED, REDIRECT TO LOGIN
+                if not user or not request.user.is_authenticated():
                     print request.path
                     return HttpResponseRedirect('/login' + request.path)
+
                 # ELSE AUTHENTICATED
                 else:
                     vals['user'] = user
                     vals['viewer'] = user
-                    vals['new_notification_count'] = user.getNumNewNotifications()
+
             except ImproperlyConfigured:
                 response = shortcuts.redirect('/login' + request.path)
                 response.delete_cookie('sessionid')
                 logger.debug('deleted cookie')
                 return response
+
         vals['google'] = GOOGLE_LOVEGOV
         host_full = getHostHelper(request)
         vals['host_full'] = host_full
@@ -76,7 +83,7 @@ def viewWrapper(view, requires_login=False):
 # Splash page and learn more.
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, blah="blah"):
-    return shortcuts.redirect('/web/')
+    return shortcuts.redirect('/home/')
 
 def splash(request):
     return splashForm(request, 'deployment/pages/splash/splash.html')
@@ -88,7 +95,7 @@ def underConstruction(request):
     return render_to_response('deployment/pages/microcopy/construction.html')
 
 def upgrade(request):
-    return render_to_response('deployment/pages/upgrade.html')
+    return render_to_response('deployment/pages/microcopy/upgrade.html')
 
 def continueAtOwnRisk(request):
     response = shortcuts.redirect("/web/")
@@ -171,19 +178,26 @@ def login(request, to_page='web/', message="", vals={}):
     @type vals: dictionary
     @return:
     """
+    # Try logging in with facebook
     if fbLogin(request,vals):
         return shortcuts.redirect('/' + to_page)
+
+    # Try logging in with twitter
     twitter = twitterLogin(request, "/" + to_page, vals)
     if twitter:
         return twitter
-    fb_state = fbGetRedirect(request, vals)
+
+    # Check for POST logins (LOGINS WITHOUT FACEBOOK) and build a response
     if request.method == 'POST' and 'button' in request.POST:
         response = loginPOST(request,to_page,message,vals)
-    else:
-        vals.update({"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'})
+
+    else: # Otherwise load the login page
+        fb_state = fbGetRedirect(request, vals)
+        vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
         vals['toregister'] = getToRegisterNumber().number
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
-    response.set_cookie("fb_state", fb_state)
+        response.set_cookie("fb_state", fb_state)
+
     return response
 
 def loginAuthenticate(request,user,to_page=''):
@@ -194,17 +208,29 @@ def loginAuthenticate(request,user,to_page=''):
 
 def loginPOST(request, to_page='web',message="",vals={}):
     vals['registerform'] = RegisterForm()
+
+    # LOGIN via POST
     if request.POST['button'] == 'login':
+        # Authenticate user
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user:
+
+        if user: # If the user authenticated
             user_prof = getUserProfile(control_id=user.id)
-            if user_prof.confirmed: return loginAuthenticate(request,user,to_page)
-            else: error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
-        else:
+            if not user_prof: # If the controlling user has no profile, we're boned
+                error = 'Your account is currently broken.  Our developers have been notified and your account should be fixed soon.'
+            elif user_prof.confirmed: # Otherwise log this bitch in motherfuckas
+                return loginAuthenticate(request,user,to_page)
+            else: # If they can't authenticate, they probably need to validate
+                error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
+        else: # Otherwise they're just straight up not in our database
             error = 'Invalid Login/Password.'
+        # Return whatever error was found
         vals.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
         return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+
+    # REGISTER via POST
     elif request.POST['button'] == 'register':
+        # Make the register form
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
@@ -213,6 +239,8 @@ def loginPOST(request, to_page='web',message="",vals={}):
         else:
             vals.update({"registerform":registerform, "state":'register'})
             return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+
+    # RECOVER via POST
     elif request.POST['button'] == 'recover':
         user = ControllingUser.lg.get_or_none(username=request.POST['username'])
         if user: resetPassword(user)
@@ -267,6 +295,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
     userProfile = vals['viewer']
+    vals['new_notification_count'] = userProfile.getNumNewNotifications()
     vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -642,7 +671,7 @@ def profile(request, alias=None, vals={}):
                 num_notifications = NOTIFICATION_INCREMENT
                 notifications = viewer.getNotifications(num=num_notifications)
                 for notification in notifications:
-                    notifications_text.append( notification.getVerbose(view_user=viewer) )
+                    notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
 
                 vals['notifications_text'] = notifications_text
                 vals['num_notifications'] = num_notifications
@@ -1074,16 +1103,17 @@ def contentDetail(request, content, vals):
     vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
     vals['topic'] = content.getMainTopic()
     vals['content'] = content
-    creator = content.getCreator()
-    vals['creator'] = creator
-    vals['recent_actions'] = Action.objects.all().order_by('-when')[:5]
+    viewer = vals['viewer']
+    creator_display = content.getCreatorDisplay(viewer)
+    vals['creator'] = creator_display
+    vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
     my_vote = user_votes.filter(content=content) 
     if my_vote:
         vals['my_vote'] = my_vote[0].value
     else:
         vals['my_vote'] = 0
-    vals['iown'] = (creator == vals['viewer'])
+    vals['iown'] = (creator_display.you)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # displays a list of all questions of that topic, along with attached forum
@@ -1172,8 +1202,9 @@ def valsQuestion(request, q_id, vals={}):
         agg = agg[0].aggregateresponse
     for a in question.answers.all():
         if agg:
-            tuple = agg.responses.get(answer_val=a.value)
-            if agg.total:
+            tuple = agg.responses.filter(answer_val=a.value)
+            if tuple and agg.total:
+                tuple = tuple[0]
                 percent = int(100*float(tuple.tally)/float(agg.total))
             else:
                 percent = 0
@@ -1201,6 +1232,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_comments:
         user_comments = Comment.objects.filter(creator=user)
     comments = Comment.objects.filter(on_content=object).order_by('-status')
+    viewer = vals['viewer']
     if comments:
         to_return = ''
         for c in comments:
@@ -1212,13 +1244,12 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                     i_vote = my_vote[0].value
                 else: i_vote = 0
                 i_own = user_comments.filter(id=c.id) # check if i own comment
-                creator = c.getCreator()
                 vals.update({'comment': c,
                         'my_vote': i_vote,
                         'owner': i_own,
                         'votes': c.upvotes - c.downvotes,
-                        'creator': creator,
-                        'display_name': c.getCreatorDisplayName(user, getSourcePath(request)),
+                        'display_name': c.getThreadDisplayName(viewer, getSourcePath(request)),
+                        'creator': c.getCreatorDisplay(viewer),
                         'public': c.getPublic(),
                         'margin': margin,
                         'width': 690-(30*depth+1)-30,
@@ -1313,15 +1344,23 @@ def facebookHandle(request, to_page="/web/", vals={}):
     if request.GET.get('state') == request.COOKIES.get('fb_state') and request.COOKIES.get('fb_state'): #If this is the correct authorization state
         code = request.GET.get('code') #Get the associated code
         redirect_uri = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
+
         access_token = fbGetAccessToken(request, code, redirect_uri) #Retrieve access token
+        if not access_token: #If there's no access token, it's being logged so return the login page
+            shortcuts.redirect('/login/')
+
         auth_to_page = request.COOKIES.get('auth_to_page') #Get the authorization to_page from Cookies
         if auth_to_page: #If it exists
             to_page = auth_to_page #set the to_page
+
         response = shortcuts.redirect(to_page) #Build a response
         response.set_cookie('fb_token', access_token) #Set the facebook authorization cookie
+
         if auth_to_page: #If there is an authorization to_page cookie
             response.delete_cookie('auth_to_page') #delete that cookie
+
         return response
+
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -31,76 +31,9 @@ STATIC_ROOT = '/static/dev/'
 
 MEDIA_ROOT = '/media/dev/'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-        },
-    },
-'handlers': {
-    'default': {
-        'level':'DEBUG',
-        'class':'logging.handlers.RotatingFileHandler',
-        'filename': '/log/dev/default.log',
-        'maxBytes': 1024*1024*5, # 5 MB
-        'backupCount': 5,
-        'formatter':'standard',
-        },
-    'mail_admins': {
-        'class': 'django.utils.log.AdminEmailHandler',
-        'level': 'ERROR',
-        'include_html': True,
-        },
-    'request_handler': {
-        'level':'DEBUG',
-        'class':'logging.handlers.RotatingFileHandler',
-        'filename': '/log/dev/django_request.log',
-        'maxBytes': 1024*1024*5, # 5 MB
-        'backupCount': 5,
-        'formatter':'standard',
-        },
-    'file_handler': {
-        'level':'DEBUG',
-        'class':'logging.handlers.RotatingFileHandler',
-        'filename': '/log/dev/django.log',
-        'maxBytes': 1024*1024*5, # 5 MB
-        'backupCount': 5,
-        'formatter':'standard',
-        },
-    'scheduled_handler': {
-        'level':'DEBUG',
-        'class':'logging.handlers.RotatingFileHandler',
-        'filename': '/log/dev/scheduled.log',
-        'maxBytes': 1024*1024*5, # 5 MB
-        'backupCount': 5,
-        'formatter':'standard',
-        },
-    },
-'loggers': {
-    'django.request': {
-        'handlers': ['mail_admins'],
-        'level': 'ERROR',
-        'propagate': True,
-        },
-    '': {
-        'handlers': ['default'],
-        'level': 'ERROR',
-        'propagate': True
-    },
-    'filelogger': {
-        'handlers': ['file_handler'],
-        'level': 'DEBUG',
-        'propagate': False
-    },
-    'scheduledlogger': {
-        'handlers': ['scheduled_handler'],
-        'level': 'DEBUG',
-        'propagate': False
-    },
-    }
-}
+LOG_ROOT = "/log/dev/"
+
+LOGGING = settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
 
