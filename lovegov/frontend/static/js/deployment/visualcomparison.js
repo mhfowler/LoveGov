@@ -10,7 +10,7 @@
 
 (function( $ )
 {
-    $.fn.visualComparison = function(json)
+    $.fn.visualComparison = function(json,preventDuplicate)
     {
         this.each(function()
         {
@@ -21,7 +21,8 @@
                 else { jsonData = $(this).data('json'); }
 
                 new VisualComparison($(this),jsonData).draw();
-                $(this).addClass("has_visualComparison");
+
+                if (preventDuplicate) { $(this).addClass("has_visualComparison"); }
             }
         });
     };

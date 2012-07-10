@@ -613,9 +613,7 @@ function loadHoverComparison()
                         {
                             var obj = eval('(' + data + ')');
                             $('#comparison-hover-loading-img').hide();
-                            $('#comparison-hover').visualComparison(obj);
-
-
+                            $('#comparison-hover').visualComparison(obj,true);
                         },
                         'error': function(jqXHR, textStatus, errorThrown)
                         {
