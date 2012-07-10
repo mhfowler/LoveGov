@@ -1179,9 +1179,6 @@ def purgeTopics():
             print "Deleting topic "+t.topic_text
             t.delete()
 
-def createGeneralTopic():
-    genTopic = Topic(alias="general", topic_text="General", icon="")
-
 def recalculateEverything():
     print "Recalculating Stats..."
     recalculateAllUserStats()
