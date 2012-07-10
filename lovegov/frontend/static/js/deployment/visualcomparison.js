@@ -17,7 +17,7 @@
             if (!$(this).hasClass("has_visualComparison"))
             {
                 var jsonData;
-                if (json) { jsonData = eval('(' + json + ')'); }
+                if (json) { jsonData = json; }
                 else { jsonData = $(this).data('json'); }
 
                 new VisualComparison($(this),jsonData).draw();
