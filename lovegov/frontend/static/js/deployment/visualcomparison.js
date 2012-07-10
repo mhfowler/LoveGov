@@ -199,6 +199,7 @@ var VisualComparison = Class.extend
         self.stage.add(self.textLayer);
         self.stage.add(self.hoverLayer);
         this.domEle.css({height:self.height,width:self.width,position:"relative"});
+        this.domEle.position();
     }
 });
 
