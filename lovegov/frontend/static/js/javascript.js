@@ -2941,7 +2941,7 @@ function updateFeedVisual() {
 
     var feed_groups = $(".feed_group_selector");
     feed_groups.each(function(index) {
-        var this_group = $(this).data('level');
+        var this_group = $(this).data('g_id');
         var i = $.inArray(this_group, feed_metadata.groups);
         if (i != -1) {
             $(this).addClass("clicked");
@@ -3214,8 +3214,8 @@ function loadNewFeed() {
     });
 
     /* group and network menu  visual */
-    defaultHover($(".group-box"));
-    $(".group-box").click(function(event) {
+    defaultHover($(".group_box"));
+    $(".group_box").click(function(event) {
         event.preventDefault();
         defaultClick($(this));
         event.stopPropagation();
@@ -3397,13 +3397,7 @@ function createGroupValidation( event )
     /* Scale */
     var scale = $('input:radio.group_scale:checked').length;
     var scale_error = $('#group_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a group scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple group scales.");
         scale_error.show();
@@ -3487,13 +3481,7 @@ function createPetitionValidation( event )
     /* Scale */
     var scale = $('input:radio.petition_scale:checked').length;
     var scale_error = $('#petition_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a petition scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple petition scales.");
         scale_error.show();
@@ -3548,13 +3536,7 @@ function createNewsValidation( event )
     /* Scale */
     var scale = $('input:radio.news_scale:checked').length;
     var scale_error = $('#news_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a news scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple news scales.");
         scale_error.show();

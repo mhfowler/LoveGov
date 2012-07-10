@@ -1,5 +1,10 @@
 @import 'linear_feed.scss';
 
+  div.gen-menu-separator
+  {
+    @include horizontalSeparator(100%);
+  }
+
   .border {
     border:solid;
     border-color:red;
@@ -88,7 +93,7 @@
       div.sort-menu {
         top:40px;
         div.menu-option {
-          width:100%;
+
           p.menu-option-title {
             margin: 8px 0px 0px 17px;
           }
@@ -122,6 +127,8 @@
       padding-left:10px;
       padding-right:10px;
 
+      @include rounded(10px);
+
       margin-top:11px;
       margin-bottom:0px;
 
@@ -132,7 +139,7 @@
 
       p.options-title {
         @include fontSize(22px);
-        color: #959595;
+        color: $dark-gray;
         float:left;
         margin: 0;
       }
@@ -146,7 +153,7 @@
     }
 
     div.options-box:hover {
-      background-color:#adadad;
+      background-color:$gray;
       p.options-title {
         color:white;
       }
@@ -156,7 +163,7 @@
     }
 
     div.options-box.clicked {
-      background-color:#adadad;
+      background-color:$gray;
       p.options-title {
         color:white;
       }
@@ -204,7 +211,7 @@
     a.how-does {
       @include body();
       @include fontSize(12px);
-      color: #959595;
+      color: $dark-gray;
       float:right;
       margin-top:21px;
       margin-right:10px;
@@ -234,11 +241,11 @@
 
     div.create-box.clicked {
       color:white;
-      background-color:#FC8A81;
+      background-color:$red-light;
     }
     div.create-box:hover {
       color:white;
-      background-color:#FC8A81;
+      background-color:$red-light;
       cursor:pointer;
     }
     div.display-choice {
@@ -270,7 +277,6 @@
         div.menu {
           position:absolute;
           top:35px;
-          width:100%;
         }
       }
 
@@ -294,15 +300,13 @@
 
       div.filter-by-network {
         div.menu {
-          width:120px;
-          padding-bottom:10px;
+          width:150px;
         }
       }
 
-      div.menu-option {
-        width:100%;
-        p.menu-option-title {
-          margin: 10px 0 0 7px;
+      div.filter-by-political {
+        div.menu {
+          width:80px;
         }
       }
 
@@ -407,6 +411,30 @@
 
   }
 
+  div.network-box
+  {
+    @include really-big();
+    @include fontSize(16px);
+    padding: 10px 0 0 10px;
+    background-color: white;
+    height: 36px;
+    margin: 0px;
+  }
+
+  div.network-box:hover
+  {
+    background-color: $white-gray;
+  }
+
+  div.network-box.clicked
+  {
+    color: $text-blue;
+  }
+
+  div.network-separator
+  {
+    @include horizontalSeparator(150px);
+  }
 
   $linkborder: 2px;
   div.group-box {
@@ -435,19 +463,20 @@
   }
 
   div.menu-option {
-    @extend .box;
     @include really-big();
     @include fontSize(16px);
     border-width:1px;
     background-color: white;
-    width:80px;
-    height:40px;
+    width:70px;
+    height:36px;
     margin:0px;
     z-index:20;
+    padding: 10px 0 0 10px;
+  }
 
-    p.menu-option-title {
-      margin: 10px 0 0 20px;
-    }
+  div.menu-separator
+  {
+    @include horizontalSeparator(80px);
   }
 
   div.menu-option:hover {
@@ -455,7 +484,7 @@
   }
 
   div.menu-option.clicked {
-    background-color: $white-gray;
+    color: $text-blue;
   }
 
   div.menu {
@@ -616,9 +645,6 @@
       float:left;
       margin-left:7px;
       margin-top:7px;
-    }
-    div.menu {
-      width:100%;
     }
   }
 

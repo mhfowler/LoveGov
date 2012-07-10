@@ -183,10 +183,6 @@ for imgRef in os.listdir(os.path.join(PROJECT_PATH, 'frontend/static/images/part
     if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
 
 
-
-
-
-
 ########################################### PROCESS PATHS ##############################################################
 
 #PHANTOMJS = os.path.join(PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
@@ -210,6 +206,7 @@ SCALE_CHOICES = (
     ('L', 'Local'),
     ('S', 'State'),
     ('F', 'Federal'),
+    ('W', 'World'),
     ('A', 'All')
 )
 

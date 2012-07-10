@@ -143,7 +143,7 @@ class PhysicalAddress(LGModel):
 #=======================================================================================================================
 class LocationLevel(models.Model):
     location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
-    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
+    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='A')
     class Meta:
         abstract = True
 
@@ -155,8 +155,10 @@ class LocationLevel(models.Model):
             return 'State'
         elif scale == 'F':
             return 'Federal'
+        elif scale == 'W':
+            return 'World'
         elif scale == 'A':
-            return 'Universal'
+            return 'Uncategorized'
         else:
             return 'None'
 
