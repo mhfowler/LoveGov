@@ -12,22 +12,18 @@
 {
     $.fn.visualComparison = function(json,duplicate)
     {
-        var self = this;
-        $(document).ready(function()
+        this.each(function()
         {
-            self.each(function()
+            if (!$(this).hasClass("has_visualComparison"))
             {
-                if (!$(this).hasClass("has_visualComparison"))
-                {
-                    var jsonData;
-                    if (json) { jsonData = json; }
-                    else { jsonData = $(this).data('json'); }
+                var jsonData;
+                if (json) { jsonData = json; }
+                else { jsonData = $(this).data('json'); }
 
-                    new VisualComparison($(this),jsonData).draw();
+                new VisualComparison($(this),jsonData).draw();
 
-                    if (!duplicate) { $(this).addClass("has_visualComparison"); }
-                }
-            });
+                if (!duplicate) { $(this).addClass("has_visualComparison"); }
+            }
         });
     };
 })( jQuery );

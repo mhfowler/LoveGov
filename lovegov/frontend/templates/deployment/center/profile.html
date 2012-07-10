@@ -304,7 +304,10 @@
 </div>
 
 <script>
-    $("." + "{{ user_prof.get_name|slugify }}" + "-canvas").visualComparison();
+    $(document).ready(function()
+    {
+        $("." + "{{ user_prof.get_name|slugify }}" + "-canvas").visualComparison();
+    });
 </script>
 <script> var p_id = "{{ user_prof.id }}"; </script>
 <script> var view_id = "{{ viewer.id }}"; </script>
