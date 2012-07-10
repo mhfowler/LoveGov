@@ -1,9 +1,4 @@
 {% load thumbnail %}
-
-<a class="group_box" href="{{ group.get_url }}">
-
-    {% thumbnail group.getImage "40x40" crop="center" as im %}
-        <img class="group-img" src="{{ im.url }}"/>
-    {% endthumbnail %}
-
-</a>
+{% thumbnail group.getImage "40x40" crop="center" as im %}
+    <img class="group-img" src="{{ im.url }}"/>
+{% endthumbnail %}
