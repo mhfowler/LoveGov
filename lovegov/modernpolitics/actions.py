@@ -21,6 +21,7 @@ from django.utils import simplejson
 
 # python
 import urllib2
+from BeautifulSoup import BeautifulSoup
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
@@ -40,8 +41,11 @@ def getLinkInfo(request, vals={}, html="",URL=""):
         except:
             continue
     if html and URL:
-        soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        try: vals['title'] = soup.title.string
+        html = re.sub(r'<script\s*.*</script>',"",html)
+        html = re.sub(r'<!DOCTYPE html\s*.*>',"",html)
+        soup = BeautifulSoup(html)
+
+        try: vals['title'] = soup.find('title').string
         except: vals['title'] = "No Title"
         try:  vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
         except: vals['description'] = "No Description"

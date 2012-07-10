@@ -27,7 +27,6 @@
     };
 })( jQuery );
 
-
 /**
  * @author Clay
  *
