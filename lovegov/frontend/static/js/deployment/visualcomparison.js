@@ -80,9 +80,11 @@ var VisualComparison = Class.extend
         var self = this;
         this.domEle.css({height:self.height,width:self.width,position:"relative"});
         this.stage = new Kinetic.Stage(self.domEle.get(0),self.width,self.height);          // get(0) returns the underlying DOM element in the jQuery element.
+        this.domEle.css({height:self.height,width:self.width,position:"relative"});
         this.drawTopics();
         this.drawMiddle();
         this.addLayers();
+        this.domEle.css({height:self.height,width:self.width,position:"relative"});
     },
 
     /**
