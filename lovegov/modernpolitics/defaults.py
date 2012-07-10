@@ -1174,6 +1174,7 @@ def recalculateTopics():
 def purgeTopics():
     for t in Topic.objects.all():
         t.parent_topic = None
+        t.save()
     for t in Topic.objects.all():
         if t not in getMainTopics():
             print "Deleting topic "+t.topic_text
