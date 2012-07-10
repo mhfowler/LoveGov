@@ -30,75 +30,78 @@ from BeautifulSoup import BeautifulSoup
 PREFIX_ITERATIONS = ["","http://","http://www."]
 DESCRIPTION_TAGS = [("name","description"),("property","og:description")]
 def getLinkInfo(request, vals={}, html="",URL=""):
-    try:
-        vals = {}
-        url = str(request.POST['remote_url'])
-        url.strip()
+    vals = {}
+    url = str(request.POST['remote_url'])
+    url.strip()
 
-        # url may not be well formed so try variations until one works
-        for prefix in PREFIX_ITERATIONS:
+    # url may not be well formed so try variations until one works
+    for prefix in PREFIX_ITERATIONS:
+        try:
+            URL = prefix + url
+            html = urllib2.urlopen(URL,data=None).fp.read()
+            if html: break
+        except:
+            continue
+
+    if html and URL:
+        # make HTML well formed
+        html = re.sub(r'<script\s*.*</script>',"",html)
+        html = re.sub(r'<!DOCTYPE html\s*.*>',"",html)
+        soup = BeautifulSoup(html)
+
+        # set title
+        try: vals['title'] = soup.find('title').string
+        except: vals['title'] = "No Title"
+
+        # set description
+        for tag in DESCRIPTION_TAGS:
+            description = soup.findAll(attrs={tag[0]:tag[1]})
+            if description:
+                vals['description'] = description[0]['content']
+                break
+        if 'description' not in vals:
+            vals['description'] = "No Description"
+
+        # init image collection
+        image_refs = soup.findAll("img")
+        list = []
+        first_image = None
+
+        for num in range(0,len(image_refs)):
             try:
-                URL = prefix + url
-                html = urllib2.urlopen(URL,data=None).fp.read()
-                if html: break
+                img_url = image_refs[num]['src']
+                if num == 0:
+                    first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
+                elif len(list) == 5:
+                    break
+                else:
+                    toAdd = downloadImage(img_url=img_url,url=URL)
+                    if toAdd: list.append(toAdd)
             except:
                 continue
 
-        if html and URL:
-            html = re.sub(r'<script\s*.*</script>',"",html)
-            html = re.sub(r'<!DOCTYPE html\s*.*>',"",html)
-            soup = BeautifulSoup(html)
+        list.sort(key=lambda img:img['size'],reverse=True)
 
-            try: vals['title'] = soup.find('title').string
-            except: vals['title'] = "No Title"
+        try:
+            for imageobj in list:
+                imageobj['path'] = open(imageobj['path'],'r+')
+        except:
+            pass
 
-            for tag in DESCRIPTION_TAGS:
-                description = soup.findAll(attrs={tag[0]:tag[1]})
-                if description:
-                    vals['description'] = description[0]['content']
-                    break
-            if 'description' not in vals:
-                vals['description'] = "No Description"
+        if len(list) == 0 and (first_image is not None and first_image is not False):
+            first_image['path'] =open(first_image['path'],'r+')
+            list.append(first_image)
 
-            image_refs = soup.findAll("img")
-            list = []
-            first_image = None
+        if len(list) == 0:
+            rel_path = 'images/top-logo-default.png'
+            this_path = os.path.join(settings.STATIC_ROOT, rel_path)
+            list.append({'path':open(this_path,'r+')})
 
-            for num in range(0,len(image_refs)):
-                try:
-                    img_url = image_refs[num]['src']
-                    if num == 0:
-                        first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
-                    elif len(list) == 5:
-                        break
-                    else:
-                        toAdd = downloadImage(img_url=img_url,url=URL)
-                        if toAdd: list.append(toAdd)
-                except:
-                    continue
+        vals['imglink'] = list
 
-            list.sort(key=lambda img:img['size'],reverse=True)
-
-            try:
-                for imageobj in list:
-                    imageobj['path'] = open(imageobj['path'],'r+')
-            except:
-                pass
-
-            if len(list) == 0 and (first_image is not None and first_image is not False):
-                first_image['path'] =open(first_image['path'],'r+')
-                list.append(first_image)
-
-            if len(list) == 0:
-                rel_path = 'images/top-logo-default.png'
-                this_path = os.path.join(settings.STATIC_ROOT, rel_path)
-                list.append({'path':open(this_path,'r+')})
-
-            vals['imglink'] = list
-
-            html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
-            return HttpResponse(json.dumps({'html':html}))
-    except:
+        html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
+        return HttpResponse(json.dumps({'html':html}))
+    else:
         return HttpResponse("-")
 
 #-----------------------------------------------------------------------------------------------------------------------
