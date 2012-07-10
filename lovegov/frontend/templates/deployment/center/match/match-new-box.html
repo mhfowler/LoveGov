@@ -42,11 +42,11 @@
     </div>
 
     <div class="qaweb">
-        <div class="{{ item.get_name|slugify }}-canvas"></div>
+        <div class="{{ item.get_name|slugify }}-canvas" data-json="{{ item.compare }}"></div>
     </div>
 
     <script>
-        loadVisualComparison($("." + "{{ item.get_name|slugify }}" + "-canvas"),eval('(' + '{{ item.compare|escapejs }}' + ')'));
+        $("." + "{{ item.get_name|slugify }}" + "-canvas").visualComparison();
     </script>
 
 </div>
