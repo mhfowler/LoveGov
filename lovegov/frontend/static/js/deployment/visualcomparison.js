@@ -1,20 +1,17 @@
-/**
- * Factory for creating VisualComparisons which insures a visual comparison is constructed in the case multiple DOM
- * elements are selected.
- *
- * @param domEle            jQuery selector $("#id"), $(".class"), $("tag")
- * @param comparisonJSON    evaluated JSON data.
- */
-function loadVisualComparison(domEle, comparisonJSON)
+(function( $ )
 {
-    domEle.each(function()
+    $.fn.visualComparison = function()
     {
-        if (!$(this).hasClass("has_visualcomparison"))
+        this.each(function()
         {
-            new VisualComparison($(this),comparisonJSON).draw();
-        }
-    });
-}
+            if (!$(this).hasClass("has_visualComparison"))
+            {
+                new VisualComparison($(this),$(this).data('json')).draw();
+                $(this).addClass("has_visualComparison");
+            }
+        });
+    };
+})( jQuery );
 
 /**
  * @author Clay
@@ -40,7 +37,6 @@ var VisualComparison = Class.extend
     init: function(domEle, comparisonJSON)
     {
         this.domEle = domEle;
-        this.domEle.addClass("has_visualcomparison");
         this.stage = null;
         this.hoverShape = null;
         this.hoverText = null;
