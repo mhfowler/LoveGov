@@ -392,11 +392,12 @@ def submitAddress(request, vals={}):
     if zip:
         if full_address == '':
             full_address = zip
-    if not zip:
-        return HttpResponse("Please enter a zipcode")
 
 
-    location = locationHelper(full_address, zip)
+    try:
+        location = locationHelper(full_address, zip)
+    except:
+        return HttpResponse("The given address was not specific enough to determine your voting district")
 
     viewer = vals['viewer']
     viewer.location = location
