@@ -370,19 +370,39 @@ def messageRep(request, vals={}):
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
+    full_address = ''
 
-    address = request.POST['address']
-    city = request.POST['city']
-    zip = request.POST['zip']
-    address = address + ', ' + city
+    address = request.POST.get('address')
+    if address != '':
+        full_address += address
 
-    location = locationHelper(address, zip)
+    city = request.POST.get('city')
+    if city != '':
+        if not full_address == '':
+            full_address += ', '
+        full_address += city
+
+    state = request.POST.get('state')
+    if state != '':
+        if not full_address == '':
+            full_address += ', '
+        full_address += state
+
+    zip = request.POST.get('zip')
+    if zip:
+        if full_address == '':
+            full_address = zip
+    if not zip:
+        return HttpResponse("Please enter a zipcode")
+
+
+    location = locationHelper(full_address, zip)
 
     viewer = vals['viewer']
     viewer.location = location
     viewer.save()
 
-    return HttpResponse("yea!")
+    return HttpResponse("success")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
