@@ -733,6 +733,10 @@ class Content(Privacy, LocationLevel):
     # Saves creation info.
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
+        from lovegov.modernpolitics.defaults import getGeneralTopic
+        if not self.main_topic:
+            self.main_topic = getGeneralTopic()
+            self.save()
         if not creator:
             self.saveDefaultCreated()
         else:

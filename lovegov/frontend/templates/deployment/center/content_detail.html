@@ -10,9 +10,9 @@
                     {% endthumbnail %}
                 {% endwith %}
                 {% with topic=content.getMainTopic %}
-                    <div id="content-topic-img" class="tooltip-top" title="{{topic.topic_text}}">
-                        <img src="{{ topic.getImageRef }}"/>
-                    </div>
+                    {% thumbnail topic.image "50x50" format="PNG" as im %}
+                        <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
+                    {% endthumbnail %}
                 {% endwith %}
                 </div>
                 {% include 'deployment/center/feed/social_bar.html' with item=content %}

@@ -244,7 +244,6 @@ class PasswordForm(forms.Form):
         else: return False
 
 
-
 #=======================================================================================================================
 # Create forms
 #=======================================================================================================================
@@ -259,7 +258,9 @@ class CreateContentForm(forms.ModelForm):
         privacy = getPrivacy(request)
         object.autoSave(creator=creator, privacy=privacy)
         self.save_m2m()
-        object.main_topic = object.getMainTopic()
+        topics = object.topics.all()
+        if topics:
+            object.main_topic = topics[0]
         object.save()
         return object
     action = forms.CharField(widget=forms.HiddenInput(), initial='create')
@@ -268,21 +269,21 @@ class CreatePetitionForm(CreateContentForm):
     class Meta:
         model = Petition
         fields = ('title', 'full_text', 'topics', 'type','scale')
-    topics = SelectTopicsField(content_type=TYPE_DICT['petition'])
+    topics = SelectTopicsField(content_type=TYPE_DICT['petition'], required=False)
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['petition'])
 
 class CreateEventForm(CreateContentForm):
     class Meta:
         model = Event
         fields = ('title', 'full_text', 'datetime_of_event', 'topics', 'type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['event'])
+    topics = SelectTopicsField(content_type=TYPE_DICT['event'], required=False)
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['event'])
 
 class CreateNewsForm(CreateContentForm):
     class Meta:
         model = News
         fields = ('title', 'link', 'summary', 'topics', 'type','scale')
-    topics = SelectTopicsField(content_type=TYPE_DICT['news'])
+    topics = SelectTopicsField(content_type=TYPE_DICT['news'], required=False)
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['news'])
     def complete(self, request):
         object = self.save(commit=False)
@@ -298,7 +299,7 @@ class CreateUserGroupForm(CreateContentForm):
     class Meta:
         model = UserGroup
         fields = ('title', 'full_text', 'topics', 'group_type', 'type', 'group_privacy','scale')
-    topics = SelectTopicsField(content_type=TYPE_DICT['group'])
+    topics = SelectTopicsField(content_type=TYPE_DICT['group'], required=False)
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['group'])
     action = forms.CharField(widget=forms.HiddenInput(), initial='create')
     group_type = forms.CharField(widget=forms.HiddenInput(), initial='U')
@@ -308,7 +309,7 @@ class CreateMotionForm(CreateContentForm):
     class Meta:
         model = Motion
         fields = ('title', 'full_text', 'topics', 'type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['motion'])
+    topics = SelectTopicsField(content_type=TYPE_DICT['motion'], required=False)
     type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['motion'])
 
 #=======================================================================================================================
@@ -324,17 +325,6 @@ class CommentForm(forms.Form):
         comment = Comment(text=data['comment'], on_content_id = data['c_id'])
         comment.autoSave(creator=creator, privacy=privacy)
         return comment
-
-
-
-
-
-
-
-
-
-
-
 
 
 #=======================================================================================================================
