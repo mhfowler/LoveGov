@@ -1172,12 +1172,15 @@ def recalculateTopics():
 
 # set parent topics to none and delete all topics which are not main topics
 def purgeTopics():
-    for t in getMainTopics():
+    for t in Topic.objects.all():
         t.parent_topic = None
     for t in Topic.objects.all():
         if t not in getMainTopics():
             print "Deleting topic "+t.topic_text
             t.delete()
+
+def createGeneralTopic():
+    genTopic = Topic(alias="general", topic_text="General", icon="")
 
 def recalculateEverything():
     print "Recalculating Stats..."
