@@ -45,13 +45,7 @@
     </div>
 
     <script>
-        var json = eval('(' + '{{ item.compare|escapejs }}' + ')');
-        $("." + "{{ item.get_name|slugify }}" + "-canvas").each(function()
-        {
-            new VisualComparison($(this),json).draw();
-        });
-
-       // new VisualComparison("{{ item.get_name|slugify }}-canvas",json).draw();
+        loadVisualComparison($("." + "{{ item.get_name|slugify }}" + "-canvas"),eval('(' + '{{ item.compare|escapejs }}' + ')'));
     </script>
 
 </div>

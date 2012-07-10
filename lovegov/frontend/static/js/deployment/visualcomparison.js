@@ -1,4 +1,19 @@
 /**
+ * Factory for creating VisualComparisons which insures a visual comparison is constructed in the case multiple DOM
+ * elements are selected.
+ *
+ * @param domEle            jQuery selector $("#id"), $(".class"), $("tag")
+ * @param comparisonJSON    evaluated JSON data.
+ */
+function loadVisualComparison(domEle, comparisonJSON)
+{
+    domEle.each(function()
+    {
+        new VisualComparison($(this),comparisonJSON).draw();
+    });
+}
+
+/**
  * @author Clay
  *
  * This object handles generating visual comparisons on LoveGov. This object is extremely easy to use. Just call:
@@ -10,7 +25,7 @@
  * var visualComparison = new VisualComparison(domEle,comparisonJSON)
  * visualComparison.draw()
  *
- * @param domEle:            the ID of the div to house the KineticJS Stage, no # included
+ * @param domEle:           single jQuery DOM element. example: $("#id") or pass $(this) from $(".class").each(...)
  * @param comparisonJSON:   the comparison data from the server.  This object is somewhat complicated so I will note its
  *                          structure here.  Check models.py, class ViewComparison, def toJSON() for backend data generation.
  *                          {'main':{'result':<number>,'num_q':<number>},
