@@ -45,8 +45,13 @@ div.address-box {
       input.address-input {
         width:294px;
       }
+      input.state-input {
+        margin-left:10px;
+        width:40px;
+      }
       input.zip-input {
         margin-left:10px;
+        width: 86px;
       }
     }
     a.find_out_now {

@@ -373,17 +373,17 @@ def submitAddress(request, vals={}):
     full_address = ''
 
     address = request.POST.get('address')
-    if address != '':
+    if address:
         full_address += address
 
     city = request.POST.get('city')
-    if city != '':
+    if city:
         if not full_address == '':
             full_address += ', '
         full_address += city
 
     state = request.POST.get('state')
-    if state != '':
+    if state:
         if not full_address == '':
             full_address += ', '
         full_address += state
