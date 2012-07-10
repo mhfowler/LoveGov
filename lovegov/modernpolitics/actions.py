@@ -28,6 +28,7 @@ from BeautifulSoup import BeautifulSoup
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
+DESCRIPTION_TAGS = [("name","description"),("property","og:description")]
 def getLinkInfo(request, vals={}, html="",URL=""):
     vals = {}
     url = str(request.POST['remote_url'])
@@ -47,8 +48,15 @@ def getLinkInfo(request, vals={}, html="",URL=""):
 
         try: vals['title'] = soup.find('title').string
         except: vals['title'] = "No Title"
-        try:  vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
-        except: vals['description'] = "No Description"
+
+        for tag in DESCRIPTION_TAGS:
+            description = soup.findAll(attrs={tag[0]:tag[1]})
+            if description:
+                vals['description'] = description[0]['content']
+                break
+        if 'description' not in vals:
+            vals['description'] = "No Description"
+
         image_refs = soup.findAll("img")
         list = []
         first_image = None
