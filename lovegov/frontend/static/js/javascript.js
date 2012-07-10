@@ -61,13 +61,8 @@ function rebindFunction()
         case 'profile':                                         // /profile/<alias>
             loadProfile();
             hideFooter();
-            if( p_id != view_id )
-            {
-               // loadProfileComparison();
-            }
             break;
         case 'group':
-            loadProfileComparison();
             loadGroup();
             hideFooter();
             break;
