@@ -392,11 +392,12 @@ def submitAddress(request, vals={}):
     if zip:
         if full_address == '':
             full_address = zip
-    if not zip:
-        return HttpResponse("Please enter a zipcode")
 
 
-    location = locationHelper(full_address, zip)
+    try:
+        location = locationHelper(full_address, zip)
+    except:
+        return HttpResponse("Unexcepted Error: " + str(sys.exc_info()[0]))
 
     viewer = vals['viewer']
     viewer.location = location

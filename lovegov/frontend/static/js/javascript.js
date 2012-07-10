@@ -4197,17 +4197,17 @@ function submitAddress(wrapper) {
         },
         success: function(data)
         {
-            var returned = eval('('+data+')');
-            if( returned != 'success' )
+            if( data == 'success' )
             {
-                $('#address_input_error').html(returned);
-                $('#address_input_error').fadeIn(300);
+                location.reload();
+                $('#address_input_error').hide();
             }
             else
             {
-                $('#address_input_error').hide();
-                location.reload();
+                $('#address_input_error').html(data);
+                $('#address_input_error').fadeIn(300);
             }
+
         },
         error: function(error, textStatus, errorThrown)
         {
