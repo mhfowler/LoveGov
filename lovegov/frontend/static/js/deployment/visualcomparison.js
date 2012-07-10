@@ -10,13 +10,17 @@
 
 (function( $ )
 {
-    $.fn.visualComparison = function()
+    $.fn.visualComparison = function(json)
     {
         this.each(function()
         {
             if (!$(this).hasClass("has_visualComparison"))
             {
-                new VisualComparison($(this),$(this).data('json')).draw();
+                var jsonData;
+                if (json) { jsonData = eval('(' + json + ')'); }
+                else { jsonData = $(this).data('json'); }
+
+                new VisualComparison($(this),jsonData).draw();
                 $(this).addClass("has_visualComparison");
             }
         });
