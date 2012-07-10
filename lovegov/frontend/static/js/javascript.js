@@ -4200,12 +4200,10 @@ function submitAddress(wrapper) {
             if( data == 'success' )
             {
                 location.reload();
-                alert('whatup');
                 $('#address_input_error').hide();
             }
             else
             {
-                alert('shit');
                 $('#address_input_error').html(data);
                 $('#address_input_error').fadeIn(300);
             }
