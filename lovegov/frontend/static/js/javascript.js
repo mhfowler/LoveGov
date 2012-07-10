@@ -4177,6 +4177,7 @@ function loadNewMatch() {
     });
 
     $(".find_out_now").click(function(event) {
+        event.preventDefault();
         submitAddress($(this).parents(".address-box"));
     });
 }
