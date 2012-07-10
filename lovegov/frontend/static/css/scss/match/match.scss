@@ -338,6 +338,7 @@ div.match-representatives {
         position:relative;
         @include rounded(15px);
         overflow:hidden;
+        padding: 0px;
 
         a.match-link-box-header {
           @include rounded-top(15px);
