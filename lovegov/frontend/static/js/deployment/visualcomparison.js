@@ -9,7 +9,10 @@ function loadVisualComparison(domEle, comparisonJSON)
 {
     domEle.each(function()
     {
-        new VisualComparison($(this),comparisonJSON).draw();
+        if (!$(this).hasClass("has_visualcomparison"))
+        {
+            new VisualComparison($(this),comparisonJSON).draw();
+        }
     });
 }
 
@@ -37,6 +40,7 @@ var VisualComparison = Class.extend
     init: function(domEle, comparisonJSON)
     {
         this.domEle = domEle;
+        this.domEle.addClass("has_visualcomparison");
         this.stage = null;
         this.hoverShape = null;
         this.hoverText = null;
