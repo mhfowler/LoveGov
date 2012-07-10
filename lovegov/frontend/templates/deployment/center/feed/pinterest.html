@@ -26,7 +26,7 @@
 
                 <!-- image -->
                 {% if item.type == 'N' or item.type == 'G' or item.type == 'P' %}
-                    <a href="{{item.get_url}}" target="_blank">
+                    <a href="{{item.link}}" target="_blank">
                         {% include 'deployment/center/feed/feed_image.html' %}
                     </a>
                 {% endif %}
