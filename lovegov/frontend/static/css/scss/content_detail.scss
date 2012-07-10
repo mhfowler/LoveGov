@@ -861,9 +861,23 @@ div.threaddiv {
     font-size: 18px;
 }
 
-#finalize-button
-{
-    float:right;
+#finalize {
+  margin: 20px;
+  float:left;
+  #finalize-button
+  {
+    float:left;
+    color: white;
+    width:100%;
+    display:block;
+    text-align: center;
+    margin-top:25px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    &:hover {
+      background-color: $red-light;
+    }
+  }
 }
 
 #signers-button
