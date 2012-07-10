@@ -255,7 +255,7 @@ def create(request, val={}):
         if request.is_ajax():
             if formtype == "N":
                 viewer.num_articles += 1
-                viewer.save();
+                viewer.save()
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
@@ -555,6 +555,8 @@ def comment(request, vals={}):
         action = Action(privacy=getPrivacy(request),relationship=rel)
         action.autoSave()
         comment.on_content.getCreator().notify(action)
+        if not comment.on_content == comment.root_content:
+            comment.root_content.getCreator().notify(action)
         return HttpResponse("+")
     else:
         if request.is_ajax():

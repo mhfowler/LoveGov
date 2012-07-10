@@ -295,9 +295,7 @@
                 <tr>
                     <td>
                         <a href="{{ follower.get_url }}">
-                            {% thumbnail follower.getProfileImage.image "38x38" crop="center" as im %}
-                                <img src="{{ im.url }}" class="icon-med"/>
-                            {% endthumbnail %}
+                            {% include "deployment/snippets/avatar.html" with user=follower width="38" height="38" hoveroff=1 %}
                         </a>
                     </td>
                     <td><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></td>
