@@ -1,4 +1,5 @@
 {% load thumbnail %}
+
 {% if group.active %}
 <!-- Middle Container -->
 <div class="main-div">
@@ -148,7 +149,7 @@
     <!-- Right Block -->
     <div class="middle-right">
         <div class="matching">
-            <div id="qaweb"></div>
+            <div class="{{ group.get_name|slugify }}-canvas" data-json="{{ json }}"></div>
             <div id="qaweb-title">
                 You & {{ group.title }}
             </div>
@@ -204,6 +205,7 @@
 <script> rebind='group'; </script>
 
 <script>
+    $("." + "{{ group.get_name|slugify }}" + "-canvas").visualComparison();
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
 </script>
 

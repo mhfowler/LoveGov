@@ -104,13 +104,12 @@ def getTopicImage(topic):
     else:
         return initializeTopicImage(topic)
 
-# TODO add root topic
 def getGeneralTopic():
     to_return = Topic.lg.get_or_none(alias='general')
     if to_return:
         return to_return
     else:
-        return Topic.lg.get_or_none(alias="energy")
+        return initializeGeneralTopic()
 
 def getOtherNetwork():
     to_return = Network.lg.get_or_none(name="other")
@@ -323,7 +322,7 @@ def initializeTopicImage(x):
         else:
             summary = "An image representing " + x.topic_text + "."
             im = UserImage(title=title, summary=summary, alias=alias)
-            ref = os.path.join(settings.PROJECT_PATH, 'frontend'+x.getImageRef())
+            ref = os.path.join(PROJECT_PATH, 'frontend'+x.getImageRef())
             file = open(ref)
             im.createImage(file, type=".png")
             im.autoSave()
@@ -334,12 +333,12 @@ def initializeTopicImage(x):
             x.image.save(photoKey(".png"), File(file))
             # initialize hover
             hover_ref = 'frontend/static/images/questionIcons/' + x.alias + '/' + x.getPre() + '_hover.png'
-            hover_ref = os.path.join(settings.PROJECT_PATH, hover_ref)
+            hover_ref = os.path.join(PROJECT_PATH, hover_ref)
             file = open(hover_ref)
             x.hover.save(photoKey(".png"), File(file))
             # initialize selected
             selected_ref = 'frontend/static/images/questionIcons/' + x.alias + '/' + x.getPre() + '_selected.png'
-            selected_ref = os.path.join(settings.PROJECT_PATH, selected_ref)
+            selected_ref = os.path.join(PROJECT_PATH, selected_ref)
             file = open(selected_ref)
             x.selected.save(photoKey(".png"), File(file))
             # save
@@ -348,6 +347,33 @@ def initializeTopicImage(x):
             return x
     else:
         return None
+
+def initializeGeneralTopic():
+
+    already = Topic.lg.get_or_none(alias="general")
+    if already:
+        print ("general topic already initialized.")
+        return already
+
+    topic = Topic(topic_text="General", alias="general")
+    topic.save()
+
+    image_ref = os.path.join(PROJECT_PATH, 'frontend/static/icons/topic_icons/for_default.png')
+    hover_ref = os.path.join(PROJECT_PATH,'frontend/static/icons/topic_icons/for_hover.png')
+    selected_ref = os.path.join(PROJECT_PATH,'frontend/static/icons/topic_icons/for_selected.png')
+
+    file = open(image_ref)
+    topic.image.save(photoKey(".png"), File(file))
+
+    file = open(hover_ref)
+    topic.hover.save(photoKey(".png"), File(file))
+
+    file = open(selected_ref)
+    topic.selected.save(photoKey(".png"), File(file))
+
+    topic.save()
+    print "initialized: General Topic"
+    return topic
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initialize mini images for every topic.
@@ -359,7 +385,7 @@ def initializeTopicMiniImages():
             alias = "topicminiimage:" + topic.alias
             summary = "A mini image representing " + topic.topic_text + "."
             img = UserImage(title=title, summary=summary, alias=alias)
-            ref = os.path.join(settings.PROJECT_PATH, 'alpha' + topic.getMiniImageRef())
+            ref = os.path.join(PROJECT_PATH, 'alpha' + topic.getMiniImageRef())
             file = open(ref)
             img.createImage(file, type=".png")
             img.autoSave()
@@ -1084,7 +1110,7 @@ def initializeParties():
             party.autoSave()
 
             ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
-            full_ref = os.path.join(settings.PROJECT_PATH, ref)
+            full_ref = os.path.join(PROJECT_PATH, ref)
             file = open(full_ref)
             party.party_label.save(photoKey(".png"), File(file))
 
@@ -1096,7 +1122,7 @@ def updatePartyImages():
         party = Party.lg.get_or_none(party_type=type[0])
 
         ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
-        full_ref = os.path.join(settings.PROJECT_PATH, ref)
+        full_ref = os.path.join(PROJECT_PATH, ref)
         file = open(full_ref)
         party.party_label.save(photoKey(".png"), File(file))
 

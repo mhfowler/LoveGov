@@ -25,6 +25,12 @@ div.address-box {
     width:450px;
     margin-left:100px;
     margin-top:20px;
+
+    div.address-input-error
+    {
+      color: $dark-gray;
+    }
+
     div.inputs-wrapper {
       width:300px;
       float:left;
@@ -39,8 +45,13 @@ div.address-box {
       input.address-input {
         width:294px;
       }
+      input.state-input {
+        margin-left:10px;
+        width:40px;
+      }
       input.zip-input {
         margin-left:10px;
+        width: 86px;
       }
     }
     a.find_out_now {

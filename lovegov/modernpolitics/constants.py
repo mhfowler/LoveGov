@@ -9,6 +9,7 @@
 
 # django
 from django.conf import settings
+from lovegov.settings import PROJECT_PATH
 
 # python
 import sunlight
@@ -178,7 +179,7 @@ for topic in MAIN_TOPICS:
     MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
 
 POLITICAL_PARTIES_IMAGES = []
-for imgRef in os.listdir(os.path.join(settings.PROJECT_PATH, 'frontend/static/images/party_labels/')):
+for imgRef in os.listdir(os.path.join(PROJECT_PATH, 'frontend/static/images/party_labels/')):
     if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
 
 
@@ -188,8 +189,8 @@ for imgRef in os.listdir(os.path.join(settings.PROJECT_PATH, 'frontend/static/im
 
 ########################################### PROCESS PATHS ##############################################################
 
-#PHANTOMJS = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
-#PHANTOMJS_RASTERIZE = os.path.join(settings.PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
+#PHANTOMJS = os.path.join(PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
+#PHANTOMJS_RASTERIZE = os.path.join(PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
 
 ########################################## CHOICES #####################################################################
 
@@ -391,7 +392,7 @@ FEED_CONTENT_TYPES = ['P','N','L','G']
 
 ###################################### STATIC FILE URLS ################################################################
 
-DEFAULT_IMAGE = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
+DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
 DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
 DEFAULT_NEWS_IMAGE_URL = '/static/icons/content-big/news.png'
 DEFAULT_PETITION_IMAGE_URL = '/static/icons/content-big/petition.png'
