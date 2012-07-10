@@ -12,9 +12,10 @@
 {
     $.fn.visualComparison = function(json,duplicate)
     {
+        var self = this;
         $(document).ready(function()
         {
-            this.each(function()
+            self.each(function()
             {
                 if (!$(this).hasClass("has_visualComparison"))
                 {
