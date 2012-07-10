@@ -245,7 +245,7 @@ def create(request, val={}):
     elif formtype =='I':
         form = UserImageForm(request.POST)
 
-        # if valid form, save to db
+    # if valid form, save to db
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)

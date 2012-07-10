@@ -3431,13 +3431,7 @@ function createGroupValidation( event )
     /* Topics */
     var topic = $('#group_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#group_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a group topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple group topics.");
         topic_error.show();
@@ -3513,13 +3507,7 @@ function createPetitionValidation( event )
     /* Topics */
     var topic = $('#petition_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#petition_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a petition topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple petition topics.");
         topic_error.show();
@@ -3580,13 +3568,7 @@ function createNewsValidation( event )
     /* Topics */
     var topic = $('#news_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#news_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a news topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple news topics.");
         topic_error.show();
@@ -3778,7 +3760,7 @@ function loadCreate()
         {
             wrapper.find(".topic-radio").attr("checked",true);
         }
-        selectTopicSingle(wrapper);
+        toggleTopicSingle(wrapper);
     });
 
     function clearPetitionErrors()
