@@ -21,12 +21,14 @@ from django.utils import simplejson
 
 # python
 import urllib2
+from BeautifulSoup import BeautifulSoup
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
 PREFIX_ITERATIONS = ["","http://","http://www."]
+DESCRIPTION_TAGS = [("name","description"),("property","og:description")]
 def getLinkInfo(request, vals={}, html="",URL=""):
     vals = {}
     url = str(request.POST['remote_url'])
@@ -40,11 +42,21 @@ def getLinkInfo(request, vals={}, html="",URL=""):
         except:
             continue
     if html and URL:
-        soup = BeautifulStoneSoup(html,selfClosingTags=['img'])
-        try: vals['title'] = soup.title.string
+        html = re.sub(r'<script\s*.*</script>',"",html)
+        html = re.sub(r'<!DOCTYPE html\s*.*>',"",html)
+        soup = BeautifulSoup(html)
+
+        try: vals['title'] = soup.find('title').string
         except: vals['title'] = "No Title"
-        try:  vals['description'] = soup.findAll(attrs={"name":"description"})[0]['content']
-        except: vals['description'] = "No Description"
+
+        for tag in DESCRIPTION_TAGS:
+            description = soup.findAll(attrs={tag[0]:tag[1]})
+            if description:
+                vals['description'] = description[0]['content']
+                break
+        if 'description' not in vals:
+            vals['description'] = "No Description"
+
         image_refs = soup.findAll("img")
         list = []
         first_image = None
@@ -54,7 +66,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
                 img_url = image_refs[num]['src']
                 if num == 0:
                     first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
-                elif len(list) == 3:
+                elif len(list) == 5:
                     break
                 else:
                     toAdd = downloadImage(img_url=img_url,url=URL)
