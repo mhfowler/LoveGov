@@ -1,5 +1,5 @@
 import os
-PROJECT_PATH = os.path.dirname(__file__)
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 DEBUG = False
 UPDATE = False
 SHOW_TOOLBAR = False
