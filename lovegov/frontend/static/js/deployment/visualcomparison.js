@@ -1,3 +1,13 @@
+/**
+ * jQuery method for visual comparisons that make instantiating VisualComparisons much more convenient. How to use:
+ *
+ * 1) Put comparison json data in DOM element as attribute data-json="{{ jsondata }}"
+ * 2) Call visualComparison() on jQuery selector ID or class.
+ * 3) ???
+ * 4) Profit.
+ *
+ */
+
 (function( $ )
 {
     $.fn.visualComparison = function()
