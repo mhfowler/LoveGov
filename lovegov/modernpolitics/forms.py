@@ -250,7 +250,8 @@ class PasswordForm(forms.Form):
 class CreateContentForm(forms.ModelForm):
     class Meta:
         model = Content
-        fields = ('title','topics', 'type')
+        fields = ('title','topics', 'type', 'scale')
+    scale = forms.ChoiceField(choices=SCALE_CHOICES, required=False)
     def complete(self,request, object=None):
         if not object:
             object = self.save(commit=False)

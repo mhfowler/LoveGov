@@ -55,23 +55,7 @@
                     <div class="create-error" id="group_scale_error"></div>
                 </td>
                 <td>
-                    <div class="create-radio group_scale_radio create-radio-selected">
-                        All
-                        <input type="radio" class="custom-radio group_scale" checked="checked" id="government-scale-all" value='A' name="scale"/>
-                    </div>
-                    <div class="create-radio group_scale_radio">
-                        Federal
-                        <input type="radio" class="custom-radio group_scale" id="government-scale-federal" value='F' name="scale"/>
-                    </div>
-                    <div class="create-radio group_scale_radio">
-                        State
-                        <input type="radio" class="custom-radio group_scale" id="government-scale-state" value='S' name="scale"/>
-                    </div>
-                    <div class="create-radio group_scale_radio">
-                        Local
-                        <input type="radio" class="custom-radio group_scale" id="government-scale-local" value='L' name="scale"/>
-                    </div>
-                    <div class='clear-both'></div>
+                    {% include 'deployment/snippets/select_scale.html' %}
                 </td>
             </tr>
 
