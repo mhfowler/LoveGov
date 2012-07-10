@@ -1,7 +1,5 @@
-<script>
-    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
-</script>
 {% load thumbnail %}
+
 <div class="main-div">
     <!-- Left Block -->
     <div class="middle-left">
@@ -276,7 +274,7 @@
 
         {% else %}
             <div class="matching">
-                <div id="qaweb"></div>
+                <div class="{{ user_prof.get_name|slugify }}-canvas"></div>
                 <div id="qaweb-title">
                     You & {{ user_prof.get_name }}
                 </div>
@@ -305,6 +303,10 @@
     </div>
 </div>
 
+<script>
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+    loadVisualComparison($("." + "{{ user_prof.get_name|slugify }}" + "-canvas"),comparisonJSON);
+</script>
 <script> var p_id = "{{ user_prof.id }}"; </script>
 <script> var view_id = "{{ viewer.id }}"; </script>
 <script> rebind='profile'; </script>
