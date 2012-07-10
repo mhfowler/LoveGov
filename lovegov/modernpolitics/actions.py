@@ -66,7 +66,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
                 img_url = image_refs[num]['src']
                 if num == 0:
                     first_image = downloadImage(img_url=img_url,url=URL,min_size=1)
-                elif len(list) == 3:
+                elif len(list) == 5:
                     break
                 else:
                     toAdd = downloadImage(img_url=img_url,url=URL)
