@@ -274,13 +274,15 @@
 
         {% else %}
             <div class="matching">
-                <div class="{{ user_prof.get_name|slugify }}-canvas"></div>
+                <div class="{{ user_prof.get_name|slugify }}-canvas" data-json="{{ json }}"></div>
                 <div id="qaweb-title">
                     You & {{ user_prof.get_name }}
                 </div>
             </div>
         {% endif %}
     </div>
+
+    <div class="clearfix"></div>
 </div>
 
 <div id="profile_followers_modal" class="followers-modal">
@@ -304,8 +306,10 @@
 </div>
 
 <script>
-    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
-    loadVisualComparison($("." + "{{ user_prof.get_name|slugify }}" + "-canvas"),comparisonJSON);
+    $(document).ready(function()
+    {
+        $("." + "{{ user_prof.get_name|slugify }}" + "-canvas").visualComparison();
+    });
 </script>
 <script> var p_id = "{{ user_prof.id }}"; </script>
 <script> var view_id = "{{ viewer.id }}"; </script>

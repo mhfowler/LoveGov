@@ -61,13 +61,8 @@ function rebindFunction()
         case 'profile':                                         // /profile/<alias>
             loadProfile();
             hideFooter();
-            if( p_id != view_id )
-            {
-               // loadProfileComparison();
-            }
             break;
         case 'group':
-            loadProfileComparison();
             loadGroup();
             hideFooter();
             break;
@@ -613,7 +608,7 @@ function loadHoverComparison()
                         {
                             var obj = eval('(' + data + ')');
                             $('#comparison-hover-loading-img').hide();
-                            new VisualComparison('comparison-hover',obj).draw();
+                            $('#comparison-hover').visualComparison(obj,true);
                         },
                         'error': function(jqXHR, textStatus, errorThrown)
                         {
@@ -4177,6 +4172,7 @@ function loadNewMatch() {
     });
 
     $(".find_out_now").click(function(event) {
+        event.preventDefault();
         submitAddress($(this).parents(".address-box"));
     });
 }
@@ -4185,16 +4181,27 @@ function submitAddress(wrapper) {
     var address = wrapper.find(".address-input").val();
     var city = wrapper.find(".city-input").val();
     var zip = wrapper.find(".zip-input").val();
+    var state = wrapper.find(".state-input").val();
     ajaxPost({
         data: {
             'action':'submitAddress',
             'address':address,
             'city':city,
-            'zip':zip
+            'zip':zip,
+            'state':state
         },
         success: function(data)
         {
-            location.reload();
+            if( data == 'success' )
+            {
+                location.reload();
+                $('#address_input_error').hide();
+            }
+            else
+            {
+                $('#address_input_error').html(data);
+                $('#address_input_error').fadeIn(300);
+            }
         },
         error: function(error, textStatus, errorThrown)
         {

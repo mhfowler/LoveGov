@@ -370,19 +370,40 @@ def messageRep(request, vals={}):
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
+    full_address = ''
 
-    address = request.POST['address']
-    city = request.POST['city']
-    zip = request.POST['zip']
-    address = address + ', ' + city
+    address = request.POST.get('address')
+    if address:
+        full_address += address
 
-    location = locationHelper(address, zip)
+    city = request.POST.get('city')
+    if city:
+        if not full_address == '':
+            full_address += ', '
+        full_address += city
+
+    state = request.POST.get('state')
+    if state:
+        if not full_address == '':
+            full_address += ', '
+        full_address += state
+
+    zip = request.POST.get('zip')
+    if zip:
+        if full_address == '':
+            full_address = zip
+
+
+    try:
+        location = locationHelper(full_address, zip)
+    except:
+        return HttpResponse("The given address was not specific enough to determine your voting district")
 
     viewer = vals['viewer']
     viewer.location = location
     viewer.save()
 
-    return HttpResponse("yea!")
+    return HttpResponse("success")
 
 
 #-----------------------------------------------------------------------------------------------------------------------

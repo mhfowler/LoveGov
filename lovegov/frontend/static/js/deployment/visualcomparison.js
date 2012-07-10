@@ -1,17 +1,34 @@
 /**
- * Factory for creating VisualComparisons which insures a visual comparison is constructed in the case multiple DOM
- * elements are selected.
+ * jQuery method for visual comparisons that make instantiating VisualComparisons much more convenient. How to use:
  *
- * @param domEle            jQuery selector $("#id"), $(".class"), $("tag")
- * @param comparisonJSON    evaluated JSON data.
+ * 1) Put comparison json data in DOM element as attribute data-json="{{ jsondata }}"
+ * 2) Call visualComparison() on jQuery selector ID or class.
+ * 3) ???
+ * 4) Profit.
+ *
  */
-function loadVisualComparison(domEle, comparisonJSON)
+
+(function( $ )
 {
-    domEle.each(function()
+    $.fn.visualComparison = function(json,duplicate)
     {
-        new VisualComparison($(this),comparisonJSON).draw();
-    });
-}
+        this.each(function()
+        {
+            if (!$(this).hasClass("has_visualComparison"))
+            {
+                var jsonData;
+                if (json) { jsonData = json; }
+                else { jsonData = $(this).data('json'); }
+
+                new VisualComparison($(this),jsonData).draw();
+
+                if (!duplicate) { $(this).addClass("has_visualComparison"); }
+            }
+        });
+    };
+})( jQuery );
+
+
 
 /**
  * @author Clay
