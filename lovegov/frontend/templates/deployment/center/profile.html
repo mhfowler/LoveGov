@@ -305,10 +305,7 @@
 
 <script>
     var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
-    $("." + "{{ user_prof.get_name|slugify }}" + "-canvas").each(function()
-    {
-        new VisualComparison($(this),comparisonJSON).draw();
-    });
+    loadVisualComparison($("." + "{{ user_prof.get_name|slugify }}" + "-canvas"),comparisonJSON);
 </script>
 <script> var p_id = "{{ user_prof.id }}"; </script>
 <script> var view_id = "{{ viewer.id }}"; </script>
