@@ -78,7 +78,7 @@ var VisualComparison = Class.extend
     draw: function()
     {
         var self = this;
-        self.domEle.css({height:self.height,width:self.width,position:"relative"});
+        self.domEle.css({height:self.height,width:self.width,position:"relative",'text-align':'left'});
         this.stage = new Kinetic.Stage(self.domEle[0],self.width,self.height);          // get(0) returns the underlying DOM element in the jQuery element.
         this.drawTopics();
         this.drawMiddle();
