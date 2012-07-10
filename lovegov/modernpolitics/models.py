@@ -2264,7 +2264,7 @@ class Comment(Content):
             self.root_content = self.on_content.downcast().root_content
         else:
             self.root_content = self.on_content
-        self.title = str(self.creator_name + "'s comment on " + self.root_content.title)
+        self.title = self.creator_name + "'s comment on " + self.root_content.title
         self.type = 'C'
         self.summary = self.text
         self.in_feed = False

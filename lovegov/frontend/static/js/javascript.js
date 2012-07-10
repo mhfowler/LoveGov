@@ -63,7 +63,7 @@ function rebindFunction()
             hideFooter();
             if( p_id != view_id )
             {
-                loadProfileComparison();
+               // loadProfileComparison();
             }
             break;
         case 'group':
@@ -125,15 +125,32 @@ function selectHeaderLink(div) {
  ***********************************************************************************************************************/
 function loadMenuToggles() {
 
+    function menuClickoff(menu) {
+        menu.bindOnce("clickoutside.menuoff", function(event) {
+            if (menu.hasClass("hack_workaround")) {
+                menu.removeClass("hack_workaround");
+            }
+            else {
+                menu.hide();
+                menu.parents(".menu_toggle").removeClass("clicked");
+            }
+        });
+    }
+
+
     $(".menu").hide();
     $(".menu_toggle").click(function(event) {
         if (!$(this).hasClass("clicked")) {
             var other_menu_toggles = $(".menu_toggle").not($(this));
             other_menu_toggles.removeClass("clicked");
             other_menu_toggles.children(".menu").hide();
+            var menu=$(this).children(".menu");
+            menu.addClass("hack_workaround");
+            menuClickoff(menu);
         }
         $(this).children(".menu").toggle();
     });
+
     $(".menu_toggle").hover(
         function(event) {
             $(this).children(".triangle-selector").addClass("highlighted");
@@ -528,17 +545,30 @@ function loadHoverComparison()
 {
 
     var hoverTimer;
+    var hoverClearOK = true;
 
     function clearHover()
     {
-        $('#comparison-hover').empty();
-        $('#comparison-hover-div').fadeOut(100);
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
     }
 
-    $('#comparison-hover-div').hoverIntent
+    $('#comparison-hover-div').hover
         (
-            function() { clearTimeout(hoverTimer); },
-            function() { hoverTimer = setTimeout(function(){clearHover();},100)}
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                (
+                    function() { clearHover(); },
+                    300
+                );
+            }
         );
 
     function findHoverPosition(selector)
@@ -594,12 +624,11 @@ function loadHoverComparison()
             },
             function(event)
             {
-                hoverTimer = setTimeout(function()
-                {
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').empty();
-                    $('#comparison-hover-div').fadeOut(100);
-                },500)
+                hoverTimer = setTimeout
+                (
+                    function(){ clearHover(); },
+                    1000
+                );
             }
         );
 }
@@ -943,7 +972,6 @@ function loadHeader()
         }
     });
 
-
     $('#logo-link').hover
         (
             function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
@@ -1281,7 +1309,7 @@ function toggleQuestionTopic(div)
 function loadQuestion()
 {
     // submit answer
-    $("#submitquestion").click(function(event)
+    $("#submitquestion").bindOnce("click.submitanswer", function(event)
     {
         event.preventDefault();
         var checked = false;
@@ -1319,12 +1347,12 @@ function loadQuestion()
         );
 
     // answer click
-    $('input').click(function(event)
+    $('input').bindOnce("click.answer", function(event)
     {
         event.preventDefault();
     });
 
-    $('.answer-container').click(function()
+    $('.answer-container').bindOnce("click.answercontainer", function()
     {
         $('.answer-container').removeClass("answer-container-selected");
 
@@ -1340,7 +1368,6 @@ function loadQuestion()
             $(this).addClass("answer-container-selected");
         }
 
-        // submit
         submitAnswer();
     });
 }
@@ -1373,9 +1400,8 @@ function loadThread()
     bindInlineEdits();
     heartButtons();
     bindTooltips();
-    // comment submit
-    $(".submit-comment").unbind();
-    $(".submit-comment").click(function(event)
+
+    $(".submit-comment").bindOnce("click.submitcomment",function(event)
     {
         event.preventDefault();
         $(this).parent().submit();
@@ -1388,9 +1414,7 @@ function loadThread()
         ncspan.text(num_comments + 1);
     }
 
-    // new comment submit
-    $('#commentform').unbind();
-    $("#commentform").submit(function(event)
+    $("#commentform").bindOnce("submit.comment",function(event)
     {
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
@@ -1415,7 +1439,7 @@ function loadThread()
     });
 
     // toggle reply form for comment
-    $(".reply").click(function()
+    $(".reply").bindOnce("click.reply",function()
     {
         $(this).parent().siblings('.replyform').toggle();
     });
@@ -1430,7 +1454,7 @@ function loadThread()
 
 
     // like comment
-    $(".commentlike").click(function(event)
+    $(".commentlike").bindOnce("click.like",function(event)
     {
         event.preventDefault();
         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
@@ -1442,7 +1466,7 @@ function loadThread()
     });
 
     // dislike comment
-    $(".commentdislike").click(function(event)
+    $(".commentdislike").bindOnce("click.dislike",function(event)
     {
         event.preventDefault();
         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
@@ -1454,7 +1478,7 @@ function loadThread()
     });
 
     // delete comment
-    $(".commentdelete").click(function()
+    $(".commentdelete").bindOnce("click.delete",function()
     {
         var content_id = $(this).children(".delete_id").val();
         $.post('/action/', {'action':'delete','c_id':content_id},
@@ -1466,7 +1490,7 @@ function loadThread()
 
 
     // reply to comment
-    $(".replyform").submit(function(event)
+    $(".replyform").bindOnce("submit.reply", function(event)
     {
         event.preventDefault();
         var comment_text = $(this).children(".comment-textarea").val();
@@ -1492,7 +1516,7 @@ function loadThread()
 
 
     // Collapse a thread (a comment and all its children)
-    $('span.collapse').click(function(e) {
+    $('span.collapse').bindOnce("click.collapse",function(e) {
         var close = '[-]';
         var open = '[+]';
         if($(this).text()==close) {
@@ -1505,7 +1529,7 @@ function loadThread()
     });
 
     // Flag a comment
-    $('span.flag').click(function(e) {
+    $('span.flag').bindOnce("click.flag", function(e) {
         var commentid = $(this).data('commentid');
         var comment = $(this).parent().children('div.comment-text').text();
         var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
@@ -1524,6 +1548,8 @@ function loadThread()
     });
 
     loadHoverComparison();
+    bindChangeContentPrivacy();
+
 }
 
 // ajax gets thread and replaces old thread
@@ -1829,7 +1855,7 @@ function loadNotification()
             var n_id = $(this).data('n_id');
             ajaxPost({
                 'data': {'action':'getaggregatenotificationusers',
-                        'n_id': n_id },
+                    'n_id': n_id },
                 success: function(data)
                 {
                     var obj = eval('(' + data + ')');
@@ -4151,6 +4177,7 @@ function loadNewMatch() {
     });
 
     $(".find_out_now").click(function(event) {
+        event.preventDefault();
         submitAddress($(this).parents(".address-box"));
     });
 }
@@ -4159,16 +4186,27 @@ function submitAddress(wrapper) {
     var address = wrapper.find(".address-input").val();
     var city = wrapper.find(".city-input").val();
     var zip = wrapper.find(".zip-input").val();
+    var state = wrapper.find(".state-input").val();
     ajaxPost({
         data: {
             'action':'submitAddress',
             'address':address,
             'city':city,
-            'zip':zip
+            'zip':zip,
+            'state':state
         },
         success: function(data)
         {
-            location.reload();
+            if( data == 'success' )
+            {
+                location.reload();
+                $('#address_input_error').hide();
+            }
+            else
+            {
+                $('#address_input_error').html(data);
+                $('#address_input_error').fadeIn(300);
+            }
         },
         error: function(error, textStatus, errorThrown)
         {
@@ -4263,7 +4301,7 @@ function swapInHover(div) {
 
 function bindChangeContentPrivacy() {
 
-    $('div.change-privacy').bindOnce('click', function() {
+    $('div.change-privacy').bindOnce('click.changeprivacy', function() {
         var content_id = $(this).data('content_id');
         var meDiv = $(this);
         $(this).tooltip('hide');

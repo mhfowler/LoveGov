@@ -1,7 +1,5 @@
-<script>
-    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
-</script>
 {% load thumbnail %}
+
 <div class="main-div">
     <!-- Left Block -->
     <div class="middle-left">
@@ -276,7 +274,7 @@
 
         {% else %}
             <div class="matching">
-                <div id="qaweb"></div>
+                <div class="{{ user_prof.get_name|slugify }}-canvas" data-json="{{ json }}"></div>
                 <div id="qaweb-title">
                     You & {{ user_prof.get_name }}
                 </div>
@@ -295,9 +293,7 @@
                 <tr>
                     <td>
                         <a href="{{ follower.get_url }}">
-                            {% thumbnail follower.getProfileImage.image "38x38" crop="center" as im %}
-                                <img src="{{ im.url }}" class="icon-med"/>
-                            {% endthumbnail %}
+                            {% include "deployment/snippets/avatar.html" with user=follower width="38" height="38" hoveroff=1 %}
                         </a>
                     </td>
                     <td><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></td>
@@ -307,6 +303,9 @@
     </div>
 </div>
 
+<script>
+    $("." + "{{ user_prof.get_name|slugify }}" + "-canvas").visualComparison();
+</script>
 <script> var p_id = "{{ user_prof.id }}"; </script>
 <script> var view_id = "{{ viewer.id }}"; </script>
 <script> rebind='profile'; </script>

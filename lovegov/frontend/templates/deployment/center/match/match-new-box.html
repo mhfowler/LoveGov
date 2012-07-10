@@ -1,4 +1,5 @@
 {% load thumbnail %}
+
 <div class="match-box-div">
 
     <div class="match-user-info">
@@ -41,12 +42,11 @@
     </div>
 
     <div class="qaweb">
-        <div id="{{ item.get_name|slugify }}-canvas"></div>
+        <div class="{{ item.get_name|slugify }}-canvas" data-json="{{ item.compare }}"></div>
     </div>
 
     <script>
-        var json = eval('(' + '{{ item.compare|escapejs }}' + ')');
-        new VisualComparison("{{ item.get_name|slugify }}-canvas",json).draw();
+        $("." + "{{ item.get_name|slugify }}" + "-canvas").visualComparison();
     </script>
 
 </div>

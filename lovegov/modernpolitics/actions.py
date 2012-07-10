@@ -255,7 +255,7 @@ def create(request, val={}):
         if request.is_ajax():
             if formtype == "N":
                 viewer.num_articles += 1
-                viewer.save();
+                viewer.save()
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
 
@@ -370,19 +370,40 @@ def messageRep(request, vals={}):
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
+    full_address = ''
 
-    address = request.POST['address']
-    city = request.POST['city']
-    zip = request.POST['zip']
-    address = address + ', ' + city
+    address = request.POST.get('address')
+    if address:
+        full_address += address
 
-    location = locationHelper(address, zip)
+    city = request.POST.get('city')
+    if city:
+        if not full_address == '':
+            full_address += ', '
+        full_address += city
+
+    state = request.POST.get('state')
+    if state:
+        if not full_address == '':
+            full_address += ', '
+        full_address += state
+
+    zip = request.POST.get('zip')
+    if zip:
+        if full_address == '':
+            full_address = zip
+
+
+    try:
+        location = locationHelper(full_address, zip)
+    except:
+        return HttpResponse("The given address was not specific enough to determine your voting district")
 
     viewer = vals['viewer']
     viewer.location = location
     viewer.save()
 
-    return HttpResponse("yea!")
+    return HttpResponse("success")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -555,6 +576,8 @@ def comment(request, vals={}):
         action = Action(privacy=getPrivacy(request),relationship=rel)
         action.autoSave()
         comment.on_content.getCreator().notify(action)
+        if not comment.on_content == comment.root_content:
+            comment.root_content.getCreator().notify(action)
         return HttpResponse("+")
     else:
         if request.is_ajax():
