@@ -3688,32 +3688,33 @@ function loadCreate()
                         data: {'action':'getLinkInfo','remote_url':text},
                         success: function(data)
                         {
-                            returned = eval('(' + data + ')');
-                            $('#news-link-generation-wrapper').html(returned.html);
-                            image_count = $('.news_link_image_container').children().length;
-                            $('#cycle-img-left').bind('click',function()
+                            if (data != "-")
                             {
-                                if (currentLink-1 < 1) { currentLink = image_count; }
-                                else { currentLink--; }
-                                selectImageToggle();
+                                returned = eval('(' + data + ')');
+                                $('#news-link-generation-wrapper').html(returned.html);
+                                image_count = $('.news_link_image_container').children().length;
+                                $('#cycle-img-left').bind('click',function()
+                                {
+                                    if (currentLink-1 < 1) { currentLink = image_count; }
+                                    else { currentLink--; }
+                                    selectImageToggle();
 
-                            });
-                            $('#cycle-img-right').bind('click',function()
+                                });
+                                $('#cycle-img-right').bind('click',function()
+                                {
+                                    if (currentLink+1 > image_count) { currentLink = 1; }
+                                    else { currentLink++; }
+                                    selectImageToggle();
+                                });
+                            }
+                            else
                             {
-                                if (currentLink+1 > image_count) { currentLink = 1; }
-                                else { currentLink++; }
-                                selectImageToggle();
-                            });
+                                $('#news-link-generation').hide();
+                                $('#news-summary').hide();
+                            }
                             currentURL = text;
                         },
                         error: null
-                        /*
-                         function(jqXHR, textStatus, errorThrown)
-                         {
-
-                         $('#news-link-generation').hide();
-                         $('#news-summary').hide();
-                         } */
                     });
                 }
                 else
