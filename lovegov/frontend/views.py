@@ -43,13 +43,13 @@ def viewWrapper(view, requires_login=False):
                 if not user:
                     return shortcuts.redirect('/login' + request.path)
 
-                # IF NOT DEVELOPER AND IN UPDATE MODE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE:
-                    if not user.developer: # Return construction if the user doesn't exist, or isn't a developer
-                        return shortcuts.redirect('/underconstruction/') # Otherwise continue logging in
+                # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
+                if UPDATE or ("dev" in getHostHelper(request)):
+                    if not user.developer:
+                        return shortcuts.redirect('/underconstruction/')
 
                 # IF NOT AUTHENTICATED, REDIRECT TO LOGIN
-                if not user or not request.user.is_authenticated():
+                if not request.user.is_authenticated():
                     print request.path
                     return HttpResponseRedirect('/login' + request.path)
 
