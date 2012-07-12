@@ -17,6 +17,8 @@ import os.path
 import datetime
 import os
 
+LOCAL = settings.LOCAL
+
 ########################################## PROHIBITED BROWSERS #########################################################
 
 PROHIBITED_BROWSERS = ["MSIE"]

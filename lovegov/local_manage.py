@@ -1,9 +1,3 @@
-import socket
-
-# are we local?
-LOCAL = False
-if "lg" not in socket.getfqdn():
-    LOCAL = True
 
 #!/usr/bin/env python
 import os

@@ -1,6 +1,7 @@
 import os.path
 import settings
 
+LOCAL = False
 DEBUG = settings.UPDATE
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.dirname(__file__)

@@ -26,7 +26,6 @@ from datetime import datetime
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
-from lovegov.local_manage import LOCAL
 from lovegov.modernpolitics.constants import *
 
 import logging
