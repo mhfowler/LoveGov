@@ -12,7 +12,7 @@ DATABASES = {
         'ENGINE':   'django.db.backends.mysql',
         'NAME':     'live',
         'USER':     'root',
-        'PASSWORD': 'texers787',
+        'PASSWORD': 'lglglg12',
         'HOST':     '',
         'PORT':     '3306',
         }

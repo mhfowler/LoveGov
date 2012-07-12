@@ -13,7 +13,7 @@ DATABASES = {
         'ENGINE':   'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.django.db.backends.dummy
         'NAME':     'dev',
         'USER':     'root',         # Not used with sqlite3.
-        'PASSWORD': 'texers787',         # Not used with sqlite3.
+        'PASSWORD': 'lglglg12',         # Not used with sqlite3.
         'HOST':     '',         # Set to empty string for localhost. Not used with sqlite3.
         'PORT':     '3006',         # Set to empty string for default. Not used with sqlite3.
     },
@@ -21,7 +21,7 @@ DATABASES = {
         'ENGINE':   'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.django.db.backends.dummy
         'NAME':     'live',
         'USER':     'root',         # Not used with sqlite3.
-        'PASSWORD': 'texers787',         # Not used with sqlite3.
+        'PASSWORD': 'lglglg12',         # Not used with sqlite3.
         'HOST':     '',         # Set to empty string for localhost. Not used with sqlite3.
         'PORT':     '3306',         # Set to empty string for default. Not used with sqlite3.
     },
