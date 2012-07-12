@@ -883,30 +883,6 @@ def legislation(request, session=None, type=None, number=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Match page.
 #-----------------------------------------------------------------------------------------------------------------------
-def matchNew(request, vals={}):
-    if request.method == 'GET':
-        vals['defaultImage'] = getDefaultImage().image
-        user = vals['viewer']
-
-        c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
-        c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
-
-        list = [c1,c2]
-        for c in list:
-            comparison = getUserUserComparison(user,c)
-            c.compare = comparison.toJSON()
-            c.result = comparison.result
-        vals['c1'] = c1
-        vals['c2'] = c2
-
-        # vals['viewer'] doesn't translate well in the template
-        vals['userProfile'] = user
-        setPageTitle("lovegov: match",vals)
-        html = ajaxRender('deployment/center/match/match-new.html', vals, request)
-        url = '/match/'
-        return framedResponse(request, html, url, vals)
-
-
 def newMatch(request,start='presidential', vals={}):
 
     sections = {'presidential':0,
