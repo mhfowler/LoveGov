@@ -2,7 +2,7 @@ import socket
 
 # are we local?
 LOCAL = False
-if socket.getfqdn() != 'server.lovegov.com':
+if "lg" not in socket.getfqdn():
     LOCAL = True
 
 #!/usr/bin/env python
