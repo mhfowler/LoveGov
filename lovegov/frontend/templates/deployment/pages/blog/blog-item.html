@@ -2,7 +2,9 @@
     <div class="blog_item_left">
         <h3><a class="clear-link" href="{{ blogPost.getURL }}">{{ blogPost.title }}</a></h3>
         <div class="blog_posted">Posted on <strong>{{ blogPost.datetime }}</strong> in {% for cat in blogPost.category %}<a class="category_blog" href="/blog/{{ cat|lower }}">{{ cat }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+        {% autoescape off %}
         {{ blogPost.message|urlize|linebreaks }}
+        {% endautoescape %}
     </div>
     <div class="blog_item_right">
         <h6 style="margin-bottom:5px">Author</h6>
