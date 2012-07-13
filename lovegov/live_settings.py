@@ -1,22 +1,21 @@
-import os.path
 import settings
 
 LOCAL = False
 DEBUG = settings.UPDATE
 TEMPLATE_DEBUG = DEBUG
-PROJECT_PATH = os.path.dirname(__file__)
+PROJECT_PATH = settings.PROJECT_PATH
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
 DATABASES = {
     'default': {
         'ENGINE':   'django.db.backends.mysql',
-        'NAME':     'live',
+        'NAME':     'lglive',
         'USER':     'root',
         'PASSWORD': 'lglglg12',
-        'HOST':     '',
+        'HOST':     'lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com',
         'PORT':     '3306',
-        }
+        },
 }
 
 STATIC_ROOT = '/static/live/'
