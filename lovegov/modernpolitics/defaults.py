@@ -1129,17 +1129,17 @@ def updatePartyImages():
 def updatePoliticianImages():
 
     romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/romney.jpg')
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
     im = open(im_ref)
     romney.setProfileImage(im)
 
     elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/warren.jpg')
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
     im = open(im_ref)
     elizabeth.setProfileImage(im)
 
     cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/cicilline.jpg')
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
     im = open(im_ref)
     cicilline.setProfileImage(im)
 
