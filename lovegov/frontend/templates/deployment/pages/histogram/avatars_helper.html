@@ -1,0 +1,7 @@
+{% for u in users %}
+
+    <a class="histogram-avatar" href="{{ u.get_url }}">
+        {% include 'deployment/snippets/avatar.html' with user=u width="50" height="50" %}
+    </a>
+
+{% endfor %}

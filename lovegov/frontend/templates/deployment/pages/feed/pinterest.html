@@ -1,0 +1,61 @@
+{% load thumbnail %}
+
+{% with creator=item.getCreatorDisplay %}
+
+    <div class="pinterest_card pinterest_unrendered" data-rank="{{ pinterest_sequence }}">
+
+        <div class="pinterest">
+
+            <div class="pinterest-main">
+
+                <div class="pinterest-header">
+
+                    <!-- avatar -->
+                    {% include 'deployment/pages/feed/feed_avatar.html' %}
+
+                    <div class="header-topic">
+                        {% with topic=item.getMainTopic %}
+                            {% thumbnail topic.image "50x50" format="PNG" as im %}
+                                <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
+                            {% endthumbnail %}
+                        {% endwith %}
+                    </div>
+
+                    <div style="clear:both"></div>
+                </div>
+
+                <!-- image -->
+                {% if item.type == 'N' or item.type == 'G' or item.type == 'P' %}
+                    <a href="{{item.link}}" target="_blank">
+                        {% include 'deployment/pages/feed/feed_image.html' %}
+                    </a>
+                {% endif %}
+
+                <!-- title -->
+                {% include 'deployment/pages/feed/feed_title.html' %}
+
+                <!-- summary -->
+                {% include 'deployment/pages/feed/feed_summary.html' %}
+
+                <!-- top-comment -->
+                {% with top_comment=item.getTopComment %}
+                    {% if top_comment %}
+                        {% include 'deployment/pages/feed/top_comment.html' %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- petition bar -->
+                {% if item.type == 'P' %}
+                    {% include 'deployment/snippets/petition_bar.html' with p=item %}
+                {% endif %}
+
+                <!-- footer -->
+                {% include 'deployment/pages/feed/social_bar.html' %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endwith %}

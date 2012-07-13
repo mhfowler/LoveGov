@@ -1,0 +1,113 @@
+{% extends 'deployment/templates/frame.html' %}
+
+{% block content %}
+
+<div id="content-leg-div">
+
+{% if error %}
+
+<span style="color:red">{{error}}</span>
+
+{% else %}
+
+Session: {{session}}
+<br>Type: {{type}}
+<br>Number: {{number}}
+
+<p><a href='' class='button'>Share 'dis wit yo friends</a>
+
+<p><h2>Bill Information</h2>
+
+{% for title in leg_titles %}
+<p><h3>Bill title</h3>
+<ul>
+	<li>Title: {{title.title}}</li>
+	<li>Type: {{title.title_type}}</li>
+	<li>As: {{title.title_as}}</li>
+</ul>
+{% endfor %}
+
+<p><h3>Description</h3></p>
+
+<p>{{leg.bill_summary}}
+
+<p><h3>Misc Info</h3>
+
+<ul>
+	<li>Last updated: {{leg.bill_updated}}</li>
+	<li>Introduced: {{leg.introduced_datetime}}</li>
+	<li>Sponsor: <a href='{{leg.sponsor.get_url}}'>{{leg.sponsor.get_name}}</a></li>
+	<li>Current state: {{leg.state_text}}</li>
+	<ul>
+		<li>Status: {{leg.bill_status.status_text}}</li>
+		<li>Datetime: {{leg.bill_status.datetime}}</li>
+		<li>Where: {{leg.bill_status.where}}</li>
+		<li>Result: {{leg.bill_status.result}}</li>
+		<li>How: {{leg.bill_status.how}}</li>
+		<li>Roll: {{leg.bill_status.roll}}</li>
+	</ul>
+	<li>State datetime: {{leg.state_datetime}}</li>
+</ul>
+
+<p><h3>Sponsor</h3>
+
+<a href='{{leg.sponsor.get_url}}'>{{leg.sponsor.get_name}}</a>
+
+<p><h3>Co-sponsors</h3>
+
+<ul>
+	{% for cosponsor in leg.cosponsors.all %}
+	<li><a href='{{cosponsor.get_url}}'>{{cosponsor.get_name}}</a></li>
+	{% endfor %}
+</ul>
+
+<p><h3>Committees</h3>
+
+{% for committee in leg.committees.all %}
+
+<ul>
+	<li>Name: {{committee.name}}</li>
+	<li>Code: {{committee.code}}</li>
+	<li>Type: {{committee.type}}</li>
+	<li>Members: <ul>
+		{% for cmember in committee.committemember_set.electedofficial.all %}
+		<li><a href='{{cmember.get_url}}'>{{cmember.get_name}}</a></li>
+		{% endfor %}
+	</ul></li>
+</ul>
+
+{% endfor %}
+
+<p><h3>Legislative Actions</h3></p>
+
+{% for action in leg.legislationaction_set.all %}
+
+<ul>
+	<li>Action: {{action.action_type}}</li>
+	<li>Committee: {{action.refer_committee}}</li>
+	<li>Datetime: {{action.datetime}}</li>
+	<li>Description: {{action.text}}</li>	
+</ul>
+
+{% endfor %}
+
+<p><h3>Amendments</h3>
+
+{% for amendment in leg.legislatationamendment_set %}
+
+<ul>
+	<li>Chamber: {{amendment.chamber}}</li>
+	<li>Number: {{amendment.number}}</li>
+</ul>
+
+{% empty %}
+
+<p>No amendments for this bill.</p>
+
+{% endfor %}
+
+{% endif %}
+
+</div>
+
+{% endblock %}

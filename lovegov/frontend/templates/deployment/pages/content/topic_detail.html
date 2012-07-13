@@ -1,0 +1,15 @@
+{% extends 'deployment/pages/content/content_detail.html' %}
+
+{% block content_detail %}
+
+
+    {% load thumbnail %}
+
+    {% thumbnail topic.image "500x500" format="PNG" as im %}
+        <img id="super-topic-img" src="{{ im.url }}"/>
+    {% endthumbnail %}
+
+    <script> rebind='topic'; </script>
+
+{% endblock %}
+

@@ -1,0 +1,26 @@
+{% extends 'deployment/templates/frame.html' %}
+
+{% block content %}
+
+<div id="content-leg-div">
+
+Session: {{session}}
+<br>
+	Type: {{type}}
+</br>
+<br>
+	Please select a bill.
+
+<ul>
+	{% for number in numbers %}
+	<li><a href='/legislation/{{session}}/{{type}}/{{number}}'>{{type}} {{number}}</a></li>
+	{% empty %}
+	<li>Congressional bill data is unavailable for the provided session and bill type.</li>
+	{% endfor %}
+</ul>
+</br>
+<br>
+
+</div>
+
+{% endblock %}
