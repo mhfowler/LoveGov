@@ -641,7 +641,6 @@ def setFollowPrivacy(request, vals={}):
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
-#
 #-----------------------------------------------------------------------------------------------------------------------
 def vote(request, vals):
     """Likes or dislikes content based on post."""
@@ -659,7 +658,6 @@ def vote(request, vals):
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves a users answer to a question.
-#
 #-----------------------------------------------------------------------------------------------------------------------
 def answer(request, vals={}):
     """ Saves a users answer to a question."""
@@ -1095,7 +1093,7 @@ def matchComparison(request,vals={}):
     object.compare = object.getComparison(viewer).toJSON()
 
     vals['item'] = object
-    html = ajaxRender('deployment/center/match/match-new-box.html',vals,request)
+    html = ajaxRender('deployment/pages/match/match-new-box.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1140,14 +1138,14 @@ def ajaxGetFeed(request, vals={}):
     vals['display']=feed_display
 
     if feed_display == 'L':
-        html = ajaxRender('deployment/center/feed/linear_helper.html', vals, request)
+        html = ajaxRender('deployment/pages/feed/linear_helper.html', vals, request)
         to_return = {'html':html, 'num':len(content)}
     else:
         cards = []
         for x in items:
             vals['item'] = x[0].downcast()
             vals['my_vote'] = x[1]
-            card =  ajaxRender('deployment/center/feed/pinterest.html', vals, request)
+            card =  ajaxRender('deployment/pages/feed/pinterest.html', vals, request)
             cards.append(card)
         to_return = {'cards':json.dumps(cards), 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
@@ -1419,7 +1417,7 @@ def matchSection(request, vals={}):
 
         # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-tryptic-template.html', vals, request)
+        html = ajaxRender('deployment/pages/match/match-tryptic-template.html', vals, request)
 
     elif section == 'social':
         user = vals['viewer']
@@ -1441,7 +1439,7 @@ def matchSection(request, vals={}):
         vals['networks'] = [network,congress,lovegov]
 
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
+        html = ajaxRender('deployment/pages/match/match-social-network.html', vals, request)
 
     elif section == 'cause':
         user = vals['viewer']
@@ -1463,7 +1461,7 @@ def matchSection(request, vals={}):
         vals['networks'] = [network,congress,lovegov]
 
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
+        html = ajaxRender('deployment/pages/match/match-social-network.html', vals, request)
 
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1612,7 +1610,7 @@ def getHistogramMembers(request, vals={}):
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('deployment/pages/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
@@ -1626,14 +1624,14 @@ def getAllGroupMembers(request, vals={}):
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('deployment/pages/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
 
 def likeThis(request, vals={}):
 
-    html = ajaxRender('deployment/pieces/like_this.html', vals, request)
+    html = ajaxRender('deployment/pages/feed/like_this.html', vals, request)
     to_return = {'html':html}
 
     return HttpResponse(json.dumps(to_return))

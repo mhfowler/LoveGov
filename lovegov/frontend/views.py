@@ -127,7 +127,7 @@ def postEmail(request):
             return HttpResponse('+')
         else:
             vals = {'emailMessage':"Thanks! We'll keep you updated!"}
-            return renderToResponseCSRF(template='deployment/pages/login-main.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
     else:
         return shortcuts.redirect('/comingsoon/')
 
@@ -285,7 +285,6 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
         vals['viewer'] = user
         print "user:" + user.get_name()
     if request.method == 'GET':
-        # TODO: login user and redirect him/her to Q&A Web after a couple of seconds
         return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
     else:
         return loginPOST(request,to_page,message,vals)
@@ -362,7 +361,7 @@ def web(request, vals={}):
         getUserWebResponsesJSON(request,vals)
         setPageTitle("lovegov: web",vals)
         vals['firstLogin'] = vals['viewer'].checkFirstLogin()
-        html = ajaxRender('deployment/center/qaweb.html', vals, request)
+        html = ajaxRender('deployment/pages/qaweb/qaweb.html', vals, request)
         url = '/web/'
         return framedResponse(request, html, url, vals)
     if request.method == 'POST':
@@ -397,7 +396,7 @@ def compareWeb(request,alias=None,vals={}):
             vals['compareUserProfile'] = tempvals['viewer']
 
             setPageTitle("lovegov: web2",vals)
-            html = ajaxRender('deployment/center/qaweb-temp.html', vals, request)
+            html = ajaxRender('deployment/pages/qaweb/qaweb-temp.html', vals, request)
             url = '/profile/web/' + alias + '/'
             return framedResponse(request, html, url, vals)
     if request.method == 'POST':
@@ -436,7 +435,7 @@ def theFeed(request, vals={}):
     vals['num_pinterest'] = range(3)
 
     setPageTitle("lovegov: beta",vals)
-    html = ajaxRender('deployment/center/feed/feed.html', vals, request)
+    html = ajaxRender('deployment/pages/feed/feed.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
 
@@ -517,74 +516,6 @@ def networks(request, vals={}):
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# home page with feeds
-#-----------------------------------------------------------------------------------------------------------------------
-def home(request, vals={}):
-    rightSideBar(request, vals)             # even though its homesidebar
-    # get feed stuff
-    user=vals['viewer']
-    # new
-    new = latest(user)
-    vals['defaultImage'] = getDefaultImage().image
-    vals['new_length'] = len(new)
-    vals['newfeed'] = new
-    # hot
-    hot = feedHelper(user=user, feed_type='H')
-    vals['hot_length'] = len(hot)
-    vals['hotfeed'] = hot
-    # best
-    best = greatest(user)
-    vals['best_length'] = len(best)
-    vals['bestfeed'] = best
-    setPageTitle("lovegov: beta",vals)
-    html = ajaxRender('deployment/center/home.html', vals, request)
-    url = '/home/'
-    return framedResponse(request, html, url, vals)
-
-def latest(user, start=0, stop=5, content=None):
-    if not content:
-        content = Content.objects.filter(Q(type='P') | Q(type='N'))
-    content = content.order_by('-created_when')
-    stop = min(stop, len(content))
-    content = content[start:stop]
-    return listHelper(user, content)
-
-def greatest(user, start=0, stop=5, content=None,):
-    if not content:
-        content = Content.objects.filter(Q(type='P') | Q(type='N'))
-    content = content.order_by("-status")
-    stop = min(stop, len(content))
-    content = content[start:stop]
-    return listHelper(user, content)
-
-def listHelper(user, content):
-    user_votes = Voted.objects.filter(user=user)
-    list=[]
-    for c in content:
-        vote = user_votes.filter(content=c)
-        if vote:
-            my_vote=vote[0].value
-        else:
-            my_vote=0
-        list.append((c,my_vote))
-    return list
-
-def feedHelper(user, feed_type='H', start=0, stop=5, topics=None):
-    items = getFeedItems(start=start, stop=stop, feed_type=feed_type, topics=topics)
-    list = []
-    user_votes = Voted.objects.filter(user=user)
-    for i in items:
-        c = i.content
-        vote = user_votes.filter(content=c)
-        if vote:
-            my_vote=vote[0].value
-        else:
-            my_vote=0
-        list.append((c,my_vote))    # content, my_vote
-    return list
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Profile Link
@@ -684,7 +615,7 @@ def profile(request, alias=None, vals={}):
 
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
-            html = ajaxRender('deployment/center/profile.html', vals, request)
+            html = ajaxRender('deployment/pages/profile/profile.html', vals, request)
             url = '/profile/' + alias
             return framedResponse(request, html, url, vals)
         else:
@@ -706,7 +637,7 @@ def network(request, alias=None, vals={}):
     network = Network.lg.get_or_none(alias=alias)
     if not network:
         vals['basic_message'] = "No network matches the given network ID"
-        html = ajaxRender('deployment/center/basic_message.html', vals, request)
+        html = ajaxRender('deployment/pages/basic_message.html', vals, request)
         url = '/network/' + alias + '/'
         return framedResponse(request, html, url, vals)
     return group(request,g_id=network.id,vals=vals)
@@ -776,7 +707,7 @@ def group(request, g_id=None, vals={}):
     vals['num_group_members'] = group.members.count()
 
     setPageTitle("lovegov: " + group.title,vals)
-    html = ajaxRender('deployment/center/group.html', vals, request)
+    html = ajaxRender('deployment/pages/group/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -791,7 +722,7 @@ def histogramDetail(request, g_id, vals={}):
     loadHistogram(20, group.id, 'full', vals)
 
     setPageTitle("lovegov: " + group.title,vals)
-    html = ajaxRender('deployment/center/histogram.html', vals, request)
+    html = ajaxRender('deployment/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
 
@@ -849,7 +780,7 @@ def about(request, start="video", vals={}):
         vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
         setPageTitle("lovegov: about",vals)
 
-        html = ajaxRender('deployment/center/about/about.html', vals, request)
+        html = ajaxRender('deployment/pages/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 
@@ -861,15 +792,15 @@ def legislation(request, session=None, type=None, number=None, vals={}):
     vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
         vals['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
-        return renderToResponseCSRF(template='deployment/pages/legislation.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='deployment/pages/legislation/legislation.html', vals=vals, request=request)
     legs = Legislation.objects.filter(bill_session=session)
     if type==None:
         type_list = [x['bill_type'] for x in Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
         vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='deployment/pages/legislation-session.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='deployment/pages/legislation/legislation-session.html', vals=vals, request=request)
     if number==None:
         vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='deployment/pages/legislation-type.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='deployment/pages/legislation/legislation-type.html', vals=vals, request=request)
     legs = Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
         vals['error'] = "No legislation found with the given parameters."
@@ -877,7 +808,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
 	leg = legs[0]
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
-    return renderToResponseCSRF(template='deployment/pages/legislation-view.html', vals=vals, request=request)
+    return renderToResponseCSRF(template='deployment/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -900,7 +831,7 @@ def newMatch(request,start='presidential', vals={}):
     matchRepresentatives(request, vals)
 
     setPageTitle("lovegov: beta",vals)
-    html = ajaxRender('deployment/center/match/match-new.html', vals, request)
+    html = ajaxRender('deployment/pages/match/match-new.html', vals, request)
     url = "/match/"
     return framedResponse(request, html, url, vals)
 
@@ -1011,7 +942,7 @@ def topicDetail(request, topic_alias=None, vals={}):
         topic = Topic.objects.get(alias=topic_alias)
         contentDetail(request, topic.getForum(), vals)
         frame(request, vals)
-        return renderToResponseCSRF('deployment/pages/topic_detail.html', vals, request)
+        return renderToResponseCSRF('deployment/pages/content/topic_detail.html', vals, request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
@@ -1030,7 +961,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
 
     contentDetail(request=request, content=petition, vals=vals)
     setPageTitle("lovegov: " + petition.title,vals)
-    html = ajaxRender('deployment/center/petition_detail.html', vals, request)
+    html = ajaxRender('deployment/pages/content/petition_detail.html', vals, request)
     url = '/petition/' + str(petition.id)
     return framedResponse(request, html, url, vals)
 
@@ -1043,7 +974,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
     setPageTitle("lovegov: " + news.title,vals)
-    html = ajaxRender('deployment/center/news_detail.html', vals, request)
+    html = ajaxRender('deployment/pages/content/news_detail.html', vals, request)
     url = '/news/' + str(news.id)
     return framedResponse(request, html, url, vals)
 
@@ -1070,7 +1001,7 @@ def questionDetail(request, q_id=-1, vals={}):
     valsQuestion(request, q_id, vals)
     user = vals['user']
     vals['pageTitle'] = "lovegov: " + vals['question'].question_text
-    html = ajaxRender('deployment/center/question_detail.html', vals, request)
+    html = ajaxRender('deployment/pages/content/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
 
@@ -1160,7 +1091,7 @@ def nextQuestion(request, vals={}):
     question = getNextQuestion(request, vals)
     valsQuestion(request, question.id, vals)
     setPageTitle("lovegov: " + question.question_text,vals)
-    html = ajaxRender('deployment/center/question_detail.html', vals, request)
+    html = ajaxRender('deployment/pages/content/question_detail.html', vals, request)
     url = question.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -1189,7 +1120,7 @@ def account(request, section="", vals={}):
 
     if request.method == 'GET':
         setPageTitle("lovegov: account",vals)
-        html = ajaxRender('deployment/center/account.html', vals, request)
+        html = ajaxRender('deployment/pages/account/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
@@ -1219,7 +1150,7 @@ def account(request, section="", vals={}):
         else:
             pass
 
-        html = ajaxRender('deployment/center/account.html', vals, request)
+        html = ajaxRender('deployment/pages/account/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
@@ -1346,7 +1277,7 @@ def search(request, term='', vals={}):
     vals['questions'] = questions
     vals['news'] = news
     vals['term'] = term
-    html = ajaxRender('deployment/center/search.html', vals, request)
+    html = ajaxRender('deployment/pages/search/search.html', vals, request)
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
 

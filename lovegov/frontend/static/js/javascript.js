@@ -810,7 +810,13 @@ function ajaxPost(dict) {
         type: 'POST',
         data: data,
         success: success_fun,
-        error: error_fun
+        error: function(jqXHR, textStatus, errorThrown) {
+            if (textStatus == '401') {
+                alert("you no can do that!");
+            } else {
+                error_fun(jqXHR, textStatus, errorThrown);
+            }
+        }
     });
 }
 
