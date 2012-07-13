@@ -26,7 +26,6 @@ from datetime import datetime
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
-from lovegov.local_manage import LOCAL
 from lovegov.modernpolitics.constants import *
 
 import logging
@@ -143,7 +142,7 @@ class PhysicalAddress(LGModel):
 #=======================================================================================================================
 class LocationLevel(models.Model):
     location = models.ForeignKey(PhysicalAddress, null=True, blank=True)
-    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='W')
+    scale = models.CharField(max_length=1, choices=SCALE_CHOICES, default='A')
     class Meta:
         abstract = True
 
@@ -155,8 +154,10 @@ class LocationLevel(models.Model):
             return 'State'
         elif scale == 'F':
             return 'Federal'
+        elif scale == 'W':
+            return 'World'
         elif scale == 'A':
-            return 'Universal'
+            return 'Uncategorized'
         else:
             return 'None'
 
@@ -733,6 +734,10 @@ class Content(Privacy, LocationLevel):
     # Saves creation info.
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
+        from lovegov.modernpolitics.defaults import getGeneralTopic
+        if not self.main_topic:
+            self.main_topic = getGeneralTopic()
+            self.save()
         if not creator:
             self.saveDefaultCreated()
         else:

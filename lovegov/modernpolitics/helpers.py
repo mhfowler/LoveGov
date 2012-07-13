@@ -18,7 +18,6 @@ from django.template import loader
 
 # python
 import string
-import datetime
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
@@ -32,6 +31,23 @@ browser_logger = logging.getLogger('browserlogger')
 #-----------------------------------------------------------------------------------------------------------------------
 def getMainTopics():
     return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# convenience method to get a user with inputted name or email
+#-----------------------------------------------------------------------------------------------------------------------
+def getUser(name):
+    splitted = name.split()
+    if len(splitted) > 1:
+        first_name = splitted[0]
+        last_name = splitted[1]
+        users = UserProfile.objects.filter(first_name=first_name, last_name=last_name)
+    else:
+        users = UserProfile.objects.filter(first_name=name)
+    if users.count() == 1:
+        return users[0]
+    elif users.count() == 0:
+        users = UserProfile.objects.filter(email=name)
+    return users
 
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this

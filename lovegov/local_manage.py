@@ -1,9 +1,3 @@
-import socket
-
-# are we local?
-LOCAL = False
-if socket.getfqdn() != 'server.lovegov.com':
-    LOCAL = True
 
 #!/usr/bin/env python
 import os

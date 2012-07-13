@@ -43,7 +43,7 @@ div.address-box {
         @include titleFont();
       }
       input.address-input {
-        width:294px;
+        width:290px;
       }
       input.state-input {
         margin-left:10px;
@@ -54,16 +54,8 @@ div.address-box {
         width: 86px;
       }
     }
-    a.find_out_now {
-      float:left;
-      margin-left:15px;
-      margin-top:25px;
-      background-color:$red;
-      padding:10px;
-      color:white;
-    }
-    a.find_out_now:hover {
-      background-color:$red-light;
+    input.find_out_now {
+      margin-top:20px;
     }
   }
 }
@@ -346,6 +338,7 @@ div.match-representatives {
         position:relative;
         @include rounded(15px);
         overflow:hidden;
+        padding: 0px;
 
         a.match-link-box-header {
           @include rounded-top(15px);

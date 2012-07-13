@@ -1,30 +1,30 @@
-import os.path
 import settings
 
+LOCAL = False
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
-PROJECT_PATH = os.path.dirname(__file__)
+PROJECT_PATH = settings.PROJECT_PATH
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.django.db.backends.dummy
-        'NAME':     'dev',
-        'USER':     'root',         # Not used with sqlite3.
-        'PASSWORD': 'texers787',         # Not used with sqlite3.
-        'HOST':     '',         # Set to empty string for localhost. Not used with sqlite3.
-        'PORT':     '3006',         # Set to empty string for default. Not used with sqlite3.
+        'ENGINE':   'django.db.backends.mysql',
+        'NAME':     'lgdb',
+        'USER':     'root',
+        'PASSWORD': 'lglglg12',
+        'HOST':     'lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com',
+        'PORT':     '3306',
     },
     'live': {
-        'ENGINE':   'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.django.db.backends.dummy
-        'NAME':     'live',
-        'USER':     'root',         # Not used with sqlite3.
-        'PASSWORD': 'texers787',         # Not used with sqlite3.
-        'HOST':     '',         # Set to empty string for localhost. Not used with sqlite3.
-        'PORT':     '3306',         # Set to empty string for default. Not used with sqlite3.
-    },
+        'ENGINE':   'django.db.backends.mysql',
+        'NAME':     'lglive',
+        'USER':     'root',
+        'PASSWORD': 'lglglg12',
+        'HOST':     'lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com',
+        'PORT':     '3306',
+        },
 }
 
 STATIC_ROOT = '/static/dev/'
@@ -136,7 +136,7 @@ CACHES = {
 #EMAIL DURING LIVE
 EMAIL_HOST = 'smtpout.secureserver.net'
 EMAIL_HOST_USER = 'team@lovegov.com'
-EMAIL_HOST_PASSWORD = 'freeGOV'
+EMAIL_HOST_PASSWORD = 'lglglgLG'
 EMAIL_PORT = '25'
 
 ########################################################################################################################

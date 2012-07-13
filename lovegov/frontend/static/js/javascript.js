@@ -2968,7 +2968,7 @@ function updateFeedVisual() {
 
     var feed_groups = $(".feed_group_selector");
     feed_groups.each(function(index) {
-        var this_group = $(this).data('level');
+        var this_group = $(this).data('g_id');
         var i = $.inArray(this_group, feed_metadata.groups);
         if (i != -1) {
             $(this).addClass("clicked");
@@ -3241,8 +3241,8 @@ function loadNewFeed() {
     });
 
     /* group and network menu  visual */
-    defaultHover($(".group-box"));
-    $(".group-box").click(function(event) {
+    defaultHover($(".group_box"));
+    $(".group_box").click(function(event) {
         event.preventDefault();
         defaultClick($(this));
         event.stopPropagation();
@@ -3424,13 +3424,7 @@ function createGroupValidation( event )
     /* Scale */
     var scale = $('input:radio.group_scale:checked').length;
     var scale_error = $('#group_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a group scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple group scales.");
         scale_error.show();
@@ -3458,13 +3452,7 @@ function createGroupValidation( event )
     /* Topics */
     var topic = $('#group_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#group_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a group topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple group topics.");
         topic_error.show();
@@ -3520,13 +3508,7 @@ function createPetitionValidation( event )
     /* Scale */
     var scale = $('input:radio.petition_scale:checked').length;
     var scale_error = $('#petition_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a petition scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple petition scales.");
         scale_error.show();
@@ -3540,13 +3522,7 @@ function createPetitionValidation( event )
     /* Topics */
     var topic = $('#petition_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#petition_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a petition topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple petition topics.");
         topic_error.show();
@@ -3587,13 +3563,7 @@ function createNewsValidation( event )
     /* Scale */
     var scale = $('input:radio.news_scale:checked').length;
     var scale_error = $('#news_scale_error');
-    if( scale < 1 )
-    {
-        scale_error.text("Please select a news scale.");
-        scale_error.show();
-        valid = false;
-    }
-    else if( scale > 1 )
+    if( scale > 1 )
     {
         scale_error.text("You have selected multiple news scales.");
         scale_error.show();
@@ -3607,13 +3577,7 @@ function createNewsValidation( event )
     /* Topics */
     var topic = $('#news_input_topic').find('input:radio[name=topics]:checked').length;
     var topic_error = $('#news_topic_error');
-    if( topic < 1 )
-    {
-        topic_error.text("Please select a news topic.");
-        topic_error.show();
-        valid = false;
-    }
-    else if( topic > 1 )
+    if( topic > 1 )
     {
         topic_error.text("You have selected multiple news topics.");
         topic_error.show();
@@ -3751,32 +3715,33 @@ function loadCreate()
                         data: {'action':'getLinkInfo','remote_url':text},
                         success: function(data)
                         {
-                            returned = eval('(' + data + ')');
-                            $('#news-link-generation-wrapper').html(returned.html);
-                            image_count = $('.news_link_image_container').children().length;
-                            $('#cycle-img-left').bind('click',function()
+                            if (data != "-")
                             {
-                                if (currentLink-1 < 1) { currentLink = image_count; }
-                                else { currentLink--; }
-                                selectImageToggle();
+                                returned = eval('(' + data + ')');
+                                $('#news-link-generation-wrapper').html(returned.html);
+                                image_count = $('.news_link_image_container').children().length;
+                                $('#cycle-img-left').bind('click',function()
+                                {
+                                    if (currentLink-1 < 1) { currentLink = image_count; }
+                                    else { currentLink--; }
+                                    selectImageToggle();
 
-                            });
-                            $('#cycle-img-right').bind('click',function()
+                                });
+                                $('#cycle-img-right').bind('click',function()
+                                {
+                                    if (currentLink+1 > image_count) { currentLink = 1; }
+                                    else { currentLink++; }
+                                    selectImageToggle();
+                                });
+                            }
+                            else
                             {
-                                if (currentLink+1 > image_count) { currentLink = 1; }
-                                else { currentLink++; }
-                                selectImageToggle();
-                            });
+                                $('#news-link-generation').hide();
+                                $('#news-summary').hide();
+                            }
                             currentURL = text;
                         },
                         error: null
-                        /*
-                         function(jqXHR, textStatus, errorThrown)
-                         {
-
-                         $('#news-link-generation').hide();
-                         $('#news-summary').hide();
-                         } */
                     });
                 }
                 else
@@ -3805,7 +3770,7 @@ function loadCreate()
         {
             wrapper.find(".topic-radio").attr("checked",true);
         }
-        selectTopicSingle(wrapper);
+        toggleTopicSingle(wrapper);
     });
 
     function clearPetitionErrors()

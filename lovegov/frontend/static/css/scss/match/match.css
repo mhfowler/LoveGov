@@ -178,22 +178,15 @@ div.address-box {
         color: #353535;
         font-family: "Sonus Light", Helvetica, Arial, Verdana, sans-serif; }
       div.address-box div.wrapper div.inputs-wrapper input.address-input {
-        width: 294px; }
+        width: 290px; }
       div.address-box div.wrapper div.inputs-wrapper input.state-input {
         margin-left: 10px;
         width: 40px; }
       div.address-box div.wrapper div.inputs-wrapper input.zip-input {
         margin-left: 10px;
         width: 86px; }
-    div.address-box div.wrapper a.find_out_now {
-      float: left;
-      margin-left: 15px;
-      margin-top: 25px;
-      background-color: #ef503b;
-      padding: 10px;
-      color: white; }
-    div.address-box div.wrapper a.find_out_now:hover {
-      background-color: #fc8a81; }
+    div.address-box div.wrapper input.find_out_now {
+      margin-top: 20px; }
 
 div.new-address-wrapper div.address-box {
   margin-top: 10px; }
@@ -386,7 +379,8 @@ div.match-representatives div.address-wrapper {
       -moz-border-radius: 15px;
       -webkit-border-radius: 15px;
       -khtml-border-radius: 15px;
-      overflow: hidden; }
+      overflow: hidden;
+      padding: 0px; }
       #match-featured-social-network div.page-right div.boxes div.match-link-box a.match-link-box-header {
         border-top-right-radius: 15px;
         border-top-left-radius: 15px;

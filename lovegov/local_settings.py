@@ -1,9 +1,11 @@
 import os
 from lovegov import settings
 
+LOCAL = True
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-PROJECT_PATH = os.path.dirname(__file__)
+THUMBNAIL_DEBUG = DEBUG
+PROJECT_PATH = settings.PROJECT_PATH
 
 DATABASES = {
     'default': {

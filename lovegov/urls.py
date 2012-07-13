@@ -3,7 +3,6 @@ from lovegov.frontend import views, tests, analytics
 from lovegov.modernpolitics import actions, lgwidget, api
 from lovegov.frontend.views import viewWrapper
 from lovegov.frontend import admin_views
-from lovegov.local_manage import LOCAL
 
 # django
 from django.conf.urls.defaults import patterns, include, url
@@ -13,6 +12,7 @@ from django.views.generic.simple import redirect_to
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 
+LOCAL = settings.LOCAL
 
 admin.autodiscover()
 

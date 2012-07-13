@@ -21,19 +21,15 @@
         <div class="triangle-selector"></div>
         <div class="sort-menu menu" id="menu_sort">
             <div class="menu-option single feed-ranking-selector" data-ranking="N" data-verbose="New">
-                <p class="ranking-choice-title menu-option-title">
-                    New
-                </p>
+                New
             </div>
+            <div class="gen-menu-separator"></div>
             <div class="menu-option single feed-ranking-selector" data-ranking="H" data-verbose="Hot">
-                <p class="ranking-choice-title menu-option-title">
-                    Hot
-                </p>
+                Hot
             </div>
+            <div class="gen-menu-separator"></div>
             <div class="menu-option single feed-ranking-selector" data-ranking="B" data-verbose="Best">
-                <p class="ranking-choice-title menu-option-title">
-                    Best
-                </p>
+                Best
             </div>
         </div>
     </div>
@@ -53,13 +49,14 @@
         <div class="saved-menu menu">
             {% for x in my_filters %}
                 <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
-                    <p class="saved-filter-title">
-                        {{ x.name }}
-                    </p>
+                    {{ x.name }}
                     {% if x.name != 'default' %}
                         <div class="x-button delete_saved_filter"></div>
                     {% endif %}
                 </div>
+                {% if not forloop.last %}
+                    <div class="gen-menu-separator"></div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -81,7 +78,6 @@
         <p class="options-title create-title"> create </p>
     </div>
 
-    <a href="" class="how-does"> how does this work? </a>
 
     <div class="clear-both"></div>
 </div>
@@ -103,7 +99,7 @@
             <div class="triangle-selector"></div>
             <div class="group-menu menu">
                 {% for g in my_groups %}
-                    <div class="group-box feed_group_selector tooltip-top" data-g_id="{{ g.id }}" title="{{ g.title }}">
+                    <div class="group-box group_box feed_group_selector tooltip-top" data-g_id="{{ g.id }}" title="{{ g.title }}">
                         {% include 'deployment/snippets/group_box.html' with group=g %}
                     </div>
                 {% empty %}
@@ -112,16 +108,19 @@
             </div>
         </div>
 
-        <div class="filter-by-network  menu_toggle menu-toggle">
+        <div class="filter-by-network menu_toggle menu-toggle">
             <p class="feed-menu-title menu-title">
                 networks
             </p>
             <div class="triangle-selector"></div>
             <div class="group-menu menu">
                 {% for g in my_networks %}
-                    <div class="group-box feed_group_selector tooltip-top" data-g_id="{{ g.id }}" title="{{ g.title }}">
-                        {% include 'deployment/snippets/group_box.html' with group=g %}
+                    <div class="network-box feed_group_selector group_box" data-g_id="{{ g.id }}" title="{{ g.title }}">
+                        {{ g.title|truncatechars:18 }}
                     </div>
+                    {% if not forloop.last %}
+                        <div class="gen-menu-separator"></div>
+                    {% endif %}
                 {% empty %}
                     You are not a member of any networks.
                 {% endfor %}
@@ -135,19 +134,19 @@
             <div class="triangle-selector"></div>
             <div class="political-menu menu">
                 <div class="menu-option multi feed-level-selector" data-level="L">
-                    <p class="levels-choice-title menu-option-title">
-                        Local
-                    </p>
+                    Local
                 </div>
+                <div class="gen-menu-separator"></div>
                 <div class="menu-option multi feed-level-selector" data-level="S">
-                    <p class="levels-choice-title menu-option-title">
-                        State
-                    </p>
+                    State
                 </div>
+                <div class="gen-menu-separator"></div>
                 <div class="menu-option multi feed-level-selector" data-level="F">
-                    <p class="levels-choice-title menu-option-title">
-                        Federal
-                    </p>
+                    Federal
+                </div>
+                <div class="gen-menu-separator"></div>
+                <div class="menu-option multi feed-level-selector" data-level="W">
+                    World
                 </div>
             </div>
         </div>
@@ -159,19 +158,15 @@
             <div class="triangle-selector"></div>
             <div class="type-menu menu">
                 <div class="menu-option multi feed-type-selector" data-type="N">
-                    <p class="type-choice-title menu-option-title">
-                        News
-                    </p>
+                    News
                 </div>
+                <div class="gen-menu-separator"></div>
                 <div class="menu-option multi feed-type-selector" data-type="P">
-                    <p class="type-choice-title menu-option-title">
-                        Petitions
-                    </p>
+                    Petitions
                 </div>
+                <div class="gen-menu-separator"></div>
                 <div class="menu-option multi feed-type-selector" data-type="G">
-                    <p class="type-choice-title menu-option-title">
-                        Groups
-                    </p>
+                    Groups
                 </div>
             </div>
         </div>
