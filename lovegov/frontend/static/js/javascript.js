@@ -2275,6 +2275,33 @@ function loadPetition()
         });
     });
 
+    $('div.see-all-signers').bindOnce('click', function(e) {
+        e.preventDefault();
+        $('div.overdiv').fadeToggle();
+        $('div.petition-signers-modal').fadeToggle();
+        var petition_id = $('div.petition-signers-modal').data('petition_id');
+        alert('clicky '+petition_id);
+        ajaxPost({
+            data: {'action': 'getSigners', 'petition2_id': petition_id},
+            success: function(data) {
+                alert(data);
+                var returned = eval('(' + data + ')');
+                alert(returned['html']);
+            },
+            error: function(data) {
+                var returned = eval('(' + data + ')');
+                alert("error: "+returned['error']);
+            }
+        });
+    });
+
+
+    $('div.overdiv').bindOnce('click.hideSigners', function(e) {
+        e.preventDefault();
+        $('div.overdiv').hide();
+        $('div.petition-signers-modal').hide();
+    })
+
 }
 
 /***********************************************************************************************************************

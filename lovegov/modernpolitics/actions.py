@@ -1701,6 +1701,26 @@ def getAggregateNotificationUsers(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
+def getSigners(request, vals={}):
+    html = ''
+    viewer = vals['viewer']
+    error = ''
+    petition_id = request.GET.get('petition_id')
+    if petition_id:
+        if Petition.lg.get_or_none(id=petition_id):
+            petition = Petition.lg.get_or_none(id=petition_id)
+            vals['signers'] = petition.signers.all()
+            html = ajaxRender('deployment/snippets/petition-signers.html', vals, request)
+        else:
+            error = 'The given petition identifier is invalid.'
+    else:
+        error = 'No petition identifier given.'
+    to_return = {'html':html, 'error': error}
+    response = HttpResponse(json.dumps(to_return))
+    response.status_code = 500 if error else 200
+    return response
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -1768,7 +1788,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'likeThis':likeThis,
             'changeContentPrivacy': changeContentPrivacy,
             'updatePage': updatePage,
-            'getaggregatenotificationusers': getAggregateNotificationUsers
+            'getaggregatenotificationusers': getAggregateNotificationUsers,
+            'getSigners': getSigners,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

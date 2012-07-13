@@ -141,7 +141,6 @@ def getEmptyDict():
 def renderToResponseCSRF(template, vals, request):
     """Does stuff that we need to happen on every single template render (such as context processing)."""
     # get privacy mode
-
     try:
         vals['privacy'] = request.COOKIES['privacy']
     except KeyError:
