@@ -8,10 +8,19 @@
     </div>
 
     <div id="middle-right">
-        <!-- Forms -->
-        {% include 'deployment/pages/login/login-fb.form.html' %}
-        {% include 'deployment/pages/login/login-login.form.html' %}
-        {% include 'deployment/pages/login/login-register.form.html' %}
+
+        <div id="create-account-div" class="state-div">
+            {% include 'deployment/pages/login/create-account.html' %}
+        </div>
+
+        <div id="sign-up-div" class="state-div">
+            {% include 'deployment/pages/login/sign-up.html' %}
+        </div>
+
+        <div id="register-div" class="state-div">
+            {% include 'deployment/pages/login/login-register.form.html' %}
+        </div>
+
     </div>
 
     <!-- Fade-in Divs -->
@@ -21,6 +30,8 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
+            $("#create-account-div").show();
+
             $('#what-is-lovegov').click(function()
             {
                 $('._fade').fadeOut(300);
@@ -62,6 +73,18 @@
             {
                 $('#fb-div').hide();
                 $('#login-div').show();
+            });
+
+            $(".create_account_button").click(function(event) {
+                event.preventDefault();
+                $("#create-account-div").hide();
+                $("#sign-up-div").show();
+            });
+
+            $(".sign_up_with_email_button").click(function(event) {
+                event.preventDefault();
+                $("#sign-up-div").hide();
+                $("#register-div").show();
             });
 
         });

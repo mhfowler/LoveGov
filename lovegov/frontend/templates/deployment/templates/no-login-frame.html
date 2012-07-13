@@ -18,13 +18,19 @@
 <div id="main">
     <div id="top">
         <a href="/"><img id="logo" src="/static/images/login/splashlogo.png"></a>
-        <span id="mission-statement">
+        <div class="top-right">
+        <div class="sign-in">
+            <p> have an account? </p> <a href="#" class="sign-in-button sign_in_button"> Sign In </a> <div style="clear:both"></div>
+            {% include 'deployment/pages/login/sign-in-dialogue.html' %}
+        </div>
+        <div class="mission-statement">
             <p>
                 We are committed to non-partisanship,
                 government transparency & the right to
                 personal privacy.
             </p>
-        </span>
+        </div>
+        </div>
     </div>
     {% block content %}
 
@@ -34,6 +40,11 @@
 <script type="text/javascript">
     $(document).ready(function()
     {
+        $(".sign_in_button").click(function(event) {
+            event.preventDefault();
+            $(".sign_in_dialogue").show();
+        });
+
         // CSRF protection
         $.ajaxSetup({ data: {csrfmiddlewaretoken: "{{ csrf_token }}" }});
     });

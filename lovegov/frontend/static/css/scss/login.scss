@@ -25,9 +25,11 @@ div.blocks
 div#top
 {
   @extend .blocks;
+  margin-bottom:5px;
 }
 div#middle
 {
+  margin-top:0px;
   @extend .blocks;
 }
 div#bottom
@@ -50,10 +52,6 @@ div#bottom
 .form-div
 {
 
-  h2
-  {
-    margin-bottom:10px;
-  }
 
 }
 
@@ -62,19 +60,227 @@ div#bottom
   position:relative;
   float:right;
   margin-right:20px;
-  margin-top:25px;
+  margin-top:0px;
   width:440px;
+
+  div.state-div {
+    display:none;
+  }
+
+  div#create-account-div {
+    h3.new-to-lovegov {
+      color:$dark-gray;
+      @include fontSize(28px);
+      text-align:center;
+    }
+    a.create-account-button {
+      display:block;
+      text-align:center;
+      margin-top:15px;
+      @include div-button-padding($radius:7px,$padding:12px,$font-size:30px,$color:white,$background-color:$red,$hover-color:$red-light);
+    }
+    div.try-it {
+      display:block;
+      text-align:center;
+      @include fontSize(18px);
+      margin-top:15px;
+    }
+    p.mission {
+      display:block;
+      margin-top:20px;
+      font-family:$gill-light;
+      color:$deep-gray;
+      display:block;
+      font-size:20px;
+      text-align:center;
+    }
+  }
+
+  div#sign-up-div {
+    text-align:center;
+    a.sign-up-with-email-button {
+      @include div-button-padding($radius:7px,$padding:14px,$font-size:26px,$color:white,$background-color:$gray,$hover-color:$light-gray);
+    }
+
+    p {
+      margin-top:40px;
+      @include fontSize(18px);
+      @include titleFont();
+      text-transform: uppercase;
+    }
+
+    div.connect-with {
+      margin-top:20px;
+      display:block;
+      a.fb-button {
+        background-image:url(/static/icons/FB_login.png);
+        background-size:contain;
+        background-repeat:no-repeat;
+        margin-left:40px;
+        float:left;
+        width:200px;
+        height:35px;
+      }
+      a.twitter-button {
+        background-image:url(/static/icons/Twitter_login.png);
+        background-size:contain;
+        background-repeat:no-repeat;
+        float:left;
+        width:200px;
+        height:35px;
+      }
+      a.fb-button:hover {
+        background-image:url(/static/icons/FB_login_hover.png);
+      }
+      a.twitter-button:hover {
+        background-image:url(/static/icons/Twitter_login_hover.png);
+      }
+
+    }
+
+    div.connect-message {
+      display:block;
+      margin-top:30px;
+      p.no-post {
+        margin-top:8px;
+        text-transform: none;
+        @include titleFont();
+        @include fontSize(14px);
+      }
+    }
+  }
+
 }
 
-#mission-statement
+#top {
+
+  div.top-right {
+    float:right;
+    margin-top:30px;
+    margin-right:0px;
+
+    div.sign-in {
+      position:relative;
+      float:right;
+      margin-left:50px;
+      margin-right:0px;
+      p {
+        margin-top:8px;
+        float:left;
+        color:$dark-gray;
+      }
+      a.sign-in-button {
+        margin-left:10px;
+        float:left;
+        @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+      }
+
+      div.sign-in-dialogue {
+        display:none;
+        position:absolute;
+        left:-180px;
+        top:50px;
+        z-index:20;
+        border: 1px solid $black;
+        width:350px;
+        height:220px;
+        background-color:white;
+
+        div.connect-buttons {
+          margin-top:20px;
+          display:block;
+
+          a.sign-in-fb {
+            background-image:url(/static/icons/FB_login.png);
+            background-size:contain;
+            background-repeat:no-repeat;
+            margin-left:40px;
+            float:left;
+            width:130px;
+            height:40px;
+          }
+          a.sign-in-twitter {
+            background-image:url(/static/icons/Twitter_login.png);
+            background-size:contain;
+            background-repeat:no-repeat;
+            float:left;
+            width:130px;
+            height:40px;
+            margin-left:10px;
+          }
+          a.sign-in-fb:hover {
+            background-image:url(/static/icons/FB_login_hover.png);
+          }
+          a.sign-in-twitter:hover {
+            background-image:url(/static/icons/Twitter_login_hover.png);
+          }
+        }
+
+        p {
+          clear:both;
+          text-align:center;
+          display:block;
+          text-transform: uppercase;
+          margin:0px;
+          margin-top:0px;
+          @include titleFont();
+          @include fontSize(20px);
+          width:100%;
+        }
+
+        input.login-email-input {
+          display:block;
+          margin-left:20px;
+          margin-top:5px;
+          width:300px;
+          height:30px;
+        }
+        input.login-password-input {
+          display:block;
+          margin-top:10px;
+          margin-left:20px;
+          width:300px;
+          height:30px;
+        }
+
+        div.dialogue-bottom {
+          display:block;
+          width:100%;
+          margin-top:10px;
+
+          a.forgot-link {
+            float:right;
+            margin: 20px 10px 10px 0;
+          }
+          input.login-button {
+            float:right;
+            margin: 15px 10px 10px 0;
+            @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+          }
+        }
+
+      }
+
+    }
+
+    div.mission-statement
+    {
+      display:none;
+    }
+  }
+}
+
+div.mission-statement
 {
+  clear:both;
   font-family:$gill-light;
   color:$deep-gray;
-  float:right;
+  display:block;
   width:325px;
   font-size:20px;
   text-align:right;
-  margin-top:45px;
+  margin-top:50px;
+  margin-right:0px;
 }
 
 .developer_title
@@ -200,31 +406,47 @@ p.privacy_p
 
 .login-input
 {
-  height:45px;
+  height:28px;
   width:410px;
-  padding:5px;
-  font-size:28px;
+  padding:3px;
+  font-size:22px;
   color:$black;
   font-family:$gill-light;
 }
 
-.button-red, .button-red:link, .button-red:active, .button-red:visited
-{
-  @extend .button-red;
-  float:right;
-  font-size:23px;
-}
+div#register-div {
 
-.button-red:hover
-{
-  @extend .button-red:hover;
-}
+  position:relative;
+  top:-40px;
 
-table td
-{
-  text-align:right;
-  padding-bottom:10px;
-  padding-right:5px;
+  h2.register-title {
+    margin-bottom:10px;
+  }
+
+  input#zip-register-input {
+    width:150px;
+    float:left;
+  }
+
+  table.register-form {
+    input.register-button {
+      @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+      float:right;
+      font-size:23px;
+    }
+  }
+
+  table td
+  {
+    text-align:right;
+    padding-bottom:10px;
+    padding-right:5px;
+  }
+
+  tr.privacy-policy {
+    margin-top:5px;
+    float:left;
+  }
 }
 
 .account-actions, .account-actions:link, .account-actions:visited, .account-actions:active
@@ -242,15 +464,16 @@ table td
   color:$text-blue;
 }
 
-span.privacy_agree
+span.privacy-agree
 {
   font-size:18px;
   font-family:$gill-light;
+  margin-left:10px;
 }
 
 div.get-started-left
 {
-  /*tribute to cs17 project bignum. rest in peace. */
+/*tribute to cs17 project bignum. rest in peace. */
   font-weight:bold;
   font-size:170px;
   color:$red;
