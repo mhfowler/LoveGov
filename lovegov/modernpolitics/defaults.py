@@ -1126,6 +1126,22 @@ def updatePartyImages():
         file = open(full_ref)
         party.party_label.save(photoKey(".png"), File(file))
 
+def updatePoliticianImages():
+
+    romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/romney.jpg')
+    im = open(im_ref)
+    romney.setProfileImage(im)
+
+    elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/warren.jpg')
+    im = open(im_ref)
+    elizabeth.setProfileImage(im)
+
+    cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/cicilline.jpg')
+    im = open(im_ref)
+    cicilline.setProfileImage(im)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Petition clear and recount functions (a.k.a. recalculate)
