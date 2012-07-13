@@ -1140,6 +1140,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     signers = petition.getSigners()
     vals['signers'] = signers[:signerLimit]
     vals['i_signed'] = (vals['viewer'] in signers)
+    vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
     setPageTitle("lovegov: " + petition.title,vals)

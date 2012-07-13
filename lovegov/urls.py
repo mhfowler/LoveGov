@@ -1,6 +1,6 @@
 # lovegov
 from lovegov.frontend import views, tests, analytics
-from lovegov.modernpolitics import actions, lgwidget
+from lovegov.modernpolitics import actions, lgwidget, api
 from lovegov.frontend.views import viewWrapper
 from lovegov.frontend import admin_views
 from lovegov.local_manage import LOCAL
@@ -114,6 +114,9 @@ urlpatterns += patterns('',
     (r'^analytics/activity/$', viewWrapper(analytics.dailyActivity, requires_login=True)),                        # analytics of daily activity
     (r'^analytics/total/(\S+)/$', viewWrapper(analytics.totalActivity, requires_login=True)),                     # analytics of total user activity
     (r'^analytics/total/$', viewWrapper(analytics.totalActivity, requires_login=True)),                           # analytics of all activity
+
+    # api
+    (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
     # REDIRECT
     (r'.*/$', views.redirect),
