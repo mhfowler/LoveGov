@@ -75,13 +75,9 @@ def fbGetAccessToken(request, code, redirect_uri=None):
     return None
 
 def getRedirectURI(request, redirect):
-    absolute_uri = request.build_absolute_uri()
-    domain_regex = re.compile('.*\.com')
-    regex = domain_regex.match( absolute_uri )
-    new_domain = regex.group(0)
-    if LOCAL:
-        new_domain += ':8000'
-    redirect_uri = new_domain + redirect
+    domain = getHostHelper(request)
+    temp_logger.debug('domain: ' + domain)
+    redirect_uri = domain + redirect
     return redirect_uri
 
 #-----------------------------------------------------------------------------------------------------------------------
