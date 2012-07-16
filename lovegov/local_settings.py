@@ -32,7 +32,7 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 

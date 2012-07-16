@@ -57,7 +57,7 @@ $(".replyform").submit(function(event) {
     $.ajax({
         url:'/action/',
         type: 'POST',
-        data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+        data: {'action':'comment','c_id': content_id,'comment':comment_text},
         success: function(data){
             location.reload();
         },
@@ -75,7 +75,7 @@ $("#commentform").submit(function(event) {
     $.ajax({
         url:'/action/',
         type: 'POST',
-        data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+        data: {'action':'comment','c_id': content_id,'comment':comment_text},
         success: function(data){
             location.reload();
         },

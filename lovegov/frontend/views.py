@@ -8,9 +8,14 @@
 ########################################################################################################################
 ########################################################################################################################
 
+from django.http import HttpResponse, HttpRequest
+
 # lovegov
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
+
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
@@ -44,11 +49,10 @@ def viewWrapper(view, requires_login=False):
 
         # if login is required
         if requires_login:
-            try: # Get this user profile
+            try:
+                # returns corresponding UserProfile for the request's ControllingUser
+                # if no ControllingUser exists (not logged in), returns the Anonymous UserProfile
                 user = getUserProfile(request)
-
-                if not user:
-                    return shortcuts.redirect('/login' + request.path)
 
                 # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                 if UPDATE or ("dev" in getHostHelper(request)):
@@ -56,9 +60,9 @@ def viewWrapper(view, requires_login=False):
                         return shortcuts.redirect('/underconstruction/')
 
                 # IF NOT AUTHENTICATED, REDIRECT TO LOGIN
-                if not request.user.is_authenticated():
-                    print request.path
-                    return HttpResponseRedirect('/login' + request.path)
+                #if not user.is_authenticated():
+                #    print request.path
+                #    return HttpResponseRedirect('/login' + request.path)
 
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
@@ -67,6 +71,9 @@ def viewWrapper(view, requires_login=False):
                 else:
                     vals['user'] = user
                     vals['viewer'] = user
+                    controlling_user = user.controllinguser_set.get()
+                    vals['controlling_user'] = controlling_user
+                    vals['permitted_actions'] = controlling_user.permitted_actions
 
             except ImproperlyConfigured:
                 response = shortcuts.redirect('/login' + request.path)
@@ -382,7 +389,7 @@ def web(request, vals={}):
         return framedResponse(request, html, url, vals)
     if request.method == 'POST':
         if request.POST['action']:
-            return actions.answer(request, vals)
+            return answer(request, vals)
         else:
             return shortcuts.redirect('/alpha/')
 
@@ -417,7 +424,7 @@ def compareWeb(request,alias=None,vals={}):
             return framedResponse(request, html, url, vals)
     if request.method == 'POST':
         if request.POST['action']:
-            return actions.answer(request, vals)
+            return answer(request, vals)
         else:
             return shortcuts.redirect('/alpha/')
 

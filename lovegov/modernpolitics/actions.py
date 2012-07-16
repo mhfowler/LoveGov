@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
@@ -1719,77 +1718,6 @@ def getSigners(request, vals={}):
     return response
 
 
-########################################################################################################################
-########################################################################################################################
-#
-#       Switcher for the actual action.
-#
-########################################################################################################################
-########################################################################################################################
-#-----------------------------------------------------------------------------------------------------------------------
-# Dictionary of callabe functions.
-#-----------------------------------------------------------------------------------------------------------------------
-actions = { 'getLinkInfo': getLinkInfo,
-            'postCongressmen': getCongressmen,
-            'loadGroupUsers': loadGroupUsers,
-            'loadHistogram': loadHistogram,
-            'searchAutoComplete': searchAutoComplete,
-            'postcomment': comment,
-            'create': create,
-            'invite': invite,
-            'editaccount': editAccount,
-            'editprofile': editProfile,
-            'editcontent': editContent,
-            'delete': delete,
-            'setprivacy': setPrivacy,
-            'followprivacy': setFollowPrivacy,
-            'vote': vote,
-            'hoverComparison': hoverComparison,
-            'sign': sign,
-            'finalize': finalize,
-            'userfollow': userFollowRequest,
-            'followresponse': userFollowResponse,
-            'stopfollow': userFollowStop,
-            'answer': answer,
-            'joingroup': joinGroupRequest,
-            'joinresponse': joinGroupResponse,
-            'groupinviteresponse': groupInviteResponse,
-            'leavegroup': leaveGroup,
-            'matchComparison': matchComparison,
-            'posttogroup': posttogroup,
-            'updateCompare': updateCompare,
-            'viewCompare': viewCompare,
-            'answerWeb': answerWeb,
-            'feedback': feedback,
-            'updateGroupView': updateGroupView,
-            'ajaxThread': ajaxThread,
-            'getnotifications': getNotifications,
-            'getuseractions': getUserActions,
-            'getusergroups': getUserGroups,
-            'getgroupactions': getGroupActions,
-            'getgroupmembers': getGroupMembers,
-            'ajaxGetFeed': ajaxGetFeed,
-            'matchSection': matchSection,
-            'saveFilter': saveFilter,
-            'deleteFilter': deleteFilter,
-            'getFilter': getFilter,
-            'matchSection': matchSection,
-            'shareContent': shareContent,
-            'blogAction': blogAction,
-            'flag': flag,
-            'updateHistogram': updateHistogram,
-            'getHistogramMembers': getHistogramMembers,
-            'getAllGroupMembers': getAllGroupMembers,
-            'support': support,
-            'messageRep': messageRep,
-            'submitAddress':submitAddress,
-            'likeThis':likeThis,
-            'changeContentPrivacy': changeContentPrivacy,
-            'updatePage': updatePage,
-            'getaggregatenotificationusers': getAggregateNotificationUsers,
-            'getSigners': getSigners,
-        }
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
@@ -1803,6 +1731,10 @@ def actionPOST(request, vals={}):
     if not request.REQUEST.__contains__('action'):
         return HttpResponse('No action specified.')
     action = request.REQUEST['action']
-    if action not in actions:
+    if action not in ACTIONS:
         return HttpResponse('The specified action ("%s") is not valid.' % (action))
-    return actions[action](request, vals)
+    elif action not in vals['permitted_actions']:
+        return HttpResponseForbidden("You are not permitted to perform the action \"%s\"." % action)
+    else:
+        action_func = action + '(request, vals)'
+        return eval(action_func)
