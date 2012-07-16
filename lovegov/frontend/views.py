@@ -54,20 +54,19 @@ def viewWrapper(view, requires_login=False):
                 # if no ControllingUser exists (not logged in), returns the Anonymous UserProfile
                 user = getUserProfile(request)
 
+                # if not authenticated user, and not lovegov_try cookie, redirect to login page
+                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                    return shortcuts.redirect("/login" + request.path)
+
                 # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                 if UPDATE or ("dev" in getHostHelper(request)):
-                    if not user.developer and not user.isAnon():
+                    if not user.developer:
                         temp_logger.debug('blocked: ' + user.get_name())
                         return shortcuts.redirect('/underconstruction/')
-
-                # If user hasn't clicked "try lovegov", redirect to login
-                if not request.COOKIES.get('lovegov_try'):
-                    return HttpResponseRedirect('/login' + request.path)
 
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
 
-                # ELSE AUTHENTICATED
                 else:
                     vals['user'] = user
                     vals['viewer'] = user
