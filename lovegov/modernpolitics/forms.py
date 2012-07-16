@@ -106,6 +106,7 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(required=True)
     email2 = forms.EmailField(required=True)
     passwordregister = forms.CharField(widget=forms.PasswordInput,required=True)
+    zip = forms.CharField(required=False)
     privacy = forms.BooleanField(error_messages={'required': '< click'})
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ class RegisterForm(forms.Form):
         fullname = cleaned_data.get('fullname')
 
         # Handle fullname error checking
-        if not fullname:
+        if not fullname or fullname == 'full name':
             self._errors["fullname"] = self.error_class([u"input your full name."])
         else:
             spaces = fullname.count(" ")
@@ -153,6 +154,18 @@ class RegisterForm(forms.Form):
         user = createUser(fullname,email,password,active=False)
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()
+
+        zip = self.cleaned_data.get('zip')
+        if zip:
+            location = user.location
+            if not location:
+                location = PhysicalAddress()
+                location.save()
+                user.location = location
+                user.save()
+            location.zip = zip
+            location.save()
+
         vals = {'firstname':firstname,'link':user.user_profile.confirmation_link}
         sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)
 

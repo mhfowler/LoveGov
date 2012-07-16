@@ -220,6 +220,7 @@ def fbTest(request):
 # Authenticate with twitter.
 #-----------------------------------------------------------------------------------------------------------------------
 def twitterRedirect(request, redirect_uri=None):
+
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/twitter/handle/")
 
@@ -242,9 +243,8 @@ def twitterRedirect(request, redirect_uri=None):
     print "Request Token:"
     print "    - oauth_token        = %s" % request_token['oauth_token']
     print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
+    print "twit redirect: ", redirect_uri
     print
-
-    redirect_uri="http://www.lovegov.com/comingsoon/"
 
     to_encode = {'oauth_token':request_token['oauth_token'],'oauth_callback':redirect_uri}
     redirect = authorize_url + "?"

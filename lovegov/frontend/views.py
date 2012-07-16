@@ -64,9 +64,12 @@ def viewWrapper(view, requires_login=False):
                 logger.debug('deleted cookie')
                 return response
 
+        vals['fb_state'] = fbGetRedirect(request, vals)
+
         vals['google'] = GOOGLE_LOVEGOV
         host_full = getHostHelper(request)
         vals['host_full'] = host_full
+        vals['to_page'] = request.path.replace('/login', '')
         vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
         # SAVE PAGE ACCESS
         if request.method == 'GET':
@@ -180,6 +183,8 @@ def login(request, to_page='web/', message="", vals={}):
     """
     # Try logging in with facebook
     if fbLogin(request,vals):
+        # to_page = to_page.replace("/login", "")
+        # print ("to_page: " + to_page)
         return shortcuts.redirect('/' + to_page)
 
     # Try logging in with twitter
@@ -192,11 +197,9 @@ def login(request, to_page='web/', message="", vals={}):
         response = loginPOST(request,to_page,message,vals)
 
     else: # Otherwise load the login page
-        fb_state = fbGetRedirect(request, vals)
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
         vals['toregister'] = getToRegisterNumber().number
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
-        response.set_cookie("fb_state", fb_state)
 
     return response
 
@@ -223,9 +226,9 @@ def loginPOST(request, to_page='web',message="",vals={}):
             else: # If they can't authenticate, they probably need to validate
                 error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
         else: # Otherwise they're just straight up not in our database
-            error = 'Invalid Login/Password.'
+            error = 'Invalid Login/Password'
         # Return whatever error was found
-        vals.update({"username":request.POST['username'], "message":message, "error":error, "state":'login'})
+        vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
         return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
 
     # REGISTER via POST
@@ -234,10 +237,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
-            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email')})
+            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email'), 'zip':registerform.cleaned_data.get('zip')})
             return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
-            vals.update({"registerform":registerform, "state":'register'})
+            vals.update({"registerform":registerform, "state":'register_error'})
             return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
 
     # RECOVER via POST
@@ -277,13 +280,11 @@ def logout(request, vals={}):
     return response
 
 def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
-    print "confirm: " + confirm_link
     user = UserProfile.lg.get_or_none(confirmation_link=confirm_link)
     if user:
         user.confirmed = True
         user.save()
         vals['viewer'] = user
-        print "user:" + user.get_name()
     if request.method == 'GET':
         return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
     else:
@@ -1159,7 +1160,9 @@ def account(request, section="", vals={}):
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------
 def facebookHandle(request, to_page="/web/", vals={}):
-    if request.GET.get('state') == request.COOKIES.get('fb_state') and request.COOKIES.get('fb_state'): #If this is the correct authorization state
+    cookie_state = request.COOKIES.get('fb_state')
+    returned_state = request.GET.get('state')
+    if cookie_state and returned_state == cookie_state: #If this is the correct authorization state
         code = request.GET.get('code') #Get the associated code
         redirect_uri = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
 
@@ -1184,8 +1187,9 @@ def facebookHandle(request, to_page="/web/", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Authenticate with twitter via redirect.
 #-----------------------------------------------------------------------------------------------------------------------
-def twitterRedirect(request, redirect_uri=None):
-    return twitterRedirect(request, redirect_uri)
+def twitterRedirect(request, redirect_uri=None, vals={}):
+    from lovegov.modernpolitics import facebook
+    return facebook.twitterRedirect(request, redirect_uri)
 
 def twitterHandle(request, vals={}):
     return twitterGetAccessToken(request)

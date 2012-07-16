@@ -228,19 +228,19 @@ div#bottom
           width:100%;
         }
 
-        input.login-email-input {
+        input.sign-in-input {
           display:block;
           margin-left:20px;
           margin-top:5px;
           width:300px;
           height:30px;
+          color:#adadad;
+          padding-left:5px;
+          @include titleFont();
+          @include fontSize(18px);
         }
-        input.login-password-input {
-          display:block;
-          margin-top:10px;
-          margin-left:20px;
-          width:300px;
-          height:30px;
+        input.password-input {
+          margin-top:8px;
         }
 
         div.dialogue-bottom {
@@ -248,6 +248,14 @@ div#bottom
           width:100%;
           margin-top:10px;
 
+          span.login-error {
+            @include fontSize(14px);
+            float:right;
+            width:100px;
+            text-align:center;
+            margin: 16px 45px 10px 0;
+            color:$red;
+          }
           a.forgot-link {
             float:right;
             margin: 20px 10px 10px 0;
