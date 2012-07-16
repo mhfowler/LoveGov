@@ -1,6 +1,8 @@
 # git pull
 cd /srv/dev
 sudo git pull
+# sass
+/srv/server/scripts/dev/dev_run.sh python /srv/dev/lovegov/bash/sasscompile.py
 # collect static
 sudo python /srv/dev/lovegov/dev_manage.py collectstatic --noinput
 # reset permissions
