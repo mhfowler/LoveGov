@@ -30,6 +30,7 @@ alias masterpush="git push origin master"
 
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"
+alias lgjvkoh="ssh -i ~/Documents/lovegov/lgjvkoh.pem jvkoh@ec2-23-23-91-235.compute-1.amazonaws.com"
 
 # permission
 alias projectpermission="sudo chmod -R 770 $LG"
