@@ -8,7 +8,7 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.models import *
+from lovegov.modernpolitics.send_email import *
 
 # django
 from django.shortcuts import render_to_response

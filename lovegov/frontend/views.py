@@ -290,7 +290,7 @@ def passwordRecovery(request,confirm_link=None, vals={}):
 
 def logout(request, vals={}):
     auth.logout(request)
-    response = shortcuts.redirect('/web/')
+    response = shortcuts.redirect('/login/web/')
     response.delete_cookie('fb_token')
     response.delete_cookie('twitter_access_token')
     return response
@@ -1182,7 +1182,7 @@ def account(request, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------
-def facebookHandle(request, to_page="/web/", vals={}):
+def facebookHandle(request, to_page="/login/home/", vals={}):
     cookie_state = request.COOKIES.get('fb_state')
     returned_state = request.GET.get('state')
     if cookie_state and returned_state == cookie_state: #If this is the correct authorization state
@@ -1191,7 +1191,7 @@ def facebookHandle(request, to_page="/web/", vals={}):
 
         access_token = fbGetAccessToken(request, code, redirect_uri) #Retrieve access token
         if not access_token: #If there's no access token, it's being logged so return the login page
-            shortcuts.redirect('/login/')
+            return shortcuts.redirect('/login/')
 
         auth_to_page = request.COOKIES.get('auth_to_page') #Get the authorization to_page from Cookies
         if auth_to_page: #If it exists
