@@ -21,109 +21,53 @@ def get_or_none(model, **kwargs):
         return None
 
 def getDefaultImage():
-    to_return = UserImage.lg.get_or_none(alias="Default_Image")
-    if to_return:
-        return to_return
-    else:
-        return initializeDefaultImage()
+    return UserImage.lg.get_or_none(alias="Default_Image") or initializeDefaultImage()
 
 def getHotFilter():
-    to_return = FilterSetting.lg.get_or_none(alias="Hot_Filter")
-    if to_return:
-        return to_return
-    else:
-        return initializeHotFilter()
+    return FilterSetting.lg.get_or_none(alias="Hot_Filter") or initializeHotFilter()
 
 def getNewFilter():
-    to_return = FilterSetting.lg.get_or_none(alias="New_Filter")
-    if to_return:
-        return to_return
-    else:
-        return initializeNewFilter()
+    return FilterSetting.lg.get_or_none(alias="New_Filter") or initializeNewFilter()
 
 def getBestFilter():
-    to_return = FilterSetting.lg.get_or_none(alias="Best_Filter")
-    if to_return:
-        return to_return
-    else:
-        return initializeBestFilter()
+    return FilterSetting.lg.get_or_none(alias="Best_Filter") or initializeBestFilter()
 
 def getDefaultFilter():
     return getHotFilter()
 
 def getLoveGovGroup():
-    to_return = Group.lg.get_or_none(alias="LoveGov_Group")
-    if to_return:
-        return to_return
-    else:
-        return initializeLoveGovGroup()
+    return Group.lg.get_or_none(alias="LoveGov_Group") or initializeLoveGovGroup()
 
 def getLoveGovGroupView():
     return getLoveGovGroup().group_view.responses.all()
 
 def getLoveGovUser():
-    to_return = UserProfile.lg.get_or_none(alias="lovegov")
-    if to_return:
-        return to_return
-    else:
-        return initializeLoveGovUser()
+    return UserProfile.lg.get_or_none(alias="lovegov") or initializeLoveGovUser()
 
 def getAnonUser():
-    to_return = UserProfile.lg.get_or_none(alias="anonymous")
-    if to_return:
-        return to_return
-    else:
-        return initializeAnonymous()
+    return UserProfile.lg.get_or_none(alias="anonymous") or initializeAnonymous()
 
 def getNewFeed():
-    to_return =  Feed.lg.get_or_none(alias='New_Feed')
-    if to_return:
-        return to_return
-    else:
-        return initializeFeed('New_Feed')
+    return Feed.lg.get_or_none(alias='New_Feed') or initializeFeed('New_feed')
 
 def getHotFeed():
-    to_return = Feed.lg.get_or_none(alias='Hot_Feed')
-    if to_return:
-        return to_return
-    else:
-        return initializeFeed('Hot_Feed')
+    to_return = Feed.lg.get_or_none(alias='Hot_Feed') or initializeFeed('Hot_Feed')
 
 def getBestFeed():
-    to_return = Feed.lg.get_or_none(alias='Best_Feed')
-    if to_return:
-        return to_return
-    else:
-        return initializeFeed('Best_Feed')
+    return Feed.lg.get_or_none(alias='Best_Feed') or initializeFeed('Best_Feed')
 
 def getTopicImage(topic):
     alias = "topicimage:" + topic.alias
-    to_return = UserImage.lg.get_or_none(alias=alias)
-    if to_return:
-        return to_return
-    else:
-        return initializeTopicImage(topic)
+    return UserImage.lg.get_or_none(alias=alias) or initializeTopicImage(topic)
 
 def getGeneralTopic():
-    to_return = Topic.lg.get_or_none(alias='general')
-    if to_return:
-        return to_return
-    else:
-        return initializeGeneralTopic()
+    return Topic.lg.get_or_none(alias='general') or initializeGeneralTopic()
 
 def getOtherNetwork():
-    to_return = Network.lg.get_or_none(name="other")
-    if to_return:
-        return to_return
-    else:
-        return initializeOtherNetwork()
+    return Network.lg.get_or_none(name="other") or initializeOtherNetwork()
 
 def getCongressNetwork():
-    to_return = Network.lg.get_or_none(alias="congress")
-    if to_return:
-        return to_return
-    else:
-        return initializeCongressNetwork()
+    return Network.lg.get_or_none(alias="congress") or initializeCongressNetwork()
 
 
 def getToRegisterNumber():
@@ -205,6 +149,7 @@ def initializeAnonymous():
         anon = ControllingUser.objects.create_user(username='anon',email='anon@lovegov.com',password='theANON')
         anon.first_name = "Anonymous"
         anon.last_name = ""
+        anon.permitted_actions = ANONYMOUS_PERMITTED_ACTIONS
         userprof = superUserHelper(anon)
         userprof.developer = False
         userprof.save()
@@ -1231,3 +1176,16 @@ def recalculateEverything():
     recalculateAllVotes()
     print "Recalculating Comments..."
     recalculateAllComments()
+
+def initPermittedActions():
+    for c in ControllingUser.objects.all():
+        p = c.getUserProfile()
+        if p:
+            if p.alias=="anonymous":
+                c.permitted_actions = ANONYMOUS_PERMITTED_ACTIONS
+            else:
+                c.permitted_actions = ACTIONS
+        c.save()
+
+def defaultTest():
+    return helperFunc()

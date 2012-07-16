@@ -207,10 +207,10 @@ function userFollow(event,div,follow)
 {
     event.preventDefault();
     div.unbind();
-    var action = 'userfollow';
+    var action = 'userFollowRequest';
     if( !follow )
     {
-        action = 'stopfollow';
+        action = 'userFollowStop';
     }
     ajaxPost({
             data: {
@@ -266,10 +266,10 @@ function groupFollow(event,div,follow)
 {
     event.preventDefault();
     div.unbind();
-    var action = 'joingroup';
+    var action = 'joinGroupRequest';
     if( !follow )
     {
-        action = 'leavegroup';
+        action = 'leaveGroup';
     }
     ajaxPost({
             data: {
@@ -327,7 +327,7 @@ function userFollowResponse(event,response,div)
     var follow_id = div.siblings(".user_follow_id").val();
     ajaxPost({
             data: {
-                'action':'followresponse',
+                'action':'followResponseResponse',
                 'p_id': follow_id,
                 'response': response
             },
@@ -350,7 +350,7 @@ function groupInviteResponse(event,response,div)
     var g_id = div.siblings(".group-join-id").val();
     ajaxPost({
             data: {
-                'action':'groupinviteresponse',
+                'action':'groupInviteResponse',
                 'g_id': g_id,
                 'response': response
             },
@@ -424,7 +424,7 @@ function setFollowPrivacy(event,private_follow,div)
 function editUserProfile(info,edit_div)
 {
     var prof_data = info;
-    prof_data.action = 'editprofile';
+    prof_data.action = 'editProfile';
 
     ajaxPost({
         'data': prof_data,
@@ -448,7 +448,7 @@ function editUserProfile(info,edit_div)
 function editContent(c_id,info,edit_div)
 {
     var content_data = info;
-    content_data.action = 'editcontent';
+    content_data.action = 'editContent';
     content_data.c_id = c_id;
 
     ajaxPost({
@@ -800,10 +800,21 @@ function ajaxLink(div, loadimg)
 function ajaxPost(dict) {
     var data = dict['data'];
     var success_fun = dict['success'];
-    var error_fun = dict['error'];
-    if (error_fun == null) {
-        error_fun = function(jqXHR, textStatus, errorThrown) { $('body').html(jqXHR.responseText); };
-    }
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if(jqXHR.status==403) {
+            if(confirm("Forbidden error: "+jqXHR.responseText +"\n\nDo you want to login now?")) {
+                window.location = "/login";
+            } else {
+                return;
+            }
+        }
+        var superError = dict['error'];
+        if (superError) {
+            superError()
+        } else {
+            $('body').html(jqXHR.responseText);
+        }
+    };
     data['url'] = window.location.href;
     $.ajax({
         url:'/action/',
@@ -924,7 +935,7 @@ function loadHeader()
                 pos.top = dropdown.offset().top;
                 $('#notifications-dropdown').offset(pos);
                 ajaxPost({
-                    'data': {'action':'getnotifications',
+                    'data': {'action':'getNotifications',
                         'dropdown':'true'},
                     success: function(data)
                     {
@@ -1419,7 +1430,7 @@ function loadThread()
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
             ajaxPost({
-                'data': {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                'data': {'action':'comment','c_id': content_id,'comment':comment_text},
                 'success': function(data) {
                     ajaxThread();
                     incNumComments();
@@ -1494,7 +1505,7 @@ function loadThread()
         {
             var content_id = $(this).children(".hidden_id").val();
             ajaxPost({
-                data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                data: {'action':'comment','c_id': content_id,'comment':comment_text},
                 success: function(data)
                 {
                     ajaxThread();
@@ -1800,7 +1811,7 @@ function loadNotification()
         wrapper.fadeOut(600);
         ajaxPost({
                 data: {
-                    'action':'userfollow',
+                    'action':'userFollowRequest',
                     'p_id': follow_id
                 },
                 success: function(data)
@@ -1849,7 +1860,7 @@ function loadNotification()
             event.preventDefault();
             var n_id = $(this).data('n_id');
             ajaxPost({
-                'data': {'action':'getaggregatenotificationusers',
+                'data': {'action':'getAggregateNotificationUsers',
                     'n_id': n_id },
                 success: function(data)
                 {
@@ -1931,7 +1942,7 @@ function getMoreNotifications()
         prof_more_notifications = false;
         var num_notifications = $("#num_notifications").val();
         ajaxPost({
-            'data': {'action':'getnotifications',
+            'data': {'action':'getNotifications',
                 'num_notifications':num_notifications },
             success: function(data)
             {
@@ -1973,7 +1984,7 @@ function getMoreUserActions()
         prof_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
-            'data': {'action':'getuseractions',
+            'data': {'action':'getUserActions',
                 'num_actions':num_actions,
                 'p_id':p_id },
             success: function(data)
@@ -2014,7 +2025,7 @@ function getMoreGroups()
         prof_more_groups = false;
         var num_groups = $("#num_groups").val();
         ajaxPost({
-            'data': {'action':'getusergroups',
+            'data': {'action':'getUserGroups',
                 'num_groups':num_groups,
                 'p_id':p_id },
             success: function(data)
@@ -2402,7 +2413,7 @@ function groupFollowResponse(event,response,div,g_id)
     var g_id = div.siblings(".group-id").val();
     ajaxPost({
             data: {
-                'action':'joinresponse',
+                'action':'joinGroupResponse',
                 'follow_id': follow_id,
                 'g_id': g_id,
                 'response': response
@@ -2429,7 +2440,7 @@ function getMoreGroupActions()
         group_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
-            'data': {'action':'getgroupactions',
+            'data': {'action':'getGroupActions',
                 'num_actions':num_actions,
                 'g_id':g_id },
             success: function(data)
@@ -2470,7 +2481,7 @@ function getMoreGroupMembers()
         group_more_members = false;
         var num_members = $("#num_members").val();
         ajaxPost({
-            'data': {'action':'getgroupmembers',
+            'data': {'action':'getGroupMembers',
                 'num_members':num_members,
                 'g_id':g_id },
             success: function(data)

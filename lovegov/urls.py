@@ -5,7 +5,7 @@ from lovegov.frontend.views import viewWrapper
 from lovegov.frontend import admin_views
 
 # django
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 from django.contrib.admin import site
 from django.contrib import admin
 from django.views.generic.simple import redirect_to

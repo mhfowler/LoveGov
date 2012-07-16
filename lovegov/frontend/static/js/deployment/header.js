@@ -46,7 +46,7 @@ function loadHeader()
     $("#public").click( function(event)
     {
         event.preventDefault();
-        $.post('/action/', {'action':'setprivacy','mode':'PUB','path':path},
+        $.post('/action/', {'action':'setPrivacy','mode':'PUB','path':path},
                 // call back function
                 function()
                 {
@@ -57,7 +57,7 @@ function loadHeader()
     $("#private").click( function(event)
     {
         event.preventDefault();
-        $.post('/action/', {'action':'setprivacy','mode':'PRI','path':path},
+        $.post('/action/', {'action':'setPrivacy','mode':'PRI','path':path},
                 // call back function
                 function()
                 {
@@ -68,7 +68,7 @@ function loadHeader()
     $("#custom").click( function(event)
     {
         event.preventDefault();
-        $.post('/action/', {'action':'setprivacy','mode':'FOL','path':path},
+        $.post('/action/', {'action':'setPrivacy','mode':'FOL','path':path},
                 // call back function
                 function()
                 {

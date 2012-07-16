@@ -16,7 +16,7 @@ function loadJSONThread()
             $.ajax({
                 url:'/action/',
                 type: 'POST',
-                data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                data: {'action':'comment','c_id': content_id,'comment':comment_text},
                 success: function(data)
                 {
                     reloadThread(data);
@@ -105,7 +105,7 @@ function initializeThread(thread)
             $.ajax({
                 url:'/action/',
                 type: 'POST',
-                data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                data: {'action':'comment','c_id': content_id,'comment':comment_text},
                 success: function(data)
                 {
                     reloadThread(data);

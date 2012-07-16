@@ -1705,6 +1705,7 @@ class ControllingUser(User, LGModel):
     permissions = models.ForeignKey(UserPermission, null=True)  # null is default permission
     user_profile = models.ForeignKey(UserProfile, null=True)    # spectator
     objects = UserManager()
+    permitted_actions = custom_fields.ListField(default=ACTIONS)
     def getUserProfile(self):
         return self.user_profile
 
