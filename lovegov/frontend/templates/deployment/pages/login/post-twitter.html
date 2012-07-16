@@ -1,5 +1,6 @@
 <div class="form-div">
-    <h2 class="register-title"> To register with twitter, enter your info below. </h2>
+    <h2 class="register-title"> To finish your registration with twitter,
+    enter your info below. </h2>
     <form action="/login/home/" method="POST" id="twitterform">{% csrf_token %}
 
                     <input type="text" class="twitter-input top" name="twitter_name"
@@ -11,6 +12,8 @@
                     <input type="hidden" name="button" value="post-twitter"/>
                     <input class="button-red register-button" type="submit" value="register"/>
     </form>
+
+    <p class="twitter-error"> {{ twitter_error }} </p>
 </div>
 
 

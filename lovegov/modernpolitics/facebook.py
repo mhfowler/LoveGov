@@ -363,14 +363,19 @@ def twitterRegister(request, vals={}):
         tat = tatHelper(request)
         if tat:                                                 # ready to twitter register
             twitter_user_id = tat['user_id']
-            control = createTwitterUser(name, email)
-            user_prof = control.user_profile
-            vals['viewer'] = user_prof
-            user_prof.twitter_user_id = tat['user_id']
-            user_prof.save()
-            if zip:
-                user_prof.setZipCode(zip)
-            return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
+            already = UserProfile.lg.get_or_none(twitter_user_id = twitter_user_id)
+            if already:
+                vals['twitter_error'] = "A lovegov user profile has already been associated with this twitter account.\
+                Try logging in in the top right?"
+            else:
+                control = createTwitterUser(name, email)
+                user_prof = control.user_profile
+                vals['viewer'] = user_prof
+                user_prof.twitter_user_id = tat['user_id']
+                user_prof.save()
+                if zip:
+                    user_prof.setZipCode(zip)
+                return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             response = shortcuts.redirect("/twitter/redirect/")
             response.set_cookie('twitter_name', name)

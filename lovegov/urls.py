@@ -50,6 +50,7 @@ urlpatterns += patterns('',
     (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
     (r'^twitter/register/$', viewWrapper(views.twitterRegister)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
+    (r'^logout/$', viewWrapper(views.logout)),                                           # logout
 
 
     # under construction
@@ -90,7 +91,6 @@ urlpatterns += patterns('',
     (r'^networks/$', viewWrapper(views.networks, requires_login=True)),
 
     # ajax pages
-    (r'^logout/$', viewWrapper(views.logout, requires_login=True)),                            # logout
     (r'^action/$', viewWrapper(actions.actionPOST, requires_login=True)),                      # comment and other actions
     (r'^answer/$', viewWrapper(views.profile, requires_login=True)),                           # comment and other actions
     (r'^fb/action/$', viewWrapper(views.facebookAction, requires_login=True)),
