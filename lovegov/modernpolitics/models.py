@@ -1124,6 +1124,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         location.zip = zip
         location.save()
 
+    def isAnon(self):
+        return self.alias == 'anonymous'
+
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
     #-------------------------------------------------------------------------------------------------------------------
