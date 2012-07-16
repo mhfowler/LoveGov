@@ -66,6 +66,9 @@ function rebindFunction()
             loadGroup();
             hideFooter();
             break;
+        case 'groupedit':
+            loadGroupEdit();
+            break;
         case 'account':                                         // /account
             loadAccount();
             break;
@@ -2657,6 +2660,39 @@ function loadGroup()
     bindNewDivs();
 
 }
+
+/***********************************************************************************************************************
+ *
+ *      ~GroupEdit
+ *
+ **********************************************************************************************************************/
+
+
+function loadGroupEdit()
+{
+    bindGroupPrivacyRadio();
+    bindScaleRadio();
+    selectPrivacyRadio();
+    selectScaleRadio();
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+
 
 /***********************************************************************************************************************
  *

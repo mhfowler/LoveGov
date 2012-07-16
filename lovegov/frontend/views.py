@@ -1156,6 +1156,56 @@ def account(request, section="", vals={}):
         return framedResponse(request, html, url, vals)
 
 
+def groupEdit(request, g_id=None, section="", vals={}):
+    viewer = vals['viewer']
+
+    if not g_id:
+        return HttpResponse('Group id not provided to view function')
+    group = Group.lg.get_or_none(id=g_id)
+    if not group:
+        return HttpResponse('Group id not found in database')
+    vals['group'] = group
+
+    admins = list( group.admins.all() )
+    if viewer.id not in map( lambda x : x.id , admins ):
+        return HttpResponse('You are not an administrator of this group')
+
+    vals['group_admins'] = admins
+
+    vals['uploadform'] = UploadFileForm()
+
+    if section == "profile": vals['profile_message'] = " "
+
+    if request.method == 'GET':
+        setPageTitle("lovegov: group edit",vals)
+        html = ajaxRender('deployment/pages/group/group_edit.html', vals, request)
+        url = '/account/'
+        return framedResponse(request, html, url, vals)
+
+    elif request.method == 'POST':
+        if request.POST['box'] == 'profile':
+            if 'image' in request.FILES:
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    viewer.setProfileImage(file_content)
+                    vals['profile_message'] = "You look great!"
+                except IOError:
+                    vals['profile_message'] = "The image upload didn't work. Try again?"
+                    vals['uploadform'] = UploadFileForm(request.POST)
+
+
+            vals['profile_message'] = " "
+        elif request.POST['box'] == 'basic_info':
+            pass
+        else:
+            pass
+
+        html = ajaxRender('deployment/pages/group/group_edit.html', vals, request)
+        url = '/account/'
+        return framedResponse(request, html, url, vals)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------

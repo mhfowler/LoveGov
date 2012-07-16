@@ -286,3 +286,36 @@ div.account-right
 
 }
 
+.custom-radio
+{
+  display: none;
+}
+
+div.create-radio
+{
+  @include rounded(9px);
+  @include float-left;
+  padding: 10px 10px 0px 10px;
+  font-size: 18px;
+  font-family: $gill-std;
+  color: white;
+  background-color: $gray;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+div.create-radio:hover
+{
+  background-color: $light-gray;
+}
+
+div.create-radio-selected
+{
+  background-color: $red;
+}
+
+div.create-radio-selected:hover
+{
+  background-color: $red-light;
+}
+

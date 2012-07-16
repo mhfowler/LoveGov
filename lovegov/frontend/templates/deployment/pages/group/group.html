@@ -28,8 +28,18 @@
             {% endif %}
 
             <div class="basic-info-main">
-                <div class="group-name">
-                    {{ group.title }}
+                <div class="group-name-container">
+                    <div class="inline-div inline_hide group-name">
+                        {{ group.title }}
+                    </div>
+                    {% if is_user_admin  %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                            <input maxlength="100" type="text" value="{{ group.title }}" class="group-title-edit edit_input" name="title"/>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
                 </div>
                 {% if not group.system and not group.group_type == 'P' %}
                     <div class="group-scale">
@@ -87,10 +97,24 @@
                                 </a>
                             {% endif %}
                         </div>
+                        {% if is_user_confirmed and group.group_type == "U" %}
+                            <div class="group-button">
+                                <a href="" class="button-red float-left">
+                                    invite
+                                </a>
+                            </div>
+                        {% endif %}
                         {% if is_user_admin and group_requests|length > 0 %}
                             <div class="group-button">
                                 <a href="" class="button-red float-left" id="group_requests">
                                     {{ group_requests|length }} request{% if group_requests|length > 1 %}s{% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+                        {% if is_user_admin %}
+                            <div class="group-button">
+                                <a href="/group/{{ group.id }}/edit/" class="button-red float-left">
+                                    edit info
                                 </a>
                             </div>
                         {% endif %}

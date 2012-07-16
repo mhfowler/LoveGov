@@ -1,0 +1,175 @@
+{% load thumbnail %}
+<!---- CSS for this file is in account.scss -->
+
+<div class="main-div">
+    <a href="{{ group.get_url }}"><h5>Back to group page</h5></a>
+    <br>
+    <div class="account-left">
+        <h2>Group Settings</h2>
+        <div class="account-button-options">
+            <div class="account-button" id="account_basic_information">
+                <div class="account-button-pointer">
+                    <div class="border"></div>
+                    <div class="inner"></div>
+                </div>
+                <span>Basic Information</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button" id="account_change_profile">
+                <span>Administrators</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="account-right">
+
+        <div class="account_div" id="account-basic-information" style="display:none">
+            <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+                <span class="edit-link-large edit_link"></span>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h2>Basic Information</h2></td>
+                    </tr>
+                    <tr>
+                        <td class="left"><h3>avatar</h3></td>
+                        <td>
+                            {% thumbnail group.getImage "75x75" crop="center" as im %}
+                                <img src="{{ im.url }}" style="margin-right:20px"/>
+                            {% endthumbnail %}
+                            {{ uploadform.image }}
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left"><h3>title</h3></td>
+                        <td><input type="text" value="{{ group.title }}" name="title"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>description</h3>
+                        </td>
+                        <td><textarea class="bio-field" name="full_text">{{ group.full_text }}</textarea></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>privacy</h3>
+                        </td>
+                        <td id="group_privacy_container" data-group_privacy="{{ group.group_privacy }}">
+                            <div class="create-radio group_privacy_radio">
+                                Open
+                                <input type="radio" class="custom-radio" value='O' name="group_privacy"/>
+                            </div>
+                            <div class="create-radio group_privacy_radio">
+                                Private
+                                <input type="radio" class="custom-radio" value='P' name="group_privacy"/>
+                            </div>
+                            <div class="create-radio group_privacy_radio">
+                                Hidden
+                                <input type="radio" class="custom-radio" value='S' name="group_privacy"/>
+                            </div>
+                            <div class='clear-both'></div>
+                        </td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>scale</h3>
+                        </td>
+                        <td id="group_scale_container" data-group_scale="{{ group.scale }}">
+                            {% include 'deployment/snippets/select_scale.html' %}
+                        </td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td>
+                            <p class="account-message">
+                                {{ group_info_message }}
+                            </p>
+                        </td>
+                        <td style="text-align:right"><input type="submit" action="/action/" class="button-red" value="save changes"/></td>
+                        <td width=20></td>
+                    </tr>
+                </table>
+                <input type="hidden" name="action" value="editGroup"/>
+                <input type="hidden" name="g_id" value="{{ group.id }}"/>
+            </form>
+        </div>
+
+        <div class="account_div" id="account-change-profile" style="display:none">
+
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function account()
+    {
+
+        var pointer = $('.account-button-pointer');
+        var pencil = $('.edit_link').detach();
+        var id;
+
+        $('.account_div').hide();
+    {% if password_message %}
+        id = '#account_change_password';
+    {% elif profile_message %}
+        id = '#account_change_profile';
+    {% else %}
+        id = '#account_basic_information';
+    {% endif %}
+        $(id).prepend(pointer.detach()).addClass("account-button-selected");
+        $(id.replace(/_/g,"-")).show();
+
+        $('.account_input').hover(
+                function() { $(this).parent().next().append(pencil); },
+                function() { pencil = pencil.detach(); }
+        );
+
+        $('.account-button').click(function()
+        {
+            $('.account-button').removeClass("account-button-selected");
+            $(this).addClass("account-button-selected");
+            $(this).prepend(pointer);
+        });
+
+        var inputLimit = 150;
+        $('.limit_input').keypress(function(event)
+        {
+            if ($(this).val().length  > inputLimit)
+            {
+                event.preventDefault();
+            }
+        });
+        $('.limit_input').bind('paste',function(event)
+        {
+            if ($(this).val().length  > inputLimit)
+            {
+                event.preventDefault();
+            }
+        });
+        $('.account-button').click(function(event)
+        {
+            $('.account_div').hide();
+            $('#' + $(this).attr('id').replace(/_/g,"-")).show();
+        });
+
+    }
+
+    account();
+
+</script>
+
+<!-- Javascript -->
+<script> rebind='groupedit'; </script>
+<!-- End Account -->
+
+

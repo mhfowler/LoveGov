@@ -494,6 +494,42 @@ def editAccount(request, vals={}):
     return shortcuts.redirect('/account/')
 
 #-----------------------------------------------------------------------------------------------------------------------
+# FORM Edits group profile info
+#-----------------------------------------------------------------------------------------------------------------------
+def editGroup(request, vals={}):
+    viewer = vals['viewer']
+
+    g_id = request.POST.get('g_id')
+
+    if not g_id:
+        errors_logger.error('Group id not provided to editGroup action')
+        return shortcuts.redirect('/')
+
+    group = Group.lg.get_or_none(id=g_id)
+    if not group:
+        errors_logger.error('Group id #' + str(g_id) + ' not found in database.  Requested by editGroup action')
+        return shortcuts.redirect('/')
+
+    vals['group'] = group
+
+    if 'title' in request.POST: group.title = request.POST['title']
+    if 'full_text' in request.POST: group.full_text = request.POST['full_text']
+    if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
+    if 'scale' in request.POST: group.scale = request.POST['scale']
+
+    if 'image' in request.FILES:
+        try:
+            file_content = ContentFile(request.FILES['image'].read())
+            Image.open(file_content)
+            group.setMainImage(file_content)
+        except IOError:
+            print "Image Upload Error"
+
+    group.save()
+
+    return shortcuts.redirect('/group/' + str(group.id) + '/edit/')
+
+#-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editProfile(request, vals={}):
@@ -1788,6 +1824,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'updatePage': updatePage,
             'getaggregatenotificationusers': getAggregateNotificationUsers,
             'getSigners': getSigners,
+            'editGroup': editGroup,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------
