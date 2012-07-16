@@ -322,7 +322,7 @@ def validateTwitterForm(name, email):
     elif not "@" in email:
         valid = False
         twitter_email_error = "email"
-    elif UserProfile.lg.get_or_none(email=email):
+    elif ControllingUser.lg.get_or_none(username=email):
         valid = False
         twitter_email_error = "User with given email already has registered."
     else:
