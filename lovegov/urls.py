@@ -68,6 +68,7 @@ urlpatterns += patterns('',
     (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                           # match page
     (r'^match/(\w+)/$', viewWrapper(views.newMatch, requires_login=True)),                    # match page
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
+    (r'^try/$', viewWrapper(views.tryLoveGov)),
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail

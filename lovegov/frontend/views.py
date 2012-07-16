@@ -60,10 +60,9 @@ def viewWrapper(view, requires_login=False):
                         temp_logger.debug('blocked: ' + user.get_name())
                         return shortcuts.redirect('/underconstruction/')
 
-                # IF NOT AUTHENTICATED, REDIRECT TO LOGIN
-                #if not user.is_authenticated():
-                #    print request.path
-                #    return HttpResponseRedirect('/login' + request.path)
+                # If user hasn't clicked "try lovegov", redirect to login
+                if not request.COOKIES.get('lovegov_try'):
+                    return HttpResponseRedirect('/login' + request.path)
 
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
@@ -192,6 +191,7 @@ def login(request, to_page='web/', message="", vals={}):
     @type vals: dictionary
     @return:
     """
+
     # Try logging in with facebook
     if fbLogin(request,vals):
         # to_page = to_page.replace("/login", "")
@@ -211,7 +211,7 @@ def login(request, to_page='web/', message="", vals={}):
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
         vals['toregister'] = getToRegisterNumber().number
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
-
+    response.delete_cookie('lovegov_try')
     return response
 
 def loginAuthenticate(request,user,to_page=''):
@@ -1314,6 +1314,15 @@ def search(request, term='', vals={}):
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Tryin' to love some gov
+#-----------------------------------------------------------------------------------------------------------------------
+
+def tryLoveGov(request, vals={}):
+    response = HttpResponseRedirect('/home')
+    response.set_cookie('lovegov_try', 1)
+    return response
 
 
 #-----------------------------------------------------------------------------------------------------------------------
