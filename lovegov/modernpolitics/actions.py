@@ -146,14 +146,16 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
+    groups = SearchQuerySet().models(Group).filter(content=term)
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
     petitions = [x.object for x in petitions]
     questions = [x.object for x in questions]
     news = [x.object for x in news]
+    groups = [x.object for x in groups]
 
-    return userProfiles, petitions, questions, news
+    return userProfiles, petitions, questions, news, groups
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -163,9 +165,9 @@ def lovegovSearch(term):
 def searchAutoComplete(request,vals={},limit=5):
     string = request.POST['string'].lstrip().rstrip()
 
-    userProfiles, petitions, questions, news = lovegovSearch(string)
+    userProfiles, petitions, questions, news, groups = lovegovSearch(string)
 
-    total_results = sum(map(len, (userProfiles, petitions, questions, news)))
+    total_results = sum(map(len, (userProfiles, petitions, questions, news, groups)))
 
     results_length = 0
 
@@ -173,6 +175,7 @@ def searchAutoComplete(request,vals={},limit=5):
     petition_results = []
     question_results = []
     news_results = []
+    group_results = []
 
     # If total results is less than the given limit, 
     # show up to the number of actual results
@@ -196,11 +199,15 @@ def searchAutoComplete(request,vals={},limit=5):
             popped = news.pop(0)
             if popped:
                 news_results.append(popped)
-        results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
+        if len(groups) > 0:
+            popped = groups.pop(0)
+            if popped:
+                group_results.append(popped)
+        results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results, group_results)))
     
     # Store results in context values
-    vals['userProfiles'], vals['petitions'], vals['questions'], vals['news'] = \
-        userProfile_results, petition_results, question_results, news_results
+    vals['userProfiles'], vals['petitions'], vals['questions'], vals['news'], vals['groups'] = \
+        userProfile_results, petition_results, question_results, news_results, group_results
     vals['search_string'] = string
     vals['num_results'] = total_results
     vals['shown'] = results_length

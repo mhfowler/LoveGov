@@ -26,6 +26,14 @@
 	{% include 'deployment/snippets/autocomplete-petition.html' with petition=petition %}
 {% endfor %}
 
+{% if groups %}
+    <div class="autocomplete-div autocomplete-header">Groups</div>
+{% endif %}
+{% for group in groups %}
+    {% include 'deployment/snippets/autocomplete-group.html' with group=group %}
+{% endfor %}
+
+
 {% if num_results|subtract:shown > 0 %}
 <a href="/search/{{search_string}}"> 
 <div class="autocomplete-div autocomplete-more-results">

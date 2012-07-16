@@ -1303,12 +1303,13 @@ def widgetAbout(request, vals={}):
 # Search page
 #-----------------------------------------------------------------------------------------------------------------------
 def search(request, term='', vals={}):
-    userProfiles, petitions, questions, news = lovegovSearch(term)
-    vals['num_results'] = sum(map(len, (userProfiles, petitions, questions, news)))
+    userProfiles, petitions, questions, news, groups = lovegovSearch(term)
+    vals['num_results'] = sum(map(len, (userProfiles, petitions, questions, news, groups)))
     vals['userProfiles'] = userProfiles
     vals['petitions'] = petitions
     vals['questions'] = questions
     vals['news'] = news
+    vals['groups'] = groups
     vals['term'] = term
     html = ajaxRender('deployment/pages/search/search.html', vals, request)
     url = '/search/' + term
