@@ -1,0 +1,57 @@
+<div class="sign-in-dialogue sign_in_dialogue">
+
+    <div class="connect-buttons">
+
+        <a href="{{ fb_link }}" class="sign-in-fb"> </a>
+        <a href="/twitter/redirect/" class="sign-in-twitter"> </a>
+        <div style="clear:both;"></div>
+
+    </div>
+
+    <p>
+        OR
+    </p>
+
+    <form action="/login{{ to_page }}" method="post" id="loginform"> {% csrf_token %}
+
+        <input type="text" class="sign-in-input" name="username"
+               value="{% if login_email %}{{ login_email }}{% else %}email{% endif %}"
+               data-orig="{% if login_email %} {{ login_email }} {% else %} email {% endif %}"/>
+        <input type="password" class="sign-in-input password-input" name="password"
+               value="{% if not login_email %}password{% endif %}" data-orig="password"/>
+        <input type="hidden" name="button" value="login" />
+
+        <div class="dialogue-bottom">
+            <input class="login-button" id="submit-login" type="submit" value="log in"/>
+            <a class="account-actions forgot-link" id="forgot-password" href="/passwordRecovery/">forgot password?</a>
+            <span class="login-error">{{ error }}</span>
+        </div>
+    </form>
+
+</div>
+
+<script>
+
+    $(".sign-in-input").focusin(function(event) {
+        $(this).val("");
+        $(this).css('color', 'black');
+    });
+    $(".sign-in-input").focusout(function(event) {
+        var entered = $(this).val();
+        if (entered == "") {
+            $(this).val($(this).data('orig'));
+            $(this).css('color', '#adadad');
+        }
+    });
+
+    $(".sign_in_dialogue").bind("clickoutside.menuoff", function(event) {
+        if (!$(this).hasClass("hack_workaround")) {
+            $(this).addClass("hack_workaround");
+        }
+        else {
+            $(this).hide();
+            $(this).removeClass("hack_workaround");
+        }
+    });
+
+</script>
