@@ -368,7 +368,7 @@ def twitterRegister(request, vals={}):
                 vals['twitter_error'] = "A lovegov user profile has already been associated with this twitter account.\
                 Try logging in in the top right?"
             else:
-                control = createTwitterUser(name, email)
+                control = createTwitterUser(name, email, vals=vals)
                 user_prof = control.user_profile
                 vals['viewer'] = user_prof
                 user_prof.twitter_user_id = tat['user_id']

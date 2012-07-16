@@ -36,10 +36,13 @@ def createFBUser(name, email):
     sendTemplateEmail(subject="Welcome to LoveGov", template="facebookRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
     return control
 
-def createTwitterUser(name, email):
+def createTwitterUser(name, email, vals={}):
     password = generateRandomPassword(10)
     control = createUser(name, email, password)
-    vals = {'name':name,'email':email,'password':password, 'confirmation_link':control.user_profile.confirmation_link}
+    vals['name'] = name
+    vals['email'] = email
+    vals['password'] = password
+    vals['confirmation_link'] = confirmation_link
     sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
     return control
 
