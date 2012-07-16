@@ -1,0 +1,32 @@
+<div class="form-div">
+    <h2 class="register-title"> To register with twitter, enter your info below. </h2>
+    <form action="/login/home/" method="POST" id="twitterform">{% csrf_token %}
+
+                    <input type="text" class="twitter-input top" name="twitter_name"
+                           value="{% if twitter_name_error %}{{ twitter_name_error }}{% else %}full name{% endif %}"/>
+                    <input type="text" class="twitter-input middle" name="twitter_email"
+                            value="{% if twitter_email_error %}{{ twitter_email_error }}{% else %}email{% endif %}"/>
+                    <input type="text" class="twitter-input bottom" name="twitter_zip"
+                           value="{% if twitter_zip %}{{ twitter_zip }}{% else %}zip [optional]{% endif %}"/>
+                    <input type="hidden" name="button" value="post-twitter"/>
+                    <input class="button-red register-button" type="submit" value="register"/>
+    </form>
+</div>
+
+
+<script>
+
+    $(".twitter-input").focusin(function(event) {
+        $(this).data('orig', $(this).val());
+        $(this).val("");
+        $(this).css('color', 'black');
+    });
+    $(".twitter-input").focusout(function(event) {
+        var entered = $(this).val();
+        if (entered == "") {
+            $(this).val($(this).data('orig'));
+            $(this).css('color', '#adadad');
+        }
+    });
+
+</script>

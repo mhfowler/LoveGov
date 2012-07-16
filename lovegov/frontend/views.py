@@ -31,9 +31,16 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {}
-        # check browser
+
         if not checkBrowserCompatible(request):
             return shortcuts.redirect("/upgrade/")
+
+        vals['fb_state'] = fbGetRedirect(request, vals)
+        vals['google'] = GOOGLE_LOVEGOV
+        host_full = getHostHelper(request)
+        vals['host_full'] = host_full
+        vals['to_page'] = request.path.replace('/login', '')
+        vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
 
         # if login is required
         if requires_login:
@@ -53,6 +60,9 @@ def viewWrapper(view, requires_login=False):
                     print request.path
                     return HttpResponseRedirect('/login' + request.path)
 
+                if not user.confirmed:
+                    return shortcuts.redirect("/need_email_confirmation/")
+
                 # ELSE AUTHENTICATED
                 else:
                     vals['user'] = user
@@ -64,13 +74,6 @@ def viewWrapper(view, requires_login=False):
                 logger.debug('deleted cookie')
                 return response
 
-        vals['fb_state'] = fbGetRedirect(request, vals)
-
-        vals['google'] = GOOGLE_LOVEGOV
-        host_full = getHostHelper(request)
-        vals['host_full'] = host_full
-        vals['to_page'] = request.path.replace('/login', '')
-        vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
         # SAVE PAGE ACCESS
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
@@ -243,6 +246,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
             vals.update({"registerform":registerform, "state":'register_error'})
             return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
 
+    elif request.POST['button'] == 'post-twitter':
+        from lovegov.modernpolitics import facebook
+        return facebook.twitterRegister(request, vals)
+
     # RECOVER via POST
     elif request.POST['button'] == 'recover':
         user = ControllingUser.lg.get_or_none(username=request.POST['username'])
@@ -277,6 +284,7 @@ def logout(request, vals={}):
     auth.logout(request)
     response = shortcuts.redirect('/web/')
     response.delete_cookie('fb_token')
+    response.delete_cookie('twitter_access_token')
     return response
 
 def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
@@ -289,6 +297,13 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
         return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
     else:
         return loginPOST(request,to_page,message,vals)
+
+def needConfirmation(request, vals={}):
+    vals['confirmation_message'] =         'Your account has not been validated yet. '\
+                                           'Check your email for a confirmation link.  '\
+                                           'It might be in your spam folder.'
+    vals['state'] = 'need-confirmation'
+    return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets frame values and puts in dictionary.
@@ -1192,7 +1207,13 @@ def twitterRedirect(request, redirect_uri=None, vals={}):
     return facebook.twitterRedirect(request, redirect_uri)
 
 def twitterHandle(request, vals={}):
-    return twitterGetAccessToken(request)
+    print "twitter handl."
+    return twitterGetAccessToken(request, to_page="/home/", vals=vals)
+
+def twitterRegister(request, vals={}):
+    from lovegov.modernpolitics import facebook
+    print "twitter registr."
+    return facebook.twitterRegister(request, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Authorize permission from facebook

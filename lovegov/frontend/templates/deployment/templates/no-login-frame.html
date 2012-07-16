@@ -45,6 +45,28 @@
             $(".sign_in_dialogue").show();
         });
 
+        $(".sign-in-input").focusin(function(event) {
+            $(this).val("");
+            $(this).css('color', 'black');
+        });
+        $(".sign-in-input").focusout(function(event) {
+            var entered = $(this).val();
+            if (entered == "") {
+                $(this).val($(this).data('orig'));
+                $(this).css('color', '#adadad');
+            }
+        });
+
+        $(".sign_in_dialogue").bind("clickoutside.menuoff", function(event) {
+            if (!$(this).hasClass("hack_workaround")) {
+                $(this).addClass("hack_workaround");
+            }
+            else {
+                $(this).hide();
+                $(this).removeClass("hack_workaround");
+            }
+        });
+
         // CSRF protection
         $.ajaxSetup({ data: {csrfmiddlewaretoken: "{{ csrf_token }}" }});
     });

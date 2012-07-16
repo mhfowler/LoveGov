@@ -36,6 +36,13 @@ def createFBUser(name, email):
     sendTemplateEmail(subject="Welcome to LoveGov", template="facebookRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
     return control
 
+def createTwitterUser(name, email):
+    password = generateRandomPassword(10)
+    control = createUser(name, email, password)
+    vals = {'name':name,'email':email,'password':password, 'confirmation_link':control.user_profile.confirmation_link}
+    sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
+    return control
+
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
 # - name, email, password

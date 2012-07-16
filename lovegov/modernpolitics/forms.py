@@ -157,14 +157,7 @@ class RegisterForm(forms.Form):
 
         zip = self.cleaned_data.get('zip')
         if zip:
-            location = user.location
-            if not location:
-                location = PhysicalAddress()
-                location.save()
-                user.location = location
-                user.save()
-            location.zip = zip
-            location.save()
+            user.user_prof.setZipCode(zip)
 
         vals = {'firstname':firstname,'link':user.user_profile.confirmation_link}
         sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)

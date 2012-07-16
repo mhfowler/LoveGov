@@ -21,6 +21,14 @@
             {% include 'deployment/pages/login/login-register.form.html' %}
         </div>
 
+        <div id="post-twitter-div" class="state-div">
+            {% include 'deployment/pages/login/post-twitter.html' %}
+        </div>
+
+        <div id="need-confirmation-div" class="state-div">
+            <h3> {{ confirmation_message  }} </h3>
+        </div>
+
     </div>
 
     <!-- Fade-in Divs -->
@@ -86,6 +94,20 @@
                 $("#sign-up-div").hide();
                 $("#register-div").show();
             });
+
+            var register_state = "{{ state }}";
+            if (register_state == 'register_error') {
+                $(".state-div").hide();
+                $("#register-div").show();
+            }
+            if (register_state == 'post-twitter') {
+                $(".state-div").hide();
+                $("#post-twitter-div").show();
+            }
+            if (register_state == 'need-confirmation') {
+                $(".state-div").hide();
+                $("#need-confirmation-div").show();
+            }
 
         });
     </script>

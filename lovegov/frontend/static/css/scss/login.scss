@@ -278,6 +278,7 @@ div#bottom
   }
 }
 
+
 div.mission-statement
 {
   clear:both;
@@ -290,6 +291,35 @@ div.mission-statement
   margin-top:50px;
   margin-right:0px;
 }
+
+
+#post-twitter-div {
+
+  input.twitter-input {
+    height:28px;
+    width:410px;
+    padding:3px;
+    font-size:22px;
+    color:$black;
+    font-family:$gill-light;
+  }
+
+  input.top {
+    margin-top:10px;
+  }
+  input.middle {
+    margin-top:10px;
+    margin-bottom:10px;
+  }
+  input.bottom {
+    margin-bottom:15px;
+  }
+  input.register-button {
+    float:right;
+  }
+}
+
+
 
 .developer_title
 {

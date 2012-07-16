@@ -48,6 +48,9 @@ urlpatterns += patterns('',
     (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
     (r'^twitter/redirect/$', viewWrapper(views.twitterRedirect)),
     (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
+    (r'^twitter/register/$', viewWrapper(views.twitterRegister)),
+    (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
+
 
     # under construction
     (r'^underconstruction/$', views.underConstruction),
