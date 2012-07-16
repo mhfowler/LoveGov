@@ -61,16 +61,19 @@ def checkBrowserCompatible(request):
         if cookie == 'yes':
             return True
 
-    user_agent = request.META['HTTP_USER_AGENT']
-    parsed = httpagentparser.detect(user_agent)
-    browser = parsed.get('browser')
-    if browser:
-        browser_logger.debug('useragent: ' + pprint.pformat(parsed))
-        browser_name = browser.get('name')
-        if browser_name == "Microsoft Internet Explorer":
-            version = float(browser.get('version'))
-            if version < 9.0:
-                to_return = False
+    user_agent = request.META.get('HTTP_USER_AGENT')
+    if user_agent:
+        parsed = httpagentparser.detect(user_agent)
+        browser = parsed.get('browser')
+        if browser:
+            browser_logger.debug('useragent: ' + pprint.pformat(parsed))
+            browser_name = browser.get('name')
+            if browser_name == "Microsoft Internet Explorer":
+                version = float(browser.get('version'))
+                if version < 9.0:
+                    to_return = False
+    else:
+        to_return = False
 
     return to_return
 
@@ -144,13 +147,10 @@ def renderToResponseCSRF(template, vals, request):
         vals['privacy'] = request.COOKIES['privacy']
     except KeyError:
         vals['privacy'] = 'PUB'
-    try:
-        vals['linkfrom'] = request.COOKIES['linkfrom']
-    except KeyError:
-        vals['linkfrom'] = 0
     vals['request'] = request
-    # render template
-    return render_to_response(template, vals, context_instance=RequestContext(request))
+    response = render_to_response(template, vals, context_instance=RequestContext(request))
+    response.set_cookie("fb_state", vals['fb_state'])
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns and object from the url which uniquely identifies it

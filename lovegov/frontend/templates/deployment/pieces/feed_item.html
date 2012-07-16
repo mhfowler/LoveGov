@@ -1,9 +1,0 @@
-{% if item.type == "N" %}
-
-    {% include 'deployment/snippets/news_feed.html' with news=item.downcast %}
-
-{% elif item.type == "P" %}
-
-    {% include 'deployment/snippets/petition_feed.html' with petition=item.downcast %}
-
-{% endif %}

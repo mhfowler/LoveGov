@@ -1,0 +1,31 @@
+<div class="sign-in-dialogue sign_in_dialogue">
+
+    <div class="connect-buttons">
+
+        <a href="{{ fb_link }}" class="sign-in-fb"> </a>
+        <a href="/twitter/redirect/" class="sign-in-twitter"> </a>
+        <div style="clear:both;"></div>
+
+    </div>
+
+    <p>
+        OR
+    </p>
+
+    <form action="/login{{ to_page }}" method="post" id="loginform"> {% csrf_token %}
+
+        <input type="text" class="sign-in-input" name="username"
+               value="{% if login_email %}{{ login_email }}{% else %}email{% endif %}"
+               data-orig="{% if login_email %} {{ login_email }} {% else %} email {% endif %}"/>
+        <input type="password" class="sign-in-input password-input" name="password"
+               value="{% if not login_email %}password{% endif %}" data-orig="password"/>
+        <input type="hidden" name="button" value="login" />
+
+        <div class="dialogue-bottom">
+            <input class="login-button" id="submit-login" type="submit" value="log in"/>
+            <a class="account-actions forgot-link" id="forgot-password" href="/passwordRecovery/">forgot password?</a>
+            <span class="login-error">{{ error }}</span>
+        </div>
+    </form>
+
+</div>

@@ -1,5 +1,4 @@
-{% extends 'deployment/center/content_detail.html' %}
-
+{% extends 'deployment/pages/content/content_detail.html' %}
 
 {% block petition_detail %}
 
@@ -19,6 +18,8 @@
         {% if signers %}
             {% include 'deployment/snippets/petition_bar.html' with p=petition %}
         {% endif %}
+
+    {% endif %}
 
 {% endblock %}
 
@@ -46,22 +47,8 @@
 
     <!-- sign -->
     <div id="signers">
-        {% if petition.finalized %}
-
-            <div class="sign">
-                {% if not i_signed %}
-                    <a href="" class='red-button' id="sign-button"> Sign </a>
-                {% else %}
-                    You have signed this petition.
-                {% endif %}
-            </div>
-
-        {% else %}
-            {% if not iown %}
-                This petition has not yet been finalized by its creator. Once finalized, you can sign!
-            {% endif %}
-        {% endif %}
     </div>
+
     <div class="petition-signers-modal" data-petition_id='{{petition.id}}'>abcdefghijklmnopqrstuvwxyz</div>
 
     <script> rebind='petition'; </script>

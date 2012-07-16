@@ -10,7 +10,7 @@
 
                 <div class="linear-picture">
 
-                    {% include 'deployment/center/feed/feed_image.html' %}
+                    {% include 'deployment/pages/feed/feed_image.html' %}
 
                     <div class="header-topic">
                         {% with topic=item.getMainTopic %}
@@ -25,7 +25,7 @@
                 </div>
 
                 <!-- footer -->
-                {% include 'deployment/center/feed/social_bar.html' %}
+                {% include 'deployment/pages/feed/social_bar.html' %}
 
                 <div style="clear:both"></div>
 
@@ -35,17 +35,17 @@
             <div class="linear-right">
 
                 <!-- title -->
-                {% include 'deployment/center/feed/feed_title.html' %}
+                {% include 'deployment/pages/feed/feed_title.html' %}
 
                 <!-- summary -->
-                {% include 'deployment/center/feed/feed_summary.html' %}
+                {% include 'deployment/pages/feed/feed_summary.html' %}
 
                 <!-- top-comment -->
                 <!--
                 {% with top_comment=item.getTopComment %}
                     {% if top_comment %}
 
-                        {% include 'deployment/center/feed/top_comment.html' %}
+                        {% include 'deployment/pages/feed/top_comment.html' %}
 
                     {% endif %}
                 {% endwith %}
@@ -53,7 +53,7 @@
 
                 <!-- avatar -->
                 <div class="avatar">
-                    {% include 'deployment/center/feed/feed_avatar.html' %}
+                    {% include 'deployment/pages/feed/feed_avatar.html' %}
                     <div style="clear:both"></div>
                 </div>
 

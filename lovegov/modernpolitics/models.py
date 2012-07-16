@@ -1114,6 +1114,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location: return self.location.address_string
         else: return ""
 
+    def setZipCode(self, zip):
+        location = self.location
+        if not location:
+            location = PhysicalAddress()
+            location.save()
+            self.location = location
+            self.save()
+        location.zip = zip
+        location.save()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
     #-------------------------------------------------------------------------------------------------------------------

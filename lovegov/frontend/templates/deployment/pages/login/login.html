@@ -14,18 +14,16 @@
         <input id="csrftoken" type="hidden" value="{{ csrf_token }}" />
     </div>
     <!--Some facebook code requires the fb-root div -->
-    <script src="/static/js/facebook.js" type="text/javascript"></script>
     <script type="text/javascript">
-        facebookAppId = '{{ FACEBOOK_APP_ID }}';
-        facebookDefaultScope = {{ FACEBOOK_DEFAULT_SCOPE_JS }};
-        staticUrl = '{{ STATIC_URL }}';
-        function facebookJSLoaded()
+
+        $(document).ready(function()
         {
-            FB.init({appId: facebookAppId, status: true, cookie: true, xfbml: true, oauth: true});
-        }
-        window.fbAsyncInit = facebookJSLoaded;
-        F = new facebookClass(facebookAppId);
-        F.load();
+            var state = "{{ state }}";
+            if (state == 'login_error') {
+                $(".sign_in_dialogue").show();
+            }
+        });
+
     </script>
 
 {% endblock %}

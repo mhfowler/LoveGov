@@ -75,13 +75,9 @@ def fbGetAccessToken(request, code, redirect_uri=None):
     return None
 
 def getRedirectURI(request, redirect):
-    absolute_uri = request.build_absolute_uri()
-    domain_regex = re.compile('.*\.com')
-    regex = domain_regex.match( absolute_uri )
-    new_domain = regex.group(0)
-    if LOCAL:
-        new_domain += ':8000'
-    redirect_uri = new_domain + redirect
+    domain = getHostHelper(request)
+    temp_logger.debug('domain: ' + domain)
+    redirect_uri = domain + redirect
     return redirect_uri
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -224,6 +220,7 @@ def fbTest(request):
 # Authenticate with twitter.
 #-----------------------------------------------------------------------------------------------------------------------
 def twitterRedirect(request, redirect_uri=None):
+
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/twitter/handle/")
 
@@ -246,22 +243,21 @@ def twitterRedirect(request, redirect_uri=None):
     print "Request Token:"
     print "    - oauth_token        = %s" % request_token['oauth_token']
     print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
+    print "twit redirect: ", redirect_uri
     print
-
-    redirect_uri="http://www.lovegov.com/comingsoon/"
 
     to_encode = {'oauth_token':request_token['oauth_token'],'oauth_callback':redirect_uri}
     redirect = authorize_url + "?"
     redirect += urlencode(to_encode)
-
-    print "redirect: " + redirect
 
     response = shortcuts.redirect(redirect)
     response.set_cookie('twitter_secret', request_token['oauth_token_secret'])
 
     return response
 
-def twitterGetAccessToken(request, to_page="/web/"):
+
+
+def twitterGetAccessToken(request, to_page="/home/", vals={}):
     oauth_verifier = request.GET.get('oauth_verifier')
     oauth_token = request.GET.get('oauth_token')
     oauth_token_secret = request.COOKIES.get('twitter_secret')
@@ -281,31 +277,109 @@ def twitterGetAccessToken(request, to_page="/web/"):
     print "You may now access protected resources using the access tokens above."
     print
 
-    response = shortcuts.redirect(to_page)
+    response = twitterLogin(request, to_page, vals={})
+    if not response:
+        response = shortcuts.redirect('/twitter/register/')
+
     response.set_cookie("twitter_access_token", access_token)
 
     return response
 
 def twitterLogin(request, to_page="/web/", vals={}):
-    twitter_access_token = request.COOKIES.get('twitter_access_token')
-    if twitter_access_token:
-        tat = twitter_access_token.replace('\'','\"')
-        tat = json.loads(str(tat))
+    tat = tatHelper(request)
+    if tat:
         twitter_user_id = tat['user_id']
         user_prof = UserProfile.lg.get_or_none(twitter_user_id=twitter_user_id)
-        logging.debug("twitter")
-        if not user_prof:
-            return twitterRegister(request)
-        else:
+        if user_prof:
             user_prof.twitter_screen_name = tat['screen_name']
             user_prof.save()
             user = user_prof.user
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
             return shortcuts.redirect(to_page)
+        else:
+            return False
     else:
         return False
 
 
-def twitterRegister(request):
-    return HttpResponse("enter name, email and password[optional]")
+def tatHelper(request):
+    twitter_access_token = request.COOKIES.get('twitter_access_token')
+    if twitter_access_token:
+        tat = twitter_access_token.replace('\'','\"')
+        tat = json.loads(str(tat))
+        return tat
+    else:
+        return None
+
+
+def validateTwitterForm(name, email):
+
+    valid = True
+    if not email:
+        valid = False
+        twitter_email_error = "email"
+    elif not "@" in email:
+        valid = False
+        twitter_email_error = "email"
+    elif UserProfile.lg.get_or_none(email=email):
+        valid = False
+        twitter_email_error = "User with given email already has registered."
+    else:
+        twitter_email_error = email
+
+    if not name:
+        valid = False
+        twitter_name_error = "full name"
+    else:
+        splitted = name.split()
+        length = len(splitted)
+        if length <2:
+            valid = False
+            twitter_name_error = "full name"
+        else:
+            twitter_name_error = name
+
+    return valid, twitter_name_error, twitter_email_error
+
+
+
+def twitterRegister(request, vals={}):
+
+    from lovegov.modernpolitics.register import createTwitterUser
+
+    if request.method == 'POST':
+        name = request.POST.get('twitter_name')
+        email = request.POST.get('twitter_email')
+        zip =  request.POST.get('twitter_zip')
+    else:
+        name = request.COOKIES.get('twitter_name')
+        email = request.COOKIES.get('twitter_email')
+        zip = request.COOKIES.get('twitter_zip')
+
+    valid, twitter_name_error, twitter_email_error = validateTwitterForm(name, email)
+
+    if valid:
+        tat = tatHelper(request)
+        if tat:                                                 # ready to twitter register
+            twitter_user_id = tat['user_id']
+            control = createTwitterUser(name, email)
+            user_prof = control.user_profile
+            vals['viewer'] = user_prof
+            user_prof.twitter_user_id = tat['user_id']
+            user_prof.save()
+            if zip:
+                user_prof.setZipCode(zip)
+            return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
+        else:
+            response = shortcuts.redirect("/twitter/redirect/")
+            response.set_cookie('twitter_name', name)
+            response.set_cookie('twitter_email', email)
+            return response
+
+    vals['state'] = 'post-twitter'
+    vals['twitter_name_error'] = twitter_name_error
+    vals['twitter_email_error'] = twitter_email_error
+    vals['twitter_zip'] = zip
+
+    return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
