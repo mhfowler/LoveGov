@@ -560,7 +560,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Follow Requests
             vals['prof_requests'] = list(user_prof.getFollowRequests())
-            vals['group_invities'] = list(user_prof.getGroupInvites())
+            vals['prof_invites'] = list(user_prof.getGroupInvites())
 
             # Get Schools and Locations:
             networks = user_prof.networks.all()
@@ -648,6 +648,9 @@ def network(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def group(request, g_id=None, vals={}):
     viewer = vals['viewer']
+
+    inviteButton(request,vals)
+
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
@@ -988,6 +991,13 @@ def shareButton(request, vals={}):
     groups = viewer.getGroups()
     vals['my_groups'] = groups.filter(group_type="U")
     vals['my_networks'] = groups.filter(group_type="N")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get share button values
+#-----------------------------------------------------------------------------------------------------------------------
+def inviteButton(request, vals={}):
+    viewer = vals['viewer']
+    vals['my_followers'] = viewer.getFollowMe()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum

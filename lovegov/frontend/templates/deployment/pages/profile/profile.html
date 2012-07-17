@@ -189,88 +189,112 @@
     <div class="middle-right">
 
         {% if viewer.id == user_prof.id %}
-            {% comment %}
-            <h4>Invites</h4>
-            <div class='group-invites-container'>
-                {% for invite in group_invites %}
-                    <div class="group-invite">
-                        <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a>
-                        has invited you to join
-                        <a href="{{ invite.group.get_url }}">{{ invite.group.get_name }}</a>:
-                        <a href="" class="group-invite-response-y"> I accept! </a> ||
-                        <a href="" class="group-invite-response-n"> I decline! </a>
-                        <input type="hidden" class="group-join-id" value="{{ invite.group.id }}"/>
-                    </div>
-                    <br>
-                {% empty %}
-                    <div>No group invites! =( </div><br>
-                {% endfor %}
+
+            <div class="profile-section-title">
+                Follow privacy:
+                {% if viewer.private_follow %}
+                    <a href="" class="button-red public-follow">private</a>
+                {% else %}
+                    <a href="" class="button-red private-follow">public</a>
+                {% endif %}
             </div>
-            {% endcomment %}
+            <br>
+            <div class="right-separator"></div>
+            <br>
 
-        <div class="profile-section-title">
-            Follow privacy:
-            {% if viewer.private_follow %}
-                <a href="" class="button-red public-follow">private</a>
-            {% else %}
-                <a href="" class="button-red private-follow">public</a>
-            {% endif %}
-        </div>
-        <br>
-        <div class="right-separator"></div>
-        <br>
-        {% if prof_requests %}
-            <div class="profile-section-title">Follow Requests</div>
+            {% if prof_invites %}
+                <div class="profile-section-title">Group Invites</div>
 
-        <div class="follow-requests-container">
-            {% for req in prof_requests %}
-                <div class="notification">
-                <table>
-                    <tr>
-                        <td class="notification-thumbnail">
-                            {% thumbnail req.getFrom.getProfileImage.image "25x25" crop="center" as im %}
-                                <img src="{{ im.url }}" class="icon-small"/>
-                            {% endthumbnail %}
-                        </td>
-                        <td class="notification-text notification_text">
-                            <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> requested to follow you
-                            <div class='notification-append notification_append_y'>They are now following you</div>
-                            <div class='notification-append notification_append_n'>Request declined</div>
-                        </td>
-                        <td class="notification-buttons notification_buttons">
-                            <div class="notification-follow-response notification_follow_response_y">accept</div>
-                            <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
-                            <input type="hidden" class="user_follow_id" value="{{ req.getFrom.id }}"/>
-                        </td>
-                    </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                </tr>
-                </table>
+                <div class='group-invites-container'>
+                    {% for invite in prof_invites %}
+                        <div class="notification">
+                            <table>
+                                <tr>
+                                    <td class="notification-thumbnail">
+                                        {% thumbnail invite.group.getImage "25x25" crop="center" as im %}
+                                            <img src="{{ im.url }}" class="icon-small"/>
+                                        {% endthumbnail %}
+                                    </td>
+                                    <td class="notification-text notification_text">
+                                        <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a>
+                                        invited you to join
+                                        <a href="{{ invite.group.get_url }}">{{ invite.group.title }}</a>
+                                        <div class='notification-append notification_append_y'>Invite accepted</div>
+                                        <div class='notification-append notification_append_n'>Invite declined</div>
+                                    </td>
+                                    <td class="notification-buttons notification_buttons" data-g_id="{{ invite.group.id }}">
+                                        <div class="notification-follow-response notification_invite_response_y">accept</div>
+                                        <div class="notification-follow-response bottom notification_invite_response_n">decline</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        {% if not forloop.last %}
+                            <div class="right-separator"></div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
 
-                {% if not forloop.last %}
-                    <div class="right-separator"></div>
-                {% endif %}
-            {% endfor %}
-        </div>
+                <div class="right-separator"></div>
+                <br>
+            {% endif %}
 
-        <div class="right-separator"></div>
-        <br>
-        {% endif %}
+            {% if prof_requests %}
+                <div class="profile-section-title">Follow Requests</div>
 
-        <div class="profile-section-title">Notifications</div>
-        <div id="profile_notifications" class="profile-notifications-container">
-            {% for note in notifications_text %}
-                {{ note|safe|escape }}
-                {% if not forloop.last %}
-                    <div class="right-separator"></div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
-        <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
+                <div class="follow-requests-container">
+                    {% for req in prof_requests %}
+                        <div class="notification">
+                        <table>
+                            <tr>
+                                <td class="notification-thumbnail">
+                                    {% thumbnail req.getFrom.getProfileImage.image "25x25" crop="center" as im %}
+                                        <img src="{{ im.url }}" class="icon-small"/>
+                                    {% endthumbnail %}
+                                </td>
+                                <td class="notification-text notification_text">
+                                    <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> requested to follow you
+                                    <div class='notification-append notification_append_y'>They are now following you</div>
+                                    <div class='notification-append notification_append_n'>Request declined</div>
+                                </td>
+                                <td class="notification-buttons notification_buttons">
+                                    <div class="notification-follow-response notification_follow_response_y">accept</div>
+                                    <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
+                                    <input type="hidden" class="user_follow_id" value="{{ req.getFrom.id }}"/>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </table>
+                        </div>
+
+                        {% if not forloop.last %}
+                            <div class="right-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="right-separator"></div>
+                <br>
+            {% endif %}
+
+            <div class="profile-section-title">Notifications</div>
+            <div id="profile_notifications" class="profile-notifications-container">
+                {% for note in notifications_text %}
+                    {{ note|safe|escape }}
+                    {% if not forloop.last %}
+                        <div class="right-separator"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
+            <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
 
         {% else %}
             <div class="matching">

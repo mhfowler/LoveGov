@@ -99,7 +99,7 @@
                         </div>
                         {% if is_user_confirmed and group.group_type == "U" %}
                             <div class="group-button">
-                                <a href="" class="button-red float-left">
+                                <a href="" id="group_invite_button" class="button-red float-left" data-g_id="{{ group.id }}">
                                     invite
                                 </a>
                             </div>
@@ -207,15 +207,17 @@
                     <div class='group-request-append group_request_append_y'>They have joined your group</div>
                     <div class='group-request-append group_request_append_n'>Request declined</div>
                 </td>
-                <td class="group_request_buttons">
+                <td class="group_request_buttons" data-follow_id="{{ from_user.id }}" data-g_id="{{ to_user.id }}">
                     <a href="" class="group_response_y button-red group-button">accept</a>
                     <a href="" class="group_response_n button-red group-button">decline</a>
-                    <input type="hidden" class="follow-id" value="{{ req.getFrom.id }}"/>
-                    <input type="hidden" class="group-id" value="{{ req.getTo.id }}"/>
                 </td>
             </tr>
         {% endfor %}
     </table>
+</div>
+
+<div class="invite_modal invite-modal">
+    {% include "deployment/pieces/invite_modal.html" %}
 </div>
 
 <script>

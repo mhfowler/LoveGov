@@ -854,9 +854,8 @@ def groupInviteResponse(request, vals={}):
     response = request.POST['response']
 
     # Find any groupJoined objects that exist
-    already = GroupJoined.objects.filter(user=from_user, group=group)
-    if already: # If there are any
-        group_joined = already[0] # Use the first one
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
 
         if group_joined.confirmed:
             errors_logger.error("User #" + str(from_user.id) + " responded to an invite to group #" + str(group.id) + " of which they are already a member")
@@ -883,7 +882,7 @@ def groupInviteResponse(request, vals={}):
     return HttpResponse("you were not invitied to join this group")
 
 #----------------------------------------------------------------------------------------------------------------------
-# Invites a user to a given group
+# Invites a set of users to a given group
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def groupInvite(request, vals={}):
@@ -898,41 +897,55 @@ def groupInvite(request, vals={}):
         errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
         return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
 
-    if not 'follow_id' in request.POST:
-        errors_logger.error("Group invite sent without a recieving user ID for group #" + str(group.id) + " by user #" + str(inviter.id))
-        return HttpResponse("Group invite sent without a recieving user ID")
+    if not 'invitees' in request.POST:
+        errors_logger.error("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
+        return HttpResponse("Group invite sent without recieving user IDs")
 
-    from_user = UserProfile.lg.get_or_none(id=request.POST['follow_id'])
+    invitees = json.loads(request.POST['invitees'])
+
+    for follow_id in invitees:
+        individualGroupInvite(follow_id,group,inviter,request)
+
+    return HttpResponse("invite success")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Invites a single user to a given group
+# HELPER FUNCTION TO groupInvite().
+#-----------------------------------------------------------------------------------------------------------------------
+def individualGroupInvite(follow_id, group, inviter, request):
+    from_user = UserProfile.lg.get_or_none(id=follow_id)
 
     if not from_user:
         errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
-        return HttpResponse("User with given user ID does not exist")
+        return False
 
     # Find any groupJoined objects that exist
-    already = GroupJoined.objects.filter(user=from_user, group=group)
-    if already: # If there are any
-        group_joined = already[0] # Use the first one
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
 
         if group_joined.confirmed:
             errors_logger.error("User #" + str(from_user.id) + " was invited to group #" + str(group.id) + " of which they are already a member")
-            return HttpResponse("They have already joined that group")
+            return False
 
         elif group_joined.invited:
             normal_logger.debug("User #" + str(from_user.id) + " was reinvited to join group #" + str(group.id) )
-            return HttpResponse("They have already been invited to this group")
+            return False
 
         elif group_joined.requested:
             group.joinMember(from_user, privacy=getPrivacy(request))
             action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
             action.autoSave()
             from_user.notify(action)
-            return HttpResponse("invitation success")
+            return True
     else:
         group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
-        group_joined.autosave()
+        group_joined.autoSave()
 
     group_joined.invite(inviter)
-    return HttpResponse("invitation success")
+    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="I")
+    action.autoSave()
+    from_user.notify(action)
+    return True
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -1861,7 +1874,7 @@ actions = { 'getLinkInfo': getLinkInfo,
             'stopfollow': userFollowStop,
             'answer': answer,
             'joingroup': joinGroupRequest,
-            'joinresponse': joinGroupResponse,
+            'joinResponse': joinGroupResponse,
             'groupInviteResponse': groupInviteResponse,
             'groupInvite': groupInvite,
             'leavegroup': leaveGroup,

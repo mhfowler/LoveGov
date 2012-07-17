@@ -347,29 +347,6 @@ function userFollowResponse(event,response,div)
     return false;
 }
 
-function groupInviteResponse(event,response,div)
-{
-    event.preventDefault();
-    var g_id = div.siblings(".group-join-id").val();
-    ajaxPost({
-            data: {
-                'action':'groupinviteresponse',
-                'g_id': g_id,
-                'response': response
-            },
-            success: function(data)
-            {
-                return true;
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
-            }
-        }
-    );
-    return false;
-}
-
 function setFollowPrivacy(event,private_follow,div)
 {
     event.preventDefault();
@@ -1234,6 +1211,46 @@ function loadShareButton() {
         $('div.shareModal').hide();
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *     ~Invite Button
+ *
+ **********************************************************************************************************************/
+function loadInviteButton() {
+    $('#group_invite_button').bindOnce('click.group_invite', function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div.invite_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.invite_modal').hide();
+    });
+
+    $('div.invite_modal_close').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.invite_modal').hide();
+    });
+
+    $('#invite_submit_content').bindOnce('click.invite_submit', (function(e) {
+        e.preventDefault();
+        var g_id = $("#group_invite_button").data('g_id');
+        var invitees = $('.invite_select').select2("val");
+        if (invitees!='') {
+            ajaxPost({
+                data: {'action': 'groupInvite', 'invitees': JSON.stringify(invitees), 'g_id':g_id},
+                success: function(data)
+                {
+                    $('#invite_submit_message').html('Invite Sent!');
+                    $('#invite_submit_message').fadeIn(200);
+                    window.setTimeout("$('div.overdiv').fadeOut(600); $('div.invite_modal').fadeOut(600);",1000);
+                }
+            });
+        }
+    }) );
+}
 /***********************************************************************************************************************
  *
  *     ~RightSidebar
@@ -1797,6 +1814,10 @@ function unbindNotification()
     $('.notification-user-follow').unbind();
     $('.notification-follow-response-y').unbind();
     $(".notificatton-follow-response-n").unbind();
+    $('.notification-invite-response-y').unbind();
+    $(".notificatton-invite-response-n").unbind();
+    $('.notification-group-response-y').unbind();
+    $(".notificatton-group-response-n").unbind();
 }
 
 function loadNotification()
@@ -1841,14 +1862,28 @@ function loadNotification()
     $(".notification_group_response_y").click( function(event) {
         var wrapper = $(this).parent(".notification_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"Y",$(this));
+        groupFollowResponse(event,"Y",wrapper);
         wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
     });
 
     $(".notification_group_response_n").click( function(event) {
         var wrapper = $(this).parent(".notification_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"N",$(this));
+        groupFollowResponse(event,"N",wrapper);
+        wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
+    });
+
+    $(".notification_invite_response_y").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
+        groupInviteResponse(event,"Y",wrapper);
+        wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
+    });
+
+    $(".notification_invite_response_n").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
+        groupInviteResponse(event,"N",wrapper);
         wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
 
@@ -2404,15 +2439,37 @@ function bindGroupRequestsButton()
     });
 }
 
-function groupFollowResponse(event,response,div,g_id)
+function groupFollowResponse(event,response,div)
 {
     event.preventDefault();
-    var follow_id = div.siblings(".follow-id").val();
-    var g_id = div.siblings(".group-id").val();
+    var follow_id = div.data("follow_id");
+    var g_id = div.data("g_id");
     ajaxPost({
             data: {
-                'action':'joinresponse',
+                'action':'joinResponse',
                 'follow_id': follow_id,
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                //alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function groupInviteResponse(event,response,div)
+{
+    event.preventDefault();
+    var g_id = div.data("g_id");
+    ajaxPost({
+            data: {
+                'action':'groupInviteResponse',
                 'g_id': g_id,
                 'response': response
             },
@@ -2565,20 +2622,20 @@ function loadMoreUsers(event, replace)
 
 function loadGroup()
 {
-
+    loadInviteButton();
     bindGroupRequestsButton();
 
     $(".group_response_y").click( function(event) {
         var wrapper = $(this).parent(".group_request_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"Y",$(this),g_id);
+        groupFollowResponse(event,"Y",wrapper);
         wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
     });
 
     $(".group-response-n").click( function(event) {
         var wrapper = $(this).parent(".group_request_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"N",$(this),g_id);
+        groupFollowResponse(event,"N",wrapper);
         wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
     });
 

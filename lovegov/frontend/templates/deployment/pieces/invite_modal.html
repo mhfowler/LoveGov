@@ -1,0 +1,39 @@
+<div class="invite-modal-container">
+
+    <div class="modal-close invite_modal_close" ></div>
+
+    <div class="invite_content">
+
+        <div class="invite-modal-header"> Invite your followers to {{ group.title }} </div>
+
+        <form>
+
+            <div class="invite-select-container">
+                <select multiple class="invite_select invite-select">
+                    <option value='all_followers'>All my followers</option>
+
+                    <optgroup label="Followers">
+                        {% for follower in my_followers %}
+                            <option value='{{ follower.id }}'>{{ follower.get_name }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="invite-submit-container">
+                <a href='' id='invite_submit_content' class="invite-button-modal">Submit</a>
+            </div>
+
+        </form>
+
+        <div class="invite-submit-message" id="invite_submit_message" ></div>
+
+    </div>
+
+</div>
+
+<script>
+    $('select.invite_select').select2({
+        placeholder: "Enter a follower,"
+    });
+</script>

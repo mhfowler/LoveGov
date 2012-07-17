@@ -1574,9 +1574,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupInvites(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')
         else:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')[:num]
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # return a query set of groups and networks user is in
@@ -1846,6 +1846,8 @@ class Notification(Privacy):
         if n_action.type == 'JO':
             notification_context['from_user'] = relationship.getFrom()
             notification_context['group_join'] = relationship.downcast()
+            if n_action.modifier == 'I':
+                notification_context['inviter'] = relationship.downcast().getInviter()
 
         if n_action.type == 'SH':
             notification_context['from_user'] = relationship.getFrom()
@@ -3566,7 +3568,7 @@ class Group(Content):
     def joinMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
-            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.confirm()
@@ -3578,7 +3580,7 @@ class Group(Content):
     def removeMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
-            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.clear()
@@ -4248,6 +4250,7 @@ class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
+        self.content = self.group
         self.creator = self.user
         self.save()
 
