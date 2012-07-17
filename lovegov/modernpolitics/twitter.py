@@ -16,7 +16,7 @@ def twitterTryLogin(request, to_page="/home/", vals={}):
     if success:
         return success
     else:
-        return shortcuts.redirect('/twitter/redirect/')
+        return twitterRedirect(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # redirect to twitter, to get twitter access token
@@ -42,15 +42,16 @@ def twitterRedirect(request, redirect_uri=None):
 
     request_token = dict(urlparse.parse_qsl(content))
 
-    print "Request Token:"
-    print "    - oauth_token        = %s" % request_token['oauth_token']
-    print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
-    print "twit redirect: ", redirect_uri
-    print
+#    print "Request Token:"
+#    print "    - oauth_token        = %s" % request_token['oauth_token']
+#    print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
+#    print "twit redirect: ", redirect_uri
+#    print
 
     to_encode = {'oauth_token':request_token['oauth_token'],'oauth_callback':redirect_uri}
     redirect = authorize_url + "?"
     redirect += urlencode(to_encode)
+    print "twitter redirect: ", redirect
 
     response = shortcuts.redirect(redirect)
     response.set_cookie('twitter_secret', request_token['oauth_token_secret'])
@@ -118,6 +119,10 @@ def twitterRegister(request, vals={}):
 
     from lovegov.modernpolitics.register import createTwitterUser
 
+    already = twitterLogin(request, to_page='/home/', vals=vals)
+    if already:
+        return already
+
     if request.method == 'POST':
         name = request.POST.get('twitter_name')
         email = request.POST.get('twitter_email')
@@ -141,6 +146,7 @@ def twitterRegister(request, vals={}):
                     user_prof = control.user_profile
                     vals['viewer'] = user_prof
                     user_prof.twitter_user_id = tat['user_id']
+                    user_prof.twitter_screen_name = tat['screen_name']
                     user_prof.save()
                     if zip:
                         user_prof.setZipCode(zip)

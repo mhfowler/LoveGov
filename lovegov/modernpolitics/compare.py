@@ -162,30 +162,26 @@ def getViewComparison(viewA, viewB, force=False, dateA=None, dateB=None):
 # Creates or updates comparison between two views.
 #-----------------------------------------------------------------------------------------------------------------------
 def viewCompare(viewA, viewB):
-    comparator = Comparison(viewA.responses.all(), viewB.responses.all())
-    (result, num_q) = comparator.compareAll()
+
+    topics = getMainTopics()
+    questions = Question.objects.filter(official=True)
+    fast_comparison = fastCompare(questions=questions, viewA=viewA, viewB=viewB, topics=topics)
+
     comparison = findViewComparison(viewA, viewB)
-    # if not found, create new comparison in db
     if not comparison:
-        new_comparison = ViewComparison(viewA=viewA, viewB=viewB, result=result, num_q= num_q)
-        new_comparison.save()
-        # do topics
-        all_topics = Topic.objects.all()
-        for topic in all_topics:
-            (result, num_q)  = comparator.compareTopic(topic)
-            topic_comparison = TopicComparison(topic=topic, result=result, num_q=num_q)
-            topic_comparison.save()
-            new_comparison.bytopic.add(topic_comparison)
-        return new_comparison
-    # else just update
-    else:
-        when = datetime.datetime.now()
-        comparison.update(result=result, num_q=num_q, when=when)
-        # update topics
-        for t in comparison.bytopic.all():
-            (result, num_q) = comparator.compareTopic(t.topic)
-            t.update(result=result, num_q=num_q)
-        return comparison
+        comparison = ViewComparison(viewA=viewA, viewB=viewB)
+
+    total_bucket = fast_comparison.getTotalBucket()
+    comparison.result = total_bucket.getSimilarityPercent()
+    comparison.num_q = total_bucket.num_questions
+    comparison.when = datetime.datetime.now()
+    comparison.save()
+
+    for t in topics:
+        topic_bucket = fast_comparison.getTopicBucket(t)
+        by_topic = comparison.updateTopic(t, topic_bucket)
+
+    return comparison
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Returns a comparison between both views, either by retrieving or by calculating and then saving.
@@ -403,6 +399,90 @@ def updateLoveGovResponses():
 # compareTopic is the same as compareAll except by topic
 ########################################################################################################################
 ########################################################################################################################
+
+# each bucket has the format 'topic/tag':num_questions, num_different
+class ComparisonBucket:
+    def __init__(self):
+        self.num_questions = 0
+        self.num_similar = 0
+        self.weight_similar = 0
+        self.weight_questions = 0
+    def update(self, similar, weight):
+        self.weight_questions += weight
+        self.num_questions += 1
+        if similar:
+            self.weight_similar += weight
+            self.num_similar += 1
+    def getSimilarityPercent(self):
+        if self.weight_questions:
+            percent = int(self.weight_similar/float(self.weight_questions)*100)
+        else:
+            percent = 0
+        return percent
+
+class FastComparison:
+    def __init__(self, topics=None, tags=None):
+        self.total = ComparisonBucket()
+        self.buckets = {}
+        self.getTotalBucket()
+        self.topics = topics
+        if topics:
+            for t in topics:
+                self.getTopicBucket(t)
+        self.tags = tags
+        if tags:
+            for t in tags:
+                self.getTagBucket(t)
+    def getTotalBucket(self):
+        key = 'total'
+        return self.getBucket(key)
+
+    def getTopicBucket(self, topic):
+        key = 'topic:'+topic.alias
+        return self.getBucket(key)
+
+    def getTagBucket(self, tag):
+        key = 'tag:'+tag
+        return self.getBucket(key)
+
+    def getBucket(self, key):
+        bucket = self.buckets.get(key)
+        if not bucket:
+            bucket = ComparisonBucket()
+            self.buckets[key] = bucket
+        return bucket
+
+def fastCompare(questions, viewA, viewB, topics=None, tags=None):
+
+    q_ids = questions.values_list("id", flat=True)
+    responsesA = viewA.responses.filter(question__id__in=q_ids)
+    responsesB = viewB.responses.filter(question__id__in=q_ids)
+
+    comparison = FastComparison(topics, tags)
+
+    for rA in responsesA:
+        question = rA.question
+        weight = rA.weight
+        rB = responsesB.filter(question=question)
+        if rB:
+            rB = rB[0]
+            question = rA.question
+            similar = (rA.answer_val == rB.answer_val)
+            # total bucket
+            comparison.getTotalBucket().update(similar, weight)
+            # topic buckets
+            if topics:
+                topic = question.getMainTopic()
+                if topic in topics:
+                    comparison.getTopicBucket(topic).update(similar, weight)
+            # tag buckets
+            if tags:
+                tags = question.getTags()
+                for tag in tags:
+                    if tag in tags:
+                        comparison.getTagBucket(tag).update(similar, weight)
+    return comparison
+
 
 #=======================================================================================================================
 # Class stores in a dictionary all responses of one person with all responses of a second TODO

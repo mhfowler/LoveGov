@@ -212,9 +212,12 @@ class RecoveryPassword(forms.Form):
         from modernpolitics.models import ResetPassword
         resetPassword = ResetPassword.lg.get_or_none(email_code=confirm_link)
         if resetPassword:
-            user= resetPassword.userProfile.user
-            user.set_password(self.cleaned_data['password1'])
-            user.save()
+            age = datetime.datetime.now() - resetPassword.created_when
+            print "age: ", str(age.total_seconds())
+            if age.total_seconds() < (60*60*24):                            # if link not expired, reset password
+                user= resetPassword.userProfile.user
+                user.set_password(self.cleaned_data['password1'])
+                user.save()
             resetPassword.delete()
             return user.username
 

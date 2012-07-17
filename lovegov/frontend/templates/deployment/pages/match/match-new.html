@@ -87,20 +87,16 @@
 
     {% if state and district and longitude and latitude %}
 
-    var match_state = "{{ state }}";
-    var match_district = {{ district }};
-    var match_longtitude = {{ longitude }};
-    var match_latitude = {{ latitude }};
+    match_location = true;
+
+    match_state = "{{ state }}";
+    match_district = "{{ district }}";
+    match_longtitude = "{{ longitude }}";
+    match_latitude = "{{ latitude }}";
 
     {% endif %}
 
-    {% if start_sequence == 3 and state and district and longitude and latitude %}
 
-        $(document).ready(function(){
-           loadGoogleMap();
-        });
-
-    {% endif %}
 </script>
 
 

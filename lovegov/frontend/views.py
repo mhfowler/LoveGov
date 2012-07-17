@@ -251,8 +251,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
 
     elif request.POST['button'] == 'post-twitter':
-        from lovegov.modernpolitics import facebook
-        return facebook.twitterRegister(request, vals)
+        return twitterRegister(request, vals)
 
     # RECOVER via POST
     elif request.POST['button'] == 'recover':
@@ -262,11 +261,15 @@ def loginPOST(request, to_page='web',message="",vals={}):
         return HttpResponse(json.dumps(message))
 
 def passwordRecovery(request,confirm_link=None, vals={}):
-    if request.POST and "email" in request.POST:
+
+    # new password recovery request
+    if request.method == 'POST' and "email" in request.POST:
         ResetPassword.create(username=request.POST['email'])
         msg = u"Check your email for instructions to reset your password."
         if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
         else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",vals=vals.update({'message':msg}),request=request)
+
+    # else following link to actual password recovery page
     else:
         if confirm_link is not None:
             confirm = ResetPassword.lg.get_or_none(email_code=confirm_link)
@@ -292,6 +295,10 @@ def logout(request, vals={}):
     return response
 
 def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
+
+    redirect = ifConfirmedRedirect(request)
+    if redirect: return redirect
+
     user = UserProfile.lg.get_or_none(confirmation_link=confirm_link)
     if user:
         user.confirmed = True
@@ -300,9 +307,13 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
     if request.method == 'GET':
         return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
     else:
-        return loginPOST(request,to_page,message,vals)
+        return loginPOST(request,'/home/',message,vals)
 
 def needConfirmation(request, vals={}):
+
+    redirect = ifConfirmedRedirect(request)
+    if redirect: return redirect
+
     vals['confirmation_message'] =         'Your account has not been validated yet. '\
                                            'Check your email for a confirmation link.  '\
                                            'It might be in your spam folder.'

@@ -3360,8 +3360,8 @@ class WorldView(LGModel):
 #=======================================================================================================================
 class TopicComparison(LGModel):
     topic = models.ForeignKey(Topic)
-    result = models.IntegerField()
-    num_q = models.IntegerField()
+    result = models.IntegerField(default=0)
+    num_q = models.IntegerField(default=0)
     def update(self, result, num_q):
         self.result = result
         self.num_q = num_q
@@ -3420,6 +3420,19 @@ class ViewComparison(LGModel):
         else:
             return True
 
+    def updateTopic(self, topic, topic_bucket):
+        by_topic = self.bytopic.filter(topic=topic)
+        result = topic_bucket.getSimilarityPercent()
+        num_q =  topic_bucket.num_questions
+        if by_topic:
+            by_topic = by_topic[0]
+            by_topic.result = result
+            by_topic.num_q = num_q
+            by_topic.save()
+        else:
+            by_topic = TopicComparison(topic=topic, result=result, num_q=num_q)
+            by_topic.save()
+            self.bytopic.add(by_topic)
 
 #=======================================================================================================================
 # Comparison of two people's worldview.
@@ -4444,20 +4457,21 @@ class LGNumber(LGModel):
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
-#TODO: make this link expire after a certain length of time
 class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
     email_code = models.CharField(max_length=75)
+    created_when = models.DateTimeField(auto_now_add=True)
 
     def create(username):
+
         from lovegov.modernpolitics.helpers import generateRandomPassword
+
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
         userProfile = UserProfile.lg.get_or_none(username=username)
-        if userProfile and userProfile.confirmed:
+        if userProfile:
             try:
-                userProfile = UserProfile.objects.get(username=username)
                 reseturl = generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()

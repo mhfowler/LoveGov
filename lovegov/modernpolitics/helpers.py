@@ -32,6 +32,36 @@ def getMainTopics():
     return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# checks if current session is with authenticated and confirmed user. If so, redirect to home page.
+#-----------------------------------------------------------------------------------------------------------------------
+def ifConfirmedRedirect(request):
+    already = getUserProfile(request)
+    if (not already.isAnon()) and already.confirmed:
+        return shortcuts.redirect("/home/")
+    else:
+        return None
+
+#-----------------------------------------------------------------------------------------------------------------------
+# answers all questions randomly for a user
+#-----------------------------------------------------------------------------------------------------------------------
+def randomAnswers(user):
+    questions = Question.objects.filter(official=True)
+    for q in questions:
+        answers = list(q.answers.all())
+        my_answer = random.choice(answers)
+        print "answered: ", my_answer.answer_text
+        response = UserResponse(responder=user,
+            question = q,
+            answer_val = my_answer.value,
+            weight = 5,
+            explanation = "")
+        response.autoSave(creator=user, privacy='PUB')
+        action = Action(privacy='PUB',relationship=response.getCreatedRelationship())
+        action.autoSave()
+    user.last_answered = datetime.datetime.now()
+    user.save()
+
+#-----------------------------------------------------------------------------------------------------------------------
 # convenience method to get a user with inputted name or email
 #-----------------------------------------------------------------------------------------------------------------------
 def getUser(name):

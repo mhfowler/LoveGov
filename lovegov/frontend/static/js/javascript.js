@@ -1600,56 +1600,6 @@ function loadUserList()
         );
 }
 
-function loadGoogleMap()
-{
-    function createDistrictsOverlay(outlines_only, opacity, state, district)
-    {
-        return {
-            getTileUrl: function(coord, zoom)
-            {
-                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
-                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
-                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
-                    + (!district ? "%25"
-                    : "/cd/110/" + district)
-                    : "")
-                    + "&FORMAT=image/png";
-            },
-            tileSize: new google.maps.Size(256,256),
-            minZoom: 2,
-            maxZoom: 28,
-            opacity: opacity,
-            isPng: true
-        };
-    }
-
-    var map;
-
-    function initialize()
-    {
-        var myOptions =
-        {
-            zoom: 10,
-            center: new google.maps.LatLng(match_latitude, match_longtitude),
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            panControl: false,
-            zoomControl: true,
-            mapTypeControl: false,
-            scaleControl: true,
-            streetViewControl: false
-        };
-        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
-
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
-        map.overlayMapTypes.insertAt(0, overlayWMS);
-
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
-        map.overlayMapTypes.insertAt(0, overlayWMS);
-    }
-
-    initialize();
-
-}
 /***********************************************************************************************************************
  *
  *      ~About
@@ -4159,6 +4109,11 @@ function getAllGroupMembers(start, num, g_id) {
  **********************************************************************************************************************/
 var match_hover_off = true;
 var match_autoswitch;
+var match_latitude;
+var match_longitude;
+var match_state;
+var match_district;
+var match_location = false;
 function loadNewMatch() {
 
     swapFeatured(match_current_section);
@@ -4174,10 +4129,10 @@ function loadNewMatch() {
     match_autoswitch= setInterval(function()
     {
         if (match_hover_off) {
-            //swapFeatured("right");
+            swapFeatured("right");
         }
 
-    }, 2000);
+    }, 3000);
 
     $('body').bindOnce("click.auto", function(event) {
         clearInterval(match_autoswitch);
@@ -4259,7 +4214,6 @@ function swapFeatured(direction) {
     var next = getSection(match_next_section);
     current.hide();
     next.show();
-    if (match_next_section == 3) { loadGoogleMap(); }
     var current_circle = getCircle(match_current_section);
     var next_circle = getCircle(match_next_section);
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
@@ -4271,6 +4225,9 @@ function swapFeatured(direction) {
         3:'representatives'};
     var url = sections[match_current_section];
     History.pushState( {k:1}, "LoveGov: Beta", '/match/' + url + '/');
+    if ((match_next_section==3) && match_location) {
+        loadGoogleMap();
+    }
 }
 
 function nextSection() {
@@ -4323,6 +4280,57 @@ function swapInHover(div) {
             }
         }
     );
+}
+
+function loadGoogleMap()
+{
+    function createDistrictsOverlay(outlines_only, opacity, state, district)
+    {
+        return {
+            getTileUrl: function(coord, zoom)
+            {
+                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
+                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
+                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
+                    + (!district ? "%25"
+                    : "/cd/110/" + district)
+                    : "")
+                    + "&FORMAT=image/png";
+            },
+            tileSize: new google.maps.Size(256,256),
+            minZoom: 2,
+            maxZoom: 28,
+            opacity: opacity,
+            isPng: true
+        };
+    }
+
+    var map;
+
+    function initialize()
+    {
+        var myOptions =
+        {
+            zoom: 10,
+            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: false
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+    }
+
+    initialize();
+
 }
 
 
