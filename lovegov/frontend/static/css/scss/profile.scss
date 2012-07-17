@@ -404,4 +404,13 @@ div.followers-modal
   }
 }
 
-
+div.profile-img-modal {
+  @include modal;
+  position: fixed;
+  top: 100px;
+  $width: 50px;
+  display: none;
+  min-height: 50px;
+  min-width: $width;
+  left: 50%;
+}

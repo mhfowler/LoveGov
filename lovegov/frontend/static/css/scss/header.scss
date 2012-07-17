@@ -31,12 +31,12 @@ div#top
     padding-right:5px;
     width:110px;
     height:45px;
-    background-image: url('/static/images/top-logo-default.png');
+    background-image: url('/static/images/beta-subtle.png');
     background-size:contain;
   }
   div.top-logo:hover {
     cursor:pointer;
-    background-image: url('/static/images/top-logo-hover.png');
+    background-image: url('/static/images/beta-subtle-hover.png');
   }
 
   div.link-wrapper

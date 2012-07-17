@@ -1016,8 +1016,8 @@ function loadHeader()
         event.stopPropagation();
     });
 
-    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
-    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
+    var pubMessage = "You are in PUBLIC mode. Comments and content you create while in this mode will be attributed to you. Click to change to Anonymous mode.";
+    var priMessage = "You are in ANONYMOUS mode. Comments and content you create while in this mode will be attributed to \"Anonymous\". Click to change to Public mode.";
 
 
     if ($.cookie('privacy'))
@@ -2178,6 +2178,29 @@ function loadProfile()
     $(".message_x").bindOnce("click.message", function(event) {
         event.preventDefault();
         $(this).parents(".message-wrapper").hide();
+    });
+
+    $('div.profile-img').bindOnce("click.image", function(event) {
+        event.preventDefault();
+        $('div.overdiv').show();
+        if ($('img.profile-img-actual-size').length==0) {
+            var img_to_show = $('div.profile-img img').data('original_image');
+            var img = $("<img />").attr('src', img_to_show).attr('class', 'profile-img-actual-size')
+                .load(function() {
+                    if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+                        alert('broken image!');
+                    } else {
+                        $("div.profile-img-modal").append(img);
+                    }
+                });
+
+        }
+        $('div.profile-img-modal').css('background-image', img_to_show).show();
+
+    });
+
+    $('div.overdiv').click(function(event) {
+        $('div.profile-img-modal').hide();
     });
 }
 
