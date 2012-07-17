@@ -4444,20 +4444,21 @@ class LGNumber(LGModel):
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
-#TODO: make this link expire after a certain length of time
 class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
     email_code = models.CharField(max_length=75)
+    created_when = models.DateTimeField(auto_now_add=True)
 
     def create(username):
+
         from lovegov.modernpolitics.helpers import generateRandomPassword
+
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
         userProfile = UserProfile.lg.get_or_none(username=username)
-        if userProfile and userProfile.confirmed:
+        if userProfile:
             try:
-                userProfile = UserProfile.objects.get(username=username)
                 reseturl = generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()

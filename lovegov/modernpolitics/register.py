@@ -42,7 +42,7 @@ def createTwitterUser(name, email, vals={}):
     vals['name'] = name
     vals['email'] = email
     vals['password'] = password
-    vals['confirmation_link'] = confirmation_link
+    vals['confirmation_link'] = control.user_profile.confirmation_link
     sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
     return control
 

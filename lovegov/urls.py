@@ -51,9 +51,9 @@ urlpatterns += patterns('',
     (r'^fb/handle/$', viewWrapper(views.facebookHandle)),
 
     # twitter authentication
-    (r'^twitter/redirect/$', viewWrapper(twitter.twitterRedirect)),                     # redirect to twitter, and back to handle
-    (r'^twitter/handle/$', viewWrapper(twitter.twitterHandle)),                           # handles return from twitter
-    (r'^twitter/register/$', viewWrapper(twitter.twitterRegister)),                       # twitter form page
+    (r'^twitter/redirect/$', viewWrapper(twitter.twitterTryLogin)),                      # redirect to twitter, and back to handle
+    (r'^twitter/handle/$', viewWrapper(twitter.twitterHandle)),                          # handles return from twitter
+    (r'^twitter/register/$', viewWrapper(twitter.twitterRegister)),                      # twitter form page
 
     # logout
     (r'^logout/$', viewWrapper(views.logout)),                                           # logout

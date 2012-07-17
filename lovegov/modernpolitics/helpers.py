@@ -32,6 +32,16 @@ def getMainTopics():
     return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# checks if current session is with authenticated and confirmed user. If so, redirect to home page.
+#-----------------------------------------------------------------------------------------------------------------------
+def ifConfirmedRedirect(request):
+    already = getUserProfile(request)
+    if (not already.isAnon()) and already.confirmed:
+        return shortcuts.redirect("/home/")
+    else:
+        return None
+
+#-----------------------------------------------------------------------------------------------------------------------
 # convenience method to get a user with inputted name or email
 #-----------------------------------------------------------------------------------------------------------------------
 def getUser(name):
