@@ -3360,8 +3360,8 @@ class WorldView(LGModel):
 #=======================================================================================================================
 class TopicComparison(LGModel):
     topic = models.ForeignKey(Topic)
-    result = models.IntegerField()
-    num_q = models.IntegerField()
+    result = models.IntegerField(default=0)
+    num_q = models.IntegerField(default=0)
     def update(self, result, num_q):
         self.result = result
         self.num_q = num_q
@@ -3420,6 +3420,19 @@ class ViewComparison(LGModel):
         else:
             return True
 
+    def updateTopic(self, topic, topic_bucket):
+        by_topic = self.bytopic.filter(topic=topic)
+        result = topic_bucket.getSimilarityPercent()
+        num_q =  topic_bucket.num_questions
+        if by_topic:
+            by_topic = by_topic[0]
+            by_topic.result = result
+            by_topic.num_q = num_q
+            by_topic.save()
+        else:
+            by_topic = TopicComparison(topic=topic, result=result, num_q=num_q)
+            by_topic.save()
+            self.bytopic.add(by_topic)
 
 #=======================================================================================================================
 # Comparison of two people's worldview.
