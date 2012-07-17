@@ -42,6 +42,26 @@ def ifConfirmedRedirect(request):
         return None
 
 #-----------------------------------------------------------------------------------------------------------------------
+# answers all questions randomly for a user
+#-----------------------------------------------------------------------------------------------------------------------
+def randomAnswers(user):
+    questions = Question.objects.filter(official=True)
+    for q in questions:
+        answers = list(q.answers.all())
+        my_answer = random.choice(answers)
+        print "answered: ", my_answer.answer_text
+        response = UserResponse(responder=user,
+            question = q,
+            answer_val = my_answer.value,
+            weight = 5,
+            explanation = "")
+        response.autoSave(creator=user, privacy='PUB')
+        action = Action(privacy='PUB',relationship=response.getCreatedRelationship())
+        action.autoSave()
+    user.last_answered = datetime.datetime.now()
+    user.save()
+
+#-----------------------------------------------------------------------------------------------------------------------
 # convenience method to get a user with inputted name or email
 #-----------------------------------------------------------------------------------------------------------------------
 def getUser(name):
