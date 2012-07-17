@@ -1,6 +1,6 @@
 # lovegov
 from lovegov.frontend import views, tests, analytics
-from lovegov.modernpolitics import actions, lgwidget, api
+from lovegov.modernpolitics import actions, lgwidget, api, twitter
 from lovegov.frontend.views import viewWrapper
 from lovegov.frontend import admin_views
 
@@ -39,19 +39,24 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
-    # outside of login
-    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                             # login
+    # login page
+    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                            # login
     (r'^login/$', viewWrapper(views.login)),
+    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),                  # password recovery
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm
+    (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),                # need confirmation
+
+    # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),
     (r'^fb/handle/$', viewWrapper(views.facebookHandle)),
-    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
-    (r'^twitter/redirect/$', viewWrapper(views.twitterRedirect)),
-    (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
-    (r'^twitter/register/$', viewWrapper(views.twitterRegister)),
-    (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
-    (r'^logout/$', viewWrapper(views.logout)),                                           # logout
 
+    # twitter authentication
+    (r'^twitter/redirect/$', viewWrapper(twitter.twitterRedirect)),                     # redirect to twitter, and back to handle
+    (r'^twitter/handle/$', viewWrapper(twitter.twitterHandle)),                           # handles return from twitter
+    (r'^twitter/register/$', viewWrapper(twitter.twitterRegister)),                       # twitter form page
+
+    # logout
+    (r'^logout/$', viewWrapper(views.logout)),                                           # logout
 
     # under construction
     (r'^underconstruction/$', views.underConstruction),

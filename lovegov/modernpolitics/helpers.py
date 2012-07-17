@@ -134,6 +134,11 @@ def getSourcePath(request):
 def getHostHelper(request):
     return 'http://' + request.get_host()
 
+def getRedirectURI(request, redirect):
+    domain = getHostHelper(request)
+    redirect_uri = domain + redirect
+    return redirect_uri
+
 def getEmptyDict():
     return {}
 

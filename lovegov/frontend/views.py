@@ -14,9 +14,6 @@ from django.http import HttpResponse, HttpRequest
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
-
-
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1205,22 +1202,6 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
         return response
 
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Authenticate with twitter via redirect.
-#-----------------------------------------------------------------------------------------------------------------------
-def twitterRedirect(request, redirect_uri=None, vals={}):
-    from lovegov.modernpolitics import facebook
-    return facebook.twitterRedirect(request, redirect_uri)
-
-def twitterHandle(request, vals={}):
-    print "twitter handl."
-    return twitterGetAccessToken(request, to_page="/home/", vals=vals)
-
-def twitterRegister(request, vals={}):
-    from lovegov.modernpolitics import facebook
-    print "twitter registr."
-    return facebook.twitterRegister(request, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Authorize permission from facebook
