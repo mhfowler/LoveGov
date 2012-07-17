@@ -3375,9 +3375,21 @@ class ViewComparison(LGModel):
     viewA = models.ForeignKey(WorldView, related_name="viewa")
     viewB = models.ForeignKey(WorldView, related_name="viewb")
     when = models.DateTimeField(auto_now_add=True)
-    result = models.IntegerField()
-    num_q = models.IntegerField()
+    result = models.IntegerField(default=0)
+    num_q = models.IntegerField(default=0)
     bytopic = models.ManyToManyField(TopicComparison)
+    optimized = models.CharField(max_length=1000, null=True)
+
+    def loadOptimized(self):
+        from lovegov.modernpolitics.compare import FastComparison
+        if self.optimized:
+            comparison = FastComparison(json_buckets=self.optimized)
+            return comparison
+        else:
+            return None
+
+    def saveOptimized(self, fast_comparison):
+        self.optimized = fast_comparison.dumpBuckets()
 
     def get_url(self):
         return '/comparison/' + str(self.id)
@@ -3388,7 +3400,7 @@ class ViewComparison(LGModel):
         self.when = when
         self.save()
 
-    def toDict(self):
+    def oldToDict(self):
         toReturn = []
         for topic_text in MAIN_TOPICS:
             topic = self.bytopic.filter(topic__topic_text=topic_text)
@@ -3408,6 +3420,37 @@ class ViewComparison(LGModel):
         if user: vals['user_url'] = user.getWebUrl()
         else: vals['user_url'] = ''
         return vals
+
+    def toDict(self):
+        from lovegov.modernpolitics.helpers import getMainTopics
+        to_return = []
+        fast_comparison = self.loadOptimized()
+        if not fast_comparison:
+            temp_logger.debug('old comparison.')
+            return self.oldToDict()
+        else:
+            topics = getMainTopics()
+            for t in topics:
+                topic_text = t.topic_text
+                topic_dict = {'text':topic_text,
+                             'colors': MAIN_TOPICS_COLORS[topic_text],
+                             'mini_img': MAIN_TOPICS_MINI_IMG[topic_text],
+                             'order': MAIN_TOPICS_CLOCKWISE_ORDER[topic_text],
+                             'result':0,
+                             'num_q':0}
+                topic_bucket = fast_comparison.getTopicBucket(t)
+                topic_dict['result'] = topic_bucket.getSimilarityPercent()
+                topic_dict['num_q'] = topic_bucket.num_questions
+                to_return.append(topic_dict)
+            total_bucket = fast_comparison.getTotalBucket()
+            vals = {'topics':to_return,'main':{'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}}
+            user = UserProfile.lg.get_or_none(view_id=self.viewB.id)
+            if user: vals['user_url'] = user.getWebUrl()
+            else: vals['user_url'] = ''
+            return vals
+
+
+
 
     def toJSON(self):
         return json.dumps(self.toDict())

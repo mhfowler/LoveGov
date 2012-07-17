@@ -175,13 +175,15 @@ def viewCompare(viewA, viewB):
     comparison.result = total_bucket.getSimilarityPercent()
     comparison.num_q = total_bucket.num_questions
     comparison.when = datetime.datetime.now()
+    comparison.saveOptimized(fast_comparison)
     comparison.save()
 
-    for t in topics:
-        topic_bucket = fast_comparison.getTopicBucket(t)
-        by_topic = comparison.updateTopic(t, topic_bucket)
-
     return comparison
+
+#    for t in topics:
+#        topic_bucket = fast_comparison.getTopicBucket(t)
+#        by_topic = comparison.updateTopic(t, topic_bucket)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Returns a comparison between both views, either by retrieving or by calculating and then saving.
@@ -402,11 +404,17 @@ def updateLoveGovResponses():
 
 # each bucket has the format 'topic/tag':num_questions, num_different
 class ComparisonBucket:
-    def __init__(self):
-        self.num_questions = 0
-        self.num_similar = 0
-        self.weight_similar = 0
-        self.weight_questions = 0
+    def __init__(self, vals=None):
+        if vals:
+            self.num_questions = vals['num_questions']
+            self.num_similar = vals['num_similar']
+            self.weight_questions = vals['weight_questions']
+            self.weight_similar = vals['weight_similar']
+        else:
+            self.num_questions = 0
+            self.num_similar = 0
+            self.weight_similar = 0
+            self.weight_questions = 0
     def update(self, similar, weight):
         self.weight_questions += weight
         self.num_questions += 1
@@ -419,20 +427,30 @@ class ComparisonBucket:
         else:
             percent = 0
         return percent
+    def toDict(self):
+        return {'num_questions':self.num_questions,
+                'num_similar':self.num_similar,
+                'weight_questions':self.weight_questions,
+                'weight_similar':self.weight_similar}
 
 class FastComparison:
-    def __init__(self, topics=None, tags=None):
-        self.total = ComparisonBucket()
-        self.buckets = {}
-        self.getTotalBucket()
-        self.topics = topics
-        if topics:
-            for t in topics:
-                self.getTopicBucket(t)
-        self.tags = tags
-        if tags:
-            for t in tags:
-                self.getTagBucket(t)
+    def __init__(self, topics=None, tags=None, json_buckets=None):
+        if json_buckets:
+            buckets = json.loads(json_buckets)
+            self.buckets={}
+            for k,v in buckets.items():
+                self.buckets[k] = ComparisonBucket(v)
+        else:
+            self.buckets = {}
+            self.getTotalBucket()
+            self.topics = topics
+            if topics:
+                for t in topics:
+                    self.getTopicBucket(t)
+            self.tags = tags
+            if tags:
+                for t in tags:
+                    self.getTagBucket(t)
     def getTotalBucket(self):
         key = 'total'
         return self.getBucket(key)
@@ -451,6 +469,12 @@ class FastComparison:
             bucket = ComparisonBucket()
             self.buckets[key] = bucket
         return bucket
+
+    def dumpBuckets(self):
+        to_dump = {}
+        for k,v in self.buckets.items():
+            to_dump[k] = v.toDict()
+        return json.dumps(to_dump)
 
 def fastCompare(questions, viewA, viewB, topics=None, tags=None):
 

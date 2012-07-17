@@ -118,6 +118,8 @@ def initializeLoveGovUser():
         lovegov.first_name = 'Love'
         lovegov.last_name = 'Gov'
         user_profile = superUserHelper(lovegov)
+        user_profile.alias = "lovegov"
+        user_profile.save()
         print "initialized: lovegov user"
         return user_profile
 
