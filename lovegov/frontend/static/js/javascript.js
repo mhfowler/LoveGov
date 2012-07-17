@@ -4106,10 +4106,10 @@ function loadNewMatch() {
     match_autoswitch= setInterval(function()
     {
         if (match_hover_off) {
-            //swapFeatured("right");
+            swapFeatured("right");
         }
 
-    }, 2000);
+    }, 3000);
 
     $('body').bindOnce("click.auto", function(event) {
         clearInterval(match_autoswitch);

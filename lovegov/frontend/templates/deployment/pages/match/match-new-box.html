@@ -12,7 +12,9 @@
         </a>
 
         <div class="match-user-text">
+            <a href="{{ item.get_url }}">
             <h4>{{ item.get_name|truncatechars:20 }}</h4>
+            </a>
 
             {% if item.type == "U" %}
                 {% if item.user_type == "S" and item.first_name != "Barack" %}
