@@ -761,7 +761,7 @@ def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    group = group.downcast()
+    group = group.downcast()  # Parties have a slightly different joinMember
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
@@ -812,7 +812,7 @@ def joinGroupResponse(request, vals={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
-    group = group.downcast()
+    group = group.downcast() # Parties have a slightly different joinMember
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_joined = already[0]
@@ -838,28 +838,101 @@ def joinGroupResponse(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def groupInviteResponse(request, vals={}):
+    from_user = vals['viewer'] # Viewer is always recieving/responding to the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
+        return HttpResponse("Group invite response sent without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if not 'response' in request.POST:
+        errors_logger.error("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
     response = request.POST['response']
-    from_user = vals['viewer']
-    group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupJoined.objects.filter(user=from_user, group=group, privacy=getPrivacy(request))
-    if already:
-        group_joined = already[0]
+
+    # Find any groupJoined objects that exist
+    already = GroupJoined.objects.filter(user=from_user, group=group)
+    if already: # If there are any
+        group_joined = already[0] # Use the first one
+
         if group_joined.confirmed:
+            errors_logger.error("User #" + str(from_user.id) + " responded to an invite to group #" + str(group.id) + " of which they are already a member")
             return HttpResponse("You have already joined that group")
+
         if group_joined.invited:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
                 action.autoSave()
-                from_user.notify(action)
+                for admin in group.admins.all():
+                    admin.notify(action)
                 return HttpResponse("you have joined this group!")
+
             elif response == 'N':
-                group_joined.reject()
+                group_joined.decline()
                 action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
                 action.autoSave()
-                from_user.notify(action)
+                for admin in group.admins.all():
+                    admin.notify(action)
                 return HttpResponse("you have rejected this group invitation")
+
+    errors_logger.error("User #" + str(viewer.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
     return HttpResponse("you were not invitied to join this group")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Invites a user to a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def groupInvite(request, vals={}):
+    inviter = vals['viewer'] # Viewer is always sending the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Group invite sent without a group ID by user " + str(inviter.id) + ".")
+        return HttpResponse("Group invite sent without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if not 'follow_id' in request.POST:
+        errors_logger.error("Group invite sent without a recieving user ID for group #" + str(group.id) + " by user #" + str(inviter.id))
+        return HttpResponse("Group invite sent without a recieving user ID")
+
+    from_user = UserProfile.lg.get_or_none(id=request.POST['follow_id'])
+
+    if not from_user:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return HttpResponse("User with given user ID does not exist")
+
+    # Find any groupJoined objects that exist
+    already = GroupJoined.objects.filter(user=from_user, group=group)
+    if already: # If there are any
+        group_joined = already[0] # Use the first one
+
+        if group_joined.confirmed:
+            errors_logger.error("User #" + str(from_user.id) + " was invited to group #" + str(group.id) + " of which they are already a member")
+            return HttpResponse("They have already joined that group")
+
+        elif group_joined.invited:
+            normal_logger.debug("User #" + str(from_user.id) + " was reinvited to join group #" + str(group.id) )
+            return HttpResponse("They have already been invited to this group")
+
+        elif group_joined.requested:
+            group.joinMember(from_user, privacy=getPrivacy(request))
+            action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
+            action.autoSave()
+            from_user.notify(action)
+            return HttpResponse("invitation success")
+    else:
+        group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
+        group_joined.autosave()
+
+    group_joined.invite(inviter)
+    return HttpResponse("invitation success")
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -1789,7 +1862,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'answer': answer,
             'joingroup': joinGroupRequest,
             'joinresponse': joinGroupResponse,
-            'groupinviteresponse': groupInviteResponse,
+            'groupInviteResponse': groupInviteResponse,
+            'groupInvite': groupInvite,
             'leavegroup': leaveGroup,
             'matchComparison': matchComparison,
             'posttogroup': posttogroup,

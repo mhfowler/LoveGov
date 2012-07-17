@@ -4049,10 +4049,7 @@ class Invite(LGModel):
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
-        if self.requested:
-            self.confirm()
-        else:
-            self.save()
+        self.save()
     def getInviter(self):
         if self.inviter == -1:
             return None
