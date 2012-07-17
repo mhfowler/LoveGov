@@ -14,9 +14,6 @@ from django.http import HttpResponse, HttpRequest
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
-
-
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -54,20 +51,19 @@ def viewWrapper(view, requires_login=False):
                 # if no ControllingUser exists (not logged in), returns the Anonymous UserProfile
                 user = getUserProfile(request)
 
+                # if not authenticated user, and not lovegov_try cookie, redirect to login page
+                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                    return shortcuts.redirect("/login" + request.path)
+
                 # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                 if UPDATE or ("dev" in getHostHelper(request)):
-                    if not user.developer and not user.isAnon():
+                    if not user.developer:
                         temp_logger.debug('blocked: ' + user.get_name())
                         return shortcuts.redirect('/underconstruction/')
-
-                # If user hasn't clicked "try lovegov", redirect to login
-                if not request.COOKIES.get('lovegov_try'):
-                    return HttpResponseRedirect('/login' + request.path)
 
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
 
-                # ELSE AUTHENTICATED
                 else:
                     vals['user'] = user
                     vals['viewer'] = user
@@ -1206,22 +1202,6 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
         return response
 
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Authenticate with twitter via redirect.
-#-----------------------------------------------------------------------------------------------------------------------
-def twitterRedirect(request, redirect_uri=None, vals={}):
-    from lovegov.modernpolitics import facebook
-    return facebook.twitterRedirect(request, redirect_uri)
-
-def twitterHandle(request, vals={}):
-    print "twitter handl."
-    return twitterGetAccessToken(request, to_page="/home/", vals=vals)
-
-def twitterRegister(request, vals={}):
-    from lovegov.modernpolitics import facebook
-    print "twitter registr."
-    return facebook.twitterRegister(request, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Authorize permission from facebook
