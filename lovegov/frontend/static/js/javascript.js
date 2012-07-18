@@ -2731,6 +2731,50 @@ function loadGroupEdit()
     bindScaleRadio();
     selectPrivacyRadio();
     selectScaleRadio();
+
+    var pointer = $('.group_edit_pointer');
+    var pencil = $('.group_edit_icon').detach();
+
+    $('.group_edit_input').hover(
+        function() { $(this).parent().next().append(pencil); },
+        function() { pencil = pencil.detach(); }
+    );
+
+    $('.append_pointer').bindOnce("click.append_pointer" , function(event)
+    {
+        $('.append_pointer').removeClass("account-button-selected");
+        $(this).addClass("account-button-selected");
+        $(this).prepend(pointer);
+    });
+
+    $('.group_edit_button').bindOnce("click.group_info_edit" , function(event)
+    {
+        $('.admin_edit_tab').hide();
+        $('.group_edit_tab').show();
+    });
+
+    $('.admin_edit_button').bindOnce("click.group_admin_edit" , function(event)
+    {
+        $('.group_edit_tab').hide();
+        $('.admin_edit_tab').show();
+    });
+
+    $('#edit_admin_submit').bindOnce('click.edit_admin_submit', (function(e) {
+        e.preventDefault();
+        var g_id = $("#edit_admin_submit").data('g_id');
+        var new_admins = $('.admin_select').select2("val");
+        if (new_admins!='') {
+            ajaxPost({
+                data: {'action': 'addAdmins', 'invitees': JSON.stringify(new_admins), 'g_id':g_id},
+                success: function(data)
+                {
+                    $('#admin_submit_message').html('Administrator Added');
+                    $('#admin_submit_message').show();
+                    window.setTimeout("$('#admin_submit_message').fadeOut(600);",300);
+                }
+            });
+        }
+    }) );
 }
 
 function selectPrivacyRadio()

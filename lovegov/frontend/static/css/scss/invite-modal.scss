@@ -39,6 +39,12 @@ div.invite-modal
       display: none;
     }
 
+    div.invite-explanation
+    {
+      color: $dark-gray;
+      @include fontSize(14px);
+    }
+
     a.invite-button-modal
     {
       @include fontSize(18px);

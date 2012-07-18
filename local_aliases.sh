@@ -38,6 +38,7 @@ alias jpermission="sudo chown jvkoh -R $LG && sudo chmod -R 770 $LG"
 alias mpermission="sudo chown -R maxfowler $LG && sudo chmod -R 770 $LG"
 alias jserver="jpermission && lgserver"
 alias jsass="jpermission && lgsass"
+alias lgcharm="lgdir && charm ."
 
 # python environment
 export PYTHONSTARTUP=$LG/autopython.py

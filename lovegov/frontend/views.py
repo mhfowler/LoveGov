@@ -649,8 +649,6 @@ def network(request, alias=None, vals={}):
 def group(request, g_id=None, vals={}):
     viewer = vals['viewer']
 
-    inviteButton(request,vals)
-
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
@@ -704,11 +702,19 @@ def group(request, g_id=None, vals={}):
         if admin.id == viewer.id:
             vals['is_user_admin'] = True
     vals['group_admins'] = group.admins.all()
-    num_members = MEMBER_INCREMENT
-    vals['group_members'] = group.getMembers(num=num_members)
-    vals['num_members'] = num_members
 
+    all_members = list(group.getMembers())
+    num_members = MEMBER_INCREMENT
+    vals['group_members'] = all_members[:num_members]
+    vals['num_members'] = num_members
     vals['num_group_members'] = group.members.count()
+
+    followers = list(viewer.getFollowMe())
+    for member in all_members:
+        if member in followers:
+            followers.remove(member)
+
+    vals['non_member_followers'] = followers
 
     setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/pages/group/group.html', vals, request)
@@ -992,12 +998,6 @@ def shareButton(request, vals={}):
     vals['my_groups'] = groups.filter(group_type="U")
     vals['my_networks'] = groups.filter(group_type="N")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# get share button values
-#-----------------------------------------------------------------------------------------------------------------------
-def inviteButton(request, vals={}):
-    viewer = vals['viewer']
-    vals['my_followers'] = viewer.getFollowMe()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
