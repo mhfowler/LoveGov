@@ -61,6 +61,12 @@ def viewWrapper(view, requires_login=False):
                 vals['user'] = user
                 vals['viewer'] = user
 
+                if not user:
+                    if controlling_user:
+                        errors_logger.error("errrror:" + controlling_user.email)
+                    else:
+                        errors_logger.error("errRror:" + request.user.id)
+
                 # if not authenticated user, and not lovegov_try cookie, redirect to login page
                 if user.isAnon() and not request.COOKIES.get('lovegov_try'):
                     return shortcuts.redirect("/login" + request.path)
