@@ -106,7 +106,7 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.username = control.username
     # active
     userProfile.is_active = active
-    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))   #TODO: crypto-safe
+    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))
     # worldview
     world_view = WorldView()
     world_view.save()
@@ -132,7 +132,7 @@ def createUserHelper(control,name,type='userProfile',active=True):
     userProfile.user = control
     userProfile.save()
     if type=="userProfile":
-        sendYayRegisterEmail(userProfile)
+        thread.start_new_thread(sendYayRegisterEmail,(),kwargs={'user':userProfile})
     # return user prof
     return userProfile
 

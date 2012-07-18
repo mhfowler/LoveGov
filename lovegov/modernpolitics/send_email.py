@@ -76,7 +76,9 @@ def sendPasswordChangeEmail(django_user, password):
 # Sends an email telling us someone registered.
 #-----------------------------------------------------------------------------------------------------------------------
 def sendYayRegisterEmail(user):
-    message = "<h3>" + user.get_name() + " just registered. LOVEGOV </h3>"
+    from lovegov.frontend.analytics import userActivity
+    message = "<h3>" + user.get_name() + " just registered. LOVEGOV </h3> \n"
+    message += userActivity(user)
     send_mail(subject='LoveGov Registration', message=message,
         from_email='info@lovegov.com', recipient_list=YAY_EMAILS)
 

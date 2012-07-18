@@ -3449,9 +3449,6 @@ class ViewComparison(LGModel):
             else: vals['user_url'] = ''
             return vals
 
-
-
-
     def toJSON(self):
         return json.dumps(self.toDict())
 
