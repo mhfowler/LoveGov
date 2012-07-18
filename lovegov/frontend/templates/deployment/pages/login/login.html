@@ -9,11 +9,10 @@
 
     {% include 'deployment/pages/login/login-footer.html' %}
 
-    <div id="fb-root"></div>
     <div id="default_variables" style="display:none">
         <input id="csrftoken" type="hidden" value="{{ csrf_token }}" />
     </div>
-    <!--Some facebook code requires the fb-root div -->
+
     <script type="text/javascript">
 
         $(document).ready(function()

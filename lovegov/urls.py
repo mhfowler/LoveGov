@@ -66,7 +66,7 @@ urlpatterns += patterns('',
     # main pages
     (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
-    (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
+    (r'^about/$', viewWrapper(views.about, requires_login=True)),                                                   # about
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
@@ -74,6 +74,8 @@ urlpatterns += patterns('',
     (r'^match/(\w+)/$', viewWrapper(views.newMatch, requires_login=True)),                    # match page
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
     (r'^try/$', viewWrapper(views.tryLoveGov)),
+    (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
+
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail
