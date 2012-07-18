@@ -421,8 +421,8 @@ def compareWeb(request,alias=None,vals={}):
 
             tempvals = {}
             tempvals['viewer'] = UserProfile.objects.get(alias=alias)
-            comparison = getUserUserComparison(user,tempvals['viewer'])
-            vals['json'] = comparison.toJSON()
+            comparison, json = user.getComparison(tempvals['viewer'])
+            vals['json'] = json
             getUserWebResponsesJSON(request,vals=tempvals,webCompare=True)
             vals['questionsArray'] = tempvals['questionsArray']                     # populates questionsArray with user from profile page that you are looking at.
             vals['compareUserProfile'] = tempvals['viewer']
@@ -505,9 +505,7 @@ def groups(request, vals={}):
     mygroups_ids = mygroups.values_list("id", flat=True)
     groups = list(UserGroup.objects.all())
     for x in groups:
-        comparison = x.getComparison(viewer)
-        x.compare = comparison.toJSON()
-        x.result = comparison.result
+        x.prepComparison(viewer)
         x.you_are_member = (x.id in mygroups_ids)
     groups.sort(key=lambda x:x.result,reverse=True)
     vals['groups'] = groups
@@ -531,9 +529,7 @@ def networks(request, vals={}):
     mygroups_ids = mygroups.values_list("id", flat=True)
     groups = list(Network.objects.all())
     for x in groups:
-        comparison = x.getComparison(viewer)
-        x.compare = comparison.toJSON()
-        x.result = comparison.result
+        x.prepComparison(viewer)
         x.you_are_member = (x.id in mygroups_ids)
     groups.sort(key=lambda x:x.result,reverse=True)
     vals['groups'] = groups
@@ -555,11 +551,10 @@ def profile(request, alias=None, vals={}):
             getUserResponses(request,vals)
             # get comparison of person you are looking at
             user_prof = UserProfile.objects.get(alias=alias).downcast()
-            comparison = getUserUserComparison(viewer, user_prof)
+            comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
-            jsonData = comparison.toJSON()
-            vals['json'] = jsonData
+            vals['json'] = json
 
             # Get users followers
             if user_prof.user_type == "U":
@@ -672,17 +667,18 @@ def network(request, alias=None, vals={}):
 # Group page
 #-----------------------------------------------------------------------------------------------------------------------
 def group(request, g_id=None, vals={}):
+
     viewer = vals['viewer']
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
     if not group:
         return HttpResponse('Group id not found in database')
+
     vals['group'] = group
-    comparison = getUserGroupComparison(viewer, group, force=True)
+    comparison, json = group.getComparisonJSON(viewer)
     vals['comparison'] = comparison
-    jsonData = comparison.toJSON()
-    vals['json'] = jsonData
+    vals['json'] = json
 
     loadHistogram(5, group.id, 'mini', vals)
 
@@ -846,7 +842,9 @@ def newMatch(request,start='presidential', vals={}):
     vals['start_sequence'] = sections[start]
 
     viewer = vals['viewer']
-    viewer.compare = viewer.getComparison(viewer).toJSON()
+    comparison, json = viewer.getComparisonJSON(viewer)
+    viewer.compare = json
+    viewer.result = comparison.result
 
     matchSocial(request, vals)
     matchPresidential(request, vals)
@@ -874,10 +872,9 @@ def matchPresidential(request, vals={}):
         paul = viewer
         romney = viewer
     list = [obama,paul,romney]
-    for presidential_user in list:
-        comparison = getUserUserComparison(viewer, presidential_user)
-        presidential_user.compare = comparison.toJSON()
-        presidential_user.result = comparison.result
+    for x in list:
+        x.prepComparison(viewer)
+
     list.sort(key=lambda x:x.result,reverse=True)
     vals['presidential'] = list
 
@@ -893,9 +890,7 @@ def matchSenate(request, vals={}):
         voters = viewer
 
     for x in [elizabeth, brown, voters]:
-        comparison = x.getComparison(viewer)
-        x.compare = comparison.toJSON()
-        x.result = comparison.result
+        x.prepComparison(viewer)
 
     vals['elizabeth'] = elizabeth
     vals['brown'] = brown
@@ -911,11 +906,9 @@ def matchRepresentatives(request, vals={}):
         congressmen = []
         representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
         if representative:
-            representative.compare = representative.getComparison(viewer).toJSON()
             congressmen.append(representative)
         senators = Senator.objects.filter(congresssessions=112,state=address.state)
         for senator in senators:
-            senator.compare = senator.getComparison(viewer).toJSON()
             congressmen.append(senator)
         vals['congressmen'] = congressmen
         vals['state'] = address.state
@@ -924,9 +917,8 @@ def matchRepresentatives(request, vals={}):
         vals['longitude'] = address.longitude
 
     for x in congressmen:
-        comparison = x.getComparison(viewer)
-        x.compare = comparison.toJSON()
-        x.result = comparison.result
+        x.prepComparison(viewer)
+
     congressmen.sort(key=lambda x:x.result,reverse=True)
 
     if not congressmen:

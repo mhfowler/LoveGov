@@ -295,13 +295,9 @@ CACHES = {
 }
 
 ########################################################################################################################
-#    caching
+#    email
 #
 ########################################################################################################################
-
-# EMAIL DURING DEVELOPMENT
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = '/log/emails'
 
 #EMAIL DURING LIVE
 EMAIL_USE_TLS = True

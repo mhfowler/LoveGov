@@ -617,6 +617,15 @@ class Content(Privacy, LocationLevel):
         from lovegov.modernpolitics.backend import getUserContentComparison
         return getUserContentComparison(user=viewer, content=self)
 
+    def getComparisonJSON(self, viewer):
+        comparison = self.getComparison(viewer)
+        return comparison, comparison.toJSON()
+
+    def prepComparison(self, viewer):
+        comparison, json = self.getComparisonJSON(viewer)
+        self.compare = json
+        self.result = comparison.result
+
     #-------------------------------------------------------------------------------------------------------------------
     # Add like vote to content from inputted user (or adjust his vote appropriately)
     #-------------------------------------------------------------------------------------------------------------------
@@ -1073,6 +1082,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def get_url(self):
         return '/profile/' + self.alias + '/'
     def getWebUrl(self):
+        return self.getWebURL()
+    def getWebURL(self):
         return '/profile/web/' + self.alias + '/'
     def getAlphaURL(self):
         return self.get_url()
@@ -1176,6 +1187,15 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getComparison(self, viewer):
         from lovegov.modernpolitics.compare import getUserUserComparison
         return getUserUserComparison(userA=viewer, userB=self)
+
+    def getComparisonJSON(self, viewer):
+        comparison = self.getComparison(viewer)
+        return comparison, comparison.toJSON(viewB_url=self.getWebURL())
+
+    def prepComparison(self, viewer):
+        comparison, json = self.getComparisonJSON(viewer)
+        self.compare = json
+        self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
     # Makes unique alias from name
@@ -1323,7 +1343,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getView(self):
         if self.view_id != -1:
-            return WorldView.objects.get(id=self.view_id)
+            return self.view
         else: return None
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3425,7 +3445,7 @@ class ViewComparison(LGModel):
         else: vals['user_url'] = ''
         return vals
 
-    def toDict(self):
+    def toDict(self, viewB_url=''):
         from lovegov.modernpolitics.helpers import getMainTopics
         to_return = []
         fast_comparison = self.loadOptimized()
@@ -3448,13 +3468,11 @@ class ViewComparison(LGModel):
                 to_return.append(topic_dict)
             total_bucket = fast_comparison.getTotalBucket()
             vals = {'topics':to_return,'main':{'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}}
-            user = UserProfile.lg.get_or_none(view_id=self.viewB.id)
-            if user: vals['user_url'] = user.getWebUrl()
-            else: vals['user_url'] = ''
+            vals['user_url'] = viewB_url
             return vals
 
-    def toJSON(self):
-        return json.dumps(self.toDict())
+    def toJSON(self, viewB_url=''):
+        return json.dumps(self.toDict(viewB_url))
 
     # checks if the comparison is still valid given the two inputted dates, returns True if Stale, false if still fresh
     def checkStale(self, dateA=None, dateB=None):
@@ -3662,6 +3680,15 @@ class Group(Content):
     def getComparison(self, viewer):
         from lovegov.modernpolitics.compare import getUserGroupComparison
         return getUserGroupComparison(user=viewer, group=self)
+
+    def getComparisonJSON(self, viewer):
+        comparison = self.getComparison(viewer)
+        return comparison, comparison.toJSON()
+
+    def prepComparison(self, viewer):
+        comparison, json = self.getComparisonJSON(viewer)
+        self.compare = json
+        self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
