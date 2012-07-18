@@ -1287,8 +1287,8 @@ def search(request, term='', vals={}):
 # Tryin' to love some gov
 #-----------------------------------------------------------------------------------------------------------------------
 
-def tryLoveGov(request, vals={}):
-    response = HttpResponseRedirect('/home')
+def tryLoveGov(request, to_page="home/", vals={}):
+    response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
 
