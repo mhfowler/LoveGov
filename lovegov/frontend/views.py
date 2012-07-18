@@ -69,7 +69,7 @@ def viewWrapper(view, requires_login=False):
                 if UPDATE or ("dev" in host_full):
                     if not user.developer:
                         normal_logger.debug('blocked: ' + user.get_name())
-                        return shortcuts.redirect('/underconstruction/')
+                        #return shortcuts.redirect('/underconstruction/')
 
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
