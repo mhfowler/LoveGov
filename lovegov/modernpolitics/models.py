@@ -1128,6 +1128,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def isAnon(self):
         return self.alias == 'anonymous'
 
+    def isSuperHero(self):
+        return self.alias in SUPER_HEROES
+
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1693,7 +1696,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getUserResponses(self):
         qr = []
         responses = self.getView().responses
-        questions = Question.objects.all()
+        questions = Question.objects.filter(official=True)
         for q in questions:
             r = responses.filter(question=q)
             qr.append((q,r))
@@ -3916,17 +3919,13 @@ class PageAccess(LGModel):
     login = models.BooleanField(default=True)
 
     def autoSave(self, request):
-        from lovegov.modernpolitics.helpers import getSourcePath
+        from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
         if not LOCAL:
-            user_prof = ControllingUser.lg.get_or_none(id=request.user.id)
+            user_prof = getUserProfile(request)
             if user_prof:
-                user_prof = user_prof.user_profile
                 self.user = user_prof
                 self.page = getSourcePath(request)
                 self.ipaddress = request.META['REMOTE_ADDR']
-                if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
-                    newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
-                    newUserIPAddress.autoSave()
                 if request.method == "POST":
                     self.type = 'POST'
                     if 'action' in request.POST:
@@ -3935,10 +3934,7 @@ class PageAccess(LGModel):
                     self.type = 'GET'
                     if 'action' in request.GET:
                         self.action = request.GET['action']
-                try: self.save()
-                except: pass
-                user_prof.last_page_access = self.id
-                user_prof.save()
+                self.save()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

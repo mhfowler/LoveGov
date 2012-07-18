@@ -19,6 +19,8 @@ import os
 
 LOCAL = settings.LOCAL
 
+SUPER_HEROES = ['lovegov', 'anonymous']
+
 ########################################## PROHIBITED BROWSERS #########################################################
 
 PROHIBITED_BROWSERS = ["MSIE"]

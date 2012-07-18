@@ -393,17 +393,17 @@ def updateLoveGovResponses():
 
 ########################################################################################################################
 ########################################################################################################################
-# Class stores in a dictionary all responses of one person with all responses of a second
-# construct: A (person 1), B (person 2)
 #
-# compareAll returns a tuple (%similar, num_questions), where num_questions is the number of question-responses
-# this comparison was based off of
-# compareTopic is the same as compareAll except by topic
+#   comparisons
+#
+#
 ########################################################################################################################
 ########################################################################################################################
 
-# each bucket has the format 'topic/tag':num_questions, num_different
+# each bucket stores num_questions, num_similar, weight_questions and weight_similar for some set of questions (the bucket)
 class ComparisonBucket:
+
+    # can be initialized with a dictionary of vals, or as all 0s
     def __init__(self, vals=None):
         if vals:
             self.num_questions = vals['num_questions']
@@ -415,25 +415,31 @@ class ComparisonBucket:
             self.num_similar = 0
             self.weight_similar = 0
             self.weight_questions = 0
+
     def update(self, similar, weight):
         self.weight_questions += weight
         self.num_questions += 1
         if similar:
             self.weight_similar += weight
             self.num_similar += 1
+
     def getSimilarityPercent(self):
         if self.weight_questions:
             percent = int(self.weight_similar/float(self.weight_questions)*100)
         else:
             percent = 0
         return percent
+
     def toDict(self):
         return {'num_questions':self.num_questions,
                 'num_similar':self.num_similar,
                 'weight_questions':self.weight_questions,
                 'weight_similar':self.weight_similar}
 
+# stores a set of buckets that a comparison resulted in, including 'total' bucket
 class FastComparison:
+
+    # can be initialized with a json dump of all buckets or with a set of topics and tags to create buckets for
     def __init__(self, topics=None, tags=None, json_buckets=None):
         if json_buckets:
             buckets = json.loads(json_buckets)
@@ -451,6 +457,7 @@ class FastComparison:
             if tags:
                 for t in tags:
                     self.getTagBucket(t)
+
     def getTotalBucket(self):
         key = 'total'
         return self.getBucket(key)
@@ -476,6 +483,8 @@ class FastComparison:
             to_dump[k] = v.toDict()
         return json.dumps(to_dump)
 
+# takes in a set of questions and two worldviews, and compares them overall
+# and within buckets for inputted topics and tags
 def fastCompare(questions, viewA, viewB, topics=None, tags=None):
 
     q_ids = questions.values_list("id", flat=True)
@@ -506,91 +515,3 @@ def fastCompare(questions, viewA, viewB, topics=None, tags=None):
                     if tag in tags:
                         comparison.getTagBucket(tag).update(similar, weight)
     return comparison
-
-
-#=======================================================================================================================
-# Class stores in a dictionary all responses of one person with all responses of a second TODO
-# construct: viewA (worldview A), viewB (worldview B)
-#
-# compareAll returns a tuple (%similar, num_questions), where num_questions is the number of question-responses
-# this comparison was based off of
-# compareTopic is the same as compareAll except by topic
-# userA and userB, its always from the perspective of userA
-#=======================================================================================================================
-class Comparison:
-    def __init__(self, responsesA, responsesB):
-        self.responsesA = responsesA
-        self.responsesB = responsesB
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns result of comparing all topics.
-    #-------------------------------------------------------------------------------------------------------------------
-    def compareAll(self, method='W'):
-        questions = Question.objects.all()
-        return self.compareQuestions(questions, method=method)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns result of comparing all questions of inputted topic.
-    #-------------------------------------------------------------------------------------------------------------------
-    def compareTopic(self, topic, method='W'):
-        questions = Question.objects.filter(topics__id__exact=topic.id)
-        return self.compareQuestions(questions, method=method)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns result of comparing all inputted questions.
-    #-------------------------------------------------------------------------------------------------------------------
-    def compareQuestions(self, questions, method='W', aggregate=False):
-        difference = 0.0
-        total = 0
-        total_weight = 0.0
-        for q in questions:
-            responseA = self.responsesA.filter(question=q)
-            responseB = self.responsesB.filter(question=q, privacy="PUB")
-            if responseA and responseB:
-                responseA = responseA[0]
-                responseB = responseB[0]        # special case for aggregates
-                if responseA.type == 'Z': responseA = responseA.aggregateresponse
-                if responseB.type == 'Z': responseB = responseB.aggregateresponse
-                # default comparison method
-                if method == 'D':
-                    difference += self.getDifference(responseA, responseB)
-                    total += 1
-                # chunked comparison method
-                elif method == 'C':
-                    dif = self.getDifference(responseA, responseB)
-                    if dif < COMPARISON_CHUNKSIZE:
-                        difference += 0
-                    elif dif < 2* COMPARISON_CHUNKSIZE:
-                        difference += 1
-                    else:
-                        difference += 2
-                    total += 1
-                # comparison based on weighted questions
-                elif method == 'W':
-                    weight = responseA.weight
-                    difference += self.getDifference(responseA, responseB) * weight/10.0
-                    total += 1
-                    total_weight += weight
-        return self.getSimilarityTuple(difference, total, method=method, total_weight=total_weight)
-
-
-    def getDifference(self, responseA, responseB):
-        return math.fabs(responseA.getValue() - responseB.getValue())
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns tuple where first first element represent similarity percentage (subjective algo),
-    # and second is how many questions.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getSimilarityTuple(self, difference, num_questions, method='W', total_weight=0):
-        if num_questions :
-            if method=='D':
-                similarityPercentage = (100 - int(difference / num_questions*10)*100)
-            elif method=='C':
-                similarityPercentage = (100 - int(difference / num_questions*2)*100)
-            elif method=='W':
-                similarityPercentage = (100 - int(difference / total_weight*100))
-            else:
-                similarityPercentage = 0
-        else:
-            similarityPercentage = 0
-        return similarityPercentage, num_questions

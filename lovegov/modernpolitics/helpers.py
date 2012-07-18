@@ -96,7 +96,6 @@ def checkBrowserCompatible(request):
         parsed = httpagentparser.detect(user_agent)
         browser = parsed.get('browser')
         if browser:
-            browser_logger.debug('useragent: ' + pprint.pformat(parsed))
             browser_name = browser.get('name')
             if browser_name == "Microsoft Internet Explorer":
                 version = float(browser.get('version'))
@@ -104,6 +103,9 @@ def checkBrowserCompatible(request):
                     to_return = False
     else:
         to_return = False
+
+    if not to_return:
+        browser_logger.debug('useragent: ' + user_agent)
 
     return to_return
 
@@ -214,12 +216,9 @@ def ajaxRender(template, vals, request):
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets a user profile from a request or id.
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserProfile(request=None, control_id=None):
-    #Try and get a ControllingUser
-    if control_id:
-        control = ControllingUser.lg.get_or_none(id=control_id)
-    else:
-        control = ControllingUser.lg.get_or_none(id=request.user.id)
+def getUserProfile(request=None, control_id=None, control=None):
+
+    control = control or getControllingUser(request, control_id)
 
     user_prof = None
     if control:     #Try and get a user profile from that Control if it exists
@@ -229,8 +228,14 @@ def getUserProfile(request=None, control_id=None):
 
     from lovegov.modernpolitics.defaults import getAnonUser
     user_prof = user_prof or getAnonUser()
-    return user_prof #and return it
+    return user_prof
 
+def getControllingUser(request=None, control_id=None):
+    if control_id:
+        control = ControllingUser.lg.get_or_none(id=control_id)
+    else:
+        control = ControllingUser.lg.get_or_none(id=request.user.id)
+    return control
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets privacy from cookies.

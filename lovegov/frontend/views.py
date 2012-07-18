@@ -19,7 +19,7 @@ from lovegov.settings import UPDATE
 #-----------------------------------------------------------------------------------------------------------------------
 def framedResponse(request, html, url, vals):
     if request.is_ajax():
-        to_return = {'html':html, 'url':url, 'title':vals['pageTitle']}
+        to_return = {'html':html, 'url':url, 'title':vals['page_title']}
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
@@ -32,6 +32,7 @@ def framedResponse(request, html, url, vals):
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
+
         vals = {}
 
         if not checkBrowserCompatible(request):
@@ -41,51 +42,54 @@ def viewWrapper(view, requires_login=False):
         vals['google'] = GOOGLE_LOVEGOV
         host_full = getHostHelper(request)
         vals['host_full'] = host_full
-        vals['to_page'] = request.path.replace('/login', '')
         vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
+        vals['to_page'] = request.path.replace('/login', '')
+        vals['page_title'] = "LoveGov: Beta"
 
-        # if login is required
         if requires_login:
             try:
-                # returns corresponding UserProfile for the request's ControllingUser
-                # if no ControllingUser exists (not logged in), returns the Anonymous UserProfile
-                user = getUserProfile(request)
+                controlling_user = getControllingUser(request)
+                vals['controlling_user'] = controlling_user
+
+                # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
+                if controlling_user:
+                    user = controlling_user.user_profile
+                    vals['permitted_actions'] = controlling_user.permitted_actions
+                else:
+                    user = getAnonUser()
+                    vals['permitted_actions'] = ANONYMOUS_PERMITTED_ACTIONS
+                vals['user'] = user
+                vals['viewer'] = user
 
                 # if not authenticated user, and not lovegov_try cookie, redirect to login page
                 if user.isAnon() and not request.COOKIES.get('lovegov_try'):
                     return shortcuts.redirect("/login" + request.path)
 
                 # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE or ("dev" in getHostHelper(request)):
+                if UPDATE or ("dev" in host_full):
                     if not user.developer:
-                        temp_logger.debug('blocked: ' + user.get_name())
+                        normal_logger.debug('blocked: ' + user.get_name())
                         return shortcuts.redirect('/underconstruction/')
 
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
 
-                else:
-                    vals['user'] = user
-                    vals['viewer'] = user
-                    controlling_user = user.controllinguser_set.get()
-                    vals['controlling_user'] = controlling_user
-                    vals['permitted_actions'] = controlling_user.permitted_actions
-
             except ImproperlyConfigured:
                 response = shortcuts.redirect('/login' + request.path)
                 response.delete_cookie('sessionid')
-                logger.debug('deleted cookie')
+                errors_logger.error('deleted cookie')
                 return response
 
-        # SAVE PAGE ACCESS
+        # SAVE PAGE ACCESS, if there isn't specifically set value to log-ignore
         if request.method == 'GET':
             ignore = request.GET.get('log-ignore')
         else:
             ignore = request.POST.get('log-ignore')
         if not ignore:
-            page = PageAccess()
-            page.autoSave(request)
+            def saveAccess(req): PageAccess().autoSave(req)
+            thread.start_new_thread(saveAccess, (request,))
         return view(request,vals=vals,*args,**kwargs)
+
     return new_view
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -345,19 +349,17 @@ def getUserResponses(request,vals={}):
     userProfile = vals['viewer']
     vals['qr'] = userProfile.getUserResponses()
 
-def setPageTitle(title,vals={}):
-    vals['pageTitle'] = title
-
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses proper format for web
 #-----------------------------------------------------------------------------------------------------------------------
 def getUserWebResponsesJSON(request,vals={},webCompare=False):
+
     questionsArray = {}
+    topics = getMainTopics()
+    for t in topics:
+        questionsArray[t.topic_text] = []
+
     for (question,response) in vals['viewer'].getUserResponses():
-        for topic in question.topics.all():
-            topic_text = topic.topic_text
-            if topic_text not in questionsArray:
-                questionsArray[topic_text] = []
         answerArray = []
         for answer in question.answers.all():
             if len(response) > 0 and (not webCompare or response[0].userresponse.privacy == "PUB") :
@@ -372,7 +374,7 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
         if len(response) > 0  : toAddquestion['user_explanation'] = response[0].userresponse.explanation
         if not webCompare and len(response) > 0: toAddquestion['security'] = response[0].userresponse.privacy
         else: toAddquestion['security'] = ""
-        questionsArray[topic_text].append(toAddquestion)
+        questionsArray[question.getMainTopic().topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -390,7 +392,6 @@ def web(request, vals={}):
     """
     if request.method == 'GET':
         getUserWebResponsesJSON(request,vals)
-        setPageTitle("lovegov: web",vals)
         vals['firstLogin'] = vals['viewer'].checkFirstLogin()
         html = ajaxRender('deployment/pages/qaweb/qaweb.html', vals, request)
         url = '/web/'
@@ -426,7 +427,6 @@ def compareWeb(request,alias=None,vals={}):
             vals['questionsArray'] = tempvals['questionsArray']                     # populates questionsArray with user from profile page that you are looking at.
             vals['compareUserProfile'] = tempvals['viewer']
 
-            setPageTitle("lovegov: web2",vals)
             html = ajaxRender('deployment/pages/qaweb/qaweb-temp.html', vals, request)
             url = '/profile/web/' + alias + '/'
             return framedResponse(request, html, url, vals)
@@ -465,7 +465,6 @@ def theFeed(request, vals={}):
     vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
     vals['num_pinterest'] = range(3)
 
-    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/feed/feed.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
@@ -489,7 +488,6 @@ def iFollow(request, vals={}):
 
     loadHistogram(5, group.id, 'mini', vals)
 
-    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/friends.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
@@ -516,7 +514,6 @@ def groups(request, vals={}):
 
     vals['what'] = "Groups"
 
-    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
@@ -543,7 +540,6 @@ def networks(request, vals={}):
 
     vals['what'] = "Networks"
 
-    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
@@ -564,7 +560,6 @@ def profile(request, alias=None, vals={}):
             vals['comparison'] = comparison
             jsonData = comparison.toJSON()
             vals['json'] = jsonData
-            setPageTitle("lovegov: " + user_prof.get_name(),vals)
 
             # Get users followers
             if user_prof.user_type == "U":
@@ -737,7 +732,6 @@ def group(request, g_id=None, vals={}):
 
     vals['num_group_members'] = group.members.count()
 
-    setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/pages/group/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
@@ -752,7 +746,6 @@ def histogramDetail(request, g_id, vals={}):
 
     loadHistogram(20, group.id, 'full', vals)
 
-    setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
@@ -809,7 +802,6 @@ def about(request, start="video", vals={}):
         vals['y'] = skew - ((main_side-side)/2)
         vals['colors'] = MAIN_TOPIC_COLORS_LIST
         vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
-        setPageTitle("lovegov: about",vals)
 
         html = ajaxRender('deployment/pages/about/about.html', vals, request)
         url = '/about/'
@@ -861,7 +853,6 @@ def newMatch(request,start='presidential', vals={}):
     matchSenate(request, vals)
     matchRepresentatives(request, vals)
 
-    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('deployment/pages/match/match-new.html', vals, request)
     url = "/match/"
     return framedResponse(request, html, url, vals)
@@ -983,7 +974,6 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
-    vals['pageTitle'] = "lovegov: " + petition.title
     vals['petition'] = petition
     signers = petition.getSigners()
     vals['signers'] = signers[:signerLimit]
@@ -991,7 +981,6 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    setPageTitle("lovegov: " + petition.title,vals)
     html = ajaxRender('deployment/pages/content/petition_detail.html', vals, request)
     url = '/petition/' + str(petition.id)
     return framedResponse(request, html, url, vals)
@@ -1001,10 +990,9 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
 #-----------------------------------------------------------------------------------------------------------------------
 def newsDetail(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
-    vals['pageTitle'] = "lovegov: " + news.title
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
-    setPageTitle("lovegov: " + news.title,vals)
+
     html = ajaxRender('deployment/pages/content/news_detail.html', vals, request)
     url = '/news/' + str(news.id)
     return framedResponse(request, html, url, vals)
@@ -1031,7 +1019,7 @@ def questionDetail(request, q_id=-1, vals={}):
             return HttpResponse("Congratulations, you have answered every question!")
     valsQuestion(request, q_id, vals)
     user = vals['user']
-    vals['pageTitle'] = "lovegov: " + vals['question'].question_text
+
     html = ajaxRender('deployment/pages/content/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
@@ -1121,7 +1109,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
 def nextQuestion(request, vals={}):
     question = getNextQuestion(request, vals)
     valsQuestion(request, question.id, vals)
-    setPageTitle("lovegov: " + question.question_text,vals)
+
     html = ajaxRender('deployment/pages/content/question_detail.html', vals, request)
     url = question.get_url()
     return framedResponse(request, html, url, vals)
@@ -1148,9 +1136,7 @@ def account(request, section="", vals={}):
 
     if section == "profile": vals['profile_message'] = " "
 
-
     if request.method == 'GET':
-        setPageTitle("lovegov: account",vals)
         html = ajaxRender('deployment/pages/account/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)

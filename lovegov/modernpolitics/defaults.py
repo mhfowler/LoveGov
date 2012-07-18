@@ -147,12 +147,17 @@ def initializeAnonymous():
     if UserProfile.objects.filter(alias="anonymous"):
         print("...anon user already initialized.")
     else:
-        anon = ControllingUser.objects.create_user(username='anon',email='anon@lovegov.com',password='theANON')
-        anon.first_name = "Anonymous"
-        anon.last_name = ""
+        from lovegov.modernpolitics.register import createUser
+        already = ControllingUser.lg.get_or_none(username="anon")
+        if already:
+            if already.user_profile:
+                already.user_profile.delete()
+            already.delete()
+        anon = createUser(name="Anonymous", email="anon", password="theANON")
         anon.permitted_actions = ANONYMOUS_PERMITTED_ACTIONS
-        userprof = superUserHelper(anon)
-        userprof.developer = False
+        userprof = anon.user_profile
+        userprof.confirmed = True
+        userprof.alias = 'anonymous'
         userprof.save()
         print("initialized: anon user")
         return userprof

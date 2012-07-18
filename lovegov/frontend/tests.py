@@ -33,7 +33,6 @@ def test3(request, vals={}):
     buckets.sort()
     vals['buckets'] = buckets
 
-    setPageTitle("lovegov: beta",vals)
     html = ajaxRender('test/petition.html', vals, request)
     url = '/test3/'
     return framedResponse(request, html, url, vals)
