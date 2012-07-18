@@ -77,6 +77,7 @@ def sendPasswordChangeEmail(django_user, password):
 #-----------------------------------------------------------------------------------------------------------------------
 def sendYayRegisterEmail(user):
     from lovegov.frontend.analytics import userActivity
+    time.sleep(10)
     message = "<h3>" + user.get_name() + " just registered. LOVEGOV </h3> \n"
     message += userActivity(user)
     send_mail(subject='LoveGov Registration', message=message,

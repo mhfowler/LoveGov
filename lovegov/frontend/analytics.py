@@ -81,6 +81,7 @@ def userActivity(user, file=None,  min=None, max=None):
                 print "unicode encode error for " + user.get_name()
 
     print to_return
+    return to_return
 
 def allUserActivity(file, min=None, max=None):
     u = UserProfile.objects.filter(user_type="U")
