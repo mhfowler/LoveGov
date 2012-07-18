@@ -26,8 +26,8 @@ ALLOWED_BROWSERS = ["Chrome","Mozilla"]
 
 ########################################## EMAIL LISTS #################################################################
 
-TEAM_EMAILS =  ['clay@lovegov.com','max_fowler@brown.edu','jonathanvkoh@gmail.com','loweth.g@gmail.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
-YAY_EMAILS = ['clay@lovegov.com','max_fowler@brown.edu','jonathanvkoh@gmail.com','loweth.g@gmail.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
+TEAM_EMAILS =  ['max_fowler@brown.edu','jonathanvkoh@gmail.com','loweth.g@gmail.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
+YAY_EMAILS = ['max_fowler@brown.edu','jonathanvkoh@gmail.com','loweth.g@gmail.com','yoshi141@gmail.com','cschmidt@risd.edu', 'jsgreenf@gmail.com']
 
 ########################################## KEYS ########################################################################
 
