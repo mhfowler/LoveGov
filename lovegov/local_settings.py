@@ -3,7 +3,7 @@ from lovegov import settings
 
 LOCAL = True
 DEBUG = True
-SHOW_TOOLBAR = False
+SHOW_TOOLBAR = True
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH

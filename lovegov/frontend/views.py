@@ -726,7 +726,7 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = group.getMembers(num=num_members)
     vals['num_members'] = num_members
 
-    vals['num_group_members'] = group.members.count()
+    vals['num_group_members'] = group.num_members
 
     html = ajaxRender('deployment/pages/group/group.html', vals, request)
     url = group.get_url()

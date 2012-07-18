@@ -1713,14 +1713,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
+    # The other version is less SQL queries
+#    def getUserResponses(self):
+#        qr = []
+#        responses = self.getView().responses
+#        questions = Question.objects.filter(official=True)
+#        for q in questions:
+#            r = responses.filter(question=q)
+#            qr.append((q,r))
+#        return qr
+
     def getUserResponses(self):
         qr = []
-        responses = self.getView().responses
-        questions = Question.objects.filter(official=True)
-        for q in questions:
-            r = responses.filter(question=q)
-            qr.append((q,r))
+        responses = list( self.getView().responses.all() )
+        for r in responses:
+            q = r.question
+            if q.official:
+                qr.append((q,r))
         return qr
+
 
     def setAddress(self, newAddress):
         self.userAddress.currentAddress = False
@@ -3559,6 +3570,7 @@ class Group(Content):
     # people
     admins = models.ManyToManyField(UserProfile, related_name='admin')
     members = models.ManyToManyField(UserProfile, related_name='member')
+    num_members = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
     group_content = models.ManyToManyField(Content, related_name='ongroup')
@@ -3652,6 +3664,13 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
     #-------------------------------------------------------------------------------------------------------------------
+    def countMembers(self):
+        self.num_members = self.members.count()
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Joins a member to the group and creates GroupJoined appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
     def joinMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
@@ -3660,6 +3679,8 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.confirm()
         self.members.add(user)
+        self.num_members += 1
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -3672,6 +3693,8 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.num_members -= 1
+        self.save()
 
 
     #-------------------------------------------------------------------------------------------------------------------
