@@ -715,6 +715,22 @@ div.edit-link
 }
 
 
+div.modal {
+  z-index: 103;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  padding: 15px;
+  background-color: white;
+  -moz-box-shadow: 10px 10px 5px $deep-gray;
+  -webkit-box-shadow: 10px 10px 5px $deep-gray;
+  box-shadow: 10px 10px 5px $deep-gray;
+  @include rounded(5px);
+  display: none;
+  border:1px solid $red;
+}
+
+
 .modal-close-base
 {
   float: right;
@@ -824,7 +840,7 @@ div.autocomplete-user
   }
 }
 
-div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question {
+div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question, div.autocomplete-group {
   padding: 5px;
   position: relative;
   div.autocomplete-image-wrapper {

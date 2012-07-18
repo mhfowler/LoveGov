@@ -7,7 +7,7 @@
             <div class="basic-info-left">
                 <div class="profile-img">
                     {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
-                        <img src="{{ im.url }}" class="icon-really-big"/>
+                        <img src="{{ im.url }}" data-original_image="{{user_prof.getProfileImage.image.url}}" class="icon-really-big"/>
                     {% endthumbnail %}
                 </div>
                 {% if viewer.id != user_prof.id and is_following_you%}
@@ -304,6 +304,8 @@
         {% endfor %}
     </div>
 </div>
+
+<div class="profile-modal-wrapper"><div class="profile-img-modal"></div></div>
 
 <script>
     $(document).ready(function()

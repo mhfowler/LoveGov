@@ -38,4 +38,13 @@
 </ul>
 {% endif %}
 
+{% if groups %}
+    <h2>Groups</h2>
+    <ul>
+        {% for group in groups %}
+            <li><a href='{{group.get_url}}'>{{group.title}}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 </div>
