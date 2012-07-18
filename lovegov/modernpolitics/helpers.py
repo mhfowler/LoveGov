@@ -34,7 +34,8 @@ def getMainTopics(vals=None):
         main_topics = None
     if not main_topics:
         main_topics = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
-        vals['main_topics'] = main_topics
+        if vals:
+            vals['main_topics'] = main_topics
     return main_topics
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -47,7 +48,8 @@ def getOfficialQuestions(vals=None):
         official_questions = None
     if not official_questions:
         official_questions = Question.objects.filter(official=True).order_by("-rank")
-        vals['official_questions'] = official_questions
+        if vals:
+            vals['official_questions'] = official_questions
     return official_questions
 
 #-----------------------------------------------------------------------------------------------------------------------
