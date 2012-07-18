@@ -19,7 +19,6 @@ DATABASES = {
     },
 }
 
-
 STATIC_ROOT = settings.STATIC_ROOT
 
 LOG_ROOT = "/log/"
@@ -134,12 +133,6 @@ CACHES = {
 # EMAIL DURING DEVELOPMENT
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/log/emails'
-
-# EMAIL
-# EMAIL_HOST = 'smtpout.secureserver.net'
-# EMAIL_HOST_USER = 'team@lovegov.com'
-# EMAIL_HOST_PASSWORD = 'freeGOV'
-# EMAIL_PORT = '25'
 
 ########################################################################################################################
 #    misc settings

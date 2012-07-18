@@ -337,10 +337,8 @@ def frame(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def rightSideBar(request, vals):
     userProfile = vals['viewer']
-    vals['random_questions'] = userProfile.getQuestions()
-    vals['all_questions'] = Question.objects.all().order_by("-rank")
-    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
-    vals['root_topic'] = getGeneralTopic()
+    vals['questions_dict'] = getQuestionsDictionary(questions=getOfficialQuestions(vals), vals=vals)
+    getMainTopics(vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -355,7 +353,7 @@ def getUserResponses(request,vals={}):
 def getUserWebResponsesJSON(request,vals={},webCompare=False):
 
     questionsArray = {}
-    topics = getMainTopics()
+    topics = getMainTopics(vals)
     for t in topics:
         questionsArray[t.topic_text] = []
 
@@ -738,7 +736,7 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
 
     vals['group'] = group
-    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+    getMainTopics(vals)
 
     loadHistogram(20, group.id, 'full', vals)
 
@@ -1041,7 +1039,7 @@ def valsQuestion(request, q_id, vals={}):
             percent = 0
         answers.append(AnswerClass(a.answer_text, a.value, percent))
     vals['answers'] = answers
-    topic_text = question.topics.all()[0].topic_text
+    topic_text = question.getMainTopic().topic_text
     vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
     vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
 

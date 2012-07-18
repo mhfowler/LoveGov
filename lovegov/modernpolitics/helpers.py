@@ -24,12 +24,47 @@ import pprint
 
 browser_logger = logging.getLogger('browserlogger')
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets query set of main topics, pseudo-caching
+#-----------------------------------------------------------------------------------------------------------------------
+def getMainTopics(vals=None):
+    if vals:
+        main_topics = vals.get('main_topics')
+    else:
+        main_topics = None
+    if not main_topics:
+        main_topics = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+        vals['main_topics'] = main_topics
+    return main_topics
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets query set of main topics
+# gets official questions, pseudo-caching
 #-----------------------------------------------------------------------------------------------------------------------
-def getMainTopics():
-    return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+def getOfficialQuestions(vals=None):
+    if vals:
+        official_questions = vals.get('official_questions')
+    else:
+        official_questions = None
+    if not official_questions:
+        official_questions = Question.objects.filter(official=True).order_by("-rank")
+        vals['official_questions'] = official_questions
+    return official_questions
+
+#-----------------------------------------------------------------------------------------------------------------------
+# takes in a query set of questions, and returns a dictionary of the questions organized by topic.
+#-----------------------------------------------------------------------------------------------------------------------
+def getQuestionsDictionary(questions=None, vals=None):
+
+    if not questions:
+        questions = getOfficialQuestions(vals)
+
+    topics = getMainTopics(vals)
+
+    to_return = {'all':questions, 'topics':[]}
+    for t in topics:
+        to_return['topics'].append((t, questions.filter(main_topic_id=t.id)))
+
+    return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
 # checks if current session is with authenticated and confirmed user. If so, redirect to home page.

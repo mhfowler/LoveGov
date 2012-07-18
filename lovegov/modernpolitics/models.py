@@ -186,11 +186,7 @@ class Topic(LGModel):
         return {'color':self.color,'color_light':self.color_light}
 
     def getQuestions(self):
-        ids = []
-        for q in Question.objects.filter(official=True):
-            if q.getMainTopic() == self:
-                ids.append(q.id)
-        return Question.objects.filter(id__in=ids).order_by("-rank")
+        return Question.objects.filter(official=True, main_topic=self).order_by("-rank")
 
     def getContent(self):
         ids = []
@@ -373,9 +369,7 @@ class Content(Privacy, LocationLevel):
         creator = self.getCreator()
         img.autoSave(creator=creator, privacy=self.privacy)
         # add topics
-        for t in self.topics.all():
-            img.topics.add(t)
-            # point self.image to new image
+        img.setMainTopic(self.getMainTopic())
         self.main_image_id = img.id
         self.save()
 
@@ -2324,7 +2318,7 @@ class Comment(Content):
         self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
-        self.setMainTopic(self.root_content.main_topic)
+        self.setMainTopic(self.root_content.getMainTopic())
         # update on_content
         root_content = self.root_content
         root_content.num_comments += 1
@@ -3132,9 +3126,7 @@ class Response(Content):
         self.in_feed = False
         self.save()
         super(Response, self).autoSave(creator=creator, privacy=privacy)
-        for t in self.question.topics.all():
-            self.topics.add(t)
-        return self
+        self.setMainTopic(self.question.getMainTopic())
 
     def getValue(self):
         return float(self.answer_val)
