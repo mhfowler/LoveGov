@@ -360,17 +360,17 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
     for (question,response) in vals['viewer'].getUserResponses():
         answerArray = []
         for answer in question.answers.all():
-            if len(response) > 0 and (not webCompare or response[0].userresponse.privacy == "PUB") :
-                checked = (answer.value == response[0].userresponse.answer_val)
-                weight = response[0].userresponse.weight
+            if response and (not webCompare or response.privacy == "PUB"):
+                checked = (answer.value == userresponse.answer_val)
+                weight = response.weight
             else:
                 checked = False
                 weight = 5
             answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
-        if len(response) > 0  : toAddquestion['user_explanation'] = response[0].userresponse.explanation
-        if not webCompare and len(response) > 0: toAddquestion['security'] = response[0].userresponse.privacy
+        if response: toAddquestion['user_explanation'] = response.downcast().explanation
+        if not webCompare and response: toAddquestion['security'] = response.privacy
         else: toAddquestion['security'] = ""
         questionsArray[question.getMainTopic().topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
