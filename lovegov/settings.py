@@ -257,7 +257,7 @@ def setLogging(log_root):
                 'level': 'DEBUG',
                 'propagate': False
             },
-            'errrorslogger': {
+            'errorslogger': {
                 'handlers': ['errors_handler'],
                 'level': 'DEBUG',
                 'propagate': False
