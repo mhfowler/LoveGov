@@ -3645,19 +3645,22 @@ function postNews()
 
 function loadCreate()
 {
-    $('#create_petition_button').click(function()
+    $('#create_petition_button').bindOnce('click.create',
+        function()
     {
         $('.create_content_div').hide();
         $('#create_petition_div').show();
     });
 
-    $('#create_news_button').click(function()
+    $('#create_news_button').bindOnce('click.create',
+        function()
     {
         $('.create_content_div').hide();
         $('#create_news_div').show();
     });
 
-    $('#create_group_button').click(function()
+    $('#create_group_button').bindOnce('click.create',
+        function()
     {
         $('.create_content_div').hide();
         $('#create_group_div').show();
@@ -3666,27 +3669,30 @@ function loadCreate()
     bindGroupPrivacyRadio();
     bindScaleRadio();
 
-    $('#submit_group_button').click(
+    $('#submit_group_button').bindOnce('click.create',
         function(event)
         {
-            createGroupValidation(event);
+            event.preventDefault();
+            lockoutFunction(createGroupValidation, [event]);
         }
     );
 
-    $('#submit_petition_button').click(
+
+    $('#submit_petition_button').bindOnce('click.create',
         function(event)
         {
-            createPetitionValidation(event);
+            event.preventDefault();
+            lockoutFunction(createPetitionValidation, [event]);
         }
     );
 
-    $('#submit_news_button').click(
+    $('#submit_news_button').bindOnce('click.create',
         function(event)
         {
-            createNewsValidation( event );
+            event.preventDefault();
+            lockoutFunction(createNewsValidation, [event]);
         }
     );
-
 
     var timeout;
     var delay = 750;
@@ -3793,6 +3799,17 @@ function loadCreate()
         $("#errors-full_text").empty();
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
+    }
+}
+
+var my_lockout_boolean = false;
+function lockoutFunction(fun, args) {
+    if (!my_lockout_boolean) {
+        my_lockout_boolean = true;
+        fun.apply(undefined, args);
+        setTimeout(function() {
+            my_lockout_boolean = false;
+        }, 6000);
     }
 }
 

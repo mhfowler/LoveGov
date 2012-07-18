@@ -98,21 +98,23 @@ def createUserHelper(control,name,type='userProfile',active=True):
     if len(names) == 2:
         userProfile.first_name = names[0]
         userProfile.last_name = names[1]
-    elif len(names) == 3:
+    elif len(names) > 2:
         userProfile.first_name = names[0] + " " + names[1]
         userProfile.last_name = names[2]
-        # save email and username from control
+    else:
+        userProfile.first_name = names[0]
+        userProfile.last_name = ""
+
     userProfile.email = control.email
     userProfile.username = control.username
     # active
     userProfile.is_active = active
-    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))   #TODO: crypto-safe
+    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))
     # worldview
     world_view = WorldView()
     world_view.save()
-    userProfile.view_id = world_view.id
+    userProfile.view = world_view
     userProfile.save()
-    userid = userProfile.id
     # profilePage
     userProfilePage = ProfilePage(person=userProfile)
     userProfilePage.save()
@@ -131,8 +133,8 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # associate with control
     userProfile.user = control
     userProfile.save()
-    if type=="userProfile":
-        sendYayRegisterEmail(userProfile)
+    if type=="userProfile" and not userProfile.isSuperHero():
+            thread.start_new_thread(sendYayRegisterEmail,(userProfile,))
     # return user prof
     return userProfile
 

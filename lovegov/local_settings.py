@@ -3,6 +3,7 @@ from lovegov import settings
 
 LOCAL = True
 DEBUG = True
+SHOW_TOOLBAR = False
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH
@@ -99,8 +100,18 @@ HAYSTACK_CONNECTIONS = settings.HAYSTACK_CONNECTIONS
 #
 ########################################################################################################################
 
+# for django-debug-toolbar
+def show_toolbar(request):
+    from lovegov.modernpolitics.helpers import getUserProfile
+    if DEBUG and SHOW_TOOLBAR:
+        user_prof = getUserProfile(request)
+        if user_prof:
+            if user_prof.developer:
+                return True
+    return False
+
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': settings.show_toolbar,
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar,
     }
 
 ########################################################################################################################

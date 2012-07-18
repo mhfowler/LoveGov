@@ -1487,7 +1487,8 @@ function assignTopicText(topicID)
 function assignQuestionTopic(topicID)
 {
     var topicString = assignTopicText(topicID);
-    return questionsArray[topicString];
+    var to_return = questionsArray[topicString];
+    return to_return;
 }
 
 /**

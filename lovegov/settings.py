@@ -257,7 +257,7 @@ def setLogging(log_root):
                 'level': 'DEBUG',
                 'propagate': False
             },
-            'errrorslogger': {
+            'errorslogger': {
                 'handlers': ['errors_handler'],
                 'level': 'DEBUG',
                 'propagate': False
@@ -295,13 +295,9 @@ CACHES = {
 }
 
 ########################################################################################################################
-#    caching
+#    email
 #
 ########################################################################################################################
-
-# EMAIL DURING DEVELOPMENT
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = '/log/emails'
 
 #EMAIL DURING LIVE
 EMAIL_USE_TLS = True
@@ -335,7 +331,6 @@ SECRET_KEY = 'uodf#%)e0gss8zbqnnfqj=ppbi!*4n_ss0joum-_udavihl6m%'
 
 ADMINS = (
     ('Max Fowler', 'max_fowler@brown.edu'),
-    ('Clay Dunwell','clayton_dunwell@brown.edu'),
     ('Jonathan Koh', 'jonathanvkoh@gmail.com'),
     ('Jeremy Greenfield', 'jsgreenf@gmail.com'),
     )
