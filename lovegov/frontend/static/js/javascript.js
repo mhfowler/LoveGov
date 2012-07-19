@@ -4186,6 +4186,7 @@ function loadNewMatch() {
         function() {
         });
 
+    /*
     clearInterval(match_autoswitch);
     match_autoswitch= setInterval(function()
     {
@@ -4193,7 +4194,7 @@ function loadNewMatch() {
             swapFeatured("right");
         }
 
-    }, 10000);
+    }, 10000); */
 
     $('body').bindOnce("click.auto", function(event) {
         clearInterval(match_autoswitch);
