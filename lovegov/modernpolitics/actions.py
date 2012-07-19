@@ -1754,7 +1754,7 @@ def actionPOST(request, vals={}):
     action = request.REQUEST['action']
     if action not in ACTIONS:
         return HttpResponseBadRequest('The specified action ("%s") is not valid.' % (action))
-    elif action not in vals['permitted_actions']:
+    elif action in vals['prohibited_actions']:
         return HttpResponseForbidden("You are not permitted to perform the action \"%s\"." % action)
     else:
         action_func = action + '(request, vals)'

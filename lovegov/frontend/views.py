@@ -55,13 +55,17 @@ def viewWrapper(view, requires_login=False):
                 # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
                 if controlling_user:
                     user = controlling_user.user_profile
-                    vals['permitted_actions'] = controlling_user.permitted_actions
+                    vals['prohibited_actions'] = controlling_user.prohibited_actions
                 else:
                     user = getAnonUser()
-                    vals['permitted_actions'] = ANONYMOUS_PERMITTED_ACTIONS
+                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
                 vals['user'] = user
                 vals['viewer'] = user
-                vals['firstLoginStage'] = user.first_login
+
+                first_login = user.first_login
+                vals['firstLoginStage'] = first_login
+                if not first_login:
+                    shortcuts.redirect("/match/representatives/")
 
                 # if not authenticated user, and not lovegov_try cookie, redirect to login page
                 if user.isAnon() and not request.COOKIES.get('lovegov_try'):
