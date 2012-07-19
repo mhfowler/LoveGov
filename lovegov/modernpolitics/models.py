@@ -1034,7 +1034,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     registration_code = models.ForeignKey(RegisterCode,null=True)
     confirmed = models.BooleanField(default=False)
     confirmation_link = models.CharField(max_length=500)
-    first_login = models.BooleanField(default=True) # for special case for first login
+    first_login = models.IntegerField(default=0) # for special case for first login
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
@@ -1697,9 +1697,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Checks if this is the first time the user has logged in.
     #-------------------------------------------------------------------------------------------------------------------
     def checkFirstLogin(self):
-        if self.first_login:
-            self.first_login = False
-            self.save()
+        if self.first_login == 0:
             return True
         else:
             return False

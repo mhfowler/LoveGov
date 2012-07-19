@@ -1724,6 +1724,20 @@ def getSigners(request, vals={}):
     response.status_code = 500 if error else 200
     return response
 
+def setFirstLoginStage(request, vals={}):
+    viewer = vals['viewer']
+    stage = request.POST.get('stage')
+    error = ''
+    if stage:
+        viewer.first_login = stage
+        viewer.save()
+    else:
+        error = 'No first login stage given.'
+    to_return = {'error': error}
+    response = HttpResponse(json.dumps(to_return))
+    response.status_code = 500 if error else 200
+    return response
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
@@ -1736,10 +1750,10 @@ def actionPOST(request, vals={}):
     if request.user:
         vals['viewer'] = getUserProfile(request)
     if not request.REQUEST.__contains__('action'):
-        return HttpResponse('No action specified.')
+        return HttpResponseBadRequest('No action specified.')
     action = request.REQUEST['action']
     if action not in ACTIONS:
-        return HttpResponse('The specified action ("%s") is not valid.' % (action))
+        return HttpResponseBadRequest('The specified action ("%s") is not valid.' % (action))
     elif action not in vals['permitted_actions']:
         return HttpResponseForbidden("You are not permitted to perform the action \"%s\"." % action)
     else:

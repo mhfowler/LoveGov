@@ -523,6 +523,7 @@ ACTIONS = [
     'updatePage',
     'getAggregateNotificationUsers',
     'getSigners',
+    'setFirstLoginStage',
 ]
 
 ANONYMOUS_PERMITTED_ACTIONS = [
@@ -582,4 +583,5 @@ ANONYMOUS_PERMITTED_ACTIONS = [
     'updatePage',
     'getAggregateNotificationUsers',
     'getSigners',
+    #'setFirstLoginStage',
 ]

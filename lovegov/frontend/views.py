@@ -46,6 +46,7 @@ def viewWrapper(view, requires_login=False):
         vals['to_page'] = request.path.replace('/login', '')
         vals['page_title'] = "LoveGov: Beta"
 
+
         if requires_login:
             try:
                 controlling_user = getControllingUser(request)
@@ -60,6 +61,7 @@ def viewWrapper(view, requires_login=False):
                     vals['permitted_actions'] = ANONYMOUS_PERMITTED_ACTIONS
                 vals['user'] = user
                 vals['viewer'] = user
+                vals['firstLoginStage'] = user.first_login
 
                 # if not authenticated user, and not lovegov_try cookie, redirect to login page
                 if user.isAnon() and not request.COOKIES.get('lovegov_try'):
@@ -330,6 +332,7 @@ def frame(request, vals):
     userProfile = vals['viewer']
     vals['new_notification_count'] = userProfile.getNumNewNotifications()
     vals['firstLogin'] = userProfile.checkFirstLogin()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets values for right side bar and puts in dictionary
