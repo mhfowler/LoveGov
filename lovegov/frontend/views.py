@@ -193,7 +193,7 @@ def login(request, to_page='web/', message="", vals={}):
     """
 
     # Try logging in with facebook
-    if fbLogin(request,vals):
+    if fbLogin(request,vals,refresh=True):
         # to_page = to_page.replace("/login", "")
         # print ("to_page: " + to_page)
         return shortcuts.redirect('/' + to_page)
@@ -1227,7 +1227,7 @@ def facebookAction(request, to_page="/web/", vals={}):
 
     elif fb_action == 'share': #Attempt a wall share!  Share destination (fb_share_to) and message specified in GET
         vals['success'] = fbWallShare(request, vals) #Wall Share Success Boolean (puts errors in vals[fb_error])
-        vals['fb_scope'] = 'email,publish_stream' #Scope Needed if wall share fails
+        vals['fb_scope'] = 'publish_stream,' + FACEBOOK_SCOPE #Scope Needed if wall share fails
         vals['auth_to_page'] = action_path + action_query #Build authorization to_page
         auth_path = '/fb/authorize/' #Path to authorization
         auth_path += '?fb_scope=' + vals['fb_scope'] #Add Queries to authorization path

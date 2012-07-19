@@ -1299,6 +1299,26 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         # self.gender = fb_data['gender']
         self.confirmed = True
 
+
+        if 'birthday' in fb_data:
+            split_bday = fb_data['birthday'].split('/')
+            birthday = datetime.date.min
+
+            month = int(split_bday[0])
+            day = int(split_bday[1])
+            year = int(split_bday[2])
+
+            if 0 < month < 13:
+                birthday = birthday.replace(month=month)
+            if 0 < day < 32:
+                birthday = birthday.replace(day=day)
+            if 0 < year < 10000:
+                birthday = birthday.replace(year=year)
+
+            self.dob = birthday
+            self.save()
+
+
         if 'education' in fb_data:
             education = fb_data['education']
             for edu in education:

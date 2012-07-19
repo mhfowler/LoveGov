@@ -391,6 +391,9 @@ BILL_TYPES = {
 # types of content that show up in the feed
 FEED_CONTENT_TYPES = ['P','N','L','G']
 
+# Facebook Stuff
+FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
+
 ###################################### STATIC FILE URLS ################################################################
 
 DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
