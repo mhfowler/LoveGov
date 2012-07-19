@@ -1281,16 +1281,13 @@ def search(request, term='', vals={}):
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Tryin' to love some gov
 #-----------------------------------------------------------------------------------------------------------------------
-
 def tryLoveGov(request, to_page="home/", vals={}):
     response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # LoveGov API

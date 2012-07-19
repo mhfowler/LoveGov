@@ -4259,12 +4259,6 @@ function swapFeatured(direction) {
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
-    var sections = {0:'presidential',
-        1:'senate',
-        2:'social',
-        3:'representatives'};
-    var url = sections[match_current_section];
-    History.pushState( {k:1}, "LoveGov: Beta", '/match/' + url + '/');
     if ((match_next_section==3) && match_location) {
         loadGoogleMap();
     }

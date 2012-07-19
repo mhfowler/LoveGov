@@ -101,7 +101,7 @@ def fbLogin(request, vals={}, refresh=False):
             # REGISTER
             if not user_prof:
                 refresh = False
-                name = me['first_name'] + " " + me['last_name']
+                name = (me.get('first_name') or "Unknown") + " " + (me.get('last_name') or "User")
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
                 vals['viewer'] = user_prof
