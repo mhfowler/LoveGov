@@ -584,7 +584,7 @@ def profile(request, alias=None, vals={}):
 
             # Get Follow Requests
             vals['prof_requests'] = list(user_prof.getFollowRequests())
-            vals['group_invities'] = list(user_prof.getGroupInvites())
+            vals['prof_invites'] = list(user_prof.getGroupInvites())
 
             # Get Schools and Locations:
             networks = user_prof.networks.all()
@@ -673,6 +673,7 @@ def network(request, alias=None, vals={}):
 def group(request, g_id=None, vals={}):
 
     viewer = vals['viewer']
+
     if not g_id:
         return HttpResponse('Group id not provided to view function')
     group = Group.lg.get_or_none(id=g_id)
@@ -726,12 +727,22 @@ def group(request, g_id=None, vals={}):
         if admin.id == viewer.id:
             vals['is_user_admin'] = True
     vals['group_admins'] = group.admins.all()
+
+    all_members = list(group.getMembers())
     num_members = MEMBER_INCREMENT
-    vals['group_members'] = group.getMembers(num=num_members)
+    vals['group_members'] = all_members[:num_members]
     vals['num_members'] = num_members
 
     vals['num_group_members'] = group.num_members
 
+    followers = list(viewer.getFollowMe())
+    for member in all_members:
+        if member in followers:
+            followers.remove(member)
+
+    vals['non_member_followers'] = followers
+
+    setPageTitle("lovegov: " + group.title,vals)
     html = ajaxRender('deployment/pages/group/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
@@ -1003,6 +1014,7 @@ def shareButton(request, vals={}):
     vals['my_groups'] = groups.filter(group_type="U")
     vals['my_networks'] = groups.filter(group_type="N")
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1164,6 +1176,61 @@ def account(request, section="", vals={}):
             pass
 
         html = ajaxRender('deployment/pages/account/account.html', vals, request)
+        url = '/account/'
+        return framedResponse(request, html, url, vals)
+
+
+def groupEdit(request, g_id=None, section="", vals={}):
+    viewer = vals['viewer']
+
+    if not g_id:
+        return HttpResponse('Group id not provided to view function')
+    group = Group.lg.get_or_none(id=g_id)
+    if not group:
+        return HttpResponse('Group id not found in database')
+    vals['group'] = group
+
+    admins = list( group.admins.all() )
+    if viewer.id not in map( lambda x : x.id , admins ):
+        return HttpResponse('You are not an administrator of this group')
+
+    vals['group_admins'] = admins
+
+    members = list( group.getMembers() )
+    for admin in admins:
+        members.remove(admin)
+    vals['group_members'] = members
+
+    vals['uploadform'] = UploadFileForm()
+
+    if section == "profile": vals['profile_message'] = " "
+
+    if request.method == 'GET':
+        setPageTitle("lovegov: group edit",vals)
+        html = ajaxRender('deployment/pages/group/group_edit.html', vals, request)
+        url = '/account/'
+        return framedResponse(request, html, url, vals)
+
+    elif request.method == 'POST':
+        if request.POST['box'] == 'profile':
+            if 'image' in request.FILES:
+                try:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    viewer.setProfileImage(file_content)
+                    vals['profile_message'] = "You look great!"
+                except IOError:
+                    vals['profile_message'] = "The image upload didn't work. Try again?"
+                    vals['uploadform'] = UploadFileForm(request.POST)
+
+
+            vals['profile_message'] = " "
+        elif request.POST['box'] == 'basic_info':
+            pass
+        else:
+            pass
+
+        html = ajaxRender('deployment/pages/group/group_edit.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
