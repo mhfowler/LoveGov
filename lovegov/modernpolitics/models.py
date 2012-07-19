@@ -1719,11 +1719,20 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getUserResponses(self):
         qr = []
+
         responses = list( self.getView().responses.all() )
+
+        official_questions = list( Question.objects.filter(official=True) )
+
         for r in responses:
             q = r.question
             if q.official:
                 qr.append((q,r))
+                official_questions.remove(q)
+
+        for q in official_questions:
+            qr.append((q,None))
+
         return qr
 
 
