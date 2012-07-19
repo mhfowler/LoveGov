@@ -55,25 +55,25 @@ urlpatterns += patterns('',
     (r'^twitter/handle/$', viewWrapper(twitter.twitterHandle)),                          # handles return from twitter
     (r'^twitter/register/$', viewWrapper(twitter.twitterRegister)),                      # twitter form page
 
-    # logout
-    (r'^logout/$', viewWrapper(views.logout)),                                           # logout
-
-    # under construction
+    # misc
+    (r'^logout/$', viewWrapper(views.logout)),
     (r'^underconstruction/$', views.underConstruction),
     (r'^upgrade/$', views.upgrade),
     (r'^continue/$', views.continueAtOwnRisk),
+    (r'^try/$', viewWrapper(views.tryLoveGov)),
+    (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # main pages
     (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
-    (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
+    (r'^about/$', viewWrapper(views.about, requires_login=True)),                                                   # about
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
     (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                           # match page
     (r'^match/(\w+)/$', viewWrapper(views.newMatch, requires_login=True)),                    # match page
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
-    (r'^try/$', viewWrapper(views.tryLoveGov)),
+
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail

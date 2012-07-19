@@ -90,10 +90,6 @@ def createUserHelper(control,name,type='userProfile',active=True):
         userProfile = Representative(user_type='R')
     else:
         userProfile = UserProfile(user_type='U')
-        toregister = getToRegisterNumber()
-        toregister.number -= 1
-        toregister.save()
-        # split name into first and last
     names = name.split(" ")
     if len(names) == 2:
         userProfile.first_name = names[0]

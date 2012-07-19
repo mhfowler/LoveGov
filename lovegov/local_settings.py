@@ -3,7 +3,7 @@ from lovegov import settings
 
 LOCAL = True
 DEBUG = True
-SHOW_TOOLBAR = False
+SHOW_TOOLBAR = True
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH
@@ -18,7 +18,6 @@ DATABASES = {
         'PORT':    '',
     },
 }
-
 
 STATIC_ROOT = settings.STATIC_ROOT
 
@@ -134,12 +133,6 @@ CACHES = {
 # EMAIL DURING DEVELOPMENT
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/log/emails'
-
-# EMAIL
-# EMAIL_HOST = 'smtpout.secureserver.net'
-# EMAIL_HOST_USER = 'team@lovegov.com'
-# EMAIL_HOST_PASSWORD = 'freeGOV'
-# EMAIL_PORT = '25'
 
 ########################################################################################################################
 #    misc settings

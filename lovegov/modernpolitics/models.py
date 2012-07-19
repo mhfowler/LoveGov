@@ -186,11 +186,7 @@ class Topic(LGModel):
         return {'color':self.color,'color_light':self.color_light}
 
     def getQuestions(self):
-        ids = []
-        for q in Question.objects.filter(official=True):
-            if q.getMainTopic() == self:
-                ids.append(q.id)
-        return Question.objects.filter(id__in=ids).order_by("-rank")
+        return Question.objects.filter(official=True, main_topic=self).order_by("-rank")
 
     def getContent(self):
         ids = []
@@ -373,9 +369,7 @@ class Content(Privacy, LocationLevel):
         creator = self.getCreator()
         img.autoSave(creator=creator, privacy=self.privacy)
         # add topics
-        for t in self.topics.all():
-            img.topics.add(t)
-            # point self.image to new image
+        img.setMainTopic(self.getMainTopic())
         self.main_image_id = img.id
         self.save()
 
@@ -1711,14 +1705,34 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
+    # The other version is less SQL queries
+#    def getUserResponses(self):
+#        qr = []
+#        responses = self.getView().responses
+#        questions = Question.objects.filter(official=True)
+#        for q in questions:
+#            r = responses.filter(question=q)
+#            qr.append((q,r))
+#        return qr
+
     def getUserResponses(self):
         qr = []
-        responses = self.getView().responses
-        questions = Question.objects.filter(official=True)
-        for q in questions:
-            r = responses.filter(question=q)
-            qr.append((q,r))
+
+        responses = list( self.getView().responses.all() )
+
+        official_questions = list( Question.objects.filter(official=True) )
+
+        for r in responses:
+            q = r.question
+            if q.official:
+                qr.append((q,r))
+                official_questions.remove(q)
+
+        for q in official_questions:
+            qr.append((q,None))
+
         return qr
+
 
     def setAddress(self, newAddress):
         self.userAddress.currentAddress = False
@@ -2311,7 +2325,7 @@ class Comment(Content):
         self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
-        self.setMainTopic(self.root_content.main_topic)
+        self.setMainTopic(self.root_content.getMainTopic())
         # update on_content
         root_content = self.root_content
         root_content.num_comments += 1
@@ -3119,9 +3133,7 @@ class Response(Content):
         self.in_feed = False
         self.save()
         super(Response, self).autoSave(creator=creator, privacy=privacy)
-        for t in self.question.topics.all():
-            self.topics.add(t)
-        return self
+        self.setMainTopic(self.question.getMainTopic())
 
     def getValue(self):
         return float(self.answer_val)
@@ -3557,6 +3569,7 @@ class Group(Content):
     # people
     admins = models.ManyToManyField(UserProfile, related_name='admin')
     members = models.ManyToManyField(UserProfile, related_name='member')
+    num_members = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
     group_content = models.ManyToManyField(Content, related_name='ongroup')
@@ -3650,6 +3663,13 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
     #-------------------------------------------------------------------------------------------------------------------
+    def countMembers(self):
+        self.num_members = self.members.count()
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Joins a member to the group and creates GroupJoined appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
     def joinMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
@@ -3658,6 +3678,8 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.confirm()
         self.members.add(user)
+        self.num_members += 1
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -3670,6 +3692,8 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.num_members -= 1
+        self.save()
 
 
     #-------------------------------------------------------------------------------------------------------------------

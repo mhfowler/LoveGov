@@ -211,7 +211,6 @@ def login(request, to_page='web/', message="", vals={}):
 
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
-        vals['toregister'] = getToRegisterNumber().number
         response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
     response.delete_cookie('lovegov_try')
     return response
@@ -340,10 +339,8 @@ def frame(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def rightSideBar(request, vals):
     userProfile = vals['viewer']
-    vals['random_questions'] = userProfile.getQuestions()
-    vals['all_questions'] = Question.objects.all().order_by("-rank")
-    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
-    vals['root_topic'] = getGeneralTopic()
+    vals['questions_dict'] = getQuestionsDictionary(questions=getOfficialQuestions(vals), vals=vals)
+    getMainTopics(vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -358,24 +355,24 @@ def getUserResponses(request,vals={}):
 def getUserWebResponsesJSON(request,vals={},webCompare=False):
 
     questionsArray = {}
-    topics = getMainTopics()
+    topics = getMainTopics(vals)
     for t in topics:
         questionsArray[t.topic_text] = []
 
     for (question,response) in vals['viewer'].getUserResponses():
         answerArray = []
         for answer in question.answers.all():
-            if len(response) > 0 and (not webCompare or response[0].userresponse.privacy == "PUB") :
-                checked = (answer.value == response[0].userresponse.answer_val)
-                weight = response[0].userresponse.weight
+            if response and (not webCompare or response.privacy == "PUB"):
+                checked = (answer.value == response.answer_val)
+                weight = response.weight
             else:
                 checked = False
                 weight = 5
             answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
-        if len(response) > 0  : toAddquestion['user_explanation'] = response[0].userresponse.explanation
-        if not webCompare and len(response) > 0: toAddquestion['security'] = response[0].userresponse.privacy
+        if response: toAddquestion['user_explanation'] = response.downcast().explanation
+        if not webCompare and response: toAddquestion['security'] = response.privacy
         else: toAddquestion['security'] = ""
         questionsArray[question.getMainTopic().topic_text].append(toAddquestion)
     vals['questionsArray'] = json.dumps(questionsArray)
@@ -729,7 +726,7 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = group.getMembers(num=num_members)
     vals['num_members'] = num_members
 
-    vals['num_group_members'] = group.members.count()
+    vals['num_group_members'] = group.num_members
 
     html = ajaxRender('deployment/pages/group/group.html', vals, request)
     url = group.get_url()
@@ -741,7 +738,7 @@ def histogramDetail(request, g_id, vals={}):
     group = Group.objects.get(id=g_id)
 
     vals['group'] = group
-    vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+    getMainTopics(vals)
 
     loadHistogram(20, group.id, 'full', vals)
 
@@ -1044,7 +1041,7 @@ def valsQuestion(request, q_id, vals={}):
             percent = 0
         answers.append(AnswerClass(a.answer_text, a.value, percent))
     vals['answers'] = answers
-    topic_text = question.topics.all()[0].topic_text
+    topic_text = question.getMainTopic().topic_text
     vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
     vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
 
@@ -1287,16 +1284,13 @@ def search(request, term='', vals={}):
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Tryin' to love some gov
 #-----------------------------------------------------------------------------------------------------------------------
-
-def tryLoveGov(request, vals={}):
-    response = HttpResponseRedirect('/home')
+def tryLoveGov(request, to_page="home/", vals={}):
+    response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # LoveGov API
