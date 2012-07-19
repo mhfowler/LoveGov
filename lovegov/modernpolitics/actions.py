@@ -1735,7 +1735,7 @@ def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
         vals['viewer'] = getUserProfile(request)
-    if not request.REQUEST.__contains__('action'):
+    if not 'action' in request.REQUEST:
         return HttpResponse('No action specified.')
     action = request.REQUEST['action']
     if action not in ACTIONS:
