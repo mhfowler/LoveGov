@@ -175,6 +175,14 @@
   background-color:$background-color;
 }
 
+@mixin rotate($degrees) {
+  transform:rotate($deg);
+  -ms-transform:rotate($deg); /* IE 9 */
+  -moz-transform:rotate($deg); /* Firefox */
+  -webkit-transform:rotate($deg); /* Safari and Chrome */
+  -o-transform:rotate($deg); /* Opera */
+}
+
 @mixin box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
 {
   -moz-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
@@ -403,4 +411,11 @@
       background-image: url('/static/images/edit-pencil-blue.png');
     }
 
+}
+
+// $opacity is a float
+@mixin opacity($opacity) {
+  -moz-opacity: $opacity;
+  -khtml-opacity: $opacity;
+  opacity: $opacity;
 }

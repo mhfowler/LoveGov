@@ -24,6 +24,8 @@
         </div>
     </div>
 
+    <a href="#" class="reactivate-first-login tooltip-bottom" title="Tutorial"> ? </a>
+
     {% if not viewer.isAnon %}
 
         <div id="user-menu-container">
@@ -98,7 +100,7 @@
                     </script>
 
                     <div class="user-menu-dashboard-right">
-                        <p class="user-menu-dashboard-text">{{ viewer.get_name }}</p>
+                        <p class="user-menu-dashboard-text">{{ viewer.get_nameShort }}</p>
                         <p class="user-menu-dashboard-text text-gray">{{ viewer.get_email }}</p>
                         <table>
                             <tr>

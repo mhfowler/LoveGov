@@ -46,6 +46,7 @@ def viewWrapper(view, requires_login=False):
         vals['to_page'] = request.path.replace('/login', '')
         vals['page_title'] = "LoveGov: Beta"
 
+
         if requires_login:
             try:
                 controlling_user = getControllingUser(request)
@@ -54,12 +55,17 @@ def viewWrapper(view, requires_login=False):
                 # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
                 if controlling_user:
                     user = controlling_user.user_profile
-                    vals['permitted_actions'] = controlling_user.permitted_actions
+                    vals['prohibited_actions'] = controlling_user.prohibited_actions
                 else:
                     user = getAnonUser()
-                    vals['permitted_actions'] = ANONYMOUS_PERMITTED_ACTIONS
+                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
                 vals['user'] = user
                 vals['viewer'] = user
+
+                first_login = user.first_login
+                vals['firstLoginStage'] = first_login
+                if not first_login:
+                    shortcuts.redirect("/match/representatives/")
 
                 # if not authenticated user, and not lovegov_try cookie, redirect to login page
                 if user.isAnon() and not request.COOKIES.get('lovegov_try'):
@@ -330,6 +336,7 @@ def frame(request, vals):
     userProfile = vals['viewer']
     vals['new_notification_count'] = userProfile.getNumNewNotifications()
     vals['firstLogin'] = userProfile.checkFirstLogin()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets values for right side bar and puts in dictionary
@@ -1281,16 +1288,13 @@ def search(request, term='', vals={}):
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Tryin' to love some gov
 #-----------------------------------------------------------------------------------------------------------------------
-
 def tryLoveGov(request, to_page="home/", vals={}):
     response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # LoveGov API

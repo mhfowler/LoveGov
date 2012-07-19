@@ -16,6 +16,7 @@ function rebindFunction()
     bindInlineEdits();
     loadShareButton();
     bindChangeContentPrivacy();
+    bindTutorialLink();
     showFooter();                                               // By default, show footer. Hide footer in indvidual cases.
     switch (rebind)
     {
@@ -111,6 +112,14 @@ function bindLinks() {
 function selectHeaderLink(div) {
     $(".header_link").removeClass("clicked");
     div.addClass("clicked");
+}
+
+function bindTutorialLink() {
+    $('.reactivate-first-login').bindOnce('click', function() {
+        setFirstLoginStage(0, function() {
+            window.location = '/match';
+        });
+    });
 }
 
 /***********************************************************************************************************************
@@ -809,7 +818,7 @@ function ajaxPost(dict) {
         if (superError) {
             superError()
         } else {
-            $('body').html(jqXHR.responseText);
+            launchModal("<strong>Error:</strong> "+jqXHR.responseText);
         }
     };
     data['url'] = window.location.href;
@@ -825,7 +834,9 @@ function ajaxPost(dict) {
 }
 
 function launch403Modal(msg) {
-   launchModal('<h2>Forbidden</h2> <p>'+msg+'</p><p><a href="/login">Sign in or register</a></p>');
+   launchModal('<h2>Forbidden!</h2> <p> Your IP address has been logged.</p> ' +
+       '<p> not really, but you need to log in to do the action you just tried to do.</p>' +
+       '<p><a href="/login">Sign in or register!</a></p>');
 }
 
 
@@ -833,13 +844,24 @@ function launchModal(content) {
     $('div.overdiv').show();
     var modal = $('div.modal');
     modal.html(content);
-    var width = modal.width();
-    var height = modal.height();
+    var width = modal.outerWidth();
+    var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
         .css("margin-left", -width/2)
         .css("display", "inline-block");
     bindOverdivClick(modal);
+}
+
+function launchFirstLoginModal(content) {
+    var modal = $('div.first-login-modal');
+    modal.children('div.first-login-content').html(content);
+    var width = modal.outerWidth();
+    var height = modal.outerHeight();
+    modal
+        .css("margin-top", -height/2)
+        .css("margin-left", -width/2)
+        .css("display", "inline-block");
 }
 
 // Binds an overdiv click to hide a particular element
@@ -3302,6 +3324,7 @@ function loadNewFeed() {
 
     bindCreateButton();
     loadCreate();
+    bindCloseFirstLoginModal();
 
 }
 
@@ -4165,6 +4188,7 @@ function loadNewMatch() {
         function() {
         });
 
+    /*
     clearInterval(match_autoswitch);
     match_autoswitch= setInterval(function()
     {
@@ -4172,7 +4196,7 @@ function loadNewMatch() {
             swapFeatured("right");
         }
 
-    }, 3000);
+    }, 10000); */
 
     $('body').bindOnce("click.auto", function(event) {
         clearInterval(match_autoswitch);
@@ -4202,6 +4226,13 @@ function loadNewMatch() {
         event.preventDefault();
         submitAddress($(this).parents(".address-box"));
     });
+
+    $('div.first-login-modal div.modal-close').bindOnce('click', function() {
+        alert('clicky');
+        $('div.first-login-modal').hide();
+    });
+
+    bindCloseFirstLoginModal();
 }
 
 function submitAddress(wrapper) {
@@ -4237,6 +4268,24 @@ function submitAddress(wrapper) {
     });
 }
 
+function submitZip(zip) {
+    ajaxPost({
+        data: {
+            'action': 'submitAddress',
+            'zip': zip,
+        },
+        success: function(data)
+        {
+            if (data=='success') {
+                return true;
+            } else {
+                alert(data);
+                return false;
+            }
+        }
+    })
+}
+
 var match_current_section;
 function swapFeatured(direction) {
     if (direction=='right') {
@@ -4259,12 +4308,6 @@ function swapFeatured(direction) {
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
-    var sections = {0:'presidential',
-        1:'senate',
-        2:'social',
-        3:'representatives'};
-    var url = sections[match_current_section];
-    History.pushState( {k:1}, "LoveGov: Beta", '/match/' + url + '/');
     if ((match_next_section==3) && match_location) {
         loadGoogleMap();
     }
@@ -4374,6 +4417,13 @@ function loadGoogleMap()
 }
 
 
+
+/***********************************************************************************************************************
+ *
+ *      ~Content Privacy
+ *
+ **********************************************************************************************************************/
+
 function bindChangeContentPrivacy() {
 
     $('div.change-privacy').bindOnce('click.changeprivacy', function() {
@@ -4402,6 +4452,33 @@ function bindChangeContentPrivacy() {
         });
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *      ~First login experience
+ *
+ **********************************************************************************************************************/
+
+function setFirstLoginStage(stage, success) {
+    success = typeof success !== 'undefined' ? success : function() {};
+    ajaxPost({
+        data: {action: 'setFirstLoginStage', stage: stage},
+        success: success,
+    });
+}
+
+function bindCloseFirstLoginModal() {
+    $('div.first-login-modal div.modal-close').bindOnce('click', function() {
+        $('div.first-login-modal').hide();
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Footer
+ *
+ **********************************************************************************************************************/
 
 function showFooter() {
     $('footer').show();

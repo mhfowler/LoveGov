@@ -126,6 +126,12 @@ div#top
     }
   }
 
+  a.reactivate-first-login {
+    margin: 14px 0 0px 10px;
+    @include fontSize(16px);
+    float:left;
+  }
+
   a.anon-sign-up {
     float:left;
     margin-top:15px;

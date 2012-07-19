@@ -1034,7 +1034,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     registration_code = models.ForeignKey(RegisterCode,null=True)
     confirmed = models.BooleanField(default=False)
     confirmation_link = models.CharField(max_length=500)
-    first_login = models.BooleanField(default=True) # for special case for first login
+    first_login = models.IntegerField(default=0) # for special case for first login
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
@@ -1093,11 +1093,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
-    def get_nameShort(self):
+    def get_nameShort(self, max_length=15):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
-            if len(fullname) > 19:
+            if len(fullname) > max_length:
                 to_return = unicode(str(self.first_name)).encode("UTF-8")
+                if len(to_return) > max_length:
+                    to_return = to_return[:max_length-3] + "..."
             else:
                 to_return = unicode(str(self.first_name) + " " + str(self.last_name)).encode("UTF-8")
         except UnicodeEncodeError:
@@ -1717,9 +1719,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Checks if this is the first time the user has logged in.
     #-------------------------------------------------------------------------------------------------------------------
     def checkFirstLogin(self):
-        if self.first_login:
-            self.first_login = False
-            self.save()
+        if self.first_login == 0:
             return True
         else:
             return False
@@ -1748,7 +1748,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             q = r.question
             if q.official:
                 qr.append((q,r))
-                official_questions.remove(q)
+                if q in official_questions:
+                    official_questions.remove(q)
 
         for q in official_questions:
             qr.append((q,None))
@@ -1776,7 +1777,7 @@ class ControllingUser(User, LGModel):
     permissions = models.ForeignKey(UserPermission, null=True)  # null is default permission
     user_profile = models.ForeignKey(UserProfile, null=True)    # spectator
     objects = UserManager()
-    permitted_actions = custom_fields.ListField(default=ACTIONS)
+    prohibited_actions = custom_fields.ListField(default=DEFAULT_PROHIBITED_ACTIONS)
     def getUserProfile(self):
         return self.user_profile
 

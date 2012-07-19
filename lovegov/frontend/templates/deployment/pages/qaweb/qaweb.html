@@ -1,7 +1,7 @@
 <div id="qaweb-interactive">
     <div id="dragger">
 
-        {% if firstLogin %}
+        {% if firstLoginStage == 3 %}
         <div id="first_user" class="first-user-box" data-state="left">
 
             <div id="first_user_intro">
@@ -70,7 +70,7 @@
 
 </div>
 
-{% if firstLogin %}
+{% if firstLoginStage == 3 %}
 <script type="text/javascript">
     var progressBar =  '<div class="progress_bar_fill" style="width:70px">&nbsp;</div>';
     var progressBarDivider = '<div class="progress_bar_divider" style="width:5px">&nbsp;</div>';
@@ -82,6 +82,7 @@
         {
             $('#first_user').fadeOut('slow');
             $('._topic_label').remove();
+            setFirstLoginStage(4, stageFour);
         });
 
         $('#learn_how_it_works').click(function()
@@ -140,6 +141,7 @@
         $('.first_user_progress_text').hide();
         $('.end_of_web').show();
         $('#first_user').fadeOut(10000);
+        setFirstLoginStage(4, stageFour);
 
     }
 </script>
@@ -220,17 +222,22 @@
     </div>
 </div>
 
+<div class="first-login-modal">
+    <div class="modal-close"></div>
+    <div class="first-login-content"></div>
+</div>
 
 
 <script type="text/javascript">
     rebind = 'qaweb';
     $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20});
     var questionsArray = eval('(' + "{{ questionsArray|escapejs }}" + ')');
-    {% if firstLogin  %}
+    {% if firstLoginStage == 3  %}
         var firstLogin = true;
     {% else %}
         var firstLogin = false;
     {% endif %}
+
 
     var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
     var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
@@ -268,6 +275,47 @@
             $(this).addClass("has_security_setting");
         }
     });
+
+    function stageFour() {
+        launchFirstLoginModal('<h2>Privacy on LoveGov</h2>' +
+                '<p>We think in-depth, complex privacy settings are too confusing. That\'s why on LoveGov ' +
+                'there are two modes: public and anonymous. You can quickly switch between modes next to your ' +
+                'profile picture at the top.</p>' +
+                '<p><img src="/static/images/public.png" class="privacy-img"> When in public mode, everything you do, ' +
+                'such as signing petitions or writing comments, is attributed to your account.</p>' +
+                '<p><img src="/static/images/user-menu/lockgray.png" class="privacy-img"> When in anonymous mode, any content you create ' +
+                'is attributed to an anonymous user.</p>' +
+                '<p>On questions in the Q&A web, you can individually toggle the visibility of your answers. Public ' +
+                'answers will be viewable, anonymous answers will be hidden to other users.</p>' +
+                '<button class="tutorial-button">Next</button>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage('5', function() {
+                launchFirstLoginModal('<p>Now that you\'ve answered a few questions, why not take a look at how your ' +
+                        'matches have changed?</p><p>You can always jump back to the Q&A web by clicking up top.' +
+                        '<button class="tutorial-button">Show me my matches</button>');
+                $('button.tutorial-button').bindOnce('click', function() { window.location = "/match" });
+            });
+        });
+    }
+
+    function bindSkipFirstLogin() {
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            var success = function() {
+                $('div.first-login-modal').hide();
+            };
+            setFirstLoginStage('7', success);
+        });
+    }
+
+    var firstLoginStage = {{ firstLoginStage }}
+
+    switch (firstLoginStage) {
+        case 3: break;
+        case 4: stageFour(); break;
+        default: break;
+    }
+
+    bindCloseFirstLoginModal();
 
 </script>
 
