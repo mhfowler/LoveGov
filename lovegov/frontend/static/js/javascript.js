@@ -2729,6 +2729,7 @@ function loadGroupEdit()
 {
     bindGroupPrivacyRadio();
     bindScaleRadio();
+    bindRemoveAdmin();
     selectPrivacyRadio();
     selectScaleRadio();
 
@@ -2763,18 +2764,50 @@ function loadGroupEdit()
         e.preventDefault();
         var g_id = $("#edit_admin_submit").data('g_id');
         var new_admins = $('.admin_select').select2("val");
+
         if (new_admins!='') {
             ajaxPost({
-                data: {'action': 'addAdmins', 'invitees': JSON.stringify(new_admins), 'g_id':g_id},
+                data: {'action': 'addAdmins', 'admins': JSON.stringify(new_admins), 'g_id':g_id},
                 success: function(data)
                 {
-                    $('#admin_submit_message').html('Administrator Added');
-                    $('#admin_submit_message').show();
-                    window.setTimeout("$('#admin_submit_message').fadeOut(600);",300);
+                    var returned = eval('(' + data + ')');
+                    $('#edit_admin_submit_message').html('Administrator Added');
+                    $('#edit_admin_submit_message').show();
+                    $('#edit_admin_submit_message').fadeOut(3000);
+                    $('#admin_remove_container').hide();
+                    $('#admin_remove_container').html(returned.html);
+                    $('#admin_remove_container').fadeIn(600);
+                    bindRemoveAdmin();
                 }
             });
         }
-    }) );
+    }));
+}
+
+function bindRemoveAdmin()
+{
+    $('.remove_admin').bindOnce('click.remove_admin', (function(e) {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        ajaxPost({
+            data:
+            {
+                'action': 'removeAdmin',
+                'admin_id': admin_id,
+                'g_id': g_id
+            },
+            success: function(data)
+            {
+                $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
+            },
+            error: function(data)
+            {
+                alert(data);
+            }
+        })
+    }));
 }
 
 function selectPrivacyRadio()

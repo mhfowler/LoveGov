@@ -103,17 +103,21 @@
             </form>
         </div>
 
-        <div class="admin_edit_tab" id="account-change-profile" style="display:none">
+        <div class="admin_edit_tab admin-edit-tab" style="display:none">
 
             <div class="admin-edit-header"> Edit Administrators for {{ group.title }} </div>
 
+            <div class="admin-remove-container" id="admin_remove_container">
+                {% include "deployment/snippets/admin_list.html" %}
+            </div>
+        
             <form>
 
                 <div class="admin-select-container">
                     <select multiple class="admin_select admin-select">
-                        <optgroup label="Members">
-                            {% for member in members %}
-                                <option value='{{ member.id }}'>{{ member.get_name }}</option>
+                        <optgroup label="Members" id="add_members_input">
+                            {% for member in group_members %}
+                                <option class="admin_value" value='{{ member.id }}'>{{ member.get_name }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>
@@ -134,7 +138,15 @@
 </div>
 
 <!-- Javascript -->
-<script> rebind='groupedit'; </script>
+<script>
+    rebind='groupedit';
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+</script>
+
+
 <!-- End Account -->
 
 

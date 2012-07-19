@@ -1106,6 +1106,91 @@ def posttogroup(request, vals={}):
     group.group_content.add(content)
     return HttpResponse("added")
 
+
+#----------------------------------------------------------------------------------------------------------------------
+# Makes a set of users into moderators for a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def removeAdmin(request, vals={}):
+    viewer = vals['viewer']
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Admin removal without a group ID by user " + str(viewer.id) + ".")
+        return HttpResponse("Admin removal without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to removeAdmin by user #" + str(viewer.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to remove an admin for this group")
+
+    if not 'admin_id' in request.POST:
+        errors_logger.error("Group admin removal without user ID for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group admin removal without user ID")
+
+    admin_remove = UserProfile.lg.get_or_none(id=request.POST['admin_id'])
+    if not admin_remove:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
+        return HttpResponse("User with given ID does not exist")
+
+    if admin_remove in group.admins.all():
+        group.admins.remove(admin_remove)
+    return HttpResponse("admin remove success")
+
+
+#----------------------------------------------------------------------------------------------------------------------
+# Makes a set of users into moderators for a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def addAdmins(request, vals={}):
+    viewer = vals['viewer'] # Viewer is always sending the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Admin addition without a group ID by user " + str(viewer.id) + ".")
+        return HttpResponse("Admin addition without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to addAdmins by user #" + str(viewer.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to add an admin for this group")
+
+    if not 'admins' in request.POST:
+        errors_logger.error("Group admin addition without user IDs for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group admin addition without user IDs")
+
+    admins = json.loads(request.POST['admins'])
+
+    for admin_id in admins:
+        addAdmin(admin_id,group,viewer,request)
+
+    vals['group_admins'] = group.admins.all()
+    html = ajaxRender('deployment/snippets/admin_list.html',vals,request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
+#----------------------------------------------------------------------------------------------------------------------
+# Adds a single user as moderator for a given group
+# HELPER FUNCTION TO addAdmins().
+#-----------------------------------------------------------------------------------------------------------------------
+def addAdmin(admin_id, group, viewer, request):
+    new_admin = UserProfile.lg.get_or_none(id=admin_id)
+
+    if not new_admin:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
+        return False
+
+    group.admins.add(new_admin)
+    #TODO ADD ADMIN ACTIONS
+#    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
+#    action.autoSave()
+#    from_user.notify(action)
+    return True
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates inputted comparison.
 #
@@ -1912,6 +1997,8 @@ actions = { 'getLinkInfo': getLinkInfo,
             'getaggregatenotificationusers': getAggregateNotificationUsers,
             'getSigners': getSigners,
             'editGroup': editGroup,
+            'addAdmins': addAdmins,
+            'removeAdmin': removeAdmin,
         }
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -1182,6 +1182,11 @@ def groupEdit(request, g_id=None, section="", vals={}):
 
     vals['group_admins'] = admins
 
+    members = list( group.getMembers() )
+    for admin in admins:
+        members.remove(admin)
+    vals['group_members'] = members
+
     vals['uploadform'] = UploadFileForm()
 
     if section == "profile": vals['profile_message'] = " "
