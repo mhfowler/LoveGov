@@ -1726,7 +1726,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             q = r.question
             if q.official:
                 qr.append((q,r))
-                official_questions.remove(q)
+                if q in official_questions:
+                    official_questions.remove(q)
 
         for q in official_questions:
             qr.append((q,None))

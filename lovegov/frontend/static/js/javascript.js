@@ -16,6 +16,7 @@ function rebindFunction()
     bindInlineEdits();
     loadShareButton();
     bindChangeContentPrivacy();
+    bindTutorialLink();
     showFooter();                                               // By default, show footer. Hide footer in indvidual cases.
     switch (rebind)
     {
@@ -111,6 +112,14 @@ function bindLinks() {
 function selectHeaderLink(div) {
     $(".header_link").removeClass("clicked");
     div.addClass("clicked");
+}
+
+function bindTutorialLink() {
+    $('.reactivate-first-login').bindOnce('click', function() {
+        setFirstLoginStage(0, function() {
+            window.location = '/match';
+        });
+    });
 }
 
 /***********************************************************************************************************************
