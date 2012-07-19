@@ -264,4 +264,27 @@
 
 </div>
 
+<div class="first-login-modal">
+    <div class="modal-close"></div>
+    <div class="first-login-content"></div>
+</div>
+
 <script> rebind = 'feed'; </script>
+
+
+{% if firstLoginStage == 6 %}
+<script type="text/javascript">
+
+    function stageSix() {
+        launchFirstLoginModal('<p>This is the feed page, where you can explore activity and content created by others. ' +
+                'Use the create button to share links and more. Also, use the filter dropdown to get a more ' +
+                'personalized feed!</p><button class="tutorial-button">Let me browse!</button>');
+        $('div.first-login-modal button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage(7, function() {$('div.first-login-modal').hide(); });
+        });
+    }
+
+    stageSix();
+
+</script>
+{% endif %}

@@ -79,8 +79,12 @@
 {% include 'deployment/pages/match/match-quicklinks.html' %}
 
 </div>
+<div class="first-login-modal">
+    <div class="modal-close"></div>
+    <div class="first-login-content"></div>
+</div>
 
-<script>
+<script type="text/javascript">
     rebind = 'match';
 
     match_current_section={{ start_sequence }};
@@ -96,6 +100,96 @@
 
     {% endif %}
 
+    {% if firstLoginStage < 3 or firstLoginStage == 5%}
+
+    var firstLoginStage = {{ firstLoginStage }};
+
+    var fl_modal = $('div.first-login-modal');
+
+    var skipTutorialText = '<div class="skip-tutorial">Prefer to browse the site? <a>Skip</a> the tutorial.</div>';
+
+    function stageZero() {
+        launchFirstLoginModal('<h2>Welcome to LoveGov</h2><p>We are currently in Beta, so this site is a work in progress. ' +
+                'To find out more about what we are trying to do, visit ' +
+                'our <a href="/about">About</a> page. We would love any feedback you may have.</p>' +
+                '<p>We’ve built some neat tools to help you stay informed and get involved in politics. ' +
+                '<button class="tutorial-button">Learn how it works</button>' + skipTutorialText);
+        $('button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage('1', stageOne);
+        });
+        bindSkipFirstLogin();
+    }
+
+    function stageOne() {
+        launchFirstLoginModal('<p>Right now you\'re browsing the match page. Use this page to see how your beliefs match ' +
+                'with politicians, groups, and friends.</p>' +
+                '<p>Try finding the representatives for your congressional district.</p>' +
+                '<div class="zip-code-form"><input type="text" class="firstlogin-zipcode" placeholder="Your zip code">' +
+                '<button class="tutorial-button">Go</button></div>' +
+                '<div class="skip-tutorial"><a>Skip this step</a></div>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            var zip = $('input.firstlogin-zipcode').val();
+            submitZip(zip);
+            setFirstLoginStage(2, function() {
+                window.location = '/match/representatives'
+            });
+        });
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            setFirstLoginStage(3, function() {
+                window.location = '/web';
+            });
+        });
+    }
+
+    function stageTwo() {
+        launchFirstLoginModal('<p>Awesome! Here are your representatives. ' +
+                'Notice that your match percentage is at 0%.</p>' +
+                '<p>Answer some questions to begin comparing your views with your representatives.</p>' +
+                '<button class="tutorial-button">Jump to Q&A Web</button>' +
+                '<div class="skip-tutorial">Not your voting district? <a>Enter a new address.</a></div>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage(3, function() {window.location = "/web";});
+        });
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            stageOne();
+        });
+
+    }
+
+
+
+    function stageFive() {
+        launchFirstLoginModal('<p>See how your match percentages have changed? The more questions you answer' +
+                ' the more accurate this number becomes.</p>' +
+                '<p>Finally, the feed is where you can discuss news and check out content submitted by ' +
+                'the LoveGov community. Clicking the LoveGov logo will always take you to the feed.</p>' +
+                '<button class="tutorial-button">Jump to Feed</button>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            var success = function() {
+                window.location = '/feed';
+            };
+            setFirstLoginStage('6', success);
+        });
+     }
+
+    function bindSkipFirstLogin() {
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            var success = function() {
+                $('div.first-login-modal').hide();
+            };
+            setFirstLoginStage('7', success);
+        });
+    }
+
+    switch (firstLoginStage) {
+        case 0: stageZero(); break;
+        case 1: stageOne(); break;
+        case 2: stageTwo(); break;
+        case 5: stageFive(); break;
+    }
+
+    <!-- /first login -->
+    {% endif %}
 
 </script>
 
