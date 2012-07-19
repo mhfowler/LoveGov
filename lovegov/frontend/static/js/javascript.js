@@ -834,7 +834,9 @@ function ajaxPost(dict) {
 }
 
 function launch403Modal(msg) {
-   launchModal('<h2>Forbidden</h2> <p>'+msg+'</p><p><a href="/login">Sign in or register</a></p>');
+   launchModal('<h2>Forbidden!</h2> <p> Your IP address has been logged.</p> ' +
+       '<p> not really, but you need to log in to do whatever you just did.</p>' +
+       '<p><a href="/login">Sign in or register!</a></p>');
 }
 
 

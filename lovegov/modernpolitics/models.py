@@ -1093,11 +1093,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
-    def get_nameShort(self):
+    def get_nameShort(self, max_length=15):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
-            if len(fullname) > 19:
+            if len(fullname) > max_length:
                 to_return = unicode(str(self.first_name)).encode("UTF-8")
+                if len(to_return) > max_length:
+                    to_return = to_return[:max_length-3] + "..."
             else:
                 to_return = unicode(str(self.first_name) + " " + str(self.last_name)).encode("UTF-8")
         except UnicodeEncodeError:
