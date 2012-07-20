@@ -4480,11 +4480,11 @@ function submitZip(zip) {
                 alert(data);
                 return false;
             }
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
         }
-//        error: function(error, textStatus, errorThrown)
-//        {
-//            $('body').html(error.responseText);
-//        }
     });
 }
 
