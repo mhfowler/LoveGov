@@ -76,6 +76,10 @@ function rebindFunction()
         case 'friends':
             loadHistogram();
             break;
+        case 'login':                                       // login page
+            loadSignInDialogue();
+            loadLogin();
+            break;
         default:
             break
     }
@@ -568,10 +572,10 @@ function loadHoverComparison()
             {
                 hoverClearOK = true;
                 hoverTimer = setTimeout
-                (
-                    function() { clearHover(); },
-                    300
-                );
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
             }
         );
 
@@ -629,10 +633,10 @@ function loadHoverComparison()
             function(event)
             {
                 hoverTimer = setTimeout
-                (
-                    function(){ clearHover(); },
-                    1000
-                );
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
             }
         );
 }
@@ -834,9 +838,9 @@ function ajaxPost(dict) {
 }
 
 function launch403Modal(msg) {
-   launchModal('<h2>Forbidden!</h2> <p> Your IP address has been logged.</p> ' +
-       '<p> not really, but you need to log in to do the action you just tried to do.</p>' +
-       '<p><a href="/login">Sign in or register!</a></p>');
+    launchModal('<h2>Forbidden!</h2> <p> Your IP address has been logged.</p> ' +
+        '<p> not really, but you need to log in to perform that action.</p>' +
+        '<p><a href="/login">Sign in or register!</a></p>');
 }
 
 
@@ -3670,24 +3674,24 @@ function loadCreate()
 {
     $('#create_petition_button').bindOnce('click.create',
         function()
-    {
-        $('.create_content_div').hide();
-        $('#create_petition_div').show();
-    });
+        {
+            $('.create_content_div').hide();
+            $('#create_petition_div').show();
+        });
 
     $('#create_news_button').bindOnce('click.create',
         function()
-    {
-        $('.create_content_div').hide();
-        $('#create_news_div').show();
-    });
+        {
+            $('.create_content_div').hide();
+            $('#create_news_div').show();
+        });
 
     $('#create_group_button').bindOnce('click.create',
         function()
-    {
-        $('.create_content_div').hide();
-        $('#create_group_div').show();
-    });
+        {
+            $('.create_content_div').hide();
+            $('#create_group_div').show();
+        });
 
     bindGroupPrivacyRadio();
     bindScaleRadio();
@@ -4189,14 +4193,14 @@ function loadNewMatch() {
         });
 
     /*
-    clearInterval(match_autoswitch);
-    match_autoswitch= setInterval(function()
-    {
-        if (match_hover_off) {
-            swapFeatured("right");
-        }
+     clearInterval(match_autoswitch);
+     match_autoswitch= setInterval(function()
+     {
+     if (match_hover_off) {
+     swapFeatured("right");
+     }
 
-    }, 10000); */
+     }, 10000); */
 
     $('body').bindOnce("click.auto", function(event) {
         clearInterval(match_autoswitch);
@@ -4486,4 +4490,57 @@ function showFooter() {
 
 function hideFooter() {
     $('footer').hide();
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~Sign In Dialogue
+ *
+ **********************************************************************************************************************/
+function loadSignInDialogue() {
+
+    $(".sign-in-input").focusin(function(event) {
+        $(this).val("");
+        $(this).css('color', 'black');
+    });
+    $(".sign-in-input").focusout(function(event) {
+        var entered = $(this).val();
+        if (entered == "") {
+            $(this).val($(this).data('orig'));
+            $(this).css('color', '#adadad');
+        }
+    });
+
+    $(".sign_in_dialogue").bind("clickoutside.menuoff", function(event) {
+        if (event.target.id != "sign_in_button") {
+            $(this).hide();
+        }
+    });
+
+    $(".sign_in_button").click(function(event) {
+        event.preventDefault();
+        $(".sign_in_dialogue").show();
+    });
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~Login page
+ *
+ **********************************************************************************************************************/
+var login_state;
+function loadLogin() {
+    if (login_state == 'login_error') {
+        $(".sign_in_dialogue").show();
+    }
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Blog
+ *
+ **********************************************************************************************************************/
+function loadBlog() {
+    alert("blog!");
 }

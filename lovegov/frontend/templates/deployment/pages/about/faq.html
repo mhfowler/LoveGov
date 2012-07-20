@@ -16,8 +16,18 @@ be able to see specifically which piece of legislation a question is based on.</
 <h2>How do you generate matches?</h2>
 
 <p>Matches are based on which answer you gave and how strongly you weighted the question.
-There’s no mysterious formula that adjusts the importance of your responses. We generate answers for presidential
-candidates and congressmen based on our own research of their voting records and their stated opinions.</p>
+There’s no mysterious formula that generates a magic number. The formula is,  </p>
+    <p>
+ total weight of questions both users answered the same &divide total weight of questions both users answered = match %
+    </p>
+    <p>
+    We generate answers for presidential
+candidates and congressmen based on our own research of their voting records and their stated opinions. Right now only the views
+        of the presidential candidates, and congressmen from Rhode Island and Massachusetts are researched by hand. The views
+        of the rest of Congress are determined by parsing voting records from a legislation database, and answering our questions
+        based on their ties to legislation. This doesn't totally capture a politician's views, but we hope that as LoveGov grows politicians will start to take notice,
+        and eventually claim their profiles on LoveGov and answer our questions themselves.
+    </p>
 
 </div>
 

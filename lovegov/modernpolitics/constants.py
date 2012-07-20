@@ -585,5 +585,5 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     #'updatePage',
     #'getAggregateNotificationUsers',
     #'getSigners',
-    'setFirstLoginStage',
+    #'setFirstLoginStage',
 ]
