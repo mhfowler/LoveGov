@@ -430,6 +430,9 @@ class ComparisonBucket:
             percent = 0
         return percent
 
+    def getNumQuestions(self):
+        return self.num_questions
+
     def toDict(self):
         return {'num_questions':self.num_questions,
                 'num_similar':self.num_similar,

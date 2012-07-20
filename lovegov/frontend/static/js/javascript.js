@@ -826,8 +826,7 @@ function ajaxPost(dict) {
         if (superError) {
             superError()
         } else {
-            alert(jqXHR.status);
-            launchModal("<strong>Error:</strong> "+jqXHR.responseText);
+            $("body").html(jqXHR.responseText);
         }
     };
     data['url'] = window.location.href;
@@ -4225,10 +4224,6 @@ function updateHistogram(recursive) {
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
                 }
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
             }
         }
     );
