@@ -1183,7 +1183,7 @@ def recalculateEverything():
     print "Recalculating Comments..."
     recalculateAllComments()
 
-def recalculatePermittedActions():
+def recalculateProhibitedActions():
     for c in ControllingUser.objects.all():
         p = c.getUserProfile()
         if p:
