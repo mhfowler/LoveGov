@@ -18,6 +18,7 @@ function rebindFunction()
     bindChangeContentPrivacy();
     bindTutorialLink();
     showFooter();                                               // By default, show footer. Hide footer in indvidual cases.
+    bindLinks();
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -4479,6 +4480,10 @@ function submitZip(zip) {
             } else {
                 return false;
             }
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
         }
     });
 }

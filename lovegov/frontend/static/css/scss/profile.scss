@@ -351,13 +351,21 @@ div.middle-right
 
     div#qaweb-title
     {
-      @include rounded-bottom(10px);
+      @include rounded-bottom(18px);
       position:relative;
       background-color: $gray;
       padding-top:10px;
       padding-bottom:2px;
       @include h5;
+      z-index:-1;
       color: white;
+    }
+  }
+  div.matching:hover {
+    border-color:$black;
+    cursor:pointer;
+    div#qaweb-title {
+      border-color:$black;
     }
   }
 }
