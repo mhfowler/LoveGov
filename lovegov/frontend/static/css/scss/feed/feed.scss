@@ -881,3 +881,26 @@ div.bind_link {
 div.bind_link:hover {
   color:$black;
 }
+
+
+span.fake_heart {
+  width: 18px;
+  height: 19px;
+  display: inline-block;
+  position: relative;
+  top: 4px;
+}
+span.fake_heart_plus {
+  background-image: url("/static/icons/plusheart-gray.png");
+}
+span.fake_heart_plus:hover {
+  background-image: url("/static/icons/plusheart-red.png");
+  cursor:pointer;
+}
+span.fake_heart_minus {
+  background-image: url('/static/icons/minusheart-gray.png');
+}
+span.fake_heart_minus:hover {
+  background-image: url("/static/icons/minusheart-red.png");
+  cursor:pointer;
+}

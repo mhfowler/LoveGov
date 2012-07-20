@@ -869,9 +869,12 @@ function launchFirstLoginModal(content) {
     var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
-        .css("margin-left", -width/2)
-        .css("display", "inline-block")
+        .css("margin-left", -width/2);
+
+    setTimeout(function() {modal.fadeIn(1500)}, 1500);
 }
+
+
 
 // Binds an overdiv click to hide a particular element
 // Unbinds when the click occurs

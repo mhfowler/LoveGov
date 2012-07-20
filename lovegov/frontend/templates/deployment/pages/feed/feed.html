@@ -271,10 +271,10 @@
 <script type="text/javascript">
 
     function stageSix() {
-        launchFirstLoginModal('<p>This is the feed page.</p>' +
-                '<p> Here you can find links and petitions that people are sharing. ' +
-                "Click the plus heart on a post if you think it's interesting, click the minus heart if you don't. " +
+        launchFirstLoginModal('<p>This is the feed page. Here you can find links and petitions that people are sharing. ' +
                 'The more upvotes a post gets the more likely it is other people will see it. </p>' +
+                '<p>Click the <span class="fake_heart_plus fake_heart"></span> on a post if you think it\'s interesting.' +
+                '<br>Click the <span class="fake_heart_minus fake_heart"></span> if you don\'t.</p>  ' +
                 '<p> Use the create button to share your own content. ' +
                 'We are working on making it easier to customize your home page so that you can find the people ' +
                 'and posts which are most interesting to you. But for now... </p>' +
@@ -284,7 +284,9 @@
         });
     }
 
-    stageSix();
+    $(document).ready(function() {
+        stageSix();
+    });
 
 </script>
 {% endif %}

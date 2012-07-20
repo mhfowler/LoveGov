@@ -74,8 +74,6 @@ def viewWrapper(view, requires_login=False):
 
                 first_login = user.first_login
                 vals['firstLoginStage'] = first_login
-                if not first_login:
-                    shortcuts.redirect("/match/representatives/")
 
                 # if not authenticated user, and not lovegov_try cookie, redirect to login page
                 if user.isAnon() and not request.COOKIES.get('lovegov_try'):
@@ -207,6 +205,9 @@ def login(request, to_page='web/', message="", vals={}):
     @type vals: dictionary
     @return:
     """
+
+    if not vals.get('firstLoginStage'):
+        to_page = "match/representatives/"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
