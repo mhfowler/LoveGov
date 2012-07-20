@@ -560,6 +560,7 @@ def editContent(request, vals={}):
     if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
         return HttpResponse( json.dumps({'success':False,'value':''}) )
     value = request.POST['val']
+    from django.template import defaultfilters
     key = request.POST['key']
     if key not in CONTENT_EDITABLE_FIELDS:
         return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
@@ -568,6 +569,8 @@ def editContent(request, vals={}):
         save_content = content.downcast()
         setattr( save_content , key , value )
         save_content.save()
+        value = defaultfilters.urlize(value)
+        value = defaultfilters.linebreaks_filter(value)
         return HttpResponse( json.dumps({'success':True,'value':value}) )
     return HttpResponse( json.dumps({'success':False,'value':''}) )
 
