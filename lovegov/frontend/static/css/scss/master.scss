@@ -804,6 +804,10 @@ div.first-login-modal {
   &.slim-modal {
     max-width: 500px;
   }
+  div.zip-code-error-msg {
+    color: $deep-gray;
+    font-size: 16px;
+  }
 }
 
 div.modal-close
