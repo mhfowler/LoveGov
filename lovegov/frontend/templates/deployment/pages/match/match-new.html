@@ -139,6 +139,7 @@
                 window.location = '/web';
             });
         });
+        bindSkipFirstLogin();
     }
 
     function stageTwo() {
@@ -146,14 +147,14 @@
                 'Notice that your match percentage is at 0%.</p>' +
                 '<p>Answer some questions to begin comparing your views with your representatives.</p>' +
                 '<button class="tutorial-button">Jump to Q&A Web</button>' +
-                '<div class="skip-tutorial">Not your voting district? <a>Enter a new address.</a></div>');
+                '<div class="skip-tutorial">Not your voting district? <a>Enter a new address.</a></div>'+skipTutorialText);
         $('button.tutorial-button').bindOnce('click', function() {
             setFirstLoginStage(3, function() {window.location = "/web";});
         });
         $('div.skip-tutorial a').bindOnce('click', function() {
             stageOne();
         });
-
+        bindSkipFirstLogin();
     }
 
 
@@ -161,15 +162,16 @@
     function stageFive() {
         launchFirstLoginModal('<p>See how your match percentages have changed? The more questions you answer' +
                 ' the more accurate this number becomes.</p>' +
-                '<p>Finally, the feed is where you can discuss news and check out content submitted by ' +
+                '<p>Our final stop is the feed page, where you can discuss news and check out content submitted by ' +
                 'the LoveGov community. Clicking the LoveGov logo will always take you to the feed.</p>' +
-                '<button class="tutorial-button">Jump to Feed</button>');
+                '<button class="tutorial-button">Jump to Feed</button>'+skipTutorialText);
         $('button.tutorial-button').bindOnce('click', function() {
             var success = function() {
                 window.location = '/feed';
             };
             setFirstLoginStage('6', success);
         });
+        bindSkipFirstLogin();
      }
 
     function bindSkipFirstLogin() {
