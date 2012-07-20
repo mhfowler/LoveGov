@@ -852,14 +852,14 @@ function launch403Modal(msg) {
 function launchModal(content) {
     $('div.overdiv').show();
     var modal = $('div.modal');
-    modal.html(content);
+    modal.children("#general_modal_content").html(content);
     var width = modal.outerWidth();
     var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
         .css("margin-left", -width/2)
-        .css("display", "inline-block")
-    bindOverdivClick(modal);
+        .css("display", "inline-block");
+    bindCloseClick(modal);
     return modal;
 }
 
@@ -871,14 +871,20 @@ function launchFirstLoginModal(content) {
     modal
         .css("margin-top", -height/2)
         .css("margin-left", -width/2)
-        .css("display", "inline-block")
+        .css("display", "inline-block");
 }
 
 // Binds an overdiv click to hide a particular element
 // Unbinds when the click occurs
-function bindOverdivClick(element) {
+function bindCloseClick(element) {
     var overdiv = $('div.overdiv');
     overdiv.bindOnce('click', function(e) {
+        element.hide();
+        overdiv.hide();
+        overdiv.off('click');
+    });
+
+    element.children('.general_modal_close').bindOnce('click.general_close' , function(e) {
         element.hide();
         overdiv.hide();
         overdiv.off('click');
@@ -4748,6 +4754,33 @@ function loadLogin() {
     if (login_state == 'login_error') {
         $(".sign_in_dialogue").show();
     }
+
+    $(".no_login_link").bindOnce("click.no_login_link", function(e)
+    {
+        e.preventDefault();
+        var target = $(this).data('link');
+
+        $('#modal_browse_anyways_login').bindOnce("click.browse_anyways_modal", function(e)
+        {
+            e.preventDefault();
+            window.location = target;
+        });
+
+        $('.no_login_modal').show();
+        $('.overdiv').show();
+    });
+
+    $('.overdiv').bindOnce('click.no_login_modal_hide' , function(e)
+    {
+        $(this).hide();
+        $('.no_login_modal').hide();
+    });
+
+    $('.no_login_modal_close').bindOnce('click.no_login_modal_close' , function(e)
+    {
+        $('.overdiv').hide();
+        $('.no_login_modal').hide();
+    });
 }
 
 
