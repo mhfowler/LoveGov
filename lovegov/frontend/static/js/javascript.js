@@ -825,6 +825,7 @@ function ajaxPost(dict) {
         if (superError) {
             superError()
         } else {
+            alert(jqXHR.status);
             launchModal("<strong>Error:</strong> "+jqXHR.responseText);
         }
     };
@@ -4476,11 +4477,10 @@ function submitZip(zip) {
             if (data=='success') {
                 return true;
             } else {
-                alert(data);
                 return false;
             }
         }
-    })
+    });
 }
 
 var match_current_section;
