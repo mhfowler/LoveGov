@@ -858,19 +858,20 @@ function launchModal(content) {
     modal
         .css("margin-top", -height/2)
         .css("margin-left", -width/2)
-        .css("display", "inline-block");
+        .css("display", "inline-block")
     bindOverdivClick(modal);
+    return modal;
 }
 
 function launchFirstLoginModal(content) {
-    var modal = $('div.first-login-modal');
+    var modal = $('.first-login-modal');
     modal.children('div.first-login-content').html(content);
     var width = modal.outerWidth();
     var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
         .css("margin-left", -width/2)
-        .css("display", "inline-block");
+        .css("display", "inline-block")
 }
 
 // Binds an overdiv click to hide a particular element
