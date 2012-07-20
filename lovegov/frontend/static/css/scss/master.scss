@@ -732,7 +732,7 @@ div.modal {
 
 div.first-login-modal {
   z-index: 103;
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 50%;
   padding: 30px;
@@ -745,6 +745,13 @@ div.first-login-modal {
   border:1px solid $red;
   @include opacity(0.92);
   max-width: 750px;
+
+  a.first-login-restart {
+    float:right;
+    margin-top:150px;
+    display:none;
+  }
+
   h2 {
     text-align: center;
     margin-bottom: 15px;

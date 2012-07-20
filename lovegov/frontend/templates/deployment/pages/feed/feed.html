@@ -264,11 +264,6 @@
 
 </div>
 
-<div class="first-login-modal">
-    <div class="modal-close"></div>
-    <div class="first-login-content"></div>
-</div>
-
 <script> rebind = 'feed'; </script>
 
 
@@ -276,13 +271,12 @@
 <script type="text/javascript">
 
     function stageSix() {
-        launchFirstLoginModal('<p>This is the feed page, where you can find links and petitions that users are sharing. ' +
-                'Click the plus heart on a post if you think a post is interesting, click the minus heart if you dont. ' +
-                'The more upvotes a post gets the more likely it is other users will see it, so upvote things which you ' +
-                'think other people should know about.</p>' +
+        launchFirstLoginModal('<p>This is the feed page.</p>' +
+                '<p> Here you can find links and petitions that people are sharing. ' +
+                "Click the plus heart on a post if you think it's interesting, click the minus heart if you don't. " +
+                'The more upvotes a post gets the more likely it is other people will see it. </p>' +
                 '<p> Use the create button to share your own content. ' +
-                'Use the filter dropdown to get a more ' +
-                'personalized feed. We are working on making it easier to customize your home page and find the people' +
+                'We are working on making it easier to customize your home page so that you can find the people ' +
                 'and posts which are most interesting to you. But for now... </p>' +
                 '<p> Have fun exploring and welcome to LoveGov. </p> </p><button class="tutorial-button">Let me browse!</button>');
         $('div.first-login-modal button.tutorial-button').bindOnce('click', function() {
