@@ -79,10 +79,6 @@
 {% include 'deployment/pages/match/match-quicklinks.html' %}
 
 </div>
-<div class="first-login-modal">
-    <div class="modal-close"></div>
-    <div class="first-login-content"></div>
-</div>
 
 <script type="text/javascript">
     rebind = 'match';
@@ -100,8 +96,6 @@
 
     {% endif %}
 
-    {% if firstLoginStage < 3 or firstLoginStage == 5%}
-
     var firstLoginStage = {{ firstLoginStage }};
 
     var fl_modal = $('div.firs t-login-modal');
@@ -111,8 +105,8 @@
     function stageZero() {
         launchFirstLoginModal('<h2>Welcome to LoveGov</h2><p>We are currently in Beta, so this site is a work in progress. ' +
                 'To find out more about what we are trying to do, visit ' +
-                'our <a href="/about">About</a> page. We would love to hear your feedback. </p>' +
-                "<p>There's more on the way, but we’ve already built some neat tools to help you stay informed and get involved in politics. " +
+                'our <a href="/about">About</a> page. We would really like to hear your feedback. </p>' +
+                "<p>There's more on the way but we’ve already built some neat tools to help you stay informed and get involved." +
                 '<button class="tutorial-button">Learn how it works</button>' + skipTutorialText);
         $('button.tutorial-button').bindOnce('click', function() {
             setFirstLoginStage('1', stageOne);
@@ -142,7 +136,7 @@
     }
 
     function stageTwo() {
-        launchFirstLoginModal('<p>Awesome! Here are your representatives. ' +
+        launchFirstLoginModal('<p>Congratulations you won! Here are your representatives. ' +
                 "If your match percentage is at 0%, this means you haven't answered any questions yet.</p>" +
                 '<p> Use the Q&A Web to answer questions so you can have more meaningful matches.</p>' +
                 '<button class="tutorial-button">Jump to Q&A Web</button>' +
@@ -156,16 +150,13 @@
 
     }
 
-
-
     function stageFive() {
         launchFirstLoginModal('<p>See how your match percentages have changed? The more questions you answer' +
                 ' the more accurate this number becomes.</p>' +
-                '<p>But matching is just one tool on LoveGov. Beyond the match page we are trying to build an entire ' +
-                'platform for our users to discuss the issues and share news and petitions with eachother. Your portal' +
-                ' to this side of LoveGov is the feed, where you can discuss news and check out content submitted by ' +
-                'the LoveGov community. Clicking the LoveGov logo will always take you to the feed. </p>' +
-                '<button class="tutorial-button">Show Me The Feed</button></div>');
+                '<p>But matching is just one of the tools you can use. Beyond the match page we are trying to build an entire ' +
+                'platform for people to discuss the issues and share news and petitions with eachother. Your portal' +
+                ' to this community is the feed, clicking the logo in the top left always takes you there. </p>' +
+                '<button class="tutorial-button">Show me the feed</button></div>');
         $('button.tutorial-button').bindOnce('click', function() {
             var success = function() {
                 window.location = '/feed';
@@ -183,15 +174,16 @@
         });
     }
 
-    switch (firstLoginStage) {
-        case 0: stageZero(); break;
-        case 1: stageOne(); break;
-        case 2: stageTwo(); break;
-        case 5: stageFive(); break;
-    }
-
-    <!-- /first login -->
-    {% endif %}
+    $(document).ready(function() {
+        switch (firstLoginStage) {
+            case 0: stageZero(); break;
+            case 1: stageOne(); break;
+            case 2: stageTwo(); break;
+            case 5: stageFive(); break;
+            default:
+                break;
+        }
+    });
 
 </script>
 

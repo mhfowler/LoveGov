@@ -222,12 +222,6 @@
     </div>
 </div>
 
-<div class="first-login-modal">
-    <div class="modal-close"></div>
-    <div class="first-login-content"></div>
-</div>
-
-
 <script type="text/javascript">
     rebind = 'qaweb';
     $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20});
@@ -286,12 +280,13 @@
                 '<p><img src="/static/images/user-menu/lockgray.png" class="privacy-img"> When in anonymous mode, any content you create ' +
                 'is attributed to an anonymous user.</p>' +
                 '<p>On questions in the Q&A web, you can individually toggle the visibility of your answers. Public ' +
-                'answers will be viewable, anonymous answers will be hidden to other users.</p>' +
+                'answers will be viewable by others, anonymous answers will be displayed as though you had not answered ' +
+                'that question.</p>' +
                 '<button class="tutorial-button">Next</button>');
         $('button.tutorial-button').bindOnce('click', function() {
             setFirstLoginStage('5', function() {
-                launchFirstLoginModal("<p>Now that you\'ve answered a few questions, let's take a look at how your " +
-                        'matches have changed.</p><p>You can always jump back to the Q&A web by clicking up top.' +
+                launchFirstLoginModal("<p>Now that you\'ve answered a few questions, take a look at how your " +
+                        'matches have changed.</p><p>You can always jump back to the Q&A web by clicking the q&a link up top.' +
                         '<button class="tutorial-button">Show me my matches</button>');
                 $('button.tutorial-button').bindOnce('click', function() { window.location = "/match" });
             });
