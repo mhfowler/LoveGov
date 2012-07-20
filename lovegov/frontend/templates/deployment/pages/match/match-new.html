@@ -118,15 +118,22 @@
         launchFirstLoginModal('<p>Right now you\'re browsing the match page. Use this page to see how your beliefs match ' +
                 'with politicians, groups, and friends.</p>' +
                 '<p>Try finding the representatives for your congressional district.</p>' +
+                '<div class="zip-code-error-msg"></div>' +
                 '<div class="zip-code-form"><input type="text" class="firstlogin-zipcode" placeholder="Your zip code">' +
                 '<button class="tutorial-button">Go</button></div>' +
                 '<div class="skip-tutorial"><a>Skip this step</a></div>');
         $('button.tutorial-button').bindOnce('click', function() {
             var zip = $('input.firstlogin-zipcode').val();
-            submitZip(zip);
-            setFirstLoginStage(2, function() {
-                window.location = '/match/representatives'
-            });
+            var submitZipSuccess = function() {
+                setFirstLoginStage(2, function() {
+                    window.location = '/match/representatives';
+                });
+            };
+            var submitZipError = function() {
+                $('div.zip-code-error-msg').text('The zip code you entered, "'+zip+'", did not match any district. Please double-check that it is correct and try again.')
+            }
+            submitZip(zip, submitZipSuccess, submitZipError);
+
         });
         $('div.skip-tutorial a').bindOnce('click', function() {
             setFirstLoginStage(3, function() {

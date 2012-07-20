@@ -4484,7 +4484,7 @@ function submitAddress(wrapper) {
     });
 }
 
-function submitZip(zip) {
+function submitZip(zip, successCallback, errorCallback) {
     ajaxPost({
         data: {
             'action': 'submitAddress',
@@ -4493,9 +4493,9 @@ function submitZip(zip) {
         success: function(data)
         {
             if (data=='success') {
-                return true;
+                successCallback();
             } else {
-                return false;
+                errorCallback(data);
             }
         },
         error: function(error, textStatus, errorThrown)
