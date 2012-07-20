@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.defaults import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
@@ -147,14 +146,16 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
+    groups = SearchQuerySet().models(Group).filter(content=term)
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
     petitions = [x.object for x in petitions]
     questions = [x.object for x in questions]
     news = [x.object for x in news]
+    groups = [x.object for x in groups]
 
-    return userProfiles, petitions, questions, news
+    return userProfiles, petitions, questions, news, groups
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -164,9 +165,9 @@ def lovegovSearch(term):
 def searchAutoComplete(request,vals={},limit=5):
     string = request.POST['string'].lstrip().rstrip()
 
-    userProfiles, petitions, questions, news = lovegovSearch(string)
+    userProfiles, petitions, questions, news, groups = lovegovSearch(string)
 
-    total_results = sum(map(len, (userProfiles, petitions, questions, news)))
+    total_results = sum(map(len, (userProfiles, petitions, questions, news, groups)))
 
     results_length = 0
 
@@ -174,6 +175,7 @@ def searchAutoComplete(request,vals={},limit=5):
     petition_results = []
     question_results = []
     news_results = []
+    group_results = []
 
     # If total results is less than the given limit, 
     # show up to the number of actual results
@@ -197,11 +199,15 @@ def searchAutoComplete(request,vals={},limit=5):
             popped = news.pop(0)
             if popped:
                 news_results.append(popped)
-        results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results)))
+        if len(groups) > 0:
+            popped = groups.pop(0)
+            if popped:
+                group_results.append(popped)
+        results_length = sum(map(len, (news_results, question_results, petition_results, userProfile_results, group_results)))
     
     # Store results in context values
-    vals['userProfiles'], vals['petitions'], vals['questions'], vals['news'] = \
-        userProfile_results, petition_results, question_results, news_results
+    vals['userProfiles'], vals['petitions'], vals['questions'], vals['news'], vals['groups'] = \
+        userProfile_results, petition_results, question_results, news_results, group_results
     vals['search_string'] = string
     vals['num_results'] = total_results
     vals['shown'] = results_length
@@ -419,12 +425,11 @@ def submitAddress(request, vals={}):
 
     try:
         location = locationHelper(full_address, zip)
+        viewer = vals['viewer']
+        viewer.location = location
+        viewer.save()
     except:
         return HttpResponse("The given address was not specific enough to determine your voting district")
-
-    viewer = vals['viewer']
-    viewer.location = location
-    viewer.save()
 
     return HttpResponse("success")
 
@@ -492,6 +497,45 @@ def editAccount(request, vals={}):
         return shortcuts.redirect('/account/profile/')
 
     return shortcuts.redirect('/account/')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# FORM Edits group profile info
+#-----------------------------------------------------------------------------------------------------------------------
+def editGroup(request, vals={}):
+    viewer = vals['viewer']
+
+    g_id = request.POST.get('g_id')
+
+    if not g_id:
+        errors_logger.error('Group id not provided to editGroup action')
+        return shortcuts.redirect('/')
+
+    group = Group.lg.get_or_none(id=g_id)
+    if not group:
+        errors_logger.error('Group id #' + str(g_id) + ' not found in database.  Requested by editGroup action')
+        return shortcuts.redirect('/')
+
+    vals['group'] = group
+
+    if viewer not in group.admins.all():
+        return HttpResponseForbidden("You are not authroized to edit this group")
+
+    if 'title' in request.POST: group.title = request.POST['title']
+    if 'full_text' in request.POST: group.full_text = request.POST['full_text']
+    if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
+    if 'scale' in request.POST: group.scale = request.POST['scale']
+
+    if 'image' in request.FILES:
+        try:
+            file_content = ContentFile(request.FILES['image'].read())
+            Image.open(file_content)
+            group.setMainImage(file_content)
+        except IOError:
+            print "Image Upload Error"
+
+    group.save()
+
+    return shortcuts.redirect('/group/' + str(group.id) + '/edit/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information
@@ -641,7 +685,6 @@ def setFollowPrivacy(request, vals={}):
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
-#
 #-----------------------------------------------------------------------------------------------------------------------
 def vote(request, vals):
     """Likes or dislikes content based on post."""
@@ -659,7 +702,6 @@ def vote(request, vals):
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves a users answer to a question.
-#
 #-----------------------------------------------------------------------------------------------------------------------
 def answer(request, vals={}):
     """ Saves a users answer to a question."""
@@ -727,7 +769,7 @@ def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    group = group.downcast()
+    group = group.downcast()  # Parties have a slightly different joinMember
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
@@ -775,10 +817,15 @@ def joinGroupRequest(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, vals={}):
+    viewer = vals['viewer']
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
-    group = group.downcast()
+    group = group.downcast() # Parties have a slightly different joinMember
+
+    if viewer not in group.admins.all():
+        return HttpResponseForbidden("You are not authorized to respond to this group request")
+
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_joined = already[0]
@@ -804,28 +851,117 @@ def joinGroupResponse(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def groupInviteResponse(request, vals={}):
+    from_user = vals['viewer'] # Viewer is always recieving/responding to the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
+        return HttpResponse("Group invite response sent without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if not 'response' in request.POST:
+        errors_logger.error("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
     response = request.POST['response']
-    from_user = vals['viewer']
-    group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupJoined.objects.filter(user=from_user, group=group, privacy=getPrivacy(request))
-    if already:
-        group_joined = already[0]
+
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
+
         if group_joined.confirmed:
+            errors_logger.error("User #" + str(from_user.id) + " responded to an invite to group #" + str(group.id) + " of which they are already a member")
             return HttpResponse("You have already joined that group")
+
         if group_joined.invited:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
                 action.autoSave()
-                from_user.notify(action)
+                for admin in group.admins.all():
+                    admin.notify(action)
                 return HttpResponse("you have joined this group!")
+
             elif response == 'N':
-                group_joined.reject()
+                group_joined.decline()
                 action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
                 action.autoSave()
-                from_user.notify(action)
+                for admin in group.admins.all():
+                    admin.notify(action)
                 return HttpResponse("you have rejected this group invitation")
+
+    errors_logger.error("User #" + str(viewer.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
     return HttpResponse("you were not invitied to join this group")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Invites a set of users to a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def groupInvite(request, vals={}):
+    inviter = vals['viewer'] # Viewer is always sending the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Group invite sent without a group ID by user " + str(inviter.id) + ".")
+        return HttpResponse("Group invite sent without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if inviter not in group.admins.all():
+        return HttpResponseForbidden("You are not authorized to send group invites for this group")
+
+    if not 'invitees' in request.POST:
+        errors_logger.error("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
+        return HttpResponse("Group invite sent without recieving user IDs")
+
+    invitees = json.loads(request.POST['invitees'])
+
+    for follow_id in invitees:
+        individualGroupInvite(follow_id,group,inviter,request)
+
+    return HttpResponse("invite success")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Invites a single user to a given group
+# HELPER FUNCTION TO groupInvite().
+#-----------------------------------------------------------------------------------------------------------------------
+def individualGroupInvite(follow_id, group, inviter, request):
+    from_user = UserProfile.lg.get_or_none(id=follow_id)
+
+    if not from_user:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return False
+
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
+
+        if group_joined.confirmed:
+            errors_logger.error("User #" + str(from_user.id) + " was invited to group #" + str(group.id) + " of which they are already a member")
+            return False
+
+        elif group_joined.invited:
+            normal_logger.debug("User #" + str(from_user.id) + " was reinvited to join group #" + str(group.id) )
+            return False
+
+        elif group_joined.requested:
+            group.joinMember(from_user, privacy=getPrivacy(request))
+            action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
+            action.autoSave()
+            from_user.notify(action)
+            return True
+    else:
+        group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
+        group_joined.autoSave()
+
+    group_joined.invite(inviter)
+    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="I")
+    action.autoSave()
+    from_user.notify(action)
+    return True
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -986,6 +1122,91 @@ def posttogroup(request, vals={}):
     group.group_content.add(content)
     return HttpResponse("added")
 
+
+#----------------------------------------------------------------------------------------------------------------------
+# Makes a set of users into moderators for a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def removeAdmin(request, vals={}):
+    viewer = vals['viewer']
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Admin removal without a group ID by user " + str(viewer.id) + ".")
+        return HttpResponse("Admin removal without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to removeAdmin by user #" + str(viewer.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to remove an admin for this group")
+
+    if not 'admin_id' in request.POST:
+        errors_logger.error("Group admin removal without user ID for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group admin removal without user ID")
+
+    admin_remove = UserProfile.lg.get_or_none(id=request.POST['admin_id'])
+    if not admin_remove:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
+        return HttpResponse("User with given ID does not exist")
+
+    if admin_remove in group.admins.all():
+        group.admins.remove(admin_remove)
+    return HttpResponse("admin remove success")
+
+
+#----------------------------------------------------------------------------------------------------------------------
+# Makes a set of users into moderators for a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def addAdmins(request, vals={}):
+    viewer = vals['viewer'] # Viewer is always sending the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Admin addition without a group ID by user " + str(viewer.id) + ".")
+        return HttpResponse("Admin addition without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to addAdmins by user #" + str(viewer.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to add an admin for this group")
+
+    if not 'admins' in request.POST:
+        errors_logger.error("Group admin addition without user IDs for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group admin addition without user IDs")
+
+    admins = json.loads(request.POST['admins'])
+
+    for admin_id in admins:
+        addAdmin(admin_id,group,viewer,request)
+
+    vals['group_admins'] = group.admins.all()
+    html = ajaxRender('deployment/snippets/admin_list.html',vals,request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
+#----------------------------------------------------------------------------------------------------------------------
+# Adds a single user as moderator for a given group
+# HELPER FUNCTION TO addAdmins().
+#-----------------------------------------------------------------------------------------------------------------------
+def addAdmin(admin_id, group, viewer, request):
+    new_admin = UserProfile.lg.get_or_none(id=admin_id)
+
+    if not new_admin:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
+        return False
+
+    group.admins.add(new_admin)
+    #TODO ADD ADMIN ACTIONS
+#    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
+#    action.autoSave()
+#    from_user.notify(action)
+    return True
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates inputted comparison.
 #
@@ -1095,7 +1316,7 @@ def matchComparison(request,vals={}):
     object.compare = object.getComparison(viewer).toJSON()
 
     vals['item'] = object
-    html = ajaxRender('deployment/center/match/match-new-box.html',vals,request)
+    html = ajaxRender('deployment/pages/match/match-new-box.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1140,14 +1361,14 @@ def ajaxGetFeed(request, vals={}):
     vals['display']=feed_display
 
     if feed_display == 'L':
-        html = ajaxRender('deployment/center/feed/linear_helper.html', vals, request)
+        html = ajaxRender('deployment/pages/feed/linear_helper.html', vals, request)
         to_return = {'html':html, 'num':len(content)}
     else:
         cards = []
         for x in items:
             vals['item'] = x[0].downcast()
             vals['my_vote'] = x[1]
-            card =  ajaxRender('deployment/center/feed/pinterest.html', vals, request)
+            card =  ajaxRender('deployment/pages/feed/pinterest.html', vals, request)
             cards.append(card)
         to_return = {'cards':json.dumps(cards), 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
@@ -1419,7 +1640,7 @@ def matchSection(request, vals={}):
 
         # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-tryptic-template.html', vals, request)
+        html = ajaxRender('deployment/pages/match/match-tryptic-template.html', vals, request)
 
     elif section == 'social':
         user = vals['viewer']
@@ -1441,7 +1662,7 @@ def matchSection(request, vals={}):
         vals['networks'] = [network,congress,lovegov]
 
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
+        html = ajaxRender('deployment/pages/match/match-social-network.html', vals, request)
 
     elif section == 'cause':
         user = vals['viewer']
@@ -1463,7 +1684,7 @@ def matchSection(request, vals={}):
         vals['networks'] = [network,congress,lovegov]
 
         vals['userProfile'] = user
-        html = ajaxRender('deployment/center/match/match-social-network.html', vals, request)
+        html = ajaxRender('deployment/pages/match/match-social-network.html', vals, request)
 
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1612,7 +1833,7 @@ def getHistogramMembers(request, vals={}):
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('deployment/pages/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
@@ -1626,14 +1847,14 @@ def getAllGroupMembers(request, vals={}):
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('deployment/snippets/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('deployment/pages/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
 
 def likeThis(request, vals={}):
 
-    html = ajaxRender('deployment/pieces/like_this.html', vals, request)
+    html = ajaxRender('deployment/pages/feed/like_this.html', vals, request)
     to_return = {'html':html}
 
     return HttpResponse(json.dumps(to_return))
@@ -1701,75 +1922,38 @@ def getAggregateNotificationUsers(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
-########################################################################################################################
-########################################################################################################################
-#
-#       Switcher for the actual action.
-#
-########################################################################################################################
-########################################################################################################################
-#-----------------------------------------------------------------------------------------------------------------------
-# Dictionary of callabe functions.
-#-----------------------------------------------------------------------------------------------------------------------
-actions = { 'getLinkInfo': getLinkInfo,
-            'postCongressmen': getCongressmen,
-            'loadGroupUsers': loadGroupUsers,
-            'loadHistogram': loadHistogram,
-            'searchAutoComplete': searchAutoComplete,
-            'postcomment': comment,
-            'create': create,
-            'invite': invite,
-            'editaccount': editAccount,
-            'editprofile': editProfile,
-            'editcontent': editContent,
-            'delete': delete,
-            'setprivacy': setPrivacy,
-            'followprivacy': setFollowPrivacy,
-            'vote': vote,
-            'hoverComparison': hoverComparison,
-            'sign': sign,
-            'finalize': finalize,
-            'userfollow': userFollowRequest,
-            'followresponse': userFollowResponse,
-            'stopfollow': userFollowStop,
-            'answer': answer,
-            'joingroup': joinGroupRequest,
-            'joinresponse': joinGroupResponse,
-            'groupinviteresponse': groupInviteResponse,
-            'leavegroup': leaveGroup,
-            'matchComparison': matchComparison,
-            'posttogroup': posttogroup,
-            'updateCompare': updateCompare,
-            'viewCompare': viewCompare,
-            'answerWeb': answerWeb,
-            'feedback': feedback,
-            'updateGroupView': updateGroupView,
-            'ajaxThread': ajaxThread,
-            'getnotifications': getNotifications,
-            'getuseractions': getUserActions,
-            'getusergroups': getUserGroups,
-            'getgroupactions': getGroupActions,
-            'getgroupmembers': getGroupMembers,
-            'ajaxGetFeed': ajaxGetFeed,
-            'matchSection': matchSection,
-            'saveFilter': saveFilter,
-            'deleteFilter': deleteFilter,
-            'getFilter': getFilter,
-            'matchSection': matchSection,
-            'shareContent': shareContent,
-            'blogAction': blogAction,
-            'flag': flag,
-            'updateHistogram': updateHistogram,
-            'getHistogramMembers': getHistogramMembers,
-            'getAllGroupMembers': getAllGroupMembers,
-            'support': support,
-            'messageRep': messageRep,
-            'submitAddress':submitAddress,
-            'likeThis':likeThis,
-            'changeContentPrivacy': changeContentPrivacy,
-            'updatePage': updatePage,
-            'getaggregatenotificationusers': getAggregateNotificationUsers
-        }
+def getSigners(request, vals={}):
+    html = ''
+    viewer = vals['viewer']
+    error = ''
+    petition_id = request.GET.get('petition_id')
+    if petition_id:
+        if Petition.lg.get_or_none(id=petition_id):
+            petition = Petition.lg.get_or_none(id=petition_id)
+            vals['signers'] = petition.signers.all()
+            html = ajaxRender('deployment/snippets/petition-signers.html', vals, request)
+        else:
+            error = 'The given petition identifier is invalid.'
+    else:
+        error = 'No petition identifier given.'
+    to_return = {'html':html, 'error': error}
+    response = HttpResponse(json.dumps(to_return))
+    response.status_code = 500 if error else 200
+    return response
+
+def setFirstLoginStage(request, vals={}):
+    viewer = vals['viewer']
+    stage = request.POST.get('stage')
+    error = ''
+    if stage:
+        viewer.first_login = stage
+        viewer.save()
+    else:
+        error = 'No first login stage given.'
+    to_return = {'error': error}
+    response = HttpResponse(json.dumps(to_return))
+    response.status_code = 500 if error else 200
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
@@ -1781,9 +1965,13 @@ def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
         vals['viewer'] = getUserProfile(request)
-    if not request.REQUEST.__contains__('action'):
-        return HttpResponse('No action specified.')
+    if not 'action' in request.REQUEST:
+        return HttpResponseBadRequest('No action specified.')
     action = request.REQUEST['action']
-    if action not in actions:
-        return HttpResponse('The specified action ("%s") is not valid.' % (action))
-    return actions[action](request, vals)
+    if action not in ACTIONS:
+        return HttpResponseBadRequest('The specified action ("%s") is not valid.' % (action))
+    elif action in vals['prohibited_actions']:
+        return HttpResponseForbidden("You are not permitted to perform the action \"%s\"." % action)
+    else:
+        action_func = action + '(request, vals)'
+        return eval(action_func)

@@ -3,21 +3,21 @@ from lovegov import settings
 
 LOCAL = True
 DEBUG = True
+SHOW_TOOLBAR = True
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.django.db.backends.dummy
+        'ENGINE':   'django.db.backends.sqlite3',
         'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
-        'USER':      '',   # Not used with sqlite3.
-        'PASSWORD':  '',       # Not used with sqlite3.
-        'HOST':     '',      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT':    '',        # Set to empty string for default. Not used with sqlite3.
+        'USER':      '',
+        'PASSWORD':  '',
+        'HOST':     '',
+        'PORT':    '',
     },
 }
-
 
 STATIC_ROOT = settings.STATIC_ROOT
 
@@ -32,7 +32,7 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 
@@ -99,8 +99,18 @@ HAYSTACK_CONNECTIONS = settings.HAYSTACK_CONNECTIONS
 #
 ########################################################################################################################
 
+# for django-debug-toolbar
+def show_toolbar(request):
+    from lovegov.modernpolitics.helpers import getUserProfile
+    if DEBUG and SHOW_TOOLBAR:
+        user_prof = getUserProfile(request)
+        if user_prof:
+            if user_prof.developer:
+                return True
+    return False
+
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': settings.show_toolbar,
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar,
     }
 
 ########################################################################################################################
@@ -123,12 +133,6 @@ CACHES = {
 # EMAIL DURING DEVELOPMENT
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/log/emails'
-
-# EMAIL
-# EMAIL_HOST = 'smtpout.secureserver.net'
-# EMAIL_HOST_USER = 'team@lovegov.com'
-# EMAIL_HOST_PASSWORD = 'freeGOV'
-# EMAIL_PORT = '25'
 
 ########################################################################################################################
 #    misc settings

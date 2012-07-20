@@ -16,7 +16,9 @@ function rebindFunction()
     bindInlineEdits();
     loadShareButton();
     bindChangeContentPrivacy();
+    bindTutorialLink();
     showFooter();                                               // By default, show footer. Hide footer in indvidual cases.
+    bindLinks();
     switch (rebind)
     {
         case 'question':                                        // /question/#
@@ -66,6 +68,9 @@ function rebindFunction()
             loadGroup();
             hideFooter();
             break;
+        case 'groupedit':
+            loadGroupEdit();
+            break;
         case 'account':                                         // /account
             loadAccount();
             break;
@@ -74,6 +79,10 @@ function rebindFunction()
             break;
         case 'friends':
             loadHistogram();
+            break;
+        case 'login':                                       // login page
+            loadSignInDialogue();
+            loadLogin();
             break;
         default:
             break
@@ -111,6 +120,14 @@ function bindLinks() {
 function selectHeaderLink(div) {
     $(".header_link").removeClass("clicked");
     div.addClass("clicked");
+}
+
+function bindTutorialLink() {
+    $('.reactivate-first-login').bindOnce('click', function() {
+        setFirstLoginStage(0, function() {
+            window.location = '/match';
+        });
+    });
 }
 
 /***********************************************************************************************************************
@@ -207,10 +224,10 @@ function userFollow(event,div,follow)
 {
     event.preventDefault();
     div.unbind();
-    var action = 'userfollow';
+    var action = 'userFollowRequest';
     if( !follow )
     {
-        action = 'stopfollow';
+        action = 'userFollowStop';
     }
     ajaxPost({
             data: {
@@ -266,10 +283,10 @@ function groupFollow(event,div,follow)
 {
     event.preventDefault();
     div.unbind();
-    var action = 'joingroup';
+    var action = 'joinGroupRequest';
     if( !follow )
     {
-        action = 'leavegroup';
+        action = 'leaveGroup';
     }
     ajaxPost({
             data: {
@@ -327,7 +344,7 @@ function userFollowResponse(event,response,div)
     var follow_id = div.siblings(".user_follow_id").val();
     ajaxPost({
             data: {
-                'action':'followresponse',
+                'action':'followResponseResponse',
                 'p_id': follow_id,
                 'response': response
             },
@@ -350,7 +367,7 @@ function groupInviteResponse(event,response,div)
     var g_id = div.siblings(".group-join-id").val();
     ajaxPost({
             data: {
-                'action':'groupinviteresponse',
+                'action':'groupInviteResponse',
                 'g_id': g_id,
                 'response': response
             },
@@ -424,7 +441,7 @@ function setFollowPrivacy(event,private_follow,div)
 function editUserProfile(info,edit_div)
 {
     var prof_data = info;
-    prof_data.action = 'editprofile';
+    prof_data.action = 'editProfile';
 
     ajaxPost({
         'data': prof_data,
@@ -448,7 +465,7 @@ function editUserProfile(info,edit_div)
 function editContent(c_id,info,edit_div)
 {
     var content_data = info;
-    content_data.action = 'editcontent';
+    content_data.action = 'editContent';
     content_data.c_id = c_id;
 
     ajaxPost({
@@ -559,10 +576,10 @@ function loadHoverComparison()
             {
                 hoverClearOK = true;
                 hoverTimer = setTimeout
-                (
-                    function() { clearHover(); },
-                    300
-                );
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
             }
         );
 
@@ -620,10 +637,10 @@ function loadHoverComparison()
             function(event)
             {
                 hoverTimer = setTimeout
-                (
-                    function(){ clearHover(); },
-                    1000
-                );
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
             }
         );
 }
@@ -800,19 +817,81 @@ function ajaxLink(div, loadimg)
 function ajaxPost(dict) {
     var data = dict['data'];
     var success_fun = dict['success'];
-    var error_fun = dict['error'];
-    if (error_fun == null) {
-        error_fun = function(jqXHR, textStatus, errorThrown) { $('body').html(jqXHR.responseText); };
-    }
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if(jqXHR.status==403) {
+            launch403Modal(jqXHR.responseText);
+            return;
+        }
+        var superError = dict['error'];
+        if (superError) {
+            superError()
+        } else {
+            $("body").html(jqXHR.responseText);
+        }
+    };
     data['url'] = window.location.href;
     $.ajax({
         url:'/action/',
         type: 'POST',
         data: data,
         success: success_fun,
-        error: error_fun
+        error: function(jqXHR, textStatus, errorThrown) {
+            error_fun(jqXHR, textStatus, errorThrown);
+        }
     });
 }
+
+function launch403Modal(msg) {
+    launchModal('<h2>Forbidden!</h2> <p> Your IP address has been logged.</p> ' +
+        '<p> not really, but you need to log in to perform that action.</p>' +
+        '<p><a href="/login">Sign in or register!</a></p>');
+}
+
+
+function launchModal(content) {
+    $('div.overdiv').show();
+    var modal = $('div.modal');
+    modal.children("#general_modal_content").html(content);
+    var width = modal.outerWidth();
+    var height = modal.outerHeight();
+    modal
+        .css("margin-top", -height/2)
+        .css("margin-left", -width/2)
+        .css("display", "inline-block");
+    bindCloseClick(modal);
+    return modal;
+}
+
+function launchFirstLoginModal(content) {
+    var modal = $('.first-login-modal');
+    modal.children('div.first-login-content').html(content);
+    var width = modal.outerWidth();
+    var height = modal.outerHeight();
+    modal
+        .css("margin-top", -height/2)
+        .css("margin-left", -width/2);
+    setTimeout(function() {modal.fadeIn(1500)}, 1500);
+}
+
+
+
+// Binds an overdiv click to hide a particular element
+// Unbinds when the click occurs
+function bindCloseClick(element) {
+    var overdiv = $('div.overdiv');
+    overdiv.bindOnce('click', function(e) {
+        element.hide();
+        overdiv.hide();
+        overdiv.off('click');
+    });
+
+    element.children('.general_modal_close').bindOnce('click.general_close' , function(e) {
+        element.hide();
+        overdiv.hide();
+        overdiv.off('click');
+    });
+}
+
 
 // ajax load home page
 function ajaxReload(theurl, loadimg)
@@ -924,7 +1003,7 @@ function loadHeader()
                 pos.top = dropdown.offset().top;
                 $('#notifications-dropdown').offset(pos);
                 ajaxPost({
-                    'data': {'action':'getnotifications',
+                    'data': {'action':'getNotifications',
                         'dropdown':'true'},
                     success: function(data)
                     {
@@ -999,8 +1078,8 @@ function loadHeader()
         event.stopPropagation();
     });
 
-    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
-    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
+    var pubMessage = "You are in PUBLIC mode. Comments and content you create while in this mode will be attributed to you. Click to change to Anonymous mode.";
+    var priMessage = "You are in ANONYMOUS mode. Comments and content you create while in this mode will be attributed to \"Anonymous\". Click to change to Public mode.";
 
 
     if ($.cookie('privacy'))
@@ -1225,6 +1304,46 @@ function loadShareButton() {
         $('div.shareModal').hide();
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *     ~Invite Button
+ *
+ **********************************************************************************************************************/
+function loadInviteButton() {
+    $('#group_invite_button').bindOnce('click.group_invite', function(event) {
+        event.preventDefault();
+        $('div.overdiv').fadeToggle("fast");
+        $('div.invite_modal').fadeToggle("fast");
+    });
+
+    $('div.overdiv').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.invite_modal').hide();
+    });
+
+    $('div.invite_modal_close').bindOnce('click.hide_overdiv', function() {
+        $('div.overdiv').hide();
+        $('div.invite_modal').hide();
+    });
+
+    $('#invite_submit_content').bindOnce('click.invite_submit', (function(e) {
+        e.preventDefault();
+        var g_id = $("#group_invite_button").data('g_id');
+        var invitees = $('.invite_select').select2("val");
+        if (invitees!='') {
+            ajaxPost({
+                data: {'action': 'groupInvite', 'invitees': JSON.stringify(invitees), 'g_id':g_id},
+                success: function(data)
+                {
+                    $('#invite_submit_message').html('Invite Sent!');
+                    $('#invite_submit_message').fadeIn(200);
+                    window.setTimeout("$('div.overdiv').fadeOut(600); $('div.invite_modal').fadeOut(600);",1000);
+                }
+            });
+        }
+    }) );
+}
 /***********************************************************************************************************************
  *
  *     ~RightSidebar
@@ -1419,7 +1538,7 @@ function loadThread()
             $(this).children(".comment-textarea").val("");
             var content_id = $("#content_id").val();
             ajaxPost({
-                'data': {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                'data': {'action':'comment','c_id': content_id,'comment':comment_text},
                 'success': function(data) {
                     ajaxThread();
                     incNumComments();
@@ -1494,7 +1613,7 @@ function loadThread()
         {
             var content_id = $(this).children(".hidden_id").val();
             ajaxPost({
-                data: {'action':'postcomment','c_id': content_id,'comment':comment_text},
+                data: {'action':'comment','c_id': content_id,'comment':comment_text},
                 success: function(data)
                 {
                     ajaxThread();
@@ -1583,56 +1702,6 @@ function loadUserList()
         );
 }
 
-function loadGoogleMap()
-{
-    function createDistrictsOverlay(outlines_only, opacity, state, district)
-    {
-        return {
-            getTileUrl: function(coord, zoom)
-            {
-                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
-                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
-                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
-                    + (!district ? "%25"
-                    : "/cd/110/" + district)
-                    : "")
-                    + "&FORMAT=image/png";
-            },
-            tileSize: new google.maps.Size(256,256),
-            minZoom: 2,
-            maxZoom: 28,
-            opacity: opacity,
-            isPng: true
-        };
-    }
-
-    var map;
-
-    function initialize()
-    {
-        var myOptions =
-        {
-            zoom: 10,
-            center: new google.maps.LatLng(match_latitude, match_longtitude),
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            panControl: false,
-            zoomControl: true,
-            mapTypeControl: false,
-            scaleControl: true,
-            streetViewControl: false
-        };
-        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
-
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
-        map.overlayMapTypes.insertAt(0, overlayWMS);
-
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
-        map.overlayMapTypes.insertAt(0, overlayWMS);
-    }
-
-    initialize();
-
-}
 /***********************************************************************************************************************
  *
  *      ~About
@@ -1788,6 +1857,10 @@ function unbindNotification()
     $('.notification-user-follow').unbind();
     $('.notification-follow-response-y').unbind();
     $(".notificatton-follow-response-n").unbind();
+    $('.notification-invite-response-y').unbind();
+    $(".notificatton-invite-response-n").unbind();
+    $('.notification-group-response-y').unbind();
+    $(".notificatton-group-response-n").unbind();
 }
 
 function loadNotification()
@@ -1800,7 +1873,7 @@ function loadNotification()
         wrapper.fadeOut(600);
         ajaxPost({
                 data: {
-                    'action':'userfollow',
+                    'action':'userFollowRequest',
                     'p_id': follow_id
                 },
                 success: function(data)
@@ -1832,14 +1905,28 @@ function loadNotification()
     $(".notification_group_response_y").click( function(event) {
         var wrapper = $(this).parent(".notification_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"Y",$(this));
+        groupFollowResponse(event,"Y",wrapper);
         wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
     });
 
     $(".notification_group_response_n").click( function(event) {
         var wrapper = $(this).parent(".notification_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"N",$(this));
+        groupFollowResponse(event,"N",wrapper);
+        wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
+    });
+
+    $(".notification_invite_response_y").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
+        groupInviteResponse(event,"Y",wrapper);
+        wrapper.siblings(".notification_text").children('.notification_append_y').fadeIn(600);
+    });
+
+    $(".notification_invite_response_n").click( function(event) {
+        var wrapper = $(this).parent(".notification_buttons");
+        wrapper.fadeOut(600);
+        groupInviteResponse(event,"N",wrapper);
         wrapper.siblings(".notification_text").children('.notification_append_n').fadeIn(600);
     });
 
@@ -1849,7 +1936,7 @@ function loadNotification()
             event.preventDefault();
             var n_id = $(this).data('n_id');
             ajaxPost({
-                'data': {'action':'getaggregatenotificationusers',
+                'data': {'action':'getAggregateNotificationUsers',
                     'n_id': n_id },
                 success: function(data)
                 {
@@ -1931,7 +2018,7 @@ function getMoreNotifications()
         prof_more_notifications = false;
         var num_notifications = $("#num_notifications").val();
         ajaxPost({
-            'data': {'action':'getnotifications',
+            'data': {'action':'getNotifications',
                 'num_notifications':num_notifications },
             success: function(data)
             {
@@ -1973,7 +2060,7 @@ function getMoreUserActions()
         prof_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
-            'data': {'action':'getuseractions',
+            'data': {'action':'getUserActions',
                 'num_actions':num_actions,
                 'p_id':p_id },
             success: function(data)
@@ -2014,7 +2101,7 @@ function getMoreGroups()
         prof_more_groups = false;
         var num_groups = $("#num_groups").val();
         ajaxPost({
-            'data': {'action':'getusergroups',
+            'data': {'action':'getUserGroups',
                 'num_groups':num_groups,
                 'p_id':p_id },
             success: function(data)
@@ -2162,6 +2249,29 @@ function loadProfile()
         event.preventDefault();
         $(this).parents(".message-wrapper").hide();
     });
+
+    $('div.profile-img').bindOnce("click.image", function(event) {
+        event.preventDefault();
+        $('div.overdiv').show();
+        if ($('img.profile-img-actual-size').length==0) {
+            var img_to_show = $('div.profile-img img').data('original_image');
+            var img = $("<img />").attr('src', img_to_show).attr('class', 'profile-img-actual-size')
+                .load(function() {
+                    if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+                        alert('broken image!');
+                    } else {
+                        $("div.profile-img-modal").append(img);
+                    }
+                });
+
+        }
+        $('div.profile-img-modal').css('background-image', img_to_show).show();
+
+    });
+
+    $('div.overdiv').click(function(event) {
+        $('div.profile-img-modal').hide();
+    });
 }
 
 
@@ -2275,6 +2385,33 @@ function loadPetition()
         });
     });
 
+    $('div.see-all-signers').bindOnce('click', function(e) {
+        e.preventDefault();
+        $('div.overdiv').fadeToggle();
+        $('div.petition-signers-modal').fadeToggle();
+        var petition_id = $('div.petition-signers-modal').data('petition_id');
+        alert('clicky '+petition_id);
+        ajaxPost({
+            data: {'action': 'getSigners', 'petition2_id': petition_id},
+            success: function(data) {
+                alert(data);
+                var returned = eval('(' + data + ')');
+                alert(returned['html']);
+            },
+            error: function(data) {
+                var returned = eval('(' + data + ')');
+                alert("error: "+returned['error']);
+            }
+        });
+    });
+
+
+    $('div.overdiv').bindOnce('click.hideSigners', function(e) {
+        e.preventDefault();
+        $('div.overdiv').hide();
+        $('div.petition-signers-modal').hide();
+    })
+
 }
 
 /***********************************************************************************************************************
@@ -2368,15 +2505,37 @@ function bindGroupRequestsButton()
     });
 }
 
-function groupFollowResponse(event,response,div,g_id)
+function groupFollowResponse(event,response,div)
 {
     event.preventDefault();
-    var follow_id = div.siblings(".follow-id").val();
-    var g_id = div.siblings(".group-id").val();
+    var follow_id = div.data("follow_id");
+    var g_id = div.data("g_id");
     ajaxPost({
             data: {
-                'action':'joinresponse',
+                'action':'joinGroupResponse',
                 'follow_id': follow_id,
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                //alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
+function groupInviteResponse(event,response,div)
+{
+    event.preventDefault();
+    var g_id = div.data("g_id");
+    ajaxPost({
+            data: {
+                'action':'groupInviteResponse',
                 'g_id': g_id,
                 'response': response
             },
@@ -2402,7 +2561,7 @@ function getMoreGroupActions()
         group_more_actions = false;
         var num_actions = $("#num_actions").val();
         ajaxPost({
-            'data': {'action':'getgroupactions',
+            'data': {'action':'getGroupActions',
                 'num_actions':num_actions,
                 'g_id':g_id },
             success: function(data)
@@ -2443,7 +2602,7 @@ function getMoreGroupMembers()
         group_more_members = false;
         var num_members = $("#num_members").val();
         ajaxPost({
-            'data': {'action':'getgroupmembers',
+            'data': {'action':'getGroupMembers',
                 'num_members':num_members,
                 'g_id':g_id },
             success: function(data)
@@ -2529,20 +2688,20 @@ function loadMoreUsers(event, replace)
 
 function loadGroup()
 {
-
+    loadInviteButton();
     bindGroupRequestsButton();
 
     $(".group_response_y").click( function(event) {
         var wrapper = $(this).parent(".group_request_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"Y",$(this),g_id);
+        groupFollowResponse(event,"Y",wrapper);
         wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
     });
 
     $(".group-response-n").click( function(event) {
         var wrapper = $(this).parent(".group_request_buttons");
         wrapper.fadeOut(600);
-        groupFollowResponse(event,"N",$(this),g_id);
+        groupFollowResponse(event,"N",wrapper);
         wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
     });
 
@@ -2627,6 +2786,132 @@ function loadGroup()
 
 /***********************************************************************************************************************
  *
+ *      ~GroupEdit
+ *
+ **********************************************************************************************************************/
+
+
+function loadGroupEdit()
+{
+    bindGroupPrivacyRadio();
+    bindScaleRadio();
+    bindRemoveAdmin();
+    selectPrivacyRadio();
+    selectScaleRadio();
+
+    var pointer = $('.group_edit_pointer');
+    var pencil = $('.group_edit_icon').detach();
+
+    $('.group_edit_input').hover(
+        function() { $(this).parent().next().append(pencil); },
+        function() { pencil = pencil.detach(); }
+    );
+
+    $('.append_pointer').bindOnce("click.append_pointer" , function(event)
+    {
+        $('.append_pointer').removeClass("account-button-selected");
+        $(this).addClass("account-button-selected");
+        $(this).prepend(pointer);
+    });
+
+    $('.group_edit_button').bindOnce("click.group_info_edit" , function(event)
+    {
+        $('.admin_edit_tab').hide();
+        $('.group_edit_tab').show();
+    });
+
+    $('.admin_edit_button').bindOnce("click.group_admin_edit" , function(event)
+    {
+        $('.group_edit_tab').hide();
+        $('.admin_edit_tab').show();
+    });
+
+    $('#edit_admin_submit').bindOnce('click.edit_admin_submit', (function(e) {
+        e.preventDefault();
+        var g_id = $("#edit_admin_submit").data('g_id');
+        var new_admins = $('.admin_select').select2("val");
+
+        if (new_admins!='') {
+            ajaxPost({
+                data: {'action': 'addAdmins', 'admins': JSON.stringify(new_admins), 'g_id':g_id},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    $('#edit_admin_submit_message').html('Administrator Added');
+                    $('#edit_admin_submit_message').show();
+                    $('#edit_admin_submit_message').fadeOut(3000);
+                    $('#admin_remove_container').hide();
+                    $('#admin_remove_container').html(returned.html);
+                    $('#admin_remove_container').fadeIn(600);
+                    bindRemoveAdmin();
+                }
+            });
+        }
+    }));
+}
+
+function bindRemoveAdmin()
+{
+    $('.remove_admin').bindOnce('click.remove_admin', (function(e) {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id ,function(data)
+        {
+            $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
+        });
+    }));
+
+    $('.remove_admin_self').bindOnce('click.remove_admin', (function(e) {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id ,function(data)
+        {
+            window.location = '/group/' + g_id + '/';
+        });
+    }));
+}
+
+function removeAdmin(admin_id,g_id,success)
+{
+    ajaxPost({
+        data:
+        {
+            'action': 'removeAdmin',
+            'admin_id': admin_id,
+            'g_id': g_id
+        },
+        success: success,
+        error: function(data)
+        {
+            //alert(data);
+        }
+    })
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+
+
+/***********************************************************************************************************************
+ *
  *      ~NewFeed
  *
  **********************************************************************************************************************/
@@ -2701,6 +2986,10 @@ function getFeed(num)
         feed_replace = false;
     }
 
+    setTimeout(function() {
+            $(".feed_loading").show();
+    }, 100);
+
     ajaxPost({
         data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
             'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
@@ -2708,6 +2997,10 @@ function getFeed(num)
             'feed_start':feed_start, 'feed_end':feed_end
         },
         success: function(data) {
+
+            $(".feed_loading").hide();
+            scrollLoadLockout=false;
+
             var returned = eval('(' + data + ')');
 
             feed_metadata.feed_start = feed_start + returned.num;
@@ -3002,8 +3295,7 @@ function scrollFeed() {
     if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
         if (scrollLoadLockout==false) {
             getFeed(-1);
-            scrollLoadLockout=true;
-            setTimeout(function() { scrollLoadLockout=false}, 500);
+            scrollLoadLockout = true;
         }
     }
 }
@@ -3262,6 +3554,7 @@ function loadNewFeed() {
 
     bindCreateButton();
     loadCreate();
+    bindCloseFirstLoginModal();
 
 }
 
@@ -3605,48 +3898,54 @@ function postNews()
 
 function loadCreate()
 {
-    $('#create_petition_button').click(function()
-    {
-        $('.create_content_div').hide();
-        $('#create_petition_div').show();
-    });
+    $('#create_petition_button').bindOnce('click.create',
+        function()
+        {
+            $('.create_content_div').hide();
+            $('#create_petition_div').show();
+        });
 
-    $('#create_news_button').click(function()
-    {
-        $('.create_content_div').hide();
-        $('#create_news_div').show();
-    });
+    $('#create_news_button').bindOnce('click.create',
+        function()
+        {
+            $('.create_content_div').hide();
+            $('#create_news_div').show();
+        });
 
-    $('#create_group_button').click(function()
-    {
-        $('.create_content_div').hide();
-        $('#create_group_div').show();
-    });
+    $('#create_group_button').bindOnce('click.create',
+        function()
+        {
+            $('.create_content_div').hide();
+            $('#create_group_div').show();
+        });
 
     bindGroupPrivacyRadio();
     bindScaleRadio();
 
-    $('#submit_group_button').click(
+    $('#submit_group_button').bindOnce('click.create',
         function(event)
         {
-            createGroupValidation(event);
+            event.preventDefault();
+            lockoutFunction(createGroupValidation, [event]);
         }
     );
 
-    $('#submit_petition_button').click(
+
+    $('#submit_petition_button').bindOnce('click.create',
         function(event)
         {
-            createPetitionValidation(event);
+            event.preventDefault();
+            lockoutFunction(createPetitionValidation, [event]);
         }
     );
 
-    $('#submit_news_button').click(
+    $('#submit_news_button').bindOnce('click.create',
         function(event)
         {
-            createNewsValidation( event );
+            event.preventDefault();
+            lockoutFunction(createNewsValidation, [event]);
         }
     );
-
 
     var timeout;
     var delay = 750;
@@ -3753,6 +4052,17 @@ function loadCreate()
         $("#errors-full_text").empty();
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
+    }
+}
+
+var my_lockout_boolean = false;
+function lockoutFunction(fun, args) {
+    if (!my_lockout_boolean) {
+        my_lockout_boolean = true;
+        fun.apply(undefined, args);
+        setTimeout(function() {
+            my_lockout_boolean = false;
+        }, 6000);
     }
 }
 
@@ -3929,10 +4239,6 @@ function updateHistogram(recursive) {
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
                 }
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
             }
         }
     );
@@ -4092,6 +4398,11 @@ function getAllGroupMembers(start, num, g_id) {
  **********************************************************************************************************************/
 var match_hover_off = true;
 var match_autoswitch;
+var match_latitude;
+var match_longitude;
+var match_state;
+var match_district;
+var match_location = false;
 function loadNewMatch() {
 
     swapFeatured(match_current_section);
@@ -4103,14 +4414,15 @@ function loadNewMatch() {
         function() {
         });
 
-    clearInterval(match_autoswitch);
-    match_autoswitch= setInterval(function()
-    {
-        if (match_hover_off) {
-            //swapFeatured("right");
-        }
+    /*
+     clearInterval(match_autoswitch);
+     match_autoswitch= setInterval(function()
+     {
+     if (match_hover_off) {
+     swapFeatured("right");
+     }
 
-    }, 2000);
+     }, 10000); */
 
     $('body').bindOnce("click.auto", function(event) {
         clearInterval(match_autoswitch);
@@ -4140,6 +4452,13 @@ function loadNewMatch() {
         event.preventDefault();
         submitAddress($(this).parents(".address-box"));
     });
+
+    $('div.first-login-modal div.modal-close').bindOnce('click', function() {
+        alert('clicky');
+        $('div.first-login-modal').hide();
+    });
+
+    bindCloseFirstLoginModal();
 }
 
 function submitAddress(wrapper) {
@@ -4175,6 +4494,27 @@ function submitAddress(wrapper) {
     });
 }
 
+function submitZip(zip, successCallback, errorCallback) {
+    ajaxPost({
+        data: {
+            'action': 'submitAddress',
+            'zip': zip
+        },
+        success: function(data)
+        {
+            if (data=='success') {
+                successCallback();
+            } else {
+                errorCallback(data);
+            }
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
+        }
+    });
+}
+
 var match_current_section;
 function swapFeatured(direction) {
     if (direction=='right') {
@@ -4192,18 +4532,14 @@ function swapFeatured(direction) {
     var next = getSection(match_next_section);
     current.hide();
     next.show();
-    if (match_next_section == 3) { loadGoogleMap(); }
     var current_circle = getCircle(match_current_section);
     var next_circle = getCircle(match_next_section);
     current_circle.removeClass("circle-div-red").addClass("circle-div-gray");
     next_circle.removeClass("circle-div-gray").addClass("circle-div-red");
     match_current_section = match_next_section;
-    var sections = {0:'presidential',
-        1:'senate',
-        2:'social',
-        3:'representatives'};
-    var url = sections[match_current_section];
-    History.pushState( {k:1}, "LoveGov: Beta", '/match/' + url + '/');
+    if ((match_next_section==3) && match_location) {
+        loadGoogleMap();
+    }
 }
 
 function nextSection() {
@@ -4258,6 +4594,64 @@ function swapInHover(div) {
     );
 }
 
+function loadGoogleMap()
+{
+    function createDistrictsOverlay(outlines_only, opacity, state, district)
+    {
+        return {
+            getTileUrl: function(coord, zoom)
+            {
+                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
+                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
+                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
+                    + (!district ? "%25"
+                    : "/cd/110/" + district)
+                    : "")
+                    + "&FORMAT=image/png";
+            },
+            tileSize: new google.maps.Size(256,256),
+            minZoom: 2,
+            maxZoom: 28,
+            opacity: opacity,
+            isPng: true
+        };
+    }
+
+    var map;
+
+    function initialize()
+    {
+        var myOptions =
+        {
+            zoom: 10,
+            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: false
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+    }
+
+    initialize();
+
+}
+
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Content Privacy
+ *
+ **********************************************************************************************************************/
 
 function bindChangeContentPrivacy() {
 
@@ -4288,10 +4682,117 @@ function bindChangeContentPrivacy() {
     });
 }
 
+/***********************************************************************************************************************
+ *
+ *      ~First login experience
+ *
+ **********************************************************************************************************************/
+
+function setFirstLoginStage(stage, success) {
+    success = typeof success !== 'undefined' ? success : function() {};
+    ajaxPost({
+        data: {action: 'setFirstLoginStage', stage: stage},
+        success: success
+    });
+}
+
+function bindCloseFirstLoginModal() {
+    $('div.first-login-modal div.modal-close').bindOnce('click', function() {
+        $('div.first-login-modal').hide();
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Footer
+ *
+ **********************************************************************************************************************/
+
 function showFooter() {
     $('footer').show();
 }
 
 function hideFooter() {
     $('footer').hide();
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~Sign In Dialogue
+ *
+ **********************************************************************************************************************/
+function loadSignInDialogue() {
+
+    $(".sign-in-input").focusin(function(event) {
+        $(this).val("");
+        $(this).css('color', 'black');
+    });
+    $(".sign-in-input").focusout(function(event) {
+        var entered = $(this).val();
+        if (entered == "") {
+            $(this).val($(this).data('orig'));
+            $(this).css('color', '#adadad');
+        }
+    });
+
+    $(".sign_in_dialogue").bind("clickoutside.menuoff", function(event) {
+        if (event.target.id != "sign_in_button") {
+            $(this).hide();
+        }
+    });
+
+    $(".sign_in_button").click(function(event) {
+        event.preventDefault();
+        $(".sign_in_dialogue").show();
+    });
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~Login page
+ *
+ **********************************************************************************************************************/
+var login_state;
+function loadLogin() {
+    if (login_state == 'login_error') {
+        $(".sign_in_dialogue").show();
+    }
+
+    $(".no_login_link").bindOnce("click.no_login_link", function(e)
+    {
+        e.preventDefault();
+        var target = $(this).data('link');
+
+        $('#modal_browse_anyways_login').bindOnce("click.browse_anyways_modal", function(e)
+        {
+            e.preventDefault();
+            window.location = target;
+        });
+
+        $('.no_login_modal').show();
+        $('.overdiv').show();
+    });
+
+    $('.overdiv').bindOnce('click.no_login_modal_hide' , function(e)
+    {
+        $(this).hide();
+        $('.no_login_modal').hide();
+    });
+
+    $('.no_login_modal_close').bindOnce('click.no_login_modal_close' , function(e)
+    {
+        $('.overdiv').hide();
+        $('.no_login_modal').hide();
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Blog
+ *
+ **********************************************************************************************************************/
+function loadBlog() {
+    alert("blog!");
 }

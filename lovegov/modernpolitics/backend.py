@@ -2,7 +2,7 @@ from lovegov.modernpolitics.actions import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.constants import *
 from lovegov.modernpolitics.defaults import *
-from lovegov.modernpolitics.facebook import *
+from lovegov.modernpolitics.twitter import *
 from lovegov.modernpolitics.feed import *
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.images import *

@@ -351,13 +351,21 @@ div.middle-right
 
     div#qaweb-title
     {
-      @include rounded-bottom(10px);
+      @include rounded-bottom(18px);
       position:relative;
       background-color: $gray;
       padding-top:10px;
       padding-bottom:2px;
       @include h5;
+      z-index:-1;
       color: white;
+    }
+  }
+  div.matching:hover {
+    border-color:$black;
+    cursor:pointer;
+    div#qaweb-title {
+      border-color:$black;
     }
   }
 }
@@ -368,6 +376,7 @@ div.followers-modal
   min-height: 300px;
   border:1px solid $red;
   position: absolute;
+  top: 100px;
   @include modal;
   width: 60%;
   margin-left: 20%;
@@ -403,4 +412,13 @@ div.followers-modal
   }
 }
 
-
+div.profile-img-modal {
+  @include modal;
+  position: fixed;
+  top: 100px;
+  $width: 50px;
+  display: none;
+  min-height: 50px;
+  min-width: $width;
+  left: 50%;
+}

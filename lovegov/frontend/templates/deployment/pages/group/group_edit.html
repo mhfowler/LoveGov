@@ -1,0 +1,152 @@
+{% load thumbnail %}
+<!---- CSS for this file is in account.scss -->
+
+<div class="main-div">
+    <a href="{{ group.get_url }}"><h5>Back to group page</h5></a>
+    <br>
+    <div class="account-left">
+        <h2>Group Settings</h2>
+        <div class="account-button-options">
+            <div class="group_edit_button append_pointer account-button account-button-selected" id="account_basic_information">
+                <div class="account-button-pointer group_edit_pointer">
+                    <div class="border"></div>
+                    <div class="inner"></div>
+                </div>
+                <span>Basic Information</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="admin_edit_button append_pointer account-button" id="account_change_profile">
+                <span>Administrators</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="account-right">
+
+        <div class="group_edit_tab" id="account-basic-information">
+            <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+                <span class="edit-link-large group_edit_icon"></span>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h2>Basic Information</h2></td>
+                    </tr>
+                    <tr>
+                        <td class="left"><h3>avatar</h3></td>
+                        <td>
+                            <div>
+                                {% thumbnail group.getImage "75x75" crop="center" as im %}
+                                    <img src="{{ im.url }}" style="margin-right:20px"/>
+                                {% endthumbnail %}
+                            </div>
+                            <div>{{ uploadform.image }}</div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left"><h3>title</h3></td>
+                        <td><input class="group_edit_input" type="text" value="{{ group.title }}" name="title"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>description</h3>
+                        </td>
+                        <td><textarea class="bio-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>privacy</h3>
+                        </td>
+                        <td id="group_privacy_container" data-group_privacy="{{ group.group_privacy }}">
+                            <div class="create-radio group_privacy_radio">
+                                Open
+                                <input type="radio" class="custom-radio" value='O' name="group_privacy"/>
+                            </div>
+                            <div class="create-radio group_privacy_radio">
+                                Private
+                                <input type="radio" class="custom-radio" value='P' name="group_privacy"/>
+                            </div>
+                            <div class="create-radio group_privacy_radio">
+                                Hidden
+                                <input type="radio" class="custom-radio" value='S' name="group_privacy"/>
+                            </div>
+                            <div class='clear-both'></div>
+                        </td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>scale</h3>
+                        </td>
+                        <td id="group_scale_container" data-group_scale="{{ group.scale }}">
+                            {% include 'deployment/snippets/select_scale.html' %}
+                        </td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td>
+                            <p class="account-message">
+                                {{ group_info_message }}
+                            </p>
+                        </td>
+                        <td style="text-align:right"><input type="submit" action="/action/" class="button-red" value="save changes"/></td>
+                        <td width=20></td>
+                    </tr>
+                </table>
+                <input type="hidden" name="action" value="editGroup"/>
+                <input type="hidden" name="g_id" value="{{ group.id }}"/>
+            </form>
+        </div>
+
+        <div class="admin_edit_tab admin-edit-tab" style="display:none">
+
+            <div class="admin-edit-header"> Edit Administrators for {{ group.title }} </div>
+
+            <div class="admin-remove-container" id="admin_remove_container">
+                {% include "deployment/snippets/admin_list.html" %}
+            </div>
+        
+            <form>
+
+                <div class="admin-select-container">
+                    <select multiple class="admin_select admin-select">
+                        <optgroup label="Members" id="add_members_input">
+                            {% for member in group_members %}
+                                <option class="admin_value" value='{{ member.id }}'>{{ member.get_name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="admin-submit-container">
+                    <a href='' id='edit_admin_submit' class="admin-button" data-g_id="{{ group.id }}">Add Administrator</a>
+                </div>
+
+            </form>
+
+            <div class="edit-admin-submit-message" id="edit_admin_submit_message" ></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Javascript -->
+<script>
+    rebind='groupedit';
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+</script>
+
+
+<!-- End Account -->
+
+

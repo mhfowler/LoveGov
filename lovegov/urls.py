@@ -1,11 +1,11 @@
 # lovegov
 from lovegov.frontend import views, tests, analytics
-from lovegov.modernpolitics import actions, lgwidget
+from lovegov.modernpolitics import actions, lgwidget, api, twitter
 from lovegov.frontend.views import viewWrapper
 from lovegov.frontend import admin_views
 
 # django
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 from django.contrib.admin import site
 from django.contrib import admin
 from django.views.generic.simple import redirect_to
@@ -39,31 +39,41 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
-    # outside of login
-    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                             # login
+    # login page
+    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                            # login
     (r'^login/$', viewWrapper(views.login)),
+    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),                  # password recovery
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm
+    (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),                # need confirmation
+
+    # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),
     (r'^fb/handle/$', viewWrapper(views.facebookHandle)),
-    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
-    (r'^twitter/redirect/$', viewWrapper(views.twitterRedirect)),
-    (r'^twitter/handle/$', viewWrapper(views.twitterHandle)),
 
-    # under construction
+    # twitter authentication
+    (r'^twitter/redirect/$', viewWrapper(twitter.twitterTryLogin)),                      # redirect to twitter, and back to handle
+    (r'^twitter/handle/$', viewWrapper(twitter.twitterHandle)),                          # handles return from twitter
+    (r'^twitter/register/$', viewWrapper(twitter.twitterRegister)),                      # twitter form page
+
+    # misc
+    (r'^logout/$', viewWrapper(views.logout)),
     (r'^underconstruction/$', views.underConstruction),
     (r'^upgrade/$', views.upgrade),
     (r'^continue/$', views.continueAtOwnRisk),
+    (r'^try/$', viewWrapper(views.tryLoveGov)),
+    (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # main pages
     (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
-    (r'^about/$', viewWrapper(views.about, requires_login=True)),                             # about
+    (r'^about/$', viewWrapper(views.about, requires_login=True)),                                                   # about
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
     (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
     (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
     (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                           # match page
     (r'^match/(\w+)/$', viewWrapper(views.newMatch, requires_login=True)),                    # match page
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
+
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail
@@ -72,6 +82,8 @@ urlpatterns += patterns('',
     (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),                   # news detail
     (r'^network/(\S+)/$', viewWrapper(views.network, requires_login=True)),                   # network page
     (r'^network/$', viewWrapper(views.network, requires_login=True)),                         # network page
+    (r'^group/(\d+)/edit/$', viewWrapper(views.groupEdit, requires_login=True)),
+    (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.group, requires_login=True)),
     (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),               # histogram detail of group
     (r'^feed/$', viewWrapper(views.theFeed, requires_login=True)),                            # the feed
@@ -87,7 +99,6 @@ urlpatterns += patterns('',
     (r'^networks/$', viewWrapper(views.networks, requires_login=True)),
 
     # ajax pages
-    (r'^logout/$', viewWrapper(views.logout, requires_login=True)),                            # logout
     (r'^action/$', viewWrapper(actions.actionPOST, requires_login=True)),                      # comment and other actions
     (r'^answer/$', viewWrapper(views.profile, requires_login=True)),                           # comment and other actions
     (r'^fb/action/$', viewWrapper(views.facebookAction, requires_login=True)),
@@ -114,6 +125,9 @@ urlpatterns += patterns('',
     (r'^analytics/activity/$', viewWrapper(analytics.dailyActivity, requires_login=True)),                        # analytics of daily activity
     (r'^analytics/total/(\S+)/$', viewWrapper(analytics.totalActivity, requires_login=True)),                     # analytics of total user activity
     (r'^analytics/total/$', viewWrapper(analytics.totalActivity, requires_login=True)),                           # analytics of all activity
+
+    # api
+    (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
     # REDIRECT
     (r'.*/$', views.redirect),

@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.models import *
 from lovegov.modernpolitics.send_email import *
 
 # django
@@ -25,12 +24,79 @@ import pprint
 
 browser_logger = logging.getLogger('browserlogger')
 
+#-----------------------------------------------------------------------------------------------------------------------
+# gets query set of main topics, pseudo-caching
+#-----------------------------------------------------------------------------------------------------------------------
+def getMainTopics(vals=None):
+    if vals:
+        main_topics = vals.get('main_topics')
+    else:
+        main_topics = None
+    if not main_topics:
+        main_topics = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+        if vals:
+            vals['main_topics'] = main_topics
+    return main_topics
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets query set of main topics
+# gets official questions, pseudo-caching
 #-----------------------------------------------------------------------------------------------------------------------
-def getMainTopics():
-    return Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+def getOfficialQuestions(vals=None):
+    if vals:
+        official_questions = vals.get('official_questions')
+    else:
+        official_questions = None
+    if not official_questions:
+        official_questions = Question.objects.filter(official=True).order_by("-rank")
+        if vals:
+            vals['official_questions'] = official_questions
+    return official_questions
+
+#-----------------------------------------------------------------------------------------------------------------------
+# takes in a query set of questions, and returns a dictionary of the questions organized by topic.
+#-----------------------------------------------------------------------------------------------------------------------
+def getQuestionsDictionary(questions=None, vals=None):
+
+    if not questions:
+        questions = getOfficialQuestions(vals)
+
+    topics = getMainTopics(vals)
+
+    to_return = {'all':questions, 'topics':[]}
+    for t in topics:
+        to_return['topics'].append((t, questions.filter(main_topic_id=t.id)))
+
+    return to_return
+
+#-----------------------------------------------------------------------------------------------------------------------
+# checks if current session is with authenticated and confirmed user. If so, redirect to home page.
+#-----------------------------------------------------------------------------------------------------------------------
+def ifConfirmedRedirect(request):
+    already = getUserProfile(request)
+    if (not already.isAnon()) and already.confirmed:
+        return shortcuts.redirect("/home/")
+    else:
+        return None
+
+#-----------------------------------------------------------------------------------------------------------------------
+# answers all questions randomly for a user
+#-----------------------------------------------------------------------------------------------------------------------
+def randomAnswers(user):
+    questions = Question.objects.filter(official=True)
+    for q in questions:
+        answers = list(q.answers.all())
+        my_answer = random.choice(answers)
+        print "answered: ", my_answer.answer_text
+        response = UserResponse(responder=user,
+            question = q,
+            answer_val = my_answer.value,
+            weight = 5,
+            explanation = "")
+        response.autoSave(creator=user, privacy='PUB')
+        action = Action(privacy='PUB',relationship=response.getCreatedRelationship())
+        action.autoSave()
+    user.last_answered = datetime.datetime.now()
+    user.save()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience method to get a user with inputted name or email
@@ -62,16 +128,21 @@ def checkBrowserCompatible(request):
         if cookie == 'yes':
             return True
 
-    user_agent = request.META['HTTP_USER_AGENT']
-    parsed = httpagentparser.detect(user_agent)
-    browser = parsed.get('browser')
-    if browser:
-        browser_logger.debug('useragent: ' + pprint.pformat(parsed))
-        browser_name = browser.get('name')
-        if browser_name == "Microsoft Internet Explorer":
-            version = float(browser.get('version'))
-            if version < 9.0:
-                to_return = False
+    user_agent = request.META.get('HTTP_USER_AGENT')
+    if user_agent:
+        parsed = httpagentparser.detect(user_agent)
+        browser = parsed.get('browser')
+        if browser:
+            browser_name = browser.get('name')
+            if browser_name == "Microsoft Internet Explorer":
+                version = float(browser.get('version'))
+                if version < 9.0:
+                    to_return = False
+    else:
+        to_return = False
+
+    if not to_return:
+        browser_logger.debug('useragent: ' + user_agent)
 
     return to_return
 
@@ -132,6 +203,11 @@ def getSourcePath(request):
 def getHostHelper(request):
     return 'http://' + request.get_host()
 
+def getRedirectURI(request, redirect):
+    domain = getHostHelper(request)
+    redirect_uri = domain + redirect
+    return redirect_uri
+
 def getEmptyDict():
     return {}
 
@@ -141,18 +217,14 @@ def getEmptyDict():
 def renderToResponseCSRF(template, vals, request):
     """Does stuff that we need to happen on every single template render (such as context processing)."""
     # get privacy mode
-
     try:
         vals['privacy'] = request.COOKIES['privacy']
     except KeyError:
         vals['privacy'] = 'PUB'
-    try:
-        vals['linkfrom'] = request.COOKIES['linkfrom']
-    except KeyError:
-        vals['linkfrom'] = 0
     vals['request'] = request
-    # render template
-    return render_to_response(template, vals, context_instance=RequestContext(request))
+    response = render_to_response(template, vals, context_instance=RequestContext(request))
+    response.set_cookie("fb_state", vals['fb_state'])
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns and object from the url which uniquely identifies it
@@ -181,12 +253,9 @@ def ajaxRender(template, vals, request):
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets a user profile from a request or id.
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserProfile(request=None, control_id=None):
-    #Try and get a ControllingUser
-    if control_id:
-        control = ControllingUser.lg.get_or_none(id=control_id)
-    else:
-        control = ControllingUser.lg.get_or_none(id=request.user.id)
+def getUserProfile(request=None, control_id=None, control=None):
+
+    control = control or getControllingUser(request, control_id)
 
     user_prof = None
     if control:     #Try and get a user profile from that Control if it exists
@@ -194,7 +263,16 @@ def getUserProfile(request=None, control_id=None):
         if not user_prof:
             errors_logger.error("Controlling User: " + str(control.id) + " does not have a userProfile")
 
-    return user_prof #and return it
+    from lovegov.modernpolitics.defaults import getAnonUser
+    user_prof = user_prof or getAnonUser()
+    return user_prof
+
+def getControllingUser(request=None, control_id=None):
+    if control_id:
+        control = ControllingUser.lg.get_or_none(id=control_id)
+    else:
+        control = ControllingUser.lg.get_or_none(id=request.user.id)
+    return control
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets privacy from cookies.

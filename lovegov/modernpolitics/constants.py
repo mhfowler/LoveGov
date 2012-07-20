@@ -19,6 +19,8 @@ import os
 
 LOCAL = settings.LOCAL
 
+SUPER_HEROES = ['lovegov', 'anonymous']
+
 ########################################## PROHIBITED BROWSERS #########################################################
 
 PROHIBITED_BROWSERS = ["MSIE"]
@@ -128,6 +130,8 @@ DEFAULT_INVITE_MESSAGE = "LoveGov Alpha is now up and running! We would really a
                          "so you will see us regularly adding new features over the next month. If you encounter any problems while using our site"\
                          "or just want to send us comments then please don't hesitate to contact us - we want to hear your opinions!"
 
+FIRST_LOGIN_LAST_STAGE = 7
+
 ########################################### MAIN TOPICS ################################################################
 MAIN_TOPICS = ['Economy', 'Education', 'Energy', 'Environment', 'Health Care', 'National Security', 'Social Issues']
 
@@ -200,6 +204,7 @@ USERPROFILE_EDITABLE_FIELDS = [
 CONTENT_EDITABLE_FIELDS = [
     'text', 
     'full_text',
+    'title',
 ]
 
 # level of government
@@ -305,7 +310,7 @@ NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
-    'JO': ['A','D','R'],
+    'JO': ['A','D','R','I'],
     'FO': ['A','D','R']
 }
 
@@ -389,6 +394,9 @@ BILL_TYPES = {
 # types of content that show up in the feed
 FEED_CONTENT_TYPES = ['P','N','L','G']
 
+# Facebook Stuff
+FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
+
 ###################################### STATIC FILE URLS ################################################################
 
 DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
@@ -461,3 +469,138 @@ PETITION_LEVELS = [0, 10, 50, 100, 500, 1000, 5000, 10000, 50000,
                    100000, 500000, 1000000, 5000000, 10000000,
                    50000000, 100000000, 500000000, 1000000000,
                    5000000000, 10000000000]
+
+###################################### ACTIONS #########################################################################
+
+ACTIONS = [
+    'loadGroupUsers',
+    'loadHistogram',
+    'searchAutoComplete',
+    'comment',
+    'create',
+    'invite',
+    'editAccount',
+    'editProfile',
+    'editContent',
+    'delete',
+    'setPrivacy',
+    'setFollowPrivacy',
+    'vote',
+    'hoverComparison',
+    'sign',
+    'finalize',
+    'userFollowRequest',
+    'userFollowResponse',
+    'userFollowStop',
+    'answer',
+    'joinGroupRequest',
+    'joinGroupResponse',
+    'groupInviteResponse',
+    'leaveGroup',
+    'matchComparison',
+    'posttogroup',
+    'updateCompare',
+    'viewCompare',
+    'answerWeb',
+    'feedback',
+    'updateGroupView',
+    'ajaxThread',
+    'getNotifications',
+    'getUserActions',
+    'getUserGroups',
+    'getGroupActions',
+    'getGroupMembers',
+    'ajaxGetFeed',
+    'matchSection',
+    'saveFilter',
+    'deleteFilter',
+    'getFilter',
+    'shareContent',
+    'blogAction',
+    'flag',
+    'updateHistogram',
+    'getHistogramMembers',
+    'getAllGroupMembers',
+    'support',
+    'messageRep',
+    'submitAddress',
+    'likeThis',
+    'changeContentPrivacy',
+    'updatePage',
+    'getAggregateNotificationUsers',
+    'getSigners',
+    'setFirstLoginStage',
+    'editGroup',
+    'addAdmins',
+    'removeAdmin',
+    'groupInviteResponse',
+    'groupInvite'
+]
+
+DEFAULT_PROHIBITED_ACTIONS = []
+
+ANONYMOUS_PROHIBITED_ACTIONS = [
+    #'loadGroupUsers',
+    #'loadHistogram',
+    #'searchAutoComplete',
+    'comment',
+    'create',
+    'invite',
+    'editAccount',
+    'editProfile',
+    'editContent',
+    'delete',
+    'setPrivacy',
+    'setFollowPrivacy',
+    'vote',
+    #'hoverComparison',
+    'sign',
+    'finalize',
+    'userFollowRequest',
+    'userFollowResponse',
+    'userFollowStop',
+    'answer',
+    'joinGroupRequest',
+    'joinGroupResponse',
+    'groupInviteResponse',
+    'leaveGroup',
+    'matchComparison',
+    'posttogroup',
+    'updateCompare',
+    'viewCompare',
+    'answerWeb',
+    #'feedback',
+    #'updateGroupView',
+    #'ajaxThread',
+    #'getNotifications',
+    #'getUserActions',
+    #'getUserGroups',
+    #'getGroupActions',
+    #'getGroupMembers',
+    #'ajaxGetFeed',
+    #'matchSection',
+    'saveFilter',
+    'deleteFilter',
+    #'getFilter',
+    'shareContent',
+    #'blogAction',
+    #'flag',
+    #'updateHistogram',
+    #'getHistogramMembers',
+    #'getAllGroupMembers',
+    'support',
+    #'messageRep',
+    'submitAddress',
+    'likeThis',
+    #'changeContentPrivacy',
+    #'updatePage',
+    #'getAggregateNotificationUsers',
+    #'getSigners',
+    #'setFirstLoginStage',
+    'setFirstLoginStage',
+    'editGroup',
+    'addAdmins',
+    'removeAdmin',
+    'groupInviteResponse',
+    'groupInvite'
+]

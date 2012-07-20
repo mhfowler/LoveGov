@@ -1,15 +1,199 @@
-{% extends 'deployment/templates/frame.html' %}
+<!-- HTML -->
+<div id="match-main">
 
-{% block content %}
-
-    <!-- to allow being easily replaced by another question via ajax -->
-    <div id="content-div">
-        {% include 'deployment/center/match/match-new.html' %}
+    <div id="match-mid-header">
+        <h5>Featured Matches</h5>
     </div>
 
-    <script>
-        rebind = 'match-new';
-    </script>
+    <!-- Content Section -->
+    <div id="match-mid">
 
-{% endblock %}
+        <div id="match-mid-content">
+
+            <div id="match-arrow-left" class="match-arrow">
+                <img src="/static/images/match/arrow_left_light.png"/>
+            </div>
+
+            <div id="match-ajax-content">
+
+                <div class="match-presidential match-section" data-sequence="0">
+                    {% include 'deployment/pages/match/match-tryptic-template.html' with prof1=presidential.0 prof2=presidential.1 prof3=presidential.2 match_title="Your 2012 Presidential Candidates" %}
+                </div>
+
+                <div class="match-massachusettes match-section" data-sequence="1">
+                    {% include 'deployment/pages/match/match-tryptic-template.html' with prof1=elizabeth prof2=mass prof3=brown match_title="Your Massachusettes Senate Election" %}
+                </div>
+
+                <div class="match-social match-section" data-sequence="2">
+                    {% include 'deployment/pages/match/match-social.html' %}
+                </div>
+
+                <div class="match-representatives match-section" data-sequence="3">
+                    {% if congressmen %}
+                        {% include 'deployment/pages/match/match-tryptic-template.html' with prof1=congressmen.0 prof2=congressmen.1 prof3=congressmen.2 match_title="Find Your Congressmen" %}
+                    {% else %}
+                        <div class="match-title">
+                            <h3>Find Your Congressmen</h3>
+                        </div>
+                        {% if invalid_address %}
+                            <p>
+                                We could not find any congressmen associated with the last address you entered. You could try entering the
+                                address again or lookup a different one.
+                            </p>
+                        {% endif %}
+                        {% include 'deployment/pages/match/address.html' %}
+                    {% endif %}
+                    <div style="clear:both"></div>
+                    <div class="address-wrapper">
+
+                        {% if state and district and longitude and latitude %}
+                        <div id="map_canvas" style='width:930px;height:500px'>
+
+                        </div>
+                        {% endif %}
+
+                        {% if not invalid_address %}
+                            <div class="new-address-wrapper">
+                                {% include 'deployment/pages/match/address.html' %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="match-arrow-right" class="match-arrow">
+            <img src="/static/images/match/arrow_right_light.png"/>
+        </div>
+
+    </div>
+
+    <div class="clear-both"></div>
+
+<!-- Red/Gray Circles -->
+{% include 'deployment/pages/match/match-selection-line-break.html' %}
+
+<!-- QuickLinks -->
+{% include 'deployment/pages/match/match-quicklinks.html' %}
+
+</div>
+
+<script type="text/javascript">
+    rebind = 'match';
+
+    match_current_section={{ start_sequence }};
+
+    {% if state and district and longitude and latitude %}
+
+    match_location = true;
+
+    match_state = "{{ state }}";
+    match_district = "{{ district }}";
+    match_longtitude = "{{ longitude }}";
+    match_latitude = "{{ latitude }}";
+
+    {% endif %}
+
+    var firstLoginStage = {{ firstLoginStage }};
+
+    var fl_modal = $('div.firs t-login-modal');
+
+    var skipTutorialText = '<div class="skip-tutorial">Prefer to browse the site? <a>Skip</a> the tutorial.</div>';
+
+    function stageZero() {
+        launchFirstLoginModal('<h2>Welcome to LoveGov</h2><p>We are currently in Beta, so this site is a work in progress. ' +
+                'To find out more about what we are trying to do, visit ' +
+                'our <a href="/about">About</a> page. We would really like to hear your feedback. </p>' +
+                "<p>There's more on the way but we’ve already built some neat tools to help you stay informed and get involved." +
+                '<button class="tutorial-button">Learn how it works</button>' + skipTutorialText);
+        $('button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage('1', stageOne);
+        });
+        bindSkipFirstLogin();
+    }
+
+    function stageOne() {
+        launchFirstLoginModal('<p>Right now you\'re browsing the match page. Use this page to see how your beliefs match ' +
+                'with politicians, groups, and friends.</p>' +
+                '<p>Try finding the representatives for your congressional district.</p>' +
+                '<div class="zip-code-error-msg"></div>' +
+                '<div class="zip-code-form"><input type="text" class="firstlogin-zipcode" placeholder="Your zip code">' +
+                '<button class="tutorial-button">Go</button></div>' +
+                '<div class="skip-tutorial"><a>Skip this step</a></div>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            var zip = $('input.firstlogin-zipcode').val();
+            var submitZipSuccess = function() {
+                setFirstLoginStage(2, function() {
+                    window.location = '/match/representatives';
+                });
+            };
+            var submitZipError = function() {
+                $('div.zip-code-error-msg').text('The zip code you entered, "'+zip+'", did not match any district. Please double-check that it is correct and try again.')
+            }
+            submitZip(zip, submitZipSuccess, submitZipError);
+
+        });
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            setFirstLoginStage(3, function() {
+                window.location = '/web';
+            });
+        });
+    }
+
+    function stageTwo() {
+        launchFirstLoginModal('<p>Awesome! Here are your representatives. ' +
+                "If your match percentage is at 0%, this means you haven't answered any questions yet.</p>" +
+                '<p> Use the Q&A Web to answer questions so you can have more meaningful matches.</p>' +
+                '<button class="tutorial-button">Jump to Q&A Web</button>' +
+                '<div class="skip-tutorial">Not your voting district? <a>Enter a new address.</a></div>'+skipTutorialText);
+        $('button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage(3, function() {window.location = "/web";});
+        });
+        bindSkipFirstLogin();
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            setFirstLoginStage(1, function() {stageOne();});
+        });
+    }
+
+    function stageFive() {
+        launchFirstLoginModal('<p>See how your match percentages have changed? The more questions you answer' +
+                ' the more accurate this number becomes.</p>' +
+                '<p>But matching is just one of the tools that you can use. Beyond the match page we are trying to build an entire ' +
+                'platform for people to discuss the issues and share news and petitions with each other. Your portal' +
+                ' to this community is the feed. Clicking the LoveGov logo will always take you there.</p>' +
+                '<button class="tutorial-button">Show me the feed</button></div>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            var success = function() {
+                window.location = '/feed';
+            };
+            setFirstLoginStage('6', success);
+        });
+        bindSkipFirstLogin();
+     }
+
+    function bindSkipFirstLogin() {
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            var success = function() {
+                $('div.first-login-modal').hide();
+            };
+            setFirstLoginStage('7', success);
+        });
+    }
+
+    $(document).ready(function() {
+        switch (firstLoginStage) {
+            case 0: stageZero(); break;
+            case 1: stageOne(); break;
+            case 2: stageTwo(); break;
+            case 5: stageFive(); break;
+            default:
+                break;
+        }
+    });
+
+</script>
+
+
 

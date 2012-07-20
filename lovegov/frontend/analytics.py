@@ -35,6 +35,16 @@ def userSummary(user, request, days=None):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# convenience method to see user activity summary
+#-----------------------------------------------------------------------------------------------------------------------
+def userSum(name):
+    user = getUser(name)
+    if user:
+        userActivity(user)
+    else:
+        print "no user with inputted name."
+
+#-----------------------------------------------------------------------------------------------------------------------
 # new user
 #-----------------------------------------------------------------------------------------------------------------------
 def userActivity(user, file=None,  min=None, max=None):
@@ -69,9 +79,8 @@ def userActivity(user, file=None,  min=None, max=None):
                 f.write(to_return)
             except UnicodeEncodeError:
                 print "unicode encode error for " + user.get_name()
-    else:
-        print to_return
 
+    print to_return
     return to_return
 
 def allUserActivity(file, min=None, max=None):

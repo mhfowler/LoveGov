@@ -9,23 +9,15 @@
 
     {% include 'deployment/pages/login/login-footer.html' %}
 
-    <div id="fb-root"></div>
     <div id="default_variables" style="display:none">
         <input id="csrftoken" type="hidden" value="{{ csrf_token }}" />
     </div>
-    <!--Some facebook code requires the fb-root div -->
-    <script src="/static/js/facebook.js" type="text/javascript"></script>
+
     <script type="text/javascript">
-        facebookAppId = '{{ FACEBOOK_APP_ID }}';
-        facebookDefaultScope = {{ FACEBOOK_DEFAULT_SCOPE_JS }};
-        staticUrl = '{{ STATIC_URL }}';
-        function facebookJSLoaded()
-        {
-            FB.init({appId: facebookAppId, status: true, cookie: true, xfbml: true, oauth: true});
-        }
-        window.fbAsyncInit = facebookJSLoaded;
-        F = new facebookClass(facebookAppId);
-        F.load();
+
+        rebind="login";
+        login_state = "{{ state }}";
+
     </script>
 
 {% endblock %}

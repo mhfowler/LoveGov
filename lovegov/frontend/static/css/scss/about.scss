@@ -22,13 +22,15 @@ div._fade {
 
 div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited
 {
-  @include div-button($radius:10px,$width:250px,$height:53px,$font-size:23px,$color:$black);
+  @include div-button($radius:10px,$width:230px,$height:53px,$font-size:20px,$color:$black);
   margin-bottom:15px;
+  float: left;
+  margin: 10px 10px;
+  text-align: center;
   span
   {
     display:inline-block;
     margin-top:16px;
-    margin-left:10px;
   }
 
   &:hover
@@ -65,43 +67,7 @@ div.top-nav-left
 {
   @extend .top-nav;
   margin-right: $nav-margin;
-  width:250px;
-}
-
-div.top-nav-right
-{
-  @extend .top-nav;
-  margin-left: $nav-margin;
-  width:690px;
-
-  h1
-  {
-    float:left;
-    margin-top:35px;
-  }
-
-  div
-  {
-    width:690px;
-    float:left;
-  }
-
-  img
-  {
-    float:left;
-    width:200px;
-    margin-left:65px;
-  }
-
-  p
-  {
-    font-size:24px;
-    color:$deep-gray;
-    font-family:$gill-light;
-    float:left;
-    margin-top:25px;
-  }
-
+  width:1000px;
 }
 
 div#about-content
@@ -232,7 +198,7 @@ div#contact-div {
   }
   h4.find-us {
     @include fontSize(30px);
-    margin:40px 0 60px 0;
+    margin:40px 0 20px 0;
   }
 }
 
@@ -242,4 +208,13 @@ a.about-link {
 }
 a.about-link:hover {
   background-color:$light-gray;
+}
+
+div.faq-question {
+  margin: 30px 0;
+  p {
+    margin: 10px 0;
+    font-size: 14px;
+  }
+
 }

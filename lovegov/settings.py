@@ -257,7 +257,7 @@ def setLogging(log_root):
                 'level': 'DEBUG',
                 'propagate': False
             },
-            'errrorslogger': {
+            'errorslogger': {
                 'handlers': ['errors_handler'],
                 'level': 'DEBUG',
                 'propagate': False
@@ -295,13 +295,9 @@ CACHES = {
 }
 
 ########################################################################################################################
-#    caching
+#    email
 #
 ########################################################################################################################
-
-# EMAIL DURING DEVELOPMENT
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = '/log/emails'
 
 #EMAIL DURING LIVE
 EMAIL_USE_TLS = True

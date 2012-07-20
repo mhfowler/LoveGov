@@ -21,6 +21,7 @@ from django import shortcuts
 import random
 import thread
 import json
+import time
 from datetime import timedelta
 from datetime import datetime
 
@@ -185,11 +186,7 @@ class Topic(LGModel):
         return {'color':self.color,'color_light':self.color_light}
 
     def getQuestions(self):
-        ids = []
-        for q in Question.objects.filter(official=True):
-            if q.getMainTopic() == self:
-                ids.append(q.id)
-        return Question.objects.filter(id__in=ids).order_by("-rank")
+        return Question.objects.filter(official=True, main_topic=self).order_by("-rank")
 
     def getContent(self):
         ids = []
@@ -372,9 +369,7 @@ class Content(Privacy, LocationLevel):
         creator = self.getCreator()
         img.autoSave(creator=creator, privacy=self.privacy)
         # add topics
-        for t in self.topics.all():
-            img.topics.add(t)
-            # point self.image to new image
+        img.setMainTopic(self.getMainTopic())
         self.main_image_id = img.id
         self.save()
 
@@ -615,6 +610,15 @@ class Content(Privacy, LocationLevel):
     def getComparison(self, viewer):
         from lovegov.modernpolitics.backend import getUserContentComparison
         return getUserContentComparison(user=viewer, content=self)
+
+    def getComparisonJSON(self, viewer):
+        comparison = self.getComparison(viewer)
+        return comparison, comparison.toJSON()
+
+    def prepComparison(self, viewer):
+        comparison, json = self.getComparisonJSON(viewer)
+        self.compare = json
+        self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add like vote to content from inputted user (or adjust his vote appropriately)
@@ -1030,7 +1034,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     registration_code = models.ForeignKey(RegisterCode,null=True)
     confirmed = models.BooleanField(default=False)
     confirmation_link = models.CharField(max_length=500)
-    first_login = models.BooleanField(default=True) # for special case for first login
+    first_login = models.IntegerField(default=0) # for special case for first login
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
@@ -1072,6 +1076,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def get_url(self):
         return '/profile/' + self.alias + '/'
     def getWebUrl(self):
+        return self.getWebURL()
+    def getWebURL(self):
         return '/profile/web/' + self.alias + '/'
     def getAlphaURL(self):
         return self.get_url()
@@ -1087,11 +1093,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
-    def get_nameShort(self):
+    def get_nameShort(self, max_length=15):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
-            if len(fullname) > 19:
+            if len(fullname) > max_length:
                 to_return = unicode(str(self.first_name)).encode("UTF-8")
+                if len(to_return) > max_length:
+                    to_return = to_return[:max_length-3] + "..."
             else:
                 to_return = unicode(str(self.first_name) + " " + str(self.last_name)).encode("UTF-8")
         except UnicodeEncodeError:
@@ -1113,6 +1121,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def get_address(self):
         if self.location: return self.location.address_string
         else: return ""
+
+    def setZipCode(self, zip):
+        location = self.location
+        if not location:
+            location = PhysicalAddress()
+            location.save()
+            self.location = location
+            self.save()
+        location.zip = zip
+        location.save()
+
+    def isAnon(self):
+        return self.alias == 'anonymous'
+
+    def isSuperHero(self):
+        return self.alias in SUPER_HEROES
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts users appropriately based on type.
@@ -1159,6 +1183,15 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getComparison(self, viewer):
         from lovegov.modernpolitics.compare import getUserUserComparison
         return getUserUserComparison(userA=viewer, userB=self)
+
+    def getComparisonJSON(self, viewer):
+        comparison = self.getComparison(viewer)
+        return comparison, comparison.toJSON(viewB_url=self.getWebURL())
+
+    def prepComparison(self, viewer):
+        comparison, json = self.getComparisonJSON(viewer)
+        self.compare = json
+        self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
     # Makes unique alias from name
@@ -1268,6 +1301,26 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         # self.gender = fb_data['gender']
         self.confirmed = True
 
+
+        if 'birthday' in fb_data:
+            split_bday = fb_data['birthday'].split('/')
+            birthday = datetime.date.min
+
+            month = int(split_bday[0])
+            day = int(split_bday[1])
+            year = int(split_bday[2])
+
+            if 0 < month < 13:
+                birthday = birthday.replace(month=month)
+            if 0 < day < 32:
+                birthday = birthday.replace(day=day)
+            if 0 < year < 10000:
+                birthday = birthday.replace(year=year)
+
+            self.dob = birthday
+            self.save()
+
+
         if 'education' in fb_data:
             education = fb_data['education']
             for edu in education:
@@ -1306,7 +1359,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getView(self):
         if self.view_id != -1:
-            return WorldView.objects.get(id=self.view_id)
+            return self.view
         else: return None
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1574,9 +1627,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupInvites(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')
         else:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')[:num]
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # return a query set of groups and networks user is in
@@ -1666,9 +1719,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Checks if this is the first time the user has logged in.
     #-------------------------------------------------------------------------------------------------------------------
     def checkFirstLogin(self):
-        if self.first_login:
-            self.first_login = False
-            self.save()
+        if self.first_login == 0:
             return True
         else:
             return False
@@ -1676,14 +1727,35 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
+    # The other version is less SQL queries
+#    def getUserResponses(self):
+#        qr = []
+#        responses = self.getView().responses
+#        questions = Question.objects.filter(official=True)
+#        for q in questions:
+#            r = responses.filter(question=q)
+#            qr.append((q,r))
+#        return qr
+
     def getUserResponses(self):
         qr = []
-        responses = self.getView().responses
-        questions = Question.objects.all()
-        for q in questions:
-            r = responses.filter(question=q)
-            qr.append((q,r))
+
+        responses = list( self.getView().responses.all() )
+
+        official_questions = list( Question.objects.filter(official=True) )
+
+        for r in responses:
+            q = r.question
+            if q.official:
+                qr.append((q,r))
+                if q in official_questions:
+                    official_questions.remove(q)
+
+        for q in official_questions:
+            qr.append((q,None))
+
         return qr
+
 
     def setAddress(self, newAddress):
         self.userAddress.currentAddress = False
@@ -1705,6 +1777,7 @@ class ControllingUser(User, LGModel):
     permissions = models.ForeignKey(UserPermission, null=True)  # null is default permission
     user_profile = models.ForeignKey(UserProfile, null=True)    # spectator
     objects = UserManager()
+    prohibited_actions = custom_fields.ListField(default=DEFAULT_PROHIBITED_ACTIONS)
     def getUserProfile(self):
         return self.user_profile
 
@@ -1846,6 +1919,8 @@ class Notification(Privacy):
         if n_action.type == 'JO':
             notification_context['from_user'] = relationship.getFrom()
             notification_context['group_join'] = relationship.downcast()
+            if n_action.modifier == 'I':
+                notification_context['inviter'] = relationship.downcast().getInviter()
 
         if n_action.type == 'SH':
             notification_context['from_user'] = relationship.getFrom()
@@ -2275,7 +2350,7 @@ class Comment(Content):
         self.in_feed = False
         self.save()
         super(Comment, self).autoSave(creator=creator, privacy=privacy)
-        self.setMainTopic(self.root_content.main_topic)
+        self.setMainTopic(self.root_content.getMainTopic())
         # update on_content
         root_content = self.root_content
         root_content.num_comments += 1
@@ -3083,9 +3158,7 @@ class Response(Content):
         self.in_feed = False
         self.save()
         super(Response, self).autoSave(creator=creator, privacy=privacy)
-        for t in self.question.topics.all():
-            self.topics.add(t)
-        return self
+        self.setMainTopic(self.question.getMainTopic())
 
     def getValue(self):
         return float(self.answer_val)
@@ -3346,8 +3419,8 @@ class WorldView(LGModel):
 #=======================================================================================================================
 class TopicComparison(LGModel):
     topic = models.ForeignKey(Topic)
-    result = models.IntegerField()
-    num_q = models.IntegerField()
+    result = models.IntegerField(default=0)
+    num_q = models.IntegerField(default=0)
     def update(self, result, num_q):
         self.result = result
         self.num_q = num_q
@@ -3361,9 +3434,21 @@ class ViewComparison(LGModel):
     viewA = models.ForeignKey(WorldView, related_name="viewa")
     viewB = models.ForeignKey(WorldView, related_name="viewb")
     when = models.DateTimeField(auto_now_add=True)
-    result = models.IntegerField()
-    num_q = models.IntegerField()
+    result = models.IntegerField(default=0)
+    num_q = models.IntegerField(default=0)
     bytopic = models.ManyToManyField(TopicComparison)
+    optimized = models.CharField(max_length=1000, null=True)
+
+    def loadOptimized(self):
+        from lovegov.modernpolitics.compare import FastComparison
+        if self.optimized:
+            comparison = FastComparison(json_buckets=self.optimized)
+            return comparison
+        else:
+            return None
+
+    def saveOptimized(self, fast_comparison):
+        self.optimized = fast_comparison.dumpBuckets()
 
     def get_url(self):
         return '/comparison/' + str(self.id)
@@ -3374,7 +3459,7 @@ class ViewComparison(LGModel):
         self.when = when
         self.save()
 
-    def toDict(self):
+    def oldToDict(self):
         toReturn = []
         for topic_text in MAIN_TOPICS:
             topic = self.bytopic.filter(topic__topic_text=topic_text)
@@ -3395,8 +3480,34 @@ class ViewComparison(LGModel):
         else: vals['user_url'] = ''
         return vals
 
-    def toJSON(self):
-        return json.dumps(self.toDict())
+    def toDict(self, viewB_url=''):
+        from lovegov.modernpolitics.helpers import getMainTopics
+        to_return = []
+        fast_comparison = self.loadOptimized()
+        if not fast_comparison:
+            temp_logger.debug('old comparison.')
+            return self.oldToDict()
+        else:
+            topics = getMainTopics()
+            for t in topics:
+                topic_text = t.topic_text
+                topic_dict = {'text':topic_text,
+                             'colors': MAIN_TOPICS_COLORS[topic_text],
+                             'mini_img': MAIN_TOPICS_MINI_IMG[topic_text],
+                             'order': MAIN_TOPICS_CLOCKWISE_ORDER[topic_text],
+                             'result':0,
+                             'num_q':0}
+                topic_bucket = fast_comparison.getTopicBucket(t)
+                topic_dict['result'] = topic_bucket.getSimilarityPercent()
+                topic_dict['num_q'] = topic_bucket.num_questions
+                to_return.append(topic_dict)
+            total_bucket = fast_comparison.getTotalBucket()
+            vals = {'topics':to_return,'main':{'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}}
+            vals['user_url'] = viewB_url
+            return vals
+
+    def toJSON(self, viewB_url=''):
+        return json.dumps(self.toDict(viewB_url))
 
     # checks if the comparison is still valid given the two inputted dates, returns True if Stale, false if still fresh
     def checkStale(self, dateA=None, dateB=None):
@@ -3406,6 +3517,19 @@ class ViewComparison(LGModel):
         else:
             return True
 
+    def updateTopic(self, topic, topic_bucket):
+        by_topic = self.bytopic.filter(topic=topic)
+        result = topic_bucket.getSimilarityPercent()
+        num_q =  topic_bucket.num_questions
+        if by_topic:
+            by_topic = by_topic[0]
+            by_topic.result = result
+            by_topic.num_q = num_q
+            by_topic.save()
+        else:
+            by_topic = TopicComparison(topic=topic, result=result, num_q=num_q)
+            by_topic.save()
+            self.bytopic.add(by_topic)
 
 #=======================================================================================================================
 # Comparison of two people's worldview.
@@ -3470,6 +3594,7 @@ class Group(Content):
     # people
     admins = models.ManyToManyField(UserProfile, related_name='admin')
     members = models.ManyToManyField(UserProfile, related_name='member')
+    num_members = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
     group_content = models.ManyToManyField(Content, related_name='ongroup')
@@ -3537,18 +3662,21 @@ class Group(Content):
         identical_uids = []
 
         for x in members:
-            comparison = x.getComparison(user)
-            if topic and topic_alias != 'all':
-                comparison = comparison.bytopic.get(topic=topic)
-            if comparison.num_q:
-                total += 1
-                result = comparison.result
-                bucket = getBucket(result, bucket_list)
-                buckets[bucket]['num'] += 1
-                buckets[bucket]['u_ids'].append(x.id)
-                if comparison.result == 100:
-                    identical += 1
-                    identical_uids.append(x.id)
+            comparison = x.getComparison(user).loadOptimized()
+            if comparison:
+                if topic and topic_alias != 'all':
+                    comparison = comparison.getTopicBucket(topic)
+                else:
+                    comparison = comparison.getTotalBucket()
+                if comparison.getNumQuestions():
+                    total += 1
+                    result = comparison.getSimilarityPercent()
+                    bucket = getBucket(result, bucket_list)
+                    buckets[bucket]['num'] += 1
+                    buckets[bucket]['u_ids'].append(x.id)
+                    if result == 100:
+                        identical += 1
+                        identical_uids.append(x.id)
 
         return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
                 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
@@ -3563,14 +3691,23 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
     #-------------------------------------------------------------------------------------------------------------------
+    def countMembers(self):
+        self.num_members = self.members.count()
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Joins a member to the group and creates GroupJoined appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
     def joinMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
-            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.confirm()
         self.members.add(user)
+        self.num_members += 1
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -3578,11 +3715,13 @@ class Group(Content):
     def removeMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
-            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.num_members -= 1
+        self.save()
 
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3591,6 +3730,15 @@ class Group(Content):
     def getComparison(self, viewer):
         from lovegov.modernpolitics.compare import getUserGroupComparison
         return getUserGroupComparison(user=viewer, group=self)
+
+    def getComparisonJSON(self, viewer):
+        comparison = self.getComparison(viewer)
+        return comparison, comparison.toJSON()
+
+    def prepComparison(self, viewer):
+        comparison, json = self.getComparisonJSON(viewer)
+        self.compare = json
+        self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
     # Edit method, the group-specific version of the general content method.
@@ -3848,17 +3996,13 @@ class PageAccess(LGModel):
     login = models.BooleanField(default=True)
 
     def autoSave(self, request):
-        from lovegov.modernpolitics.helpers import getSourcePath
+        from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
         if not LOCAL:
-            user_prof = ControllingUser.lg.get_or_none(id=request.user.id)
+            user_prof = getUserProfile(request)
             if user_prof:
-                user_prof = user_prof.user_profile
                 self.user = user_prof
                 self.page = getSourcePath(request)
                 self.ipaddress = request.META['REMOTE_ADDR']
-                if not UserIPAddress.objects.filter(user=self.user, ipaddress=self.ipaddress):
-                    newUserIPAddress = UserIPAddress(user=self.user,ipaddress=self.ipaddress)
-                    newUserIPAddress.autoSave()
                 if request.method == "POST":
                     self.type = 'POST'
                     if 'action' in request.POST:
@@ -3867,10 +4011,7 @@ class PageAccess(LGModel):
                     self.type = 'GET'
                     if 'action' in request.GET:
                         self.action = request.GET['action']
-                try: self.save()
-                except: pass
-                user_prof.last_page_access = self.id
-                user_prof.save()
+                self.save()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -4049,10 +4190,7 @@ class Invite(LGModel):
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
-        if self.requested:
-            self.confirm()
-        else:
-            self.save()
+        self.save()
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -4251,6 +4389,7 @@ class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
+        self.content = self.group
         self.creator = self.user
         self.save()
 
@@ -4430,20 +4569,21 @@ class LGNumber(LGModel):
 #=======================================================================================================================
 # Handles password resets
 #=======================================================================================================================
-#TODO: make this link expire after a certain length of time
 class ResetPassword(LGModel):
     userProfile = models.ForeignKey(UserProfile)
     email_code = models.CharField(max_length=75)
+    created_when = models.DateTimeField(auto_now_add=True)
 
     def create(username):
+
         from lovegov.modernpolitics.helpers import generateRandomPassword
+
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
         userProfile = UserProfile.lg.get_or_none(username=username)
-        if userProfile and userProfile.confirmed:
+        if userProfile:
             try:
-                userProfile = UserProfile.objects.get(username=username)
                 reseturl = generateRandomPassword(50)
                 new = ResetPassword(userProfile=userProfile,email_code=reseturl)
                 new.save()

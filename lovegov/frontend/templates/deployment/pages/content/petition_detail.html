@@ -1,0 +1,57 @@
+{% extends 'deployment/pages/content/content_detail.html' %}
+
+{% block petition_detail %}
+
+    {% if petition.finalized %}
+
+        <h3>Signers</h3>
+
+        {% for signer in signers %}
+            {% include 'deployment/snippets/signer.html' %}
+        {% empty %}
+            <span id="be-first-signer-message">Be the first to sign this petition.</span>
+        {% endfor %}
+
+
+        <div style="clear: both"></div>
+
+        {% if signers %}
+            {% include 'deployment/snippets/petition_bar.html' with p=petition %}
+        {% endif %}
+
+    {% endif %}
+
+{% endblock %}
+
+{% block content_detail %}
+
+    <h3> {{ petition.title }} </h3>
+
+    <p id="petition-text">
+        {{ petition.full_text|urlize|linebreaks }}
+    </p>
+
+    <!-- finalize button -->
+    {% if iown %}
+        <div id="finalize">
+            {% if not petition.finalized %}
+                <p>
+                    Finalize this petition to allow others to sign it,
+                </p>
+                <div class="submit">
+                    <a href="" class='red-button' id="finalize-button"> finalize </a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- sign -->
+    <div id="signers">
+    </div>
+
+    <div class="petition-signers-modal" data-petition_id='{{petition.id}}'>abcdefghijklmnopqrstuvwxyz</div>
+
+    <script> rebind='petition'; </script>
+
+{% endblock %}
+

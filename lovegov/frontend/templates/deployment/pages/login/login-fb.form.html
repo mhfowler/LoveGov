@@ -1,39 +1,26 @@
-<div id="fb-div" class="state-div" {% if state != 'fb' %}style="display:none"{% endif %}>
+<div class="form-div">
+    <h2>To get the most out of LoveGov</h2>
 
-    {% if toregister > 0 %}
+    <div style="float:left">
+        <a href="{{ fb_link }}" id="">
+            <img id="facebook-button" src="/static/images/login/login_FB.png" />
+        </a>
+    </div>
 
-        <div class="form-div">
-            <h2>To get the most out of LoveGov</h2>
+    <p class="fb_login_p" style="margin-top:10px;">
+        By logging in with Facebook you agree to our <a class="invert_link privacy_policy">Privacy Policy</a>
+    </p>
 
-            <div style="float:left">
-                <a href="{{ fb_link }}" id="">
-                    <img id="facebook-button" src="/static/images/login/login_FB.png" />
-                </a>
-            </div>
+    <p class="fb_login_p">
+        <a id="no-facebook" class="invert_link">I don’t have a Facebook account</a> - <a id="why-facebook" class="invert_link">Why we ask for Facebook</a>
+    </p>
 
-            <p class="fb_login_p" style="margin-top:10px;">
-                By logging in with Facebook you agree to our <a class="invert_link privacy_policy">Privacy Policy</a>
-            </p>
-
-            <p class="fb_login_p">
-                <a id="no-facebook" class="invert_link">I don’t have a Facebook account</a> - <a id="why-facebook" class="invert_link">Why we ask for Facebook</a>
-            </p>
-
-            <div id="why-facebook-hover" style="display:none">
-                <a>X</a>
-                <p>
-                    By logging in with Facebook we are able to better match you with friends and networks giving you a better
-                    LoveGov experience.
-                </p>
-            </div>
-        </div>
-
-    {% else %}
-
-        <h2> Our servers are currently overrun! Come back tomorrow to register. </h2>
-
-    {% endif %}
-
-
-
+    <div id="why-facebook-hover" style="display:none">
+        <a>X</a>
+        <p>
+            By logging in with Facebook we are able to better match you with friends and networks giving you a better
+            LoveGov experience.
+        </p>
+    </div>
 </div>
+

@@ -42,10 +42,10 @@ def fbMakeFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.
 #-----------------------------------------------------------------------------------------------------------------------
-def fbGetRedirect(request, vals={}, redirect_uri=None, scope="email,user_education_history,user_location"):
+def fbGetRedirect(request, vals={}, redirect_uri=None, scope=FACEBOOK_SCOPE):
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/fb/handle/")
-    fb_state = random.randint(0, 1000)
+    fb_state = random.randint(0, 100000)
     url =  "https://www.facebook.com/dialog/oauth?"
     url += "client_id=" + settings.FACEBOOK_APP_ID
     url += "&redirect_uri=" + redirect_uri
@@ -74,12 +74,6 @@ def fbGetAccessToken(request, code, redirect_uri=None):
     normal_logger.debug("Facebook Access Token Error (in fbGetAccessToken): " + str(returned))
     return None
 
-def getRedirectURI(request, redirect):
-    domain = getHostHelper(request)
-    temp_logger.debug('domain: ' + domain)
-    redirect_uri = domain + redirect
-    return redirect_uri
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Handles access token, and log in, register or deny appropriately
 #-----------------------------------------------------------------------------------------------------------------------
@@ -107,7 +101,7 @@ def fbLogin(request, vals={}, refresh=False):
             # REGISTER
             if not user_prof:
                 refresh = False
-                name = me['first_name'] + " " + me['last_name']
+                name = (me.get('first_name') or "Unknown") + " " + (me.get('last_name') or "User")
                 control = createFBUser(name, fb_email)
                 user_prof = control.user_profile
                 vals['viewer'] = user_prof
@@ -215,93 +209,3 @@ def fbTest(request):
     returned = urlopen(url).read()
     print returned
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Authenticate with twitter.
-#-----------------------------------------------------------------------------------------------------------------------
-def twitterRedirect(request, redirect_uri=None):
-    if not redirect_uri:
-        redirect_uri = getRedirectURI(request, "/twitter/handle/")
-
-    request_token_url = 'http://twitter.com/oauth/request_token'
-    authorize_url = 'http://twitter.com/oauth/authorize'
-
-    consumer = oauth.Consumer(settings.TWITTER_KEY, settings.TWITTER_SECRET)
-    client = oauth.Client(consumer)
-
-    # Step 1: Get a request token. This is a temporary token that is used for
-    # having the user authorize an access token and to sign the request to obtain
-    # said access token.
-
-    resp, content = client.request(request_token_url, "GET")
-    if resp['status'] != '200':
-        raise Exception("Invalid response %s." % resp['status'])
-
-    request_token = dict(urlparse.parse_qsl(content))
-
-    print "Request Token:"
-    print "    - oauth_token        = %s" % request_token['oauth_token']
-    print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
-    print
-
-    redirect_uri="http://www.lovegov.com/comingsoon/"
-
-    to_encode = {'oauth_token':request_token['oauth_token'],'oauth_callback':redirect_uri}
-    redirect = authorize_url + "?"
-    redirect += urlencode(to_encode)
-
-    print "redirect: " + redirect
-
-    response = shortcuts.redirect(redirect)
-    response.set_cookie('twitter_secret', request_token['oauth_token_secret'])
-
-    return response
-
-def twitterGetAccessToken(request, to_page="/web/"):
-    oauth_verifier = request.GET.get('oauth_verifier')
-    oauth_token = request.GET.get('oauth_token')
-    oauth_token_secret = request.COOKIES.get('twitter_secret')
-    consumer = oauth.Consumer(settings.TWITTER_KEY, settings.TWITTER_SECRET)
-    access_token_url = 'http://twitter.com/oauth/access_token'
-    token = oauth.Token(oauth_token, oauth_token_secret)
-    token.set_verifier(oauth_verifier)
-    client = oauth.Client(consumer, token)
-
-    resp, content = client.request(access_token_url, "POST")
-    access_token = dict(urlparse.parse_qsl(content))
-
-    print "Access Token:"
-    print "    - oauth_token        = %s" % access_token['oauth_token']
-    print "    - oauth_token_secret = %s" % access_token['oauth_token_secret']
-    print
-    print "You may now access protected resources using the access tokens above."
-    print
-
-    response = shortcuts.redirect(to_page)
-    response.set_cookie("twitter_access_token", access_token)
-
-    return response
-
-def twitterLogin(request, to_page="/web/", vals={}):
-    twitter_access_token = request.COOKIES.get('twitter_access_token')
-    if twitter_access_token:
-        tat = twitter_access_token.replace('\'','\"')
-        tat = json.loads(str(tat))
-        twitter_user_id = tat['user_id']
-        user_prof = UserProfile.lg.get_or_none(twitter_user_id=twitter_user_id)
-        logging.debug("twitter")
-        if not user_prof:
-            return twitterRegister(request)
-        else:
-            user_prof.twitter_screen_name = tat['screen_name']
-            user_prof.save()
-            user = user_prof.user
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-            auth.login(request, user)
-            return shortcuts.redirect(to_page)
-    else:
-        return False
-
-
-def twitterRegister(request):
-    return HttpResponse("enter name, email and password[optional]")

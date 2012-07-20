@@ -24,12 +24,14 @@ alias lgserver="$LG/local_server.sh"
 alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/frontend/static/css/compiled"
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
 alias lgindex="python $LG/lovegov/local_manage.py rebuild_index"
+alias lgcharm="lgdir && charm ."
 
 alias masterpull="git pull origin master"
 alias masterpush="git push origin master"
 
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"
+alias lg1jvkoh="ssh jvkoh@ec2-23-23-91-235.compute-1.amazonaws.com"
 
 # permission
 alias projectpermission="sudo chmod -R 770 $LG"
@@ -37,6 +39,7 @@ alias jpermission="sudo chown jvkoh -R $LG && sudo chmod -R 770 $LG"
 alias mpermission="sudo chown -R maxfowler $LG && sudo chmod -R 770 $LG"
 alias jserver="jpermission && lgserver"
 alias jsass="jpermission && lgsass"
+alias lgcharm="lgdir && charm ."
 
 # python environment
 export PYTHONSTARTUP=$LG/autopython.py

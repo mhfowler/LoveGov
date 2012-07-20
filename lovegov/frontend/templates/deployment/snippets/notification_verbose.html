@@ -144,13 +144,24 @@
     <!-- Group Follow -->
     {% elif type == 'JO' %}
         {% if modifier == 'I' %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-            {% if from_you %}
-                were invited to join
-            {% else %}
-                was invited to join
+            <td class="notification-thumbnail">
+                {% include "deployment/snippets/avatar.html" with user=to_user width="25" height="25" hoveroff=hover_off %}
+            </td>
+            <td class="notification-text notification_text">
+                {% include "deployment/snippets/action_name_snippet.html" with user=inviter capital=true %}
+                invited
+                {% include "deployment/snippets/action_name_snippet.html" with user=from_user you=from_you %}
+                to join
+                {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
+                <div class='notification-append notification_append_y'>Invite accepted</div>
+                <div class='notification-append notification_append_n'>Invite declined</div>
+            </td>
+            {% if not group_join.declined and not group_join.confirmed and group_join.invited %}
+                <td class="notification-buttons notification_buttons" data-g_id="{{ to_user.id }}">
+                    <div class="notification-follow-response notification_invite_response_y">accept</div>
+                    <div class="notification-follow-response bottom notification_invite_response_n">decline</div>
+                </td>
             {% endif %}
-            {% include "deployment/snippets/action_name_snippet.html" with user=to_user you=to_you %}
         {% elif modifier == 'R' %}
             <td class="notification-thumbnail">
                 {% include "deployment/snippets/avatar.html" with user=from_user width="25" height="25" hoveroff=hover_off %}
@@ -163,11 +174,9 @@
                 <div class='notification-append notification_append_n'>Request declined</div>
             </td>
             {% if not group_join.rejected and not group_join.confirmed and group_join.requested %}
-                <td class="notification-buttons notification_buttons">
+                <td class="notification-buttons notification_buttons" data-follow_id="{{ from_user.id }}" data-g_id="{{ to_user.id }}">
                     <div class="notification-follow-response notification_group_response_y">accept</div>
                     <div class="notification-follow-response bottom notification_group_response_n">decline</div>
-                    <input type="hidden" class="follow-id" value="{{ from_user.id }}"/>
-                    <input type="hidden" class="group-id" value="{{ to_user.id }}"/>
                 </td>
             {% endif %}
         {% elif modifier == 'A' %}

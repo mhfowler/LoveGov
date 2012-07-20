@@ -2,30 +2,61 @@
 
 {% block middle %}
 
-    <div id="middle-left">
-        <iframe src="http://player.vimeo.com/video/45207529?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="425" height="239" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-        <p style="text-align:center;">Want to learn more? <a id="what-is-lovegov" class="invert_link">Click here</a>.</p>
-    </div>
+    <div class="upper">
 
-    <div id="middle-right">
-        <!-- Forms -->
-        {% include 'deployment/pages/login/login-fb.form.html' %}
-        {% include 'deployment/pages/login/login-login.form.html' %}
-        {% include 'deployment/pages/login/login-register.form.html' %}
+        <div id="middle-left">
+            <iframe src="http://player.vimeo.com/video/45207529?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="425" height="239" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+            <p style="text-align:center;">Want to learn more? <a id="what-is-lovegov" href="/try/about/" class="invert_link">Click here</a>.</p>
+        </div>
+
+        <div id="middle-right">
+
+            <div id="create-account-div" class="state-div">
+                {% include 'deployment/pages/login/create-account.html' %}
+            </div>
+
+            <div id="sign-up-div" class="state-div">
+                {% include 'deployment/pages/login/sign-up.html' %}
+            </div>
+
+            <div id="register-div" class="state-div">
+                {% include 'deployment/pages/login/login-register.form.html' %}
+            </div>
+
+            <div id="post-twitter-div" class="state-div">
+                {% include 'deployment/pages/login/post-twitter.html' %}
+            </div>
+
+            <div id="need-confirmation-div" class="state-div">
+                <h3> {{ confirmation_message  }} </h3>
+                <br><br>
+                <h3> or </h3>
+                <br><br>
+                <h3> <a href="/logout/"> sign in as another user. </a> </h3>
+            </div>
+
+        </div>
+
+        <div style="clear:both"></div>
+
     </div>
 
     <!-- Fade-in Divs -->
     {% include 'deployment/pages/login/login-about.html' %}
+    {% include 'deployment/pages/login/screenshots.html' %}
     {% include 'deployment/pages/login/login-privacy.html' %}
 
     <script type="text/javascript">
         $(document).ready(function()
         {
+            $("#create-account-div").show();
+
+            /*
             $('#what-is-lovegov').click(function()
             {
                 $('._fade').fadeOut(300);
                 $('.about-div').fadeToggle(300);
-            });
+            }); */
 
             $('.privacy_policy').click(function()
             {
@@ -63,6 +94,32 @@
                 $('#fb-div').hide();
                 $('#login-div').show();
             });
+
+            $(".create_account_button").click(function(event) {
+                event.preventDefault();
+                $("#create-account-div").hide();
+                $("#sign-up-div").show();
+            });
+
+            $(".sign_up_with_email_button").click(function(event) {
+                event.preventDefault();
+                $("#sign-up-div").hide();
+                $("#register-div").show();
+            });
+
+            var register_state = "{{ state }}";
+            if (register_state == 'register_error') {
+                $(".state-div").hide();
+                $("#register-div").show();
+            }
+            if (register_state == 'post-twitter') {
+                $(".state-div").hide();
+                $("#post-twitter-div").show();
+            }
+            if (register_state == 'need-confirmation') {
+                $(".state-div").hide();
+                $("#need-confirmation-div").show();
+            }
 
         });
     </script>

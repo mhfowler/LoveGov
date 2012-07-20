@@ -106,6 +106,7 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(required=True)
     email2 = forms.EmailField(required=True)
     passwordregister = forms.CharField(widget=forms.PasswordInput,required=True)
+    zip = forms.CharField(required=False)
     privacy = forms.BooleanField(error_messages={'required': '< click'})
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ class RegisterForm(forms.Form):
         fullname = cleaned_data.get('fullname')
 
         # Handle fullname error checking
-        if not fullname:
+        if not fullname or fullname == 'full name':
             self._errors["fullname"] = self.error_class([u"input your full name."])
         else:
             spaces = fullname.count(" ")
@@ -153,6 +154,11 @@ class RegisterForm(forms.Form):
         user = createUser(fullname,email,password,active=False)
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()
+
+        zip = self.cleaned_data.get('zip')
+        if zip:
+            user.user_prof.setZipCode(zip)
+
         vals = {'firstname':firstname,'link':user.user_profile.confirmation_link}
         sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)
 
@@ -206,9 +212,12 @@ class RecoveryPassword(forms.Form):
         from modernpolitics.models import ResetPassword
         resetPassword = ResetPassword.lg.get_or_none(email_code=confirm_link)
         if resetPassword:
-            user= resetPassword.userProfile.user
-            user.set_password(self.cleaned_data['password1'])
-            user.save()
+            age = datetime.datetime.now() - resetPassword.created_when
+            print "age: ", str(age.total_seconds())
+            if age.total_seconds() < (60*60*24):                            # if link not expired, reset password
+                user= resetPassword.userProfile.user
+                user.set_password(self.cleaned_data['password1'])
+                user.save()
             resetPassword.delete()
             return user.username
 

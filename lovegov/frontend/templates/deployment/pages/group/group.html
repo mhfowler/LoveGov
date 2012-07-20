@@ -1,0 +1,245 @@
+{% load thumbnail %}
+
+{% if group.active %}
+<!-- Middle Container -->
+<div class="main-div">
+    {% if is_visible %}
+    <!-- Left Block -->
+    <div class="middle-left">
+        <div class="basic-info">
+            {% if not group.system and not group.group_type == 'P' %}
+            <div class="basic-info-left">
+                <div class="group-img">
+                    {% load thumbnail %}
+                    {% thumbnail group.getMainImage.image "100x100" crop="center" as im %}
+                        <img src="{{ im.url }}" class="icon-really-big"/>
+                    {% endthumbnail %}
+                </div>
+                <div class="group-privacy">
+                    {% if group.group_privacy == 'O' %}
+                        PUBLIC
+                    {% elif group.group_privacy == 'P' %}
+                        PRIVATE
+                    {% elif group.group_privacy == 'S' %}
+                        HIDDEN
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="basic-info-main">
+                <div class="group-name-container">
+                    <div class="inline-div inline_hide group-name">
+                        {{ group.title }}
+                    </div>
+                    {% if is_user_admin  %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                            <input maxlength="100" type="text" value="{{ group.title }}" class="group-title-edit edit_input" name="title"/>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if not group.system and not group.group_type == 'P' %}
+                    <div class="group-scale">
+                        {{ group.getScaleVerbose }}
+                    </div>
+                    <div class="group-summary">
+                        <div class="inline-div inline_hide">
+                            {{ group.full_text }}
+                        </div>
+                        {% if is_user_admin  %}
+                            <div class="edit-link edit_button"></div>
+                            <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                                <textarea maxlength="1000" class="group-full-text-edit edit_input" name="full_text">{{ group.full_text }}</textarea>
+                                <a href="" class="edit-link submit_inline_edit">submit</a>
+                                <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+
+                <div class="group-stats">
+                    <div class="stat-box members-stat">
+                        <div class="group-stats-number members-number">{{ num_group_members }}</div>
+                        <div class="group-stats-title">member{% if num_group_members != 1 %}s{% endif %}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="group-stats-number">{{ group.getAverageQuestions }}</div>
+                        <div class="group-stats-title">question{% if group.getAverageQuestions != 1 %}s{% endif %}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="group-stats-number">{{ group.getNumPetitions }}</div>
+                        <div class="group-stats-title">petition{% if group.getNumPetitions != 1 %}s{% endif %}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="group-stats-number">{{ group.getNumArticles }}</div>
+                        <div class="group-stats-title">article{% if group.getNumArticles != 1 %}s{% endif %}</div>
+                    </div>
+                </div>
+
+                {% if not group.system %}
+                    <div class="group-buttons">
+                        <div class="group-button">
+                            {% if is_user_rejected or not is_user_follow and not is_user_confirmed %}
+                                <a href="" class="button-red float-left" id="group_follow">
+                                    join
+                                </a>
+                            {% else %}
+                                <a href="" class="button-red float-left" id="group_unfollow">
+                                    {% if is_user_confirmed %}
+                                        leave
+                                    {% elif is_user_follow %}
+                                        un-request
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        </div>
+                        {% if is_user_admin and group_requests|length > 0 %}
+                            <div class="group-button">
+                                <a href="" class="button-red float-left" id="group_requests">
+                                    {{ group_requests|length }} request{% if group_requests|length > 1 %}s{% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+                        {% if is_user_admin %}
+                            <div class="group-button">
+                                <a href="" id="group_invite_button" class="button-red float-left" data-g_id="{{ group.id }}">
+                                    invite
+                                </a>
+                            </div>
+                            <div class="group-button">
+                                <a href="/group/{{ group.id }}/edit/" class="button-red float-left">
+                                    edit info
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="clear-both">
+            </div>
+        </div>
+
+        <div class="group-bottom">
+            <div class="group-activity-container">
+                <div class="profile-section-title">Activity</div>
+                <div class="group-activity-feed" id="group_activity_feed">
+                    {% for action in actions_text %}
+                        {{ action|safe|escape }}
+                        {% if not forloop.last %}
+                            <div class="action-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a href="" class="long-button-gray" id="group_more_actions">
+                    See more activity
+                </a>
+                <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
+                <br>
+            </div>
+
+            <div class='group-users-container'>
+                {% if not group.system and not group.group_type == 'P' %}
+                <div class="profile-section-title">Administrators</div>
+                <div class="group-admins-container">
+                    {% for admin in group_admins %}
+                        {% include 'deployment/snippets/user_name.html' with user=admin %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="profile-section-title">Members</div>
+                <div class="group-members-container">
+                    {% for member in group_members %}
+                        {% include 'deployment/snippets/group-member-new.html' with member=member %}
+                    {% endfor %}
+                </div>
+                <div class="clear-both"></div>
+                <a href="" class="long-button-gray" id="group_more_members">
+                    See more members
+                </a>
+                <input type="hidden" id="num_members" value="{{ num_members }}"/>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Block -->
+    <div class="middle-right">
+        <div class="matching">
+            <div class="{{ group.get_name|slugify }}-canvas" data-json="{{ json }}"></div>
+            <div id="qaweb-title">
+                You & {{ group.title }}
+            </div>
+        </div>
+        <div class="group-histogram-container histogram_box tooltip-right" title="click to expand">
+            {% include 'deployment/pages/histogram/histogram_mini.html' %}
+        </div>
+    </div>
+    {% else %}
+        <div class="hidden-message">
+            <h1>This group is hidden.</h1>
+        </div>
+    {% endif %}
+</div>
+
+<div id="group_requests_modal" class="requests-modal">
+    <div class="modal-close request_modal_close" ></div>
+    <div class="modal-section-title">Requests to join {{ group.get_name }}:</div>
+    <table class="group-request-table">
+        {% for req in group_requests %}
+            <tr>
+                <td>
+                    <a href="{{ req.getFrom.get_url }}">
+                        {% thumbnail req.getFrom.getProfileImage.image "38x38" crop="center" as im %}
+                            <img src="{{ im.url }}" class="icon-med"/>
+                        {% endthumbnail %}
+                    </a>
+                </td>
+                <td class="group_request_text">
+                    <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to join {{ group.get_name }}:
+                    <div class='group-request-append group_request_append_y'>They have joined your group</div>
+                    <div class='group-request-append group_request_append_n'>Request declined</div>
+                </td>
+                <td class="group_request_buttons" data-follow_id="{{ from_user.id }}" data-g_id="{{ to_user.id }}">
+                    <a href="" class="group_response_y button-red group-button">accept</a>
+                    <a href="" class="group_response_n button-red group-button">decline</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="invite_modal invite-modal">
+    {% include "deployment/pieces/invite_modal.html" %}
+</div>
+
+<script>
+    var g_id = "{{ group.id }}";
+</script>
+
+{% else %}
+    This group has been deleted.
+{% endif %}
+
+<script> rebind='group'; </script>
+
+<script>
+    $("." + "{{ group.get_name|slugify }}" + "-canvas").visualComparison();
+    var comparisonJSON = eval('(' + '{{ json|escapejs }}' + ')');
+</script>
+
+{% comment %}
+    <div class="members-wrappers" style="width:200px;float:left;">
+        <h3> Members </h3>
+        <div id="members-list">
+            {% for x in group_members %}
+                {% include 'deployment/snippets/group-member.div.html' with member=x %}
+            {% endfor %}
+        </div>
+    </div>
+{% endcomment %}

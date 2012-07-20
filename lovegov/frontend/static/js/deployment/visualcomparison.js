@@ -65,7 +65,6 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
-        if (this.dataObj['user_url'] != '') { this.domEle.append('<a style="position:absolute;top:15px;right:15px;z-index:5000" class="do-ajax-link" href="' + this.dataObj['user_url'] + '"><img src="/static/images/fullscreen_alt.png" style="width:25px"/></a>')}
         loadAjaxifyAnchors();
     },
 

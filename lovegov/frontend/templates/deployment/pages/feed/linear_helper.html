@@ -1,0 +1,13 @@
+{% for x in items %}
+
+    {% with item=x.0.downcast my_vote=x.1 %}
+
+        <div class="linear-item">
+            {% include 'deployment/pages/feed/linear.html' %}
+        </div>
+
+    {% endwith %}
+
+{% endfor %}
+
+

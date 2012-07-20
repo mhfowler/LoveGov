@@ -715,23 +715,112 @@ div.edit-link
 }
 
 
-.modal-close-base
-{
-  float: right;
-  height: 10px;
-  width: 10px;
+div.modal {
+  z-index: 103;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  padding: 15px;
+  background-color: white;
+  -moz-box-shadow: 10px 10px 5px $deep-gray;
+  -webkit-box-shadow: 10px 10px 5px $deep-gray;
+  box-shadow: 10px 10px 5px $deep-gray;
+  @include rounded(5px);
+  display: none;
+  border:1px solid $red;
+}
+
+div.first-login-modal {
+  z-index: 103;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 30px;
+  background-color: white;
+  -moz-box-shadow: 10px 10px 5px $deep-gray;
+  -webkit-box-shadow: 10px 10px 5px $deep-gray;
+  box-shadow: 10px 10px 5px $deep-gray;
+  @include rounded(5px);
+  display: none;
+  border:1px solid $red;
+  @include opacity(0.92);
+  max-width: 750px;
+
+  a.first-login-restart {
+    float:right;
+    margin-top:150px;
+    display:none;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+  color: $red;
+  @include titleFont;
+  font-size: 20px;
+  button.tutorial-button {
+    display: block;
+    background-color: $red;
+    @include rounded(5px);
+    padding: 10px 30px;
+    color: white;
+    border: 0px;
+    margin: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    &:hover {
+      background-color: $text-blue-light;
+
+    }
+  }
+  div.zip-code-form {
+    text-align: center;
+    input {
+      height: 40px;
+      width: 150px;
+      margin-right: 20px;
+      text-align: center;
+      float: none;
+    }
+    button.tutorial-button {
+      display: inline;
+    }
+  }
+  div.skip-tutorial {
+    text-align: center;
+    color: $black;
+    font-size: 14px;
+  }
+  img.privacy-img {
+    float: left;
+    margin-right: 10px;
+  }
+  &.slim-modal {
+    max-width: 500px;
+  }
+  div.zip-code-error-msg {
+    color: $deep-gray;
+    font-size: 16px;
+  }
 }
 
 div.modal-close
 {
-  @extend .modal-close-base;
+  float: right;
+  height: 10px;
+  width: 10px;
   background-image: url('/static/icons/x.png');
-}
-
-div.modal-close:hover
-{
-  @extend .modal-close-base;
-  background-image: url('/static/icons/x_hover.png');
+  cursor: pointer;
+  &:hover
+  {
+    background-image: url('/static/icons/x_hover.png');
+  }
 }
 
 div.agg-notifications-modal
@@ -824,7 +913,7 @@ div.autocomplete-user
   }
 }
 
-div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question {
+div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question, div.autocomplete-group {
   padding: 5px;
   position: relative;
   div.autocomplete-image-wrapper {
@@ -859,4 +948,26 @@ div.autocomplete-div.autocomplete-more-results
   &:hover {
     background-color: $white-gray;
   }
+}
+
+
+div.qaweb {
+  text-align:center;
+  div.see-answers {
+    width:100%;
+    margin-bottom:5px;
+    display:none;
+  }
+  @include rounded(17px);
+  margin-bottom:23px;
+}
+
+div.qaweb:hover {
+  background-color: $white-gray;
+  cursor:pointer;
+  div.see-answers {
+    color:$text-blue;
+    display:block;
+  }
+  margin-bottom:0px;
 }

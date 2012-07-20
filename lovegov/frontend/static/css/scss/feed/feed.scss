@@ -500,19 +500,30 @@
 
   }
 
+
+  div.feed-footer {
+    border-top: 1px solid $gray;
+    height:500px;
+    width:1000px;
+    text-align:center;
+    div.feed-loading {
+        margin-top: 50px;
+        display:none;
+    }
+  }
+
   /*
    * Pinterest cards
    */
 
   div.pinterest-wrapper {
 
-    float:left;
     position:relative;
+    margin-bottom:30px;
 
     div.pinterest_column {
       float:left;
       width:320px;
-      height:500px;
       margin-top:0px;
       position:relative;
       top: -5px;
@@ -532,7 +543,7 @@
     div.pinterest {
 
       @extend .box;
-      box-shadow: 0px 0px 10px #f0f0f0;
+      box-shadow: 7px 7px 20px #B3B3B3;
       width:320px;
       margin-top:20px;
 
@@ -880,4 +891,27 @@ div.bind_link {
 }
 div.bind_link:hover {
   color:$black;
+}
+
+
+span.fake_heart {
+  width: 18px;
+  height: 19px;
+  display: inline-block;
+  position: relative;
+  top: 4px;
+}
+span.fake_heart_plus {
+  background-image: url("/static/icons/plusheart-gray.png");
+}
+span.fake_heart_plus:hover {
+  background-image: url("/static/icons/plusheart-red.png");
+  cursor:pointer;
+}
+span.fake_heart_minus {
+  background-image: url('/static/icons/minusheart-gray.png');
+}
+span.fake_heart_minus:hover {
+  background-image: url("/static/icons/minusheart-red.png");
+  cursor:pointer;
 }

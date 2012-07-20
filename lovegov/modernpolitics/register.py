@@ -36,6 +36,16 @@ def createFBUser(name, email):
     sendTemplateEmail(subject="Welcome to LoveGov", template="facebookRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
     return control
 
+def createTwitterUser(name, email, vals={}):
+    password = generateRandomPassword(10)
+    control = createUser(name, email, password)
+    vals['name'] = name
+    vals['email'] = email
+    vals['password'] = password
+    vals['confirmation_link'] = control.user_profile.confirmation_link
+    sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
+    return control
+
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
 # - name, email, password
@@ -80,29 +90,27 @@ def createUserHelper(control,name,type='userProfile',active=True):
         userProfile = Representative(user_type='R')
     else:
         userProfile = UserProfile(user_type='U')
-        toregister = getToRegisterNumber()
-        toregister.number -= 1
-        toregister.save()
-        # split name into first and last
     names = name.split(" ")
     if len(names) == 2:
         userProfile.first_name = names[0]
         userProfile.last_name = names[1]
-    elif len(names) == 3:
+    elif len(names) > 2:
         userProfile.first_name = names[0] + " " + names[1]
         userProfile.last_name = names[2]
-        # save email and username from control
+    else:
+        userProfile.first_name = names[0]
+        userProfile.last_name = ""
+
     userProfile.email = control.email
     userProfile.username = control.username
     # active
     userProfile.is_active = active
-    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))   #TODO: crypto-safe
+    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))
     # worldview
     world_view = WorldView()
     world_view.save()
-    userProfile.view_id = world_view.id
+    userProfile.view = world_view
     userProfile.save()
-    userid = userProfile.id
     # profilePage
     userProfilePage = ProfilePage(person=userProfile)
     userProfilePage.save()
@@ -121,8 +129,8 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # associate with control
     userProfile.user = control
     userProfile.save()
-    if type=="userProfile":
-        sendYayRegisterEmail(userProfile)
+    if type=="userProfile" and not userProfile.isSuperHero():
+            thread.start_new_thread(sendYayRegisterEmail,(userProfile,))
     # return user prof
     return userProfile
 

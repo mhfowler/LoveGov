@@ -1,4 +1,3 @@
-
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -21,109 +20,53 @@ def get_or_none(model, **kwargs):
         return None
 
 def getDefaultImage():
-    to_return = UserImage.lg.get_or_none(alias="Default_Image")
-    if to_return:
-        return to_return
-    else:
-        return initializeDefaultImage()
+    return UserImage.lg.get_or_none(alias="Default_Image") or initializeDefaultImage()
 
 def getHotFilter():
-    to_return = FilterSetting.lg.get_or_none(alias="Hot_Filter")
-    if to_return:
-        return to_return
-    else:
-        return initializeHotFilter()
+    return FilterSetting.lg.get_or_none(alias="Hot_Filter") or initializeHotFilter()
 
 def getNewFilter():
-    to_return = FilterSetting.lg.get_or_none(alias="New_Filter")
-    if to_return:
-        return to_return
-    else:
-        return initializeNewFilter()
+    return FilterSetting.lg.get_or_none(alias="New_Filter") or initializeNewFilter()
 
 def getBestFilter():
-    to_return = FilterSetting.lg.get_or_none(alias="Best_Filter")
-    if to_return:
-        return to_return
-    else:
-        return initializeBestFilter()
+    return FilterSetting.lg.get_or_none(alias="Best_Filter") or initializeBestFilter()
 
 def getDefaultFilter():
     return getHotFilter()
 
 def getLoveGovGroup():
-    to_return = Group.lg.get_or_none(alias="LoveGov_Group")
-    if to_return:
-        return to_return
-    else:
-        return initializeLoveGovGroup()
+    return Group.lg.get_or_none(alias="LoveGov_Group") or initializeLoveGovGroup()
 
 def getLoveGovGroupView():
     return getLoveGovGroup().group_view.responses.all()
 
 def getLoveGovUser():
-    to_return = UserProfile.lg.get_or_none(alias="lovegov")
-    if to_return:
-        return to_return
-    else:
-        return initializeLoveGovUser()
+    return UserProfile.lg.get_or_none(alias="lovegov") or initializeLoveGovUser()
 
 def getAnonUser():
-    to_return = UserProfile.lg.get_or_none(alias="anonymous")
-    if to_return:
-        return to_return
-    else:
-        return initializeAnonymous()
+    return UserProfile.lg.get_or_none(alias="anonymous") or initializeAnonymous()
 
 def getNewFeed():
-    to_return =  Feed.lg.get_or_none(alias='New_Feed')
-    if to_return:
-        return to_return
-    else:
-        return initializeFeed('New_Feed')
+    return Feed.lg.get_or_none(alias='New_Feed') or initializeFeed('New_feed')
 
 def getHotFeed():
-    to_return = Feed.lg.get_or_none(alias='Hot_Feed')
-    if to_return:
-        return to_return
-    else:
-        return initializeFeed('Hot_Feed')
+    to_return = Feed.lg.get_or_none(alias='Hot_Feed') or initializeFeed('Hot_Feed')
 
 def getBestFeed():
-    to_return = Feed.lg.get_or_none(alias='Best_Feed')
-    if to_return:
-        return to_return
-    else:
-        return initializeFeed('Best_Feed')
+    return Feed.lg.get_or_none(alias='Best_Feed') or initializeFeed('Best_Feed')
 
 def getTopicImage(topic):
     alias = "topicimage:" + topic.alias
-    to_return = UserImage.lg.get_or_none(alias=alias)
-    if to_return:
-        return to_return
-    else:
-        return initializeTopicImage(topic)
+    return UserImage.lg.get_or_none(alias=alias) or initializeTopicImage(topic)
 
 def getGeneralTopic():
-    to_return = Topic.lg.get_or_none(alias='general')
-    if to_return:
-        return to_return
-    else:
-        return initializeGeneralTopic()
+    return Topic.lg.get_or_none(alias='general') or initializeGeneralTopic()
 
 def getOtherNetwork():
-    to_return = Network.lg.get_or_none(name="other")
-    if to_return:
-        return to_return
-    else:
-        return initializeOtherNetwork()
+    return Network.lg.get_or_none(name="other") or initializeOtherNetwork()
 
 def getCongressNetwork():
-    to_return = Network.lg.get_or_none(alias="congress")
-    if to_return:
-        return to_return
-    else:
-        return initializeCongressNetwork()
+    return Network.lg.get_or_none(alias="congress") or initializeCongressNetwork()
 
 
 def getToRegisterNumber():
@@ -175,6 +118,8 @@ def initializeLoveGovUser():
         lovegov.first_name = 'Love'
         lovegov.last_name = 'Gov'
         user_profile = superUserHelper(lovegov)
+        user_profile.alias = "lovegov"
+        user_profile.save()
         print "initialized: lovegov user"
         return user_profile
 
@@ -202,11 +147,17 @@ def initializeAnonymous():
     if UserProfile.objects.filter(alias="anonymous"):
         print("...anon user already initialized.")
     else:
-        anon = ControllingUser.objects.create_user(username='anon',email='anon@lovegov.com',password='theANON')
-        anon.first_name = "Anonymous"
-        anon.last_name = ""
-        userprof = superUserHelper(anon)
-        userprof.developer = False
+        from lovegov.modernpolitics.register import createUser
+        already = ControllingUser.lg.get_or_none(username="anon")
+        if already:
+            if already.user_profile:
+                already.user_profile.delete()
+            already.delete()
+        anon = createUser(name="Anonymous", email="anon", password="theANON")
+        anon.prohibited_actions = ANONYMOUS_PROHIBITED_ACTIONS
+        userprof = anon.user_profile
+        userprof.confirmed = True
+        userprof.alias = 'anonymous'
         userprof.save()
         print("initialized: anon user")
         return userprof
@@ -1126,6 +1077,22 @@ def updatePartyImages():
         file = open(full_ref)
         party.party_label.save(photoKey(".png"), File(file))
 
+def updatePoliticianImages():
+
+    romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
+    im = open(im_ref)
+    romney.setProfileImage(im)
+
+    elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
+    im = open(im_ref)
+    elizabeth.setProfileImage(im)
+
+    cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
+    im = open(im_ref)
+    cicilline.setProfileImage(im)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Petition clear and recount functions (a.k.a. recalculate)
@@ -1198,8 +1165,9 @@ def recalculateTopics():
 
 # set parent topics to none and delete all topics which are not main topics
 def purgeTopics():
-    for t in getMainTopics():
+    for t in Topic.objects.all():
         t.parent_topic = None
+        t.save()
     for t in Topic.objects.all():
         if t not in getMainTopics():
             print "Deleting topic "+t.topic_text
@@ -1214,3 +1182,21 @@ def recalculateEverything():
     recalculateAllVotes()
     print "Recalculating Comments..."
     recalculateAllComments()
+
+def recalculatePermittedActions():
+    for c in ControllingUser.objects.all():
+        p = c.getUserProfile()
+        if p:
+            if p.alias=="anonymous":
+                c.prohibited_actions = ANONYMOUS_PROHIBITED_ACTIONS
+            else:
+                c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
+        c.save()
+
+def initFirstLogin():
+    for p in UserProfile.objects.all():
+        if p.alias=="anonymous":
+            p.first_login = FIRST_LOGIN_LAST_STAGE
+        else:
+            p.first_login = 0
+        p.save()
