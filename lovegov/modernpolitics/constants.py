@@ -202,6 +202,7 @@ USERPROFILE_EDITABLE_FIELDS = [
 CONTENT_EDITABLE_FIELDS = [
     'text', 
     'full_text',
+    'title',
 ]
 
 # level of government
@@ -307,7 +308,7 @@ NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
-    'JO': ['A','D','R'],
+    'JO': ['A','D','R','I'],
     'FO': ['A','D','R']
 }
 
@@ -390,6 +391,9 @@ BILL_TYPES = {
 
 # types of content that show up in the feed
 FEED_CONTENT_TYPES = ['P','N','L','G']
+
+# Facebook Stuff
+FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
 
 ###################################### STATIC FILE URLS ################################################################
 
@@ -524,6 +528,11 @@ ACTIONS = [
     'getAggregateNotificationUsers',
     'getSigners',
     'setFirstLoginStage',
+    'editGroup',
+    'addAdmins',
+    'removeAdmin',
+    'groupInviteResponse',
+    'groupInvite'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
@@ -586,4 +595,10 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     #'getAggregateNotificationUsers',
     #'getSigners',
     #'setFirstLoginStage',
+    'setFirstLoginStage',
+    'editGroup',
+    'addAdmins',
+    'removeAdmin',
+    'groupInviteResponse',
+    'groupInvite'
 ]
