@@ -2994,6 +2994,7 @@ function getFeed(num)
         success: function(data) {
 
             $(".feed_loading").hide();
+            scrollLoadLockout=false;
 
             var returned = eval('(' + data + ')');
 
@@ -3289,8 +3290,7 @@ function scrollFeed() {
     if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
         if (scrollLoadLockout==false) {
             getFeed(-1);
-            scrollLoadLockout=true;
-            setTimeout(function() { scrollLoadLockout=false}, 500);
+            scrollLoadLockout = true;
         }
     }
 }
