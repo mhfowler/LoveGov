@@ -425,12 +425,11 @@ def submitAddress(request, vals={}):
 
     try:
         location = locationHelper(full_address, zip)
+        viewer = vals['viewer']
+        viewer.location = location
+        viewer.save()
     except:
         return HttpResponse("The given address was not specific enough to determine your voting district")
-
-    viewer = vals['viewer']
-    viewer.location = location
-    viewer.save()
 
     return HttpResponse("success")
 
