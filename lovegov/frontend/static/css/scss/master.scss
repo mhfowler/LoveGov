@@ -937,3 +937,25 @@ div.autocomplete-div.autocomplete-more-results
     background-color: $white-gray;
   }
 }
+
+
+div.qaweb {
+  text-align:center;
+  div.see-answers {
+    width:100%;
+    margin-bottom:5px;
+    display:none;
+  }
+  @include rounded(17px);
+  margin-bottom:23px;
+}
+
+div.qaweb:hover {
+  background-color: $white-gray;
+  cursor:pointer;
+  div.see-answers {
+    color:$text-blue;
+    display:block;
+  }
+  margin-bottom:0px;
+}

@@ -370,16 +370,15 @@ div.group-histogram-container
 
   div.histogram-title
   {
-    @include rounded-bottom(10px);
+    @include rounded-bottom(18px);
     position:relative;
     background-color: $gray;
-    height: 35px;
+    height: 37px;
     color: white;
-    z-index:-1;
 
     p{
       position:relative;
-      top:-8px;
+      top:-13px;
       display:block;
       @include h5;
       color:white;

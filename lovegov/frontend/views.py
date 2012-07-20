@@ -425,7 +425,7 @@ def compareWeb(request,alias=None,vals={}):
 
             tempvals = {}
             tempvals['viewer'] = UserProfile.objects.get(alias=alias)
-            comparison, json = user.getComparison(tempvals['viewer'])
+            comparison, json = user.getComparisonJSON(tempvals['viewer'])
             vals['json'] = json
             getUserWebResponsesJSON(request,vals=tempvals,webCompare=True)
             vals['questionsArray'] = tempvals['questionsArray']                     # populates questionsArray with user from profile page that you are looking at.

@@ -43,8 +43,9 @@
         <div class="clear-both"></div>
     </div>
 
-    <div class="qaweb">
+    <div class="qaweb bind_link tooltip-bottom" data-url="{{ item.getWebURL }}">
         <div class="{{ item.get_name|slugify }}-canvas" data-json="{{ item.compare }}"></div>
+        <div class="see-answers"> click comparison to see their responses </div>
     </div>
 
     <script>

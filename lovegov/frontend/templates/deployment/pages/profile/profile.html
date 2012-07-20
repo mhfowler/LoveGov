@@ -297,7 +297,7 @@
             <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
 
         {% else %}
-            <div class="matching">
+            <div class="matching bind_link tooltip-right"  data-url="{{ user_prof.getWebURL }}" title="click to expand">
                 <div class="{{ user_prof.get_name|slugify }}-canvas" data-json="{{ json }}"></div>
                 <div id="qaweb-title">
                     You & {{ user_prof.get_name }}
