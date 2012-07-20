@@ -2848,23 +2848,39 @@ function bindRemoveAdmin()
         var admin_name = $(this).data('admin_name');
         var g_id = $('#edit_admin_submit').data('g_id');
         $(this).parents('table.admin_container').fadeOut(600);
-        ajaxPost({
-            data:
-            {
-                'action': 'removeAdmin',
-                'admin_id': admin_id,
-                'g_id': g_id
-            },
-            success: function(data)
-            {
-                $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
-            },
-            error: function(data)
-            {
-                alert(data);
-            }
-        })
+        removeAdmin( admin_id , g_id ,function(data)
+        {
+            $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
+        });
     }));
+
+    $('.remove_admin_self').bindOnce('click.remove_admin', (function(e) {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id ,function(data)
+        {
+            window.location = '/group/' + g_id + '/';
+        });
+    }));
+}
+
+function removeAdmin(admin_id,g_id,success)
+{
+    ajaxPost({
+        data:
+        {
+            'action': 'removeAdmin',
+            'admin_id': admin_id,
+            'g_id': g_id
+        },
+        success: success,
+        error: function(data)
+        {
+            //alert(data);
+        }
+    })
 }
 
 function selectPrivacyRadio()

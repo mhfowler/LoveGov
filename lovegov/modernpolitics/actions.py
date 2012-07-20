@@ -517,6 +517,9 @@ def editGroup(request, vals={}):
 
     vals['group'] = group
 
+    if viewer not in group.admins.all():
+        return HttpResponseForbidden("You are not authroized to edit this group")
+
     if 'title' in request.POST: group.title = request.POST['title']
     if 'full_text' in request.POST: group.full_text = request.POST['full_text']
     if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
@@ -814,10 +817,15 @@ def joinGroupRequest(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, vals={}):
+    viewer = vals['viewer']
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast() # Parties have a slightly different joinMember
+
+    if viewer not in group.admins.all():
+        return HttpResponseForbidden("You are not authorized to respond to this group request")
+
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_joined = already[0]
@@ -901,6 +909,9 @@ def groupInvite(request, vals={}):
     if not group:
         errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
         return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if inviter not in group.admins.all():
+        return HttpResponseForbidden("You are not authorized to send group invites for this group")
 
     if not 'invitees' in request.POST:
         errors_logger.error("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
