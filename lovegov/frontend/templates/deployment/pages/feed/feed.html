@@ -190,24 +190,6 @@
 
     </div>
 
-<!--
-    <div class="current-selection">
-        <div class="current-filter">
-            <p class="current-filter-text"> Current Filters: </p>
-        </div>
-        <div class="current-options-images"> </div>
-        <div class="current-options">
-            <a href="" class="feed-clear feed_clear">
-                clear
-            </a>
-            <a href="" class="feed-save save_filter_button">
-                save
-            </a>
-        </div>
-        <input type="text" name="filter-name" id="some_id" class="save_filter_input"/>
-    </div>
--->
-
     <div id="clear-save">
         <a href="#" class="feed_clear gray-button">
             clear filter
@@ -236,7 +218,6 @@
 <div class="feed-body">
 
     <div class="pinterest-wrapper">
-
         {% for x in num_pinterest %}
             <div class="pinterest_column
                  {% if forloop.counter0 != 0 %}
@@ -244,7 +225,7 @@
                     {% endif %}"
                  data-column="{{ forloop.counter0 }}"></div>
         {% endfor %}
-
+        <div style="clear:both"></div>
     </div>
 
     <div class="linear-wrapper">
@@ -257,6 +238,12 @@
                     {% include 'deployment/pieces/right_sidebar_questions.html' %}
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="feed-footer">
+        <div class="feed_loading feed-loading">
+            <img id="loading-img" src="/static/images/fetching.gif"/>
         </div>
     </div>
 

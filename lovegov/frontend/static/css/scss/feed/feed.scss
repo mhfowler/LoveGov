@@ -500,19 +500,30 @@
 
   }
 
+
+  div.feed-footer {
+    border-top: 1px solid $gray;
+    height:500px;
+    width:1000px;
+    text-align:center;
+    div.feed-loading {
+        margin-top: 50px;
+        display:none;
+    }
+  }
+
   /*
    * Pinterest cards
    */
 
   div.pinterest-wrapper {
 
-    float:left;
     position:relative;
+    margin-bottom:30px;
 
     div.pinterest_column {
       float:left;
       width:320px;
-      height:500px;
       margin-top:0px;
       position:relative;
       top: -5px;

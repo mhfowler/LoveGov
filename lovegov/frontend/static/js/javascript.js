@@ -2981,6 +2981,10 @@ function getFeed(num)
         feed_replace = false;
     }
 
+    setTimeout(function() {
+            $(".feed_loading").show();
+    }, 100);
+
     ajaxPost({
         data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
             'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
@@ -2988,6 +2992,9 @@ function getFeed(num)
             'feed_start':feed_start, 'feed_end':feed_end
         },
         success: function(data) {
+
+            $(".feed_loading").hide();
+
             var returned = eval('(' + data + ')');
 
             feed_metadata.feed_start = feed_start + returned.num;
