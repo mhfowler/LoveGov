@@ -826,8 +826,7 @@ function ajaxPost(dict) {
         if (superError) {
             superError()
         } else {
-            alert(jqXHR.status);
-            launchModal("<strong>Error:</strong> "+jqXHR.responseText);
+            $("body").html(jqXHR.responseText);
         }
     };
     data['url'] = window.location.href;
@@ -870,9 +869,11 @@ function launchFirstLoginModal(content) {
     var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
-        .css("margin-left", -width/2)
-        .css("display", "inline-block");
+        .css("margin-left", -width/2);
+    setTimeout(function() {modal.fadeIn(1500)}, 1500);
 }
+
+
 
 // Binds an overdiv click to hide a particular element
 // Unbinds when the click occurs
@@ -2985,6 +2986,10 @@ function getFeed(num)
         feed_replace = false;
     }
 
+    setTimeout(function() {
+            $(".feed_loading").show();
+    }, 100);
+
     ajaxPost({
         data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
             'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
@@ -2992,6 +2997,9 @@ function getFeed(num)
             'feed_start':feed_start, 'feed_end':feed_end
         },
         success: function(data) {
+
+            $(".feed_loading").hide();
+
             var returned = eval('(' + data + ')');
 
             feed_metadata.feed_start = feed_start + returned.num;
@@ -4231,10 +4239,6 @@ function updateHistogram(recursive) {
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
                 }
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
             }
         }
     );
@@ -4490,7 +4494,7 @@ function submitAddress(wrapper) {
     });
 }
 
-function submitZip(zip) {
+function submitZip(zip, successCallback, errorCallback) {
     ajaxPost({
         data: {
             'action': 'submitAddress',
@@ -4499,9 +4503,9 @@ function submitZip(zip) {
         success: function(data)
         {
             if (data=='success') {
-                return true;
+                successCallback();
             } else {
-                return false;
+                errorCallback(data);
             }
         },
         error: function(error, textStatus, errorThrown)
