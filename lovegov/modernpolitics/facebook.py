@@ -42,10 +42,10 @@ def fbMakeFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Put in authenticate link.
 #-----------------------------------------------------------------------------------------------------------------------
-def fbGetRedirect(request, vals={}, redirect_uri=None, scope="email,user_education_history,user_location"):
+def fbGetRedirect(request, vals={}, redirect_uri=None, scope=FACEBOOK_SCOPE):
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/fb/handle/")
-    fb_state = random.randint(0, 1000)
+    fb_state = random.randint(0, 100000)
     url =  "https://www.facebook.com/dialog/oauth?"
     url += "client_id=" + settings.FACEBOOK_APP_ID
     url += "&redirect_uri=" + redirect_uri

@@ -154,7 +154,7 @@ def initializeAnonymous():
                 already.user_profile.delete()
             already.delete()
         anon = createUser(name="Anonymous", email="anon", password="theANON")
-        anon.permitted_actions = ANONYMOUS_PERMITTED_ACTIONS
+        anon.prohibited_actions = ANONYMOUS_PROHIBITED_ACTIONS
         userprof = anon.user_profile
         userprof.confirmed = True
         userprof.alias = 'anonymous'
@@ -1183,14 +1183,14 @@ def recalculateEverything():
     print "Recalculating Comments..."
     recalculateAllComments()
 
-def initPermittedActions():
+def recalculatePermittedActions():
     for c in ControllingUser.objects.all():
         p = c.getUserProfile()
         if p:
             if p.alias=="anonymous":
-                c.permitted_actions = ANONYMOUS_PERMITTED_ACTIONS
+                c.prohibited_actions = ANONYMOUS_PROHIBITED_ACTIONS
             else:
-                c.permitted_actions = ACTIONS
+                c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
         c.save()
 
 def defaultTest():

@@ -1093,11 +1093,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
-    def get_nameShort(self):
+    def get_nameShort(self, max_length=15):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
-            if len(fullname) > 19:
+            if len(fullname) > max_length:
                 to_return = unicode(str(self.first_name)).encode("UTF-8")
+                if len(to_return) > max_length:
+                    to_return = to_return[:max_length-3] + "..."
             else:
                 to_return = unicode(str(self.first_name) + " " + str(self.last_name)).encode("UTF-8")
         except UnicodeEncodeError:
@@ -1298,6 +1300,26 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.facebook_profile_url = fb_data['link']
         # self.gender = fb_data['gender']
         self.confirmed = True
+
+
+        if 'birthday' in fb_data:
+            split_bday = fb_data['birthday'].split('/')
+            birthday = datetime.date.min
+
+            month = int(split_bday[0])
+            day = int(split_bday[1])
+            year = int(split_bday[2])
+
+            if 0 < month < 13:
+                birthday = birthday.replace(month=month)
+            if 0 < day < 32:
+                birthday = birthday.replace(day=day)
+            if 0 < year < 10000:
+                birthday = birthday.replace(year=year)
+
+            self.dob = birthday
+            self.save()
+
 
         if 'education' in fb_data:
             education = fb_data['education']
@@ -1605,9 +1627,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupInvites(self, num=-1):
         if num == -1:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')
         else:
-            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, rejected=False ).order_by('-when')[:num]
+            return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')[:num]
 
     #-------------------------------------------------------------------------------------------------------------------
     # return a query set of groups and networks user is in
@@ -1755,7 +1777,7 @@ class ControllingUser(User, LGModel):
     permissions = models.ForeignKey(UserPermission, null=True)  # null is default permission
     user_profile = models.ForeignKey(UserProfile, null=True)    # spectator
     objects = UserManager()
-    permitted_actions = custom_fields.ListField(default=ACTIONS)
+    prohibited_actions = custom_fields.ListField(default=DEFAULT_PROHIBITED_ACTIONS)
     def getUserProfile(self):
         return self.user_profile
 
@@ -1897,6 +1919,8 @@ class Notification(Privacy):
         if n_action.type == 'JO':
             notification_context['from_user'] = relationship.getFrom()
             notification_context['group_join'] = relationship.downcast()
+            if n_action.modifier == 'I':
+                notification_context['inviter'] = relationship.downcast().getInviter()
 
         if n_action.type == 'SH':
             notification_context['from_user'] = relationship.getFrom()
@@ -3674,7 +3698,7 @@ class Group(Content):
     def joinMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
-            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.confirm()
@@ -3688,7 +3712,7 @@ class Group(Content):
     def removeMember(self, user, privacy='PUB'):
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
-            group_joined = GroupJoined(user=user, content=self, group=self)
+            group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.clear()
@@ -4163,10 +4187,7 @@ class Invite(LGModel):
     def invite(self, inviter):
         self.invited = True
         self.inviter = inviter.id
-        if self.requested:
-            self.confirm()
-        else:
-            self.save()
+        self.save()
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -4365,6 +4386,7 @@ class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
     def autoSave(self):
         self.relationship_type = 'JO'
+        self.content = self.group
         self.creator = self.user
         self.save()
 

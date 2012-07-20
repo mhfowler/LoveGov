@@ -284,5 +284,93 @@ div.account-right
   }
 
 
+  div.admin-edit-header
+  {
+    @include h3;
+    margin-bottom: 10px;
+  }
+
+  div.admin-select-container
+  {
+    margin-bottom:15px;
+  }
+
+  div.admin-submit-container
+  {
+    margin-bottom:15px;
+  }
+
+  div.admin-submit-message
+  {
+    color: $dark-gray;
+    @include fontSize(14px);
+    display: none;
+  }
+
+  div.admin-explanation
+  {
+    color: $dark-gray;
+    @include fontSize(14px);
+  }
+
+  a.admin-button
+  {
+    @include fontSize(18px);
+    @include rounded(10px);
+    padding: 10px 15px 10px 15px;
+  }
+
+  a.admin-button-modal:hover
+  {
+    background-color: $light-gray;
+  }
+
+  select.admin-select {
+    width: 500px;
+  }
+
+  div.admin-edit-tab
+  {
+    text-align: center;
+    width: 100%;
+  }
+
+  div.admin-remove-container
+  {
+    padding-left: 65px;
+  }
+}
+
+.custom-radio
+{
+  display: none;
+}
+
+div.create-radio
+{
+  @include rounded(9px);
+  @include float-left;
+  padding: 10px 10px 0px 10px;
+  font-size: 18px;
+  font-family: $gill-std;
+  color: white;
+  background-color: $gray;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+div.create-radio:hover
+{
+  background-color: $light-gray;
+}
+
+div.create-radio-selected
+{
+  background-color: $red;
+}
+
+div.create-radio-selected:hover
+{
+  background-color: $red-light;
 }
 

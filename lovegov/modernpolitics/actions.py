@@ -500,6 +500,42 @@ def editAccount(request, vals={}):
     return shortcuts.redirect('/account/')
 
 #-----------------------------------------------------------------------------------------------------------------------
+# FORM Edits group profile info
+#-----------------------------------------------------------------------------------------------------------------------
+def editGroup(request, vals={}):
+    viewer = vals['viewer']
+
+    g_id = request.POST.get('g_id')
+
+    if not g_id:
+        errors_logger.error('Group id not provided to editGroup action')
+        return shortcuts.redirect('/')
+
+    group = Group.lg.get_or_none(id=g_id)
+    if not group:
+        errors_logger.error('Group id #' + str(g_id) + ' not found in database.  Requested by editGroup action')
+        return shortcuts.redirect('/')
+
+    vals['group'] = group
+
+    if 'title' in request.POST: group.title = request.POST['title']
+    if 'full_text' in request.POST: group.full_text = request.POST['full_text']
+    if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
+    if 'scale' in request.POST: group.scale = request.POST['scale']
+
+    if 'image' in request.FILES:
+        try:
+            file_content = ContentFile(request.FILES['image'].read())
+            Image.open(file_content)
+            group.setMainImage(file_content)
+        except IOError:
+            print "Image Upload Error"
+
+    group.save()
+
+    return shortcuts.redirect('/group/' + str(group.id) + '/edit/')
+
+#-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editProfile(request, vals={}):
@@ -731,7 +767,7 @@ def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
     from_user = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    group = group.downcast()
+    group = group.downcast()  # Parties have a slightly different joinMember
     #Secret groups and System Groups cannot be join requested
     if group.system:
         return HttpResponse("cannot request to join system group")
@@ -782,7 +818,7 @@ def joinGroupResponse(request, vals={}):
     response = request.POST['response']
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
-    group = group.downcast()
+    group = group.downcast() # Parties have a slightly different joinMember
     already = GroupJoined.objects.filter(user=from_user, group=group)
     if already:
         group_joined = already[0]
@@ -808,28 +844,114 @@ def joinGroupResponse(request, vals={}):
 #
 #-----------------------------------------------------------------------------------------------------------------------
 def groupInviteResponse(request, vals={}):
+    from_user = vals['viewer'] # Viewer is always recieving/responding to the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
+        return HttpResponse("Group invite response sent without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if not 'response' in request.POST:
+        errors_logger.error("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
     response = request.POST['response']
-    from_user = vals['viewer']
-    group = Group.objects.get(id=request.POST['g_id'])
-    already = GroupJoined.objects.filter(user=from_user, group=group, privacy=getPrivacy(request))
-    if already:
-        group_joined = already[0]
+
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
+
         if group_joined.confirmed:
+            errors_logger.error("User #" + str(from_user.id) + " responded to an invite to group #" + str(group.id) + " of which they are already a member")
             return HttpResponse("You have already joined that group")
+
         if group_joined.invited:
             if response == 'Y':
                 group.joinMember(from_user, privacy=getPrivacy(request))
                 action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
                 action.autoSave()
-                from_user.notify(action)
+                for admin in group.admins.all():
+                    admin.notify(action)
                 return HttpResponse("you have joined this group!")
+
             elif response == 'N':
-                group_joined.reject()
+                group_joined.decline()
                 action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
                 action.autoSave()
-                from_user.notify(action)
+                for admin in group.admins.all():
+                    admin.notify(action)
                 return HttpResponse("you have rejected this group invitation")
+
+    errors_logger.error("User #" + str(viewer.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
     return HttpResponse("you were not invitied to join this group")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Invites a set of users to a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def groupInvite(request, vals={}):
+    inviter = vals['viewer'] # Viewer is always sending the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Group invite sent without a group ID by user " + str(inviter.id) + ".")
+        return HttpResponse("Group invite sent without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if not 'invitees' in request.POST:
+        errors_logger.error("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
+        return HttpResponse("Group invite sent without recieving user IDs")
+
+    invitees = json.loads(request.POST['invitees'])
+
+    for follow_id in invitees:
+        individualGroupInvite(follow_id,group,inviter,request)
+
+    return HttpResponse("invite success")
+
+#----------------------------------------------------------------------------------------------------------------------
+# Invites a single user to a given group
+# HELPER FUNCTION TO groupInvite().
+#-----------------------------------------------------------------------------------------------------------------------
+def individualGroupInvite(follow_id, group, inviter, request):
+    from_user = UserProfile.lg.get_or_none(id=follow_id)
+
+    if not from_user:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return False
+
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
+
+        if group_joined.confirmed:
+            errors_logger.error("User #" + str(from_user.id) + " was invited to group #" + str(group.id) + " of which they are already a member")
+            return False
+
+        elif group_joined.invited:
+            normal_logger.debug("User #" + str(from_user.id) + " was reinvited to join group #" + str(group.id) )
+            return False
+
+        elif group_joined.requested:
+            group.joinMember(from_user, privacy=getPrivacy(request))
+            action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
+            action.autoSave()
+            from_user.notify(action)
+            return True
+    else:
+        group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
+        group_joined.autoSave()
+
+    group_joined.invite(inviter)
+    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="I")
+    action.autoSave()
+    from_user.notify(action)
+    return True
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -989,6 +1111,91 @@ def posttogroup(request, vals={}):
     group = Group.objects.get(id=group_id)
     group.group_content.add(content)
     return HttpResponse("added")
+
+
+#----------------------------------------------------------------------------------------------------------------------
+# Makes a set of users into moderators for a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def removeAdmin(request, vals={}):
+    viewer = vals['viewer']
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Admin removal without a group ID by user " + str(viewer.id) + ".")
+        return HttpResponse("Admin removal without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to removeAdmin by user #" + str(viewer.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to remove an admin for this group")
+
+    if not 'admin_id' in request.POST:
+        errors_logger.error("Group admin removal without user ID for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group admin removal without user ID")
+
+    admin_remove = UserProfile.lg.get_or_none(id=request.POST['admin_id'])
+    if not admin_remove:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
+        return HttpResponse("User with given ID does not exist")
+
+    if admin_remove in group.admins.all():
+        group.admins.remove(admin_remove)
+    return HttpResponse("admin remove success")
+
+
+#----------------------------------------------------------------------------------------------------------------------
+# Makes a set of users into moderators for a given group
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def addAdmins(request, vals={}):
+    viewer = vals['viewer'] # Viewer is always sending the invite
+
+    if not 'g_id' in request.POST:
+        errors_logger.error("Admin addition without a group ID by user " + str(viewer.id) + ".")
+        return HttpResponse("Admin addition without a group ID")
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    if not group:
+        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to addAdmins by user #" + str(viewer.id))
+        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to add an admin for this group")
+
+    if not 'admins' in request.POST:
+        errors_logger.error("Group admin addition without user IDs for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group admin addition without user IDs")
+
+    admins = json.loads(request.POST['admins'])
+
+    for admin_id in admins:
+        addAdmin(admin_id,group,viewer,request)
+
+    vals['group_admins'] = group.admins.all()
+    html = ajaxRender('deployment/snippets/admin_list.html',vals,request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
+#----------------------------------------------------------------------------------------------------------------------
+# Adds a single user as moderator for a given group
+# HELPER FUNCTION TO addAdmins().
+#-----------------------------------------------------------------------------------------------------------------------
+def addAdmin(admin_id, group, viewer, request):
+    new_admin = UserProfile.lg.get_or_none(id=admin_id)
+
+    if not new_admin:
+        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
+        return False
+
+    group.admins.add(new_admin)
+    #TODO ADD ADMIN ACTIONS
+#    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
+#    action.autoSave()
+#    from_user.notify(action)
+    return True
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates inputted comparison.
@@ -1738,7 +1945,6 @@ def setFirstLoginStage(request, vals={}):
     response.status_code = 500 if error else 200
     return response
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
@@ -1749,12 +1955,12 @@ def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
         vals['viewer'] = getUserProfile(request)
-    if not request.REQUEST.__contains__('action'):
+    if not 'action' in request.REQUEST:
         return HttpResponseBadRequest('No action specified.')
     action = request.REQUEST['action']
     if action not in ACTIONS:
         return HttpResponseBadRequest('The specified action ("%s") is not valid.' % (action))
-    elif action not in vals['permitted_actions']:
+    elif action in vals['prohibited_actions']:
         return HttpResponseForbidden("You are not permitted to perform the action \"%s\"." % action)
     else:
         action_func = action + '(request, vals)'

@@ -290,8 +290,8 @@
                 '<button class="tutorial-button">Next</button>');
         $('button.tutorial-button').bindOnce('click', function() {
             setFirstLoginStage('5', function() {
-                launchFirstLoginModal('<p>Now that you\'ve answered a few questions, why not take a look at how your ' +
-                        'matches have changed?</p><p>You can always jump back to the Q&A web by clicking up top.' +
+                launchFirstLoginModal("<p>Now that you\'ve answered a few questions, let's take a look at how your " +
+                        'matches have changed.</p><p>You can always jump back to the Q&A web by clicking up top.' +
                         '<button class="tutorial-button">Show me my matches</button>');
                 $('button.tutorial-button').bindOnce('click', function() { window.location = "/match" });
             });
