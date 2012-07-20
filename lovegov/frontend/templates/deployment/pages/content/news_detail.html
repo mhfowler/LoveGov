@@ -2,7 +2,8 @@
 
 {% block content_detail %}
 
-        <a href='{{ news.getAbsoluteLink }}'><h3> {{ news.title }} </h3></a>
+        <a href='{{ news.getAbsoluteLink }}' target="_blank
+        "><h3> {{ news.title }} </h3></a>
 
         <p class="content-text">
             {{ news.summary|urlize|linebreaks }}

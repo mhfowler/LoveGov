@@ -97,13 +97,6 @@
                                 </a>
                             {% endif %}
                         </div>
-                        {% if is_user_confirmed and group.group_type == "U" %}
-                            <div class="group-button">
-                                <a href="" id="group_invite_button" class="button-red float-left" data-g_id="{{ group.id }}">
-                                    invite
-                                </a>
-                            </div>
-                        {% endif %}
                         {% if is_user_admin and group_requests|length > 0 %}
                             <div class="group-button">
                                 <a href="" class="button-red float-left" id="group_requests">
@@ -112,6 +105,11 @@
                             </div>
                         {% endif %}
                         {% if is_user_admin %}
+                            <div class="group-button">
+                                <a href="" id="group_invite_button" class="button-red float-left" data-g_id="{{ group.id }}">
+                                    invite
+                                </a>
+                            </div>
                             <div class="group-button">
                                 <a href="/group/{{ group.id }}/edit/" class="button-red float-left">
                                     edit info

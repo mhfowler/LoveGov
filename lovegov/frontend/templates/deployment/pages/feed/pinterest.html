@@ -25,8 +25,12 @@
                 </div>
 
                 <!-- image -->
-                {% if item.type == 'N' or item.type == 'G' or item.type == 'P' %}
-                    <a href="{{item.link}}" target="_blank">
+                {% if item.type == 'N' %}
+                    <a href="{{ item.getAbsoluteLink }}" target="_blank">
+                        {% include 'deployment/pages/feed/feed_image.html' %}
+                    </a>
+                {% elif item.type == 'G' or item.type == 'P' %}
+                    <a href="{{ item.get_url }}">
                         {% include 'deployment/pages/feed/feed_image.html' %}
                     </a>
                 {% endif %}

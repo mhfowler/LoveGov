@@ -14,6 +14,16 @@ from django.http import HttpResponse, HttpRequest
 from lovegov.modernpolitics.backend import *
 from lovegov.settings import UPDATE
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Convenience method which returns a simple nice looking message in a frame
+#-----------------------------------------------------------------------------------------------------------------------
+def basicMessage(request,message,vals={}):
+    vals['basic_message'] = message
+    url = '/'
+    html = ajaxRender('deployment/pages/basic_message.html', vals, request)
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1183,15 +1193,16 @@ def groupEdit(request, g_id=None, section="", vals={}):
     viewer = vals['viewer']
 
     if not g_id:
-        return HttpResponse('Group id not provided to view function')
+        return basicMessage(request,'Requested group does not exist',vals)
+
     group = Group.lg.get_or_none(id=g_id)
     if not group:
-        return HttpResponse('Group id not found in database')
+        return basicMessage(request,'Requested group does not exist',vals)
     vals['group'] = group
 
     admins = list( group.admins.all() )
     if viewer.id not in map( lambda x : x.id , admins ):
-        return HttpResponse('You are not an administrator of this group')
+        return basicMessage(request,'You are not an administrator of this group',vals)
 
     vals['group_admins'] = admins
 
