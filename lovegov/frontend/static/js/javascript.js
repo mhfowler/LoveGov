@@ -4481,7 +4481,11 @@ function submitZip(zip) {
                 return false;
             }
         }
-    })
+//        error: function(error, textStatus, errorThrown)
+//        {
+//            $('body').html(error.responseText);
+//        }
+    });
 }
 
 var match_current_section;
