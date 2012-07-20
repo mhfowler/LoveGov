@@ -1193,5 +1193,10 @@ def recalculatePermittedActions():
                 c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
         c.save()
 
-def defaultTest():
-    return helperFunc()
+def initFirstLogin():
+    for p in UserProfile.objects.all():
+        if p.alias=="anonymous":
+            p.first_login = FIRST_LOGIN_LAST_STAGE
+        else:
+            p.first_login = 0
+        p.save()

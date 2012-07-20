@@ -136,7 +136,7 @@
     }
 
     function stageTwo() {
-        launchFirstLoginModal('<p>Congratulations you won! Here are your representatives. ' +
+        launchFirstLoginModal('<p>Awesome! Here are your representatives. ' +
                 "If your match percentage is at 0%, this means you haven't answered any questions yet.</p>" +
                 '<p> Use the Q&A Web to answer questions so you can have more meaningful matches.</p>' +
                 '<button class="tutorial-button">Jump to Q&A Web</button>' +
@@ -146,7 +146,7 @@
         });
         bindSkipFirstLogin();
         $('div.skip-tutorial a').bindOnce('click', function() {
-            stageOne();
+            setFirstLoginStage(1, function() {stageOne();});
         });
     }
 

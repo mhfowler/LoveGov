@@ -130,6 +130,8 @@ DEFAULT_INVITE_MESSAGE = "LoveGov Alpha is now up and running! We would really a
                          "so you will see us regularly adding new features over the next month. If you encounter any problems while using our site"\
                          "or just want to send us comments then please don't hesitate to contact us - we want to hear your opinions!"
 
+FIRST_LOGIN_LAST_STAGE = 7
+
 ########################################### MAIN TOPICS ################################################################
 MAIN_TOPICS = ['Economy', 'Education', 'Energy', 'Environment', 'Health Care', 'National Security', 'Social Issues']
 
