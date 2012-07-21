@@ -534,7 +534,8 @@ ACTIONS = [
     'addAdmins',
     'removeAdmin',
     'groupInviteResponse',
-    'groupInvite'
+    'groupInvite',
+    'getLinkInfo'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
