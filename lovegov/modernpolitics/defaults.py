@@ -50,7 +50,7 @@ def getNewFeed():
     return Feed.lg.get_or_none(alias='New_Feed') or initializeFeed('New_feed')
 
 def getHotFeed():
-    to_return = Feed.lg.get_or_none(alias='Hot_Feed') or initializeFeed('Hot_Feed')
+    return Feed.lg.get_or_none(alias='Hot_Feed') or initializeFeed('Hot_Feed')
 
 def getBestFeed():
     return Feed.lg.get_or_none(alias='Best_Feed') or initializeFeed('Best_Feed')
@@ -1183,7 +1183,7 @@ def recalculateEverything():
     print "Recalculating Comments..."
     recalculateAllComments()
 
-def recalculatePermittedActions():
+def recalculateProhibitedActions():
     for c in ControllingUser.objects.all():
         p = c.getUserProfile()
         if p:

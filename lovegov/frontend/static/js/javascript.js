@@ -826,8 +826,7 @@ function ajaxPost(dict) {
         if (superError) {
             superError()
         } else {
-            alert(jqXHR.status);
-            launchModal("<strong>Error:</strong> "+jqXHR.responseText);
+            $("body").html(jqXHR.responseText);
         }
     };
     data['url'] = window.location.href;
@@ -852,14 +851,14 @@ function launch403Modal(msg) {
 function launchModal(content) {
     $('div.overdiv').show();
     var modal = $('div.modal');
-    modal.html(content);
+    modal.children("#general_modal_content").html(content);
     var width = modal.outerWidth();
     var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
         .css("margin-left", -width/2)
-        .css("display", "inline-block")
-    bindOverdivClick(modal);
+        .css("display", "inline-block");
+    bindCloseClick(modal);
     return modal;
 }
 
@@ -870,15 +869,23 @@ function launchFirstLoginModal(content) {
     var height = modal.outerHeight();
     modal
         .css("margin-top", -height/2)
-        .css("margin-left", -width/2)
-        .css("display", "inline-block")
+        .css("margin-left", -width/2);
+    setTimeout(function() {modal.fadeIn(1500)}, 1500);
 }
+
+
 
 // Binds an overdiv click to hide a particular element
 // Unbinds when the click occurs
-function bindOverdivClick(element) {
+function bindCloseClick(element) {
     var overdiv = $('div.overdiv');
     overdiv.bindOnce('click', function(e) {
+        element.hide();
+        overdiv.hide();
+        overdiv.off('click');
+    });
+
+    element.children('.general_modal_close').bindOnce('click.general_close' , function(e) {
         element.hide();
         overdiv.hide();
         overdiv.off('click');
@@ -2979,6 +2986,10 @@ function getFeed(num)
         feed_replace = false;
     }
 
+    setTimeout(function() {
+            $(".feed_loading").show();
+    }, 100);
+
     ajaxPost({
         data: {'action':'ajaxGetFeed','feed_ranking': feed_ranking,'feed_topics':feed_topics,
             'feed_types':feed_types, 'feed_levels': feed_levels, 'feed_groups':feed_groups,
@@ -2986,6 +2997,10 @@ function getFeed(num)
             'feed_start':feed_start, 'feed_end':feed_end
         },
         success: function(data) {
+
+            $(".feed_loading").hide();
+            scrollLoadLockout=false;
+
             var returned = eval('(' + data + ')');
 
             feed_metadata.feed_start = feed_start + returned.num;
@@ -3280,8 +3295,7 @@ function scrollFeed() {
     if  (($(window).scrollTop() >= $(document).height() - $(window).height())) {
         if (scrollLoadLockout==false) {
             getFeed(-1);
-            scrollLoadLockout=true;
-            setTimeout(function() { scrollLoadLockout=false}, 500);
+            scrollLoadLockout = true;
         }
     }
 }
@@ -4225,10 +4239,6 @@ function updateHistogram(recursive) {
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
                 }
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
             }
         }
     );
@@ -4748,6 +4758,33 @@ function loadLogin() {
     if (login_state == 'login_error') {
         $(".sign_in_dialogue").show();
     }
+
+    $(".no_login_link").bindOnce("click.no_login_link", function(e)
+    {
+        e.preventDefault();
+        var target = $(this).data('link');
+
+        $('#modal_browse_anyways_login').bindOnce("click.browse_anyways_modal", function(e)
+        {
+            e.preventDefault();
+            window.location = target;
+        });
+
+        $('.no_login_modal').show();
+        $('.overdiv').show();
+    });
+
+    $('.overdiv').bindOnce('click.no_login_modal_hide' , function(e)
+    {
+        $(this).hide();
+        $('.no_login_modal').hide();
+    });
+
+    $('.no_login_modal_close').bindOnce('click.no_login_modal_close' , function(e)
+    {
+        $('.overdiv').hide();
+        $('.no_login_modal').hide();
+    });
 }
 
 

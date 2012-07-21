@@ -3662,18 +3662,21 @@ class Group(Content):
         identical_uids = []
 
         for x in members:
-            comparison = x.getComparison(user)
-            if topic and topic_alias != 'all':
-                comparison = comparison.bytopic.get(topic=topic)
-            if comparison.num_q:
-                total += 1
-                result = comparison.result
-                bucket = getBucket(result, bucket_list)
-                buckets[bucket]['num'] += 1
-                buckets[bucket]['u_ids'].append(x.id)
-                if comparison.result == 100:
-                    identical += 1
-                    identical_uids.append(x.id)
+            comparison = x.getComparison(user).loadOptimized()
+            if comparison:
+                if topic and topic_alias != 'all':
+                    comparison = comparison.getTopicBucket(topic)
+                else:
+                    comparison = comparison.getTotalBucket()
+                if comparison.getNumQuestions():
+                    total += 1
+                    result = comparison.getSimilarityPercent()
+                    bucket = getBucket(result, bucket_list)
+                    buckets[bucket]['num'] += 1
+                    buckets[bucket]['u_ids'].append(x.id)
+                    if result == 100:
+                        identical += 1
+                        identical_uids.append(x.id)
 
         return {'total':int(total), 'identical': identical, 'identical_uids': identical_uids,
                 'buckets':buckets,'color':MAIN_TOPICS_COLORS_ALIAS[topic_alias]['default']}
