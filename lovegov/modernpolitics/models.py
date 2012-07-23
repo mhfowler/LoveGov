@@ -1152,6 +1152,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self
 
     #-------------------------------------------------------------------------------------------------------------------
+    # returns the number of separate sessions a user has had.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumSessions(self):
+        pa = PageAccess.objects.filter(user=self).order_by("when")
+        sessions = 0
+        if pa:
+            sessions = 1
+            last=pa[0].when
+            for x in pa:
+                delta = x.when - last
+                if delta.total_seconds() > (60*60):
+                    sessions += 1
+                last = x.when
+        return sessions
+
+    #-------------------------------------------------------------------------------------------------------------------
     # gets string represetning parties of user
     #-------------------------------------------------------------------------------------------------------------------
     def getPartiesString(self):
@@ -3997,21 +4013,20 @@ class PageAccess(LGModel):
 
     def autoSave(self, request):
         from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
-        if not LOCAL:
-            user_prof = getUserProfile(request)
-            if user_prof:
-                self.user = user_prof
-                self.page = getSourcePath(request)
-                self.ipaddress = request.META['REMOTE_ADDR']
-                if request.method == "POST":
-                    self.type = 'POST'
-                    if 'action' in request.POST:
-                        self.action = request.POST['action']
-                else:
-                    self.type = 'GET'
-                    if 'action' in request.GET:
-                        self.action = request.GET['action']
-                self.save()
+        user_prof = getUserProfile(request)
+        if user_prof:
+            self.user = user_prof
+            self.page = getSourcePath(request)
+            self.ipaddress = request.META['REMOTE_ADDR']
+            if request.method == "POST":
+                self.type = 'POST'
+                if 'action' in request.POST:
+                    self.action = request.POST['action']
+            else:
+                self.type = 'GET'
+                if 'action' in request.GET:
+                    self.action = request.GET['action']
+            self.save()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

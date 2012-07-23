@@ -129,8 +129,6 @@ def createUserHelper(control,name,type='userProfile',active=True):
     # associate with control
     userProfile.user = control
     userProfile.save()
-    if type=="userProfile" and not userProfile.isSuperHero():
-            thread.start_new_thread(sendYayRegisterEmail,(userProfile,))
     # return user prof
     return userProfile
 
