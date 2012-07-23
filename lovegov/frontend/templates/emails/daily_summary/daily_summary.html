@@ -2,12 +2,12 @@
 
 {% block content %}
 
-    <p> daily lovegov usage summary. </p>
+    <p> daily lovegov usage summary </p>
 
 
     <p style="margin-top:20px;border-top:1px solid black;">
      <br><br>
-        # users registered:     {{ registered.count }}
+        <h2> users registered:     {{ registered.count }} </h2>
     <ul>
         <li> NAME - # TIME OF REGISTRATION </li>
         {% for x in registered %}
@@ -18,7 +18,7 @@
 
     <p style="margin-top:50px;border-top:1px solid black;">
     <br><br>
-        # users logged in:     {{ accessed|length }}
+        <h2> users logged in:     {{ accessed|length }} </h2>
     <ul>
         <li> NAME - # TOTAL SESSIONS FOR USER </li>
         {% for x in accessed %}
@@ -28,9 +28,9 @@
     </p>
 
 
-    <p style="margin-top:50px;border-top:1px solid black;">
+    <p style="margin-top:50px;border-top:1px solid black;border-bottom:1px solid black;margin-bottom:40px;">
         <br><br>
-        usage details
+        <h2> usage details </h2>
         {% for x in accessed %}
             {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user %}
         {% endfor %}
