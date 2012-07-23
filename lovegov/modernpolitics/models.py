@@ -2004,6 +2004,7 @@ class Notification(Privacy):
 class Office(Content):
     governmental = models.BooleanField(default=False)
     tags = custom_fields.ListField(default=[])
+
     def autoSave(self):
         self.type = "O"
         self.in_search = True
