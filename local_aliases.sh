@@ -25,6 +25,7 @@ alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/fron
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
 alias lgindex="python $LG/lovegov/local_manage.py rebuild_index"
 alias lgcharm="lgdir && charm ."
+alias lgpython="bpython -i $LG/autopython.py"
 
 alias masterpull="git pull origin master"
 alias masterpush="git push origin master"

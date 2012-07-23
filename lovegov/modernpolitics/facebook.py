@@ -8,7 +8,7 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.defaults import *
+from lovegov.modernpolitics.initialize import *
 
 # django
 from django.contrib import auth
