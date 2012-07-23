@@ -52,13 +52,12 @@ def recalculateAllVotes():
 
 
 def recalculateAllComments():
-    commentable = ['C','P','N','Q']
+    commentable = ['P','N','Q']
     content = Content.objects.filter(type__in=commentable)
 
     for c in content:
         print "Calculating Comments for " + c.get_name()
         c.contentCommentsRecalculate()
-
 
 
 def createAllFollowGroups():

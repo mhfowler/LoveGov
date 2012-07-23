@@ -257,7 +257,7 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
-    commenters = models.ManyToManyField("UserProfile", related_name="commenters")
+    unique_commenter_ids = custom_fields.ListField(default=[])
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -318,12 +318,11 @@ class Content(Privacy, LocationLevel):
                 commenters.union(children_commenters)
 
         self.num_comments = num_comments
-        self.save()
-
-        self.commenters.clear()
+        unique_commenter_ids = []
         for x in commenters:
-            print "recalccomments. " + x.get_name()
-            self.commenters.add(x)
+            unique_commenter_ids.append(x.id)
+        self.unique_commenter_ids = unique_commenter_ids
+        self.save()
 
         return num_comments, commenters
 
@@ -487,8 +486,10 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def addComment(self, commenter):
         self.num_comments += 1
-        if commenter and (not commenter in self.commenters.all()):
-            self.commenters.add(commenter)
+        unique_commenter_ids = self.unique_commenter_ids
+        if commenter and (not commenter.id in unique_commenter_ids):
+            unique_commenter_ids.append(commenter.id)
+            self.unique_commenter_ids = unique_commenter_ids
             self.status += STATUS_COMMENT
         self.save()
 
