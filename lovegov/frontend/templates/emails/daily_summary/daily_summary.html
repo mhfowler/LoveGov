@@ -1,0 +1,42 @@
+{% extends 'emails/frame.html' %}
+
+{% block content %}
+
+    <p> daily lovegov usage summary </p>
+
+
+    <p style="margin-top:20px;border-top:1px solid black;">
+     <br><br>
+        <h2> users registered:     {{ registered.count }} </h2>
+        <ul>
+            <li> NAME - # TIME OF REGISTRATION </li>
+            {% for x in registered %}
+                <li> {{ x.get_name }} - {{ x.created_when }}</li>
+            {% endfor %}
+        </ul>
+    </p>
+
+    <p style="margin-top:50px;border-top:1px solid black;">
+    <br><br>
+        <h2> users logged in:     {{ accessed|length }} </h2>
+    <ul>
+        <li> NAME - # TOTAL SESSIONS FOR USER </li>
+        {% for x in accessed %}
+            <li> {{ x.user.get_name }} - {{ x.user.getNumSessions }}</li>
+        {% endfor %}
+    </ul>
+    </p>
+
+
+    <p style="margin-top:50px;border-top:1px solid black;">
+        <br><br>
+        <h2> details </h2>
+        {% for x in accessed %}
+            {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user %}
+        {% endfor %}
+        <div style="clear:both"></div>
+    </p>
+
+    <p style="border-top:1px solid black;height:10px;width:100%;"> </p>
+
+{% endblock %}

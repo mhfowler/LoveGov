@@ -7,7 +7,6 @@ git push origin dev
 git checkout master
 git merge dev
 git pull origin master
-git add -i
 git commit -a -m "merge."
 git push origin master
 git checkout dev

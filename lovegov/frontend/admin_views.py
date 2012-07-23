@@ -50,7 +50,8 @@ def reinviteUser(request,vals={}):
     EMAIL_SENDER = 'info@lovegov.com'
     EMAIL_TEMPLATE = 'alphaInvite.html'
     vals = {'firstname':userProfile.first_name,'message':userProfile.invite_message,'email':userProfile.username,'password':new_password}
-    sendTemplateEmail(userProfile.invite_subject,EMAIL_TEMPLATE,vals,EMAIL_SENDER,userProfile.username)
+    sendTemplateEmail(subject=userProfile.invite_subject,email_sender=EMAIL_SENDER,
+        email_recipient=userProfile.username, template=EMAIL_TEMPLATE,dictionary=vals)
     return HttpResponse("+")
 
 def writeAllUsers(request,vals={}):

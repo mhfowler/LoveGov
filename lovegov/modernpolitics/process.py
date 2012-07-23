@@ -13,7 +13,7 @@ import Image
 import random
 
 # lovegov
-from lovegov.modernpolitics.defaults import *
+from lovegov.modernpolitics.initialize import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This function takes an input a URL, snaps a screenshot image, saves that image to a temp directory, and outputs

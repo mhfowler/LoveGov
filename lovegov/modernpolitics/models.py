@@ -96,7 +96,7 @@ class Privacy(LGModel):
         return creator
 
     def getCreatorDisplay(self, viewer=None):
-        from lovegov.modernpolitics.defaults import getAnonUser
+        from lovegov.modernpolitics.initialize import getAnonUser
         if self.getPublic():
             creator = self.getCreator()
         else:
@@ -239,8 +239,8 @@ class Content(Privacy, LocationLevel):
     alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
     in_feed = models.BooleanField(default=False)
-    in_search = models.BooleanField(default=True)
-    in_calc = models.BooleanField(default=True)
+    in_search = models.BooleanField(default=False)
+    in_calc = models.BooleanField(default=False)
     # FIELDS
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     topics = models.ManyToManyField(Topic)
@@ -257,6 +257,7 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
+    unique_commenter_ids = custom_fields.ListField(default=[])
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -304,14 +305,26 @@ class Content(Privacy, LocationLevel):
     def contentCommentsRecalculate(self):
         direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
+        commenters = set()
 
         if direct_comments:
             for comment in direct_comments:
-                num_comments += comment.contentCommentsRecalculate() + 1
+
+                commenters.add(comment.getCreator())
+
+                num_children_comments, children_commenters = comment.contentCommentsRecalculate()
+
+                num_comments += num_children_comments + 1
+                commenters.union(children_commenters)
 
         self.num_comments = num_comments
+        unique_commenter_ids = []
+        for x in commenters:
+            unique_commenter_ids.append(x.id)
+        self.unique_commenter_ids = unique_commenter_ids
         self.save()
-        return num_comments
+
+        return num_comments, commenters
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -466,6 +479,18 @@ class Content(Privacy, LocationLevel):
             self.title=value
         elif field == "summary":
             self.summary=value
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Handle adding a new comment appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
+    def addComment(self, commenter):
+        self.num_comments += 1
+        unique_commenter_ids = self.unique_commenter_ids
+        if commenter and (not commenter.id in unique_commenter_ids):
+            unique_commenter_ids.append(commenter.id)
+            self.unique_commenter_ids = unique_commenter_ids
+            self.status += STATUS_COMMENT
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -738,7 +763,7 @@ class Content(Privacy, LocationLevel):
     # Saves creation info.
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
-        from lovegov.modernpolitics.defaults import getGeneralTopic
+        from lovegov.modernpolitics.initialize import getGeneralTopic
         if not self.main_topic:
             self.main_topic = getGeneralTopic()
             self.save()
@@ -1152,6 +1177,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self
 
     #-------------------------------------------------------------------------------------------------------------------
+    # returns the number of separate sessions a user has had.
+    #-------------------------------------------------------------------------------------------------------------------
+    def getNumSessions(self):
+        pa = PageAccess.objects.filter(user=self).order_by("when")
+        sessions = 0
+        if pa:
+            sessions = 1
+            last=pa[0].when
+            for x in pa:
+                delta = x.when - last
+                if delta.total_seconds() > (60*60):
+                    sessions += 1
+                last = x.when
+        return sessions
+
+    #-------------------------------------------------------------------------------------------------------------------
     # gets string represetning parties of user
     #-------------------------------------------------------------------------------------------------------------------
     def getPartiesString(self):
@@ -1201,7 +1242,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         users = UserProfile.objects.filter(alias=alias)
         while users:
             alias += '<3'
-            users = users.filter(alias=alias)
+            users = UserProfile.objects.filter(alias=alias)
         self.alias = alias
         self.save()
         return self.alias
@@ -1393,7 +1434,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self.networks.all()[0]
         else: return getOtherNetwork()
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
@@ -1496,10 +1536,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
         relationship = action.relationship
+
+        #If you are the one doing the action, do not notify yourself
         if action.type != 'FO' and action.type != 'JO':
-            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+            if relationship.getFrom().id == self.id:
                 return False
 
+        #Do aggregate notifications if necessary
         if action.type in AGGREGATE_NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
@@ -1519,6 +1562,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 notification.addAggUser( relationship.user , action.privacy )
                 return True
 
+        #Otherwise do normal notifications
         elif action.type in NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 notification = Notification(action=action, notify_user=self)
@@ -2353,14 +2397,10 @@ class Comment(Content):
         self.setMainTopic(self.root_content.getMainTopic())
         # update on_content
         root_content = self.root_content
-        root_content.num_comments += 1
-        root_content.status += STATUS_COMMENT
-        root_content.save()
+        root_content.addComment(commenter=creator)
         on_content = self.on_content
         if on_content != root_content:
-            on_content.num_comments += 1
-            on_content.status += STATUS_COMMENT
-            on_content.save()
+            on_content.addComment(commenter=creator)
 
 
     def getAlphaDisplayName(self):
@@ -3949,10 +3989,9 @@ class Party(Group):
 #=======================================================================================================================
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
-        self.in_feed = True
+        self.in_feed = (self.group_privacy != "S")
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
-    pass
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3997,21 +4036,20 @@ class PageAccess(LGModel):
 
     def autoSave(self, request):
         from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
-        if not LOCAL:
-            user_prof = getUserProfile(request)
-            if user_prof:
-                self.user = user_prof
-                self.page = getSourcePath(request)
-                self.ipaddress = request.META['REMOTE_ADDR']
-                if request.method == "POST":
-                    self.type = 'POST'
-                    if 'action' in request.POST:
-                        self.action = request.POST['action']
-                else:
-                    self.type = 'GET'
-                    if 'action' in request.GET:
-                        self.action = request.GET['action']
-                self.save()
+        user_prof = getUserProfile(request)
+        if user_prof:
+            self.user = user_prof
+            self.page = getSourcePath(request)
+            self.ipaddress = request.META['REMOTE_ADDR']
+            if request.method == "POST":
+                self.type = 'POST'
+                if 'action' in request.POST:
+                    self.action = request.POST['action']
+            else:
+                self.type = 'GET'
+                if 'action' in request.GET:
+                    self.action = request.GET['action']
+            self.save()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

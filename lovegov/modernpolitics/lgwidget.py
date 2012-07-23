@@ -14,7 +14,7 @@ from django.http import *
 from random import sample
 
 # lovegov
-from lovegov.modernpolitics.defaults import *
+from lovegov.modernpolitics.initialize import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Widget switcher, also saves widget access.

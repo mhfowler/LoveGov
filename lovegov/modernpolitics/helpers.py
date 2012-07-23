@@ -263,7 +263,7 @@ def getUserProfile(request=None, control_id=None, control=None):
         if not user_prof:
             errors_logger.error("Controlling User: " + str(control.id) + " does not have a userProfile")
 
-    from lovegov.modernpolitics.defaults import getAnonUser
+    from lovegov.modernpolitics.initialize import getAnonUser
     user_prof = user_prof or getAnonUser()
     return user_prof
 
