@@ -41,6 +41,7 @@ alias jserver="jpermission && lgserver"
 alias jsass="jpermission && lgsass"
 alias lgcharm="lgdir && charm ."
 
+
 # python environment
 export PYTHONSTARTUP=$LG/autopython.py
 export PYTHONPATH=${PYTHONPATH}:$LG/lovegov
