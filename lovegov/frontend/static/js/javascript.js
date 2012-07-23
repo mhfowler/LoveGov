@@ -2347,7 +2347,8 @@ function loadPetition()
             {
                 var returned = eval('(' + data + ')');
                 if (returned.success==true) {
-                    $("#signer-names").append(returned.signer);
+                    $("div.petition-signers-list").append(returned.signer);
+                    $('div.signers-bar-wrapper').html(returned.bar);
                     if ($('#be-first-signer-message').length > 0)
                     {
                         $('#be-first-signer-message').fadeOut('slow');
@@ -2356,6 +2357,8 @@ function loadPetition()
                     var num_signers = parseInt($('#num-signers').text().replace('signed',"").replace(/\s/g, ""));
                     num_signers = num_signers + 1;
                     $('#num-signers').text(num_signers + " " + "signed");
+                    var barWrapper = $('div.petition_bar div.bar-wrapper');
+                    petitionBar(barWrapper);
                     loadHoverComparison();
                 }
                 else {
@@ -3411,7 +3414,7 @@ function loadNewFeed() {
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 850);
+            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 100);
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
@@ -3419,7 +3422,7 @@ function loadNewFeed() {
         }
         else {
             wrapper.show();
-            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 850,
+            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 100,
                 function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }

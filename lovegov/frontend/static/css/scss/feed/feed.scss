@@ -472,6 +472,7 @@
     margin:0px;
     z-index:20;
     padding: 10px 0 0 10px;
+    min-width: 700px;
   }
 
   div.menu-separator
@@ -560,8 +561,8 @@
           height:50px;
 
           div.header-topic {
-            float:left;
-            margin-left:20px;
+            float:right;
+            margin-right:15px;
           }
         }
 
