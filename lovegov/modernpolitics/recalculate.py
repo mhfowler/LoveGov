@@ -157,12 +157,17 @@ def recalculateInFeed():
 def recalculateCreators():
     c = Content.objects.all()
     anon = getAnonUser()
+    print "total: ", str(c.count())
+    count = 0
     for x in c:
+        if not count % 20:
+            print str(count)
         creator = x.getCreator()
         u = UserProfile.lg.get_or_none(id=creator.id)
         if not u:
-            print "changing creator for ", x.get_name()
+            print "CHANGING CREATOR for ", x.get_name()
             x.creator = anon
             x.save()
+        count += 1
 
 
