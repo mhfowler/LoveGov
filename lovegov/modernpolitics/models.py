@@ -239,8 +239,8 @@ class Content(Privacy, LocationLevel):
     alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
     in_feed = models.BooleanField(default=False)
-    in_search = models.BooleanField(default=True)
-    in_calc = models.BooleanField(default=True)
+    in_search = models.BooleanField(default=False)
+    in_calc = models.BooleanField(default=False)
     # FIELDS
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     topics = models.ManyToManyField(Topic)
@@ -257,6 +257,7 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
+    commenters = models.ManyToManyField("UserProfile", related_name="commenters")
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -304,14 +305,26 @@ class Content(Privacy, LocationLevel):
     def contentCommentsRecalculate(self):
         direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
+        commenters = set()
 
         if direct_comments:
             for comment in direct_comments:
-                num_comments += comment.contentCommentsRecalculate() + 1
+
+                commenters.add(comment.getCreator())
+
+                num_children_comments, children_commenters = comment.contentCommentsRecalculate()
+
+                num_comments += num_children_comments + 1
+                commenters.union(children_commenters)
 
         self.num_comments = num_comments
         self.save()
-        return num_comments
+
+        self.commenters.clear()
+        for x in commenters:
+            self.commenters.add(x)
+
+        return num_comments, commenters
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -466,6 +479,16 @@ class Content(Privacy, LocationLevel):
             self.title=value
         elif field == "summary":
             self.summary=value
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Handle adding a new comment appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
+    def addComment(self, commenter):
+        self.num_comments += 1
+        if commenter and (not commenter in self.commenters.all()):
+            self.commenters.add(commenter)
+            self.status += STATUS_COMMENT
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1408,7 +1431,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if len( self.networks.all() ) != 0:
             return self.networks.all()[0]
         else: return getOtherNetwork()
-
 
     #-------------------------------------------------------------------------------------------------------------------
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
@@ -2369,14 +2391,10 @@ class Comment(Content):
         self.setMainTopic(self.root_content.getMainTopic())
         # update on_content
         root_content = self.root_content
-        root_content.num_comments += 1
-        root_content.status += STATUS_COMMENT
-        root_content.save()
+        root_content.addComment(commenter=creator)
         on_content = self.on_content
         if on_content != root_content:
-            on_content.num_comments += 1
-            on_content.status += STATUS_COMMENT
-            on_content.save()
+            on_content.addComment(commenter=creator)
 
 
     def getAlphaDisplayName(self):
@@ -3965,10 +3983,9 @@ class Party(Group):
 #=======================================================================================================================
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
-        self.in_feed = True
+        self.in_feed = (self.group_privacy != "S")
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
-    pass
 
 ########################################################################################################################
 ########################################################################################################################

@@ -60,6 +60,7 @@ def recalculateAllComments():
         c.contentCommentsRecalculate()
 
 
+
 def createAllFollowGroups():
     users = UserProfile.objects.all()
     for user in users:
@@ -131,3 +132,25 @@ def recalculateProhibitedActions():
             else:
                 c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
         c.save()
+
+
+def recalculateInFeed():
+    c = Content.objects.filter(in_feed=True)
+    for x in c:
+        x.in_feed = False
+        x.save()
+    p = Petition.objects.all()
+    for x in p:
+        x.in_feed = True
+        x.save()
+    n = News.objects.all()
+    for x in n:
+        x.in_feed = True
+        x.save()
+    g = UserGroup.objects.all()
+    for x in g:
+        if x.group_privacy != "S":
+            x.in_feed = True
+            x.save()
+
+
