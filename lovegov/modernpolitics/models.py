@@ -322,6 +322,7 @@ class Content(Privacy, LocationLevel):
 
         self.commenters.clear()
         for x in commenters:
+            print "recalccomments. " + x.get_name()
             self.commenters.add(x)
 
         return num_comments, commenters
