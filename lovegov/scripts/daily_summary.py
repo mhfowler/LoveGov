@@ -65,6 +65,6 @@ def dailySummaryEmail():
 
 ################################################# ACTUAL SCRIPT ########################################################
 
-send_mail(subject="LoveGov Daily Summary", message=dailySummaryEmail(),
-    from_email='info@lovegov.com', recipient_list=DAILY_SUMMARY_EMAILS)
+sendHTMLEmail(subject="LoveGov Daily Summary", email_html=dailySummaryEmail(),
+            email_sender="info@lovegov.com", email_recipients=DAILY_SUMMARY_EMAILS)
 

@@ -34,13 +34,21 @@ def sendTemplateEmail(subject, template, dictionary, email_sender, email_recipie
     """
     template_reference = 'emails/' + template
     email_html = render_to_string(template_reference,dictionary)
-    msg = EmailMessage(subject, email_html, email_sender, [email_recipient])
+    emailHelper(subject, email_html, email_sender, [email_recipient])
+
+def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, template=None, dictionary=None):
+    if not email_html:
+        email_html = render_to_string(template,dictionary)
+    emailHelper(subject, email_html, email_sender, email_recipients)
+
+def emailHelper(subject, email_html, email_sender, email_recipients):
+    msg = EmailMessage(subject, email_html, email_sender, email_recipients)
     msg.content_subtype = "html"
     try:
-        print "email: " + subject + " " + email_recipient
         msg.send()
     except:
-        print "Invalid e-mail for user " + email_recipient
+        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends confirmation email to user.
