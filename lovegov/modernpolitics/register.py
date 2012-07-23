@@ -90,9 +90,6 @@ def createUserHelper(control,name,active=True):
     world_view.save()
     userProfile.view = world_view
     userProfile.save()
-    # profilePage
-    userProfilePage = ProfilePage(person=userProfile)
-    userProfilePage.save()
     # alias
     userProfile.makeAlias()
     # filter settings

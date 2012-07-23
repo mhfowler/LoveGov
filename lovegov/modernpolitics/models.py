@@ -1292,11 +1292,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return "Anonymous"
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Gets profilepage for this user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getProfilePage(self):
-        return ProfilePage.objects.get(person=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profile image for this user.
@@ -4562,49 +4557,6 @@ class TopicView(Privacy):
     view = models.TextField(max_length=10000, blank=True)
     topic = models.ForeignKey(Topic)
 
-#=======================================================================================================================
-# Stores information about what should be displyed on user's profile page.
-#
-#=======================================================================================================================
-class ProfilePage(LGModel):
-    person = models.ForeignKey(UserProfile)
-    bio = models.TextField(max_length=5000, blank=True)
-    my_views = models.ManyToManyField(TopicView)
-    # I don't want to use these. for efficiency. but here just in case.
-    my_content = models.ManyToManyField(MyContent)
-    my_people = models.ManyToManyField(MyPeople)
-    my_activity = models.ManyToManyField(MyAction)
-    #-------------------------------------------------------------------------------------------------------------------
-    # Adds content to profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def addContent(self, content):
-        new_content = MyContent(content=content, rank=0)
-        new_content.save()
-        self.my_content.add(new_content)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Adds politician to profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def addPerson(self, person):
-        new_person = MyPeople(person=person, rank=0)
-        new_person.save()
-        self.my_people.add(new_person)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Removes content from profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def removeContent(self, content):
-        to_remove = self.my_content.filter(content=content)
-        if to_remove:
-            to_remove.delete()
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Removes politician from profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def removePerson(self, people):
-        to_remove = self.my_people.filter(person=person)
-        if to_remove:
-            to_remove.delete()
 
 
 ########################################################################################################################

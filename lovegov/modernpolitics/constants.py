@@ -356,15 +356,6 @@ PARTY_TYPE = (
     ('T', 'tea')
 )
 
-# types of users
-USER_CHOICES =  (
-    ('U','user'),
-    ('P','politician'),
-    ('S','senator'),
-    ('R','representative'),
-    ('G', 'ghost')
-)
-
 # types of motions
 MOTION_CHOICES = (
     ('O','other'),
