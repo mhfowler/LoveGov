@@ -96,7 +96,7 @@ class Privacy(LGModel):
         return creator
 
     def getCreatorDisplay(self, viewer=None):
-        from lovegov.modernpolitics.defaults import getAnonUser
+        from lovegov.modernpolitics.initialize import getAnonUser
         if self.getPublic():
             creator = self.getCreator()
         else:
@@ -738,7 +738,7 @@ class Content(Privacy, LocationLevel):
     # Saves creation info.
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
-        from lovegov.modernpolitics.defaults import getGeneralTopic
+        from lovegov.modernpolitics.initialize import getGeneralTopic
         if not self.main_topic:
             self.main_topic = getGeneralTopic()
             self.save()

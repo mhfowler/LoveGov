@@ -8,7 +8,7 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.defaults import *
+from lovegov.modernpolitics.initialize import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Resets a users password and sends an email.
