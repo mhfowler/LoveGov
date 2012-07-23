@@ -1242,7 +1242,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         users = UserProfile.objects.filter(alias=alias)
         while users:
             alias += '<3'
-            users = users.filter(alias=alias)
+            users = UserProfile.objects.filter(alias=alias)
         self.alias = alias
         self.save()
         return self.alias
@@ -1536,10 +1536,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
         relationship = action.relationship
+
+        #If you are the one doing the action, do not notify yourself
         if action.type != 'FO' and action.type != 'JO':
-            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+            if relationship.getFrom().id == self.id:
                 return False
 
+        #Do aggregate notifications if necessary
         if action.type in AGGREGATE_NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
@@ -1559,6 +1562,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 notification.addAggUser( relationship.user , action.privacy )
                 return True
 
+        #Otherwise do normal notifications
         elif action.type in NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 notification = Notification(action=action, notify_user=self)
