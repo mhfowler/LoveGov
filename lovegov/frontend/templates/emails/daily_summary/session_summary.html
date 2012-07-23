@@ -1,0 +1,11 @@
+<br><br>
+<p>
+    ----------------------------------- Daily Usage for {{ user.get_name }} : {{ session.getSessionStart }}
+    <ul>
+        {% for x in session.getPA %}
+            <li> {{ x.page }}
+                {% if x.action %}:{{ x.action }}{% endif %}
+                {% if x.duration  %} ({{ x.duration }} seconds) {% endif %} </li>
+        {% endfor %}
+    </ul>
+</p>
