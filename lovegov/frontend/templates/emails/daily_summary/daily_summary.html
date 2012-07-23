@@ -8,12 +8,12 @@
     <p style="margin-top:20px;border-top:1px solid black;">
      <br><br>
         <h2> users registered:     {{ registered.count }} </h2>
-    <ul>
-        <li> NAME - # TIME OF REGISTRATION </li>
-        {% for x in registered %}
-            <li> {{ x.get_name }} - {{ x.created_when }}</li>
-        {% endfor %}
-    </ul>
+        <ul>
+            <li> NAME - # TIME OF REGISTRATION </li>
+            {% for x in registered %}
+                <li> {{ x.get_name }} - {{ x.created_when }}</li>
+            {% endfor %}
+        </ul>
     </p>
 
     <p style="margin-top:50px;border-top:1px solid black;">
@@ -28,9 +28,9 @@
     </p>
 
 
-    <p style="margin-top:50px;border-top:1px solid black;border-bottom:1px solid black;margin-bottom:40px;">
+    <p style="margin-top:50px;margin-bottom:40px;border-top:1px solid black;border-bottom:1px solid black;">
         <br><br>
-        <h2> usage details </h2>
+        <h2> details </h2>
         {% for x in accessed %}
             {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user %}
         {% endfor %}
