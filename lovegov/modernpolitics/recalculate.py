@@ -159,6 +159,7 @@ def recalculateCreators():
     anon = getAnonUser()
     print "total: ", str(c.count())
     count = 0
+    changed = 0
     for x in c:
         if not count % 20:
             print str(count)
@@ -168,6 +169,8 @@ def recalculateCreators():
             print "CHANGING CREATOR for ", x.get_name()
             x.creator = anon
             x.save()
+            changed += 1
         count += 1
+    print "TOTAL CHANGED: ", str(changed)
 
 
