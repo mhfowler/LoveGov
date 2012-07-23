@@ -1241,7 +1241,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         users = UserProfile.objects.filter(alias=alias)
         while users:
             alias += '<3'
-            users = users.filter(alias=alias)
+            users = UserProfile.objects.filter(alias=alias)
         self.alias = alias
         self.save()
         return self.alias
