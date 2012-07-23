@@ -248,7 +248,8 @@ TYPE_CHOICES = (
     ('D','debate'),
     ('Y', 'persistent-debate'),
     ('M', 'motion'),
-    ('F', 'forum')
+    ('F', 'forum'),
+    ('O', 'office')
     )
 
 # persitent debate types
@@ -289,6 +290,7 @@ RELATIONSHIP_CHOICES = (
     ('MV','motion_voted'),
     ('DV','debate_voted'),
     ('DM', 'debate_messaged'),
+    ('OH', 'held_office')
     )
 
 RELATIONSHIP_DICT = {}

@@ -523,6 +523,8 @@ class Content(Privacy, LocationLevel):
             object = self.motion
         elif type == 'F':
             object = self.forum
+        elif type == 'O':
+            object = self.office
         else: object = self
         return object
 
@@ -1087,6 +1089,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    # Government Stuff
+    politician = models.BooleanField(default=False)
+    elected_official = models.BooleanField(default=False)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     type = models.CharField(max_length=1,default="U")
@@ -1536,7 +1541,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def notify(self, action, content=None, user=None):
         relationship = action.relationship
         if action.type != 'FO' and action.type != 'JO':
-            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+            if relationship.getFrom().id == self.id:
                 return False
 
         if action.type in AGGREGATE_NOTIFY_TYPES:
@@ -1996,6 +2001,13 @@ class Notification(Privacy):
 
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
+class Office(Content):
+    governmental = models.BooleanField(default=False)
+    tags = custom_fields.ListField(default=[])
+    def autoSave(self):
+        self.type = "O"
+        self.in_search = True
+        self.save()
 
 class Politician(UserProfile):
     office_seeking = models.CharField(max_length=100)
@@ -4188,6 +4200,8 @@ class Relationship(Privacy):
             object = self.uurelationship.userfollow
         elif type == 'SI':
             object = self.ucrelationship.signed
+        elif type == 'OH':
+            object = self.ucrelationship.officeheld
         else:
             object = self
         return object
@@ -4265,6 +4279,23 @@ class UCRelationship(Relationship):
     content = models.ForeignKey(Content, related_name='trel')
     def getTo(self):
         return self.content
+
+#=======================================================================================================================
+# Exact same as vote, except for debates.
+# inherits from relationship
+#=======================================================================================================================
+class OfficeHeld(UCRelationship):
+    office = models.ForeignKey('Office',related_name="office")
+    start_date = models.DateField()
+    end_date = models.DateField()
+    current = models.BooleanField(default=False)
+    election = models.BooleanField(default=False)
+    congress_sessions = models.CommaSeparatedIntegerField(max_length="200")
+
+    def autoSave(self):
+        self.content = self.office
+        self.relationship_type = "OH"
+        self.save()
 
 #=======================================================================================================================
 # Exact same as vote, except for debates.
