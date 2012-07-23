@@ -605,7 +605,7 @@ def initializeQ():
 
 def initializeGeorgeBush():
     from lovegov.modernpolitics.register import createUser
-    normal = createUser(name="George Bush", email="george@gmail.com", password="george")
+    normal = createUser(name="George Bush", email="george@gmail.com", password="george", type="politician")
     normal.user_profile.confirmed = True
     normal.user_profile.save()
     print "initialized: George Bush"
@@ -769,30 +769,31 @@ def initializeCongress():
     from lovegov.modernpolitics.register import createUser
     for num in range(112,108,-1):
         print num
-        # Get/open current XML file
         pathXML = '/data/govtrack/' + str(num) + "/people.xml"
         fileXML = open(pathXML)
         parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
-        session_number = int(parsedXML.people['session'])
-
-        # For each person at this congress
-        for personXML in parsedXML.findall('person'):
-            role_type = personXML.role['type']
-            if role_type == "rep": role_type = "representative"
-            else: role_type = "senator"
-
-            name = personXML['firstname']+ " " + personXML['lastname']
-            print "initializing " + name.encode('utf-8','ignore')
-            password = "congress"
-            congressControl = createUser(name,email,password)
-            congressControl.user_profile.autoSave(personXML)
-            electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
-            image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
-            try:
-                electedofficial.setProfileImage(file(image_path))
-            except:
-                print "no image here: " + image_path
-            newSession.people.add(congressControl.user_profile)
+        newSession = CongressSessions(session=int(parsedXML.people['session']))
+        newSession.save()
+        for personXML in parsedXML.findAll('person'):
+            if not ElectedOfficial.objects.filter(govtrack_id=int(personXML['id'])).exists():
+                role_type = personXML.role['type']
+                if role_type == "rep": role_type = "representative"
+                else: role_type = "senator"
+                name = personXML['firstname']+ " " + personXML['lastname']
+                email = personXML['lastname'] + "_" + personXML['id']
+                print "initializing " + email.encode('utf-8','ignore')
+                password = "congress"
+                congressControl = createUser(name,email,password,type=role_type)
+                congressControl.user_profile.autoSave(personXML)
+                electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
+                image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
+                try:
+                    electedofficial.setProfileImage(file(image_path))
+                except:
+                    print "no image here: " + image_path
+                newSession.people.add(congressControl.user_profile)
+            else:
+                newSession.people.add(ElectedOfficial.objects.get(govtrack_id=int(personXML['id'])))
 
 
 def initializeCommittees():
