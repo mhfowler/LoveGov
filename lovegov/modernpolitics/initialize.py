@@ -759,42 +759,141 @@ def initializePersistentDebate():
     debate.save()
     debate.topics.add(topic)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Counts the number of files in a path
+#-----------------------------------------------------------------------------------------------------------------------
 def filecount(path):
     count = 0
     for f in os.listdir(path):
         if os.path.isfile(os.path.join(path, f)): count += 1
     return count
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Parses a string into a Date object (formatted YYYY-MM-DD)
+#-----------------------------------------------------------------------------------------------------------------------
+def parseDate(date):
+    splitDate = str(date).split('-')
+    return datetime.date(year=int(splitDate[0]), month=int(splitDate[1]), day=int(splitDate[2]))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Begins Congress Initialization
+#-----------------------------------------------------------------------------------------------------------------------
 def initializeCongress():
-    from lovegov.modernpolitics.register import createUser
     for num in range(112,108,-1):
         print num
         # Get/open current XML file
         pathXML = '/data/govtrack/' + str(num) + "/people.xml"
-        fileXML = open(pathXML)
-        parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
-        session_number = int(parsedXML.people['session'])
+        image_root = '/data/govtrack/image'
+        initializeCongressFile(pathXML,image_root)
 
-        # For each person at this congress
-        for personXML in parsedXML.findall('person'):
-            role_type = personXML.role['type']
-            if role_type == "rep": role_type = "representative"
-            else: role_type = "senator"
+#-----------------------------------------------------------------------------------------------------------------------
+# Initializes a single Congress File
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeCongressFile(filepath,image_root):
+    fileXML = open(filepath)
+    parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
+    session_number = int(parsedXML.people['session'])
 
-            name = personXML['firstname']+ " " + personXML['lastname']
-            print "initializing " + name.encode('utf-8','ignore')
-            password = "congress"
-            congressControl = createUser(name,email,password)
-            congressControl.user_profile.autoSave(personXML)
-            electedofficial = ElectedOfficial.objects.get(govtrack_id=int(personXML['id']))
-            image_path = '/data/govtrack/images/' + str(electedofficial.govtrack_id) + ".jpeg"
-            try:
-                electedofficial.setProfileImage(file(image_path))
-            except:
-                print "no image here: " + image_path
-            newSession.people.add(congressControl.user_profile)
+    # For each person at this congress
+    for personXML in parsedXML.findall('person'):
+        # name = first + " " + last
+        fname = personXML['firstname']
+        lname = personXML['lastname']
+        name = fname+ " " +lname
 
+        # get birthday
+        birthday = None
+        if 'birthday' in personXML:
+            birthday = parseDate(personXML['birthday'])
 
+        person = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday)
+
+        if not person:
+            person = initializeXMLCongressman(name,personXML,image_root=image_root)
+
+        role = personXML.role
+
+        role_type = role['type']
+        if role_type == 'sen':
+            role_type = 'S'
+        elif role_type == 'rep':
+            role_type = 'R'
+        else:
+            print "[WARNING]: role type " + role_type + " is not recognized for " + name.encode('utf-8','ignore')
+            continue # Skip this guy, can't make an Office without a type
+
+        role_state = role['state']
+        role_district = role['district']
+
+        office = Office.lg.get_or_none(location__state=role_state,location__district=role_district,office_type=role_type)
+        if not office:
+            loc = PhysicalAddress(district=role_district, state=role_state)
+            office = Office(location=loc, office_type=role_type)
+            office.autoSave()
+
+        start_date = parseDate(personXML.role['startdate'])
+        end_date = parseDate(personXML.role['enddate'])
+
+        office_held = OfficeHeld.lg.get_or_none(office=office,start_date=start_date,end_date=end_date)
+        if not office_held:
+            office_held = OfficeHeld(office=office,start_date=start_date,end_date=end_date)
+            if (datetime.date.today() - end_date).days >= 0:
+                office_held.current = True
+            office_held.congress_sessions = [session_number]
+            office_held.autoSave()
+
+        person.offices_held.add(office_held)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initializes a single congressman
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeXMLCongressman(name,personXML,image_root=''):
+    from lovegov.modernpolitics.register import createUser
+    password = "congress"
+    email = name.replace(" ","_") + "_" + personXML['id']
+
+    print "initializing " + name.encode('utf-8','ignore')
+    congressControl = createUser(name,email,password)
+    user_prof = congressControl.user_profile
+
+    image_path = image_root + str(electedofficial.govtrack_id) + ".jpeg"
+    try:
+        user_prof.setProfileImage(file(image_path))
+    except:
+        print "[WARNING]: no image here for elected offical " + name.encode('utf-8','ignore') + " at " + image_path
+
+    if 'middlename' in personXML:
+        user_prof.middle_name = personXML['middlename']
+    if 'nickname' in personXML:
+        user_prof.nick_name = personXML['nickname']
+    if 'birthday' in personXML:
+        user_prof.dob = parseDate(personXML['birthday'])
+    if 'gender' in personXML:
+        user_prof.gender = personXML['gender']
+    if 'twitterid' in personXML:
+        user_prof.twitter_id = personXML['twitterid']
+    if 'facebookgraphid' in personXML:
+        user_prof.facebook_id = personXML['facebookgraphid']
+
+    if 'party' in personXML.role:
+        party = personXML.role['party'].lower()
+        for (party_char,party_name) in PARTY_TYPE:
+            if party == party_name:
+                cur_party = Party.lg.get_or_none(party_type=party_char)
+                if cur_party:
+                    user_prof.parties.add(cur_party)
+                else:
+                    print "[WARNING]: party " + party_name + " is not initialized.  Cannot add " + name.encode('utf-8','ignore')
+
+    user_prof.confirmed = True
+    user_prof.save()
+
+    return user_prof
+
+#-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 def initializeCommittees():
     for num in range(112,108,-1):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'

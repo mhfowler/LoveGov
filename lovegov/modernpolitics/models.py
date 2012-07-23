@@ -1045,8 +1045,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    # for downcasting
-    user_type = models.CharField(max_length=1, choices=USER_CHOICES, default='G')
     # twitter integration
     twitter_user_id = models.IntegerField(null=True)
     twitter_screen_name = models.CharField(max_length=200, null=True)
@@ -1166,19 +1164,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def isSuperHero(self):
         return self.alias in SUPER_HEROES
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Downcasts users appropriately based on type.
-    #-------------------------------------------------------------------------------------------------------------------
-    def downcast(self):
-        if self.user_type == 'P':
-            return self.politician
-        elif self.user_type == 'S':
-            return self.politician.electedofficial.senator
-        elif self.user_type == 'R':
-            return self.politician.electedofficial.representative
-        else:
-            return self
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
@@ -2054,51 +2039,6 @@ class ElectedOfficial(Politician):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
 
-    def autoSave(self, personXML):
-        """
-        This method parses an individual person object from the  XML from people.xml from GovTrack
-
-        @param personXML:
-        @return:
-        """
-        def parseDate(date):
-            splitDate = str(date).split('-')
-            return datetime.date(year=int(splitDate[0]), month=int(splitDate[1]), day=int(splitDate[2]))
-            #representative.username = person['id']
-        self.govtrack_id = personXML['id']
-        if personXML.has_key('middlename'):
-            self.middle_name = personXML['middlename']
-        if personXML.has_key('nickname'):
-            self.nick_name = personXML['nickname']
-        if personXML.has_key('birthday'):
-            self.dob = parseDate(personXML['birthday'])
-        if personXML.has_key('gender'):
-            self.gender = personXML['gender']
-        if personXML.has_key('religion'):
-            self.religion = personXML['religion']
-        if personXML.has_key('pvsid'):
-            self.pvs_id = personXML['pvsid']
-        if personXML.has_key('osid'):
-            self.os_id = personXML['osid']
-        if personXML.has_key('bioguideid'):
-            self.bioguide_id = personXML['bioguideid']
-        if personXML.has_key('metavidid'):
-            self.metavid_id = personXML['metavidid']
-        if personXML.has_key('youtubeid'):
-            self.youtube_id = personXML['youtubeid']
-        if personXML.has_key('twitterid'):
-            self.twitter_id = personXML['twitterid']
-        if personXML.has_key('facebookgraphid'):
-            self.facebook_id = personXML['facebookgraphid']
-        self.start_date = parseDate(personXML.role['startdate'])
-        self.end_date = parseDate(personXML.role['enddate'])
-        self.party = personXML.role['party']
-        self.political_role = 'E'
-        # representative.url = list(person.role['url'])
-        self.confirmed = True
-        if ElectedOfficial.objects.filter(facebook_id=self.facebook_id).exists():
-            self.facebook_id=None
-        self.save()
 
 ########################################################################################################################
 ################################################# Representatives ######################################################

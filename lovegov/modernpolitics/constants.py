@@ -369,6 +369,15 @@ PERMISSION_CHOICES = (
     ('C', 'campaign')
 )
 
+OFFICE_TYPES = (
+    ('U', 'user'),
+    ('R', 'representative'),
+    ('S', 'senator'),
+    ('P', 'president'),
+    ('M', 'mayor'),
+    ('G', 'governor')
+)
+
 # type vals
 TYPE_DICT = {'event':'E', 'petition':'P', 'news':'N', 'legislation':'L',
              'question':'Q','response':'R','group':'G','comment':'C',
