@@ -9,7 +9,7 @@
 
 # lovegov
 import traceback
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulSoup
 from django import db
 from lovegov.modernpolitics.helpers import *
 
@@ -791,8 +791,9 @@ def initializeCongress():
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongressFile(filepath,image_root):
     fileXML = open(filepath)
-    parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['role'])
+    parsedXML = BeautifulSoup(fileXML, selfClosingTags=['role'])
     session_number = int(parsedXML.people['session'])
+    congress_tag = Tag.lg.get_or_none(name='congress') or Tag(name='congress')
 
     # For each person at this congress
     for personXML in parsedXML.findall('person'):
@@ -806,42 +807,55 @@ def initializeCongressFile(filepath,image_root):
         if 'birthday' in personXML:
             birthday = parseDate(personXML['birthday'])
 
-        person = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday)
+        # Look for this person in the database
+        person = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday) or initializeXMLCongressman(name,personXML,image_root=image_root)
 
-        if not person:
-            person = initializeXMLCongressman(name,personXML,image_root=image_root)
-
+        # Get their role
         role = personXML.role
 
+        # Get their role info
         role_type = role['type']
+        role_tag = None
         if role_type == 'sen':
-            role_type = 'S'
+            role_tag = 'senator'
         elif role_type == 'rep':
-            role_type = 'R'
+            role_tag = 'representative'
         else:
             print "[WARNING]: role type " + role_type + " is not recognized for " + name.encode('utf-8','ignore')
-            continue # Skip this guy, can't make an Office without a type
+            continue # Skip this guy, can't make an Office without a tag
 
         role_state = role['state']
         role_district = role['district']
 
-        office = Office.lg.get_or_none(location__state=role_state,location__district=role_district,office_type=role_type)
-        if not office:
+        # Find the tag related to this role
+        current_tag = Tag.lg.get_or_none(name=role_tag) or Tag(name=role_tag)
+        # Find the office related to
+        office = current_tag.tag_set.filter(location__state=role_state,location__district=role_district)
+        if not office: # If it doesn't exist, make that office
             loc = PhysicalAddress(district=role_district, state=role_state)
-            office = Office(location=loc, office_type=role_type)
+            loc.save()
+            office = Office(location=loc)
+            office.tags.add(current_tag)
+            office.tags.add(congress_tag)
             office.autoSave()
 
+        # Take the start and end dates
         start_date = parseDate(personXML.role['startdate'])
         end_date = parseDate(personXML.role['enddate'])
 
+        # See if this Office Held already exists.
         office_held = OfficeHeld.lg.get_or_none(office=office,start_date=start_date,end_date=end_date)
-        if not office_held:
+        if not office_held: # If it  doesn't, create it
             office_held = OfficeHeld(office=office,start_date=start_date,end_date=end_date)
             if (datetime.date.today() - end_date).days >= 0:
                 office_held.current = True
-            office_held.congress_sessions = [session_number]
             office_held.autoSave()
 
+        current_session = CongressSession.lg.get_or_none(session=session_number) or CongressSession(session=session_number)
+
+        office_held.congress_sessions.add(current_session)
+
+        # Finally,
         person.offices_held.add(office_held)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -862,6 +876,8 @@ def initializeXMLCongressman(name,personXML,image_root=''):
     except:
         print "[WARNING]: no image here for elected offical " + name.encode('utf-8','ignore') + " at " + image_path
 
+    if 'id' in personXML:
+        user_prof.govtrack_id = personXML['id']
     if 'middlename' in personXML:
         user_prof.middle_name = personXML['middlename']
     if 'nickname' in personXML:
@@ -871,7 +887,7 @@ def initializeXMLCongressman(name,personXML,image_root=''):
     if 'gender' in personXML:
         user_prof.gender = personXML['gender']
     if 'twitterid' in personXML:
-        user_prof.twitter_id = personXML['twitterid']
+        user_prof.twitter_user_id = personXML['twitterid']
     if 'facebookgraphid' in personXML:
         user_prof.facebook_id = personXML['facebookgraphid']
 
@@ -890,6 +906,7 @@ def initializeXMLCongressman(name,personXML,image_root=''):
 
     return user_prof
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
@@ -898,17 +915,48 @@ def initializeCommittees():
     for num in range(112,108,-1):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
         fileXML = open(filePath)
-        BeautifulStoneSoup.NESTABLE_TAGS["member"] = []
-        parsedXML = BeautifulStoneSoup(fileXML, selfClosingTags=['member'])
-        for committeeXML in parsedXML.findAll(re.compile("^committee$")):
+        parsedXML = BeautifulSoup(fileXML)
+        for committee in parsedXML.committees.findChildren('committee',recursive=False):
             if not Committee.objects.filter(name=committeeXML['displayname'].encode("utf-8",'ignore')).exists():
                 db.reset_queries()
                 print "parsing committee"
                 committee = Committee()
                 committee.saveXML(committeeXML,num)
 
-def initializeLegislation():
 
+def initializeXMLCommittee(committeeXML,session):
+    type = committeeXML['type']
+    if type == "house": type="H"
+    else: type="S"
+    self.type = type
+    self.name = committeeXML['displayname'].encode("utf-8",'ignore')
+    print committeeXML['displayname'].encode("utf-8",'ignore')
+    self.code = committeeXML['code']
+    self.save()
+    for memberXML in committeeXML.findChildren('member',recursive=False):
+        committeeMember = CommitteeMember()
+        if memberXML.has_key('role'): committeeMember.role = memberXML['role']
+        committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(memberXML['id']))
+        committeeMember.committee = self
+        committeeMember.session =  CongressSessions.objects.get(session=session)
+        committeeMember.save()
+    for subcommitteeXML in committeeXML.findChildren('subcommittee',recursive=False):
+        committee = Committee()
+        committee.name = subcommitteeXML['displayname'].rstrip()
+        print subcommitteeXML['displayname'].encode("utf-8",'ignore')
+        committee.type = type
+        committee.parent = self
+        committee.code = subcommitteeXML['code']
+        committee.save()
+        for submemberXML in subcommitteeXML.findChildren('member'):
+            committeeMember = CommitteeMember()
+            if submemberXML.has_key('role'): committeeMember.role = submemberXML['role']
+            committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(submemberXML['id']))
+            committeeMember.committee = committee
+            committeeMember.session = CongressSessions.objects.get(session=session)
+            committeeMember.save()
+
+def initializeLegislation():
     total = 0
     already = Legislation.objects.all().count() - 10
 

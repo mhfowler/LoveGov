@@ -230,10 +230,15 @@ class Topic(LGModel):
         return self.image.url
 
 
+class Tag(LGModel):
+    name = models.CharField(max_length=100)
+
+
 #=======================================================================================================================
 # Content
 #
 #=======================================================================================================================
+
 class Content(Privacy, LocationLevel):
     # unique identifier
     alias = models.CharField(max_length=1000, default="default")
@@ -1090,6 +1095,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Government Stuff
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
+    supporters = models.ManyToManyField('UserProfile', related_name='supporters')
+    num_supporters = models.IntegerField(default=0)
+    offices_held = models.ManyToManyField('OfficeHeld', related_name='offices_held')
+    govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     type = models.CharField(max_length=1,default="U")
@@ -1788,6 +1797,37 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userAddress = newAddress
         self.save()
 
+
+#    def getSupporters(self):
+#        support = Supported.objects.filter(user=self, confirmed=True)
+#        supporter_ids = support.values_list('to_user', flat=True)
+#        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def addSupporter(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if not supported:
+            supported = Supported(user=user, to_user=self)
+            supported.confirmed()
+            supported.autoSave()
+            supporters.add(user)
+            self.num_supporters += 1
+            self.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            self.num_supporters += 1
+            self.save()
+
+    def removeSupporter(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            self.num_supporters -= 1
+            self.save()
+        if user in supporters:
+            supporters.remove(user)
+
 #=======================================================================================================================
 # Permissions for user to modify shit.. right now just char Field, but could be expanded later
 #=======================================================================================================================
@@ -1983,158 +2023,36 @@ class Notification(Privacy):
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
     governmental = models.BooleanField(default=False)
-    tags = custom_fields.ListField(default=[])
+    tags = models.ManyToManyField("Tag",related_name='tag_set')
 
     def autoSave(self):
         self.type = "O"
         self.in_search = True
         self.save()
 
-class Politician(UserProfile):
-    office_seeking = models.CharField(max_length=100)
-    num_supporters = models.IntegerField(default=0)
-    num_messages = models.IntegerField(default=0)
-
-    def getSupporters(self):
-        support = Supported.objects.filter(user=self, confirmed=True)
-        supporter_ids = support.values_list('to_user', flat=True)
-        return UserProfile.objects.filter(id__in=supporter_ids)
-
-    def support(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if not supported:
-            supported = Supported(user=user, to_user=self)
-            supported.autoSave()
-            self.num_supporters += 1
-            self.save()
-        if not supported.confirmed:
-            supported.confirmed = True
-            supported.save()
-            self.num_supporters += 1
-            self.save()
-
-    def unsupport(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if supported and supported.confirmed:
-            supported.confirmed = False
-            supported.save()
-            self.num_supporters -= 1
-            self.save()
-
-class ElectedOfficial(Politician):
-    # ENUMS
-    TITLE_CHOICES = ( ('S','Sen.'), ('R','Rep.'), ('M', 'Sel.') )
-    # Name/Title
-    title = models.CharField(max_length=1, choices=TITLE_CHOICES, null=True)
-    official_name = models.CharField(max_length=200,null=True)
-    # ID Numbers
-    govtrack_id = models.IntegerField(null=True)
-    pvs_id = models.IntegerField(null=True)
-    os_id = models.CharField(max_length=50, null=True)
-    bioguide_id = models.CharField(max_length=50, null=True)
-    metavid_id = models.CharField(max_length=150, null=True)
-    youtube_id = models.CharField(max_length=150, null=True)
-    twitter_id = models.CharField(max_length=150, null=True)
-    # Term Data
-    start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
-
 
 ########################################################################################################################
 ################################################# Representatives ######################################################
-class CongressSessions(LGModel):
-    session = models.IntegerField(primary_key=True)
-    people = models.ManyToManyField(ElectedOfficial)
-
-    def getReps(self):
-        return self.people.filter(title="R")
-
-    def getRepByStateDistrict(self,state,district):
-        representatives = self.people.filter(title="R")
-        representatives = Representative.objects.filter(representatives)
-        return representatives.filter(state=state,district=district)[0]
-
-    def getSenators(self):
-        return self.people.filter(title="S")
-
-    def getSenatorByState(self,state):
-        return self.people.filter(title="S").get(state=state)
-
-class SelectMan(ElectedOfficial):
-    represents = models.CharField(max_length=500)
-
-class Senator(ElectedOfficial):
-    state = models.CharField(max_length=2,null=True)
-    classNum = models.IntegerField(null=True)
-
-    def autoSave(self, personXML):
-        self.title = 'S'
-        self.state = personXML.role['state']
-        self.classNum = personXML.role['class']
-        super(Senator,self).autoSave(personXML)
-
-class Representative(ElectedOfficial):
-    state = models.CharField(max_length=2,null=True)
-    district = models.IntegerField(null=True)
-
-    def autoSave(self, personXML):
-        self.title = 'R'
-        self.state = personXML.role['state']
-        self.district = personXML.role['district']
-        super(Representative,self).autoSave(personXML)
-
-
-
-class USPresident(ElectedOfficial):
-    pass
 
 
 # External Imports
-class Committee(LGModel):
-    COMMITTEE_CHOICES = ( ('S','Senate'), ('H','House'), ('SS', 'Senate Subcommittee'), ('HS','House Subcommittee'), ("O","Other") )
+class Committee(Group):
     name = models.CharField(max_length=1000)
     code = models.CharField(max_length=20)
-    type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
+    committee_type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
     parent = models.ForeignKey('self', null=True)
-    members = models.ManyToManyField(ElectedOfficial, through='CommitteeMember')
+    members = models.ManyToManyField(UserProfile, through='CommitteeMember')
 
-    def saveXML(self,committeeXML,session):
-        type = committeeXML['type']
-        if type == "house": type="H"
-        else: type="S"
-        self.type = type
-        self.name = committeeXML['displayname'].encode("utf-8",'ignore')
-        print committeeXML['displayname'].encode("utf-8",'ignore')
-        self.code = committeeXML['code']
-        self.save()
-        for memberXML in committeeXML.findChildren('member',recursive=False):
-            committeeMember = CommitteeMember()
-            if memberXML.has_key('role'): committeeMember.role = memberXML['role']
-            committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(memberXML['id']))
-            committeeMember.committee = self
-            committeeMember.session =  CongressSessions.objects.get(session=session)
-            committeeMember.save()
-        for subcommitteeXML in committeeXML.findChildren('subcommittee',recursive=False):
-            committee = Committee()
-            committee.name = subcommitteeXML['displayname'].rstrip()
-            print subcommitteeXML['displayname'].encode("utf-8",'ignore')
-            committee.type = type
-            committee.parent = self
-            committee.code = subcommitteeXML['code']
-            committee.save()
-            for submemberXML in subcommitteeXML.findChildren('member'):
-                committeeMember = CommitteeMember()
-                if submemberXML.has_key('role'): committeeMember.role = submemberXML['role']
-                committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(submemberXML['id']))
-                committeeMember.committee = committee
-                committeeMember.session = CongressSessions.objects.get(session=session)
-                committeeMember.save()
-
-class CommitteeMember(LGModel):
+class CommitteeMember(UCRelationship):
     role = models.CharField(max_length=200,null=True)
-    session = models.ForeignKey(CongressSessions)
-    electedOfficial = models.ForeignKey(ElectedOfficial)
+    active_member = models.BooleanField(default=False)
+    congress_session = models.ForeignKey(CongressSession)
     committee = models.ForeignKey(Committee)
+
+    def autoSave(self):
+        self.content = self.committee
+        self.relationship_type = 'CM'
+        self.save()
 
 
 ########################################################################################################################
@@ -2405,6 +2323,10 @@ def parseDateTime(dateTime):
 def parseDate(date):
     splitDate = str(date).split('-')
     return datetime.date(year=int(splitDate[0]), month=int(splitDate[1]), day=int(splitDate[2]))
+
+
+class CongressSession(LGModel):
+    session = models.IntegerField(primary_key=True)
 
 
 #=======================================================================================================================
@@ -4138,6 +4060,8 @@ class Relationship(Privacy):
             object = self.ucrelationship.signed
         elif type == 'OH':
             object = self.ucrelationship.officeheld
+        elif type == 'CM':
+            object = self.ucrelationship.committeemember
         else:
             object = self
         return object
@@ -4226,7 +4150,7 @@ class OfficeHeld(UCRelationship):
     end_date = models.DateField()
     current = models.BooleanField(default=False)
     election = models.BooleanField(default=False)
-    congress_sessions = models.CommaSeparatedIntegerField(max_length="200")
+    congress_sessions = models.ManyToManyField(CongressSession)
 
     def autoSave(self):
         self.content = self.office

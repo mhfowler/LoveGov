@@ -290,7 +290,8 @@ RELATIONSHIP_CHOICES = (
     ('MV','motion_voted'),
     ('DV','debate_voted'),
     ('DM', 'debate_messaged'),
-    ('OH', 'held_office')
+    ('OH', 'office_held'),
+    ('CM', 'committee_member')
     )
 
 RELATIONSHIP_DICT = {}
@@ -335,8 +336,9 @@ GROUP_PRIVACY_CHOICES = (
 GROUP_TYPE_CHOICES = (
     ('N','network'),
     ('P','party'),
+    ('C','committee'),
     ('U','user'),
-    ('S', 'system')
+    ('S','system')
 )
 
 NETWORK_TYPE = (
@@ -369,13 +371,12 @@ PERMISSION_CHOICES = (
     ('C', 'campaign')
 )
 
-OFFICE_TYPES = (
-    ('U', 'user'),
-    ('R', 'representative'),
-    ('S', 'senator'),
-    ('P', 'president'),
-    ('M', 'mayor'),
-    ('G', 'governor')
+COMMITTEE_CHOICES = (
+    ('S','Senate'),
+    ('H','House'),
+    ('SS', 'Senate Subcommittee'),
+    ('HS','House Subcommittee'),
+    ("O","Other")
 )
 
 # type vals
