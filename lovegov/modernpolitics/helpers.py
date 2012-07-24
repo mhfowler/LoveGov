@@ -142,7 +142,7 @@ def checkBrowserCompatible(request):
         to_return = False
 
     if not to_return:
-        browser_logger.debug('useragent: ' + user_agent)
+        browser_logger.debug('useragent: ' + str(user_agent))
 
     return to_return
 
