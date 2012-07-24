@@ -63,10 +63,6 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
-def initCreator():
-    from lovegov.beta.modernpolitics.backend import getLoveGovUser
-    return getLoveGovUser()
-
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
     creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
@@ -3760,6 +3756,7 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.admins.remove(user)
         self.num_members -= 1
         self.save()
 

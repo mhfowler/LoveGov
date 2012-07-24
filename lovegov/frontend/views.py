@@ -1207,10 +1207,12 @@ def groupEdit(request, g_id=None, section="", vals={}):
 
     vals['group_admins'] = admins
 
-    members = list( group.getMembers() )
+    all_members = group.getMembers()
+    vals['group_members'] = all_members
+    members = list( all_members )
     for admin in admins:
         members.remove(admin)
-    vals['group_members'] = members
+    vals['normal_members'] = members
 
     vals['uploadform'] = UploadFileForm()
 
