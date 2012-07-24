@@ -2037,17 +2037,20 @@ class Office(Content):
 
 # External Imports
 class Committee(Group):
-    name = models.CharField(max_length=1000)
     code = models.CharField(max_length=20)
     committee_type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
     parent = models.ForeignKey('self', null=True)
-    members = models.ManyToManyField(UserProfile, through='CommitteeMember')
 
-class CommitteeMember(UCRelationship):
+    def autoSave(self):
+        self.group_type = 'C'
+        self.save()
+
+class CommitteeJoined(GroupJoined):
     role = models.CharField(max_length=200,null=True)
-    active_member = models.BooleanField(default=False)
     congress_session = models.ForeignKey(CongressSession)
     committee = models.ForeignKey(Committee)
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True,null=True)
 
     def autoSave(self):
         self.content = self.committee
@@ -4148,7 +4151,6 @@ class OfficeHeld(UCRelationship):
     office = models.ForeignKey('Office',related_name="office")
     start_date = models.DateField()
     end_date = models.DateField()
-    current = models.BooleanField(default=False)
     election = models.BooleanField(default=False)
     congress_sessions = models.ManyToManyField(CongressSession)
 
