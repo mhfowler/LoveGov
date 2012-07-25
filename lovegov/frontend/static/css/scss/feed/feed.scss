@@ -467,12 +467,11 @@
     @include fontSize(16px);
     border-width:1px;
     background-color: white;
-    width:70px;
     height:36px;
     margin:0px;
     z-index:20;
     padding: 10px 0 0 10px;
-    min-width: 700px;
+    min-width: 70px;
   }
 
   div.menu-separator

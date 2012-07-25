@@ -4,7 +4,7 @@
         <table class="register-form">
             <tr>
                 <td>
-                    <input type="text" id="fullname-input" class="login-input" name="fullname" placeholder="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% elif registerform.fullname.errors %}{{ registerform.fullname.errors|striptags }}{% else %}full name{% endif %}"/>
+                    <input type="text" id="fullname-input" class="login-input" name="fullname" value="{% if not registerform.fullname.errors and registerform.fullname.value %}{{ registerform.fullname.value }}{% elif registerform.fullname.errors %}{{ registerform.fullname.errors|striptags }}{% endif %}" placeholder="full name"/>
                 </td>
             </tr>
 
@@ -12,7 +12,7 @@
 
             <tr>
                 <td>
-                    <input type="text" id="email-input" class="login-input" name="email" placeholder="{% if not registerform.email.errors and registerform.email.value %}{{ registerform.email.value }}{% elif registerform.email.errors %}{{ registerform.email.errors|striptags }}{% else %}email{% endif %}"/>
+                    <input type="text" id="email-input" class="login-input" name="email" value="{% if not registerform.email.errors and registerform.email.value %}{{ registerform.email.value }}{% elif registerform.email.errors %}{{ registerform.email.errors|striptags }}{% endif %}" placeholder="email"/>
                 </td>
             </tr>
 
@@ -20,7 +20,7 @@
 
             <tr>
                 <td>
-                    <input type="text" id="email2-input" class="login-input" name="email2" placeholder="{% if not registerform.email2.errors and registerform.email2.value %}{{ registerform.email2.value }}{% elif registerform.email2.errors %}{{ registerform.email2.errors|striptags }}{% else %}email again{% endif %}"/>
+                    <input type="text" id="email2-input" class="login-input" name="email2" value="{% if not registerform.email2.errors and registerform.email2.value %}{{ registerform.email2.value }}{% elif registerform.email2.errors %}{{ registerform.email2.errors|striptags }}{% endif %}" placeholder="email again"/>
                 </td>
             </tr>
 

@@ -142,11 +142,11 @@ div#content-wrapper {
     }
   div.news_link_summary p {
     font-size: 14px;
-    border: 1px solid $gray;
-    margin-left: 10px;
+    border: 1px dashed $gray;
+    border-left: none;
     font-style: italic;
     padding: 10px;
-    @include rounded(10px);
+    @include rounded-right(10px);
     &:hover {
       background-color: $white-gray;
     }
@@ -322,8 +322,9 @@ div#content-div p {
 }
 
 div#content-div {
-    width: auto;
+    width: 720px;
     height: auto;
+    float: left;
 }
 
 div.petition_bar {
