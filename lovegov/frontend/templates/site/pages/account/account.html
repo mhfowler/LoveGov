@@ -1,0 +1,290 @@
+{% load thumbnail %}
+
+<div class="main-div">
+
+    <a href="{{ viewer.get_url }}"><h5>Back to your profile</h5></a>
+    <div class="account-left">
+        <h2>Account Settings</h2>
+        <div class="account-button-options">
+            <div class="account-button" id="account_basic_information">
+                <div class="account-button-pointer">
+                    <div class="border"></div>
+                    <div class="inner"></div>
+                </div>
+                <span>Basic Information</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button" id="account_change_password">
+                <span>Change Password</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button" id="account_change_profile">
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="account-right">
+
+        <div class="account_div" id="account-basic-information" style="display:none">
+            <form action="/action/" method="post"> {% csrf_token %}
+                <span class="edit-link-large edit_link"></span>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h2>Basic Information</h2></td>
+                    </tr>
+                    <tr>
+                        <td class="left"><h3>first name</h3></td>
+                        <td><input class="account_input" type="text" value="{{ viewer.get_first_name }}" name="first_name"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left"><h3>last name</h3></td>
+                        <td><input class="account_input" type="text" value="{{ viewer.get_last_name }}" name="last_name"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left"><h3>email</h3></td>
+                        <td><input class="account_input" type="text" value="{{ viewer.get_email }}" name="email"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-small"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>address</h3>
+                            <p>
+                                We use your address to determine your voting district. See our <a>privacy policy</a> for details.
+                            </p>
+                        </td>
+                        <td><textarea class="account_input limit_input address-field" name="address">{{ viewer.get_address }}</textarea></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td>
+                            <p class="account-message">
+                                {{ profile_message }}
+                            </p>
+                        </td>
+                        <td style="text-align:right"><input type="submit" action="/action/" class="button-red" value="save changes"/></td>
+                        <td width=20></td>
+                    </tr>
+                </table>
+                <input type="hidden" name="box" value="basic_info"/>
+                <input type="hidden" name="action" value="editAccount"/>
+            </form>
+        </div>
+
+        <div class="account_div" id="account-change-password" style="display:none">
+            <form action="" method="post"> {% csrf_token %}
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h2>Change Password</h2></td>
+                    </tr>
+                    <tr>
+                        <td class="left"><h3>current password</h3></td>
+                        <td><input class="account_input" type="password" value="" name="old"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left"><h3>new password</h3></td>
+                        <td><input class="account_input" type="password" value="" name="new1"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left"><h3>confirm password</h3></td>
+                        <td><input class="account_input" type="password" value="" name="new2"/></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td>
+                            <p class="account-message">
+                                {{ password_message }}
+                            </p>
+                        </td>
+                        <td style="text-align:right"><input type="submit" action="" class="button-red" value="change password"/></td>
+                        <td width=35></td>
+                    </tr>
+                </table>
+                <input type="hidden" name="box" value="password"/>
+            </form>
+        </div>
+
+        <div class="account_div" id="account-change-profile" style="display:none">
+            <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><h2>Profile</h2></td>
+                    </tr>
+                    <tr>
+                        <td class="left"><h3>avatar</h3></td>
+                        <td>
+                            {% thumbnail viewer.getProfileImage.image "75x75" crop="center" as im %}
+                                <img src="{{ im.url }}" style="margin-right:20px"/>
+                            {% endthumbnail %}
+                            {{ uploadform.image }}
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>bio</h3>
+                            <p>
+                                Tell us about you in 150 characters.
+                            </p>
+                        </td>
+                        <td><textarea class="account_input limit_input bio-field" name="bio">{{ viewer.bio }}</textarea></td>
+                        <td></td>
+                    </tr>
+                    <tr class="break"></tr>
+                    <tr>
+                        <td class="left"><h3>parties</h3></td>
+                        <td>
+                            {% for party in parties %}
+                                {% thumbnail party.party_label "100x20" as im %}
+                                    <img class="party-choice" src="{{ im.url }}" data-input="#party-{{ party.alias }}"/>
+                                {% endthumbnail %}
+                                {% if party in user_parties %}
+                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="{{ party.alias }}" value="true" checked="checked">
+                                {% else %}
+                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="{{ party.alias }}" value="true">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-small"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>lock profile</h3>
+                            <p>
+                                If you lock your profile, users will
+                                have to request to follow you.
+                            </p>
+                        </td>
+                        <td>
+                            <div class="lockprofile-td">
+                                {% if viewer.private_follow %}
+                                    <input class="account_input" checked="checked" type="checkbox" name="lock"/>
+                                {% else %}
+                                    <input class="account_input" type="checkbox" name="lock"/>
+                                {% endif %}
+                                <span>Check to lock profile</span>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td></td>
+                        <td style="text-align:right"><input type="submit" class="button-red" value="save changes"/></td>
+                        <td width=35></td>
+                    </tr>
+                </table>
+                <input type="hidden" name="box" value="profile"/>
+                <input type="hidden" name="action" value="editAccount"/>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function account()
+    {
+
+        var pointer = $('.account-button-pointer');
+        var pencil = $('.edit_link').detach();
+        var id;
+
+        $('.account_div').hide();
+        {% if password_message %}
+            id = '#account_change_password';
+        {% elif profile_message %}
+            id = '#account_change_profile';
+        {% else %}
+            id = '#account_basic_information';
+        {% endif %}
+        $(id).prepend(pointer.detach()).addClass("account-button-selected");
+        $(id.replace(/_/g,"-")).show();
+
+        $('.account_input').hover(
+            function() { $(this).parent().next().append(pencil); },
+            function() { pencil = pencil.detach(); }
+        );
+
+        $('.account-button').click(function()
+        {
+            $('.account-button').removeClass("account-button-selected");
+            $(this).addClass("account-button-selected");
+            $(this).prepend(pointer);
+        });
+
+        $('img.party-choice').each( function(i)
+        {
+            var $checkbox = $($(this).data('input'));
+            if( $checkbox.prop('checked') )
+            {
+                $(this).addClass("party-choice-selected");
+            }
+        });
+
+        $('img.party-choice').click(function()
+        {
+            var $checkbox = $($(this).data('input'));
+            $checkbox.prop('checked', !$checkbox.prop('checked'));
+            $(this).toggleClass("party-choice-selected");
+            if (!$(this).hasClass("party-choice-selected"))
+            {
+                $(this).addClass("party-choice-deselected");
+            }
+        });
+
+        $('img.party-choice').mouseout(function()
+        {
+            $(this).removeClass("party-choice-deselected");
+        });
+
+        var inputLimit = 150;
+        $('.limit_input').keypress(function(event)
+        {
+            if ($(this).val().length  > inputLimit)
+            {
+                event.preventDefault();
+            }
+        });
+        $('.limit_input').bind('paste',function(event)
+        {
+            if ($(this).val().length  > inputLimit)
+            {
+                event.preventDefault();
+            }
+        });
+        $('.account-button').click(function(event)
+        {
+            $('.account_div').hide();
+            $('#' + $(this).attr('id').replace(/_/g,"-")).show();
+        });
+
+    }
+
+    account();
+
+</script>
+
+<!-- Javascript -->
+<script> rebind='account'; </script>
+<!-- End Account -->
+
+

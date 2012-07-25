@@ -1,0 +1,23 @@
+<div class="address-box">
+
+    {% if invalid_address %}
+        <h3 class="enter-your-address"> To find and compare yourself with your congressional representatives,
+            enter your address below. </h3>
+    {% else %}
+        <h3 class="enter-your-address"> Enter a new address below. </h3>
+    {% endif %}
+
+    <div class="wrapper">
+        <div class="address-input-error" id="address_input_error"></div>
+        <form action="">
+            <div class="inputs-wrapper">
+                <input type="text" class="address-input" value="" placeholder="Address"/>
+                <input type="text" class="city-input" value="" placeholder="City"/>
+                <input type="text" class="state-input" value="" placeholder="State"/>
+                <input type="text" class="zip-input" value="" placeholder="Zip"/>
+            </div>
+            <input class="find_out_now button-red" type="submit" value="Find out now."/>
+        </form>
+    </div>
+
+</div>

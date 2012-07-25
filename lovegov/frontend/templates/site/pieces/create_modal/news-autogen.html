@@ -1,0 +1,22 @@
+{% load thumbnail %}
+
+<div id="news-link-generation-image" class="news-link-generation-div" style="float:left">
+    <div class="news_link_image_container">
+        {% for image in imglink %}
+            {% thumbnail image.path "250" crop="center" as img %}
+                <img class="news_link_image {% if forloop.first %}news_link_selected{% endif %}" src="{{ img.url }}" style="display:{% if not forloop.first %}none{% endif %}"/>
+            {% endthumbnail %}
+        {% endfor %}
+    </div>
+</div>
+<div id="news-link-generation-text-container" class="news-link-generation-div" style="float:left;width:300px;margin-left:25px;">
+    <input id="news-input-title" type="hidden" name="title" value="{{ title|safe }}">
+    <h5 class="text-blue">{{ title|safe }}</h5>
+    <div id="news-link-generation-description">{{ description|safe }}</div>
+    <div style="margin-left:auto;margin-right:auto;">
+        <span style="font-weight:bold;margin-right:10px">select thumbnail: </span>
+        <button id="cycle-img-left" style="width:40px;margin-right:5px">&lt;</button>
+        <span id="cycle-img-span" style="margin-right:5px;font-size:10px">1 / {{ imglink|length }}</span>
+        <button id="cycle-img-right" style="width:40px;margin-right:5px">&gt;</button>
+    </div>
+</div>
