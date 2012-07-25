@@ -188,3 +188,21 @@ div.submit-button
 {
   display:none;
 }
+
+tr.post-to-wrapper {
+
+  div.post-to-selected {
+    float:left;
+  }
+
+  div.triangle-selector {
+    background:contain;
+    background-image: url('/static/images/icons/down-arrow.png');
+    width:10px;
+    height:10px;
+    float:left;
+    margin-left:7px;
+    margin-top:7px;
+  }
+
+}

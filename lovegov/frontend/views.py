@@ -464,12 +464,22 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # new feeds page
 #-----------------------------------------------------------------------------------------------------------------------
-def theFeed(request, vals={}):
+def theFeed(request, g_alias=None, vals={}):
 
+    viewer = vals['viewer']
     rightSideBar(request, vals)
     shareButton(request, vals)
 
-    viewer = vals['viewer']
+    if not g_alias:
+        current_group = getLoveGovGroup()
+    else:
+        current_group = Group.objects.get(alias=g_alias)
+    vals['current_group'] = current_group
+
+    if current_group.hasMember(viewer):
+        vals['default_post_to_group'] = current_group
+    else:
+        vals['default_post_to_group'] = getLoveGovGroup()
 
     filter_name = request.GET.get('filter_name')
     if not filter_name:
@@ -1029,10 +1039,7 @@ def newsDetail(request, n_id, vals={}):
 def shareButton(request, vals={}):
     viewer = vals['viewer']
     vals['my_followers'] = viewer.getFollowMe()
-    groups = viewer.getGroups()
-    vals['my_groups'] = groups.filter(group_type="U")
-    vals['my_networks'] = groups.filter(group_type="N")
-
+    getMyGroups(request, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum

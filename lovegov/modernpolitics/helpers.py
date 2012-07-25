@@ -39,6 +39,24 @@ def getMainTopics(vals=None):
     return main_topics
 
 #-----------------------------------------------------------------------------------------------------------------------
+# fills vals with useres group data
+#-----------------------------------------------------------------------------------------------------------------------
+def getMyGroups(request, vals={}):
+    viewer = vals['viewer']
+    groups = vals.get('all_my_groups')
+    if not groups:
+        groups = viewer.getGroups()
+        vals['all_my_groups'] = groups
+    my_groups = vals.get('my_groups')
+    if not my_groups:
+        my_groups = groups.filter(group_type="U")
+        vals['my_groups'] = my_groups
+    my_networks = vals.get('my_groups')
+    if not my_networks:
+        my_networks = groups.filter(group_type="N")
+        vals['my_networks'] = my_networks
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets official questions, pseudo-caching
 #-----------------------------------------------------------------------------------------------------------------------
 def getOfficialQuestions(vals=None):
