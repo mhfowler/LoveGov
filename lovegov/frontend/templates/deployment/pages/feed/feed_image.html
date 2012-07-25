@@ -4,16 +4,16 @@
     {% if item.type == 'N' %}
     {% if item.link_screenshot %}
     {% endif %}
-        {% thumbnail item.link_screenshot "250x500" as im %}
+        {% thumbnail item.link_screenshot "250x500" format="PNG" as im %}
             <img src="{{ im.url }}"/>
         {% endthumbnail %}
     {% elif item.type == 'G' %}
-        {% thumbnail item.getImage "250x500" as im %}
+        {% thumbnail item.getImage "250x500" format="PNG" as im %}
             <img src="{{ im.url }}" data-height="{{ im.height }}"/>
         {% endthumbnail %}
     {% elif item.type == 'P' %}
             {% if item.main_image %}
-                {% thumbnail item.getImage "250x500" as im %}
+                {% thumbnail item.getImage "250x500" format="PNG" as im %}
                     <img src="{{ im.url }}" data-height="{{ im.height }}"/>
                 {% endthumbnail %}
             {% endif %}

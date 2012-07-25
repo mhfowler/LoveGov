@@ -52,7 +52,7 @@ def recalculateAllVotes():
 
 
 def recalculateAllComments():
-    commentable = ['C','P','N','Q']
+    commentable = ['P','N','Q']
     content = Content.objects.filter(type__in=commentable)
 
     for c in content:
@@ -131,3 +131,49 @@ def recalculateProhibitedActions():
             else:
                 c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
         c.save()
+
+
+def recalculateInFeed():
+    c = Content.objects.filter(in_feed=True)
+    for x in c:
+        x.in_feed = False
+        x.save()
+    p = Petition.objects.all()
+    for x in p:
+        x.in_feed = True
+        x.save()
+    n = News.objects.all()
+    for x in n:
+        x.in_feed = True
+        x.save()
+    g = UserGroup.objects.all()
+    for x in g:
+        if x.group_privacy != "S":
+            x.in_feed = True
+            x.save()
+
+
+def recalculateCreators():
+    c = Content.objects.all()
+    anon = getAnonUser()
+    print "total: ", str(c.count())
+    count = 0
+    changed = 0
+    for x in c:
+        if not count % 20:
+            print str(count)
+        creator = x.getCreator()
+        u = UserProfile.lg.get_or_none(id=creator.id)
+        if not u:
+            print "CHANGING CREATOR for ", x.get_name()
+            x.creator = anon
+            x.save()
+            changed += 1
+        count += 1
+    print "TOTAL CHANGED: ", str(changed)
+
+
+def recalculateNumMembers():
+    for x in Group.objects.all():
+        print x.get_name()
+        x.countMembers()

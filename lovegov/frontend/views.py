@@ -109,7 +109,16 @@ def viewWrapper(view, requires_login=False):
 #-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
 #-----------------------------------------------------------------------------------------------------------------------
-def redirect(request, blah="blah"):
+def aliasDowncast(request, alias=None, vals={}):
+    if UserProfile.lg.get_or_none(alias=alias):
+        return viewWrapper(profile, requires_login=True)(request, alias)
+    matched_group = Group.lg.get_or_none(alias=alias)
+    if matched_group:
+        return viewWrapper(group, requires_login=True)(request, matched_group.id)
+    return redirect(request)
+
+
+def redirect(request):
     return shortcuts.redirect('/home/')
 
 def splash(request):
@@ -501,7 +510,7 @@ def iFollow(request, vals={}):
     friends.sort(key=lambda x:x.result,reverse=True)
     vals['friends'] = friends
 
-    loadHistogram(5, group.id, 'mini', vals)
+    loadHistogram(5, group.id, 'mini', vals=vals)
 
     html = ajaxRender('deployment/pages/match/friends.html', vals, request)
     url = '/friends/'
@@ -696,7 +705,7 @@ def group(request, g_id=None, vals={}):
     vals['comparison'] = comparison
     vals['json'] = json
 
-    loadHistogram(5, group.id, 'mini', vals)
+    loadHistogram(5, group.id, 'mini', increment=5, vals=vals)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -765,14 +774,14 @@ def histogramDetail(request, g_id, vals={}):
     vals['group'] = group
     getMainTopics(vals)
 
-    loadHistogram(20, group.id, 'full', vals)
+    loadHistogram(20, group.id, 'full', vals=vals)
 
     html = ajaxRender('deployment/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
 
 
-def loadHistogram(resolution, g_id, which, vals={}):
+def loadHistogram(resolution, g_id, which, increment=1, vals={}):
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}
@@ -784,7 +793,7 @@ def loadHistogram(resolution, g_id, which, vals={}):
                           'resolution':resolution,
                           'g_id':g_id,
                           'which':which,
-                          'increment':1,
+                          'increment':increment,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 }
@@ -1207,10 +1216,12 @@ def groupEdit(request, g_id=None, section="", vals={}):
 
     vals['group_admins'] = admins
 
-    members = list( group.getMembers() )
+    all_members = group.getMembers()
+    vals['group_members'] = all_members
+    members = list( all_members )
     for admin in admins:
         members.remove(admin)
-    vals['group_members'] = members
+    vals['normal_members'] = members
 
     vals['uploadform'] = UploadFileForm()
 

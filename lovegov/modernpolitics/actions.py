@@ -354,9 +354,12 @@ def sign(request, vals={}):
             if petition.sign(user):
                 vals['signer'] = user
                 context = RequestContext(request,vals)
+                context['p'] = petition
                 template = loader.get_template('deployment/snippets/signer.html')
                 signer_string = template.render(context)  # render html snippet
-                vals = {"success":True, "signer":signer_string}
+                template = loader.get_template('deployment/snippets/petition_bar.html')
+                bar_string = template.render(context)  # render html snippet
+                vals = {"success":True, "signer":signer_string, "bar":bar_string}
             else:
                 vals = {"success":False, "error": "You have already signed this petition."}
         else:
@@ -1209,6 +1212,35 @@ def addAdmin(admin_id, group, viewer, request):
 #    action.autoSave()
 #    from_user.notify(action)
     return True
+
+#----------------------------------------------------------------------------------------------------------------------
+# Removes a set of members from a group.
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def removeMembers(request, vals={}):
+
+    viewer = vals['viewer']
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to remove members from this group.")
+
+    if not 'members' in request.POST:
+        errors_logger.error("Group member removal without user IDs for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group member removal without user IDs")
+
+    members = json.loads(request.POST['members'])
+
+    for member_id in members:
+        member = UserProfile.lg.get_or_none(id=member_id)
+        if member:
+            group.removeMember(member)
+
+    vals['group_members'] = group.members.all()
+    html = ajaxRender('deployment/pages/group/members_list.html',vals,request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates inputted comparison.

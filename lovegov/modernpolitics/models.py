@@ -63,10 +63,6 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
-def initCreator():
-    from lovegov.beta.modernpolitics.backend import getLoveGovUser
-    return getLoveGovUser()
-
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
     creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
@@ -162,6 +158,8 @@ class LocationLevel(models.Model):
         else:
             return 'None'
 
+
+
 #=======================================================================================================================
 # Topic
 #
@@ -239,8 +237,8 @@ class Content(Privacy, LocationLevel):
     alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
     in_feed = models.BooleanField(default=False)
-    in_search = models.BooleanField(default=True)
-    in_calc = models.BooleanField(default=True)
+    in_search = models.BooleanField(default=False)
+    in_calc = models.BooleanField(default=False)
     # FIELDS
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     topics = models.ManyToManyField(Topic)
@@ -257,6 +255,7 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
+    unique_commenter_ids = custom_fields.ListField(default=[])
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -304,14 +303,26 @@ class Content(Privacy, LocationLevel):
     def contentCommentsRecalculate(self):
         direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
+        commenters = set()
 
         if direct_comments:
             for comment in direct_comments:
-                num_comments += comment.contentCommentsRecalculate() + 1
+
+                commenters.add(comment.getCreator())
+
+                num_children_comments, children_commenters = comment.contentCommentsRecalculate()
+
+                num_comments += num_children_comments + 1
+                commenters.union(children_commenters)
 
         self.num_comments = num_comments
+        unique_commenter_ids = []
+        for x in commenters:
+            unique_commenter_ids.append(x.id)
+        self.unique_commenter_ids = unique_commenter_ids
         self.save()
-        return num_comments
+
+        return num_comments, commenters
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -466,6 +477,18 @@ class Content(Privacy, LocationLevel):
             self.title=value
         elif field == "summary":
             self.summary=value
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Handle adding a new comment appropriately.
+    #-------------------------------------------------------------------------------------------------------------------
+    def addComment(self, commenter):
+        self.num_comments += 1
+        unique_commenter_ids = self.unique_commenter_ids
+        if commenter and (not commenter.id in unique_commenter_ids):
+            unique_commenter_ids.append(commenter.id)
+            self.unique_commenter_ids = unique_commenter_ids
+            self.status += STATUS_COMMENT
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1074,7 +1097,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def __unicode__(self):
         return self.first_name
     def get_url(self):
-        return '/profile/' + self.alias + '/'
+        if self.alias!='' and self.alias!='default':
+            return '/profile/' + self.alias + '/'
+        else:
+            return '/' + self.alias + '/'
     def getWebUrl(self):
         return self.getWebURL()
     def getWebURL(self):
@@ -1214,10 +1240,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
         alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
-        users = UserProfile.objects.filter(alias=alias)
-        while users:
-            alias += '<3'
-            users = users.filter(alias=alias)
+        from lovegov.modernpolitics.helpers import genAliasSlug
+        self.alias = genAliasSlug(alias)
         self.alias = alias
         self.save()
         return self.alias
@@ -1409,7 +1433,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self.networks.all()[0]
         else: return getOtherNetwork()
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Makes this UserProfile friends with another UserProfile (two-way following relationship)
     #-------------------------------------------------------------------------------------------------------------------
@@ -1512,10 +1535,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
         relationship = action.relationship
+
+        #If you are the one doing the action, do not notify yourself
         if action.type != 'FO' and action.type != 'JO':
-            if relationship.getFrom().id == self.id and self.id == relationship.getTo().creator.id:
+            if relationship.getFrom().id == self.id:
                 return False
 
+        #Do aggregate notifications if necessary
         if action.type in AGGREGATE_NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
@@ -1535,6 +1561,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 notification.addAggUser( relationship.user , action.privacy )
                 return True
 
+        #Otherwise do normal notifications
         elif action.type in NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 notification = Notification(action=action, notify_user=self)
@@ -2369,14 +2396,10 @@ class Comment(Content):
         self.setMainTopic(self.root_content.getMainTopic())
         # update on_content
         root_content = self.root_content
-        root_content.num_comments += 1
-        root_content.status += STATUS_COMMENT
-        root_content.save()
+        root_content.addComment(commenter=creator)
         on_content = self.on_content
         if on_content != root_content:
-            on_content.num_comments += 1
-            on_content.status += STATUS_COMMENT
-            on_content.save()
+            on_content.addComment(commenter=creator)
 
 
     def getAlphaDisplayName(self):
@@ -3643,8 +3666,6 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
 
-        from lovegov.modernpolitics.compare import getUserUserComparison
-
         def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
             i = 0
             current=buckets_list[0]
@@ -3680,12 +3701,12 @@ class Group(Content):
         for x in members:
             comparison = x.getComparison(user).loadOptimized()
             if comparison:
+                total += 1
                 if topic and topic_alias != 'all':
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
                 if comparison.getNumQuestions():
-                    total += 1
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1
@@ -3736,6 +3757,7 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.admins.remove(user)
         self.num_members -= 1
         self.save()
 
@@ -3776,6 +3798,7 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
+        self.alias = self.makeAlias()
         self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)
@@ -3892,6 +3915,14 @@ class Group(Content):
         else:
             return DEFAULT_GROUP_IMAGE_URL
 
+    def makeAlias(self):
+        from django.template.defaultfilters import slugify
+        from lovegov.modernpolitics.helpers import genAliasSlug
+        alias = slugify(self.title)
+        self.alias = genAliasSlug(alias)
+        self.save()
+        return self.alias
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -3965,10 +3996,9 @@ class Party(Group):
 #=======================================================================================================================
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
-        self.in_feed = True
+        self.in_feed = (self.group_privacy != "S")
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
-    pass
 
 ########################################################################################################################
 ########################################################################################################################

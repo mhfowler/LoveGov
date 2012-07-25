@@ -1,40 +1,38 @@
 import os
-from lovegov import settings
+from lovegov import local_settings as local
 
-LOCAL = True
-DEBUG = True
-SHOW_TOOLBAR = False
-TEMPLATE_DEBUG = DEBUG
-THUMBNAIL_DEBUG = DEBUG
-PROJECT_PATH = settings.PROJECT_PATH
+LOCAL = local.LOCAL
+DEBUG = local.DEBUG
+SHOW_TOOLBAR = local.SHOW_TOOLBAR
+TEMPLATE_DEBUG = True
+THUMBNAIL_DEBUG = False
+PROJECT_PATH = local.PROJECT_PATH
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.sqlite3',
-        'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
-        'USER':      '',
-        'PASSWORD':  '',
-        'HOST':     '',
-        'PORT':    '',
-    },
-}
+        'ENGINE':   'django.db.backends.mysql',
+        'NAME':     'lgdb',
+        'USER':     'root',
+        'PASSWORD': 'lglglg12',
+        'HOST':     'lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com',
+        'PORT':     '3306',
+        }
+    }
 
-STATIC_ROOT = settings.STATIC_ROOT
+STATIC_ROOT = local.STATIC_ROOT
 
-LOG_ROOT = "/log/"
-
-LOGGING = settings.setLogging(LOG_ROOT)
+LOGGING = local.LOGGING
 
 ########################################################################################################################
 #    apps, middelware, urlconf
 #
 ########################################################################################################################
 
-ROOT_URLCONF = settings.ROOT_URLCONF
+ROOT_URLCONF = local.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',))
+INSTALLED_APPS = local.INSTALLED_APPS.__add__(('south',))
 
-MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
+MIDDLEWARE_CLASSES = local.MIDDLEWARE_CLASSES
 
 ########################################################################################################################
 #    static and media
@@ -42,22 +40,22 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 ########################################################################################################################
 
 # URL prefix for static files.
-STATIC_URL = settings.STATIC_URL
+STATIC_URL = local.STATIC_URL
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
-MEDIA_ROOT = settings.MEDIA_ROOT
+MEDIA_ROOT = local.MEDIA_ROOT
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
-MEDIA_URL =  settings.MEDIA_URL
+MEDIA_URL =  local.MEDIA_URL
 
 # URL prefix for admin static files -- CSS, JavaScript and images. Make sure to use a trailing slash.
-ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
+ADMIN_MEDIA_PREFIX = local.ADMIN_MEDIA_PREFIX
 
 # Additional locations of static files
-STATICFILES_DIRS = settings.STATICFILES_DIRS
+STATICFILES_DIRS = local.STATICFILES_DIRS
 
 # List of finder classes that know how to find static files in various locations.
-STATICFILES_FINDERS = settings.STATICFILES_FINDERS
+STATICFILES_FINDERS = local.STATICFILES_FINDERS
 
 ########################################################################################################################
 #    templates
@@ -65,74 +63,56 @@ STATICFILES_FINDERS = settings.STATICFILES_FINDERS
 ########################################################################################################################
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+TEMPLATE_LOADERS = local.TEMPLATE_LOADERS
 
 # template dirs
-TEMPLATE_DIRS = settings.TEMPLATE_DIRS
+TEMPLATE_DIRS = local.TEMPLATE_DIRS
 
 ########################################################################################################################
 #    authentication (and integration with facebook)
 #
 ########################################################################################################################
 
-FACEBOOK_APP_ID = 	settings.FACEBOOK_APP_ID
-FACEBOOK_APP_SECRET = 	settings.FACEBOOK_APP_SECRET
+FACEBOOK_APP_ID = 	local.FACEBOOK_APP_ID
+FACEBOOK_APP_SECRET = 	local.FACEBOOK_APP_SECRET
 
-TWITTER_KEY = settings.TWITTER_KEY
-TWITTER_SECRET = settings.TWITTER_SECRET
+TWITTER_KEY = local.TWITTER_KEY
+TWITTER_SECRET = local.TWITTER_SECRET
 
-AUTH_PROFILE_MODULE = settings.AUTH_PROFILE_MODULE
+AUTH_PROFILE_MODULE = local.AUTH_PROFILE_MODULE
 
-AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS
+AUTHENTICATION_BACKENDS = local.AUTHENTICATION_BACKENDS
 
-TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS
+TEMPLATE_CONTEXT_PROCESSORS = local.TEMPLATE_CONTEXT_PROCESSORS
 
 ########################################################################################################################
 #    haystack and search
 #
 ########################################################################################################################
 
-HAYSTACK_CONNECTIONS = settings.HAYSTACK_CONNECTIONS
+HAYSTACK_CONNECTIONS = local.HAYSTACK_CONNECTIONS
 
 ########################################################################################################################
 #    debug toolbar
 #
 ########################################################################################################################
 
-# for django-debug-toolbar
-def show_toolbar(request):
-    from lovegov.modernpolitics.helpers import getUserProfile
-    if DEBUG and SHOW_TOOLBAR:
-        user_prof = getUserProfile(request)
-        if user_prof:
-            if user_prof.developer:
-                return True
-    return False
-
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': show_toolbar,
-    }
+DEBUG_TOOLBAR_CONFIG = local.DEBUG_TOOLBAR_CONFIG
 
 ########################################################################################################################
 #    caching
 #
 ########################################################################################################################
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        }
-}
+CACHES = local.CACHES
 
 ########################################################################################################################
-#    caching
+#    email
 #
 ########################################################################################################################
 
-# EMAIL DURING DEVELOPMENT
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/log/emails'
+EMAIL_BACKEND = local.EMAIL_BACKEND
+EMAIL_FILE_PATH = local.EMAIL_FILE_PATH
 
 ########################################################################################################################
 #    misc settings
@@ -140,25 +120,25 @@ EMAIL_FILE_PATH = '/log/emails'
 ########################################################################################################################
 
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = settings.TIME_ZONE
+TIME_ZONE = local.TIME_ZONE
 
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = settings.LANGUAGE_CODE
-SITE_ID = settings.SITE_ID
+LANGUAGE_CODE = local.LANGUAGE_CODE
+SITE_ID = local.SITE_ID
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = settings.USE_I18N
+USE_I18N = local.USE_I18N
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
-USE_L10N = settings.USE_L10N
+USE_L10N = local.USE_L10N
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = settings.SECRET_KEY
+SECRET_KEY = local.SECRET_KEY
 
-ADMINS = settings.ADMINS
+ADMINS = local.ADMINS
 
-MANAGERS = settings.MANAGERS
+MANAGERS = local.MANAGERS
 
 

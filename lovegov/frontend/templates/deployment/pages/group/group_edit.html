@@ -2,12 +2,15 @@
 <!---- CSS for this file is in account.scss -->
 
 <div class="main-div">
+
+
     <a href="{{ group.get_url }}"><h5>Back to group page</h5></a>
     <br>
     <div class="account-left">
         <h2>Group Settings</h2>
         <div class="account-button-options">
-            <div class="group_edit_button append_pointer account-button account-button-selected" id="account_basic_information">
+            <div class="edit_info_button group_edit_button append_pointer account-button account-button-selected"
+                 id="account_basic_information" data-div="edit_info_tab">
                 <div class="account-button-pointer group_edit_pointer">
                     <div class="border"></div>
                     <div class="inner"></div>
@@ -15,15 +18,24 @@
                 <span>Basic Information</span>
             </div>
             <div class="account-button-separator"></div>
-            <div class="admin_edit_button append_pointer account-button" id="account_change_profile">
+            <div class="admin_edit_button append_pointer account-button group_edit_button"
+                 id="account_change_profile" data-div="admin_edit_tab">
                 <span>Administrators</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="members_remove_button append_pointer account-button group_edit_button"
+                 id="members_remove_button" data-div="members_edit_tab">
+                <span>Members</span>
             </div>
         </div>
     </div>
 
+
+
+
     <div class="account-right">
 
-        <div class="group_edit_tab" id="account-basic-information">
+        <div class="edit_info_tab group_edit_tab" id="account-basic-information">
             <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
                 <span class="edit-link-large group_edit_icon"></span>
                 <table>
@@ -103,9 +115,12 @@
             </form>
         </div>
 
-        <div class="admin_edit_tab admin-edit-tab" style="display:none">
 
-            <div class="admin-edit-header"> Edit Administrators for {{ group.title }} </div>
+
+
+        <div class="admin_edit_tab admin-edit-tab group-edit-tab group_edit_tab" style="display:none">
+
+            <div class="group-edit-header"> Edit Administrators for {{ group.title }} </div>
 
             <div class="admin-remove-container" id="admin_remove_container">
                 {% include "deployment/snippets/admin_list.html" %}
@@ -113,10 +128,10 @@
         
             <form>
 
-                <div class="admin-select-container">
-                    <select multiple class="admin_select admin-select">
+                <div class="member-select-container">
+                    <select multiple class="admin_select member-select">
                         <optgroup label="Members" id="add_members_input">
-                            {% for member in group_members %}
+                            {% for member in normal_members %}
                                 <option class="admin_value" value='{{ member.id }}'>{{ member.get_name }}</option>
                             {% endfor %}
                         </optgroup>
@@ -133,17 +148,49 @@
 
         </div>
 
+
+
+
+
+        <div class="members_edit_tab members-edit-tab group_edit_tab" style="display:none">
+
+            <div class="group-edit-header"> Current Members for {{ group.title }} </div>
+
+            <div class="group-members-container group_members_container">
+                {% include 'deployment/pages/group/members_list.html' %}
+            </div>
+
+            <form>
+
+                <div class="member-select-container">
+                    <select multiple class="member_select member-select">
+                        <optgroup label="Members" id="remove_members_input">
+                            {% for member in group_members %}
+                                <option class="admin_value" value='{{ member.id }}'>{{ member.get_name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="members-remove-container">
+                    <a href='' id='members_remove_submit' class="admin-button" data-g_id="{{ group.id }}">Remove Members</a>
+                </div>
+
+            </form>
+
+            <div class="members-remove-submit-message" id="members_remove_submit_message" ></div>
+
+        </div>
+
     </div>
 
 </div>
 
+
+
 <!-- Javascript -->
 <script>
     rebind='groupedit';
-
-    $('select.admin_select').select2({
-        placeholder: "Enter a member,"
-    });
 </script>
 
 

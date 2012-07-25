@@ -36,6 +36,50 @@ if LOCAL:
     del(_media_url, serve)
 
 
+# Users and groups are prevented from generating aliases which match these strings
+# Be liberal about this list - it should include potential app URLs in addition to those actually being used
+URL_SPECIAL_NAMES = set([
+    'login',
+    'passwordRecovery',
+    'confirm',
+    'need_email_confirmation',
+    'fb',
+    'twitter',
+    'logout',
+    'underconstruction',
+    'upgrade',
+    'continue',
+    'try',
+    'home',
+    'web',
+    'about',
+    'account',
+    'match',
+    'search',
+    'question',
+    'topic',
+    'petition',
+    'news',
+    'networks',
+    'action',
+    'answer',
+    'widget',
+    'test'
+    'test2',
+    'test3',
+    'css',
+    'images',
+    'static',
+    'javascript',
+    'js',
+    'jquery',
+    'developer',
+    'alpha',
+    'beta',
+    'analytics',
+    'api',
+])
+
 # lovegov urls
 urlpatterns += patterns('',
 
@@ -130,5 +174,6 @@ urlpatterns += patterns('',
     (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
     # REDIRECT
+    (r'(?P<alias>\S+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect))

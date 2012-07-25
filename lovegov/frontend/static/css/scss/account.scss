@@ -284,13 +284,13 @@ div.account-right
   }
 
 
-  div.admin-edit-header
+  div.group-edit-header
   {
     @include h3;
     margin-bottom: 10px;
   }
 
-  div.admin-select-container
+  div.member-select-container
   {
     margin-bottom:15px;
   }
@@ -325,8 +325,18 @@ div.account-right
     background-color: $light-gray;
   }
 
-  select.admin-select {
+  select.member-select {
     width: 500px;
+  }
+
+  div.group-members-container {
+    margin-bottom: 20px;
+    display:block;
+
+    div.user-avatar-link {
+      float:left;
+      margin-right:10px;
+    }
   }
 
   div.admin-edit-tab

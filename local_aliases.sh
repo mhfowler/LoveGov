@@ -25,9 +25,12 @@ alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/fron
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
 alias lgindex="python $LG/lovegov/local_manage.py rebuild_index"
 alias lgcharm="lgdir && charm ."
-
-alias masterpull="git pull origin master"
-alias masterpush="git push origin master"
+alias lgpython="bpython -i $LG/autopython.py"
+alias remotedb="mysql --host=lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com --user=root --password=lglglg12 --database=lgdb -A"
+alias remoteserver="$LG/remote_server.sh"
+alias lgrun="source $LG/local_env.sh &&"
+alias remoterun="source $LG/remote_env.sh &&"
+alias remotepython="source $LG/remote_env.sh && bpython -i $LG/autopython.py"
 
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"
@@ -40,6 +43,7 @@ alias mpermission="sudo chown -R maxfowler $LG && sudo chmod -R 770 $LG"
 alias jserver="jpermission && lgserver"
 alias jsass="jpermission && lgsass"
 alias lgcharm="lgdir && charm ."
+
 
 # python environment
 export PYTHONSTARTUP=$LG/autopython.py
