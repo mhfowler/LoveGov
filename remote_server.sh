@@ -2,7 +2,7 @@
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo 'whereami: '$SCRIPTPATH
 
-$SCRIPTPATH/remote_env.sh
+source $SCRIPTPATH/remote_env.sh
 
 # runserver
 python $SCRIPTPATH/lovegov/devremote_manage.py runserver

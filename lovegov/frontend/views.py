@@ -696,7 +696,7 @@ def group(request, g_id=None, vals={}):
     vals['comparison'] = comparison
     vals['json'] = json
 
-    loadHistogram(5, group.id, 'mini', vals)
+    loadHistogram(5, group.id, 'mini', increment=5, vals=vals)
 
     # Get Follow Requests
     vals['group_requests'] = list(group.getFollowRequests())
@@ -772,7 +772,7 @@ def histogramDetail(request, g_id, vals={}):
     return framedResponse(request, html, url, vals)
 
 
-def loadHistogram(resolution, g_id, which, vals={}):
+def loadHistogram(resolution, g_id, which, increment=1, vals={}):
     bucket_list = getBucketList(resolution)
     vals['buckets'] = bucket_list
     bucket_uids = {}
@@ -784,7 +784,7 @@ def loadHistogram(resolution, g_id, which, vals={}):
                           'resolution':resolution,
                           'g_id':g_id,
                           'which':which,
-                          'increment':1,
+                          'increment':increment,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 }

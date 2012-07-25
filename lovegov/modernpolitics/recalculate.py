@@ -173,3 +173,7 @@ def recalculateCreators():
     print "TOTAL CHANGED: ", str(changed)
 
 
+def recalculateNumMembers():
+    for x in Group.objects.all():
+        print x.get_name()
+        x.countMembers()

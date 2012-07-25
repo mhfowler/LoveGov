@@ -4267,6 +4267,9 @@ function updateHistogram(recursive) {
                 if (returned.total != 0 && recursive) {
                     updateHistogram(true);
                 }
+                else {
+                    alert("end.");
+                }
             }
         }
     );

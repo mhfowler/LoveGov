@@ -3700,12 +3700,12 @@ class Group(Content):
         for x in members:
             comparison = x.getComparison(user).loadOptimized()
             if comparison:
+                total += 1
                 if topic and topic_alias != 'all':
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
                 if comparison.getNumQuestions():
-                    total += 1
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1

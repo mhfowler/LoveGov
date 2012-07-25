@@ -4,8 +4,8 @@ from lovegov import local_settings as local
 LOCAL = local.LOCAL
 DEBUG = local.DEBUG
 SHOW_TOOLBAR = local.SHOW_TOOLBAR
-TEMPLATE_DEBUG = local.DEBUG
-THUMBNAIL_DEBUG = local.DEBUG
+TEMPLATE_DEBUG = True
+THUMBNAIL_DEBUG = False
 PROJECT_PATH = local.PROJECT_PATH
 
 DATABASES = {
