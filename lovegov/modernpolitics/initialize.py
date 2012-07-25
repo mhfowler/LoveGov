@@ -308,9 +308,9 @@ def initializeGeneralTopic():
     topic = Topic(topic_text="General", alias="general")
     topic.save()
 
-    image_ref = os.path.join(PROJECT_PATH, 'frontend/static/icons/topic_icons/for_default.png')
-    hover_ref = os.path.join(PROJECT_PATH,'frontend/static/icons/topic_icons/for_hover.png')
-    selected_ref = os.path.join(PROJECT_PATH,'frontend/static/icons/topic_icons/for_selected.png')
+    image_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/icons/topic_icons/for_default.png')
+    hover_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_hover.png')
+    selected_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_selected.png')
 
     file = open(image_ref)
     topic.image.save(photoKey(".png"), File(file))

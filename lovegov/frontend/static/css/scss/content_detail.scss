@@ -237,16 +237,16 @@ div.social_bar {
 			background-size: 100%;
 			&.twitter_link {
 				color: red;
-				background-image: url('/static/icons/twitter.png');
+				background-image: url('/static/images/icons/twitter.png');
 				&:hover {
-					background-image: url('/static/icons/twitter_hover.png');
+					background-image: url('/static/images/icons/twitter_hover.png');
 				}
 			}
 			&.facebook_link {
 				color: blue;
-				background-image: url('/static/icons/facebook.png');
+				background-image: url('/static/images/icons/facebook.png');
 				&:hover {
-					background-image: url('/static/icons/facebook_hover.png');
+					background-image: url('/static/images/icons/facebook_hover.png');
 				}
 			}
 		}
