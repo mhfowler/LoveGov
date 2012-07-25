@@ -49,15 +49,15 @@ footer.sticky-footer {
 		width: 40px;
 		margin: 5px 5px 5px 0;
 		&.facebook {
-			background-image: url('/static/icons/facebook.png');
+			background-image: url('/static/images/icons/facebook.png');
 			&:hover {
-				background-image: url('/static/icons/facebook_hover.png');
+				background-image: url('/static/images/icons/facebook_hover.png');
 			}
 		}
 		&.twitter {
-			background-image: url('/static/icons/twitter.png');
+			background-image: url('/static/images/icons/twitter.png');
 			&:hover {
-				background-image: url('/static/icons/twitter_hover.png');
+				background-image: url('/static/images/icons/twitter_hover.png');
 			}
 		}
 	}

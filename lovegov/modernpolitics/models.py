@@ -256,6 +256,10 @@ class Content(Privacy, LocationLevel):
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
     unique_commenter_ids = custom_fields.ListField(default=[])
+    # POSTING TO GROUPS
+    posted_to = models.ForeignKey("Group", null=True, related_name="posted_content")
+    shared_to = models.ManyToManyField("Group", related_name="shared_content")
+    content_privacy = models.CharField(max_length=1,choices=CONTENT_PRIVACY_CHOICES, default='O')
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -1876,7 +1880,7 @@ class Action(Privacy):
                             'true':True,
                             'timestamp':self.when}
 
-        action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
+        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1972,7 +1976,7 @@ class Notification(Privacy):
 
         vals.update(notification_context)
 
-        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',vals)
+        notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
         return notification_verbose
 
     def addAggUser(self,agg_user,privacy="PUB"):
@@ -2346,11 +2350,13 @@ class News(Content):
         self.save()
 
 #=======================================================================================================================
-# UserPost (self post of text...aka a rant)
+# UserPost/Discussion
 #
 #=======================================================================================================================
-class UserPost(Content):
-    full_text = models.TextField(max_length=10000)
+class Discussion(Content):
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.type = "D"
+        super(self, Discussion).autoSave(creator=creator, privacy=privacy)
 
 #=======================================================================================================================
 # Photo album

@@ -21,7 +21,7 @@ from lovegov.settings import UPDATE
 def basicMessage(request,message,vals={}):
     vals['basic_message'] = message
     url = '/'
-    html = ajaxRender('deployment/pages/basic_message.html', vals, request)
+    html = ajaxRender('site/pages/basic_message.html', vals, request)
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ def framedResponse(request, html, url, vals):
     else:
         vals['center'] = html
         frame(request, vals)
-        return renderToResponseCSRF(template='deployment/templates/frame.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all views. Requires_login=True if requires login.
@@ -122,16 +122,16 @@ def redirect(request):
     return shortcuts.redirect('/home/')
 
 def splash(request):
-    return splashForm(request, 'deployment/pages/splash/splash.html')
+    return splashForm(request, 'site/pages/splash/splash.html')
 
 def learnmore(request):
-    return splashForm(request, 'deployment/pages/splash/learnmore.html')
+    return splashForm(request, 'site/pages/splash/learnmore.html')
 
 def underConstruction(request):
-    return render_to_response('deployment/pages/microcopy/construction.html')
+    return render_to_response('site/pages/microcopy/construction.html')
 
 def upgrade(request):
-    return render_to_response('deployment/pages/microcopy/upgrade.html')
+    return render_to_response('site/pages/microcopy/upgrade.html')
 
 def continueAtOwnRisk(request):
     response = shortcuts.redirect("/web/")
@@ -163,7 +163,7 @@ def postEmail(request):
             return HttpResponse('+')
         else:
             vals = {'emailMessage':"Thanks! We'll keep you updated!"}
-            return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
     else:
         return shortcuts.redirect('/comingsoon/')
 
@@ -185,7 +185,7 @@ def blog(request,category=None,number=None,vals=None):
             if blogPost:
                 vals['blogPost'] = blogPost
                 vals['blogPosts'] = blogPosts
-                return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
+                return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
         elif category:
             if string.capitalize(category) in BlogEntry.CATEGORY_CHOICES:
                 for blogPost in blogPosts:
@@ -198,7 +198,7 @@ def blog(request,category=None,number=None,vals=None):
         else:
             vals['blogPosts'] = blogPosts
 
-        return renderToResponseCSRF('deployment/pages/blog/blog.html',vals=vals,request=request)
+        return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Alpha login page.
@@ -235,7 +235,7 @@ def login(request, to_page='web/', message="", vals={}):
 
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
-        response = renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+        response = renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
     response.delete_cookie('lovegov_try')
     return response
 
@@ -265,7 +265,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             error = 'Invalid Login/Password'
         # Return whatever error was found
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
-        return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     # REGISTER via POST
     elif request.POST['button'] == 'register':
@@ -274,10 +274,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
         if registerform.is_valid():
             registerform.save()
             vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email'), 'zip':registerform.cleaned_data.get('zip')})
-            return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
-            return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
@@ -296,7 +296,7 @@ def passwordRecovery(request,confirm_link=None, vals={}):
         ResetPassword.create(username=request.POST['email'])
         msg = u"Check your email for instructions to reset your password."
         if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
-        else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",vals=vals.update({'message':msg}),request=request)
+        else: return renderToResponseCSRF(template="site/pages/login/login-forgot-password.html",vals=vals.update({'message':msg}),request=request)
 
     # else following link to actual password recovery page
     else:
@@ -312,9 +312,9 @@ def passwordRecovery(request,confirm_link=None, vals={}):
                         if user: return loginAuthenticate(request,user)
                     else:
                         vals['recoveryForm'] = recoveryForm
-                        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
-                else: return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
-        return renderToResponseCSRF(template="deployment/pages/login/login-forgot-password.html",vals=vals,request=request)
+                        return renderToResponseCSRF(template="site/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
+                else: return renderToResponseCSRF(template="site/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
+        return renderToResponseCSRF(template="site/pages/login/login-forgot-password.html",vals=vals,request=request)
 
 def logout(request, vals={}):
     auth.logout(request)
@@ -334,7 +334,7 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
         user.save()
         vals['viewer'] = user
     if request.method == 'GET':
-        return renderToResponseCSRF('deployment/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
+        return renderToResponseCSRF('site/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
     else:
         return loginPOST(request,'/home/',message,vals)
 
@@ -347,7 +347,7 @@ def needConfirmation(request, vals={}):
                                            'Check your email for a confirmation link.  '\
                                            'It might be in your spam folder.'
     vals['state'] = 'need-confirmation'
-    return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets frame values and puts in dictionary.
@@ -417,7 +417,7 @@ def web(request, vals={}):
     if request.method == 'GET':
         getUserWebResponsesJSON(request,vals)
         vals['firstLogin'] = vals['viewer'].checkFirstLogin()
-        html = ajaxRender('deployment/pages/qaweb/qaweb.html', vals, request)
+        html = ajaxRender('site/pages/qaweb/qaweb.html', vals, request)
         url = '/web/'
         return framedResponse(request, html, url, vals)
     if request.method == 'POST':
@@ -451,7 +451,7 @@ def compareWeb(request,alias=None,vals={}):
             vals['questionsArray'] = tempvals['questionsArray']                     # populates questionsArray with user from profile page that you are looking at.
             vals['compareUserProfile'] = tempvals['viewer']
 
-            html = ajaxRender('deployment/pages/qaweb/qaweb-temp.html', vals, request)
+            html = ajaxRender('site/pages/qaweb/qaweb-temp.html', vals, request)
             url = '/profile/web/' + alias + '/'
             return framedResponse(request, html, url, vals)
     if request.method == 'POST':
@@ -489,7 +489,7 @@ def theFeed(request, vals={}):
     vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
     vals['num_pinterest'] = range(3)
 
-    html = ajaxRender('deployment/pages/feed/feed.html', vals, request)
+    html = ajaxRender('site/pages/feed/feed.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
 
@@ -512,7 +512,7 @@ def iFollow(request, vals={}):
 
     loadHistogram(5, group.id, 'mini', vals=vals)
 
-    html = ajaxRender('deployment/pages/match/friends.html', vals, request)
+    html = ajaxRender('site/pages/match/friends.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
 
@@ -536,7 +536,7 @@ def groups(request, vals={}):
 
     vals['what'] = "Groups"
 
-    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    html = ajaxRender('site/pages/match/groups.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
 
@@ -560,7 +560,7 @@ def networks(request, vals={}):
 
     vals['what'] = "Networks"
 
-    html = ajaxRender('deployment/pages/match/groups.html', vals, request)
+    html = ajaxRender('site/pages/match/groups.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
 
@@ -660,7 +660,7 @@ def profile(request, alias=None, vals={}):
 
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
-            html = ajaxRender('deployment/pages/profile/profile.html', vals, request)
+            html = ajaxRender('site/pages/profile/profile.html', vals, request)
             url = '/profile/' + alias
             return framedResponse(request, html, url, vals)
         else:
@@ -682,7 +682,7 @@ def network(request, alias=None, vals={}):
     network = Network.lg.get_or_none(alias=alias)
     if not network:
         vals['basic_message'] = "No network matches the given network ID"
-        html = ajaxRender('deployment/pages/basic_message.html', vals, request)
+        html = ajaxRender('site/pages/basic_message.html', vals, request)
         url = '/network/' + alias + '/'
         return framedResponse(request, html, url, vals)
     return group(request,g_id=network.id,vals=vals)
@@ -762,7 +762,7 @@ def group(request, g_id=None, vals={}):
 
     vals['non_member_followers'] = followers
 
-    html = ajaxRender('deployment/pages/group/group.html', vals, request)
+    html = ajaxRender('site/pages/group/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -776,7 +776,7 @@ def histogramDetail(request, g_id, vals={}):
 
     loadHistogram(20, group.id, 'full', vals=vals)
 
-    html = ajaxRender('deployment/pages/histogram/histogram.html', vals, request)
+    html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
 
@@ -833,7 +833,7 @@ def about(request, start="video", vals={}):
         vals['colors'] = MAIN_TOPIC_COLORS_LIST
         vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
 
-        html = ajaxRender('deployment/pages/about/about.html', vals, request)
+        html = ajaxRender('site/pages/about/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 
@@ -845,15 +845,15 @@ def legislation(request, session=None, type=None, number=None, vals={}):
     vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
         vals['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
-        return renderToResponseCSRF(template='deployment/pages/legislation/legislation.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
     legs = Legislation.objects.filter(bill_session=session)
     if type==None:
         type_list = [x['bill_type'] for x in Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
         vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='deployment/pages/legislation/legislation-session.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
     if number==None:
         vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='deployment/pages/legislation/legislation-type.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
     legs = Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
         vals['error'] = "No legislation found with the given parameters."
@@ -861,7 +861,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
 	leg = legs[0]
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
-    return renderToResponseCSRF(template='deployment/pages/legislation/legislation-view.html', vals=vals, request=request)
+    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -885,7 +885,7 @@ def newMatch(request,start='presidential', vals={}):
     matchSenate(request, vals)
     matchRepresentatives(request, vals)
 
-    html = ajaxRender('deployment/pages/match/match-new.html', vals, request)
+    html = ajaxRender('site/pages/match/match-new.html', vals, request)
     url = "/match/"
     return framedResponse(request, html, url, vals)
 
@@ -990,7 +990,7 @@ def topicDetail(request, topic_alias=None, vals={}):
         topic = Topic.objects.get(alias=topic_alias)
         contentDetail(request, topic.getForum(), vals)
         frame(request, vals)
-        return renderToResponseCSRF('deployment/pages/content/topic_detail.html', vals, request)
+        return renderToResponseCSRF('site/pages/content/topic_detail.html', vals, request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
@@ -1007,7 +1007,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    html = ajaxRender('deployment/pages/content/petition_detail.html', vals, request)
+    html = ajaxRender('site/pages/content/petition_detail.html', vals, request)
     url = '/petition/' + str(petition.id)
     return framedResponse(request, html, url, vals)
 
@@ -1019,7 +1019,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
 
-    html = ajaxRender('deployment/pages/content/news_detail.html', vals, request)
+    html = ajaxRender('site/pages/content/news_detail.html', vals, request)
     url = '/news/' + str(news.id)
     return framedResponse(request, html, url, vals)
 
@@ -1047,7 +1047,7 @@ def questionDetail(request, q_id=-1, vals={}):
     valsQuestion(request, q_id, vals)
     user = vals['user']
 
-    html = ajaxRender('deployment/pages/content/question_detail.html', vals, request)
+    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
 
@@ -1121,7 +1121,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                         'depth':depth})
 
                 context = RequestContext(request,vals)
-                template = loader.get_template('deployment/snippets/cath_comment.html')
+                template = loader.get_template('site/pieces/snippets/cath_comment.html')
                 comment_string = template.render(context)  # render comment html
                 to_return += comment_string
                 to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
@@ -1137,7 +1137,7 @@ def nextQuestion(request, vals={}):
     question = getNextQuestion(request, vals)
     valsQuestion(request, question.id, vals)
 
-    html = ajaxRender('deployment/pages/content/question_detail.html', vals, request)
+    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
     url = question.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -1164,7 +1164,7 @@ def account(request, section="", vals={}):
     if section == "profile": vals['profile_message'] = " "
 
     if request.method == 'GET':
-        html = ajaxRender('deployment/pages/account/account.html', vals, request)
+        html = ajaxRender('site/pages/account/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
@@ -1194,7 +1194,7 @@ def account(request, section="", vals={}):
         else:
             pass
 
-        html = ajaxRender('deployment/pages/account/account.html', vals, request)
+        html = ajaxRender('site/pages/account/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
@@ -1228,7 +1228,7 @@ def groupEdit(request, g_id=None, section="", vals={}):
     if section == "profile": vals['profile_message'] = " "
 
     if request.method == 'GET':
-        html = ajaxRender('deployment/pages/group/group_edit.html', vals, request)
+        html = ajaxRender('site/pages/group/group_edit.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
@@ -1251,7 +1251,7 @@ def groupEdit(request, g_id=None, section="", vals={}):
         else:
             pass
 
-        html = ajaxRender('deployment/pages/group/group_edit.html', vals, request)
+        html = ajaxRender('site/pages/group/group_edit.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
@@ -1372,7 +1372,7 @@ def search(request, term='', vals={}):
     vals['news'] = news
     vals['groups'] = groups
     vals['term'] = term
-    html = ajaxRender('deployment/pages/search/search.html', vals, request)
+    html = ajaxRender('site/pages/search/search.html', vals, request)
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
 

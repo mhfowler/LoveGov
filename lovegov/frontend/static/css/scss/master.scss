@@ -513,27 +513,27 @@ div.heart {
 }
 
 div.heart_minus {
-  background-image: url('/static/icons/minusheart-gray.png');
+  background-image: url('/static/images/icons/minusheart-gray.png');
 }
 
 div.heart_minus.clicked {
-  background-image: url('/static/icons/minusheart-red.png');
+  background-image: url('/static/images/icons/minusheart-red.png');
 }
 
 div.heart_minus:hover {
-  background-image: url('/static/icons/minusheart-red.png');
+  background-image: url('/static/images/icons/minusheart-red.png');
 }
 
 div.heart_plus {
-  background-image: url('/static/icons/plusheart-gray.png');
+  background-image: url('/static/images/icons/plusheart-gray.png');
 }
 
 div.heart_plus.clicked {
-  background-image: url('/static/icons/plusheart-red.png');
+  background-image: url('/static/images/icons/plusheart-red.png');
 }
 
 div.heart_plus:hover {
-  background-image: url('/static/icons/plusheart-red.png');
+  background-image: url('/static/images/icons/plusheart-red.png');
 }
 
 div.overdiv {
@@ -815,11 +815,11 @@ div.modal-close
   float: right;
   height: 10px;
   width: 10px;
-  background-image: url('/static/icons/x.png');
+  background-image: url('/static/images/icons/x.png');
   cursor: pointer;
   &:hover
   {
-    background-image: url('/static/icons/x_hover.png');
+    background-image: url('/static/images/icons/x_hover.png');
   }
 }
 

@@ -150,13 +150,13 @@ def twitterRegister(request, vals={}):
                     user_prof.save()
                     if zip:
                         user_prof.setZipCode(zip)
-                    return renderToResponseCSRF(template='deployment/pages/login/login-main-register-success.html', vals=vals, request=request)
+                    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
             else:
                 response = shortcuts.redirect("/twitter/redirect/")
                 return response
 
     vals['state'] = 'post-twitter'
-    return renderToResponseCSRF(template='deployment/pages/login/login-main.html', vals=vals, request=request)
+    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper which returns dictionary from twitter access token cookie if it exists

@@ -245,7 +245,7 @@ TYPE_CHOICES = (
     ('I','image'),
     ('A','album'),
     ('Z','content-response'),
-    ('D','debate'),
+    ('D','discussion'),
     ('Y', 'persistent-debate'),
     ('M', 'motion'),
     ('F', 'forum')
@@ -328,6 +328,11 @@ GROUP_PRIVACY_CHOICES = (
     ('P','private'),
     ('S','secret'),
 )
+CONTENT_PRIVACY_CHOICES = (
+    ('O','open'),
+    ('C','closed'),
+    ('P','private'),
+)
 
 # types of groups
 GROUP_TYPE_CHOICES = (
@@ -404,10 +409,10 @@ FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
 
 DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
 DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
-DEFAULT_NEWS_IMAGE_URL = '/static/icons/content-big/news.png'
-DEFAULT_PETITION_IMAGE_URL = '/static/icons/content-big/petition.png'
-DEFAULT_GROUP_IMAGE_URL = '/static/icons/content-big/group.png'
-DEFAULT_DISCUSSION_IMAGE_URL = '/static/icons/content-big/discussion.png'
+DEFAULT_NEWS_IMAGE_URL = '/static/images/icons/content-big/news.png'
+DEFAULT_PETITION_IMAGE_URL = '/static/images/icons/content-big/petition.png'
+DEFAULT_GROUP_IMAGE_URL = '/static/images/icons/content-big/group.png'
+DEFAULT_DISCUSSION_IMAGE_URL = '/static/images/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'
 
