@@ -6,18 +6,22 @@
 
         <h3>Signers</h3>
 
+        <div class="petition-signers-list">
         {% for signer in signers %}
             {% include 'site/pages/content/petition/signer.html' %}
         {% empty %}
             <span id="be-first-signer-message">Be the first to sign this petition.</span>
         {% endfor %}
+        </div>
 
 
         <div style="clear: both"></div>
 
+        <div class="signers-bar-wrapper">
         {% if signers %}
             {% include 'site/pages/content/petition/petition_bar.html' with p=petition %}
         {% endif %}
+        </div>
 
     {% endif %}
 

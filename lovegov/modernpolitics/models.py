@@ -158,6 +158,8 @@ class LocationLevel(models.Model):
         else:
             return 'None'
 
+
+
 #=======================================================================================================================
 # Topic
 #
@@ -1099,7 +1101,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def __unicode__(self):
         return self.first_name
     def get_url(self):
-        return '/profile/' + self.alias + '/'
+        if self.alias!='' and self.alias!='default':
+            return '/profile/' + self.alias + '/'
+        else:
+            return '/' + self.alias + '/'
     def getWebUrl(self):
         return self.getWebURL()
     def getWebURL(self):
@@ -1239,10 +1244,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
         alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
-        users = UserProfile.objects.filter(alias=alias)
-        while users:
-            alias += '<3'
-            users = UserProfile.objects.filter(alias=alias)
+        from lovegov.modernpolitics.helpers import genAliasSlug
+        self.alias = genAliasSlug(alias)
         self.alias = alias
         self.save()
         return self.alias
@@ -3801,6 +3804,7 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
+        self.alias = self.makeAlias()
         self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)
@@ -3916,6 +3920,14 @@ class Group(Content):
             return self.main_image.image.url
         else:
             return DEFAULT_GROUP_IMAGE_URL
+
+    def makeAlias(self):
+        from django.template.defaultfilters import slugify
+        from lovegov.modernpolitics.helpers import genAliasSlug
+        alias = slugify(self.title)
+        self.alias = genAliasSlug(alias)
+        self.save()
+        return self.alias
 
 
 #=======================================================================================================================

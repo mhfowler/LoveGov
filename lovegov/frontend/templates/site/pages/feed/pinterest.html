@@ -15,7 +15,7 @@
 
                     <div class="header-topic">
                         {% with topic=item.getMainTopic %}
-                            {% thumbnail topic.image "50x50" format="PNG" as im %}
+                            {% thumbnail topic.image "30x30" format="PNG" as im %}
                                 <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
                             {% endthumbnail %}
                         {% endwith %}

@@ -354,9 +354,12 @@ def sign(request, vals={}):
             if petition.sign(user):
                 vals['signer'] = user
                 context = RequestContext(request,vals)
-                template = loader.get_template('site/pages/content/petition/signer.html')
+                context['p'] = petition
+                template = loader.get_template('deployment/snippets/signer.html')
                 signer_string = template.render(context)  # render html snippet
-                vals = {"success":True, "signer":signer_string}
+                template = loader.get_template('deployment/snippets/petition_bar.html')
+                bar_string = template.render(context)  # render html snippet
+                vals = {"success":True, "signer":signer_string, "bar":bar_string}
             else:
                 vals = {"success":False, "error": "You have already signed this petition."}
         else:

@@ -140,6 +140,17 @@ div#content-wrapper {
         }
       }
     }
+  div.news_link_summary p {
+    font-size: 14px;
+    border: 1px solid $gray;
+    margin-left: 10px;
+    font-style: italic;
+    padding: 10px;
+    @include rounded(10px);
+    &:hover {
+      background-color: $white-gray;
+    }
+  }
 }
 
 div.comments-bubble {
@@ -965,3 +976,4 @@ div.petition-signers-modal {
     padding: 50px;
 
 }
+
