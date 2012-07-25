@@ -501,7 +501,7 @@ def iFollow(request, vals={}):
     friends.sort(key=lambda x:x.result,reverse=True)
     vals['friends'] = friends
 
-    loadHistogram(5, group.id, 'mini', vals)
+    loadHistogram(5, group.id, 'mini', vals=vals)
 
     html = ajaxRender('deployment/pages/match/friends.html', vals, request)
     url = '/friends/'
@@ -765,7 +765,7 @@ def histogramDetail(request, g_id, vals={}):
     vals['group'] = group
     getMainTopics(vals)
 
-    loadHistogram(20, group.id, 'full', vals)
+    loadHistogram(20, group.id, 'full', vals=vals)
 
     html = ajaxRender('deployment/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
