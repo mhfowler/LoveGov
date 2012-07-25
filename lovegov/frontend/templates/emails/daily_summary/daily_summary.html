@@ -32,7 +32,9 @@
         <br><br>
         <h2> details </h2>
         {% for x in accessed %}
-            {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user %}
+            {% if not x.user.developer %}
+                {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user %}
+            {% endif %}
         {% endfor %}
         <div style="clear:both"></div>
     </p>

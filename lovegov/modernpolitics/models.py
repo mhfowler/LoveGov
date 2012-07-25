@@ -3663,8 +3663,6 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
 
-        from lovegov.modernpolitics.compare import getUserUserComparison
-
         def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
             i = 0
             current=buckets_list[0]

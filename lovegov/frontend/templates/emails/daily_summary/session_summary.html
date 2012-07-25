@@ -1,6 +1,7 @@
 <br><br>
 <p>
-    ----------- Daily Usage for {{ user.get_name }} : {{ session.getSessionStart }}
+    ----------- Daily Usage for {{ user.id }} : {{ session.getSessionStart }}
+    {% if user.location.state %} [{{ user.location.state}}] {% endif %}
     <ul>
         {% for x in session.getPA %}
             <li> {{ x.page }}
