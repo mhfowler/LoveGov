@@ -63,10 +63,6 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
-def initCreator():
-    from lovegov.beta.modernpolitics.backend import getLoveGovUser
-    return getLoveGovUser()
-
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
     creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
@@ -3670,8 +3666,6 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
 
-        from lovegov.modernpolitics.compare import getUserUserComparison
-
         def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
             i = 0
             current=buckets_list[0]
@@ -3707,12 +3701,12 @@ class Group(Content):
         for x in members:
             comparison = x.getComparison(user).loadOptimized()
             if comparison:
+                total += 1
                 if topic and topic_alias != 'all':
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
                 if comparison.getNumQuestions():
-                    total += 1
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1
@@ -3763,6 +3757,7 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.admins.remove(user)
         self.num_members -= 1
         self.save()
 

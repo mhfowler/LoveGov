@@ -2816,14 +2816,9 @@ function loadGroupEdit()
 
     $('.group_edit_button').bindOnce("click.group_info_edit" , function(event)
     {
-        $('.admin_edit_tab').hide();
-        $('.group_edit_tab').show();
-    });
-
-    $('.admin_edit_button').bindOnce("click.group_admin_edit" , function(event)
-    {
-        $('.group_edit_tab').hide();
-        $('.admin_edit_tab').show();
+        $(".group_edit_tab").hide();
+        var div_class = $(this).data('div');
+        $("." + div_class).show();
     });
 
     $('#edit_admin_submit').bindOnce('click.edit_admin_submit', (function(e) {
@@ -2848,6 +2843,39 @@ function loadGroupEdit()
             });
         }
     }));
+
+    $('#members_remove_submit').bindOnce('click.remove_members_submit', (function(e) {
+        e.preventDefault();
+        var g_id = $(this).data('g_id');
+        var members = $('.member_select').select2("val");
+
+        if (members!='') {
+            ajaxPost({
+                data: {'action': 'removeMembers', 'members': JSON.stringify(members), 'g_id':g_id},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    var return_message = $('#members_remove_submit_message');
+                    return_message.html('Members Removed');
+                    return_message.show();
+                    return_message.fadeOut(3000);
+                    var members_container = $(".group_members_container");
+                    members_container.hide();
+                    members_container.html(returned.html);
+                    members_container.fadeIn(600);
+                }
+            });
+        }
+    }));
+
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.member_select').select2({
+        placeholder: "Enter a member,"
+    });
 }
 
 function bindRemoveAdmin()

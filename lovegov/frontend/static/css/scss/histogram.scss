@@ -145,19 +145,23 @@
       float:left;
       width:800px;
       margin-bottom:20px;
+      border-right:1px solid $gray;
     }
 
     div.identical-avatars {
-      border-left:1px solid $gray;
       margin:0 0 0 0;
       float:left;
       width:170px;
       text-align:center;
+
+      a.histogram-avatar {
+        margin: 20px 0px 0 30px;
+      }
     }
 
     a.histogram-avatar {
       float:left;
-      margin: 20px 0 0 30px;
+      margin: 20px 30px 0 0;
     }
 
   }
