@@ -560,6 +560,12 @@
           margin-left:20px;
           height:50px;
 
+          p.submitted a.text-gray {
+            &:hover {
+              color: $deep-gray;
+            }
+          }
+
           div.header-topic {
             float:right;
             margin-right:15px;
@@ -603,6 +609,18 @@
             @include body();
             @include fontSize(13px);
             line-height: 18px;
+          }
+        }
+
+        div.pinterest-news-summary
+        {
+          margin: 5px;
+          padding: 5px;
+          &.short-summary {
+            display:block;
+          }
+          &.long-summary {
+            display:none;
           }
         }
 

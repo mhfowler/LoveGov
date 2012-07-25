@@ -983,9 +983,6 @@ function loadHeader()
     });
 
 
-    $('#searchbar').inputFade();
-
-
     var tempDropDownDiv = $('.notifications-dropdown-static-div');
     $('#notifications-dropdown-button').click(
         function(event)

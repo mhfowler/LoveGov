@@ -360,3 +360,21 @@ def addValidEmail(email):
     new_email = ValidEmail(email=email)
     new_email.save()
     print("added: " + str(new_email.email))
+
+def isUniqueAlias(alias):
+    from lovegov.urls import URL_SPECIAL_NAMES
+    if alias in URL_SPECIAL_NAMES:
+        return False
+    if UserProfile.objects.filter(alias=alias).count() > 0:
+        return False
+    if Group.objects.filter(alias=alias).count() > 0:
+        return False
+    return True
+
+
+def genAliasSlug(alias):
+    nonce = 0
+    while not isUniqueAlias(alias):
+        nonce += 1
+        alias = alias+str(nonce)
+    return alias

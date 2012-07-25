@@ -109,7 +109,16 @@ def viewWrapper(view, requires_login=False):
 #-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
 #-----------------------------------------------------------------------------------------------------------------------
-def redirect(request, blah="blah"):
+def aliasDowncast(request, alias=None, vals={}):
+    if UserProfile.lg.get_or_none(alias=alias):
+        return viewWrapper(profile, requires_login=True)(request, alias)
+    matched_group = Group.lg.get_or_none(alias=alias)
+    if matched_group:
+        return viewWrapper(group, requires_login=True)(request, matched_group.id)
+    return redirect(request)
+
+
+def redirect(request):
     return shortcuts.redirect('/home/')
 
 def splash(request):
