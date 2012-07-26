@@ -862,6 +862,18 @@ function launchModal(content) {
     return modal;
 }
 
+function launchAModal(modal) {
+    $('div.overdiv').show();
+    var width = modal.outerWidth();
+    var height = modal.outerHeight();
+    modal
+        .css("margin-top", -height/2)
+        .css("margin-left", -width/2)
+        .css("display", "inline-block");
+    bindCloseClick(modal);
+    return modal;
+}
+
 function launchFirstLoginModal(content) {
     var modal = $('.first-login-modal');
     modal.children('div.first-login-content').html(content);
@@ -2781,6 +2793,12 @@ function loadGroup()
     });
 
     bindNewDivs();
+
+    $("#group_motion_button").bindOnce("click.group", function(event) {
+        event.preventDefault();
+        var modal = $(".motion_modal");
+        launchAModal($(modal));
+    });
 
 }
 

@@ -10,6 +10,7 @@ def wsgi(request):
 def test(request, vals={}):
     user = vals['viewer']
     vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
+    raise LGException('I raised an lg exception!')
     return renderToResponseCSRF('test/newtest.html',vals,request)
 
 def test2(request, vals={}):

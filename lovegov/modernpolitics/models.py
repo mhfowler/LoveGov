@@ -172,7 +172,6 @@ class Topic(LGModel):
     # actual topic stuff
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
-    forum = models.ForeignKey("Forum", null=True)                        # foreign key to forum
     # fields for images
     image = models.ImageField(null=True, upload_to="defaults/")
     hover = models.ImageField(null=True, upload_to="defaults/")
@@ -196,13 +195,6 @@ class Topic(LGModel):
 
     def getPre(self):
         return self.alias[0:3]
-
-    def getForum(self):
-        if self.forum_id == -1:
-            return None
-        else:
-            forum = Forum.objects.get(id=self.forum_id)
-            return forum
 
     def getImageRef(self):
         return MAIN_TOPICS_IMG[self.topic_text]
@@ -2419,19 +2411,6 @@ class Comment(Content):
 
     def getRootContent(self):
         return self.root_content
-
-#=======================================================================================================================
-# Forum, for grouping comment threads and organizing into parents and children.
-#
-#=======================================================================================================================
-class Forum(Content):
-    children = models.ManyToManyField(Content, related_name="children")
-    parent = models.ForeignKey(Content, null=True, related_name="parent")
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.type = 'F'
-        self.save()
-        super(Forum, self).autoSave(creator=creator, privacy=privacy)
-
 
 ########################################################################################################################
 ########################################################################################################################

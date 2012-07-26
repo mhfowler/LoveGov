@@ -116,6 +116,14 @@
                                         </a>
                                     </div>
                                 {% endif %}
+                                {% if group.democratic %}
+                                    <div class="group-button">
+                                        <a href="" id="group_motion_button" class="button-red float-left" data-g_id="{{ group.id }}">
+                                            motion
+                                        </a>
+                                    </div>
+                                    {% include 'site/pages/group/create_motion.html' %}
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>

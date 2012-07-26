@@ -248,7 +248,6 @@ TYPE_CHOICES = (
     ('D','discussion'),
     ('Y', 'persistent-debate'),
     ('M', 'motion'),
-    ('F', 'forum')
     )
 
 # persitent debate types

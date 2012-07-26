@@ -446,3 +446,33 @@ div.requests-modal
     display: none;
   }
 }
+
+
+div.motion-modal {
+  @include modal;
+  padding:20px;
+  text-align: left;
+
+  div.creat-motion-icon {
+    background-image: url('/static/images/icons/Create_Motion.png');
+    background:contain;
+    width:20px;
+    height:20px;
+  }
+
+  h3.create-motion-title {
+    width:100%;
+    text-align:center;
+  }
+
+  div.row {
+    display:block;
+    margin-top:30px;
+  }
+
+  div.motion-info {
+
+    margin-top:20px;
+
+  }
+}

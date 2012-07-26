@@ -20,7 +20,6 @@ import string
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
-from django.http import http500
 import pprint
 
 browser_logger = logging.getLogger('browserlogger')
