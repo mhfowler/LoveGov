@@ -342,6 +342,13 @@ GROUP_TYPE_CHOICES = (
     ('S', 'system')
 )
 
+# types of group government
+GOVERNMENT_TYPE_CHOICES = (
+    ('traditional','Traditional'),
+    ('representative','Representative'),
+    ('democratic','Democratic'),
+)
+
 NETWORK_TYPE = (
     ('D','default'),
     ('S','school'),
@@ -370,8 +377,11 @@ USER_CHOICES =  (
 
 # types of motions
 MOTION_CHOICES = (
-    ('O','other'),
-    ('C','charity')
+    ('other', 'Other'),
+    ('charity', 'Charity'),
+    ('add', 'Add moderator'),
+    ('remove', 'Remove moderator'),
+    ('coup', 'Coup')
 )
 
 # types of user permissions

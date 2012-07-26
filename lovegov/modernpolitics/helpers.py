@@ -20,9 +20,31 @@ import string
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
+from django.http import http500
 import pprint
 
 browser_logger = logging.getLogger('browserlogger')
+
+#-----------------------------------------------------------------------------------------------------------------------
+# helper for logging and throwing errors
+#-----------------------------------------------------------------------------------------------------------------------
+class LGException(Exception):
+
+    def __init__(self, error_message, client_message=None, request=None, vals=None):
+
+        if client_message:
+            self.client_message = client_message
+        else:
+            self.client_message = error_message
+
+        self.error_message = error_message
+        lg_logger.error(self.error_message)
+
+    def __str__(self):
+        return repr(self.error_message)
+
+    def getClientMessage(self):
+        return self.client_message
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets query set of main topics, pseudo-caching

@@ -267,12 +267,10 @@ def create(request, val={}):
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
         form = CreateNewsForm(request.POST)
-    elif formtype =='E':
-        form = CreateEventForm(request.POST)
     elif formtype =='G':
         form = CreateUserGroupForm(request.POST)
-    elif formtype =='I':
-        form = UserImageForm(request.POST)
+    elif formtype =='M':
+        form = CreateMotionForm(request.POST)
 
     # if valid form, save to db
     if form.is_valid():
@@ -287,9 +285,7 @@ def create(request, val={}):
                 viewer.save()
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
-
             return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
-
         else:
             if formtype == "G":
                 c.joinMember(viewer)
@@ -322,8 +318,6 @@ def create(request, val={}):
             return HttpResponse(json.dumps(vals))
         else:
             return shortcuts.redirect('/web/')
-            vals = {'petition': petition, 'event':event, 'news':news, 'group':group, 'album':album}
-            return renderToResponseCSRF('usable/create_content_simple.html',vals,request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends invite email and and addds email to valid emails.

@@ -36,6 +36,7 @@ scheduled_logger = logging.getLogger('scheduledlogger')
 normal_logger = logging.getLogger('filelogger')
 errors_logger = logging.getLogger('errorslogger')
 temp_logger = logging.getLogger('templogger')
+lg_logger = logging.getLogger("lglogger")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Useful manager for all our models.
@@ -3644,14 +3645,16 @@ class Group(Content):
     full_text = models.TextField(max_length=1000)
     group_content = models.ManyToManyField(Content, related_name='ongroup')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
-    group_newfeed = models.ManyToManyField(FeedItem, related_name='groupnew')
-    group_hotfeed = models.ManyToManyField(FeedItem, related_name='grouphot')
-    group_bestfeed = models.ManyToManyField(FeedItem, related_name='groupbest')
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
-    democratic = models.BooleanField(default=False)
-    system = models.BooleanField(default=False)     # means you can't leave
+    system = models.BooleanField(default=False)
+    # democratic groups
+    democratic = models.BooleanField(default=False)       # if false, fields below have no importance
+    government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
+    participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
+    agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
+    motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote closes
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts Group to appropriate child model.
@@ -3936,8 +3939,16 @@ class Group(Content):
 #=======================================================================================================================
 class Motion(Content):
     group = models.ForeignKey(Group)
-    motion_type = models.CharField(max_length=1, choices=MOTION_CHOICES, default='O')
+    motion_type = models.CharField(max_length=30, choices=MOTION_CHOICES, default='other')
     full_text = models.TextField()
+    expiration_date = models.DateTimeField(auto_now_add=True)
+    passed = models.BooleanField(default=False)
+    expired = models.BooleanField(default=False)
+    above_threshold = models.BooleanField(default=False)
+    # add/remove moderator motion
+    moderator = models.ForeignKey(UserProfile, null=True)
+    # change group government type
+    government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
 
     #-------------------------------------------------------------------------------------------------------------------
     # autosave

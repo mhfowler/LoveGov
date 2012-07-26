@@ -26,6 +26,14 @@
             <td><textarea id="news-input-summary" class="full-text-input" type="text" name="summary"></textarea></td>
         </tr>
 
+        {% include 'site/pieces/create_modal/post-to.html' %}
+
+        {% include 'site/pieces/create_modal/attributed-to.html' %}
+
+        <tr class="optional-below">
+            <td> ---- optional ----  </td>
+        </tr>
+
         <tr class="news-scale-wrapper">
             <td class="create-title">
                 <div class="sub-title">Scale:</div>
@@ -47,8 +55,6 @@
                 </div>
             </td>
         </tr>
-
-        {% include 'site/pieces/create_modal/post-to.html' %}
 
     </table>
 

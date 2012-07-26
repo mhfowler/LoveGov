@@ -4081,6 +4081,12 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
+
+    /* post to group visual */
+    $(".share_group_box").click(function(event) {
+        event.preventDefault();
+        defaultClickSingle($(this), $(".share_group_box"));
+    });
 }
 
 var my_lockout_boolean = false;

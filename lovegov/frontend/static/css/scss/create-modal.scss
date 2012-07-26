@@ -195,14 +195,21 @@ tr.post-to-wrapper {
     float:left;
   }
 
-  div.triangle-selector {
-    background:contain;
-    background-image: url('/static/images/icons/down-arrow.png');
-    width:10px;
-    height:10px;
-    float:left;
-    margin-left:7px;
-    margin-top:7px;
+  div.post-to-choices {
+    @include rounded($radius: 10px);
+    border: 1px solid $light-gray;
+    padding:20px;
+    margin-right:50px;
+
+    div.group-box {
+      margin-top:0px;
+    }
+    div.group-box.clicked {
+      border-color:$red;
+    }
+    div.group-box:hover {
+      border-color:$red;
+    }
   }
 
 }
