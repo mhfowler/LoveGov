@@ -69,6 +69,7 @@ def createUser(name, email, password, active=True):
 #-------------------------------------------------------------------------------------------------------------------
 def createUserHelper(control,name,active=True):
     # new user profile
+    userProfile = UserProfile()
     names = name.split(" ")
     if len(names) == 2:
         userProfile.first_name = names[0]

@@ -90,6 +90,10 @@ HOT_WINDOW = 3 # number of days to count votes within when using hot algo
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
+# for Congress Parsing
+CONGRESS_YEAR_OFFSET = 1787 ## CongressNum*2 + CONGRESS_YEAR_OFFSET = Congress Year Start
+CURRENT_CONGRESS = 112
+
 # for chunksize comparison
 COMPARISON_CHUNKSIZE = 2
 
@@ -291,7 +295,7 @@ RELATIONSHIP_CHOICES = (
     ('DV','debate_voted'),
     ('DM', 'debate_messaged'),
     ('OH', 'office_held'),
-    ('CM', 'committee_member')
+    ('CJ', 'committee_joined')
     )
 
 RELATIONSHIP_DICT = {}
@@ -309,7 +313,7 @@ ACTION_MODIFIERS = (
     ('S', 'stop'),
     ('L', 'like'),
     ('U', 'unvoted')
-        )
+)
 
 # types of action which user should be notified about
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
@@ -372,11 +376,13 @@ PERMISSION_CHOICES = (
 )
 
 COMMITTEE_CHOICES = (
-    ('S','Senate'),
-    ('H','House'),
-    ('SS', 'Senate Subcommittee'),
-    ('HS','House Subcommittee'),
-    ("O","Other")
+    ('S','senate'),
+    ('H','house'),
+    ('J','joint committee'),
+    ('SS','senate subcommittee'),
+    ('HS','house subcommittee'),
+    ('JS','joint subcommittee'),
+    ("O","other")
 )
 
 # type vals

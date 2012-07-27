@@ -782,18 +782,19 @@ def initializeCongress():
     for num in range(112,108,-1):
         print num
         # Get/open current XML file
-        pathXML = '/data/govtrack/' + str(num) + "/people.xml"
+        filepath = '/data/govtrack/' + str(num) + "/people.xml"
         image_root = '/data/govtrack/image'
-        initializeCongressFile(pathXML,image_root)
+        fileXML = open(filepath)
+        parsedXML = BeautifulSoup(fileXML)
+        initializeCongressFile(parsedXML,image_root)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes a single Congress File
 #-----------------------------------------------------------------------------------------------------------------------
-def initializeCongressFile(filepath,image_root):
-    fileXML = open(filepath)
-    parsedXML = BeautifulSoup(fileXML, selfClosingTags=['role'])
+def initializeCongressFile(parsedXML,image_root):
     session_number = int(parsedXML.people['session'])
     congress_tag = Tag.lg.get_or_none(name='congress') or Tag(name='congress')
+    current_session = CongressSession.lg.get_or_none(session=session_number) or CongressSession(session=session_number)
 
     # For each person at this congress
     for personXML in parsedXML.findall('person'):
@@ -808,7 +809,14 @@ def initializeCongressFile(filepath,image_root):
             birthday = parseDate(personXML['birthday'])
 
         # Look for this person in the database
-        person = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday) or initializeXMLCongressman(name,personXML,image_root=image_root)
+        # TODO: make this refresh UserProfile information if the person is found.  Also search by govtrack_id first
+        if 'id' in personXML:
+            user_prof.govtrack_id = personXML['id']
+
+        person = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday)
+
+        if not person:
+            person = initializeXMLCongressman(name,personXML,image_root=image_root)
 
         # Get their role
         role = personXML.role
@@ -828,7 +836,11 @@ def initializeCongressFile(filepath,image_root):
         role_district = role['district']
 
         # Find the tag related to this role
-        current_tag = Tag.lg.get_or_none(name=role_tag) or Tag(name=role_tag)
+        current_tag = Tag.lg.get_or_none(name=role_tag)
+        if not current_tag:
+            current_tag = Tag(name=role_tag)
+            current_tag.autoSave()
+
         # Find the office related to
         office = current_tag.tag_set.filter(location__state=role_state,location__district=role_district)
         if not office: # If it doesn't exist, make that office
@@ -840,8 +852,8 @@ def initializeCongressFile(filepath,image_root):
             office.autoSave()
 
         # Take the start and end dates
-        start_date = parseDate(personXML.role['startdate'])
-        end_date = parseDate(personXML.role['enddate'])
+        start_date = parseDate(role['startdate'])
+        end_date = parseDate(role['enddate'])
 
         # See if this Office Held already exists.
         office_held = OfficeHeld.lg.get_or_none(office=office,start_date=start_date,end_date=end_date)
@@ -850,8 +862,6 @@ def initializeCongressFile(filepath,image_root):
             if (datetime.date.today() - end_date).days >= 0:
                 office_held.current = True
             office_held.autoSave()
-
-        current_session = CongressSession.lg.get_or_none(session=session_number) or CongressSession(session=session_number)
 
         office_held.congress_sessions.add(current_session)
 
@@ -874,7 +884,7 @@ def initializeXMLCongressman(name,personXML,image_root=''):
     try:
         user_prof.setProfileImage(file(image_path))
     except:
-        print "[WARNING]: no image here for elected offical " + name.encode('utf-8','ignore') + " at " + image_path
+        print "[WARNING]: no image for elected official " + name.encode('utf-8','ignore') + " at " + image_path
 
     if 'id' in personXML:
         user_prof.govtrack_id = personXML['id']
@@ -906,84 +916,240 @@ def initializeXMLCongressman(name,personXML,image_root=''):
 
     return user_prof
 
-
 #-----------------------------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------
+# Initialize all committee files and all committees
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCommittees():
     for num in range(112,108,-1):
+        congress_session = CongressSession.lg.get_or_none(session=session_number) or CongressSession(session=session_number)
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
         fileXML = open(filePath)
         parsedXML = BeautifulSoup(fileXML)
-        for committee in parsedXML.committees.findChildren('committee',recursive=False):
-            if not Committee.objects.filter(name=committeeXML['displayname'].encode("utf-8",'ignore')).exists():
-                db.reset_queries()
-                print "parsing committee"
-                committee = Committee()
-                committee.saveXML(committeeXML,num)
+
+        for committeeXML in parsedXML.committees.findChildren('committee',recursive=False):
+            committee = initializeCommittee(committeeXML,congress_session)
+
+            for subXML in committeeXML.findChildren('subcommittee',recursive=False):
+                sub = initializeSubCommittee(subXML,congress_session,committee)
 
 
-def initializeXMLCommittee(committeeXML,session):
-    type = committeeXML['type']
-    if type == "house": type="H"
-    else: type="S"
-    self.type = type
-    self.name = committeeXML['displayname'].encode("utf-8",'ignore')
-    print committeeXML['displayname'].encode("utf-8",'ignore')
-    self.code = committeeXML['code']
-    self.save()
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize one committee
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeCommittee(committeeXML,session):
+    name = committeeXML.get('displayname')
+    if name:
+        name = name.encode("utf-8",'ignore')
+
+    type = committeeXML.get('type')
+    if type == 'house':
+        type = 'H'
+    elif type == 'senate':
+        type = 'S'
+    elif type == 'joint':
+        type = 'J'
+    else:
+        print '[WARNING]: Committee type ' + type + ' not recognized in committee ' + name
+        return None
+
+    code = committeeXML.get('code')
+
+    # Find this committee
+    committee = Committee.lg.get_or_none(name=name,committee_type=type,code=code)
+    if not committee:
+        committee = Committee(name=name,committee_type=type,code=code)
+        committee.autoSave()
+
     for memberXML in committeeXML.findChildren('member',recursive=False):
-        committeeMember = CommitteeMember()
-        if memberXML.has_key('role'): committeeMember.role = memberXML['role']
-        committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(memberXML['id']))
-        committeeMember.committee = self
-        committeeMember.session =  CongressSessions.objects.get(session=session)
-        committeeMember.save()
-    for subcommitteeXML in committeeXML.findChildren('subcommittee',recursive=False):
-        committee = Committee()
-        committee.name = subcommitteeXML['displayname'].rstrip()
-        print subcommitteeXML['displayname'].encode("utf-8",'ignore')
-        committee.type = type
-        committee.parent = self
-        committee.code = subcommitteeXML['code']
-        committee.save()
-        for submemberXML in subcommitteeXML.findChildren('member'):
-            committeeMember = CommitteeMember()
-            if submemberXML.has_key('role'): committeeMember.role = submemberXML['role']
-            committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(submemberXML['id']))
-            committeeMember.committee = committee
-            committeeMember.session = CongressSessions.objects.get(session=session)
-            committeeMember.save()
+        member = UserProfile.lg.get_or_none( govtrack_id=memberXML.get('id') )
+        if member:
+            committee.joinMember( member , session , memberXML.get('role') )
 
+    return committee
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize one sub-committee
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeSubCommittee(committeeXML,session,parent):
+    name = committeeXML.get('displayname')
+    if name:
+        name = name.encode("utf-8",'ignore')
+
+    type = None
+    if parent.committee_type == 'H':
+        type = 'HS'
+    elif parent.committee_type == 'S':
+        type = 'SS'
+    elif parent.committee_type == 'J':
+        type = 'JS'
+    else:
+        print '[WARNING]: Committee type ' + parent.committee_type + ' not recognized in committee ' + name
+        return None
+
+    code = committeeXML.get('code')
+
+    committee = Committee.lg.get_or_none(name=name,committee_type=type,code=code,parent=parent)
+    if not committee:
+        committee = Committee(name=name,committee_type=type,code=code,parent=parent)
+        committee.autoSave()
+
+    for memberXML in committeeXML.findChildren('member',recursive=False):
+        member = UserProfile.lg.get_or_none( govtrack_id=memberXML.get('id') )
+        if member:
+            committee.joinMember( member , session , memberXML.get('role') )
+
+    return committee
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize each of the legislation files
+# RETURN: a list of tuples of unparsed legislation file paths and error messages
+#-----------------------------------------------------------------------------------------------------------------------
 def initializeLegislation():
-    total = 0
-    already = Legislation.objects.all().count() - 10
+    missed_files = []
+    print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n" \
+          "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
+
+    count = 0
 
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills/"
         fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
-        count = 1
+
         for infile in fileListing:
+            count += 1
+            db.reset_queries()
 
-            if total > already:
-                db.reset_queries()
-                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
-                newLegislation = Legislation()
-                try:
-                    newLegislation.setSaveAttributes(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-                    count += 1
-            else:
-                print total
+            fileXML = open(filePath + infile)
+            parsedXML = BeautifulSoup(fileXML)
+            result = parseLegislation(parsedXML)
 
-            total+=1
+            if result is not '':
+                print "[ERROR]: " + result + '.  Bill was not initialized'
+                missed_files.append((filePath + infile,result))
 
+            if count%100 is 0:
+                print str(count) + " files checked"
+
+    return missed_files
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize one legislation object
+# RETURN: an error message string.  Returns an empty string on success
+#-----------------------------------------------------------------------------------------------------------------------
+def parseLegislation(XML):
+    # If there's no bill or state for some reason, you can't parse the bill
+    if not XML.bill:
+        return 'Missing bill tag'
+    if not XML.state:
+        return 'Missing state tag'
+
+    # Get this congress session
+    session_num = XML.bill.get('session')
+    if not session_num:
+        return 'Missing congress session'
+    session = CongressSession.lg.get_or_none(session=session_num)
+    if not session:
+        session = CongressSession(session=session_num)
+        session.save()
+
+    # Get identifying bill features
+    type = XML.bill.get('type')
+    number = int(XML.bill.get('number'))
+    introduced = parseDate(XML.introduced.get('datetime'))
+    if not type or not number or not introduced:
+        return 'Missing bill type, number, or introduced tag'
+
+    # Check for bill existence and get bill
+    legislation = Legislation.lg.get_or_none( congress_session=session , bill_number=number , bill_type=type , bill_introduced=introduced )
+    if not legislation:
+        legislation = Legislation( congress_session=session , bill_type=type , bill_number=number , bill_introduced=introduced )
+
+    # Update basic bill info
+    updated = parseDateTime(XML.bill.get('updated'))
+    legislation.bill_updated = updated
+    legislation.state_date = parseDateTime(XML.state.get('datetime'))
+    legislation.state_text = XML.state.text
+    legislation.bill_summary = XML.summary.text
+
+    # Find and add bill sponsor
+    sponsor_id = XML.sponsor.get('id')
+    if sponsor_id:
+        sponsor = UserProfile.lg.get_or_none(govtrack_id=sponsor_id)
+        if sponsor:
+            legislation.sponsor = sponsor
+
+    # Parses all title tags
+    if XML.titles:
+        for title in XML.titles.findChildren('title',recursive=False):
+            type = title.get('type')
+            if type is 'official':
+                legislation.full_title = title.text
+            elif type is 'short':
+                legislation.title = title.text
+
+    # Parses all cosponsors
+    if XML.cosponsors:
+        for cosponsorXML in XML.cosponsors.findChildren('cosponsor',recursive=False):
+            # Check for cosponsor ID
+            cosponsor_id = cosponsorXML.get('id')
+            if not cosponsor_id:
+                continue
+            # Check for the actual cosponsor's profile
+            cosponsor = UserProfile.lg.get_or_none(govtrack_id=cosponsor_id)
+            if not cosponsor:
+                continue
+            # Check for the LegislationCosponsor relationship
+            legislation_cosponsor = LegislationCosponsor.lg.get_or_none(cosponsor=cosponsor,legislation=legislation)
+            if not legislation_cosponsor:
+                legislation_cosponsor = LegislationCosponsor(cosponsor=cosponsor,legislation=legislation)
+
+            # Check for and set the date joined
+            cosponsor_date = cosponsorXML.get('joined')
+            if cosponsor_date:
+                legislation_cosponsor.date = cosponsor_date
+
+            # Save that shit
+            legislation_cosponsor.save()
+
+    # Parses all actions (and sub actions)
+    for actionXML in XML.actions.findChildren(recursive=False):
+        # Get basic action data
+        name = actionXML.name
+        new_legislation_action = None
+
+        # If action
+        if name is 'action':
+            new_legislation_action = LegislationAction()
+        elif name is 'calendar':
+            new_legislation_action = LegislationCalendar()
+        elif name is 'vote':
+            new_legislation_action = LegislationVote()
+        elif name is 'vote-aux':
+            new_legislation_action = LegislationVote()
+        elif name is 'topresident':
+            new_legislation_action = LegislationToPresident()
+        elif name is 'signed':
+            new_legislation_action = LegislationSigned()
+        elif name is 'enacted':
+            new_legislation_action = LegislationAction()
+
+        if not new_legislation_action:
+            continue
+
+        new_legislation_action.parseGovtrack(actionXML,legislation)
+
+    for committee in XML.committees.findAll('committee'):
+        if committee.has_key('name') and committee['name'] != "":
+            newLegislationCommittee = LegislationCommittee()
+            newLegislationCommittee.setSaveAttributes(XML=XML, committeeXML=committee, legislation=legislation)
+    for term in XML.subjects.findAll('term'):
+        newLegislationSubject = LegislationSubjects()
+        newLegislationSubject.setSaveAttributes(termXML=term, legislation=legislation)
+
+    # Save the legislation
+    legislation.save()
 
 def initializeLegislationFast():
     total = 0
