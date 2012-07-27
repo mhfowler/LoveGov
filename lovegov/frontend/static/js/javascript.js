@@ -2705,7 +2705,7 @@ function loadCreateMotion() {
        var action = $(this).val();
        $(".motion_action_modifier").hide();
        if (action == "add moderator") {
-           $(".add_moderator").
+           $(".add_moderator").show();
        }
     });
 

@@ -7,5 +7,5 @@ source $SCRIPTPATH/local_env.sh
 
 #setup
 python $SCRIPTPATH/lovegov/local_manage.py syncdb
-python $SCRIPTPATH/lovegov/local_manage.py loaddata $SCRIPTPATH/lovegov/db/migrate.json
+python $SCRIPTPATH/lovegov/local_manage.py loaddata $SCRIPTPATH/lovegov/db/testdata.json
 python $SCRIPTPATH/lovegov/scripts/scheduled.py initialize testdata

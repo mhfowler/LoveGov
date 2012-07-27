@@ -35,7 +35,7 @@ def getDefaultFilter():
     return getHotFilter()
 
 def getLoveGovGroup():
-    return Group.lg.get_or_none(alias="LoveGov_Group") or initializeLoveGovGroup()
+    return Group.lg.get_or_none(alias="LoveGov_Group") or Group.lg.get_or_none(alias="lovegov-group") or initializeLoveGovGroup()
 
 def getLoveGovGroupView():
     return getLoveGovGroup().group_view.responses.all()
@@ -126,7 +126,7 @@ def initializeLoveGovUser():
 # Currently, just makes lovegov worldview equal to aggregate of all users on site. But could also do more later.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLoveGovGroup():
-    if Group.objects.filter(alias="LoveGov_Group"):
+    if Group.objects.filter(alias="LoveGov_Group") or Group.objects.filter(alias="lovegov-group"):
         print("...lovegov group already initialized.")
     else:
         group = Group(title="LoveGov Group", group_type='O', full_text="We are lovegov.", system=True, alias="LoveGov_Group")
@@ -239,36 +239,28 @@ def initializeTopicImages():
     for x in Topic.objects.all():
         if x.topic_text in MAIN_TOPICS:
             initializeTopicImage(x)
+    initializeGeneralTopicImage(getGeneralTopic())
 
 def initializeTopicImage(x):
     if x.topic_text in MAIN_TOPICS:
-        alias = "topicimage:" + x.alias
-        title = x.topic_text + " Image"
-        if UserImage.objects.filter(alias=alias):
-            print ("..." + alias + " already initialized")
-        else:
-            summary = "An image representing " + x.topic_text + "."
-            im = UserImage(title=title, summary=summary, alias=alias)
-            ref = os.path.join(PROJECT_PATH, 'frontend'+x.getImageRef())
-            file = open(ref)
-            im.createImage(file, type=".png")
-            im.autoSave()
-            # initialize image
-            x.image.save(photoKey(".png"), File(file))
-            # initialize hover
-            hover_ref = 'frontend/static/images/questionIcons/' + x.alias + '/' + x.getPre() + '_hover.png'
-            hover_ref = os.path.join(PROJECT_PATH, hover_ref)
-            file = open(hover_ref)
-            x.hover.save(photoKey(".png"), File(file))
-            # initialize selected
-            selected_ref = 'frontend/static/images/questionIcons/' + x.alias + '/' + x.getPre() + '_selected.png'
-            selected_ref = os.path.join(PROJECT_PATH, selected_ref)
-            file = open(selected_ref)
-            x.selected.save(photoKey(".png"), File(file))
-            # save
-            x.save()
-            print("initialized: " + title)
-            return x
+        # initialize image
+        ref = os.path.join(PROJECT_PATH, 'frontend'+x.getImageRef())
+        file = open(ref)
+        x.image.save(photoKey(".png"), File(file))
+        # initialize hover
+        hover_ref = 'frontend/static/images/questionIcons/' + x.alias + '/' + x.getPre() + '_hover.png'
+        hover_ref = os.path.join(PROJECT_PATH, hover_ref)
+        file = open(hover_ref)
+        x.hover.save(photoKey(".png"), File(file))
+        # initialize selected
+        selected_ref = 'frontend/static/images/questionIcons/' + x.alias + '/' + x.getPre() + '_selected.png'
+        selected_ref = os.path.join(PROJECT_PATH, selected_ref)
+        file = open(selected_ref)
+        x.selected.save(photoKey(".png"), File(file))
+        # save
+        x.save()
+        print("initialized: " + x.topic_text + " image")
+        return x
     else:
         return None
 
@@ -282,22 +274,26 @@ def initializeGeneralTopic():
     topic = Topic(topic_text="General", alias="general")
     topic.save()
 
+    initializeGeneralTopicImage(topic)
+
+    print "initialized: General Topic"
+    return topic
+
+def initializeGeneralTopicImage(topic):
+
     image_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/icons/topic_icons/for_default.png')
     hover_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_hover.png')
     selected_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_selected.png')
 
     file = open(image_ref)
     topic.image.save(photoKey(".png"), File(file))
-
     file = open(hover_ref)
     topic.hover.save(photoKey(".png"), File(file))
-
     file = open(selected_ref)
     topic.selected.save(photoKey(".png"), File(file))
-
     topic.save()
-    print "initialized: General Topic"
-    return topic
+
+    print "initialized: General Topic Image"
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initialize mini images for every topic.
@@ -421,9 +417,10 @@ def initializeValidRegisterCodes():
 def initializeDB():
     from scripts.alpha import scriptCreatePresidentialCandidates
     from scripts.alpha import scriptCreateCongressAnswers
+
     # post-processing of migration
     setTopicAlias()
-    # initialize default stuff
+    # initialize defaults
     initializeLoveGov()
     ## ## ## ## ## ## ## ##
     initializeAdmin()
