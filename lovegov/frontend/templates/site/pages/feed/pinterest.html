@@ -1,0 +1,65 @@
+{% load thumbnail %}
+
+{% with creator=item.getCreatorDisplay %}
+
+    <div class="pinterest_card pinterest_unrendered" data-rank="{{ pinterest_sequence }}">
+
+        <div class="pinterest">
+
+            <div class="pinterest-main">
+
+                <div class="pinterest-header">
+
+                    <!-- avatar -->
+                    {% include 'site/pages/feed/feed_avatar.html' %}
+
+                    <div class="header-topic">
+                        {% with topic=item.getMainTopic %}
+                            {% thumbnail topic.image "30x30" format="PNG" as im %}
+                                <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
+                            {% endthumbnail %}
+                        {% endwith %}
+                    </div>
+
+                    <div style="clear:both"></div>
+                </div>
+
+                <!-- image -->
+                {% if item.type == 'N' %}
+                    <a href="{{ item.getAbsoluteLink }}" target="_blank">
+                        {% include 'site/pages/feed/feed_image.html' %}
+                    </a>
+                {% elif item.type == 'G' or item.type == 'P' %}
+                    <a href="{{ item.get_url }}">
+                        {% include 'site/pages/feed/feed_image.html' %}
+                    </a>
+                {% endif %}
+
+                <!-- title -->
+                {% include 'site/pages/feed/feed_title.html' %}
+
+                <!-- summary -->
+                {% include 'site/pages/feed/feed_summary.html' %}
+
+                <!-- top-comment -->
+                {% with top_comment=item.getTopComment %}
+                    {% if top_comment %}
+                        {% include 'site/pages/feed/top_comment.html' %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- petition bar -->
+                {% if item.type == 'P' %}
+                    {% include 'site/pages/content/petition/petition_bar.html' with p=item %}
+                {% endif %}
+
+                <!-- footer -->
+                {% include 'site/pages/feed/social_bar.html' %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endwith %}

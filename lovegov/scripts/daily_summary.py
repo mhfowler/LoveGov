@@ -67,6 +67,13 @@ def dailySummaryEmail():
 
 print "*** SENDING DAILY SUMMARY EMAIL ***"
 
-sendHTMLEmail(subject="LoveGov Daily Summary", email_html=dailySummaryEmail(),
-            email_sender="info@lovegov.com", email_recipients=DAILY_SUMMARY_EMAILS)
+if len(sys.argv) > 1:
+    email = sys.argv[1]
+    print "sending to: " + email
+    email_recipients = [email]
+else:
+    email_recipients = DAILY_SUMMARY_EMAILS
+
+sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(),
+            email_sender="info@lovegov.com", email_recipients=email_recipients)
 

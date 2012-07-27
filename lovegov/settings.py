@@ -247,6 +247,11 @@ def setLogging(log_root):
                 'level': 'ERROR',
                 'propagate': True
             },
+            'lglogger': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
             'filelogger': {
                 'handlers': ['file_handler'],
                 'level': 'DEBUG',

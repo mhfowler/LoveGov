@@ -107,7 +107,7 @@
         color:white;
       }
       div.triangle-selector {
-        background-image: url('/static/icons/down-arrow-white.png');
+        background-image: url('/static/images/icons/down-arrow-white.png');
       }
     }
 
@@ -117,7 +117,7 @@
         color:white;
       }
       div.triangle-selector {
-        background-image: url('/static/icons/down-arrow-white.png');
+        background-image: url('/static/images/icons/down-arrow-white.png');
       }
     }
 
@@ -148,7 +148,7 @@
         float:left;
         margin-left:7px;
         margin-top:8px;
-        background-image: url('/static/icons/down-arrow.png');
+        background-image: url('/static/images/icons/down-arrow.png');
       }
     }
 
@@ -158,7 +158,7 @@
         color:white;
       }
       div.triangle-selector {
-        background-image: url('/static/icons/down-arrow-white.png');
+        background-image: url('/static/images/icons/down-arrow-white.png');
       }
     }
 
@@ -168,7 +168,7 @@
         color:white;
       }
       div.triangle-selector {
-        background-image: url('/static/icons/down-arrow-white.png');
+        background-image: url('/static/images/icons/down-arrow-white.png');
       }
     }
 
@@ -194,11 +194,11 @@
           width:12px;
           height:12px;
           margin: 14px 10px 0 0;
-          background-image: url('/static/icons/x.png');
+          background-image: url('/static/images/icons/x.png');
           background-size:cover;
         }
         div.x-button:hover {
-          background-image: url('/static/icons/x_hover.png');
+          background-image: url('/static/images/icons/x_hover.png');
         }
       }
 
@@ -472,6 +472,7 @@
     margin:0px;
     z-index:20;
     padding: 10px 0 0 10px;
+    min-width: 700px;
   }
 
   div.menu-separator
@@ -559,9 +560,15 @@
           margin-left:20px;
           height:50px;
 
+          p.submitted a.text-gray {
+            &:hover {
+              color: $deep-gray;
+            }
+          }
+
           div.header-topic {
-            float:left;
-            margin-left:20px;
+            float:right;
+            margin-right:15px;
           }
         }
 
@@ -602,6 +609,18 @@
             @include body();
             @include fontSize(13px);
             line-height: 18px;
+          }
+        }
+
+        div.pinterest-news-summary
+        {
+          margin: 5px;
+          padding: 5px;
+          &.short-summary {
+            display:block;
+          }
+          &.long-summary {
+            display:none;
           }
         }
 
@@ -651,7 +670,7 @@
     }
     div.triangle-selector {
       background:contain;
-      background-image: url('/static/icons/down-arrow.png');
+      background-image: url('/static/images/icons/down-arrow.png');
       width:10px;
       height:10px;
       float:left;
@@ -666,7 +685,7 @@
       color:$red-light;
     }
     div.triangle-selector {
-      //background-image: url('/static/icons/down-arrow-white.png');
+      //background-image: url('/static/images/icons/down-arrow-white.png');
     }
   }
   div.menu-toggle:hover {
@@ -675,7 +694,7 @@
       color:$red-light;
     }
     div.triangle-selector {
-      //background-image: url('/static/icons/down-arrow-white.png');
+      //background-image: url('/static/images/icons/down-arrow-white.png');
     }
   }
 
@@ -902,16 +921,16 @@ span.fake_heart {
   top: 4px;
 }
 span.fake_heart_plus {
-  background-image: url("/static/icons/plusheart-gray.png");
+  background-image: url("/static/images/icons/plusheart-gray.png");
 }
 span.fake_heart_plus:hover {
-  background-image: url("/static/icons/plusheart-red.png");
+  background-image: url("/static/images/icons/plusheart-red.png");
   cursor:pointer;
 }
 span.fake_heart_minus {
-  background-image: url('/static/icons/minusheart-gray.png');
+  background-image: url('/static/images/icons/minusheart-gray.png');
 }
 span.fake_heart_minus:hover {
-  background-image: url("/static/icons/minusheart-red.png");
+  background-image: url("/static/images/icons/minusheart-red.png");
   cursor:pointer;
 }

@@ -92,7 +92,6 @@ def initializeLoveGov():
     initializeDefaultImage()
     initializeLoveGovGroup()
     initializeLoveGovUser()
-    initializeTopicForums()
     initializeTopicImages()
     # filters
     initializeBestFilter()
@@ -234,28 +233,6 @@ def initializeFeed(alias):
         return feed
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Initializes forums for every topic.
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeTopicForums():
-    for x in Topic.objects.all():
-        initializeTopicForum(x)
-
-def initializeTopicForum(x):
-    alias = "topicforum:" + x.alias
-    if Forum.objects.filter(alias=alias):
-        print ("..." + alias + " already initialized")
-    else:
-        title = x.topic_text + " Forum"
-        summary = "A forum for discussing anything related to the topic " + x.topic_text + "."
-        forum = Forum(title=title, summary=summary, alias=alias)
-        forum.autoSave()
-        forum.topics.add(x)
-        x.forum_id = forum.id
-        x.save()
-        print("initialized: " + alias)
-        return x
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Initialize images for every topic.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeTopicImages():
@@ -276,9 +253,6 @@ def initializeTopicImage(x):
             file = open(ref)
             im.createImage(file, type=".png")
             im.autoSave()
-            forum = x.getForum()
-            forum.main_image_id = im.id
-            forum.save()
             # initialize image
             x.image.save(photoKey(".png"), File(file))
             # initialize hover
@@ -308,9 +282,9 @@ def initializeGeneralTopic():
     topic = Topic(topic_text="General", alias="general")
     topic.save()
 
-    image_ref = os.path.join(PROJECT_PATH, 'frontend/static/icons/topic_icons/for_default.png')
-    hover_ref = os.path.join(PROJECT_PATH,'frontend/static/icons/topic_icons/for_hover.png')
-    selected_ref = os.path.join(PROJECT_PATH,'frontend/static/icons/topic_icons/for_selected.png')
+    image_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/icons/topic_icons/for_default.png')
+    hover_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_hover.png')
+    selected_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_selected.png')
 
     file = open(image_ref)
     topic.image.save(photoKey(".png"), File(file))
@@ -605,7 +579,7 @@ def initializeQ():
 
 def initializeGeorgeBush():
     from lovegov.modernpolitics.register import createUser
-    normal = createUser(name="George Bush", email="george@gmail.com", password="george")
+    normal = createUser(name="George Bush", email="george@gmail.com", password="george", type="politician")
     normal.user_profile.confirmed = True
     normal.user_profile.save()
     print "initialized: George Bush"
@@ -867,6 +841,7 @@ def initializeCongressFile(parsedXML,image_root):
 
         # Finally,
         person.offices_held.add(office_held)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes a single congressman

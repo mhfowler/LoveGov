@@ -249,11 +249,9 @@ TYPE_CHOICES = (
     ('I','image'),
     ('A','album'),
     ('Z','content-response'),
-    ('D','debate'),
+    ('D','discussion'),
     ('Y', 'persistent-debate'),
     ('M', 'motion'),
-    ('F', 'forum'),
-    ('O', 'office')
     )
 
 # persitent debate types
@@ -335,6 +333,11 @@ GROUP_PRIVACY_CHOICES = (
     ('P','private'),
     ('S','secret'),
 )
+CONTENT_PRIVACY_CHOICES = (
+    ('O','open'),
+    ('C','closed'),
+    ('P','private'),
+)
 
 # types of groups
 GROUP_TYPE_CHOICES = (
@@ -343,6 +346,13 @@ GROUP_TYPE_CHOICES = (
     ('C','committee'),
     ('U','user'),
     ('S','system')
+)
+
+# types of group government
+GOVERNMENT_TYPE_CHOICES = (
+    ('traditional','Traditional'),
+    ('representative','Representative'),
+    ('democratic','Democratic'),
 )
 
 NETWORK_TYPE = (
@@ -364,8 +374,11 @@ PARTY_TYPE = (
 
 # types of motions
 MOTION_CHOICES = (
-    ('O','other'),
-    ('C','charity')
+    ('other', 'Other'),
+    ('charity', 'Charity'),
+    ('add', 'Add moderator'),
+    ('remove', 'Remove moderator'),
+    ('coup', 'Coup')
 )
 
 # types of user permissions
@@ -413,10 +426,10 @@ FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
 
 DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
 DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
-DEFAULT_NEWS_IMAGE_URL = '/static/icons/content-big/news.png'
-DEFAULT_PETITION_IMAGE_URL = '/static/icons/content-big/petition.png'
-DEFAULT_GROUP_IMAGE_URL = '/static/icons/content-big/group.png'
-DEFAULT_DISCUSSION_IMAGE_URL = '/static/icons/content-big/discussion.png'
+DEFAULT_NEWS_IMAGE_URL = '/static/images/icons/content-big/news.png'
+DEFAULT_PETITION_IMAGE_URL = '/static/images/icons/content-big/petition.png'
+DEFAULT_GROUP_IMAGE_URL = '/static/images/icons/content-big/group.png'
+DEFAULT_DISCUSSION_IMAGE_URL = '/static/images/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'
 
@@ -547,7 +560,8 @@ ACTIONS = [
     'removeAdmin',
     'groupInviteResponse',
     'groupInvite',
-    'getLinkInfo'
+    'getLinkInfo',
+    'removeMembers'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []

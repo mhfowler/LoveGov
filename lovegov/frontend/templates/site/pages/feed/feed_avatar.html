@@ -1,0 +1,25 @@
+{% load thumbnail %}
+{% load humanize %}
+
+<div class="prof-image">
+    <a
+            {% if item.getPublic %}
+            href="{{ creator.get_url }}"
+            {% else %}
+            href=""
+            {% endif %}
+            >
+        {% include 'site/pieces/snippets/avatar.html' with user=creator width="50" height="50" %}
+    </a>
+</div>
+
+<div class="header-middle">
+    <div class="user-name">
+        <a href="{{ creator.get_url }}" class="user-name">
+            {{ creator.get_name }}
+        </a>
+    </div>
+    <p class="submitted">
+        <a class="text-gray tooltip-top" style="cursor:default" title="{{ item.created_when }}">{{ item.created_when|naturaltime }}</a>
+    </p>
+</div>

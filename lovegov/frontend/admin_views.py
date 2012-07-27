@@ -14,7 +14,7 @@ def adminHome(request,vals={}):
     if request.method == 'GET' and str(userProfile.username) in TEAM_EMAILS:
         vals['message'] = "Admins can add users here"
         getForms(vals)
-        return renderToResponseCSRF('deployment/pages/admin/home.html', vals, request)
+        return renderToResponseCSRF('site/pages/admin/home.html', vals, request)
     elif request.method=='POST' and userProfile.username in TEAM_EMAILS:
         if 'createUser' in request.POST:
             createUserForm = CreateUserForm(request.POST)
@@ -26,7 +26,7 @@ def adminHome(request,vals={}):
                 vals['message'] = "Input into form was not valid or user already exists"
     else:
         vals['forbidden'] = "You aren't allowed here"
-    return renderToResponseCSRF('deployment/pages/admin/home.html', vals, request)
+    return renderToResponseCSRF('site/pages/admin/home.html', vals, request)
 
 
 def adminAction(request,vals={}):

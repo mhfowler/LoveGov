@@ -25,6 +25,27 @@ import pprint
 browser_logger = logging.getLogger('browserlogger')
 
 #-----------------------------------------------------------------------------------------------------------------------
+# helper for logging and throwing errors
+#-----------------------------------------------------------------------------------------------------------------------
+class LGException(Exception):
+
+    def __init__(self, error_message, client_message=None, request=None, vals=None):
+
+        if client_message:
+            self.client_message = client_message
+        else:
+            self.client_message = error_message
+
+        self.error_message = error_message
+        lg_logger.error(self.error_message)
+
+    def __str__(self):
+        return repr(self.error_message)
+
+    def getClientMessage(self):
+        return self.client_message
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets query set of main topics, pseudo-caching
 #-----------------------------------------------------------------------------------------------------------------------
 def getMainTopics(vals=None):
@@ -37,6 +58,24 @@ def getMainTopics(vals=None):
         if vals:
             vals['main_topics'] = main_topics
     return main_topics
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fills vals with useres group data
+#-----------------------------------------------------------------------------------------------------------------------
+def getMyGroups(request, vals={}):
+    viewer = vals['viewer']
+    groups = vals.get('all_my_groups')
+    if not groups:
+        groups = viewer.getGroups()
+        vals['all_my_groups'] = groups
+    my_groups = vals.get('my_groups')
+    if not my_groups:
+        my_groups = groups.filter(group_type="U")
+        vals['my_groups'] = my_groups
+    my_networks = vals.get('my_groups')
+    if not my_networks:
+        my_networks = groups.filter(group_type="N")
+        vals['my_networks'] = my_networks
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets official questions, pseudo-caching
@@ -142,7 +181,7 @@ def checkBrowserCompatible(request):
         to_return = False
 
     if not to_return:
-        browser_logger.debug('useragent: ' + user_agent)
+        browser_logger.debug('useragent: ' + str(user_agent))
 
     return to_return
 
@@ -360,3 +399,21 @@ def addValidEmail(email):
     new_email = ValidEmail(email=email)
     new_email.save()
     print("added: " + str(new_email.email))
+
+def isUniqueAlias(alias):
+    from lovegov.urls import URL_SPECIAL_NAMES
+    if alias in URL_SPECIAL_NAMES:
+        return False
+    if UserProfile.objects.filter(alias=alias).count() > 0:
+        return False
+    if Group.objects.filter(alias=alias).count() > 0:
+        return False
+    return True
+
+
+def genAliasSlug(alias):
+    nonce = 0
+    while not isUniqueAlias(alias):
+        nonce += 1
+        alias = alias+str(nonce)
+    return alias

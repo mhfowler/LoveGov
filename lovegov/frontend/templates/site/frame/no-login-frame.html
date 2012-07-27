@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<!-- html header -->
+{% include 'site/frame/boilerplate/html-header.html' %}
+
+<body>
+<div id="main">
+    <div id="no-frame-top">
+        <a href="/home/"><img id="logo" src="/static/images/login/splashlogo.png"></a>
+        <div class="top-right">
+            <div class="sign-in">
+                <p> have an account? </p> <a href="#" id="sign_in_button" class="sign-in-button sign_in_button"> Sign In </a> <div style="clear:both"></div>
+                {% include 'site/pages/login/sign-in-dialogue.html' %}
+            </div>
+            <div class="mission-statement">
+                <p>
+                    We are committed to non-partisanship,
+                    government transparency & the right to
+                    personal privacy.
+                </p>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+<div class="overdiv"></div>
+<div class="no-login-modal no_login_modal">
+    <div class="modal-close no_login_modal_close"></div>
+    <div class="no-login-content">
+        <h3>You are not logged in!</h3>
+        <br>
+        <h5><a href="" id="modal_browse_anyways_login">Browse anyway?</a></h5>
+    </div>
+</div>
+
+</body>
+</html>

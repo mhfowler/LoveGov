@@ -99,7 +99,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
 
             vals['imglink'] = list
 
-            html = ajaxRender('deployment/snippets/news-autogen.html', vals, request)
+            html = ajaxRender('site/snippets/news-autogen.html', vals, request)
             return HttpResponse(json.dumps({'html':html}))
         else:
             return HttpResponse("-")
@@ -133,7 +133,7 @@ def getCongressmen(request, vals={}):
     vals['district'] = state_district[0]['number']
     vals['latitude'] = location.latitude
     vals['longitude'] = location.longitude
-    html = ajaxRender('deployment/snippets/match-compare-div.html', vals, request)
+    html = ajaxRender('site/snippets/match-compare-div.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 
@@ -211,7 +211,7 @@ def searchAutoComplete(request,vals={},limit=5):
     vals['search_string'] = string
     vals['num_results'] = total_results
     vals['shown'] = results_length
-    html = ajaxRender('deployment/pieces/autocomplete.html', vals, request)
+    html = ajaxRender('site/pieces/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ def loadGroupUsers(request,vals={}):
     vals['defaultImage'] = getDefaultImage().image
     for member in more_members:
         vals['member'] = member
-        html += ajaxRender('deployment/snippets/group-member.div.html',vals,request)
+        html += ajaxRender('site/snippets/group-member.div.html',vals,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ def loadHistogram(request, vals={}):
     group = Group.objects.get(id=request.POST['group_id'])
     histogram_topic = request.POST['histogram_topic']
     vals['histogram'] = group.getComparisonHistogram(user, topic_alias=histogram_topic, resolution=HISTOGRAM_RESOLUTION)
-    html = ajaxRender('deployment/pieces/histogram.html', vals, request)
+    html = ajaxRender('site/pieces/histogram.html', vals, request)
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
@@ -267,12 +267,10 @@ def create(request, val={}):
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
         form = CreateNewsForm(request.POST)
-    elif formtype =='E':
-        form = CreateEventForm(request.POST)
     elif formtype =='G':
         form = CreateUserGroupForm(request.POST)
-    elif formtype =='I':
-        form = UserImageForm(request.POST)
+    elif formtype =='M':
+        form = CreateMotionForm(request.POST)
 
     # if valid form, save to db
     if form.is_valid():
@@ -287,9 +285,7 @@ def create(request, val={}):
                 viewer.save()
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=val)
-
             return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
-
         else:
             if formtype == "G":
                 c.joinMember(viewer)
@@ -322,8 +318,6 @@ def create(request, val={}):
             return HttpResponse(json.dumps(vals))
         else:
             return shortcuts.redirect('/web/')
-            vals = {'petition': petition, 'event':event, 'news':news, 'group':group, 'album':album}
-            return renderToResponseCSRF('usable/create_content_simple.html',vals,request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends invite email and and addds email to valid emails.
@@ -354,9 +348,12 @@ def sign(request, vals={}):
             if petition.sign(user):
                 vals['signer'] = user
                 context = RequestContext(request,vals)
+                context['p'] = petition
                 template = loader.get_template('deployment/snippets/signer.html')
                 signer_string = template.render(context)  # render html snippet
-                vals = {"success":True, "signer":signer_string}
+                template = loader.get_template('deployment/snippets/petition_bar.html')
+                bar_string = template.render(context)  # render html snippet
+                vals = {"success":True, "signer":signer_string, "bar":bar_string}
             else:
                 vals = {"success":False, "error": "You have already signed this petition."}
         else:
@@ -532,6 +529,11 @@ def editGroup(request, vals={}):
             group.setMainImage(file_content)
         except IOError:
             print "Image Upload Error"
+
+    if group.group_privacy == 'S':
+        group.in_feed = False
+    else:
+        group.in_feed = True
 
     group.save()
 
@@ -1188,7 +1190,7 @@ def addAdmins(request, vals={}):
         addAdmin(admin_id,group,viewer,request)
 
     vals['group_admins'] = group.admins.all()
-    html = ajaxRender('deployment/snippets/admin_list.html',vals,request)
+    html = ajaxRender('site/snippets/admin_list.html',vals,request)
 
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1209,6 +1211,35 @@ def addAdmin(admin_id, group, viewer, request):
 #    action.autoSave()
 #    from_user.notify(action)
     return True
+
+#----------------------------------------------------------------------------------------------------------------------
+# Removes a set of members from a group.
+#
+#-----------------------------------------------------------------------------------------------------------------------
+def removeMembers(request, vals={}):
+
+    viewer = vals['viewer']
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+
+    if viewer not in group.admins.all():
+        HttpResponseForbidden("You do not have permission to remove members from this group.")
+
+    if not 'members' in request.POST:
+        errors_logger.error("Group member removal without user IDs for group #" + str(group.id) + " by user #" + str(viewer.id))
+        return HttpResponse("Group member removal without user IDs")
+
+    members = json.loads(request.POST['members'])
+
+    for member_id in members:
+        member = UserProfile.lg.get_or_none(id=member_id)
+        if member:
+            group.removeMember(member)
+
+    vals['group_members'] = group.members.all()
+    html = ajaxRender('site/pages/group/members_list.html',vals,request)
+
+    return HttpResponse(json.dumps({'html':html}))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates inputted comparison.
@@ -1319,7 +1350,7 @@ def matchComparison(request,vals={}):
     object.compare = object.getComparison(viewer).toJSON()
 
     vals['item'] = object
-    html = ajaxRender('deployment/pages/match/match-new-box.html',vals,request)
+    html = ajaxRender('site/pages/match/match-new-box.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1364,14 +1395,14 @@ def ajaxGetFeed(request, vals={}):
     vals['display']=feed_display
 
     if feed_display == 'L':
-        html = ajaxRender('deployment/pages/feed/linear_helper.html', vals, request)
+        html = ajaxRender('site/pages/feed/linear_helper.html', vals, request)
         to_return = {'html':html, 'num':len(content)}
     else:
         cards = []
         for x in items:
             vals['item'] = x[0].downcast()
             vals['my_vote'] = x[1]
-            card =  ajaxRender('deployment/pages/feed/pinterest.html', vals, request)
+            card =  ajaxRender('site/pages/feed/pinterest.html', vals, request)
             cards.append(card)
         to_return = {'cards':json.dumps(cards), 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
@@ -1514,9 +1545,9 @@ def getNotifications(request, vals={}):
 
     vals['dropdown_notifications_text'] = notifications_text
     vals['num_notifications'] = num_notifications
-    html = ajaxRender('deployment/snippets/notification_snippet.html', vals, request)
+    html = ajaxRender('site/snippets/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('deployment/snippets/notification_dropdown.html', vals, request)
+        html = ajaxRender('site/snippets/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1542,7 +1573,7 @@ def getUserActions(request, vals={}):
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
-    html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
+    html = ajaxRender('site/snippets/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1569,7 +1600,7 @@ def getGroupActions(request, vals={}):
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
-    html = ajaxRender('deployment/snippets/action_snippet.html', vals, request)
+    html = ajaxRender('site/snippets/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1593,12 +1624,12 @@ def getGroupMembers(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more members'}))
     members_text = []
     for member in members:
-        member_text = render_to_string( 'deployment/snippets/group-member-new.html' , {'member':member} )
+        member_text = render_to_string('site/pieces/misc/group-member-new.html', {'member':member} )
         members_text.append( member_text )
     vals['members_text'] = members_text
     num_members += MEMBER_INCREMENT
     vals['num_members'] = num_members
-    html = ajaxRender('deployment/snippets/member-snippet.html', vals, request)
+    html = ajaxRender('site/snippets/member-snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_members':num_members}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1621,7 +1652,7 @@ def getUserGroups(request, vals={}):
     vals['user_groups'] = groups
     num_groups += GROUP_INCREMENT
     vals['num_groups'] = num_groups
-    html = ajaxRender('deployment/snippets/group_snippet.html', vals, request)
+    html = ajaxRender('site/snippets/group_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_groups':num_groups}))
 
 
@@ -1643,7 +1674,7 @@ def matchSection(request, vals={}):
 
         # vals['viewer'] doesn't translate well in the template
         vals['userProfile'] = user
-        html = ajaxRender('deployment/pages/match/match-tryptic-template.html', vals, request)
+        html = ajaxRender('site/pages/match/match-tryptic-template.html', vals, request)
 
     elif section == 'social':
         user = vals['viewer']
@@ -1665,7 +1696,7 @@ def matchSection(request, vals={}):
         vals['networks'] = [network,congress,lovegov]
 
         vals['userProfile'] = user
-        html = ajaxRender('deployment/pages/match/match-social-network.html', vals, request)
+        html = ajaxRender('site/pages/match/match-social-network.html', vals, request)
 
     elif section == 'cause':
         user = vals['viewer']
@@ -1687,7 +1718,7 @@ def matchSection(request, vals={}):
         vals['networks'] = [network,congress,lovegov]
 
         vals['userProfile'] = user
-        html = ajaxRender('deployment/pages/match/match-social-network.html', vals, request)
+        html = ajaxRender('site/pages/match/match-social-network.html', vals, request)
 
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1776,7 +1807,7 @@ def blogAction(request,vals={}):
 
         html = ''
         for blogPost in blogList:
-            html += ajaxRender('deployment/pages/blog/blog-item.html',{'blogPost':blogPost},request)
+            html += ajaxRender('site/pages/blog/blog-item.html',{'blogPost':blogPost},request)
 
     else:
         if user.isDeveloper():
@@ -1794,7 +1825,7 @@ def blogAction(request,vals={}):
 
             vals['blogPost'] = blog
 
-            html = ajaxRender('deployment/pages/blog/blog-item.html',vals,request)
+            html = ajaxRender('site/pages/blog/blog-item.html',vals,request)
         else:
             html = ''
 
@@ -1836,7 +1867,7 @@ def getHistogramMembers(request, vals={}):
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('deployment/pages/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('site/pages/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
@@ -1850,14 +1881,14 @@ def getAllGroupMembers(request, vals={}):
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('deployment/pages/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('site/pages/histogram/avatars_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
 
 def likeThis(request, vals={}):
 
-    html = ajaxRender('deployment/pages/feed/like_this.html', vals, request)
+    html = ajaxRender('site/pages/feed/like_this.html', vals, request)
     to_return = {'html':html}
 
     return HttpResponse(json.dumps(to_return))
@@ -1886,7 +1917,7 @@ def changeContentPrivacy(request, vals={}):
     if error=='':
         content.save()
         vals['content'] = content
-        html =ajaxRender('deployment/snippets/content-privacy.html', vals, request)
+        html =ajaxRender('site/snippets/content-privacy.html', vals, request)
     to_return = {'html':html, 'error': error}
     print "to_return: "+str(to_return)
     return HttpResponse(json.dumps(to_return))
@@ -1921,7 +1952,7 @@ def getAggregateNotificationUsers(request, vals={}):
     vals['agg_notification_users'] = agg_notification.users.all()
     vals['agg_notification_anon'] = agg_notification.anon_users.count()
 
-    html = ajaxRender('deployment/snippets/aggregate-notifications-popup.html', vals, request)
+    html = ajaxRender('site/snippets/aggregate-notifications-popup.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 
@@ -1934,7 +1965,7 @@ def getSigners(request, vals={}):
         if Petition.lg.get_or_none(id=petition_id):
             petition = Petition.lg.get_or_none(id=petition_id)
             vals['signers'] = petition.signers.all()
-            html = ajaxRender('deployment/snippets/petition-signers.html', vals, request)
+            html = ajaxRender('site/snippets/petition-signers.html', vals, request)
         else:
             error = 'The given petition identifier is invalid.'
     else:

@@ -862,6 +862,18 @@ function launchModal(content) {
     return modal;
 }
 
+function launchAModal(modal) {
+    $('div.overdiv').show();
+    var width = modal.outerWidth();
+    var height = modal.outerHeight();
+    modal
+        .css("margin-top", -height/2)
+        .css("margin-left", -width/2)
+        .css("display", "inline-block");
+    bindCloseClick(modal);
+    return modal;
+}
+
 function launchFirstLoginModal(content) {
     var modal = $('.first-login-modal');
     modal.children('div.first-login-content').html(content);
@@ -885,7 +897,7 @@ function bindCloseClick(element) {
         overdiv.off('click');
     });
 
-    element.children('.general_modal_close').bindOnce('click.general_close' , function(e) {
+    element.find('.general_modal_close').bindOnce('click.general_close' , function(e) {
         element.hide();
         overdiv.hide();
         overdiv.off('click');
@@ -981,9 +993,6 @@ function loadHeader()
             $(this).hide();
         }
     });
-
-
-    $('#searchbar').inputFade();
 
 
     var tempDropDownDiv = $('.notifications-dropdown-static-div');
@@ -2347,7 +2356,8 @@ function loadPetition()
             {
                 var returned = eval('(' + data + ')');
                 if (returned.success==true) {
-                    $("#signer-names").append(returned.signer);
+                    $("div.petition-signers-list").append(returned.signer);
+                    $('div.signers-bar-wrapper').html(returned.bar);
                     if ($('#be-first-signer-message').length > 0)
                     {
                         $('#be-first-signer-message').fadeOut('slow');
@@ -2356,6 +2366,8 @@ function loadPetition()
                     var num_signers = parseInt($('#num-signers').text().replace('signed',"").replace(/\s/g, ""));
                     num_signers = num_signers + 1;
                     $('#num-signers').text(num_signers + " " + "signed");
+                    var barWrapper = $('div.petition_bar div.bar-wrapper');
+                    petitionBar(barWrapper);
                     loadHoverComparison();
                 }
                 else {
@@ -2686,6 +2698,20 @@ function loadMoreUsers(event, replace)
     }
 }
 
+/* binds js for create motion modal */
+function loadCreateMotion() {
+
+    $(".motion_action_select").bindOnce("change.motion", function(event) {
+       var action = $(this).val();
+       $(".motion_action_modifier").hide();
+       if (action == "add moderator") {
+           $(".add_moderator").
+       }
+    });
+
+}
+
+
 function loadGroup()
 {
     loadInviteButton();
@@ -2782,6 +2808,14 @@ function loadGroup()
 
     bindNewDivs();
 
+    $("#group_motion_button").bindOnce("click.group", function(event) {
+        event.preventDefault();
+        var modal = $(".motion_modal");
+        launchAModal($(modal));
+    });
+
+    loadCreateMotion();
+
 }
 
 /***********************************************************************************************************************
@@ -2816,14 +2850,9 @@ function loadGroupEdit()
 
     $('.group_edit_button').bindOnce("click.group_info_edit" , function(event)
     {
-        $('.admin_edit_tab').hide();
-        $('.group_edit_tab').show();
-    });
-
-    $('.admin_edit_button').bindOnce("click.group_admin_edit" , function(event)
-    {
-        $('.group_edit_tab').hide();
-        $('.admin_edit_tab').show();
+        $(".group_edit_tab").hide();
+        var div_class = $(this).data('div');
+        $("." + div_class).show();
     });
 
     $('#edit_admin_submit').bindOnce('click.edit_admin_submit', (function(e) {
@@ -2848,6 +2877,39 @@ function loadGroupEdit()
             });
         }
     }));
+
+    $('#members_remove_submit').bindOnce('click.remove_members_submit', (function(e) {
+        e.preventDefault();
+        var g_id = $(this).data('g_id');
+        var members = $('.member_select').select2("val");
+
+        if (members!='') {
+            ajaxPost({
+                data: {'action': 'removeMembers', 'members': JSON.stringify(members), 'g_id':g_id},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    var return_message = $('#members_remove_submit_message');
+                    return_message.html('Members Removed');
+                    return_message.show();
+                    return_message.fadeOut(3000);
+                    var members_container = $(".group_members_container");
+                    members_container.hide();
+                    members_container.html(returned.html);
+                    members_container.fadeIn(600);
+                }
+            });
+        }
+    }));
+
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.member_select').select2({
+        placeholder: "Enter a member,"
+    });
 }
 
 function bindRemoveAdmin()
@@ -3411,7 +3473,7 @@ function loadNewFeed() {
         var wrapper = $(".more-options-wrapper");
         if (wrapper.hasClass("out")) {
             wrapper.css("overflow", "hidden");
-            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 850);
+            wrapper.animate({"height": '0px', 'padding': '0px', 'opacity':0}, 100);
             wrapper.removeClass("out");
             wrapper.find(".menu_toggle").removeClass("clicked");
             wrapper.find(".menu").hide();
@@ -3419,7 +3481,7 @@ function loadNewFeed() {
         }
         else {
             wrapper.show();
-            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 850,
+            wrapper.animate({"height": '105px', 'padding':"10px", 'opacity':1.0}, 100,
                 function() { wrapper.css('overflow', 'visible'); });
             wrapper.addClass("out");
         }
@@ -4053,6 +4115,12 @@ function loadCreate()
         $("#errors-topic").empty();
         $("#errors-non_field").empty();
     }
+
+    /* post to group visual */
+    $(".share_group_box").click(function(event) {
+        event.preventDefault();
+        defaultClickSingle($(this), $(".share_group_box"));
+    });
 }
 
 var my_lockout_boolean = false;

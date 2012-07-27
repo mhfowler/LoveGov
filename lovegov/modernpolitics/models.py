@@ -36,6 +36,7 @@ scheduled_logger = logging.getLogger('scheduledlogger')
 normal_logger = logging.getLogger('filelogger')
 errors_logger = logging.getLogger('errorslogger')
 temp_logger = logging.getLogger('templogger')
+lg_logger = logging.getLogger("lglogger")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Useful manager for all our models.
@@ -63,10 +64,6 @@ class LGModel(models.Model):
 # Abstract class for all models which should be governed by privacy constraints.
 #
 #=======================================================================================================================
-def initCreator():
-    from lovegov.beta.modernpolitics.backend import getLoveGovUser
-    return getLoveGovUser()
-
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
     creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
@@ -162,6 +159,8 @@ class LocationLevel(models.Model):
         else:
             return 'None'
 
+
+
 #=======================================================================================================================
 # Topic
 #
@@ -173,7 +172,6 @@ class Topic(LGModel):
     # actual topic stuff
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
-    forum = models.ForeignKey("Forum", null=True)                        # foreign key to forum
     # fields for images
     image = models.ImageField(null=True, upload_to="defaults/")
     hover = models.ImageField(null=True, upload_to="defaults/")
@@ -197,13 +195,6 @@ class Topic(LGModel):
 
     def getPre(self):
         return self.alias[0:3]
-
-    def getForum(self):
-        if self.forum_id == -1:
-            return None
-        else:
-            forum = Forum.objects.get(id=self.forum_id)
-            return forum
 
     def getImageRef(self):
         return MAIN_TOPICS_IMG[self.topic_text]
@@ -262,7 +253,11 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
-    commenters = models.ManyToManyField("UserProfile", related_name="commenters")
+    unique_commenter_ids = custom_fields.ListField(default=[])
+    # POSTING TO GROUPS
+    posted_to = models.ForeignKey("Group", null=True, related_name="posted_content")
+    shared_to = models.ManyToManyField("Group", related_name="shared_content")
+    content_privacy = models.CharField(max_length=1,choices=CONTENT_PRIVACY_CHOICES, default='O')
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -323,12 +318,11 @@ class Content(Privacy, LocationLevel):
                 commenters.union(children_commenters)
 
         self.num_comments = num_comments
-        self.save()
-
-        self.commenters.clear()
+        unique_commenter_ids = []
         for x in commenters:
-            print "recalccomments. " + x.get_name()
-            self.commenters.add(x)
+            unique_commenter_ids.append(x.id)
+        self.unique_commenter_ids = unique_commenter_ids
+        self.save()
 
         return num_comments, commenters
 
@@ -492,8 +486,10 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def addComment(self, commenter):
         self.num_comments += 1
-        if commenter and (not commenter in self.commenters.all()):
-            self.commenters.add(commenter)
+        unique_commenter_ids = self.unique_commenter_ids
+        if commenter and (not commenter.id in unique_commenter_ids):
+            unique_commenter_ids.append(commenter.id)
+            self.unique_commenter_ids = unique_commenter_ids
             self.status += STATUS_COMMENT
         self.save()
 
@@ -528,8 +524,6 @@ class Content(Privacy, LocationLevel):
             object = self.motion
         elif type == 'F':
             object = self.forum
-        elif type == 'O':
-            object = self.office
         else: object = self
         return object
 
@@ -1109,7 +1103,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def __unicode__(self):
         return self.first_name
     def get_url(self):
-        return '/profile/' + self.alias + '/'
+        if self.alias!='' and self.alias!='default':
+            return '/profile/' + self.alias + '/'
+        else:
+            return '/' + self.alias + '/'
     def getWebUrl(self):
         return self.getWebURL()
     def getWebURL(self):
@@ -1236,10 +1233,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
         alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
-        users = UserProfile.objects.filter(alias=alias)
-        while users:
-            alias += '<3'
-            users = users.filter(alias=alias)
+        from lovegov.modernpolitics.helpers import genAliasSlug
+        self.alias = genAliasSlug(alias)
         self.alias = alias
         self.save()
         return self.alias
@@ -1528,10 +1523,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action, content=None, user=None):
         relationship = action.relationship
+
+        #If you are the one doing the action, do not notify yourself
         if action.type != 'FO' and action.type != 'JO':
             if relationship.getFrom().id == self.id:
                 return False
 
+        #Do aggregate notifications if necessary
         if action.type in AGGREGATE_NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
@@ -1551,6 +1549,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 notification.addAggUser( relationship.user , action.privacy )
                 return True
 
+        #Otherwise do normal notifications
         elif action.type in NOTIFY_TYPES:
             if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
                 notification = Notification(action=action, notify_user=self)
@@ -1896,7 +1895,7 @@ class Action(Privacy):
                             'true':True,
                             'timestamp':self.when}
 
-        action_verbose = render_to_string('deployment/snippets/action_verbose.html',action_context)
+        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',action_context)
         return action_verbose
 
 
@@ -1992,7 +1991,7 @@ class Notification(Privacy):
 
         vals.update(notification_context)
 
-        notification_verbose = render_to_string('deployment/snippets/notification_verbose.html',vals)
+        notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
         return notification_verbose
 
     def addAggUser(self,agg_user,privacy="PUB"):
@@ -2028,7 +2027,6 @@ class Office(Content):
         self.type = "O"
         self.in_search = True
         self.save()
-
 
 
 ########################################################################################################################
@@ -2185,11 +2183,13 @@ class News(Content):
         self.save()
 
 #=======================================================================================================================
-# UserPost (self post of text...aka a rant)
+# UserPost/Discussion
 #
 #=======================================================================================================================
-class UserPost(Content):
-    full_text = models.TextField(max_length=10000)
+class Discussion(Content):
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.type = "D"
+        super(self, Discussion).autoSave(creator=creator, privacy=privacy)
 
 #=======================================================================================================================
 # Photo album
@@ -2251,19 +2251,6 @@ class Comment(Content):
 
     def getRootContent(self):
         return self.root_content
-
-#=======================================================================================================================
-# Forum, for grouping comment threads and organizing into parents and children.
-#
-#=======================================================================================================================
-class Forum(Content):
-    children = models.ManyToManyField(Content, related_name="children")
-    parent = models.ForeignKey(Content, null=True, related_name="parent")
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.type = 'F'
-        self.save()
-        super(Forum, self).autoSave(creator=creator, privacy=privacy)
-
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3264,14 +3251,16 @@ class Group(Content):
     full_text = models.TextField(max_length=1000)
     group_content = models.ManyToManyField(Content, related_name='ongroup')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
-    group_newfeed = models.ManyToManyField(FeedItem, related_name='groupnew')
-    group_hotfeed = models.ManyToManyField(FeedItem, related_name='grouphot')
-    group_bestfeed = models.ManyToManyField(FeedItem, related_name='groupbest')
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
-    democratic = models.BooleanField(default=False)
-    system = models.BooleanField(default=False)     # means you can't leave
+    system = models.BooleanField(default=False)
+    # democratic groups
+    democratic = models.BooleanField(default=False)       # if false, fields below have no importance
+    government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
+    participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
+    agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
+    motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote closes
 
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts Group to appropriate child model.
@@ -3291,8 +3280,6 @@ class Group(Content):
     # Returns json of histogram data.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
-
-        from lovegov.modernpolitics.compare import getUserUserComparison
 
         def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
             i = 0
@@ -3329,12 +3316,12 @@ class Group(Content):
         for x in members:
             comparison = x.getComparison(user).loadOptimized()
             if comparison:
+                total += 1
                 if topic and topic_alias != 'all':
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
                 if comparison.getNumQuestions():
-                    total += 1
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1
@@ -3386,6 +3373,7 @@ class Group(Content):
         group_joined.privacy = privacy
         group_joined.clear()
         self.members.remove(user)
+        self.admins.remove(user)
         self.num_members -= 1
         self.save()
 
@@ -3426,6 +3414,7 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
+        self.alias = self.makeAlias()
         self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)
@@ -3542,6 +3531,14 @@ class Group(Content):
         else:
             return DEFAULT_GROUP_IMAGE_URL
 
+    def makeAlias(self):
+        from django.template.defaultfilters import slugify
+        from lovegov.modernpolitics.helpers import genAliasSlug
+        alias = slugify(self.title)
+        self.alias = genAliasSlug(alias)
+        self.save()
+        return self.alias
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -3549,8 +3546,16 @@ class Group(Content):
 #=======================================================================================================================
 class Motion(Content):
     group = models.ForeignKey(Group)
-    motion_type = models.CharField(max_length=1, choices=MOTION_CHOICES, default='O')
+    motion_type = models.CharField(max_length=30, choices=MOTION_CHOICES, default='other')
     full_text = models.TextField()
+    expiration_date = models.DateTimeField(auto_now_add=True)
+    passed = models.BooleanField(default=False)
+    expired = models.BooleanField(default=False)
+    above_threshold = models.BooleanField(default=False)
+    # add/remove moderator motion
+    moderator = models.ForeignKey(UserProfile, null=True)
+    # change group government type
+    government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
 
     #-------------------------------------------------------------------------------------------------------------------
     # autosave

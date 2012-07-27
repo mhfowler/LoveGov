@@ -1,0 +1,34 @@
+<head>
+
+    <!-- title -->
+    <title>LoveGov: Beta</title>
+
+    <!-- css -->
+    {% include 'site/frame/boilerplate/css-all.html' %}
+
+    <!-- favicon -->
+    <link rel="icon" type="image/icon" href="/static/images/favicon.ico"/>
+
+    <!-- meta -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="Lovegov, lovegov, lovegov.com, Government, Politics, Simplified, One Stop Shop, Participate, Informed, Connected, Involved, Social, Social Network, Political Network, Legislation, Democracy, Democracy 2.0, Vote, Advocacy Groups, Coalitions, Change" />
+    <meta name="description" content="We're no-nonsense realists with an itch to fix politics. We believe participating in democracy doesn't need to be difficult — we believe it should be simple and engaging, even a little fun. Lovegov will inform you on the issues, keep you current with legislation that you care about, and connect you with your representatives. We're making it easy to get involved." />
+
+    <!-- javascript -->
+    {% include 'site/frame/boilerplate/javascript-all.html' %}
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', '{{ google }}']);
+        _gaq.push(['_trackPageview']);
+
+        (function()
+        {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+</head>
