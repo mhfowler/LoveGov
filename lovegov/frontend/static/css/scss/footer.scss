@@ -20,6 +20,16 @@ footer.sticky-footer {
 		div.footer-col {
 			float: left;
 			margin: 40px;
+          div.footer-invite {
+            &.highlight {
+              color: $text-blue;
+            }
+          }
+          div.footer-feedback {
+            &.highlight {
+              color: $text-blue;
+            }
+          }
 		}
 		color: $deep-gray;
 	}
