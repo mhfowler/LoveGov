@@ -92,7 +92,6 @@ def initializeLoveGov():
     initializeDefaultImage()
     initializeLoveGovGroup()
     initializeLoveGovUser()
-    initializeTopicForums()
     initializeTopicImages()
     # filters
     initializeBestFilter()
@@ -234,28 +233,6 @@ def initializeFeed(alias):
         return feed
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Initializes forums for every topic.
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeTopicForums():
-    for x in Topic.objects.all():
-        initializeTopicForum(x)
-
-def initializeTopicForum(x):
-    alias = "topicforum:" + x.alias
-    if Forum.objects.filter(alias=alias):
-        print ("..." + alias + " already initialized")
-    else:
-        title = x.topic_text + " Forum"
-        summary = "A forum for discussing anything related to the topic " + x.topic_text + "."
-        forum = Forum(title=title, summary=summary, alias=alias)
-        forum.autoSave()
-        forum.topics.add(x)
-        x.forum_id = forum.id
-        x.save()
-        print("initialized: " + alias)
-        return x
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Initialize images for every topic.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeTopicImages():
@@ -276,9 +253,6 @@ def initializeTopicImage(x):
             file = open(ref)
             im.createImage(file, type=".png")
             im.autoSave()
-            forum = x.getForum()
-            forum.main_image_id = im.id
-            forum.save()
             # initialize image
             x.image.save(photoKey(".png"), File(file))
             # initialize hover
