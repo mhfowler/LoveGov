@@ -9,7 +9,6 @@
 
 # lovegov
 import traceback
-from lovegov.modernpolitics.register import createUser
 from bs4 import BeautifulSoup
 from django import db
 from lovegov.modernpolitics.helpers import *
@@ -134,7 +133,7 @@ def initializeLoveGovGroup():
         group.autoSave()
         group.saveDefaultCreated()
         # add all users
-        for u in UserProfile.objects.filter(user_type='U'):
+        for u in UserProfile.objects.filter(ghost=False):
             group.members.add(u)
         print("initialized: lovegov group")
         return group
@@ -780,11 +779,6 @@ def initializeCongressFile(parsedXML,image_root):
 
         person = initializeXMLCongressman(personXML,image_root=image_root)
 
-
-
-        # Then update their profile
-
-
         # Get their role
         role = personXML.role
 
@@ -839,7 +833,8 @@ def initializeCongressFile(parsedXML,image_root):
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes a single congressman
 #-----------------------------------------------------------------------------------------------------------------------
-def updateXMLCongressman(personXML,image_root=''):
+def initializeXMLCongressman(personXML,image_root=''):
+    from lovegov.modernpolitics.register import createUser
     user_prof = None
 
     # name = first + " " + last
@@ -867,11 +862,14 @@ def updateXMLCongressman(personXML,image_root=''):
         print "initializing " + name.encode('utf-8','ignore')
         congressControl = createUser(name,email,password)
         user_prof = congressControl.user_profile
+        user_prof.ghost = True
 
     # UPDATE USER PROFILE #
     # ------------------- #
     user_prof.first_name = personXML['firstname']
     user_prof.last_name = personXML['lastname']
+    user_prof.politician = True
+    user_prof.elected_official = True
 
     image_path = image_root + str(electedofficial.govtrack_id) + ".jpeg"
     try:

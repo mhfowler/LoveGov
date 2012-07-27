@@ -1086,7 +1086,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
-    # Government Stuff    type = models.CharField(max_length=1,default="U")
+    # type = models.CharField(max_length=1,default="U")
+    ghost = models.BooleanField(default=False)
+    # Government Stuff
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
