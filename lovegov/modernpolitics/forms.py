@@ -307,43 +307,6 @@ class CreateUserGroupForm(CreateContentForm):
     action = forms.CharField(widget=forms.HiddenInput(), initial='create')
     group_type = forms.CharField(widget=forms.HiddenInput(), initial='U')
 
-
-class CreateMotionForm(CreateContentForm):
-    class Meta:
-        model = Motion
-        fields = ('title', 'full_text', 'topics', 'motion_type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['motion'], required=False)
-    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['motion'])
-    def complete(self, request):
-        object = self.save(commit=False)
-        group = Group.objects.get(id=request.POST['g_id'])
-        object.group = group
-        if group.democratic:
-            if object.motion_type == 'add':
-                moderator = UserProfile.objects.get(id=request.POST['moderator_id'])
-                if moderator not in group.members.all():
-                    error_message = "motion to add moderator of member who is not in group," + group.get_name()
-                    raise LGException(error_message)
-                elif moderator in group.admins.all():
-                    error_message = "motion to add moderator of member who is already moderator," + group.get_name()
-                    raise LGException(error_message)
-                else:
-                    object.moderator = moderator
-            elif object.motion_type == 'remove':
-                moderator = UserProfile.objects.get(id=request.POST['moderator_id'])
-                if moderator not in group.admins.all():
-                    error_message = "motion to remove moderator who is not moderator of group," + group.get_name()
-                    raise LGException(error_message)
-                else:
-                    object.moderator = moderator
-            elif object.motion_type == 'coup':
-                object.government_type = request.POST['government_type']
-            return super(CreateMotionForm, self).complete(request, object=object)
-        else:
-            error_message = "created motion for non-democratic group," + group.get_name()
-            raise LGException(error_message)
-
-
 #=======================================================================================================================
 # Comment Form
 #=======================================================================================================================

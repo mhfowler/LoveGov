@@ -553,7 +553,8 @@ ACTIONS = [
     'groupInviteResponse',
     'groupInvite',
     'getLinkInfo',
-    'removeMembers'
+    'removeMembers',
+    'createMotion'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
@@ -621,5 +622,5 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'addAdmins',
     'removeAdmin',
     'groupInviteResponse',
-    'groupInvite'
+    'groupInvite',
 ]
