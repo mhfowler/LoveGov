@@ -319,7 +319,7 @@
                 <tr>
                     <td>
                         <a href="{{ follower.get_url }}">
-                            {% include "site/pieces/snippets/avatar.html" with user=follower width="38" height="38" hoveroff=1 %}
+                            {% include "site/pieces/snippets/avatar.html" with user=follower width="38" height="38" hoveroff=False %}
                         </a>
                     </td>
                     <td><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></td>

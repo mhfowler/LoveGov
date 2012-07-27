@@ -13,10 +13,11 @@
         {% else %}
             prodded
         {% endif %}
-        <a href="agg_notification_content.get_url" class="invert_link">{{ agg_notification_content.get_name }}</a>
+        <a href="{{agg_notification_content.get_url}}" class="invert_link">{{ agg_notification_content.get_name }}</a>
     </div>
     <div class="modal-horizontal-separator"></div>
     <div class="aggregate-users-container">
+        {% if agg_notificatiosn_anon > 0 %}
         <table class="user-container">
             <tr>
                 <td>
@@ -25,12 +26,13 @@
                 <td>Anonymous Users</td>
             </tr>
         </table>
+        {% endif %}
         {% for user in agg_notification_users %}
             <table class="user-container">
                 <tr>
                     <td>
                         <a href="{{ user.get_url }}">
-                            {% include "site/pieces/snippets/avatar.html" with user=user width="38" height="38" %}
+                            {% include "site/pieces/snippets/avatar.html" with user=user width="38" height="38" hoveroff=False %}
                         </a>
                     </td>
                     <td><a href="{{ user.get_url }}">{{ user.get_name }}</a></td>

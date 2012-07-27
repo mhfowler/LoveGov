@@ -400,7 +400,7 @@ div#top
       min-height: 200px;
       z-index: 100;
       background-color: white;
-      @include box-shadow($horizontal-offset:0px,$vertical-offset:2px,$optional-blur:12px,$color:$light-gray);
+      @include box-shadow($horizontal-offset:10px,$vertical-offset:10px,$optional-blur:12px,$color:$deep-gray);
 
       div.notifications-dropdown-static-div
       {

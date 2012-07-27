@@ -1,6 +1,10 @@
 @import 'master-variables';
 @import 'master-mixins';
 
+.create_content_div {
+  display: none;
+}
+
 .create-wrapper
 {
   font-family:Helvetica, Verdana, sans-serif;
@@ -9,6 +13,7 @@
   background-color: white;
   -webkit-user-select: none;
   -moz-user-select: none;
+  margin: 20px;
 
   #create-main
   {
@@ -22,45 +27,43 @@
 
   #create-buttons
   {
-    height:70px;
-    border-bottom:1px solid $gray;
-    margin-left:25px;
-    margin-right:25px;
-    margin-top:15px;
-  }
-
-  .button-basic
-  {
-    @include float-left;
-    @include rounded(15px);
-    width:50px;
-    height:50px;
-    margin-right:10px;
-    padding:5px;
+    text-align: center;
+    width: 100%;
   }
 
   .button-placeholder
   {
-    @extend .button-basic;
+    display: inline-block;
+    @include rounded(15px);
+    margin: 10px;
+    padding:10px;
+    width: 120px;
+    cursor: pointer;
+    border: 1px solid white;
+    &:hover {
+      background-color: $white-gray;
+      border: 1px dotted $black;
+    }
+    &:active {
+      background-color: $gray;
+    }
     background-color:white;
+    img {
+      width:75px;
+      height:75px;
+    }
+    span {
+      margin-top: 10px;
+      text-align: center;
+      display: block;
+      @include titleFont;
+      font-size: 18px;
+      color: $text-blue;
+    }
+    &.selected {
+      background-color: $gray;
+    }
   }
-
-  .button-placeholder:hover
-  {
-    @extend .button-basic;
-    background-color: $gray;
-  }
-
-  .button-placeholder img
-  {
-    width:50px;
-    height:50px;
-  }
-}
-
-.create-wrapper
-{
-  margin: 20px;
 
 }
 

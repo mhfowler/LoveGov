@@ -1975,6 +1975,7 @@ class Notification(Privacy):
             notification_context['content'] = relationship.getTo()
 
         vals.update(notification_context)
+        vals['hover_off'] = True
 
         notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
         return notification_verbose
@@ -3804,7 +3805,8 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
-        self.alias = self.makeAlias()
+        if not self.alias:
+            self.alias = self.makeAlias()
         self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)

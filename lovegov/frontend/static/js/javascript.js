@@ -1946,6 +1946,8 @@ function loadNotification()
                         $('div.overdiv').hide();
                         $('div#agg_notification_modal').hide();
                     });
+
+                    loadHoverComparison();
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {
@@ -2139,6 +2141,7 @@ function bindProfileFollowersButton()
         event.preventDefault();
         $('div.overdiv').fadeToggle("fast");
         $('div#profile_followers_modal').fadeToggle("fast");
+        loadHoverComparison();
     });
 
     $('div.overdiv').click(function() {
@@ -3926,25 +3929,30 @@ function postNews()
 
 function loadCreate()
 {
+   $("div.button-placeholder").bindOnce("click", function(e) {
+       $("div.button-placeholder").removeClass("selected");
+       $(this).addClass("selected");
+   })
+
     $('#create_petition_button').bindOnce('click.create',
         function()
         {
             $('.create_content_div').hide();
-            $('#create_petition_div').show();
+            $('#create_petition_div').toggle();
         });
 
     $('#create_news_button').bindOnce('click.create',
         function()
         {
             $('.create_content_div').hide();
-            $('#create_news_div').show();
+            $('#create_news_div').toggle();
         });
 
     $('#create_group_button').bindOnce('click.create',
         function()
         {
             $('.create_content_div').hide();
-            $('#create_group_div').show();
+            $('#create_group_div').toggle();
         });
 
     bindGroupPrivacyRadio();

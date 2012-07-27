@@ -1551,9 +1551,9 @@ def getNotifications(request, vals={}):
 
     vals['dropdown_notifications_text'] = notifications_text
     vals['num_notifications'] = num_notifications
-    html = ajaxRender('site/snippets/notification_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/notification_dropdown.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('site/snippets/notification_dropdown.html', vals, request)
+        html = ajaxRender('site/pieces/notifications/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1958,7 +1958,7 @@ def getAggregateNotificationUsers(request, vals={}):
     vals['agg_notification_users'] = agg_notification.users.all()
     vals['agg_notification_anon'] = agg_notification.anon_users.count()
 
-    html = ajaxRender('site/snippets/aggregate-notifications-popup.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/aggregate-notifications-popup.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 
