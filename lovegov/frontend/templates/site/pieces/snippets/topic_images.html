@@ -2,7 +2,7 @@
 
 <div class="topic-icons-wrapper">
     {% for t in main_topics %}
-        <div class="create-topic-icon-wrapper topic-icon-wrapper tooltip-bottom" title="{{ t.topic_text }}">
+        <div class="create-topic-icon-wrapper topic-icon-wrapper tooltip-top" title="{{ t.topic_text }}">
             {% thumbnail t.image "50x50" format="PNG" as im %}
                 <img class="topic-img normal create-topic-img" src="{{ im.url }}"/>
             {% endthumbnail %}

@@ -191,3 +191,28 @@ div.submit-button
 {
   display:none;
 }
+
+tr.post-to-wrapper {
+
+  div.post-to-selected {
+    float:left;
+  }
+
+  div.post-to-choices {
+    @include rounded($radius: 10px);
+    border: 1px solid $light-gray;
+    padding:20px;
+    margin-right:50px;
+
+    div.group-box {
+      margin-top:0px;
+    }
+    div.group-box.clicked {
+      border-color:$red;
+    }
+    div.group-box:hover {
+      border-color:$red;
+    }
+  }
+
+}

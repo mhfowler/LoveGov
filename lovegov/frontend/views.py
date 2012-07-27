@@ -24,6 +24,12 @@ def basicMessage(request,message,vals={}):
     html = ajaxRender('site/pages/basic_message.html', vals, request)
     return framedResponse(request, html, url, vals)
 
+def errorMessage(request,message,vals={}):
+    vals['basic_message'] = message
+    url = '/'
+    html = ajaxRender('site/pages/basic_message.html', vals, request)
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -42,69 +48,71 @@ def framedResponse(request, html, url, vals):
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
-
         vals = {}
+        try:
+            if not checkBrowserCompatible(request):
+                return shortcuts.redirect("/upgrade/")
 
-        if not checkBrowserCompatible(request):
-            return shortcuts.redirect("/upgrade/")
+            vals['fb_state'] = fbGetRedirect(request, vals)
+            vals['google'] = GOOGLE_LOVEGOV
+            host_full = getHostHelper(request)
+            vals['host_full'] = host_full
+            vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
+            vals['to_page'] = request.path.replace('/login', '')
+            vals['page_title'] = "LoveGov: Beta"
 
-        vals['fb_state'] = fbGetRedirect(request, vals)
-        vals['google'] = GOOGLE_LOVEGOV
-        host_full = getHostHelper(request)
-        vals['host_full'] = host_full
-        vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
-        vals['to_page'] = request.path.replace('/login', '')
-        vals['page_title'] = "LoveGov: Beta"
+            if requires_login:
+                    controlling_user = getControllingUser(request)
+                    vals['controlling_user'] = controlling_user
 
+                    # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
+                    if controlling_user:
+                        user = controlling_user.user_profile
+                        vals['prohibited_actions'] = controlling_user.prohibited_actions
+                    else:
+                        user = getAnonUser()
+                        vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                    vals['user'] = user
+                    vals['viewer'] = user
 
-        if requires_login:
-            try:
-                controlling_user = getControllingUser(request)
-                vals['controlling_user'] = controlling_user
+                    first_login = user.first_login
+                    vals['firstLoginStage'] = first_login
 
-                # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
-                if controlling_user:
-                    user = controlling_user.user_profile
-                    vals['prohibited_actions'] = controlling_user.prohibited_actions
-                else:
-                    user = getAnonUser()
-                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
-                vals['user'] = user
-                vals['viewer'] = user
+                    # if not authenticated user, and not lovegov_try cookie, redirect to login page
+                    if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                        return shortcuts.redirect("/login" + request.path)
 
-                first_login = user.first_login
-                vals['firstLoginStage'] = first_login
+                    # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
+                    if UPDATE or ("dev" in host_full):
+                        if not user.developer:
+                            normal_logger.debug('blocked: ' + user.get_name())
+                            #return shortcuts.redirect('/underconstruction/')
 
-                # if not authenticated user, and not lovegov_try cookie, redirect to login page
-                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                    return shortcuts.redirect("/login" + request.path)
+                    if not user.confirmed:
+                        return shortcuts.redirect("/need_email_confirmation/")
 
-                # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE or ("dev" in host_full):
-                    if not user.developer:
-                        normal_logger.debug('blocked: ' + user.get_name())
-                        #return shortcuts.redirect('/underconstruction/')
+            return view(request,vals=vals,*args,**kwargs)
 
-                if not user.confirmed:
-                    return shortcuts.redirect("/need_email_confirmation/")
+        except LGException as e:
+            return errorMessage(request, message=e.getClientMessage(), vals=vals)
 
-            except ImproperlyConfigured:
-                response = shortcuts.redirect('/login' + request.path)
-                response.delete_cookie('sessionid')
-                errors_logger.error('deleted cookie')
-                return response
+        except ImproperlyConfigured:
+            response = shortcuts.redirect('/login' + request.path)
+            response.delete_cookie('sessionid')
+            errors_logger.error('deleted cookie')
+            return response
 
-        # SAVE PAGE ACCESS, if there isn't specifically set value to log-ignore
-        if request.method == 'GET':
-            ignore = request.GET.get('log-ignore')
-        else:
-            ignore = request.POST.get('log-ignore')
-        if not ignore:
-            def saveAccess(req): PageAccess().autoSave(req)
-            thread.start_new_thread(saveAccess, (request,))
-        return view(request,vals=vals,*args,**kwargs)
+        finally:  # save page access, if there isn't specifically set value to log-ignore
+            if request.method == 'GET':
+                ignore = request.GET.get('log-ignore')
+            else:
+                ignore = request.POST.get('log-ignore')
+            if not ignore:
+                def saveAccess(req): PageAccess().autoSave(req)
+                thread.start_new_thread(saveAccess, (request,))
 
     return new_view
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splash page and learn more.
@@ -464,12 +472,22 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # new feeds page
 #-----------------------------------------------------------------------------------------------------------------------
-def theFeed(request, vals={}):
+def theFeed(request, g_alias=None, vals={}):
 
+    viewer = vals['viewer']
     rightSideBar(request, vals)
     shareButton(request, vals)
 
-    viewer = vals['viewer']
+    if not g_alias:
+        current_group = getLoveGovGroup()
+    else:
+        current_group = Group.objects.get(alias=g_alias)
+    vals['current_group'] = current_group
+
+    if current_group.hasMember(viewer):
+        vals['default_post_to_group'] = current_group
+    else:
+        vals['default_post_to_group'] = getLoveGovGroup()
 
     filter_name = request.GET.get('filter_name')
     if not filter_name:
@@ -1029,10 +1047,7 @@ def newsDetail(request, n_id, vals={}):
 def shareButton(request, vals={}):
     viewer = vals['viewer']
     vals['my_followers'] = viewer.getFollowMe()
-    groups = viewer.getGroups()
-    vals['my_groups'] = groups.filter(group_type="U")
-    vals['my_networks'] = groups.filter(group_type="N")
-
+    getMyGroups(request, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum

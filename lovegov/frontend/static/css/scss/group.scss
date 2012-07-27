@@ -446,3 +446,60 @@ div.requests-modal
     display: none;
   }
 }
+
+
+div.motion-modal {
+  @include modal;
+  padding: 0px 20px 20px 20px;
+  text-align: left;
+
+  div.create-motion-icon {
+    background-image: url('/static/images/icons/Create_Motion.png');
+    background:contain;
+    width:80px;
+    height:80px;
+    float:left;
+  }
+
+  h3.create-motion-title {
+    margin-top:25px;
+    float:left;
+    margin-left:220px;
+    @include fontSize(26px);
+  }
+
+  div.modal-close {
+    margin-top:15px;
+  }
+
+  div.motion-title {
+    @include titleFont();
+    @include fontSize(22px);
+  }
+
+  div.triangle-selector {
+    float:left;
+    margin:0px;
+    margin-left:4px;
+    margin-top:4px;
+  }
+
+  textarea.because {
+    margin-top:10px;
+    width:400px;
+    height:150px;
+  }
+
+  div.row.first-row {
+    margin-top:0px;
+  }
+
+  div.row {
+    display:block;
+    margin-top:30px;
+  }
+
+  div.motion-info {
+    margin-top:40px;
+  }
+}

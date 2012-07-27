@@ -110,6 +110,16 @@
                                             invite
                                         </a>
                                     </div>
+                                {% endif %}
+                                {% if group.democratic and is_user_confirmed %}
+                                    <div class="group-button">
+                                        <a href="" id="group_motion_button" class="button-red float-left" data-g_id="{{ group.id }}">
+                                            motion
+                                        </a>
+                                    </div>
+                                    {% include 'site/pages/group/create_motion.html' %}
+                                {% endif %}
+                                {% if is_user_admin %}
                                     <div class="group-button">
                                         <a href="/group/{{ group.id }}/edit/" class="button-red float-left">
                                             edit info
