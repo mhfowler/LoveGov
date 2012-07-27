@@ -450,19 +450,48 @@ div.requests-modal
 
 div.motion-modal {
   @include modal;
-  padding:20px;
+  padding: 0px 20px 20px 20px;
   text-align: left;
 
-  div.creat-motion-icon {
+  div.create-motion-icon {
     background-image: url('/static/images/icons/Create_Motion.png');
     background:contain;
-    width:20px;
-    height:20px;
+    width:80px;
+    height:80px;
+    float:left;
   }
 
   h3.create-motion-title {
-    width:100%;
-    text-align:center;
+    margin-top:25px;
+    float:left;
+    margin-left:220px;
+    @include fontSize(26px);
+  }
+
+  div.modal-close {
+    margin-top:15px;
+  }
+
+  div.motion-title {
+    @include titleFont();
+    @include fontSize(22px);
+  }
+
+  div.triangle-selector {
+    float:left;
+    margin:0px;
+    margin-left:4px;
+    margin-top:4px;
+  }
+
+  textarea.because {
+    margin-top:10px;
+    width:400px;
+    height:150px;
+  }
+
+  div.row.first-row {
+    margin-top:0px;
   }
 
   div.row {
@@ -471,8 +500,6 @@ div.motion-modal {
   }
 
   div.motion-info {
-
-    margin-top:20px;
-
+    margin-top:40px;
   }
 }

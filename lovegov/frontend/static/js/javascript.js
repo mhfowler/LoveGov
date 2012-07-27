@@ -897,7 +897,7 @@ function bindCloseClick(element) {
         overdiv.off('click');
     });
 
-    element.children('.general_modal_close').bindOnce('click.general_close' , function(e) {
+    element.find('.general_modal_close').bindOnce('click.general_close' , function(e) {
         element.hide();
         overdiv.hide();
         overdiv.off('click');
@@ -2710,6 +2710,20 @@ function loadMoreUsers(event, replace)
     }
 }
 
+/* binds js for create motion modal */
+function loadCreateMotion() {
+
+    $(".motion_action_select").bindOnce("change.motion", function(event) {
+       var action = $(this).val();
+       $(".motion_action_modifier").hide();
+       if (action == "add moderator") {
+           $(".add_moderator").show();
+       }
+    });
+
+}
+
+
 function loadGroup()
 {
     loadInviteButton();
@@ -2811,6 +2825,8 @@ function loadGroup()
         var modal = $(".motion_modal");
         launchAModal($(modal));
     });
+
+    loadCreateMotion();
 
 }
 
