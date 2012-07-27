@@ -269,8 +269,6 @@ def create(request, val={}):
         form = CreateNewsForm(request.POST)
     elif formtype =='G':
         form = CreateUserGroupForm(request.POST)
-    elif formtype =='M':
-        form = CreateMotionForm(request.POST)
 
     # if valid form, save to db
     if form.is_valid():
@@ -318,6 +316,56 @@ def create(request, val={}):
             return HttpResponse(json.dumps(vals))
         else:
             return shortcuts.redirect('/web/')
+
+def createMotion(request, vals={}):
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+
+    if group.democratic:
+        motion_type = request.POST['motion_type']
+        motion = None
+
+        if motion_type == 'add_moderator':
+            moderator = UserProfile.objects.get(id=request.POST['moderator_id'])
+            if moderator not in group.members.all():
+                error_message = "motion to add moderator of member who is not in group," + group.get_name()
+                LGException(error_message)
+                return HttpResponse(error_message)
+            elif moderator in group.admins.all():
+                error_message = "motion to add moderator of member who is already moderator," + group.get_name()
+                LGException(error_message)
+                return HttpResponse(error_message)
+            else:
+                motion = Motion(motion_type=motion_type, moderator=moderator,
+                    full_text=request.POST['because'], group=group)
+
+        elif motion_type == 'remove_moderator':
+            moderator = UserProfile.objects.get(id=request.POST['moderator_id'])
+            if moderator not in group.admins.all():
+                error_message = "motion to remove moderator who is not moderator of group," + group.get_name()
+                LGException(error_message)
+                return HttpResponse(error_message)
+            else:
+                motion = Motion(motion_type=motion_type, moderator=moderator,
+                    full_text=request.POST['because'], group=group)
+
+        elif motion_type == 'coup_detat':
+            motion = Motion(motion_type=motion_type, government_type=request.POST['government_type'],
+                full_text=request.POST['because'], group=group)
+
+        if motion:
+            motion.autoSave(creator=vals['viewer'], privacy=getPrivacy(request))
+            return HttpResponse(json.dumps({'success':True}))
+        else:
+            error_message = "create motion action did not create motion for group", group.get_name()
+            LGException(error_message)
+            return HttpResponse(error_message)
+
+    else:
+        error_message = "post to create motion for non-democratic group," + group.get_name()
+        LGException(error_message)
+        return HttpResponse(error_message)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends invite email and and addds email to valid emails.

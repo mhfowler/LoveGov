@@ -38,6 +38,11 @@ function rebindFunction()
             loadRightSideBar();
             loadShareButton();
             break;
+        case 'motion':
+            loadThread();
+            loadRightSideBar();
+            loadShareButton();
+            break;
         case 'topic':                                           // /topic/<topic_name>
             loadRightSideBar();
             loadThread();
@@ -1191,18 +1196,42 @@ function convert(str)
 
 function closeLeftSideWrapper(wrapper)
 {
+
+    if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
+    else { wrapper.animate({left:'-493px'},500); }
+    setTimeout(function()
+    {
+        wrapper.css({'z-index':'100'});
+        wrapper.children('.create' +
+            'e-img').css({'z-index':'101'});
+    },500);
+
+    wrapper.removeClass('clicked');
+}
+
+function leftSideToggle(wrapper)
+{
     if (wrapper.hasClass('clicked'))
     {
-        wrapper.removeClass('clicked');
-        if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
-        else { wrapper.animate({left:'-493px'},500); }
-        setTimeout(function()
-        {
-            wrapper.css({'z-index':'100'});
-            wrapper.children('.create-img').css({'z-index':'101'});
-        },500);
+        closeLeftSideWrapper(wrapper);
     }
+    else
+    {
+        wrapper.addClass('clicked');
+        wrapper.css({'z-index':'101'});
+        wrapper.children('.create-img').css({'z-index':'102'});
+        wrapper.animate({left:'-1px'},500);
+
+        wrapper.bindOnce('clickoutside',function(event)
+        {
+            if (event.target.className != "footer_button") {
+                closeLeftSideWrapper(wrapper);
+            }
+        });
+    }
+
 }
+
 
 function loadLeftSidebar()
 {
@@ -1210,24 +1239,10 @@ function loadLeftSidebar()
     $('.left-side-img').click(function()
     {
         var parent = $(this).parent();
-        if (parent.hasClass('clicked'))
-        {
-            closeLeftSideWrapper(parent);
-        }
-        else
-        {
-            parent.addClass('clicked');
-            parent.css({'z-index':'101'});
-            parent.children('.create-img').css({'z-index':'102'});
-            parent.animate({left:'-1px'},500);
-        }
+        leftSideToggle(parent);
     });
 
-    $('.left-side-wrapper').bind('clickoutside',function()
-    {
-        var wrapper = $(this);
-        if (wrapper.hasClass('clicked')) { closeLeftSideWrapper(wrapper); }
-    });
+
 
     $('#feedback-submit').click(function(event)
     {
@@ -1235,6 +1250,8 @@ function loadLeftSidebar()
         var text = $('#feedback-text').val();
         var name = $('#feedback-name').val();
         ajaxPost({
+
+
             data: {'action':'feedback','text':text,'path':path,'name':name},
             success: function(data)
             {
@@ -2704,11 +2721,52 @@ function loadCreateMotion() {
     $(".motion_action_select").bindOnce("change.motion", function(event) {
        var action = $(this).val();
        $(".motion_action_modifier").hide();
-       if (action == "add moderator") {
-           $(".add_moderator").
-       }
+       var class_name = action + "_modifier";
+       $("." + class_name).show();
     });
 
+    $('select.add_moderator_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.remove_moderator_select').select2({
+        placeholder: "Enter a moderator,"
+    });
+
+    $('select.motion_action_select').select2({
+        placeholder: "Choose an action."
+    });
+
+    $(".create_motion_button").bindOnce("click.motion", function(event) {
+        event.preventDefault();
+        var action =  $(".motion_action_select").val();
+        var because = $(".because_textarea").val();
+        var g_id = $(this).data('g_id');
+        var to_post = {'action': 'createMotion', 'g_id':g_id,
+            'motion_type':action, 'because':because};
+        if (action == 'add_moderator') {
+            to_post['moderator_id'] = $(".add_moderator_select").val();
+        }
+        if (action == 'remove_moderator') {
+            to_post['moderator_id'] = $(".remove_moderator_select").val();
+        }
+        if (action == 'coup_detat') {
+            to_post['government_type'] = "traditional";
+        }
+        ajaxPost({
+            data: to_post,
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success) {
+                    location.reload();
+                }
+                else {
+                    alert(data);
+                }
+            }
+        });
+    });
 }
 
 
@@ -4779,6 +4837,19 @@ function bindCloseFirstLoginModal() {
 
 function showFooter() {
     $('footer').show();
+
+    $('.footer_invite').bindOnce('click.footer_invite', function (event)
+    {
+        event.preventDefault();
+        var wrapper = $('#left-side-wrapper-invite');
+        leftSideToggle(wrapper);
+    });
+    $('.footer_feedback').bindOnce('click.footer_feedback', function (event)
+    {
+        event.preventDefault();
+        var wrapper = $('#left-side-wrapper-feedback');
+        leftSideToggle(wrapper);
+    });
 }
 
 function hideFooter() {
@@ -4857,7 +4928,7 @@ function loadLogin() {
 
 
 /***********************************************************************************************************************
- *
+ *h
  *      ~Blog
  *
  **********************************************************************************************************************/

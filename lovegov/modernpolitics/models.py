@@ -267,10 +267,10 @@ class Content(Privacy, LocationLevel):
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
+        elif self.type =='M':
+            return '/motion/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
-        elif self.type=='F':
-            return '/topic/' + self.getMainTopic().alias + '/'
         elif self.type=='G':
             return '/group/' + str(self.id) + '/'
         elif self.type=='C':
@@ -671,19 +671,20 @@ class Content(Privacy, LocationLevel):
                 action.autoSave()
                 print "creator: "+str(self.creator)
                 self.creator.notify(action)
-            return my_vote.value
         else:
             # create new vote
-            new_vote = Voted(value=1, content=self, user=user, privacy=privacy)
-            new_vote.autoSave()
+            my_vote = Voted(value=1, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
             # adjust content values about status and vote
             self.upvotes += 1
             self.status += STATUS_VOTE
             self.save()
-            action = Action(relationship=new_vote,modifier='L')
+            action = Action(relationship=my_vote,modifier='L')
             action.autoSave()
             self.creator.notify(action)
-            return new_vote.value
+        if self.type == 'M':
+            self.downcast().motionVote(my_vote)
+        return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add dislike vote to content from inputted user (or adjust his vote appropriately)
@@ -712,16 +713,18 @@ class Content(Privacy, LocationLevel):
             return my_vote.value
         else:
             # create new vote
-            new_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
-            new_vote.autoSave()
+            my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
             # adjust content values about status and vote
             self.downvotes += 1
             self.status -= STATUS_VOTE
             self.save()
-            action = Action(relationship=new_vote,modifier='D')
+            action = Action(relationship=my_vote,modifier='D')
             action.autoSave()
             self.creator.notify(action)
-            return new_vote.value
+        if self.type == 'M':
+            self.downcast().motionVote(my_vote)
+        return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a time delta of how old this content is.
@@ -3439,6 +3442,18 @@ class Group(Content):
         self.save()
         return self.alias
 
+    def getMotionExpiration(self):
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(days=self.motion_expiration)
+        return  now + delta
+
+    def coup(self, government_type):
+        self.government_type = government_type
+        if government_type == 'traditional':
+            self.democratic = False
+        else:
+            self.democratic = True
+        self.save()
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -3452,6 +3467,8 @@ class Motion(Content):
     passed = models.BooleanField(default=False)
     expired = models.BooleanField(default=False)
     above_threshold = models.BooleanField(default=False)
+    motion_upvotes = models.IntegerField(default=0)
+    motion_downvotes = models.IntegerField(default=0)
     # add/remove moderator motion
     moderator = models.ForeignKey(UserProfile, null=True)
     # change group government type
@@ -3462,9 +3479,76 @@ class Motion(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
         self.type='M'
+        self.expiration_date = self.group.getMotionExpiration()
+        self.in_feed = True
+        self.title = self.getTitle()
+        self.summary = self.full_text[:100]
         self.save()
         super(Motion, self).autoSave(creator=creator, privacy=privacy)
 
+    def getTitle(self):
+        if self.motion_type == "add_moderator":
+            return "MOTION: " + self.group.get_name() + " Add Moderator " + self.moderator.get_name()
+        elif self.motion_type == "remove_moderator":
+            return "MOTION: " + self.group.get_name() + " Remove Moderator " + self.moderator.get_name()
+        elif self.motion_type == "coup_detat":
+            return "MOTION: " + self.group.get_name() + " Coup D'etat"
+
+    def execute(self):
+        if self.motion_type == "add_moderator":
+            self.group.admins.add(self.moderator)
+        elif self.motion_type == "remove_moderator":
+            self.group.admins.remove(self.moderator)
+        elif self.motion_type == "coup_detat":
+            self.group.coup(self.government_type)
+
+    def motionVote(self, my_vote):
+        if self.isActionable():
+            group = self.group
+            user = my_vote.user
+            if group.hasMember(user):
+                motion_vote = MotionVoted.lg.get_or_none(user=user, content=self)
+                if motion_vote:
+                    motion_vote.value = my_vote.value
+                    motion_vote.save()
+                else:
+                    motion_vote = MotionVoted(user=user, content=self, value=my_vote.value, privacy=my_vote.privacy)
+                    motion_vote.autoSave()
+            self.calc()
+
+    def calc(self):
+
+        if self.isActionable():
+            group = self.group
+
+            votes = MotionVoted.objects.filter(content=self)
+            upvotes = votes.filter(value=1).count()
+            downvotes = votes.filter(value=-1).count()
+            totalvotes = upvotes + downvotes
+            self.motion_upvotes = upvotes
+            self.motion_downvotes = downvotes
+
+            participation = int(totalvotes / float(group.members.count()) * 100)
+            agreement = int(upvotes / float(totalvotes) * 100)
+
+            if participation > group.participation_threshold and agreement > group.agreement_threshold:
+                self.above_threshold = True
+
+            now = datetime.datetime.now()
+            if now > self.expiration_date:
+                self.expired = True
+                if self.above_threshold:
+                    self.passed = True
+            else:
+                if participation > group.agreement_threshold:
+                    self.passed = True
+            self.save()
+
+            if self.passed:
+                self.execute()
+
+    def isActionable(self):
+        return not (self.passed or self.expired)
 
 #=======================================================================================================================
 # Network Group

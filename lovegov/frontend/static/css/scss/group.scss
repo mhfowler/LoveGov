@@ -477,16 +477,16 @@ div.motion-modal {
     @include fontSize(22px);
   }
 
-  div.triangle-selector {
-    float:left;
-    margin:0px;
-    margin-left:4px;
-    margin-top:4px;
+  select.action-select {
+    width:170px;
+  }
+  select.modifier-select {
+      width:250px;
   }
 
   textarea.because {
     margin-top:10px;
-    width:400px;
+    width:440px;
     height:150px;
   }
 
@@ -500,6 +500,17 @@ div.motion-modal {
   }
 
   div.motion-info {
-    margin-top:40px;
+    p.info-item {
+        line-height: 7px;
+    }
+    p.info-item.first-item {
+      margin-top:5px;
+    }
+  }
+
+  a.create-motion-button {
+    display:block;
+    @include div-button-padding($radius:10px,$padding:10px,$font-size:18px,$color:white,$background-color:$red,$hover-color:$red-light);
+    text-align:center;
   }
 }
