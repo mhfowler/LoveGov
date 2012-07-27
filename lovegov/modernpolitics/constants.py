@@ -323,6 +323,13 @@ NOTIFY_MODIFIERS = {
 }
 
 
+GOVTRACK_VOTES = (
+    ('+','Yea'),
+    ('-','Nay'),
+    ('P','Present'),
+    ('0','Not Voting')
+)
+
 
 # Timedelta that it takes for aggregate notifications to go stale.
 STALE_TIME_DELTA = datetime.timedelta(14)

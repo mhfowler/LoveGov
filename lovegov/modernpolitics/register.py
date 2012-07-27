@@ -78,9 +78,9 @@ def createUser(name, email, password, type='userProfile',active=True):
 
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
-# - name, email, password
+# - name, email, passwordtype='userProfile'
 #-------------------------------------------------------------------------------------------------------------------
-def createUserHelper(control,name,type='userProfile',active=True):
+def createUserHelper(control,name,active=True):
     # new user profile
     userProfile = UserProfile()
 

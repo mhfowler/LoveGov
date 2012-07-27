@@ -2366,6 +2366,7 @@ class LegislationAction(LGModel):
                        ('E','Enacted'), ('S', 'Signed'), ('T', 'ToPresident') )
     datetime = models.DateTimeField(null=True)
     legislation = models.ForeignKey(Legislation, null=True, related_name='legislation_actions')
+    amendment = models.ForeignKey('LegislationAmendment', null=True, related_name='amendment_actions')
     committee = models.ForeignKey('Committee', null=True, related_name="legislation_activity")
     state = models.TextField(max_length=100, null=True)
     text = models.TextField(max_length=500, null=True)
@@ -2373,7 +2374,7 @@ class LegislationAction(LGModel):
     references = models.ManyToManyField('LegislationReference')
 
 
-    def parseGovtrack(self,XML,legislation):
+    def parseGovtrack(self,XML,legislation=None,amendment=None):
 
         # If action type has not been already, this action has type "action"
         if not self.action_type:
@@ -2381,10 +2382,16 @@ class LegislationAction(LGModel):
         # Get other standard fields
         self.datetime = parseDateTime(XML['datetime'])
         self.text = XML.text
-        self.legislation = legislation
 
         #Begin duplicate action filtering
-        already = LegislationAction.objects.filter( datetime=self.datetime , text=self.text , action_type=self.action_type , legislation=legislation )
+        already = LegislationAction.objects.filter( datetime=self.datetime , text=self.text , action_type=self.action_type )
+
+        if legislation:
+            self.legislation = legislation
+            already = already.filter( legislation = legislation )
+        if amendment:
+            self.amendment = amendment
+            already = already.filter( amendment = amendment )
 
         if XML.committee: # If this action has a committee
             committee = None # Set initial to None
@@ -2396,12 +2403,12 @@ class LegislationAction(LGModel):
                 if committee_name: # if there is a committee name
                     committee = Committee.lg.get_or_none(title=committee_name) # try to find that committee
             if committee: # if a committee was found
-                already.filter( committee = committee ) # Refine duplicate filtering
+                already = already.filter( committee = committee ) # Refine duplicate filtering
                 self.committee = committee # set it!
 
         #Get state
         if XML.has_key('state'):
-            already.filter( state = state ) # Refine duplicate filtering
+            already = already.filter( state = state ) # Refine duplicate filtering
             self.state = XML['state']
 
         action = self # Make the current action yourself
@@ -2430,7 +2437,7 @@ class LegislationCalendar(LegislationAction):
     under = models.CharField(max_length=100, null=True)
 
 
-    def parseGovtrack(self, XML,legislation):
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'C'
 
         if XML.has_key('number'):
@@ -2440,7 +2447,7 @@ class LegislationCalendar(LegislationAction):
         if XML.has_key('under'):
             self.under = XML['under']
 
-        super(LegislationCalendar, self).parseGovtrack(XML,legislation)
+        super(LegislationCalendar, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 
@@ -2459,7 +2466,7 @@ class LegislationVote(LegislationAction):
     suspension = models.BooleanField(default=False)
 
 
-    def parseGovtrack(self, XML,legislation):
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'V'
 
         if XML.has_key('how'):
@@ -2475,7 +2482,7 @@ class LegislationVote(LegislationAction):
         if XML.has_key('suspension'):
             self.suspension = ( 1 == int(XML['suspension']) )
 
-        super(LegislationVote, self).parseGovtrack(XML,legislation)
+        super(LegislationVote, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2488,9 +2495,9 @@ class LegislationToPresident(LegislationAction):
     pass
 
 
-    def parseGovtrack(self, XML,legislation):
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'T'
-        super(LegislationToPresident, self).parseGovtrack(XML,legislation)
+        super(LegislationToPresident, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2503,9 +2510,9 @@ class LegislationSigned(LegislationAction):
     pass
 
 
-    def parseGovtrack(self,XML,legislation):
+    def parseGovtrack(self,XML,legislation=None,amendment=None):
         self.action_type = 'S'
-        super(LegislationSigned, self).parseGovtrack(XML,legislation)
+        super(LegislationSigned, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2519,7 +2526,7 @@ class LegislationEnacted(LegislationAction):
     type = models.CharField(max_length=100, null=True)
 
 
-    def parseGovtrack(self, XML,legislation):
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'E'
 
         if enactedXML.has_key('number'):
@@ -2527,7 +2534,7 @@ class LegislationEnacted(LegislationAction):
         if enactedXML.has_key('type'):
             self.type = enactedXML['type']
 
-        super(LegislationEnacted, self).parseGovtrack(XML,legislation)
+        super(LegislationEnacted, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2545,65 +2552,24 @@ class LegislationReference(LGModel):
 # LegislationAmendment
 #
 #=======================================================================================================================
-class LegislationAmendment(LGModel):
-    session = models.IntegerField()
-    chamber = models.CharField(max_length=10)
-    number = models.IntegerField()
+class LegislationAmendment(Content):
+    # Identifiers
+    legislation= models.ForeignKey(Legislation, related_name="legislation_amendments")
+    congress_session = models.ForeignKey('CongressSession', related_name='session_amendments')
+    amendment_type = models.CharField(max_length=2)
+    amendment_number = models.IntegerField()
+    # Datetimes
     updated = models.DateTimeField(null=True)
-    legislation= models.ForeignKey(Legislation,null=True)
-    status_datetime = models.DateTimeField(null=True)
-    status = models.CharField(max_length=400)
-    sponsor = models.ForeignKey(UserProfile,null=True)
-    committee = models.ForeignKey('Committee',null=True)
     offered_datetime = models.DateField(null=True)
+    # Status
+    status_datetime = models.DateTimeField(null=True)
+    status_text = models.CharField(max_length=20)
+    # Sponsors
+    sponsor = models.ForeignKey(UserProfile,null=True)
+    # Other
     description = models.TextField(max_length=50000)
     purpose = models.TextField(max_length=5000)
     amends_sequence = models.IntegerField(null=True)
-
-    def saveXML(self,xml):
-
-        if xml.amendment:
-            if xml.amendment.has_key('session'):
-                self.session = int(xml.amendment['session'])
-            if xml.amendment.has_key('chamber'):
-                self.chamber = xml.amendment['chamber']
-            if xml.amendment.has_key('number'):
-                self.number = int(xml.amendment['number'])
-            if xml.amendment.has_key('updated'):
-                self.updated = parseDateTime(xml.amendment['updated'])
-        if xml.amends:
-            if xml.amends.has_key('type') and xml.amends.has_key('number'):
-                self.legislation = Legislation.objects.get(bill_type=xml.amends['type'],bill_number=int(xml.amends['number']),bill_session=int(xml.amendment['session']))
-            if xml.amends.has_key('sequence') and xml.amends['sequence'] != "":
-                self.amends_sequence = int(xml.amends['sequence'])
-        if xml.status:
-            if xml.status.has_key('datetime'):
-                self.status_datetime = parseDateTime(xml.status['datetime'])
-            self.status_text = xml.status.contents[0]
-        if xml.sponsor and xml.sponsor.has_key('id'):
-            self.sponsor_id = ElectedOfficial.objects.get(govtrack_id=int(xml.sponsor['id']))
-            #TODO committee
-        if xml.offered and xml.offered.has_key('datetime'):
-            self.offered_datetime = parseDateTime(xml.offered['datetime'])
-        if xml.description:
-            self.description = xml.description.contents[0]
-        if xml.purpose:
-            self.purpose = xml.purpose.contents[0]
-
-        already = LegislationAmendment.lg.get_or_none(session=self.session, chamber=self.chamber, number=self.number, updated=self.updated)
-        if not already:
-            self.save()
-        else:
-            return False
-
-#=======================================================================================================================
-#
-# RollOption
-#
-#=======================================================================================================================
-class RollOption(LGModel):
-    key = models.CharField(max_length=100)
-    text = models.CharField(max_length=100)
 
 
 #=======================================================================================================================
@@ -2612,77 +2578,29 @@ class RollOption(LGModel):
 #
 #=======================================================================================================================
 class CongressRoll(LGModel):
-    where = models.CharField(max_length=100)
+    # Basic Info
+    where = models.CharField(max_length=20)
     session = models.ForeignKey(CongressSession)
-    year = models.IntegerField()
     roll_number = models.IntegerField()
     source =  models.CharField(max_length=100)
+    # Times
     datetime = models.DateTimeField()
-    updated = models.DateTimeField()
-    aye = models.IntegerField()
-    nay = models.IntegerField()
-    nv = models.IntegerField()
-    present = models.IntegerField()
-    category = models.CharField(max_length=100)
-    type = models.CharField(max_length=250)
-    question = models.CharField(max_length=1000)
-    required = models.CharField(max_length=50)
-    result = models.CharField(max_length=100)
-    bill = models.ForeignKey(Legislation, null=True)
+    updated = models.DateTimeField(null=True)
+    # Voting Data
+    aye = models.IntegerField(default=-1)
+    nay = models.IntegerField(default=-1)
+    nv = models.IntegerField(default=-1)
+    present = models.IntegerField(default=-1)
+    # votes are stored with a foreign key
+    # Text Info
+    category = models.CharField(max_length=100, null=True)
+    type = models.CharField(max_length=100, null=True)
+    question = models.CharField(max_length=1000, null=True)
+    required = models.CharField(max_length=20, null=True)
+    result = models.CharField(max_length=80, null=True)
+    # Legislation
+    legislation = models.ForeignKey(Legislation, null=True)
     amendment = models.ForeignKey(LegislationAmendment, null=True)
-    options = models.ManyToManyField(RollOption)
-    voters = models.ManyToManyField(UserProfile, through='VotingRecord')
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML       the XML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, parsedXML):
-        self.where = parsedXML.roll['where']
-        self.session = CongressSessions.objects.get(session=int(parsedXML.roll['session']))
-        self.year = int(parsedXML.roll['year'])
-        self.roll_number = parsedXML.roll['roll']
-        self.source = parsedXML.roll['source']
-        self.datetime = parseDateTime(parsedXML.roll['datetime'])
-        self.updated = parseDateTime(parsedXML.roll['updated'])
-        self.aye = int(parsedXML.roll['aye'])
-        self.nay = int(parsedXML.roll['nay'])
-        self.nv = int(parsedXML.roll['nv'])
-        self.present = int(parsedXML.roll['present'])
-        self.category = parsedXML.category.contents[0]
-        self.type = parsedXML.type.contents[0]
-        self.question = parsedXML.question.contents[0]
-        self.required = parsedXML.required.contents[0]
-        self.result = parsedXML.result.contents[0]
-        if parsedXML.bill:
-            bill_type = parsedXML.bill['type']
-            bill_number = int(parsedXML.bill['number'])
-            bill_session = int(parsedXML.bill['session'])
-            if Legislation.objects.filter(bill_type=bill_type,bill_number=bill_number,bill_session=bill_session).exists():
-                bill =  Legislation.objects.get(bill_type=bill_type,bill_number=bill_number,bill_session=bill_session)
-                self.bill = bill
-                if parsedXML.amendment and parsedXML.amendment.has_key('number'):
-                    number = parsedXML.amendment['number']
-                    if "s" in number: chamber="s"
-                    else: chamber='h'
-                    number = int(number.replace("s",""))
-                    if LegislationAmendment.objects.filter(legislation=bill, chamber=chamber, amends_sequence=number):
-                        self.amendment = LegislationAmendment.objects.get(legislation=bill, chamber=chamber, amends_sequence=number)
-        self.save()
-        for option in parsedXML.findAll('option'):
-            if not RollOption.objects.filter(key=option['key']):
-                newOption = RollOption(key=option['key'], text=option.contents[0])
-                newOption.save()
-            self.options.add(RollOption.objects.get(key=option['key']))
-        for voterXML in parsedXML.findAll('voter'):
-            eoff = ElectedOfficial.lg.get_or_none(govtrack_id=int(voterXML['id']))
-            if eoff:
-                already = VotingRecord.lg.get_or_none(bill=self.bill,amendment=self.amendment,roll=self,electedofficial=eoff)
-                if not already:
-                    newVotingRecord = VotingRecord()
-                    newVotingRecord.setSaveAttributes(voterXML,self,self.bill,self.amendment)
 
 
 #=======================================================================================================================
@@ -2690,33 +2608,13 @@ class CongressRoll(LGModel):
 # VotingRecord
 #
 #=======================================================================================================================
-class VotingRecord(LGModel):
-    electedofficial = models.ForeignKey(UserProfile)
-    roll = models.ForeignKey(CongressRoll)
-    bill = models.ForeignKey(Legislation, null=True)
-    amendment = models.ForeignKey(LegislationAmendment, null=True)
-    votekey = models.CharField(max_length=100)
-    votevalue = models.CharField(max_length=100)
+class CongressVote(LGModel):
+    roll = models.ForeignKey(CongressRoll,related_name="votes")
+    voter = models.ForeignKey(UserProfile,related_name="congress_votes")
+    votekey = models.CharField(max_length=1)
+    votevalue = models.CharField(max_length=10)
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML       the XML from govtrack.us
-    #   @arg    legislation     the legislation which contains this committee
-    #   @arg    committeeXML    the XML for a committee tag from parsedXML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self,parsedXML,rollObj,legislation=None,amendment=None):
-        if ElectedOfficial.objects.filter(govtrack_id=int(parsedXML['id'])).exists():
-            self.electedofficial = ElectedOfficial.objects.get(govtrack_id=int(parsedXML['id']))
-            self.roll = rollObj
-            if legislation is not None:
-                self.bill = legislation
-            if amendment is not None:
-                self.amendment = amendment
-            self.votekey = parsedXML['vote']
-            self.votevalue = parsedXML['value']
-            self.save()
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3638,7 +3536,7 @@ class Committee(Group):
     def autoSave(self):
         self.group_type = 'C'
         self.save()
-        super(Committee).autoSave()
+        super(Committee, self).autoSave()
 
     def joinMember(self, user, congress_session, role=None, privacy='PUB'):
         committee_joined = CommitteeJoined.lg.get_or_none(user=user, group=self)

@@ -9,6 +9,7 @@
 
 # lovegov
 import traceback
+from lovegov.modernpolitics.register import createUser
 from bs4 import BeautifulSoup
 from django import db
 from lovegov.modernpolitics.helpers import *
@@ -768,29 +769,21 @@ def initializeCongress():
 def initializeCongressFile(parsedXML,image_root):
     session_number = int(parsedXML.people['session'])
     congress_tag = Tag.lg.get_or_none(name='congress') or Tag(name='congress')
-    current_session = CongressSession.lg.get_or_none(session=session_number) or CongressSession(session=session_number)
+
+    current_session = CongressSession.lg.get_or_none(session=session_number)
+    if not current_session:
+        current_session = CongressSession(session=session_number)
+        current_session.save()
 
     # For each person at this congress
     for personXML in parsedXML.findall('person'):
-        # name = first + " " + last
-        fname = personXML['firstname']
-        lname = personXML['lastname']
-        name = fname+ " " +lname
 
-        # get birthday
-        birthday = None
-        if 'birthday' in personXML:
-            birthday = parseDate(personXML['birthday'])
+        person = initializeXMLCongressman(personXML,image_root=image_root)
 
-        # Look for this person in the database
-        # TODO: make this refresh UserProfile information if the person is found.  Also search by govtrack_id first
-        if 'id' in personXML:
-            user_prof.govtrack_id = personXML['id']
 
-        person = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday)
 
-        if not person:
-            person = initializeXMLCongressman(name,personXML,image_root=image_root)
+        # Then update their profile
+
 
         # Get their role
         role = personXML.role
@@ -846,14 +839,39 @@ def initializeCongressFile(parsedXML,image_root):
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes a single congressman
 #-----------------------------------------------------------------------------------------------------------------------
-def initializeXMLCongressman(name,personXML,image_root=''):
-    from lovegov.modernpolitics.register import createUser
-    password = "congress"
-    email = name.replace(" ","_") + "_" + personXML['id']
+def updateXMLCongressman(personXML,image_root=''):
+    user_prof = None
 
-    print "initializing " + name.encode('utf-8','ignore')
-    congressControl = createUser(name,email,password)
-    user_prof = congressControl.user_profile
+    # name = first + " " + last
+    fname = personXML['firstname']
+    lname = personXML['lastname']
+    name = fname+ " " +lname
+
+    # get birthday
+    birthday = None
+    if 'birthday' in personXML:
+        birthday = parseDate(personXML['birthday'])
+
+    # Try to find this person by govtrack id
+    if 'id' in personXML:
+        user_prof = UserProfile.lg.get_or_none( govtrack_id = personXML['id'] )
+    # Otherwise search by name and birthday
+    if not user_prof:
+        user_prof = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday)
+
+    # Otherwise make a new person
+    if not user_prof:
+        password = "congress"
+        email = name.replace(" ","_") + "_" + personXML['id']
+
+        print "initializing " + name.encode('utf-8','ignore')
+        congressControl = createUser(name,email,password)
+        user_prof = congressControl.user_profile
+
+    # UPDATE USER PROFILE #
+    # ------------------- #
+    user_prof.first_name = personXML['firstname']
+    user_prof.last_name = personXML['lastname']
 
     image_path = image_root + str(electedofficial.govtrack_id) + ".jpeg"
     try:
@@ -905,7 +923,7 @@ def initializeCommittees():
             committee = initializeCommittee(committeeXML,congress_session)
 
             for subXML in committeeXML.findChildren('subcommittee',recursive=False):
-                sub = initializeSubCommittee(subXML,congress_session,committee)
+                initializeSubCommittee(subXML,congress_session,committee)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -930,9 +948,9 @@ def initializeCommittee(committeeXML,session):
     code = committeeXML.get('code')
 
     # Find this committee
-    committee = Committee.lg.get_or_none(name=name,committee_type=type,code=code)
+    committee = Committee.lg.get_or_none(title=name,committee_type=type,code=code)
     if not committee:
-        committee = Committee(name=name,committee_type=type,code=code)
+        committee = Committee(title=name,committee_type=type,code=code)
         committee.autoSave()
 
     for memberXML in committeeXML.findChildren('member',recursive=False):
@@ -963,9 +981,9 @@ def initializeSubCommittee(committeeXML,session,parent):
 
     code = committeeXML.get('code')
 
-    committee = Committee.lg.get_or_none(name=name,committee_type=type,code=code,parent=parent)
+    committee = Committee.lg.get_or_none(title=name,committee_type=type,code=code,parent=parent)
     if not committee:
-        committee = Committee(name=name,committee_type=type,code=code,parent=parent)
+        committee = Committee(title=name,committee_type=type,code=code,parent=parent)
         committee.autoSave()
 
     for memberXML in committeeXML.findChildren('member',recursive=False):
@@ -1043,17 +1061,22 @@ def parseLegislation(XML):
 
     # Update basic bill info
     updated = parseDateTime(XML.bill.get('updated'))
-    legislation.bill_updated = updated
-    legislation.state_date = parseDateTime(XML.state.get('datetime'))
-    legislation.state_text = XML.state.text
-    legislation.bill_summary = XML.summary.text
+    last_updated = legislation.bill_updated
 
-    # Find and add bill sponsor
-    sponsor_id = XML.sponsor.get('id')
-    if sponsor_id:
-        sponsor = UserProfile.lg.get_or_none(govtrack_id=sponsor_id)
-        if sponsor:
-            legislation.sponsor = sponsor
+    # If we don't know what update this is, or this is the most recent update
+    if not last_updated or not updated or (last_updated - updated).total_seconds() <= 0:
+        if updated:
+            legislation.bill_updated = updated
+        legislation.state_date = parseDateTime(XML.state.get('datetime'))
+        legislation.state_text = XML.state.text
+        legislation.bill_summary = XML.summary.text
+
+        # Find and add bill sponsor
+        sponsor_id = XML.sponsor.get('id')
+        if sponsor_id:
+            sponsor = UserProfile.lg.get_or_none(govtrack_id=sponsor_id)
+            if sponsor:
+                legislation.sponsor = sponsor
 
     # Parses all title tags
     if XML.titles:
@@ -1113,51 +1136,42 @@ def parseLegislation(XML):
         if not new_legislation_action:
             continue
 
-        new_legislation_action.parseGovtrack(actionXML,legislation)
+        new_legislation_action.parseGovtrack(actionXML,legislation=legislation)
 
-    for committee in XML.committees.findAll('committee'):
-        if committee.has_key('name') and committee['name'] != "":
-            newLegislationCommittee = LegislationCommittee()
-            newLegislationCommittee.setSaveAttributes(XML=XML, committeeXML=committee, legislation=legislation)
-    for term in XML.subjects.findAll('term'):
-        newLegislationSubject = LegislationSubjects()
-        newLegislationSubject.setSaveAttributes(termXML=term, legislation=legislation)
+    for committeeXML in XML.committees.findChildren('committee',recursive=False):
+        committee = none
+
+        code = committeeXML.get('code')
+        if code:
+            committee = Committee.lg.get_or_none(code=code)
+
+        subcommittee_name = committeeXML.get('subcommittee')
+        if not committee and subcommittee_name:
+            committee = Committee.lg.get_or_none(title=sub_committee_name)
+
+        title = committeeXML.get('name')
+        if not committee and title:
+            committee = Committee.lg.get_or_none(title=title)
+
+        if committee:
+            legislation.committees.add(committee)
+
+    for termXML in XML.subjects.findChildren('term',recursive=False):
+        name = termXML.get('name')
+        if name:
+            subject = LegislationSubject.lg.get_or_none(name=name)
+            if not subject:
+                subject = LegislationSubject(name=name)
+                subject.save()
+            legislation.bill_subjects.add(subject)
 
     # Save the legislation
     legislation.save()
+    return ''
 
-def initializeLegislationFast():
-    total = 0
-    acceptable_files = []
-    for legislation in IMPORTANT_LEGISLATION:
-        path = '/data/govtrack/' + legislation[0] + "/bills/" + legislation[1] + ".xml"
-        acceptable_files.append(path)
-
-    for num in range(109,113):
-        filePath = '/data/govtrack/' + str(num) + "/bills/"
-        fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
-        count = 1
-        for infile in fileListing:
-            full_file_path = filePath + infile
-            if full_file_path in acceptable_files:
-                print 'AMERICA - FUCK YEAH'
-                db.reset_queries()
-                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                fileXML = open(full_file_path)
-                parsedXML = BeautifulStoneSoup(fileXML)
-                newLegislation = Legislation()
-                try:
-                    newLegislation.setSaveAttributes(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-                    count += 1
-            else:
-                print total
-
-            total+=1
-
+#-----------------------------------------------------------------------------------------------------------------------
+# Counts the number of govtrack legislation files there are
+#-----------------------------------------------------------------------------------------------------------------------
 def countLegislation():
     count = 0
     for num in range(109,113):
@@ -1165,82 +1179,148 @@ def countLegislation():
         count += filecount(filePath)
     return count
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize each of the legislation amendment files
+# RETURN: a list of tuples of unparsed legislation amendment file paths and error messages
+#-----------------------------------------------------------------------------------------------------------------------
 def initializeLegislationAmendments():
+    missed_files = []
+    print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
+          "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    total = 0
-    already = LegislationAmendment.objects.all().count() - 5
-
-    for num in range(109,113):
-        filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
-        fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
-        count = 1
-        for infile in fileListing:
-            #if total > already:
-            db.reset_queries()
-            #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-            if ".xml" in infile:
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
-                newLegislation = LegislationAmendment()
-                try:
-                    newLegislation.saveXML(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-                count+=1
-                print "success: " + str(total)
-
-            else:
-                print total
-
-            total += 1
-
-
-def initializeLegislationAmendmentsFast():
-    total = 0
-    acceptable_files = []
-
-    for amend in IMPORTANT_AMENDMENTS:
-        path = '/data/govtrack/' + amend[0] + "/bills.amdt/" + amend[1] + ".xml"
-        acceptable_files.append(path)
-
-    for num in range(109,113):
-        filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
-        fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
-        count = 1
-        for infile in fileListing:
-            full_file_path = filePath + infile
-            if full_file_path in acceptable_files:
-                print 'do it now'
-                db.reset_queries()
-                #print "parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                if ".xml" in infile:
-                    fileXML = open(full_file_path)
-                    parsedXML = BeautifulStoneSoup(fileXML)
-                    newLegislation = LegislationAmendment()
-                    try:
-                        newLegislation.saveXML(parsedXML)
-                    except:
-                        print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                        traceback.print_exc()
-                    count+=1
-                    print "success: " + str(total)
-
-            else:
-                print total
-
-            total += 1
-
-
-def countLegislationAmendments():
     count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
-        count += filecount(filePath)
-    return count
+        fileListing = os.listdir(filePath)
 
+        for infile in fileListing:
+            count += 1
+            db.reset_queries()
+
+            fileXML = open(filePath + infile)
+            parsedXML = BeautifulSoup(fileXML)
+            result = parseLegislationAmendment(parsedXML)
+
+            if result is not '':
+                print "[ERROR]: " + result + '.  Amendment was not initialized'
+                missed_files.append((filePath + infile,result))
+
+            if count%100 is 0:
+                print str(count) + " files checked"
+
+    return missed_files
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize one legislation amendment object
+# RETURN: an error message string.  Returns an empty string on success
+#-----------------------------------------------------------------------------------------------------------------------
+def parseLegislationAmendment(XML):
+    # Basic tag check
+    if not XML.amendment:
+        return 'Missing amendment tag'
+    if not XML.amends:
+        return 'Missing amends tag'
+
+    # Get this session number
+    session_num = XML.amendment.get('session')
+    if not session_num:
+        return 'Missing session in amendment tag'
+    # and get the session
+    session = CongressSession.lg.get_or_none(session=session_num)
+    if not session:
+        session = CongressSession(session=session_num)
+        session.save()
+    # Then get the type and number
+    type = XML.amendment.get('chamber')
+    number = XML.amendment.get('number')
+    if not type or not number:
+        return 'Missing chamber or number in amendment tag'
+
+    #Get legislation identifiers
+    bill_type = XML.amends.get('type')
+    bill_number = XML.amends.get('number')
+    if not bill_type or bill_number:
+        return 'Missing type or number in amends tag'
+    # Find legislation
+    legislation = Legislation.lg.get_or_none(bill_type=bill_type,bill_number=bill_number,session=session)
+    if not legislation:
+        return 'Missing legislation with ID ' + str(session_num) + '-' + bill_type + bill_number
+
+    # Find or initialize the amendment
+    amendment = LegislationAmendment.lg.get_or_none(session=session,type=type,number=number)
+    if not amendment:
+        amendment = LegislationAmendment(session=session,type=type,number=number,legislation=legislation)
+
+    # Get update dates
+    updated = None
+    if XML.amendment.has_key('updated'):
+        updated = parseDateTime(XML.amendment['updated'])
+    last_updated = None
+    if amendment.updated:
+        last_updated = amendment.updated
+
+    # If we don't know what update this is, or this is the most recent update
+    if not last_updated or not updated or (last_updated - updated).total_seconds() <= 0:
+        # Update all fields!
+        if updated:
+            amendment.updated = updated
+
+        if XML.amends.has_key('sequence'):
+            amendment.sequence = XML.amends['sequence']
+
+        if XML.status:
+            if XML.status.has_key('datetime'):
+                self.status_datetime = parseDateTime(XML.status['datetime'])
+            self.status_text = XML.status.text
+
+        if XML.sponsor and XML.sponsor.has_key('id'):
+            sponsor = UserProfile.lg.get_or_none(govtrack_id=int(XML.sponsor['id']))
+            if sponsor:
+                amendment.sponsor = sponsor
+
+        if XML.offered and XML.offered.has_key('datetime'):
+            self.offered_datetime = parseDateTime(XML.offered['datetime'])
+
+        if XML.description:
+            self.description = XML.description.text
+        if XML.purpose:
+            self.purpose = XML.purpose.text
+
+    # Parses all actions (and sub actions)
+    for actionXML in XML.actions.findChildren(recursive=False):
+        # Get basic action data
+        name = actionXML.name
+        new_amendment_action = None
+
+        if name is 'action':
+            new_amendment_action = LegislationAction()
+        elif name is 'calendar':
+            new_amendment_action = LegislationCalendar()
+        elif name is 'vote':
+            new_amendment_action = LegislationVote()
+        elif name is 'vote-aux':
+            new_amendment_action = LegislationVote()
+        elif name is 'topresident':
+            new_amendment_action = LegislationToPresident()
+        elif name is 'signed':
+            new_amendment_action = LegislationSigned()
+        elif name is 'enacted':
+            new_amendment_action = LegislationAction()
+
+        if not new_amendment_action:
+            continue
+
+        new_amendment_action.parseGovtrack(actionXML,amendment=amendment)
+
+    amendment.save()
+    return ''
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Counts the number of govtrack legislation amendment files there are
+#-----------------------------------------------------------------------------------------------------------------------
 def countXMLAmendments():
     count = 0
     for num in range(109,113):
@@ -1255,59 +1335,174 @@ def countXMLAmendments():
                 pass
     return count
 
-# Initialize Voting Records
+#-----------------------------------------------------------------------------------------------------------------------
+# Initializes Voting Record files
+#-----------------------------------------------------------------------------------------------------------------------
 def initializeVotingRecord():
-    total = 0
-    already = LegislationAmendment.objects.all().count() - 5
+    missed_files = []
+    print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
+          "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    for num in range(109,113):
-        total += 1
-        if total > already:
-            filePath = '/data/govtrack/' + str(num) + "/rolls/"
-            fileListing = os.listdir(filePath)
-            fileCount = filecount(filePath)
-            for infile in fileListing:
-                db.reset_queries()
-                fileXML = open(filePath + infile)
-                parsedXML = BeautifulStoneSoup(fileXML)
-                congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
-                if not congressRoll:
-                    congressRoll = CongressRoll()
-                try:
-                    congressRoll.setSaveAttributes(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
-
-def initializeVotingRecordFast():
     count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/rolls/"
         fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
+
         for infile in fileListing:
             count += 1
-            print count
             db.reset_queries()
+
             fileXML = open(filePath + infile)
-            parsedXML = BeautifulStoneSoup(fileXML)
+            parsedXML = BeautifulSoup(fileXML)
+            result = parseLegislationAmendment(parsedXML)
 
-            bill_tuple = None
-            if parsedXML.bill:
-                bill_tuple = (parsedXML.bill['session'],parsedXML.bill['type'] + parsedXML.bill['number'])
+            if result is not '':
+                print "[ERROR]: " + result + '.  CongressRoll was not initialized'
+                missed_files.append((filePath + infile,result))
 
-            if bill_tuple in IMPORTANT_LEGISLATION or bill_tuple in IMPORTANT_AMENDMENTS:
+            if count%500 is 0:
+                print str(count) + " files checked"
 
-                congressRoll = CongressRoll.lg.get_or_none( datetime=parseDateTime(parsedXML.roll['datetime']) , roll_number=parsedXML.roll['roll'] )
-                if not congressRoll:
-                    congressRoll = CongressRoll()
-                try:
-                    congressRoll.setSaveAttributes(parsedXML)
-                except:
-                    print "ERROR parsing " + infile + " " + str(count) + '/' + str(fileCount)
-                    traceback.print_exc()
+    return missed_files
 
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Parses a CongressRoll
+#-----------------------------------------------------------------------------------------------------------------------
+def parseCongressRoll(XML):
+    # Get identifying aspects
+    where = XML.roll.get('where')
+    session_number = XML.roll.get('session')
+    roll_number = XML.roll.get('roll')
+    if not where or not roll_number or not session_number:
+        return 'Missing house location (where), session number, or roll number'
+
+    if not 'datetime' in XML.roll:
+        return 'Missing datetime'
+    datetime = parseDateTime(XML.roll['datetime'])
+
+    # Get session
+    session = CongressSessions.lg.get_or_none(session=session_number)
+    if not session:
+        session = CongressSession(session=session_number)
+        session.save()
+
+    # Initialize or find congress roll
+    congress_roll = CongressRoll.lg.get_or_none(session=session,where=where,roll_number=roll_number,datetime=datetime)
+    if not congress_roll:
+        congress_roll = CongressRoll(session=session,where=where,roll_number=roll_number,datetime=datetime)
+
+    # Get the bill for this roll
+    if XML.bill:
+        bill_session_num = XML.bill.get('session')
+
+        if bill_session_num:
+            bill_session = CongressSession.lg.get_or_none(session=bill_session_num)
+            if not bill_session:
+                bill_session = CongressSession(session=bill_session_num)
+                bill_session.save()
+
+            bill_type = XML.bill.get('type')
+            bill_number = XML.bill.get('number')
+
+            if bill_type and bill_number and bill_session:
+                legislation = Legislation.lg.get_or_none(bill_type=bill_type,bill_number=bill_number,congress_session=bill_session)
+                if legislation:
+                    congress_roll.legislation = legislation
+
+    # Get the amendment for this roll
+    if XML.amendment:
+        amendment_session_num = XML.amendment.get('session')
+
+        if amendment_session_num:
+            amendment_session = CongressSession.lg.get_or_none(session=amendment_session_num)
+            if not amendment_session:
+                amendment_session = CongressSession(session=amendment_session_num)
+                amendment_session.save()
+
+            amendment_type = None
+            amendment_number = None
+            unparsed_type = XML.amendment.get('number')
+            if unparsed_type:
+                i = 0
+                while unparsed_type[i].isdigit():
+                    i += 1
+                amendment_type = unparsed_type[:i]
+                amendment_number = unparsed_type[i:]
+
+            if amendment_type and amendment_number and amendment_session:
+                amendment = LegislationAmendment.lg.get_or_none(amendment_type=amendment_type,amendment_number=amendment_number,congress_session=amendment_session)
+                if amendment:
+                    congress_roll.amendment = amendment
+
+    updated = None
+    if 'updated' in XML.roll:
+        updated = parseDateTime(XML.roll['updated'])
+    last_updated = congress_roll.updated
+
+    # Update things if this is not an older version
+    if not last_updated or not updated or (last_updated - updated).total_seconds() <= 0:
+        if updated:
+            congress_roll.updated = updated
+        if 'source' in XML.roll:
+            congress_roll.source = XML.roll['source']
+        if 'aye' in XML.roll:
+            congress_roll.aye = int(XML.roll['aye'])
+        if 'nay' in XML.roll:
+            congress_roll.nay = int(XML.roll['nay'])
+        if 'nv' in XML.roll:
+            congress_roll.nv = int(XML.roll['nv'])
+        if 'present' in XML.roll:
+            congress_roll.present = int(XML.roll['present'])
+        if 'category' in XML.roll:
+            congress_roll.category = XML.category.text
+        if 'type' in XML.roll:
+            congress_roll.type = XML.type.text
+        if 'question' in XML.roll:
+            congress_roll.question = XML.question.text
+        if 'required' in XML.roll:
+            congress_roll.required = XML.required.text
+        if 'result' in XML.roll:
+            congress_roll.result = XML.result.text
+
+    congress_roll.save()
+
+    for voterXML in XML.roll.findChildren('voter'):
+        voter_id = voterXML.get('id')
+        if not voter_id:
+            print "[WARNING]: Voter tag without ID.  Vote not parsed.  Congress Roll #" + str(roll_number)
+            continue
+
+        voter = UserProfile.lg.get_or_none(govtrack_id=voter_id)
+        if not voter:
+            print "[WARNING]: Voter not found in database.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
+            continue
+
+        key = voterXML.get('vote')
+        value = voterXML.get('value')
+        # If only key or value is instantiated
+        if bool(key) != bool(value):
+            # Replace the other value with the corresponding value
+            for (k,v) in GOVTRACK_VOTES:
+                if key is k:
+                    value = v
+                elif value is v:
+                    key = k
+
+        if not key and not value:
+            print "[WARNING]: Voter tag without vote or value.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
+            continue
+
+        vote = CongressVote.lg.get_or_none(roll=congress_roll,key=key,value=value,voter=voter)
+        if not vote:
+            vote = CongressVote(roll=congress_roll,key=key,value=value,voter=voter)
+            vote.save()
+
+
+
+#-------------------------------------------------------------------------------------------------------------------
+# A Function that counts all the voting record files
+#-------------------------------------------------------------------------------------------------------------------
 def countVotingRecords():
     count = 0
     for num in range(109,113):
