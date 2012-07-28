@@ -5,3 +5,6 @@ PROJECT="/srv/live/lovegov"
 
 # update feeds
 $RUN python $PROJECT/scripts/scheduled.py update sitefeeds
+
+# update index
+$RUN python $PROJECT/live_manage.py update_index --remove

@@ -1,1 +1,1 @@
-mysql --user=root --password=lglglg12 dev < $1
+/srv/server/scripts/mysql/remote_mysql.sh lgdb < $1

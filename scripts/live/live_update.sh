@@ -1,7 +1,7 @@
 # git pull
 cd /srv/live
 sudo git pull
-# lgsass
+#sass
 /srv/server/scripts/live/live_run.sh python /srv/live/lovegov/bash/sasscompile.py
 # collect static
 sudo python /srv/live/lovegov/live_manage.py collectstatic --noinput

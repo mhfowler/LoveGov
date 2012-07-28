@@ -23,4 +23,4 @@ cp -r /media/live/* /media/dev/* --force
 # rebuild search indexi
 echo "searchindex?"
 #read \n
-$PRE/scripts/dev/dev_searchindex.sh
+$PRE/scripts/dev/dev_index.sh

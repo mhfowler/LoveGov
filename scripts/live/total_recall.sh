@@ -1,4 +1,6 @@
 echo "dump db"
-mysqldump --host=lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com --user=root --password=lglglg12 --complete-insert lglive > $1/db.sql
+/srv/server/scripts/live/live_backup.sh $1/db.sql
 echo "backup folder"
-sudo cp -r /srv/live/lovegov $1/lovegov
+sudo cp -r /srv/live $1/code
+echo "backup media"
+sudo cp -r /media/live $1/media
