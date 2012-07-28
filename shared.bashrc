@@ -13,6 +13,7 @@ alias setaccess="sudo chgrp -R access"
 alias serverdir="cd $PRE"
 alias scriptsdir="cd $PRE/scripts"
 alias serverupdate="cd $PRE/scripts && git pull && cd -"
+alias remotemysql="$PRE/scripts/mysql/remote_mysql.sh"
 
 # apache
 alias apacheconfig="cd $PRE/apache"
@@ -39,7 +40,7 @@ alias devlog="cd /log/dev"
 
 # live
 alias livedir="cd /srv/live"
-alias livepython="sudo $PRE/scripts/live/live_run.sh python -i /srv/live/autopython.py"
+alias livepython="sudo $PRE/scripts/live/live_run.sh bpython -i /srv/live/autopython.py"
 alias livescript="sudo $PRE/scripts/live/live_run.sh python /srv/live/lovegov/scripts/scheduled.py"
 alias liverun="sudo $PRE/scripts/live/live_run.sh"
 alias livebackup="sudo $PRE/scripts/live/live_backup.sh"

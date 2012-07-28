@@ -1,1 +1,1 @@
-mysqldump live -u root -p --complete-insert --no-create-info --ignore-table=live.django_site --ignore-table=live.auth_permission --ignore-table=live.django_content_type > $1
+mysqldump --host=lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com --user=root --password=lglglg12 --complete-insert --no-create-info --ignore-table=live.django_site --ignore-table=live.auth_permission --ignore-table=live.django_content_type lglive > $1

@@ -1,2 +1,2 @@
-drop database dev;
-create database dev;
+drop database lgdb;
+create database lgdb;

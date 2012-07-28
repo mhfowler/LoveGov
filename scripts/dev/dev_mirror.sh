@@ -3,22 +3,17 @@ PRE="/srv/server"
 # reset db
 echo "cleardb?"
 #read \n
-mysql --user=root --password=lglglg12 < $PRE/scripts/mysql/dev_reset.sql 
+$PRE/scripts/mysql/remote_mysql.sh < $PRE/scripts/mysql/dev_reset.sql 
 
-# dump questions and topics from live db
+# dump all data from live
 echo "dumpdata?"
 #read \n
-/srv/server/scripts/live/live_migrate.sh /dump/live_to_dev.sql
-
-# syncdb
-echo "syncdb?"
-#read \n
-python /srv/dev/lovegov/dev_manage.py syncdb
+/srv/server/scripts/live/live_backup.sh /dump/live_to_dev.sql
 
 # load data from dump
 echo "loaddata?"
 #read \n
-mysql --user=root --password=lglglg12 dev < /dump/live_to_dev.sql
+$PRE/scripts/mysql/remote_mysql.sh lgdb < /dump/live_to_dev.sql
 
 # copy over media files
 echo "copymedia?"
