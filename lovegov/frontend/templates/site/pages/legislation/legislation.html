@@ -1,14 +1,14 @@
 {% extends 'site/frame/frame.html' %}
-
+e
 {% block content %}
 
 <div id="content-leg-div">
 
-Please select a congressional session.
+<h3>Please select a congressional session.</h3>
 
 <ul>
 	{% for session in sessions %}
-	<li><a href='/legislation/{{session}}/'>{{session}}th Congress</a></li>
+	<li><a href='/legislation/{{session}}/'><h3>{{session}}th Congress</h3></a></li>
 	{% empty %}
 	<li>Congressional session data is unavailable.</li>
 	{% endfor %}

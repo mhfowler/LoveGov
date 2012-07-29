@@ -10,13 +10,13 @@ PROJECT_PATH = settings.PROJECT_PATH
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.sqlite3',
-        'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
-        'USER':      '',
-        'PASSWORD':  '',
-        'HOST':     '',
-        'PORT':    '',
-    },
+         'ENGINE':   'django.db.backends.mysql',
+        'NAME':     'lgdb',
+        'USER':     'root',
+        'PASSWORD': 'lglglg12',
+        'HOST':     'lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com',
+        'PORT':     '3306',
+        },
 }
 
 STATIC_ROOT = settings.STATIC_ROOT
