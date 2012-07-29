@@ -3,9 +3,9 @@ e
 {% block content %}
 
 <div id="content-leg-div">
-
-<h3>Please select a congressional session.</h3>
-
+    <div class="select-prompt">
+        <h3>Please select a congressional session.</h3>
+    </div>
 <ul>
 	{% for session in sessions %}
 	<li><a href='/legislation/{{session}}/'><h3>{{session}}th Congress</h3></a></li>
