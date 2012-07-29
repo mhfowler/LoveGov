@@ -6,8 +6,11 @@ div#content-leg-div {
 	font-family: "Helvetica";
 }
 
-div#content-leg-div div.select-prompt
-h3 {
-   font-size: 21px;
+div#content-leg-div.select-prompt {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    font-family: "Helvetica";
 }
 

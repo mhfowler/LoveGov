@@ -6,13 +6,13 @@ e
     <div class="select-prompt">
         <h3>Please select a congressional session.</h3>
     </div>
-<ul>
-	{% for session in sessions %}
-	<li><a href='/legislation/{{session}}/'><h3>{{session}}th Congress</h3></a></li>
-	{% empty %}
-	<li>Congressional session data is unavailable.</li>
-	{% endfor %}
-</ul>
+    <ul>
+        {% for session in sessions %}
+        <li><a href='/legislation/{{session}}/'><h3>{{session}}th Congress</h3></a></li>
+        {% empty %}
+        <li>Congressional session data is unavailable.</li>
+        {% endfor %}
+    </ul>
 
 </div>
 
