@@ -751,7 +751,8 @@ def vote(request, vals):
         value = content.like(user=user, privacy=privacy)
     elif vote == -1:
         value = content.dislike(user=user, privacy=privacy)
-    to_return = {'my_vote':value, 'status':content.status}
+    motion = int(content.type == 'M')
+    to_return = {'my_vote':value, 'status':content.status, 'motion':motion}
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
