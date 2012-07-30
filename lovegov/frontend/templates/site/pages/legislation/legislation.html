@@ -3,16 +3,16 @@
 {% block content %}
 
 <div id="content-leg-div">
-
-Please select a congressional session.
-
-<ul>
-	{% for session in sessions %}
-	<li><a href='/legislation/{{session}}/'>{{session}}th Congress</a></li>
-	{% empty %}
-	<li>Congressional session data is unavailable.</li>
-	{% endfor %}
-</ul>
+    <div class="select-prompt">
+        <a href="www.google.com">Please select a congressional session.</a>
+    </div>
+    <ul>
+        {% for session in sessions %}
+        <li><a href='/legislation/{{session}}/'><h3>{{session}}th Congress</h3></a></li>
+        {% empty %}
+        <li>Congressional session data is unavailable.</li>
+        {% endfor %}
+    </ul>
 
 </div>
 

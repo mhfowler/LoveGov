@@ -10,13 +10,13 @@ PROJECT_PATH = settings.PROJECT_PATH
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.sqlite3',
+         'ENGINE':  'django.db.backends.sqlite3',
         'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
-        'USER':      '',
-        'PASSWORD':  '',
+        'USER':     '',
+        'PASSWORD': '',
         'HOST':     '',
-        'PORT':    '',
-    },
+        'PORT':     '',
+        },
 }
 
 STATIC_ROOT = settings.STATIC_ROOT

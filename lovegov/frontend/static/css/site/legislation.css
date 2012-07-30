@@ -1,7 +1,17 @@
-#content-leg-div {
-	width: 1000px;
+div#content-leg-div {
+    background-color: blue;
+    width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 40px;
 	font-family: "Helvetica";
 }
+
+div#content-leg-div.select-prompt {
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    font-family: "Helvetica";
+}
+

@@ -710,7 +710,6 @@ class Content(Privacy, LocationLevel):
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
                 self.creator.notify(action)
-            return my_vote.value
         else:
             # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -3445,7 +3444,8 @@ class Group(Content):
     def getMotionExpiration(self):
         now = datetime.datetime.now()
         delta = datetime.timedelta(days=self.motion_expiration)
-        return  now + delta
+        expiration = now + delta
+        return  expiration
 
     def coup(self, government_type):
         self.government_type = government_type
@@ -3463,7 +3463,7 @@ class Motion(Content):
     group = models.ForeignKey(Group)
     motion_type = models.CharField(max_length=30, choices=MOTION_CHOICES, default='other')
     full_text = models.TextField()
-    expiration_date = models.DateTimeField(auto_now_add=True)
+    expiration_date = models.DateTimeField()
     passed = models.BooleanField(default=False)
     expired = models.BooleanField(default=False)
     above_threshold = models.BooleanField(default=False)
@@ -3479,7 +3479,8 @@ class Motion(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
         self.type='M'
-        self.expiration_date = self.group.getMotionExpiration()
+        expiration_date = self.group.getMotionExpiration()
+        self.expiration_date = expiration_date
         self.in_feed = True
         self.title = self.getTitle()
         self.summary = self.full_text[:100]
@@ -3535,7 +3536,8 @@ class Motion(Content):
                 self.above_threshold = True
 
             now = datetime.datetime.now()
-            if now > self.expiration_date:
+            expiration_date = self.expiration_date
+            if now > expiration_date:
                 self.expired = True
                 if self.above_threshold:
                     self.passed = True
@@ -4308,6 +4310,7 @@ class BlogEntry(LGModel):
 
 
 
+
 ########################################################################################################################
 ########################################################################################################################
 #  Deprecated
@@ -4349,8 +4352,6 @@ class LoveGov(LGModel):
         self.average_rating = int((sum/count)*10)
         self.save()
 
-
-
 #=======================================================================================================================
 # Each setting has a name and value, for any given setting, there should be only one default=True
 # this model is in addition to LoveGov, to make it easy to add settings after launch.. without
@@ -4377,8 +4378,5 @@ class qOrdered(LGModel):
 class QuestionOrdering(LGModel):
     alias = models.CharField(max_length=30)
     questions = models.ManyToManyField(qOrdered)
-
-
-
 
 
