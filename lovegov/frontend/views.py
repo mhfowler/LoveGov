@@ -771,6 +771,11 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = all_members[:num_members]
     vals['num_members'] = num_members
 
+    members = list( all_members )
+    for admin in admins:
+        members.remove(admin)
+    vals['normal_members'] = members
+
     vals['num_group_members'] = group.num_members
 
     followers = list(viewer.getFollowMe())
