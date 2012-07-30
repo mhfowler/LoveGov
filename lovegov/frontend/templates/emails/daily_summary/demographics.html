@@ -1,5 +1,5 @@
 {% with num_sessions=user.getNumSessions %}
-    <p {% if num_sessions==1 %} style="color:red" {% endif %}> ----------- Daily Usage for <br>
+    <p {% if num_sessions == 1 %} style="color:red" {% endif %}> ----------- daily usage for, <br>
         id: {{ user.id }} <br>
         session #: {{ num_sessions }} <br>
         session start: {{ session.getSessionStart }} <br>
