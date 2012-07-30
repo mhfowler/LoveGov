@@ -3,17 +3,45 @@
 {% block content %}
 
 <div id="content-leg-div">
-    <div class="select-prompt">
-        <a href="www.google.com">Please select a congressional session.</a>
+    <div class="content-filter-box menu_toggle">
+        <p><h3>filter legislation by:</h3></p>
     </div>
-    <ul>
+<div class="column1">
+    <p><h4>session</h4></p>
+    <ul class="leg-filter-dropdown drop_down">
         {% for session in sessions %}
-        <li><a href='/legislation/{{session}}/'><h3>{{session}}th Congress</h3></a></li>
-        {% empty %}
-        <li>Congressional session data is unavailable.</li>
+            <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
         {% endfor %}
     </ul>
-
+</div>
+<div class="column2">
+    <p><h4>session</h4></p>
+    <ul class="leg-filter-dropdown drop_down">
+        {% for session in sessions %}
+            <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="column3">
+    <p><h4>session</h4></p>
+    <ul class="leg-filter-dropdown drop_down">
+        {% for session in sessions %}
+            <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="column4">
+    <p><h4>session</h4></p>
+    <ul class="leg-filter-dropdown drop_down">
+        {% for session in sessions %}
+            <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
+        {% endfor %}
+    </ul>
 </div>
 
+</div>
+    
 {% endblock %}
+
+
+
