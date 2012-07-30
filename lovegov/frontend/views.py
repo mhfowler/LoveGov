@@ -882,7 +882,6 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
-def legislationFilter():
 
 
 #-----------------------------------------------------------------------------------------------------------------------
