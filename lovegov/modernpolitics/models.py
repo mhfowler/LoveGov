@@ -4738,6 +4738,7 @@ class BlogEntry(LGModel):
 
 
 
+
 ########################################################################################################################
 ########################################################################################################################
 #  Deprecated
@@ -4779,8 +4780,6 @@ class LoveGov(LGModel):
         self.average_rating = int((sum/count)*10)
         self.save()
 
-
-
 #=======================================================================================================================
 # Each setting has a name and value, for any given setting, there should be only one default=True
 # this model is in addition to LoveGov, to make it easy to add settings after launch.. without
@@ -4807,8 +4806,5 @@ class qOrdered(LGModel):
 class QuestionOrdering(LGModel):
     alias = models.CharField(max_length=30)
     questions = models.ManyToManyField(qOrdered)
-
-
-
 
 

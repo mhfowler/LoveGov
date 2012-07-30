@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
+from lovegov.modernpolitics.register import *
 from lovegov.modernpolitics.images import *
 
 from haystack.query import SearchQuerySet
