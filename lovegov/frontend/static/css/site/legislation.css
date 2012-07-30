@@ -8,15 +8,27 @@ div#content-leg-div {
 	font-family: "Helvetica";
 }
 
-div#content-leg-div.content-filter-box {
+div#content-leg-div.content-filter-box.menu_toggle {
+    background-color: black;
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
     border-radius: 10px;
-    border-color: blue;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
+}
+
+div#content-leg-div.content-filter-box.menu_toggle.hovered {
+    background-color: #8a2be2;
+}
+
+div#content-leg-div.content-filter-box.menu_toggle.hovered.clicked {
+    background-color: blue;
+}
+
+div#content-leg-div.content-filter-box.menu_toggle.clicked {
+    background-color:green;
 }
 
 div#content-leg-div.column1 {
