@@ -50,13 +50,13 @@ def createTwitterUser(name, email, vals={}):
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.
 # - name, email, password
 #-------------------------------------------------------------------------------------------------------------------
-def createUser(name, email, password, type='userProfile',active=True):
+def createUser(name, email, password,active=True):
     if not ControllingUser.objects.filter(username=email):
         control = ControllingUser.objects.create_user(username=email, email=email, password=password)
         control.is_active = active
         control.save()
         logger.debug("created control: " + control.email)
-        user_profile = createUserHelper(control=control, name=name, type=type, active=active)
+        user_profile = createUserHelper(control=control, name=name, active=active)
         logger.debug("created userpof: " + user_profile.get_name())
         control.user_profile = user_profile
         control.save()
@@ -67,14 +67,14 @@ def createUser(name, email, password, type='userProfile',active=True):
             print ("deletes! " + email)
             c = ControllingUser.objects.get(username=email)
             c.delete()
-            return createUser(name, email, password, type, active)
+            return createUser(name, email, password, active)
         else:
             print ("email duplicate!" + email)
             if splitted[1] == "lovegov.com":
                 print ("deletes! " + email)
                 c = ControllingUser.objects.get(username=email)
                 c.delete()
-                return createUser(name, email, password, type, active)
+                return createUser(name, email, password, active)
 
 #-------------------------------------------------------------------------------------------------------------------
 # creates a new userprofile from name, email and password, along with controlling user to manage this profile.

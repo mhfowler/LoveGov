@@ -93,6 +93,7 @@ def initializeLoveGov():
     initializeLoveGovGroup()
     initializeLoveGovUser()
     initializeTopicImages()
+    initializeParties()
     # filters
     initializeBestFilter()
     initializeNewFilter()
@@ -576,7 +577,7 @@ def initializeQ():
 
 def initializeGeorgeBush():
     from lovegov.modernpolitics.register import createUser
-    normal = createUser(name="George Bush", email="george@gmail.com", password="george", type="politician")
+    normal = createUser(name="George Bush", email="george@gmail.com", password="george")
     normal.user_profile.confirmed = True
     normal.user_profile.save()
     print "initialized: George Bush"
@@ -750,13 +751,12 @@ def parseDate(date):
 # Begins Congress Initialization
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongress():
-    for num in range(112,108,-1):
+    for num in range(112,111,-1):
         print num
         # Get/open current XML file
         filepath = '/data/govtrack/' + str(num) + "/people.xml"
-        image_root = '/data/govtrack/image'
-        fileXML = open(filepath)
-        parsedXML = BeautifulSoup(fileXML)
+        image_root = '/data/govtrack/image/'
+        parsedXML = BeautifulSoup(open(filepath))
         initializeCongressFile(parsedXML,image_root)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -764,7 +764,10 @@ def initializeCongress():
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongressFile(parsedXML,image_root):
     session_number = int(parsedXML.people['session'])
-    congress_tag = Tag.lg.get_or_none(name='congress') or Tag(name='congress')
+    congress_tag = Tag.lg.get_or_none(name='congress')
+    if not congress_tag:
+        congress_tag = Tag(name='congress')
+        congress_tag.save()
 
     current_session = CongressSession.lg.get_or_none(session=session_number)
     if not current_session:
@@ -772,7 +775,7 @@ def initializeCongressFile(parsedXML,image_root):
         current_session.save()
 
     # For each person at this congress
-    for personXML in parsedXML.findall('person'):
+    for personXML in parsedXML.people.findChildren('person',recursive=False):
 
         person = initializeXMLCongressman(personXML,image_root=image_root)
 
@@ -797,26 +800,29 @@ def initializeCongressFile(parsedXML,image_root):
         current_tag = Tag.lg.get_or_none(name=role_tag)
         if not current_tag:
             current_tag = Tag(name=role_tag)
-            current_tag.autoSave()
+            current_tag.save()
 
         # Find the office related to
         office = current_tag.tag_set.filter(location__state=role_state,location__district=role_district)
+        if office:
+            office = office[0]
         if not office: # If it doesn't exist, make that office
             loc = PhysicalAddress(district=role_district, state=role_state)
             loc.save()
             office = Office(location=loc)
+            office.autoSave()
             office.tags.add(current_tag)
             office.tags.add(congress_tag)
-            office.autoSave()
+
 
         # Take the start and end dates
         start_date = parseDate(role['startdate'])
         end_date = parseDate(role['enddate'])
 
         # See if this Office Held already exists.
-        office_held = OfficeHeld.lg.get_or_none(office=office,start_date=start_date,end_date=end_date)
+        office_held = OfficeHeld.lg.get_or_none(user=person,office=office,start_date=start_date,end_date=end_date)
         if not office_held: # If it  doesn't, create it
-            office_held = OfficeHeld(office=office,start_date=start_date,end_date=end_date)
+            office_held = OfficeHeld(user=person,office=office,start_date=start_date,end_date=end_date)
             if (datetime.date.today() - end_date).days >= 0:
                 office_held.current = True
             office_held.autoSave()
@@ -835,61 +841,56 @@ def initializeXMLCongressman(personXML,image_root=''):
     user_prof = None
 
     # name = first + " " + last
-    fname = personXML['firstname']
-    lname = personXML['lastname']
+    fname = personXML['firstname'].encode('utf-8','ignore')
+    lname = personXML['lastname'].encode('utf-8','ignore')
     name = fname+ " " +lname
 
     # get birthday
     birthday = None
-    if 'birthday' in personXML:
+    if personXML.has_key('birthday'):
         birthday = parseDate(personXML['birthday'])
 
     # Try to find this person by govtrack id
-    if 'id' in personXML:
-        user_prof = UserProfile.lg.get_or_none( govtrack_id = personXML['id'] )
+    govtrack_id = personXML.get('id')
+    if govtrack_id:
+        user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
     # Otherwise search by name and birthday
     if not user_prof:
-        user_prof = UserProfile.lg.get_or_none(first_name=fname,last_name=lname,dob=birthday)
+        user_prof = UserProfile.lg.get_or_none( first_name=fname , last_name=lname , dob=birthday )
 
     # Otherwise make a new person
     if not user_prof:
         password = "congress"
-        email = name.replace(" ","_") + "_" + personXML['id']
+        email = name.replace(" ","-") + "-" + str(personXML['id'])
 
-        print "initializing " + name.encode('utf-8','ignore')
+        print "initializing " + name
         congressControl = createUser(name,email,password)
         user_prof = congressControl.user_profile
         user_prof.ghost = True
 
-    # UPDATE USER PROFILE #
-    # ------------------- #
+    # ========= UPDATE USER PROFILE ========= #
+    # --------------------------------------- #
     user_prof.first_name = personXML['firstname']
     user_prof.last_name = personXML['lastname']
     user_prof.politician = True
     user_prof.elected_official = True
 
-    image_path = image_root + str(electedofficial.govtrack_id) + ".jpeg"
-    try:
-        user_prof.setProfileImage(file(image_path))
-    except:
-        print "[WARNING]: no image for elected official " + name.encode('utf-8','ignore') + " at " + image_path
-
-    if 'id' in personXML:
+    if personXML.has_key('id'):
         user_prof.govtrack_id = personXML['id']
-    if 'middlename' in personXML:
+    if personXML.has_key('middlename'):
         user_prof.middle_name = personXML['middlename']
-    if 'nickname' in personXML:
+    if personXML.has_key('nickname'):
         user_prof.nick_name = personXML['nickname']
-    if 'birthday' in personXML:
+    if personXML.has_key('birthday'):
         user_prof.dob = parseDate(personXML['birthday'])
-    if 'gender' in personXML:
+    if personXML.has_key('gender'):
         user_prof.gender = personXML['gender']
-    if 'twitterid' in personXML:
+    if personXML.has_key('twitterid'):
         user_prof.twitter_user_id = personXML['twitterid']
-    if 'facebookgraphid' in personXML:
+    if personXML.has_key('facebookgraphid'):
         user_prof.facebook_id = personXML['facebookgraphid']
 
-    if 'party' in personXML.role:
+    if personXML.role.has_key('party'):
         party = personXML.role['party'].lower()
         for (party_char,party_name) in PARTY_TYPE:
             if party == party_name:
@@ -898,6 +899,14 @@ def initializeXMLCongressman(personXML,image_root=''):
                     user_prof.parties.add(cur_party)
                 else:
                     print "[WARNING]: party " + party_name + " is not initialized.  Cannot add " + name.encode('utf-8','ignore')
+
+    image_path = image_root + str(govtrack_id) + ".jpeg"
+    try:
+        user_prof.setProfileImage(file(image_path))
+    except:
+        print "[WARNING]: no image for elected official " + name.encode('utf-8','ignore') + " at " + image_path
+
+    print dir(user_prof)
 
     user_prof.confirmed = True
     user_prof.save()
@@ -1372,7 +1381,7 @@ def parseCongressRoll(XML):
     if not where or not roll_number or not session_number:
         return 'Missing house location (where), session number, or roll number'
 
-    if not 'datetime' in XML.roll:
+    if not XML.roll.has_key('datetime'):
         return 'Missing datetime'
     datetime = parseDateTime(XML.roll['datetime'])
 
@@ -1412,7 +1421,7 @@ def parseCongressRoll(XML):
         if amendment_session_num:
             amendment_session = CongressSession.lg.get_or_none(session=amendment_session_num)
             if not amendment_session:
-                amendment_session = CongressSession(session=amendment_session_num)
+                amendment_session = CongressSession(sbession=amendment_session_num)
                 amendment_session.save()
 
             amendment_type = None
@@ -1431,7 +1440,7 @@ def parseCongressRoll(XML):
                     congress_roll.amendment = amendment
 
     updated = None
-    if 'updated' in XML.roll:
+    if XML.roll.has_key('updated'):
         updated = parseDateTime(XML.roll['updated'])
     last_updated = congress_roll.updated
 
@@ -1439,25 +1448,25 @@ def parseCongressRoll(XML):
     if not last_updated or not updated or (last_updated - updated).total_seconds() <= 0:
         if updated:
             congress_roll.updated = updated
-        if 'source' in XML.roll:
+        if XML.roll.has_key('source'):
             congress_roll.source = XML.roll['source']
-        if 'aye' in XML.roll:
+        if XML.roll.has_key('aye'):
             congress_roll.aye = int(XML.roll['aye'])
-        if 'nay' in XML.roll:
+        if XML.roll.has_key('nay'):
             congress_roll.nay = int(XML.roll['nay'])
-        if 'nv' in XML.roll:
+        if XML.roll.has_key('nv'):
             congress_roll.nv = int(XML.roll['nv'])
-        if 'present' in XML.roll:
+        if XML.roll.has_key('present'):
             congress_roll.present = int(XML.roll['present'])
-        if 'category' in XML.roll:
+        if XML.roll.has_key('category'):
             congress_roll.category = XML.category.text
-        if 'type' in XML.roll:
+        if XML.roll.has_key('type'):
             congress_roll.type = XML.type.text
-        if 'question' in XML.roll:
+        if XML.roll.has_key('question'):
             congress_roll.question = XML.question.text
-        if 'required' in XML.roll:
+        if XML.roll.has_key('required'):
             congress_roll.required = XML.required.text
-        if 'result' in XML.roll:
+        if XML.roll.has_key('result'):
             congress_roll.result = XML.result.text
 
     congress_roll.save()
