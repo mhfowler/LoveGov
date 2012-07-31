@@ -3290,51 +3290,6 @@ class UserGroup(Group):
 ########################################################################################################################
 ################################################### Committees #########################################################
 
-
-# External Imports
-class Committee(Group):
-    code = models.CharField(max_length=20)
-    committee_type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
-    parent = models.ForeignKey('self', null=True)
-
-    def autoSave(self):
-        self.group_type = 'C'
-        super(Committee, self).autoSave()
-
-    def joinMember(self, user, congress_session, role=None, privacy='PUB'):
-        committee_joined = CommitteeJoined.lg.get_or_none(user=user, group=self)
-        if not committee_joined:
-            committee_joined = CommitteeJoined(user=user, group=self)
-            committee_joined.autoSave()
-
-        committee_joined.privacy = privacy
-        committee_joined.congress_sessions.add(congress_session)
-        if role:
-            committee_joined.role = role
-        committee_joined.ever_member = True
-
-        if congress_session.session == CURRENT_CONGRESS:
-            committee_joined.confirm()
-            if user not in self.members.all():
-                self.members.add(user)
-                self.num_members += 1
-                self.save()
-
-
-    def removeMember(self, user, privacy='PUB'):
-        committee_joined = CommitteeJoined.lg.get_or_none(user=user, group=self)
-        if not committee_joined:
-            committee_joined = CommitteeJoined(user=user, group=self)
-            committee_joined.autoSave()
-        committee_joined.privacy = privacy
-        committee_joined.clear()
-        if user in self.members.all():
-            self.members.remove(user)
-            self.num_members -= 1
-            self.save()
-
-
-
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -3617,21 +3572,6 @@ class UCRelationship(Relationship):
     def getTo(self):
         return self.content
 
-#=======================================================================================================================
-# Exact same as vote, except for debates.
-# inherits from relationship
-#=======================================================================================================================
-class OfficeHeld(UCRelationship):
-    office = models.ForeignKey('Office',related_name="office")
-    start_date = models.DateField()
-    end_date = models.DateField()
-    election = models.BooleanField(default=False)
-    congress_sessions = models.ManyToManyField(CongressSession)
-
-    def autoSave(self):
-        self.content = self.office
-        self.relationship_type = "OH"
-        self.save()
 
 #=======================================================================================================================
 # Exact same as vote, except for debates.
@@ -3860,17 +3800,6 @@ class Linked(LGModel):
         self.save()
 
 
-#=======================================================================================================================
-# A Method that stores data on the relationship between an Elected Offical and a Committee
-#
-#=======================================================================================================================
-class CommitteeJoined(GroupJoined):
-    role = models.CharField(max_length=200,null=True)
-    congress_sessions = models.ManyToManyField(CongressSession)
-
-    def autoSave(self):
-        self.relationship_type = 'CJ'
-        super(CommitteeJoined, self).autoSave()
 
 ########################################################################################################################
 ########################################################################################################################
