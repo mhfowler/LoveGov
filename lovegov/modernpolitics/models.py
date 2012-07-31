@@ -2030,10 +2030,10 @@ class Office(Content):
     governmental = models.BooleanField(default=False)
     tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
 
-    def autoSave(self):
+    def autoSave(self,creator=None,privacy='PUB'):
         self.type = "O"
         self.in_search = True
-        self.save()
+        super(Office,self).autoSave(creator,privacy)
 
 
 ########################################################################################################################
