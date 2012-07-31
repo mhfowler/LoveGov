@@ -997,8 +997,11 @@ def initializeCommittee(committeeXML,session):
     # Find this committee
     committee = Committee.lg.get_or_none(title=name,committee_type=type,code=code)
     if not committee:
+        print "Initializing Committee: " + name
         committee = Committee(title=name,committee_type=type,code=code)
         committee.autoSave()
+    else:
+        print "Found Committee: " + name
 
     for memberXML in committeeXML.findChildren('member',recursive=False):
         member = UserProfile.lg.get_or_none( govtrack_id=memberXML.get('id') )
@@ -1032,8 +1035,11 @@ def initializeSubCommittee(committeeXML,session,parent):
 
     committee = Committee.lg.get_or_none(title=name,committee_type=type,code=code,parent=parent)
     if not committee:
+        print "Initializing Subcommittee: " + name
         committee = Committee(title=name,committee_type=type,code=code,parent=parent)
         committee.autoSave()
+    else:
+        print "Found Subcommittee: " + name
 
     for memberXML in committeeXML.findChildren('member',recursive=False):
         member = UserProfile.lg.get_or_none( govtrack_id=memberXML.get('id') )
