@@ -4,40 +4,65 @@
 
 <div id="content-leg-div">
     <div class="content-filter-box menu_toggle">
-        <h3>filter legislation by:</h3>
+        <span><h2>filter legislation by:</h2></span>
     </div>
-    <div class="column1">
-        <h4>session</h4>
-        <ul class="leg-filter-dropdown">
-            {% for session in sessions %}
-                <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="column2">
-        <h4>session</h4>
-        <ul class="leg-filter-dropdown">
-            {% for session in sessions %}
-                <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="column3">
-        <h4>session</h4>
-        <ul class="leg-filter-dropdown">
-            {% for session in sessions %}
-                <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="column4">
-        <h4>session</h4>
-        <ul class="leg-filter-dropdown">
-            {% for session in sessions %}
-                <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
-            {% endfor %}
-        </ul>
-    </div>
+        <div class="col1">
+            <span><h3>session</h3></span>
+            <ul>
+                {% for session in sessions %}
+                    <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col2">
+            <span><h3>type</h3></span>
+            <ul>
+                {% for type in types %}
+                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col3">
+            <span><h3>introduced</h3></span>
+            <ul>
+                {% for number in numbers %}
+                    <li><input type="checkbox" class="checkbox"/><h5>introduced {{ number }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col4">
+            <span><h3>sponsor</h3></span>
+            <ul>
+                {% for type in types %}
+                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col5">
+            <span><h3>committees</h3></span>
+            <ul>
+                {% for type in types %}
+                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col6">
+            <span><h3>subject</h3></span>
+            <ul>
+                {% for type in types %}
+                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col7">
+            <span><h3>number</h3></span>
+            <ul>
+                {% for number in numbers %}
+                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% endfor %}
+            </ul>
+        </div>
+
 </div>
 
 {% endblock %}

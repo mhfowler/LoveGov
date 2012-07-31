@@ -2482,7 +2482,9 @@ class LegislationStatus(LGModel):
             self.status_text = 'V'
             self.datetime = parseDateTime(parsedXML.status.vote['datetime'])
             self.where = parsedXML.status.vote['where']
-            self.result = parsedXML.status.vote['result']
+            self.result = pars
+
+            edXML.status.vote['result']
             self.how = parsedXML.status.vote['how']
             if parsedXML.status.vote.has_key("roll") and parsedXML.status.vote['roll'] != '':
                 self.roll = int(parsedXML.status.vote['roll'])
