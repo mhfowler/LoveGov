@@ -763,7 +763,7 @@ def parseDate(date):
 # Begins Congress Initialization
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongress():
-    for num in range(112,108,-1):
+    for num in range(109,113):
         print num
         # Get/open current XML file
         filePath = '/data/govtrack/' + str(num) + "/people.xml"
@@ -878,17 +878,15 @@ def initializeXMLCongressman(personXML,image_root=''):
     if personXML.has_key('birthday'):
         birthday = parseDate(personXML['birthday'])
 
-    # Try to find this person by govtrack id
-    govtrack_id = personXML.get('id')
-    if govtrack_id:
-        user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
-    # Otherwise search by name and birthday
-    if not user_prof:
-        user_prof = UserProfile.lg.get_or_none( first_name=fname , last_name=lname , dob=birthday )
     # Otherwise search by facebook graph id (Duplicates galore)
     if not user_prof and personXML.has_key('facebookgraphid') and personXML['facebookgraphid'].isdigit():
         facebook_id = int( personXML['facebookgraphid'] )
         user_prof = UserProfile.lg.get_or_none( facebook_id = facebook_id )
+
+    # Try to find this person by govtrack id
+    govtrack_id = personXML.get('id')
+    if govtrack_id:
+        user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
 
     # Otherwise make a new person
     if not user_prof:
@@ -949,7 +947,7 @@ def initializeXMLCongressman(personXML,image_root=''):
 # Initialize all committee files and all committees
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCommittees():
-    for num in range(112,108,-1):
+    for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
 
         try:
