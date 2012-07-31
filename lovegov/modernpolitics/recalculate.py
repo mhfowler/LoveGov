@@ -177,3 +177,45 @@ def recalculateNumMembers():
     for x in Group.objects.all():
         print x.get_name()
         x.countMembers()
+
+def recalculateCurrentOfficeHeld():
+    count = 0
+    for office_held in OfficeHeld.objects.all():
+        count += 1
+        if (datetime.date.today() - office_held.end_date).days >= 0:
+            office_held.current = True
+        else:
+            office_held.current = False
+        print str(count) + " :: " + str(office_held.current)
+        office_held.save()
+
+
+def recombineOfficeHeld():
+    to_remove = []
+    print 'Offices Combining...'
+    print '===================='
+
+    for office_held in OfficeHeld.objects.all():
+        for other_held in OfficeHeld.objects.filter( office=office_held.office , user=office_held.user ):
+
+            if office_held.end_date == other_held.start_date:
+                office_held.end_date = other_held.end_date
+                for session in other_held.congress_sessions:
+                    office_held.congress_session.add(session)
+                    print "Office combined!"
+                to_remove.append(other_held)
+                office_held.save()
+
+            elif office_held.start_date == other_held.end_date:
+                office_held.start_date == other_held.start_date
+                for session in other_held.congress_sessions:
+                    office_held.congress_session.add(session)
+                    print "Office combined!"
+                to_remve.append(other_held)
+                office_held.save()
+
+    for office_remove in to_remove:
+        print "Removing Duplicate Office"
+        for holder in office_remove.office_holders:
+            holder.offices_held.remove(office_remove)
+        office_remove.delete()

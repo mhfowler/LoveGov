@@ -811,9 +811,11 @@ def initializeCongressFile(parsedXML,image_root):
             print "[WARNING]: role type " + role_type + " is not recognized for " + name
             continue # Skip this guy, can't make an Office without a tag
 
+        role_state = None
         if role.has_key('state'):
             role_state = role['state']
 
+        role_district = None
         if role.has_key('district') and role['district'].isdigit():
             role_district = int( role['district'] )
 
@@ -827,6 +829,7 @@ def initializeCongressFile(parsedXML,image_root):
         # Find the tag related to this role
         current_tag = OfficeTag.lg.get_or_none(name=role_tag)
         if not current_tag:
+            print "Initializing office tag: " + role_tag
             current_tag = OfficeTag(name=role_tag)
             current_tag.save()
 
@@ -834,7 +837,9 @@ def initializeCongressFile(parsedXML,image_root):
         office = current_tag.tag_offices.filter(location__state=role_state,location__district=role_district)
         if office:
             office = office[0]
+            print "Found office: " + office.location.state + " " + str(office.location.district)
         if not office: # If it doesn't exist, make that office
+            print "Initializing office: " + role_state + " " + str(role_district)
             loc = PhysicalAddress(district=role_district, state=role_state)
             loc.save()
             office = Office(location=loc)
