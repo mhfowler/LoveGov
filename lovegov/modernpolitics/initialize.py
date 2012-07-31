@@ -887,7 +887,7 @@ def initializeXMLCongressman(personXML,image_root=''):
 
     # Try to find this person by govtrack id
     govtrack_id = personXML.get('id')
-    if govtrack_id:
+    if not user_prof and govtrack_id:
         user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
         if user_prof:
             print "found " + name + " by Govtrack ID"
@@ -896,7 +896,7 @@ def initializeXMLCongressman(personXML,image_root=''):
     # Otherwise make a new person
     if not user_prof:
         password = "congress"
-        email = fname + str(personXML['id'])
+        email = fname + govtrack_id
 
         print "initializing " + name
         congressControl = createUser(name,email,password)
