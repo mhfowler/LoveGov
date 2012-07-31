@@ -2562,8 +2562,8 @@ class LegislationEnacted(LegislationAction):
 #
 #=======================================================================================================================
 class LegislationReference(LGModel):
-    label = models.CharField(max_length=200)
-    ref = models.CharField(max_length=100)
+    label = models.CharField(max_length=400)
+    ref = models.CharField(max_length=400)
 
 
 #=======================================================================================================================
