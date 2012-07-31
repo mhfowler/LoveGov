@@ -178,7 +178,7 @@ def recalculateNumMembers():
         print x.get_name()
         x.countMembers()
 
-def recalculateCurrentOfficeHeld():
+def recalculateOfficeHeldCurrent():
     count = 0
     for office_held in OfficeHeld.objects.all():
         count += 1

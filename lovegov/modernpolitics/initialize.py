@@ -883,21 +883,21 @@ def initializeXMLCongressman(personXML,image_root=''):
         facebook_id = int( personXML['facebookgraphid'] )
         user_prof = UserProfile.lg.get_or_none( facebook_id = facebook_id )
         if user_prof:
-            print "found " + name + " by Facebook ID"
+            print "Found " + name + " by Facebook ID"
 
     # Otherwise try to find this person by govtrack id
     govtrack_id = personXML.get('id')
     if not user_prof and govtrack_id:
         user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
         if user_prof:
-            print "found " + name + " by Govtrack ID"
+            print "Found " + name + " by Govtrack ID"
 
     # Otherwise make a new person
     if not user_prof:
         password = "congress"
         email = fname + str(govtrack_id)
 
-        print "initializing " + name
+        print "Initializing " + name
         congressControl = createUser(name,email,password)
         user_prof = congressControl.user_profile
         user_prof.ghost = True
