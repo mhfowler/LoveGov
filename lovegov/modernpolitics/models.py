@@ -2397,7 +2397,12 @@ class LegislationAction(LGModel):
             self.action_type = "A"
         # Get other standard fields
         self.datetime = parseDateTime(XML['datetime'])
-        self.text = XML.text.encode('utf-8','ignore')
+
+        text = XML.text.encode('utf-8','ignore')
+        if len( text ) > 500:
+            print "[WARNING]: LegislationAction text truncated"
+            text = text[:500]
+        self.text = text
 
         #Begin duplicate action filtering
         already = LegislationAction.objects.filter( datetime=self.datetime , text=self.text , action_type=self.action_type )
@@ -2425,6 +2430,10 @@ class LegislationAction(LGModel):
         #Get state
         if XML.has_key('state'):
             state = XML['state'].encode('utf-8','ignore')
+            if len( state ) > 100:
+                print "[WARNING]: LegislationAction state truncated"
+                state = state[:100]
+
             already = already.filter( state = state ) # Refine duplicate filtering
             self.state = state
 
@@ -2436,7 +2445,15 @@ class LegislationAction(LGModel):
 
         for refer in XML.findChildren('reference',recursive=False):
             ref_label = refer.get('label').encode('utf-8','ignore')
+            if len( ref_label ) > 400:
+                print "[WARNING]: LegislationReference ref_label truncated"
+                ref_label = ref_label[:400]
+
             ref_reference = refer.get('ref').encode('utf-8','ignore')
+            if len( ref_reference ) > 400:
+                print "[WARNING]: LegislationReference ref_reference truncated"
+                ref_reference = ref_reference[:400]
+
             reference = LegislationReference.lg.get_or_none(ref=ref_reference,label=ref_label)
             if not reference:
                 reference = LegislationReference(ref=ref_reference,label=ref_label)

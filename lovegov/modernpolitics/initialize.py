@@ -1093,6 +1093,7 @@ def initializeLegislation():
 # RETURN: an error message string.  Returns an empty string on success
 #-----------------------------------------------------------------------------------------------------------------------
 def parseLegislation(XML):
+    warning = ''
     # If there's no bill or state for some reason, you can't parse the bill
     if not XML.bill:
         return 'Missing bill tag'
@@ -1133,8 +1134,20 @@ def parseLegislation(XML):
         if updated:
             legislation.bill_updated = updated
         legislation.state_date = parseDateTime(XML.state.get('datetime'))
-        legislation.state_text = XML.state.text.encode('utf-8','ignore')
-        legislation.bill_summary = XML.summary.text.encode('utf-8','ignore')
+
+        state_text = XML.state.text.encode('utf-8','ignore')
+        if len( state_text ) > 50:
+            print "[WARNING]: Legislation state_text truncated"
+            warning += "[WARNING]: Legislation state_text truncated\n"
+            state_text = stat_text[:50]
+        legislation.state_text = state_text
+
+        bill_summary = XML.summary.text.encode('utf-8','ignore')
+        if len( bill_summary ) > 400000:
+            print "[WARNING]: Legislation bill_summary truncated"
+            warning += "[WARNING]: Legislation bill_summary truncated\n"
+            bill_summary = bill_summary[:400000]
+        legislation.bill_summary = bill_summary
 
         # Find and add bill sponsor
         sponsor_id = XML.sponsor.get('id')
@@ -1151,10 +1164,22 @@ def parseLegislation(XML):
     if XML.titles:
         for title in XML.titles.findChildren('title',recursive=False):
             title_type = title.get('type')
+
             if title_type == 'official':
-                legislation.full_title = title.text.encode('utf-8','ignore')
+                full_title = title.text.encode('utf-8','ignore')
+                if len( full_title ) > 5000:
+                    print "[WARNING]: Legislation full_title truncated"
+                    warning += "[WARNING]: Legislation full_title truncated\n"
+                    full_title = full_title[:5000]
+                legislation.full_title = full_title
+
             elif title_type == 'short':
-                legislation.title = title.text.encode('utf-8','ignore')
+                short_title = title.text.encode('utf-8','ignore')
+                if len( short_title ) > 500:
+                    print "[WARNING]: Legislation title truncated"
+                    warning += "[WARNING]: Legislation title truncated\n"
+                    short_title = short_title[:500]
+                legislation.title = short_title
 
     legislation.save()
 
@@ -1235,7 +1260,13 @@ def parseLegislation(XML):
 
     for termXML in XML.subjects.findChildren('term',recursive=False):
         name = termXML.get('name')
+
         if name:
+            if len( name ) > 300:
+                print "[WARNING]: LegislationSubject name truncated " + name
+                warning += "[WARNING]: LegislationSubject name truncated " + name + "\n"
+                name = name[:300]
+
             subject = LegislationSubject.lg.get_or_none(name=name)
             if not subject:
                 subject = LegislationSubject(name=name)
@@ -1244,7 +1275,7 @@ def parseLegislation(XML):
 
     # Save the legislation
     legislation.save()
-    return ''
+    return warning
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Counts the number of govtrack legislation files there are
