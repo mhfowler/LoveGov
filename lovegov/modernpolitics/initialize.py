@@ -885,6 +885,10 @@ def initializeXMLCongressman(personXML,image_root=''):
     # Otherwise search by name and birthday
     if not user_prof:
         user_prof = UserProfile.lg.get_or_none( first_name=fname , last_name=lname , dob=birthday )
+    # Otherwise search by facebook graph id (Duplicates galore)
+    if not user_prof and personXML.has_key('facebookgraphid') and personXML['facebookgraphid'].isdigit():
+        facebook_id = int( personXML['facebookgraphid'] )
+        user_prof = UserProfile.lg.get_or_none( facebook_id = facebook_id )
 
     # Otherwise make a new person
     if not user_prof:
