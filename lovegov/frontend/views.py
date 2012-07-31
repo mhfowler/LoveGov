@@ -771,6 +771,11 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = all_members[:num_members]
     vals['num_members'] = num_members
 
+    members = list( all_members )
+    for admin in admins:
+        members.remove(admin)
+    vals['normal_members'] = members
+
     vals['num_group_members'] = group.num_members
 
     followers = list(viewer.getFollowMe())
@@ -881,6 +886,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------

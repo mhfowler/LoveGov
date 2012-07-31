@@ -3,7 +3,6 @@
 @import 'master-mixins';
 
 #content-leg-div {
-  background-color: blue;
   width: 1000px;
   margin-left: auto;
   margin-right: auto;
@@ -17,4 +16,12 @@
     margin-top: 40px;
     font-family: "Helvetica";
   }
+}
+
+.checkbox-layer-div {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  font-family: "Helvetica";
 }

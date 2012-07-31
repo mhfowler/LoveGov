@@ -3284,6 +3284,9 @@ function vote(wrapper, content_id, v)
             if (my_vote==0) { neutral(wrapper); }
             if (my_vote==-1) { dislike(wrapper); }
             wrapper.find(".status").text(status);
+            if (returned.motion!=0) {
+                location.reload();
+            }
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
