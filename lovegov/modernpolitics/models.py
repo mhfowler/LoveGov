@@ -2317,7 +2317,7 @@ class Legislation(Content):
     state_date = models.DateField(null=True)
     state_text = models.CharField(max_length=50,null=True)
     # Title
-    full_title = models.CharField(max_length=500,null=True)
+    full_title = models.CharField(max_length=5000,null=True)
     # Sponsors
     # cosponsor relationship is stored in LegislationCosponsor object.  To retrieve them you can use "self.legislation_cosponsors"
     sponsor = models.ForeignKey(UserProfile, related_name="sponsored_legislation", null=True)
