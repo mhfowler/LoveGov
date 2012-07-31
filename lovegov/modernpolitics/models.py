@@ -2397,7 +2397,7 @@ class LegislationAction(LGModel):
             self.action_type = "A"
         # Get other standard fields
         self.datetime = parseDateTime(XML['datetime'])
-        self.text = XML.text
+        self.text = XML.text.encode('utf-8','ignore')
 
         #Begin duplicate action filtering
         already = LegislationAction.objects.filter( datetime=self.datetime , text=self.text , action_type=self.action_type )
@@ -2424,7 +2424,7 @@ class LegislationAction(LGModel):
 
         #Get state
         if XML.has_key('state'):
-            state = XML['state']
+            state = XML['state'].encode('utf-8','ignore')
             already = already.filter( state = state ) # Refine duplicate filtering
             self.state = state
 
@@ -2435,9 +2435,11 @@ class LegislationAction(LGModel):
         action.save()
 
         for refer in XML.findChildren('reference',recursive=False):
-            reference = LegislationReference.lg.get_or_none(label=refer.get('label'),ref=refer.get('ref'))
+            ref_label = refer.get('label').encode('utf-8','ignore')
+            ref_reference = refer.get('ref').encode('utf-8','ignore')
+            reference = LegislationReference.lg.get_or_none(ref=ref_reference,label=ref_label)
             if not reference:
-                reference = LegislationReference(label=refer.get('label'),ref=refer.get('ref'))
+                reference = LegislationReference(ref=ref_reference,label=ref_label)
                 reference.save()
             action.references.add(reference)
 
@@ -2460,9 +2462,9 @@ class LegislationCalendar(LegislationAction):
         if XML.has_key('number'):
             self.calendar_number = int(XML['number'])
         if XML.has_key('calendar'):
-            self.calendar = XML['calendar']
+            self.calendar = XML['calendar'].encode('utf-8','ignore')
         if XML.has_key('under'):
-            self.under = XML['under']
+            self.under = XML['under'].encode('utf-8','ignore')
 
         super(LegislationCalendar, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
@@ -2487,15 +2489,15 @@ class LegislationVote(LegislationAction):
         self.action_type = 'V'
 
         if XML.has_key('how'):
-            self.how = XML['how']
+            self.how = XML['how'].encode('utf-8','ignore')
         if XML.has_key('type'):
-            self.vote_type = XML['type']
+            self.vote_type = XML['type'].encode('utf-8','ignore')
         if XML.has_key('roll'):
             self.roll = int(XML['roll'])
         if XML.has_key('where'):
-            self.where = XML['where']
+            self.where = XML['where'].encode('utf-8','ignore')
         if XML.has_key('result'):
-            self.result = XML['result']
+            self.result = XML['result'].encode('utf-8','ignore')
         if XML.has_key('suspension'):
             self.suspension = ( 1 == int(XML['suspension']) )
 
@@ -2547,9 +2549,9 @@ class LegislationEnacted(LegislationAction):
         self.action_type = 'E'
 
         if enactedXML.has_key('number'):
-            self.number = enactedXML['number']
+            self.number = enactedXML['number'].encode('utf-8','ignore')
         if enactedXML.has_key('type'):
-            self.type = enactedXML['type']
+            self.type = enactedXML['type'].encode('utf-8','ignore')
 
         super(LegislationEnacted, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 

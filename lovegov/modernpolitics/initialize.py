@@ -1133,8 +1133,8 @@ def parseLegislation(XML):
         if updated:
             legislation.bill_updated = updated
         legislation.state_date = parseDateTime(XML.state.get('datetime'))
-        legislation.state_text = XML.state.text
-        legislation.bill_summary = XML.summary.text
+        legislation.state_text = XML.state.text.encode('utf-8','ignore')
+        legislation.bill_summary = XML.summary.text.encode('utf-8','ignore')
 
         # Find and add bill sponsor
         sponsor_id = XML.sponsor.get('id')
@@ -1152,9 +1152,9 @@ def parseLegislation(XML):
         for title in XML.titles.findChildren('title',recursive=False):
             title_type = title.get('type')
             if title_type == 'official':
-                legislation.full_title = title.text
+                legislation.full_title = title.text.encode('utf-8','ignore')
             elif title_type == 'short':
-                legislation.title = title.text
+                legislation.title = title.text.encode('utf-8','ignore')
 
     legislation.save()
 
@@ -1360,7 +1360,7 @@ def parseLegislationAmendment(XML):
         if XML.status:
             if XML.status.has_key('datetime'):
                 amendment.status_datetime = parseDateTime(XML.status['datetime'])
-            amendment.status_text = XML.status.text
+            amendment.status_text = XML.status.text.encode('utf-8','ignore')
 
         if XML.sponsor and XML.sponsor.has_key('id'):
             sponsor = UserProfile.lg.get_or_none(govtrack_id=int(XML.sponsor['id']))
@@ -1371,9 +1371,9 @@ def parseLegislationAmendment(XML):
             amendment.offered_datetime = parseDateTime(XML.offered['datetime'])
 
         if XML.description:
-            amendment.description = XML.description.text
+            amendment.description = XML.description.text.encode('utf-8','ignore')
         if XML.purpose:
-            amendment.purpose = XML.purpose.text
+            amendment.purpose = XML.purpose.text.encode('utf-8','ignore')
 
 
 
@@ -1560,7 +1560,7 @@ def parseCongressRoll(XML):
         if updated:
             congress_roll.updated = updated
         if XML.roll.has_key('source'):
-            congress_roll.source = XML.roll['source']
+            congress_roll.source = XML.roll['source'].encode('utf-8','ignore')
         if XML.roll.has_key('aye'):
             congress_roll.aye = int(XML.roll['aye'])
         if XML.roll.has_key('nay'):
@@ -1570,15 +1570,15 @@ def parseCongressRoll(XML):
         if XML.roll.has_key('present'):
             congress_roll.present = int(XML.roll['present'])
         if XML.roll.category:
-            congress_roll.category = XML.category.text
+            congress_roll.category = XML.category.text.encode('utf-8','ignore')
         if XML.roll.type:
-            congress_roll.type = XML.type.text
+            congress_roll.type = XML.type.text.encode('utf-8','ignore')
         if XML.roll.question:
-            congress_roll.question = XML.question.text
+            congress_roll.question = XML.question.text.encode('utf-8','ignore')
         if XML.roll.required:
-            congress_roll.required = XML.required.text
+            congress_roll.required = XML.required.text.encode('utf-8','ignore')
         if XML.roll.result:
-            congress_roll.result = XML.result.text
+            congress_roll.result = XML.result.text.encode('utf-8','ignore')
 
     congress_roll.save()
 
