@@ -873,30 +873,24 @@ def initializeXMLCongressman(personXML,image_root=''):
     lname = personXML['lastname'].encode('utf-8','ignore')
     name = fname+ " " +lname
 
-    # get birthday
-    birthday = None
-    if personXML.has_key('birthday'):
-        birthday = parseDate(personXML['birthday'])
-
-    # Otherwise search by facebook graph id (Duplicates galore)
+    # Search by facebook graph id (Duplicates galore)
     if not user_prof and personXML.has_key('facebookgraphid') and personXML['facebookgraphid'].isdigit():
         facebook_id = int( personXML['facebookgraphid'] )
         user_prof = UserProfile.lg.get_or_none( facebook_id = facebook_id )
         if user_prof:
             print "found " + name + " by Facebook ID"
 
-    # Try to find this person by govtrack id
+    # Otherwise try to find this person by govtrack id
     govtrack_id = personXML.get('id')
     if not user_prof and govtrack_id:
         user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
         if user_prof:
             print "found " + name + " by Govtrack ID"
 
-
     # Otherwise make a new person
     if not user_prof:
         password = "congress"
-        email = fname + govtrack_id
+        email = fname + str(govtrack_id)
 
         print "initializing " + name
         congressControl = createUser(name,email,password)
