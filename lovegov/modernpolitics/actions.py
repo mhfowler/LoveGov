@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
+from lovegov.modernpolitics.register import *
 from lovegov.modernpolitics.images import *
 
 from haystack.query import SearchQuerySet
@@ -750,7 +751,12 @@ def vote(request, vals):
         value = content.like(user=user, privacy=privacy)
     elif vote == -1:
         value = content.dislike(user=user, privacy=privacy)
-    to_return = {'my_vote':value, 'status':content.status}
+    if content.type == 'M':
+        motion = content.downcast()
+        motion = {'upvotes':motion.motion_upvotes, 'downvotes':motion.downvotes}
+    else:
+        motion = 0
+    to_return = {'my_vote':value, 'status':content.status, 'motion':motion}
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
