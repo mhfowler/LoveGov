@@ -1,33 +1,73 @@
 
-div#content-leg-div {
-    position: absolute;
-    left: 80px;
-    top: 100;
-    width: 1000px;
-    border: 10px;
-    font-family: "Helvetica";
+@font-face {
+    font-family: "Gill Sans Std Light";
+    src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+    font-family: "Gill Sans Std";
+    src: url(../GillSansStd.otf); }
+
+@font-face {
+    font-family: "Sonus Light";
+    src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+@font-face {
+    font-family: "Gill Sans Std Light";
+    src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+    font-family: "Gill Sans Std";
+    src: url(../GillSansStd.otf); }
+
+@font-face {
+    font-family: "Sonus Light";
+    src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+
+
+div.sidebar {
+    position: fixed;
+    height: 800px;
+    left: 0;
+    top: 185px;
+    width: 600px;
 }
 
-div#content-leg-div div.content-filter-box.menu_toggle {
-    position: absolute;
-    left: 80px;
-    top: 50px;
-    width: 300px;
+div.sidebar div.more-options-wrapper {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    height: 105px;
+    overflow: hidden;
 }
 
-div#content-leg-div.content-filter-box.menu_toggle.hovered {
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle {
+    height: 50px;
+    width: 980px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.hovered {
     background-color: #8a2be2;
 }
 
-div#content-leg-div.content-filter-box.menu_toggle.hovered.clicked {
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.hovered.clicked {
     background-color: blue;
 }
 
-div#content-leg-div.content-filter-box.menu_toggle.clicked {
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.clicked {
     background-color:green;
 }
 
-div#content-leg-div div.col1 {
+div.sidebar div.more-options-wrapper div.col1 {
     width: 100px;
     position:absolute;
     left:70px;
@@ -37,7 +77,7 @@ div#content-leg-div div.col1 {
     overflow: hidden;
 }
 
-div#content-leg-div div.col2 {
+div.sidebar div.more-options-wrapper div.col2 {
     width: 100px;
     position:absolute;
     left:220px;
@@ -47,7 +87,7 @@ div#content-leg-div div.col2 {
     overflow: hidden;
 }
 
-div#content-leg-div div.col3 {
+div.sidebar div.more-options-wrapper div.col3 {
     width: 100px;
     position:absolute;
     left:370px;
@@ -57,7 +97,7 @@ div#content-leg-div div.col3 {
     overflow: hidden;
 }
 
-div#content-leg-div div.col4 {
+div.sidebar div.more-options-wrapper div.col4 {
     width: 100px;
     position:absolute;
     left:520px;
@@ -67,7 +107,7 @@ div#content-leg-div div.col4 {
     overflow: hidden;
 }
 
-div#content-leg-div div.col5 {
+ddiv.sidebar div.more-options-wrapper div.col5 {
     width: 130px;
     position:absolute;
     left:670px;
@@ -77,7 +117,7 @@ div#content-leg-div div.col5 {
     overflow: hidden;
 }
 
-div#content-leg-div div.col6 {
+div.sidebar div.more-options-wrapper div.col6 {
     width: 100px;
     position:absolute;
     left:820px;
@@ -87,7 +127,7 @@ div#content-leg-div div.col6 {
     overflow: hidden;
 }
 
-div#content-leg-div div.col7 {
+div.sidebar div.more-options-wrapper div.col7 {
     width: 100px;
     position:absolute;
     left:970px;

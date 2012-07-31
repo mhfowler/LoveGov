@@ -4938,3 +4938,27 @@ function loadLogin() {
 function loadBlog() {
     alert("blog!");
 }
+
+
+
+/***********************************************************************************************************************
+ *h
+ *      -Legislation checkboxes
+ *
+ **********************************************************************************************************************/
+
+function queryCheckedAttribute () {
+    $(".checkbox").bindOnce("clickoutside", function(event) {
+
+    
+    });
+}
+
+
+function bindLinks() {
+    $(".bind_link").bindOnce("click.link", function(event) {
+        event.preventDefault();
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+}

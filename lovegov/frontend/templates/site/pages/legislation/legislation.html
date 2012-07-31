@@ -2,20 +2,49 @@
 
 {% block content %}
 
-<div id="content-leg-div">
-    <div class="content-filter-box menu_toggle">
-        <span><h2>filter legislation by:</h2></span>
-    </div>
+    <div class="sidebar">
+        <div class="more-options-wrapper more_options">
+            <p class="options-title menu-title">
+                filter legislation by:
+            </p>
+            <div class="triangle-selector"></div>
+        </div>
+
+        <div class="options-box saved-filters-box  menu_toggle menu-toggle">
+            <p class="options-title menu-title">
+                saved filters
+            </p>
+            <div class="triangle-selector"></div>
+            <div class="saved-menu menu">
+                {% for x in my_filters %}
+                    <div class="menu-option single saved-filter-selector" data-f_id="{{ x.id }}" data-f_name="{{ x.name }}">
+                        {{ x.name }}
+                        {% if x.name != 'default' %}
+                            <div class="x-button delete_saved_filter"></div>
+                        {% endif %}
+                    </div>
+                    {% if not forloop.last %}
+                        <div class="gen-menu-separator"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+
+
+
         <div class="col1">
-            <span><h3>session</h3></span>
+            <span><label><input type="checkbox"><h3>session</h3></label></span>
             <ul>
                 {% for session in sessions %}
                     <li><input type="checkbox" class="checkbox"/><h5>session {{ session }}</h5></li>
+                {% empty %}
+                    "empty"
                 {% endfor %}
             </ul>
         </div>
         <div class="col2">
-            <span><h3>type</h3></span>
+            <span><label><input type="checkbox"><h3>type</h3></label></span>
             <ul>
                 {% for type in types %}
                     <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
@@ -23,31 +52,31 @@
             </ul>
         </div>
         <div class="col3">
-            <span><h3>introduced</h3></span>
+            <span><label><input type="checkbox"><h3>introduced</h3></label></span>
             <ul>
-                {% for number in numbers %}
-                    <li><input type="checkbox" class="checkbox"/><h5>introduced {{ number }}</h5></li>
+                {% for billIntroduced in billsIntroduced %}
+                    <li><input type="checkbox" class="checkbox"/><h5>introduced {{ billIntrodoced }}</h5></li>
                 {% endfor %}
             </ul>
         </div>
         <div class="col4">
-            <span><h3>sponsor</h3></span>
+            <span><label><input type="checkbox"><h3>sponsor</h3></label></span>
             <ul>
-                {% for type in types %}
-                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% for sponsor in sponsors %}
+                    <li><input type="checkbox" class="checkbox"/><h5>sponsor {{ sponsor }}</h5></li>
                 {% endfor %}
             </ul>
         </div>
         <div class="col5">
-            <span><h3>committees</h3></span>
+            <span><label><input type="checkbox"><h3>committees</h3></label></span>
             <ul>
-                {% for type in types %}
-                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                {% for committeeList in committeeLists %}
+                    <li><input type="checkbox" class="checkbox"/><h5>committees {{ committeeList }}</h5></li>
                 {% endfor %}
             </ul>
         </div>
         <div class="col6">
-            <span><h3>subject</h3></span>
+            <span><label><input type="checkbox"><h3>subject</h3></label></span>
             <ul>
                 {% for type in types %}
                     <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
@@ -55,15 +84,15 @@
             </ul>
         </div>
         <div class="col7">
-            <span><h3>number</h3></span>
+            <span><label><input type="checkbox"><h3>number</h3></label></span>
             <ul>
                 {% for number in numbers %}
-                    <li><input type="checkbox" class="checkbox"/><h5>type {{ type }}</h5></li>
+                    <li><input type="checkbox" class="checkbox"/><h5>number {{ number }}</h5></li>
                 {% endfor %}
             </ul>
         </div>
+    </div>
 
-</div>
 
 {% endblock %}
 
