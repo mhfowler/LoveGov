@@ -36,11 +36,24 @@ div#content-leg-div.column1 {
     float: left;
 }
 
+div#content-leg-div.column1.leg-filter-dropdown {
+    width: 200px;
+    float: left;
+}
+
 div#content-leg-div.column2 {
     width:180px;
 }
 
+div#content-leg-div.column2.leg-filter-dropdown {
+    width: 180px;
+}
+
 div#content-leg-div.column3 {
+    width: 200px;
+}
+
+div#content-leg-div.column3.leg-filter-dropdown {
     width: 200px;
 }
 
@@ -48,6 +61,12 @@ div#content-leg-div.column4 {
     width: 200px;
     float: right;
 }
+
+div#content-leg-div.column4.leg-filter-dropdown {
+    width: 200px;
+    float: right;
+}
+
 
 .checkbox {
    position: relative;
