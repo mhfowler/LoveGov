@@ -1,22 +1,18 @@
 
 div#content-leg-div {
-    width: 200px;
-	margin-left: 165px;
-	margin-right: auto;
-	margin-top: 40px;
+    position: absolute;
+    left: 80px;
+    top: 100;
+    width: 1000px;
     border: 10px;
-	font-family: "Helvetica";
+    font-family: "Helvetica";
 }
 
-div#content-leg-div.content-filter-box.menu_toggle {
-    background-color: black;
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -khtml-border-radius: 10px;
+div#content-leg-div div.content-filter-box.menu_toggle {
+    position: absolute;
+    left: 80px;
+    top: 50px;
+    width: 300px;
 }
 
 div#content-leg-div.content-filter-box.menu_toggle.hovered {
@@ -31,42 +27,75 @@ div#content-leg-div.content-filter-box.menu_toggle.clicked {
     background-color:green;
 }
 
-div#content-leg-div.column1 {
-    width: 200px;
-    float: left;
+div#content-leg-div div.col1 {
+    width: 100px;
+    position:absolute;
+    left:70px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
 
-div#content-leg-div.column1.leg-filter-dropdown {
-    width: 200px;
-    float: left;
+div#content-leg-div div.col2 {
+    width: 100px;
+    position:absolute;
+    left:220px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
 
-div#content-leg-div.column2 {
-    width:180px;
+div#content-leg-div div.col3 {
+    width: 100px;
+    position:absolute;
+    left:370px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
 
-div#content-leg-div.column2.leg-filter-dropdown {
-    width: 180px;
+div#content-leg-div div.col4 {
+    width: 100px;
+    position:absolute;
+    left:520px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
 
-div#content-leg-div.column3 {
-    width: 200px;
+div#content-leg-div div.col5 {
+    width: 130px;
+    position:absolute;
+    left:670px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
 
-div#content-leg-div.column3.leg-filter-dropdown {
-    width: 200px;
+div#content-leg-div div.col6 {
+    width: 100px;
+    position:absolute;
+    left:820px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
 
-div#content-leg-div.column4 {
-    width: 200px;
-    float: right;
+div#content-leg-div div.col7 {
+    width: 100px;
+    position:absolute;
+    left:970px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
 }
-
-div#content-leg-div.column4.leg-filter-dropdown {
-    width: 200px;
-    float: right;
-}
-
 
 .checkbox {
    position: relative;

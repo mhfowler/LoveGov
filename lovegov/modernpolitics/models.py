@@ -2299,6 +2299,7 @@ def parseDate(date):
 class CongressSession(LGModel):
     session = models.IntegerField(primary_key=True)
 
+
 #=======================================================================================================================
 #
 # Legislation
