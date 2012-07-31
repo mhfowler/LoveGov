@@ -205,63 +205,88 @@ def scriptCreateCongressAnswers(args=None):
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(3)
     metrics = {}
+
     for row in range(1,sheet.nrows):
         for column in xrange(1,sheet.ncols,4):
             amendment = None
             bill = None
+
             if sheet.cell(row,column).value != "":
-                congress = int(sheet.cell(row,column).value.replace("th",""))
+                congress_num = int(sheet.cell(row,column).value.replace("th",""))
+                session = CongressSession.lg.get_or_none(session=congress_num)
+
                 legislation = sheet.cell(row,column+2).value
                 if "Amdt" in legislation:
                     legislation = legislation.split('.')
                     chamber = legislation[0].lower()
                     number = int(legislation[2].strip())
-                    metricName = str(congress) + "_" + chamber + "_" + str(number)
-                    print str(congress) + "_" + chamber + "_" + str(number) + "_Amendment"
-                    if LegislationAmendment.objects.filter(chamber=chamber,session=congress,number=number).exists():
-                        amendment = LegislationAmendment.objects.get(chamber=chamber,session=congress,number=number)
-                    else:
+
+                    metricName = str(congress_num) + "_" + chamber + "_" + str(number)
+
+                    print str(congress_num) + "_" + chamber + "_" + str(number) + "_Amendment"
+
+                    amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
+                    if not amendment:
                         print "Couldn't find amendment " + metricName
+
                 else:
                     legislation = legislation.split('.')
+                    chamber = ''
+                    number = -1
+
                     if len(legislation) == 2:
                         chamber = legislation[0].lower()
                         number = int(legislation[1].strip())
+
                     elif len(legislation) == 3:
                         chamber = (legislation[0] + legislation[1]).lower()
                         number = int(legislation[2].strip())
-                    metricName = str(congress) + "_" + chamber + "_" + str(number)
+
+                    metricName = str(congress_num) + "_" + chamber + "_" + str(number)
+
                     print "Searching for " + metricName
-                    if Legislation.objects.filter(bill_session=congress,bill_number=number,bill_type=chamber).exists():
-                        bill = Legislation.objects.get(bill_session=congress,bill_number=number,bill_type=chamber)
-                    else:
+
+                    bill = Legislation.objects.filter(congress_session=session,bill_number=number,bill_type=chamber)
+                    if not bill:
                         print "Couldn't find bill " + metricName
+
                 answer_text = sheet.cell(row,0).value
                 answer_text = answer_text.encode('utf-8','ignore')
+
                 answer_value = sheet.cell(row,column+3).value
                 answer_value = answer_value.encode('utf-8','ignore')
+
                 if answer_value == "Yes":
                     answer_value = "+"
                 else:
                     answer_value = "-"
+
                 metrics[metricName] = 0
-                for electedofficial in ElectedOfficial.objects.all():
-                    votingrecord = None
-                    if bill is not None and VotingRecord.objects.filter(electedofficial=electedofficial,bill=bill,amendment=None).exists():
-                        votingrecord = VotingRecord.objects.filter(electedofficial=electedofficial,bill=bill,amendment=None)[0]
-                    elif amendment is not None and VotingRecord.objects.filter(electedofficial=electedofficial,amendment=amendment).exists():
-                        votingrecord = VotingRecord.objects.filter(electedofficial=electedofficial,amendment=amendment)[0]
-                    if votingrecord is not None:
-                        if answer_text and Answer.objects.filter(answer_text=answer_text).exists():
-                            if votingrecord.votekey == answer_value:
-                                answer = Answer.objects.get(answer_text=answer_text)
+
+                for congressman in UserProfile.objects.filter(elected_official=True):
+                    congress_vote = None
+
+                    if bill:
+                        congress_vote = CongressVote.lg.get_or_none(voter=congressman,votekey=answer_value,roll__legislation=bill)
+
+                    elif amendment:
+                        congress_vote = CongressVote.lg.get_or_none(voter=congressman,votekey=answer_value,roll__amendment=amendment)
+
+                    if congress_vote:
+                        if answer_text:
+
+                            answer = Answer.lg.get_or_none(answer_text=answer_text)
+                            if answer:
                                 answer_val = answer.value
-                                if Question.objects.filter(answers__answer_text=answer_text).exists():
-                                    question = Question.objects.get(answers__answer_text=answer_text)
-                                    response = UserResponse.lg.get_or_none(responder=electedofficial,question=question)
+
+                                question = Question.lg.get_or_none(answers__answer_text=answer_text)
+                                if question:
+                                    response = UserResponse.lg.get_or_none(responder=congressman,question=question)
+
                                     if not response:
-                                        response = UserResponse(responder=electedofficial,question=question,answer_val=answer_val,explanation="")
-                                        response.autoSave(creator=electedofficial)
+                                        response = UserResponse(responder=congressman,question=question,answer_val=answer_val,explanation="")
+                                        response.autoSave(creator=congressman)
+
                                     else:
                                         response.answer_val = answer_val
                                         response.save()
@@ -270,8 +295,10 @@ def scriptCreateCongressAnswers(args=None):
                                     metrics[metricName]+= 1
                                 else:
                                     print "Question doesn't exist"
+                            else:
+                                print "Couldn't find answer"
                         else:
-                            print "Couldn't find answer"
+                            print "Couldn't find answer text"
 
                 print metricName + " " + str(metrics[metricName])
     print metrics
@@ -293,7 +320,7 @@ def scriptCreateResponses(args=None):
                     print "Creating " + name
                     email = politician_name[0] + '_' + politician_name[1] + "@lovegov.com"
                     password = 'politician'
-                    politician = createUser(name,email,password,type="politician")
+                    politician = createUser(name,email,password)
                     politician.user_profile.confirmed = True
                     politician.user_profile.save()
                     #image_path = os.path.join(settings.PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")

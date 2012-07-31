@@ -247,7 +247,7 @@ TYPE_CHOICES = (
     ('G','group'),
     ('C','comment'),
     ('I','image'),
-    ('A','album'),
+    ('A','amendment'),
     ('Z','content-response'),
     ('D','discussion'),
     ('Y', 'persistent-debate'),
@@ -408,7 +408,7 @@ COMMITTEE_CHOICES = (
 # type vals
 TYPE_DICT = {'event':'E', 'petition':'P', 'news':'N', 'legislation':'L',
              'question':'Q','response':'R','group':'G','comment':'C',
-             'image':'I','album':'A','content-response':'Z','debate':'D',
+             'image':'I','amendment':'A','content-response':'Z','debate':'D',
              'motion':'M', 'forum':'F'}
 
 # bill types

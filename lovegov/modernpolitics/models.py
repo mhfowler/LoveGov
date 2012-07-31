@@ -221,7 +221,7 @@ class Topic(LGModel):
         return self.image.url
 
 
-class Tag(LGModel):
+class OfficeTag(LGModel):
     name = models.CharField(max_length=100)
 
 
@@ -1236,7 +1236,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Makes unique alias from name
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
-        alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
+        alias = str.lower((self.first_name.replace(" ","") + self.last_name))
         from lovegov.modernpolitics.helpers import genAliasSlug
         self.alias = genAliasSlug(alias)
         self.alias = alias
@@ -2025,7 +2025,7 @@ class Notification(Privacy):
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
     governmental = models.BooleanField(default=False)
-    tags = models.ManyToManyField("Tag",related_name='tag_set')
+    tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
 
     def autoSave(self):
         self.type = "O"
@@ -2307,11 +2307,11 @@ class Legislation(Content):
     bill_type = models.CharField(max_length=2)
     bill_number = models.IntegerField()
     # Bill Times
-    bill_updated = models.DateTimeField()
-    bill_introduced = models.DateField()
+    bill_updated = models.DateTimeField(null=True)
+    bill_introduced = models.DateField(null=True)
     # State
-    state_date = models.DateField()
-    state_text = models.CharField(max_length=50)
+    state_date = models.DateField(null=True)
+    state_text = models.CharField(max_length=50,null=True)
     # Title
     full_title = models.CharField(max_length=500,null=True)
     # Sponsors
@@ -2325,9 +2325,9 @@ class Legislation(Content):
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
     def getTitle(self):
-        if self.title and self.title is not '':
+        if self.title and self.title != '':
             return self.title
-        elif self.full_title and self.full_title is not '':
+        elif self.full_title and self.full_title != '':
             return self.full_title
         else:
             return 'No Legislation Title Available'
@@ -2339,6 +2339,14 @@ class Legislation(Content):
 
     def getActions(self):
         return self.legislation_actions.all()
+
+
+    def autoSave(self,creator=None,privacy='PUB'):
+        self.type = 'L'
+        if self.sponsor:
+            creator = self.sponsor
+            self.creator = creator
+        super(Legislation,self).autoSave(creator,privacy)
 
 #=======================================================================================================================
 #
@@ -2412,8 +2420,9 @@ class LegislationAction(LGModel):
 
         #Get state
         if XML.has_key('state'):
+            state = XML['state']
             already = already.filter( state = state ) # Refine duplicate filtering
-            self.state = XML['state']
+            self.state = state
 
         action = self # Make the current action yourself
         if already: # If an identical action exists
@@ -2422,9 +2431,9 @@ class LegislationAction(LGModel):
         action.save()
 
         for refer in XML.findChildren('reference',recursive=False):
-            reference = Reference.lg.get_or_none(label=refer.get('label'),ref=refer.get('ref'))
+            reference = LegislationReference.lg.get_or_none(label=refer.get('label'),ref=refer.get('ref'))
             if not reference:
-                reference = Reference(label=refer.get('label'),ref=refer.get('ref'))
+                reference = LegislationReference(label=refer.get('label'),ref=refer.get('ref'))
                 reference.save()
             action.references.add(reference)
 
@@ -2571,9 +2580,16 @@ class LegislationAmendment(Content):
     # Sponsors
     sponsor = models.ForeignKey(UserProfile,null=True)
     # Other
-    description = models.TextField(max_length=50000)
-    purpose = models.TextField(max_length=5000)
+    description = models.TextField(max_length=50000,null=True)
+    purpose = models.TextField(max_length=5000,null=True)
     amends_sequence = models.IntegerField(null=True)
+
+    def autoSave(self,creator=None,privacy='PUB'):
+        self.type = 'A'
+        if self.sponsor:
+            creator = self.sponsor
+            self.creator = creator
+        super(LegislationAmendment,self).autoSave(creator,privacy)
 
 
 #=======================================================================================================================
@@ -3623,7 +3639,6 @@ class Committee(Group):
 
     def autoSave(self):
         self.group_type = 'C'
-        self.save()
         super(Committee, self).autoSave()
 
     def joinMember(self, user, congress_session, role=None, privacy='PUB'):
@@ -4195,8 +4210,7 @@ class CommitteeJoined(GroupJoined):
 
     def autoSave(self):
         self.relationship_type = 'CJ'
-        self.save()
-        super(CommitteeJoined).autoSave()
+        super(CommitteeJoined, self).autoSave()
 
 ########################################################################################################################
 ########################################################################################################################
