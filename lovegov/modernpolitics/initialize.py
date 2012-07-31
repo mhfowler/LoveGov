@@ -763,7 +763,7 @@ def parseDate(date):
 # Begins Congress Initialization
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongress():
-    for num in range(112,108,-1):
+    for num in range(109,113):
         print num
         # Get/open current XML file
         filePath = '/data/govtrack/' + str(num) + "/people.xml"
@@ -873,23 +873,24 @@ def initializeXMLCongressman(personXML,image_root=''):
     lname = personXML['lastname'].encode('utf-8','ignore')
     name = fname+ " " +lname
 
-    # get birthday
-    birthday = None
-    if personXML.has_key('birthday'):
-        birthday = parseDate(personXML['birthday'])
+    # Search by facebook graph id (Duplicates galore)
+    if not user_prof and personXML.has_key('facebookgraphid') and personXML['facebookgraphid'].isdigit():
+        facebook_id = int( personXML['facebookgraphid'] )
+        user_prof = UserProfile.lg.get_or_none( facebook_id = facebook_id )
+        if user_prof:
+            print "found " + name + " by Facebook ID"
 
-    # Try to find this person by govtrack id
+    # Otherwise try to find this person by govtrack id
     govtrack_id = personXML.get('id')
-    if govtrack_id:
+    if not user_prof and govtrack_id:
         user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
-    # Otherwise search by name and birthday
-    if not user_prof:
-        user_prof = UserProfile.lg.get_or_none( first_name=fname , last_name=lname , dob=birthday )
+        if user_prof:
+            print "found " + name + " by Govtrack ID"
 
     # Otherwise make a new person
     if not user_prof:
         password = "congress"
-        email = name.replace(" ","-") + "-" + str(personXML['id'])
+        email = fname + str(govtrack_id)
 
         print "initializing " + name
         congressControl = createUser(name,email,password)
@@ -945,7 +946,7 @@ def initializeXMLCongressman(personXML,image_root=''):
 # Initialize all committee files and all committees
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCommittees():
-    for num in range(112,108,-1):
+    for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
 
         try:
