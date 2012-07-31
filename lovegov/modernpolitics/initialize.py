@@ -1130,6 +1130,7 @@ def parseLegislation(XML):
 
     # If we don't know what update this is, or this is the most recent update
     if not last_updated or not updated or (last_updated - updated).total_seconds() <= 0:
+        print "Updating Legislation: " + type + str(number)
         if updated:
             legislation.bill_updated = updated
         legislation.state_date = parseDateTime(XML.state.get('datetime'))
