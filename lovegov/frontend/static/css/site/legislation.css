@@ -1,7 +1,7 @@
 
 div#content-leg-div {
     position: absolute;
-    left: 50px;
+    left: 80px;
     top: 100;
     width: 1000px;
     border: 10px;
@@ -10,7 +10,7 @@ div#content-leg-div {
 
 div#content-leg-div div.content-filter-box.menu_toggle {
     position: absolute;
-    left: 50px;
+    left: 80px;
     top: 50px;
     width: 300px;
 }
@@ -30,7 +30,7 @@ div#content-leg-div.content-filter-box.menu_toggle.clicked {
 div#content-leg-div div.col1 {
     width: 100px;
     position:absolute;
-    left:100px;
+    left:70px;
     top:100px;
     text-align: center;
     border-style: solid;
@@ -40,7 +40,7 @@ div#content-leg-div div.col1 {
 div#content-leg-div div.col2 {
     width: 100px;
     position:absolute;
-    left:250px;
+    left:220px;
     top:100px;
     text-align: center;
     border-style: solid;
@@ -50,7 +50,7 @@ div#content-leg-div div.col2 {
 div#content-leg-div div.col3 {
     width: 100px;
     position:absolute;
-    left:400px;
+    left:370px;
     top:100px;
     text-align: center;
     border-style: solid;
@@ -60,7 +60,7 @@ div#content-leg-div div.col3 {
 div#content-leg-div div.col4 {
     width: 100px;
     position:absolute;
-    left:550px;
+    left:520px;
     top:100px;
     text-align: center;
     border-style: solid;
@@ -70,7 +70,7 @@ div#content-leg-div div.col4 {
 div#content-leg-div div.col5 {
     width: 130px;
     position:absolute;
-    left:700px;
+    left:670px;
     top:100px;
     text-align: center;
     border-style: solid;
@@ -80,7 +80,7 @@ div#content-leg-div div.col5 {
 div#content-leg-div div.col6 {
     width: 100px;
     position:absolute;
-    left:850px;
+    left:820px;
     top:100px;
     text-align: center;
     border-style: solid;
@@ -90,7 +90,7 @@ div#content-leg-div div.col6 {
 div#content-leg-div div.col7 {
     width: 100px;
     position:absolute;
-    left:1000px;
+    left:970px;
     top:100px;
     text-align: center;
     border-style: solid;
