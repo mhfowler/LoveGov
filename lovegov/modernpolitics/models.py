@@ -2480,7 +2480,7 @@ class LegislationVote(LegislationAction):
     roll = models.IntegerField(null=True)
     where = models.CharField(max_length=4, null=True)
     result = models.CharField(max_length=50, null=True)
-    suspension = models.BooleanField(default=False)
+    suspension_vote = models.BooleanField(default=False)
 
 
     def parseGovtrack(self, XML,legislation=None,amendment=None):
@@ -2497,7 +2497,7 @@ class LegislationVote(LegislationAction):
         if XML.has_key('result'):
             self.result = XML['result']
         if XML.has_key('suspension'):
-            self.suspension = ( 1 == int(XML['suspension']) )
+            self.suspension_vote = ( 1 == int(XML['suspension']) )
 
         super(LegislationVote, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
