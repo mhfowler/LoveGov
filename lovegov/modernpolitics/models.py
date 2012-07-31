@@ -1236,7 +1236,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Makes unique alias from name
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
-        alias = str.lower((self.first_name.replace(" ","") + self.last_name))
+        alias = self.first_name.replace(" ","") + self.last_name
+        if type(alias) == unicode:
+            alias = alias.encode('utf-8','ignore')
+        alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
         self.alias = genAliasSlug(alias)
         self.alias = alias

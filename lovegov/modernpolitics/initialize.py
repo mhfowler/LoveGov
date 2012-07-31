@@ -443,6 +443,18 @@ def initializeDB():
         scriptCreateCongressAnswers()
 
 
+def initializeGovernmentDatabase():
+    from scripts.alpha import scriptCreateCongressAnswers
+    initializeCongress()
+    #scriptCreatePresidentialCandidates()
+    initializeCommittees()
+    initializeLegislation()
+    initializeLegislationAmendments()
+    initializeVotingRecord()
+    scriptCreateCongressAnswers()
+
+
+
 def setTopicAlias():
     for t in Topic.objects.all():
         t.makeAlias()
