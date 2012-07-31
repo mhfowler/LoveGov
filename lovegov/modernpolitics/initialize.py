@@ -1060,8 +1060,6 @@ def initializeLegislation():
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n" \
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    count = 0
-
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills/"
         try:
@@ -1071,7 +1069,6 @@ def initializeLegislation():
             continue
 
         for infile in fileListing:
-            count += 1
             db.reset_queries()
 
 
@@ -1087,9 +1084,6 @@ def initializeLegislation():
             if result != '':
                 print "[ERROR]: " + result + '.  Bill was not initialized'
                 missed_files.append((filePath + infile,result))
-
-            if count%100 == 0:
-                print str(count) + " files checked"
 
     return missed_files
 
@@ -1124,8 +1118,11 @@ def parseLegislation(XML):
     # Check for bill existence and get bill
     legislation = Legislation.lg.get_or_none( congress_session=session , bill_number=number , bill_type=type , bill_introduced=introduced )
     if not legislation:
+        print "Initializing Legislation: " + type + str(number)
         legislation = Legislation( congress_session=session , bill_type=type , bill_number=number , bill_introduced=introduced )
         legislation.autoSave()
+    else:
+        print "Found Legislation: " + type + str(number)
 
     # Update basic bill info
     updated = parseDateTime(XML.bill.get('updated'))
@@ -1269,7 +1266,6 @@ def initializeLegislationAmendments():
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
 
@@ -1280,7 +1276,6 @@ def initializeLegislationAmendments():
             continue
 
         for infile in fileListing:
-            count += 1
             db.reset_queries()
 
             try:
@@ -1295,9 +1290,6 @@ def initializeLegislationAmendments():
             if result != '':
                 print "[ERROR]: " + result + '.  Amendment was not initialized'
                 missed_files.append((filePath + infile,result))
-
-            if count%100 == 0:
-                print str(count) + " files checked"
 
     return missed_files
 
@@ -1342,8 +1334,11 @@ def parseLegislationAmendment(XML):
     # Find or initialize the amendment
     amendment = LegislationAmendment.lg.get_or_none(congress_session=session,amendment_type=type,amendment_number=number)
     if not amendment:
+        print "Initializing Amendment: " + type + str(number)
         amendment = LegislationAmendment(congress_session=session,amendment_type=type,amendment_number=number,legislation=legislation)
         amendment.autoSave()
+    else:
+        print "Found Amendment: " + type + str(number)
 
     # Get update dates
     updated = None
