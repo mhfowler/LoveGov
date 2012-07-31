@@ -887,39 +887,6 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
-def legislationFilter(legs, filterOrder):
-    legs = Legislation.objects.all
-    vals['session'], vals['type'], vals['status'], vals['introduced'], vals['sponsors'], vals['committees'], vals['subject'], vals['number'] = session, type, status,introducedRange, sponsors, committees, subject, number
-    vals['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
-    vals['types'] = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
-    vals['statuses'] = [x['state_text'] for x in Legislation.objects.values('state_text').distinct()]
-    vals['billsIntroduced'] = [x['bill_introduced'] for x in Legislation.objects.values('bill_introduced').distinct()]
-    vals['sponsors'] = [x['sponsor'] for x in Legislation.objects.values('sponsor').distinct()]
-    vals['committeeLists'] = [x['committees'] for x in Legislation.objects.values('committees').distinct()]
-
-    filterOrder
-
-
-
-
-
-
-
-    for vals in vals:
-        if val_checked==1:
-            vals==1
-        else:
-            vals==0
-    legs = Legislation.objects.filter(lambda vals: vals==1, [type, number, introduced, sponsors, committees, subject])
-    if len(legs)==0:
-        vals['error'] = "No legislation found with the given parameters."
-    else:
-        leg = legs[0]
-        vals['leg_titles'] = leg.legislationtitle_set.all()
-        vals['leg'] = leg
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-filter.html', vals=vals, request=request)
-
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------

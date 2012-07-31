@@ -4947,13 +4947,14 @@ function loadBlog() {
  *
  **********************************************************************************************************************/
 
-function queryCheckedAttribute () {
-    $(".checkbox").bindOnce("clickoutside", function(event) {
-
-    
-    });
+function queryCheckedAttribute (checkbox) {
+     if ($(this).hasClass('clicked')) {
+        $(".checkbox").bindOnce("clickoutside", function(event) {
+            event.preventDefault();
+            checkbox.addClass("querychecked");
+        });
+     }
 }
-
 
 function bindLinks() {
     $(".bind_link").bindOnce("click.link", function(event) {
