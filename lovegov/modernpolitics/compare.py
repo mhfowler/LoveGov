@@ -96,7 +96,7 @@ def updateAllContentLinks(debug=False):
 #-----------------------------------------------------------------------------------------------------------------------
 def updateUserComparisons(debug=False):
     scheduled_logger.debug("UPDATE USER COMPARISONS")
-    users = UserProfile.objects.filter(user_type='U')
+    users = UserProfile.objects.filter(ghost=False)
     i=0
     for a in users:
         for b in users[i:]:

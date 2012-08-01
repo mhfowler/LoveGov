@@ -77,6 +77,7 @@ pip install python-memcached
 BeautifulSoup	
 http://www.crummy.com/software/BeautifulSoup/
 pip install BeautifulSoup
+pip install beautifulsoup4
 
 xlrd
 http://pypi.python.org/pypi/xlrd
@@ -119,6 +120,10 @@ then run "python setup.py install"
 
 django-extensions
 pip install django-extensions
+
+python-boto django-storages
+pip install django-storages
+pip install boto
 
 ********** GETTING STARTED ************
 

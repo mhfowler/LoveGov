@@ -90,6 +90,10 @@ HOT_WINDOW = 3 # number of days to count votes within when using hot algo
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
+# for Congress Parsing
+CONGRESS_YEAR_OFFSET = 1787 ## CongressNum*2 + CONGRESS_YEAR_OFFSET = Congress Year Start
+CURRENT_CONGRESS = 112
+
 # for chunksize comparison
 COMPARISON_CHUNKSIZE = 2
 
@@ -243,7 +247,7 @@ TYPE_CHOICES = (
     ('G','group'),
     ('C','comment'),
     ('I','image'),
-    ('A','album'),
+    ('A','amendment'),
     ('Z','content-response'),
     ('D','discussion'),
     ('Y', 'persistent-debate'),
@@ -288,6 +292,8 @@ RELATIONSHIP_CHOICES = (
     ('MV','motion_voted'),
     ('DV','debate_voted'),
     ('DM', 'debate_messaged'),
+    ('OH', 'office_held'),
+    ('CJ', 'committee_joined')
     )
 
 RELATIONSHIP_DICT = {}
@@ -305,7 +311,7 @@ ACTION_MODIFIERS = (
     ('S', 'stop'),
     ('L', 'like'),
     ('U', 'unvoted')
-        )
+)
 
 # types of action which user should be notified about
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
@@ -316,6 +322,13 @@ NOTIFY_MODIFIERS = {
     'FO': ['A','D','R']
 }
 
+
+GOVTRACK_VOTES = (
+    ('+','Yea'),
+    ('-','Nay'),
+    ('P','Present'),
+    ('0','Not Voting')
+)
 
 
 # Timedelta that it takes for aggregate notifications to go stale.
@@ -337,8 +350,9 @@ CONTENT_PRIVACY_CHOICES = (
 GROUP_TYPE_CHOICES = (
     ('N','network'),
     ('P','party'),
+    ('C','committee'),
     ('U','user'),
-    ('S', 'system')
+    ('S','system')
 )
 
 # types of group government
@@ -365,15 +379,6 @@ PARTY_TYPE = (
     ('T', 'tea')
 )
 
-# types of users
-USER_CHOICES =  (
-    ('U','user'),
-    ('P','politician'),
-    ('S','senator'),
-    ('R','representative'),
-    ('G', 'ghost')
-)
-
 # types of motions
 MOTION_CHOICES = (
     ('other', 'Other'),
@@ -390,10 +395,20 @@ PERMISSION_CHOICES = (
     ('C', 'campaign')
 )
 
+COMMITTEE_CHOICES = (
+    ('S','senate'),
+    ('H','house'),
+    ('J','joint committee'),
+    ('SS','senate subcommittee'),
+    ('HS','house subcommittee'),
+    ('JS','joint subcommittee'),
+    ("O","other")
+)
+
 # type vals
 TYPE_DICT = {'event':'E', 'petition':'P', 'news':'N', 'legislation':'L',
              'question':'Q','response':'R','group':'G','comment':'C',
-             'image':'I','album':'A','content-response':'Z','debate':'D',
+             'image':'I','amendment':'A','content-response':'Z','debate':'D',
              'motion':'M', 'forum':'F'}
 
 # bill types
@@ -553,7 +568,8 @@ ACTIONS = [
     'groupInviteResponse',
     'groupInvite',
     'getLinkInfo',
-    'removeMembers'
+    'removeMembers',
+    'createMotion'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
@@ -621,5 +637,5 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'addAdmins',
     'removeAdmin',
     'groupInviteResponse',
-    'groupInvite'
+    'groupInvite',
 ]

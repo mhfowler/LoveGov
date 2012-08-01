@@ -44,7 +44,7 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',))
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages'))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 
@@ -53,8 +53,12 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 #
 ########################################################################################################################
 
-# URL prefix for static files.
-STATIC_URL = settings.STATIC_URL
+AWS_ACCESS_KEY_ID = "AKIAJTOKT24MX6BS3NKA"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = "lovegov"
+
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+STATIC_URL = 'https://s3.amazonaws.com/lovegov'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 MEDIA_URL =  settings.MEDIA_URL

@@ -38,6 +38,11 @@ function rebindFunction()
             loadRightSideBar();
             loadShareButton();
             break;
+        case 'motion':
+            loadThread();
+            loadRightSideBar();
+            loadShareButton();
+            break;
         case 'topic':                                           // /topic/<topic_name>
             loadRightSideBar();
             loadThread();
@@ -2719,11 +2724,52 @@ function loadCreateMotion() {
     $(".motion_action_select").bindOnce("change.motion", function(event) {
        var action = $(this).val();
        $(".motion_action_modifier").hide();
-       if (action == "add moderator") {
-           $(".add_moderator").show();
-       }
+       var class_name = action + "_modifier";
+       $("." + class_name).show();
     });
 
+    $('select.add_moderator_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.remove_moderator_select').select2({
+        placeholder: "Enter a moderator,"
+    });
+
+    $('select.motion_action_select').select2({
+        placeholder: "Choose an action."
+    });
+
+    $(".create_motion_button").bindOnce("click.motion", function(event) {
+        event.preventDefault();
+        var action =  $(".motion_action_select").val();
+        var because = $(".because_textarea").val();
+        var g_id = $(this).data('g_id');
+        var to_post = {'action': 'createMotion', 'g_id':g_id,
+            'motion_type':action, 'because':because};
+        if (action == 'add_moderator') {
+            to_post['moderator_id'] = $(".add_moderator_select").val();
+        }
+        if (action == 'remove_moderator') {
+            to_post['moderator_id'] = $(".remove_moderator_select").val();
+        }
+        if (action == 'coup_detat') {
+            to_post['government_type'] = "traditional";
+        }
+        ajaxPost({
+            data: to_post,
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success) {
+                    location.reload();
+                }
+                else {
+                    alert(data);
+                }
+            }
+        });
+    });
 }
 
 
@@ -3241,6 +3287,9 @@ function vote(wrapper, content_id, v)
             if (my_vote==0) { neutral(wrapper); }
             if (my_vote==-1) { dislike(wrapper); }
             wrapper.find(".status").text(status);
+            if (returned.motion!=0) {
+                location.reload();
+            }
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -4897,3 +4946,12 @@ function loadLogin() {
 function loadBlog() {
     alert("blog!");
 }
+
+
+
+/***********************************************************************************************************************
+ *h
+ *      -Legislation checkboxes
+ *
+ **********************************************************************************************************************/
+

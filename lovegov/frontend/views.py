@@ -48,7 +48,7 @@ def framedResponse(request, html, url, vals):
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
-        vals = {}
+        vals = {'STATIC_URL':settings.STATIC_URL}
         try:
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
@@ -599,7 +599,7 @@ def profile(request, alias=None, vals={}):
             vals['json'] = json
 
             # Get users followers
-            if user_prof.user_type == "U":
+            if user_prof.isNormal():
                 prof_follow_me = list(user_prof.getFollowMe())
                 for follow_me in prof_follow_me:
                     comparison = getUserUserComparison(user_prof, follow_me)
@@ -671,7 +671,7 @@ def profile(request, alias=None, vals={}):
                 vals['num_notifications'] = num_notifications
 
             # get politician page values
-            if user_prof.user_type != "U":
+            if not user_prof.isNormal():
                 supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
                 if supported:
                     vals['yousupport'] = supported.confirmed
@@ -771,6 +771,11 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = all_members[:num_members]
     vals['num_members'] = num_members
 
+    members = list( all_members )
+    for admin in admins:
+        members.remove(admin)
+    vals['normal_members'] = members
+
     vals['num_group_members'] = group.num_members
 
     followers = list(viewer.getFollowMe())
@@ -783,6 +788,7 @@ def group(request, g_id=None, vals={}):
     html = ajaxRender('site/pages/group/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
+
 
 def histogramDetail(request, g_id, vals={}):
 
@@ -862,17 +868,17 @@ def about(request, start="video", vals={}):
 def legislation(request, session=None, type=None, number=None, vals={}):
     vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
-        vals['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
+        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
         return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(bill_session=session)
+    legs = Legislation.objects.filter(congress_session=session)
     if type==None:
-        type_list = [x['bill_type'] for x in Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
+        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
         vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
         return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
     if number==None:
-        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
+        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
+    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
         vals['error'] = "No legislation found with the given parameters."
     else:
@@ -880,6 +886,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -916,9 +923,9 @@ def matchSocial(request, vals={}):
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
-        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
-        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+        obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
+        paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
+        romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
     else:
         obama = viewer
         paul = viewer
@@ -933,8 +940,8 @@ def matchPresidential(request, vals={}):
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
-        brown = ElectedOfficial.objects.get(first_name="Scott", last_name="Brown")
+        elizabeth = UserProfile.lg.get_or_none(first_name="Elizabeth", last_name="Warren", politician=True)
+        brown = UserProfile.lg.get_or_none(first_name="Scott", last_name="Brown", politician=True)
         voters = getLoveGovGroup()
     else:
         elizabeth = viewer
@@ -956,12 +963,20 @@ def matchRepresentatives(request, vals={}):
     if viewer.location:
         address = viewer.location
         congressmen = []
-        representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
-        if representative:
-            congressmen.append(representative)
-        senators = Senator.objects.filter(congresssessions=112,state=address.state)
-        for senator in senators:
-            congressmen.append(senator)
+        congress = CongressSession.lg.get_or_none(session=CURRENT_CONGRESS)
+        senator_tag = OfficeTag.lg.get_or_none(name="senator")
+        rep_tag = OfficeTag.lg.get_or_none(name="representative")
+        if congress:
+            rep_office = rep_tag.tag_offices.filter(state=address.state,district=address.district)[0]
+            representative = rep_ofice.office_terms.filter(end_date__gte=datetime.date.today())[0]
+            if representative:
+                congressmen.append(representative)
+
+            senator_office = senator_tag.tag_offices.filter(state=address.state)[0]
+            senators = map( lambda x : x.user , senator_office.office_terms.filter(end_date__gte=datetime.date.today()) )
+            for senator in senators:
+                congressmen.append(senator)
+
         vals['congressmen'] = congressmen
         vals['state'] = address.state
         vals['district'] = address.district
@@ -1025,8 +1040,22 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    html = ajaxRender('site/pages/content/petition_detail.html', vals, request)
-    url = '/petition/' + str(petition.id)
+    html = ajaxRender('site/pages/content/petition/petition_detail.html', vals, request)
+    url = petition.get_url()
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# detail of motion with attached forum
+#-----------------------------------------------------------------------------------------------------------------------
+def motionDetail(request, m_id, vals={}):
+
+    motion = Motion.objects.get(id=m_id)
+    vals['motion'] = motion
+
+    contentDetail(request=request, content=motion, vals=vals)
+    html = ajaxRender('site/pages/content/motion/motion_detail.html', vals, request)
+    url = motion.get_url()
+
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1038,7 +1067,7 @@ def newsDetail(request, n_id, vals={}):
     contentDetail(request=request, content=news, vals=vals)
 
     html = ajaxRender('site/pages/content/news_detail.html', vals, request)
-    url = '/news/' + str(news.id)
+    url =  news.get_url()
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -18,7 +18,7 @@
     </div>
     <div class="top-search">
         <input type="text" id="searchbar" class="input_default" placeholder="Search for people, groups, or discussions">
-        <img id="searchglass" src="/static/images/searchglass.png"/>
+        <img id="searchglass" src="{{ STATIC_URL }}/images/searchglass.png"/>
         <div id="search-dropdown" style="display:none">
             <!-- For Search AutoComplete -->
         </div>
@@ -47,12 +47,12 @@
                             <h5>Notifications</h5>
                             <div class="notifications-header-border"></div>
                             <div class="notifications-ajax-load" style="display:none">
-                                <img src="/static/images/ajax-loader.gif"/>
+                                <img src="{{ STATIC_URL }}/images/ajax-loader.gif"/>
                             </div>
                         </div>
                         <!-- For Notifications -->
                     </div>
-                    <img class="security-mode security_setting tooltip-bottom" data-original-title="Privacy made simple.  Click to toggle between private mode (lock) and public mode (people)."  src="/static/images/public.png"/>
+                    <img class="security-mode security_setting tooltip-bottom" data-original-title="Privacy made simple.  Click to toggle between private mode (lock) and public mode (people)."  src="{{ STATIC_URL }}/images/public.png"/>
                 </div>
             </div>
 
@@ -104,7 +104,7 @@
                         <table>
                             <tr>
                                 <td><a class="do-ajax-link" href="{{ viewer.getAlphaURL }}">View Profile</a></td>
-                                <td><a class="security_setting">Privacy</a><img class="security_setting tooltip-bottom" data-original-title="" src="/static/images/public.png"/></td>
+                                <td><a class="security_setting">Privacy</a><img class="security_setting tooltip-bottom" data-original-title="" src="{{ STATIC_URL }}/images/public.png"/></td>
                             </tr>
                         </table>
                     </div>

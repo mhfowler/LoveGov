@@ -1,7 +1,123 @@
-#content-leg-div {
-	width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 40px;
-	font-family: "Helvetica";
+
+@font-face {
+    font-family: "Gill Sans Std Light";
+    src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+    font-family: "Gill Sans Std";
+    src: url(../GillSansStd.otf); }
+
+@font-face {
+    font-family: "Sonus Light";
+    src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+@font-face {
+    font-family: "Gill Sans Std Light";
+    src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+    font-family: "Gill Sans Std";
+    src: url(../GillSansStd.otf); }
+
+@font-face {
+    font-family: "Sonus Light";
+    src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+
+
+div.sidebar-box {
+    position: fixed;
+    left: 140px;
+    top: 100px;
+    height: 800px;
+    width: 300px;
+    padding: 20px;
+    overflow: auto;
 }
+
+div.sidebar-box div.div-toggle {
+    position:fixed;
+    height:100px;
+    width: 300px;
+    left: 150px;
+    top: 100px;
+}
+
+div.sidebar-box div.sidebar {
+    position: fixed;
+    left: 140px;
+    top: 150px;
+    height: 800px;
+    width: 250px;
+    padding: 20px;
+    overflow: auto;
+}
+
+div.sidebar-box div.sidebar div.col1 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 120px;
+    padding: 20px;
+    text-align: left;
+    border-style: solid;
+    overflow: auto;
+}
+
+div.sidebar-box div.sidebar div.col2 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 160px;
+    padding: 20px;
+    text-align: left;
+    border-style: solid;
+    overflow: auto;
+}
+
+div.sidebar-box div.sidebar div.col3 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 200px;
+    padding: 20px;
+    text-align: left;
+    border-style: solid;
+    overflow: auto;
+}
+
+div.sidebar-box div.sidebar div.col4 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 240px;
+    padding: 20px;
+    text-align: left;
+    border-style: solid;
+    overflow: auto;
+}
+
+.checkbox {
+   position: relative;
+   top: 5px;
+   right: 5px;
+}
+
+.label {
+    text-align: left;
+}
+
+
+
+
