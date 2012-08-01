@@ -280,13 +280,13 @@ div#top
           div.img-holder-account
           {
             @extend .img-holder;
-            background-image:url('/static/images/user-menu/gear_red.png');
+            @include staticImage($rel-path:'/images/user-menu/gear_red.png');
           }
 
           div.img-holder-logout
           {
             @extend .img-holder;
-            background-image:url('/static/images/user-menu/logout.png');
+            @include staticImage($rel-path:'/images/user-menu/logout.png');
           }
 
           &:hover
@@ -300,7 +300,7 @@ div#top
 
             div.img-holder-account
             {
-              background-image:url('/static/images/user-menu/gear_white.png');
+              @include staticImage($rel-path:'/images/user-menu/gear_white.png');
             }
           }
         }
