@@ -12,11 +12,11 @@ def createPoliticianProfiles(sheet):
         firstname = name[0]
         lastname = name[1]
         fullname = name[0] + " " + name[1]
-        if not Politician.objects.filter(first_name=name[0],last_name=name[1]).exists() and not ElectedOfficial.objects.filter(first_name=name[0],last_name=name[1]).exists():
+        if not UserProfile.objects.filter(first_name=name[0],last_name=name[1],politician=True):
             print "Creating " + fullname
             email = firstname + "@lovegov.com"
             password = 'president'
-            politician = createUser(fullname,email,password,type="politician")
+            politician = createUser(fullname,email,password)
             politician.user_profile.confirmed = True
             politician.user_profile.save()
             image_path = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/presidentialCandidates/' + lastname.lower() + ".jpg")
