@@ -4947,3 +4947,17 @@ function loadBlog() {
  *
  **********************************************************************************************************************/
 
+function checkboxQuery() {
+    $(".leg_checkbox").bindOnce('click',function(event) {
+        event.preventDefault();
+        if ($(".leg_checkbox").hasClass("checked")) {
+            $(".leg_checkbox").removeClass("checked");
+            $(".leg_checkbox").removeAttr('checked');
+        }
+        else {
+            $(".leg_checkbox").addClass("checked");
+            $(".leg_checkbox").addAttr('checked');
+        }
+    });
+}
+
