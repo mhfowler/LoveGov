@@ -596,7 +596,7 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias).downcast()
+            user_prof = UserProfile.objects.get(alias=alias)
             comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
