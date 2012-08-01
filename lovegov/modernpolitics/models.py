@@ -2392,7 +2392,7 @@ class LegislationAction(LGModel):
     amendment = models.ForeignKey('LegislationAmendment', null=True, related_name='amendment_actions')
     committee = models.ForeignKey('Committee', null=True, related_name="legislation_activity")
     state = models.TextField(max_length=100, null=True)
-    text = models.TextField(max_length=500, null=True)
+    text = models.TextField(max_length=2000, null=True)
     action_type = models.CharField(max_length=1, choices=ACTION_CHOICES)
     references = models.ManyToManyField('LegislationReference')
 

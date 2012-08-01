@@ -774,6 +774,7 @@ def initializeCongress():
         except:
             print '[ERROR]: Could not open ' + filePath
             continue
+
         parsedXML = BeautifulSoup(fileXML)
         initializeCongressFile(parsedXML,image_root)
 
@@ -959,6 +960,7 @@ def initializeCommittees():
         except:
             print '[ERROR]: Could not open ' + filePath
             continue
+
         parsedXML = BeautifulSoup(fileXML)
 
         congress_session = CongressSession.lg.get_or_none(session=num)
@@ -1069,21 +1071,22 @@ def initializeLegislation():
             continue
 
         for infile in fileListing:
-            db.reset_queries()
+            if not '.txt' in infile:
+                db.reset_queries()
 
 
-            try:
-                fileXML = open(filePath + infile)
-            except:
-                print '[ERROR]: Could not open ' + filePath + infile
-                continue
+                try:
+                    fileXML = open(filePath + infile)
+                except:
+                    print '[ERROR]: Could not open ' + filePath + infile
+                    continue
 
-            parsedXML = BeautifulSoup(fileXML)
-            result = parseLegislation(parsedXML)
+                parsedXML = BeautifulSoup(fileXML)
+                result = parseLegislation(parsedXML)
 
-            if result != '':
-                print "[ERROR]: " + result + '.  Bill was not initialized'
-                missed_files.append((filePath + infile,result))
+                if result != '':
+                    print "[ERROR]: " + result + '.  Bill was not initialized'
+                    missed_files.append((filePath + infile,result))
 
     return missed_files
 
@@ -1282,20 +1285,21 @@ def initializeLegislationAmendments():
             continue
 
         for infile in fileListing:
-            db.reset_queries()
+            if not '.txt' in infile:
+                db.reset_queries()
 
-            try:
-                fileXML = open(filePath + infile)
-            except:
-                print '[ERROR]: Could not open ' + filePath + infile
-                continue
+                try:
+                    fileXML = open(filePath + infile)
+                except:
+                    print '[ERROR]: Could not open ' + filePath + infile
+                    continue
 
-            parsedXML = BeautifulSoup(fileXML)
-            result = parseLegislationAmendment(parsedXML)
+                parsedXML = BeautifulSoup(fileXML)
+                result = parseLegislationAmendment(parsedXML)
 
-            if result != '':
-                print "[ERROR]: " + result + '.  Amendment was not initialized'
-                missed_files.append((filePath + infile,result))
+                if result != '':
+                    print "[ERROR]: " + result + '.  Amendment was not initialized'
+                    missed_files.append((filePath + infile,result))
 
     return missed_files
 
@@ -1439,7 +1443,6 @@ def initializeVotingRecord():
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    count = 0
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/rolls/"
 
@@ -1450,24 +1453,21 @@ def initializeVotingRecord():
             continue
 
         for infile in fileListing:
-            count += 1
-            db.reset_queries()
+            if not '.txt' in infile:
+                db.reset_queries()
 
-            try:
-                fileXML = open(filePath + infile)
-            except:
-                print '[ERROR]: Could not open ' + filePath + infile
-                continue
+                try:
+                    fileXML = open(filePath + infile)
+                except:
+                    print '[ERROR]: Could not open ' + filePath + infile
+                    continue
 
-            parsedXML = BeautifulSoup(fileXML)
-            result = parseCongressRoll(parsedXML)
+                parsedXML = BeautifulSoup(fileXML)
+                result = parseCongressRoll(parsedXML)
 
-            if result != '':
-                print "[ERROR]: " + result + '.  CongressRoll was not initialized'
-                missed_files.append((filePath + infile,result))
-
-            if count%500 == 0:
-                print str(count) + " files checked"
+                if result != '':
+                    print "[ERROR]: " + result + '.  CongressRoll was not initialized'
+                    missed_files.append((filePath + infile,result))
 
     return missed_files
 
@@ -1538,7 +1538,7 @@ def parseCongressRoll(XML):
                 ref = XML.amendment['ref']
 
                 if ref == 'bill-serial':
-                    num = XML.amendment.get('number')
+                    num = int(XML.amendment.get('number'))
                     if num and legislation:
                         amendments = legislation.legislation_amendments.all()
                         if (num - 1) < len(amendments):
@@ -1557,7 +1557,8 @@ def parseCongressRoll(XML):
             if amendment_type and amendment_number and amendment_session:
                 amendment = LegislationAmendment.lg.get_or_none(amendment_type=amendment_type,amendment_number=amendment_number,congress_session=amendment_session)
                 if amendment:
-                    congress_roll.amendment = amendment
+                    congress_roll.\
+                    amendment = amendment
 
 
     updated = None
