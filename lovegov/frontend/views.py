@@ -612,7 +612,6 @@ def profile(request, alias=None, vals={}):
                 prof_follow_me.sort(key=lambda x:x.result,reverse=True)
                 vals['prof_follow_me'] = prof_follow_me[0:5]
             else:       # get politician supporters
-                user_prof = user_prof.downcast()
                 prof_support_me = user_prof.getSupporters()
                 vals['prof_support_me'] = prof_support_me[0:5]
 

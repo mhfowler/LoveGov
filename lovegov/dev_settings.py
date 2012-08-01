@@ -1,4 +1,5 @@
 import settings
+from lovegov import s3_configuration
 
 LOCAL = False
 DEBUG = True
@@ -53,11 +54,9 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 ########################################################################################################################
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
-AWS_ACCESS_KEY_ID = "AKIAJTOKT24MX6BS3NKA"
-AWS_SECRET_ACCESS_KEY = "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"
-AWS_STORAGE_BUCKET_NAME = "lovegov"
-
+AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 STATIC_URL = 'https://s3.amazonaws.com/lovegov'
 
