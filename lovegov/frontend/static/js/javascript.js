@@ -90,7 +90,8 @@ function rebindFunction()
             loadLogin();
             break;
         case 'legislation':                                 //legislation pages
-            checkboxQuery();
+            checkSession();
+            Uncheck();
             break;
         default:
             break
@@ -4950,17 +4951,22 @@ function loadBlog() {
  *
  **********************************************************************************************************************/
 
-function checkboxQuery() {
-    $(".leg_checkbox").bindOnce('click',function(event) {
-        event.preventDefault();
-        if ($(".leg_checkbox").hasClass("checked")) {
-            $(".leg_checkbox").removeClass("checked");
-            $(".leg_checkbox").removeAttr('checked');
-        }
+function checkSession() {
+    if ($("#leg_session").is(':checked')) {
+    $("#leg_session").click(function() {
+            var checkbox = $("#leg_session");
+            Uncheck(checkbox);
+        });
+    }
         else {
-            $(".leg_checkbox").addClass("checked");
-            $(".leg_checkbox").addAttr('checked');
+            $("#leg_session").attr('checked',true);
         }
-    });
 }
+
+
+
+function Uncheck(checkbox) {
+    checkbox.attr('checked',true);
+}
+
 
