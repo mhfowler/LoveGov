@@ -115,7 +115,7 @@ div.linear-wrapper {
               div.comments-bubble {
                 position:relative;
                 display:block;
-                background-image: url('/static/images/icons/comments.png');
+                @include staticImage($rel-path:'/images/icons/comments.png');
                 background:contain;
                 width:35px;
                 height:35px;
@@ -129,7 +129,7 @@ div.linear-wrapper {
                 }
               }
               div.comments-bubble:hover {
-                background-image: url('/static/images/icons/comments-filled.png');
+                @include staticImage($rel-path:'/images/icons/comments-filled.png');
                 div.comments-num {
                   color:white;
                 }

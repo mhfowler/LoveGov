@@ -454,7 +454,7 @@ div.motion-modal {
   text-align: left;
 
   div.create-motion-icon {
-    background-image: url('/static/images/icons/Create_Motion.png');
+    @include staticImage($rel-path:'/images/icons/Create_Motion.png');
     background:contain;
     width:80px;
     height:80px;

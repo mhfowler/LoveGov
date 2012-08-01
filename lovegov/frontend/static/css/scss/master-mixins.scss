@@ -399,7 +399,7 @@
 
 @mixin edit-link($side-length:16px)
 {
-    background-image: url('/static/images/edit-pencil.png');
+    @include staticImage($rel-path:'/images/edit-pencil.png');
     background-size: $side-length $side-length;
     width: $side-length;
     height: $side-length;
@@ -408,7 +408,7 @@
 
     &:hover
     {
-      background-image: url('/static/images/edit-pencil-blue.png');
+      @include staticImage($rel-path:'/images/edit-pencil-blue.png');
     }
 
 }
@@ -419,3 +419,12 @@
   -khtml-opacity: $opacity;
   opacity: $opacity;
 }
+
+
+// static images
+@mixin staticImage($rel-path)
+{
+  background-image: url(#{$STATIC_URL}#{$rel-path});
+}
+
+
