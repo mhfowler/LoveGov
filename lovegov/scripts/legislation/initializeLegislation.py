@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 if __name__ == "__main__":
-    from initialize import initializeLegislation
+    from lovegov.modernpolitics.initialize import initializeLegislation
     from pprint import pprint
 
     print "================= initializeLegislation() ==================="

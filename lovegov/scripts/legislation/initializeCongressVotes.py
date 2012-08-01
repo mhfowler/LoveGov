@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 if __name__ == "__main__":
-    from initialize import initializeVotingRecord
+    from lovegov.modernpolitics.initialize import initializeVotingRecord
     from pprint import pprint
 
     print "================= initializeVotingRecord() ==================="

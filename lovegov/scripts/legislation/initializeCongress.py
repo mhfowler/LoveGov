@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 if __name__ == "__main__":
-    from initialize import initializeCongress
-    from initialize import initializeCommittees
+    from lovegov.modernpolitics.initialize import initializeCongress
+    from lovegov.modernpolitics.initialize import initializeCommittees
 
     print "================= initializeCongress() ==================="
     print '=========================================================='
