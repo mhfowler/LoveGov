@@ -514,27 +514,27 @@ div.heart {
 }
 
 div.heart_minus {
-  background-image: url('/static/images/icons/minusheart-gray.png');
+  @include staticImage($rel-path:'/images/icons/minusheart-gray.png');
 }
 
 div.heart_minus.clicked {
-  background-image: url('/static/images/icons/minusheart-red.png');
+  @include staticImage($rel-path:'/images/icons/minusheart-red.png');
 }
 
 div.heart_minus:hover {
-  background-image: url('/static/images/icons/minusheart-red.png');
+  @include staticImage($rel-path:'/images/icons/minusheart-red.png');
 }
 
 div.heart_plus {
-  background-image: url('/static/images/icons/plusheart-gray.png');
+  @include staticImage($rel-path:'/images/icons/plusheart-gray.png');
 }
 
 div.heart_plus.clicked {
-  background-image: url('/static/images/icons/plusheart-red.png');
+  @include staticImage($rel-path:'/images/icons/plusheart-red.png');
 }
 
 div.heart_plus:hover {
-  background-image: url('/static/images/icons/plusheart-red.png');
+  @include staticImage($rel-path:'/images/icons/plusheart-red.png');
 }
 
 div.overdiv {
@@ -696,7 +696,7 @@ span#email-label
 
 div.edit-link
 {
-  background-image: url('/static/images/edit-pencil.png');
+  @include staticImage($rel-path:'/images/edit-pencil.png');
   background-size: 16px 16px;
   width: 16px;
   height: 16px;
@@ -705,7 +705,7 @@ div.edit-link
 
   &:hover
   {
-    background-image: url('/static/images/edit-pencil-blue.png');
+    @include staticImage($rel-path:'/images/edit-pencil-blue.png');
   }
 }
 
@@ -816,11 +816,11 @@ div.modal-close
   float: right;
   height: 10px;
   width: 10px;
-  background-image: url('/static/images/icons/x.png');
+  @include staticImage($rel-path:'/images/icons/x.png');
   cursor: pointer;
   &:hover
   {
-    background-image: url('/static/images/icons/x_hover.png');
+    @include staticImage($rel-path:'/images/icons/x_hover.png');
   }
 }
 
@@ -976,4 +976,8 @@ div.qaweb:hover {
 
 div.modal-box {
   display:none;
+}
+
+.test-static {
+  @include staticImage($rel-path:'/test.jpg');
 }
