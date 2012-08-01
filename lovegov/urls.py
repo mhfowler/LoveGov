@@ -80,6 +80,10 @@ URL_SPECIAL_NAMES = set([
     'api',
 ])
 
+urlpatterns += patterns('django.views.generic.simple',
+    (r'^frame/$', 'direct_to_template', {'template': 'frame/frame.html'}),
+)
+
 # lovegov urls
 urlpatterns += patterns('',
 
@@ -176,4 +180,5 @@ urlpatterns += patterns('',
     # REDIRECT
     (r'(?P<alias>\S+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
-    (r'^$', views.redirect))
+    (r'^$', views.redirect)
+)

@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* Default page width on large screens */
 @font-face {
   font-family: "Gill Sans Std Light";
   src: url(../GillSansStd-Light.otf); }
@@ -14,6 +15,7 @@
 /* Main Colors */
 /* Topic Colors */
 /* Fonts */
+/* Default page width on large screens */
 @font-face {
   font-family: "Gill Sans Std Light";
   src: url(../GillSansStd-Light.otf); }

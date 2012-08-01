@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+/* Default page width on large screens */
+$default-page-width: 1140px;
+
 @font-face
 {
   font-family: "Gill Sans Std Light";
@@ -87,3 +90,4 @@ $body-fonts: Helvetica, Arial, Verdana, sans-serif;
 $gill-light: "Gill Sans Std Light";
 $gill-std: "Gill Sans Std";
 $title-font: "Sonus Light";
+

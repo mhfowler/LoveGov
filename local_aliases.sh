@@ -1,5 +1,5 @@
 # absolute path to the directory of this script
-LG="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+LG=~/lovegov
 
 # aliases
 alias cmdcreate='vi $LG/local_aliases.sh'
