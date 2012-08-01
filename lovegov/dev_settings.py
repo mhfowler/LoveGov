@@ -52,11 +52,12 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 #
 ########################################################################################################################
 import s3_configuration
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
-STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
+DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+STATICFILES_STORAGE = 's3_folder_storage.s3.DefaultStorage'
 
 DEFAULT_S3_PATH = "media"
 STATIC_S3_PATH = "static"
