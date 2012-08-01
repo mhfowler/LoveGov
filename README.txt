@@ -120,6 +120,10 @@ then run "python setup.py install"
 django-extensions
 pip install django-extensions
 
+python-boto django-storages
+pip install django-storages
+pip install boto
+
 ********** GETTING STARTED ************
 
 Now that you have checked out a version of the project and installed all the dependencies you should be pretty much ready to go. 

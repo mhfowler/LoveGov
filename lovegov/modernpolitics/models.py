@@ -126,7 +126,6 @@ class UserPhysicalAddress(LGModel):
     state = models.CharField(max_length=2)
     district = models.IntegerField()
 
-
 class PhysicalAddress(LGModel):
     address_string = models.CharField(max_length=500, null=True)
     zip = models.CharField(max_length=20, null=True)
