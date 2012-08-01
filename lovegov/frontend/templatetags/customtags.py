@@ -43,3 +43,9 @@ def truncate_chars(value, max_length):
             truncd_val = truncd_val[:rightmost_space]
  
     return truncd_val + "..."
+
+@register.filter("media_url")
+def media_url(value, media_prefix):
+    if not value.startswith(media_prefix):
+        value = media_prefix + value
+    return value
