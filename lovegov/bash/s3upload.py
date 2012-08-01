@@ -3,6 +3,7 @@ import os
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from lovegov import s3_configuration
+from django.conf import settings
 
 def percent_cb(complete, total):
     sys.stdout.write('.')
@@ -18,7 +19,10 @@ def uploadFile(path, rel_path, bucket):
     k.set_contents_from_filename(path,cb=percent_cb, num_cb=10)
 
 def run(args):
-    origin_folder = args[1]
+    if len(args) < 2:
+        origin_folder = settings.MEDIA_ROOT
+    else:
+        origin_folder = args[1]
     if len(args) > 2:
         destination_folder = args[2]
     else:
@@ -31,6 +35,5 @@ def run(args):
             rel_path = path.replace(origin_folder, destination_folder, 1)
             uploadFile(path, rel_path, bucket)
 
-if len(sys.argv) > 1:
-    run(sys.argv)
+run(sys.argv)
 
