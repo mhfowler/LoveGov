@@ -376,7 +376,7 @@ div#top
 
             #notifications-dropdown-arrow
             {
-              background-image: url(/static/images/user-menu/downarrow.png);
+              @include staticImage($rel-path:'/images/user-menu/downarrow.png');
               display: block;
               width: 12px;
               height: 8px;
