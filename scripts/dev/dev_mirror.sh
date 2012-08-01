@@ -18,7 +18,7 @@ $PRE/scripts/mysql/remote_mysql.sh lgdb < /dump/live_to_dev.sql
 # copy over media files
 echo "copymedia?"
 #read \n
-cp -r /media/live/* /media/dev/* --force
+$PRE/scripts/dev/dev_mirror_media.sh
 
 # rebuild search indexi
 echo "searchindex?"
