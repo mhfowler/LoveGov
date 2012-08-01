@@ -1214,7 +1214,7 @@ def parseLegislation(XML):
             new_legislation_action = LegislationAction()
 
         if not new_legislation_action:
-            print "[WARNING]: Action type not recognized, action skipped"
+            print "[WARNING]: Action type " + name + " not recognized, action skipped"
             continue
 
         new_legislation_action.parseGovtrack(actionXML,legislation=legislation)
@@ -1406,6 +1406,7 @@ def parseLegislationAmendment(XML):
             new_amendment_action = LegislationAction()
 
         if not new_amendment_action:
+            print "[WARNING]: Action type " + name + " not recognized, action skipped"
             continue
 
         new_amendment_action.parseGovtrack(actionXML,amendment=amendment)

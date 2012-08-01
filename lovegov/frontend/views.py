@@ -923,9 +923,9 @@ def matchSocial(request, vals={}):
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
-        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
-        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+        obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
+        paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
+        romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
     else:
         obama = viewer
         paul = viewer
@@ -940,8 +940,8 @@ def matchPresidential(request, vals={}):
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
-        brown = ElectedOfficial.objects.get(first_name="Scott", last_name="Brown")
+        elizabeth = UserProfile.lg.get_or_none(first_name="Elizabeth", last_name="Warren", politician=True)
+        brown = UserProfile.lg.get_or_none(first_name="Scott", last_name="Brown", politician=True)
         voters = getLoveGovGroup()
     else:
         elizabeth = viewer
@@ -963,12 +963,20 @@ def matchRepresentatives(request, vals={}):
     if viewer.location:
         address = viewer.location
         congressmen = []
-        representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
-        if representative:
-            congressmen.append(representative)
-        senators = Senator.objects.filter(congresssessions=112,state=address.state)
-        for senator in senators:
-            congressmen.append(senator)
+        congress = CongressSession.lg.get_or_none(session=CURRENT_CONGRESS)
+        senator_tag = OfficeTag.lg.get_or_none(name="senator")
+        rep_tag = OfficeTag.lg.get_or_none(name="representative")
+        if congress:
+            rep_office = rep_tag.tag_offices.filter(state=address.state,district=address.district)[0]
+            representative = rep_ofice.office_terms.filter(end_date__gte=datetime.date.today())[0]
+            if representative:
+                congressmen.append(representative)
+
+            senator_office = senator_tag.tag_offices.filter(state=address.state)[0]
+            senators = map( lambda x : x.user , senator_office.office_terms.filter(end_date__gte=datetime.date.today()) )
+            for senator in senators:
+                congressmen.append(senator)
+
         vals['congressmen'] = congressmen
         vals['state'] = address.state
         vals['district'] = address.district
