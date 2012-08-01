@@ -32,109 +32,80 @@
 /* Mixins */
 
 
-div.sidebar {
+div.sidebar-box {
     position: fixed;
+    left: 140px;
+    top: 100px;
     height: 800px;
-    left: 0;
-    top: 185px;
-    width: 600px;
+    width: 300px;
+    padding: 20px;
+    overflow: auto;
 }
 
-div.sidebar div.more-options-wrapper {
-    display: none;
-    margin-top: 10px;
-    padding: 10px;
-    height: 105px;
-    overflow: hidden;
+div.sidebar-box div.div-toggle {
+    position:fixed;
+    height:100px;
+    width: 300px;
+    left: 150px;
+    top: 100px;
 }
 
-div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle {
+div.sidebar-box div.sidebar {
+    position: fixed;
+    left: 140px;
+    top: 150px;
+    height: 800px;
+    width: 250px;
+    padding: 20px;
+    overflow: auto;
+}
+
+div.sidebar-box div.sidebar div.col1 {
+    position: fixed;
+    width: 200px;
     height: 50px;
-    width: 980px;
-    margin-left: 10px;
-    margin-top: 10px;
-}
-
-div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.hovered {
-    background-color: #8a2be2;
-}
-
-div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.hovered.clicked {
-    background-color: blue;
-}
-
-div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.clicked {
-    background-color:green;
-}
-
-div.sidebar div.more-options-wrapper div.col1 {
-    width: 100px;
-    position:absolute;
-    left:70px;
-    top:100px;
-    text-align: center;
+    float: left;
+    top: 120px;
+    padding: 20px;
+    text-align: left;
     border-style: solid;
-    overflow: hidden;
+    overflow: auto;
 }
 
-div.sidebar div.more-options-wrapper div.col2 {
-    width: 100px;
-    position:absolute;
-    left:220px;
-    top:100px;
-    text-align: center;
+div.sidebar-box div.sidebar div.col2 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 160px;
+    padding: 20px;
+    text-align: left;
     border-style: solid;
-    overflow: hidden;
+    overflow: auto;
 }
 
-div.sidebar div.more-options-wrapper div.col3 {
-    width: 100px;
-    position:absolute;
-    left:370px;
-    top:100px;
-    text-align: center;
+div.sidebar-box div.sidebar div.col3 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 200px;
+    padding: 20px;
+    text-align: left;
     border-style: solid;
-    overflow: hidden;
+    overflow: auto;
 }
 
-div.sidebar div.more-options-wrapper div.col4 {
-    width: 100px;
-    position:absolute;
-    left:520px;
-    top:100px;
-    text-align: center;
+div.sidebar-box div.sidebar div.col4 {
+    position: fixed;
+    width: 200px;
+    height: 50px;
+    float: left;
+    top: 240px;
+    padding: 20px;
+    text-align: left;
     border-style: solid;
-    overflow: hidden;
-}
-
-ddiv.sidebar div.more-options-wrapper div.col5 {
-    width: 130px;
-    position:absolute;
-    left:670px;
-    top:100px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
-}
-
-div.sidebar div.more-options-wrapper div.col6 {
-    width: 100px;
-    position:absolute;
-    left:820px;
-    top:100px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
-}
-
-div.sidebar div.more-options-wrapper div.col7 {
-    width: 100px;
-    position:absolute;
-    left:970px;
-    top:100px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .checkbox {
@@ -143,7 +114,9 @@ div.sidebar div.more-options-wrapper div.col7 {
    right: 5px;
 }
 
-
+.label {
+    text-align: left;
+}
 
 
 
