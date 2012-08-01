@@ -6,7 +6,7 @@
 
 <body>
 <!-- Header -->
-{% include 'site/frame/header/new-header.html' %}
+{% include 'site/frame/header/header.html' %}
 <!-- End Header -->
 
 <!-- Left Side Bar -->
@@ -18,8 +18,8 @@
 <!-- End Loading Image -->
 
 <!-- Content -->
-<div id="main-content">
-    {% block content %}
+<div class="wrapper">
+	{% block content %}
         {{ center }}
     {% endblock %}
 </div>
@@ -42,6 +42,7 @@
 </div>
 
 
+<!-- Reusable 
 <div id="agg_notification_modal" class="agg-notifications-modal"></div>
 
 <div class="first-login-modal first-login">
