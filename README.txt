@@ -77,6 +77,7 @@ pip install python-memcached
 BeautifulSoup	
 http://www.crummy.com/software/BeautifulSoup/
 pip install BeautifulSoup
+pip install beautifulsoup4
 
 xlrd
 http://pypi.python.org/pypi/xlrd
