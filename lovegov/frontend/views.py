@@ -61,6 +61,7 @@ def viewWrapper(view, requires_login=False):
                 vals['MEDIA_PREFIX'] = 'https://lovegov.s3.amazonaws.com/'
             else:
                 vals['MEDIA_PREFIX'] = host_full
+            temp_logger.debug(vals['MEDIA_PREFIX'])
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
