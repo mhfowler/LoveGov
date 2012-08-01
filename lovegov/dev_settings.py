@@ -58,9 +58,7 @@ AWS_SECRET_ACCESS_KEY = "Fe+FE9Y5Kc+UNuS5BE1GsjNG3Q1NQ1aZmFeXNKHA"
 AWS_STORAGE_BUCKET_NAME = "lovegov"
 
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
-# URL prefix for static files.
-STATIC_URL = settings.STATIC_URL
+STATIC_URL = 'https://s3.amazonaws.com/lovegov'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 MEDIA_URL =  settings.MEDIA_URL

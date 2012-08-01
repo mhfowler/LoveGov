@@ -48,7 +48,7 @@ def framedResponse(request, html, url, vals):
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
-        vals = {}
+        vals = {'STATIC_URL':settings.STATIC_URL}
         try:
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
