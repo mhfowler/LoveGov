@@ -2393,7 +2393,7 @@ class LegislationAction(LGModel):
     amendment = models.ForeignKey('LegislationAmendment', null=True, related_name='amendment_actions')
     committee = models.ForeignKey('Committee', null=True, related_name="legislation_activity")
     state = models.TextField(max_length=100, null=True)
-    text = models.TextField(max_length=500, null=True)
+    text = models.TextField(max_length=2000, null=True)
     action_type = models.CharField(max_length=1, choices=ACTION_CHOICES)
     references = models.ManyToManyField('LegislationReference')
 
@@ -3074,7 +3074,7 @@ class ViewComparison(LGModel):
         else: vals['user_url'] = ''
         return vals
 
-    def toDict(self, viewB_url=''):
+    def  toDict(self, viewB_url=''):
         from lovegov.modernpolitics.helpers import getMainTopics
         to_return = []
         fast_comparison = self.loadOptimized()
@@ -3095,6 +3095,7 @@ class ViewComparison(LGModel):
                 topic_dict['result'] = topic_bucket.getSimilarityPercent()
                 topic_dict['num_q'] = topic_bucket.num_questions
                 to_return.append(topic_dict)
+            to_return.sort(key=lambda x: x['order'])
             total_bucket = fast_comparison.getTotalBucket()
             vals = {'topics':to_return,'main':{'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}}
             vals['user_url'] = viewB_url

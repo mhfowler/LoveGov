@@ -1,0 +1,8 @@
+{% with num_sessions=user.getNumSessions %}
+    <p {% if num_sessions == 1 %} style="color:red" {% endif %}> ----------- daily usage for, <br>
+        id: {{ user.id }} <br>
+        session #: {{ num_sessions }} <br>
+        session start: {{ session.getSessionStart }} <br>
+        location: {{ user.location.address_string }} [{{ user.location.state }}] <br>
+    </p> <br>
+{% endwith %}

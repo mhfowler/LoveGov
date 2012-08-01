@@ -57,6 +57,10 @@ def viewWrapper(view, requires_login=False):
             vals['google'] = GOOGLE_LOVEGOV
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
+            if 'boto' in settings.DEFAULT_FILE_STORAGE:
+                vals['MEDIA_PREFIX'] = settings.MEDIA_URL
+            else:
+                vals['MEDIA_PREFIX'] = host_full
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
@@ -592,7 +596,7 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias).downcast()
+            user_prof = UserProfile.objects.get(alias=alias)
             comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
@@ -608,7 +612,6 @@ def profile(request, alias=None, vals={}):
                 prof_follow_me.sort(key=lambda x:x.result,reverse=True)
                 vals['prof_follow_me'] = prof_follow_me[0:5]
             else:       # get politician supporters
-                user_prof = user_prof.downcast()
                 prof_support_me = user_prof.getSupporters()
                 vals['prof_support_me'] = prof_support_me[0:5]
 
