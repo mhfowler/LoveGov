@@ -30,7 +30,8 @@ ALLOWED_BROWSERS = ["Chrome","Mozilla"]
 
 TEAM_EMAILS =  ['max_fowler@brown.edu','jonathanvkoh@gmail.com',
                 'loweth.g@gmail.com','yoshi141@gmail.com',
-                'cschmidt@risd.edu', 'jsgreenf@gmail.com', 'ccapuozz@risd.edu']
+                'cschmidt@risd.edu', 'jsgreenf@gmail.com',
+                'ccapuozz@risd.edu', 'marcus330@gmail.com']
 YAY_EMAILS = TEAM_EMAILS
 DAILY_SUMMARY_EMAILS = TEAM_EMAILS
 
