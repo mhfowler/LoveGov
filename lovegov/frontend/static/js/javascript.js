@@ -89,6 +89,9 @@ function rebindFunction()
             loadSignInDialogue();
             loadLogin();
             break;
+        case 'legislation':                                 //legislation pages
+            checkboxQuery();
+            break;
         default:
             break
     }
