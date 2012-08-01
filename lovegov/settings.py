@@ -3,7 +3,6 @@ PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 DEBUG = False
 UPDATE = False
 SHOW_TOOLBAR = False
-STATIC_REMOTE = False               # true if serving static files from remote storage
 
 ########################################################################################################################
 #    apps, middelware, urlconf

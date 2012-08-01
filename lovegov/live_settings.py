@@ -4,7 +4,6 @@ LOCAL = False
 DEBUG = settings.UPDATE
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH
-HOST = "http://lovegov.com"
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
