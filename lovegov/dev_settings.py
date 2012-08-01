@@ -1,5 +1,4 @@
 import settings
-from lovegov import s3_configuration
 
 LOCAL = False
 DEBUG = True
@@ -52,7 +51,7 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 #    static and media
 #
 ########################################################################################################################
-
+import s3_configuration
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
