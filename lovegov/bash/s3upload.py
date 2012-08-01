@@ -22,8 +22,7 @@ def run(args):
     if len(args) > 2:
         destination_folder = args[2]
     else:
-        destination_folder = ''
-
+        destination_folder = 'media/'
     conn = S3Connection(s3_configuration.AWS_ACCESS_KEY_ID, s3_configuration.AWS_SECRET_ACCESS_KEY)
     bucket = conn.get_bucket(s3_configuration.AWS_STORAGE_BUCKET_NAME)
     for dirpath, dirnames, filenames in os.walk(origin_folder):

@@ -63,9 +63,9 @@ DEFAULT_S3_PATH = "media"
 STATIC_S3_PATH = "static"
 
 MEDIA_ROOT = '/%s/' % DEFAULT_S3_PATH
-MEDIA_URL = 'https//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+MEDIA_URL = 'https://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
 STATIC_ROOT = "/%s/" % STATIC_S3_PATH
-STATIC_URL = 'https//%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
+STATIC_URL = 'https://%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_DIRS = settings.STATICFILES_DIRS
