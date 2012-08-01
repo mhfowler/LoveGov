@@ -158,7 +158,7 @@
             </div>
 
             <p id="dialogue-loading" style="display:none">
-                <img src="/static/images/ajax-loader.gif" />
+                <img src="{{ STATIC_URL }}/images/ajax-loader.gif" />
             </p>
             <div id="answer-div">
                 <form class="qaweb-answerform" action="" method="post">
@@ -184,7 +184,7 @@
                     <div id="qa-buttons" style="display:none">
                         <span id="answer-saved" style="float:left;display:none;font-weight:bold;color:#EF503B">Answer Saved</span>
                         <!--<a class="dialogue-buttons" href="">learn more</a>-->
-                        <img id="privacy-image" class="security_setting" src="/static/images/public.png" style="width:25px;height:25px"/>
+                        <img id="privacy-image" class="security_setting" src="{{ STATIC_URL }}/images/public.png" style="width:25px;height:25px"/>
                         <a class="discuss dialogue-buttons" href="">discuss</a>
                         <a id="next_button" class="dialogue-buttons" href="">next</a>
                     </div>
@@ -202,7 +202,7 @@
         </div>
 
         <div id="dialogue-pointer">
-            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+            <img src="{{ STATIC_URL }}/catherine/environment/env_dialogue-pointer.png">
         </div>
 
     </div>
@@ -217,7 +217,7 @@
         </div>
 
         <div id="topic-pointer">
-            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+            <img src="{{ STATIC_URL }}/catherine/environment/env_dialogue-pointer.png">
         </div>
     </div>
 </div>
@@ -250,7 +250,7 @@
                         {
                             if ($(this).is('img'))
                             {
-                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr("src","{{ STATIC_URL }}/images/user-menu/lockgray.png");
                                 $(this).attr('data-original-title',priMessage);
                             }
                         });
@@ -259,7 +259,7 @@
                         $.cookie('privacy','PUB', {path:'/'});
                         $(".security_setting").each(function()
                         {
-                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                            if ($(this).is('img')) { $(this).attr("src","{{ STATIC_URL }}/images/public.png");
                                 $(this).attr('data-original-title',pubMessage);}
                         });
                         break;
@@ -275,9 +275,9 @@
                 '<p>We think in-depth, complex privacy settings are too confusing. That\'s why on LoveGov ' +
                 'there are two modes: public and anonymous. You can quickly switch between modes next to your ' +
                 'profile picture at the top.</p>' +
-                '<p><img src="/static/images/public.png" class="privacy-img"> When in public mode, everything you do, ' +
+                '<p><img src="{{ STATIC_URL }}/images/public.png" class="privacy-img"> When in public mode, everything you do, ' +
                 'such as signing petitions or writing comments, is attributed to your account.</p>' +
-                '<p><img src="/static/images/user-menu/lockgray.png" class="privacy-img"> When in anonymous mode, any content you create ' +
+                '<p><img src="{{ STATIC_URL }}/images/user-menu/lockgray.png" class="privacy-img"> When in anonymous mode, any content you create ' +
                 'is attributed to an anonymous user.</p>' +
                 '<p>On questions in the Q&A web, you can individually toggle the visibility of your answers. Public ' +
                 'answers will be viewable by others, anonymous answers will be displayed as though you had not answered ' +
@@ -315,4 +315,4 @@
 </script>
 
 <!-- Web -->
-<script type='text/javascript' src="/static/js/qaweb/qaweb.js"></script>
+<script type='text/javascript' src="{{ STATIC_URL }}/js/qaweb/qaweb.js"></script>
