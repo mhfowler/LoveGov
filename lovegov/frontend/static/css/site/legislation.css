@@ -1,17 +1,150 @@
-div#content-leg-div {
-    background-color: blue;
-    width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 40px;
-	font-family: "Helvetica";
+
+@font-face {
+    font-family: "Gill Sans Std Light";
+    src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+    font-family: "Gill Sans Std";
+    src: url(../GillSansStd.otf); }
+
+@font-face {
+    font-family: "Sonus Light";
+    src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+@font-face {
+    font-family: "Gill Sans Std Light";
+    src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+    font-family: "Gill Sans Std";
+    src: url(../GillSansStd.otf); }
+
+@font-face {
+    font-family: "Sonus Light";
+    src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+
+
+div.sidebar {
+    position: fixed;
+    height: 800px;
+    left: 0;
+    top: 185px;
+    width: 600px;
 }
 
-div#content-leg-div.select-prompt {
-    width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 40px;
-    font-family: "Helvetica";
+div.sidebar div.more-options-wrapper {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    height: 105px;
+    overflow: hidden;
 }
+
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle {
+    height: 50px;
+    width: 980px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.hovered {
+    background-color: #8a2be2;
+}
+
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.hovered.clicked {
+    background-color: blue;
+}
+
+div.sidebar div.more-options-wrapper div.content-filter-box.menu_toggle.clicked {
+    background-color:green;
+}
+
+div.sidebar div.more-options-wrapper div.col1 {
+    width: 100px;
+    position:absolute;
+    left:70px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div.sidebar div.more-options-wrapper div.col2 {
+    width: 100px;
+    position:absolute;
+    left:220px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div.sidebar div.more-options-wrapper div.col3 {
+    width: 100px;
+    position:absolute;
+    left:370px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div.sidebar div.more-options-wrapper div.col4 {
+    width: 100px;
+    position:absolute;
+    left:520px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+ddiv.sidebar div.more-options-wrapper div.col5 {
+    width: 130px;
+    position:absolute;
+    left:670px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div.sidebar div.more-options-wrapper div.col6 {
+    width: 100px;
+    position:absolute;
+    left:820px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div.sidebar div.more-options-wrapper div.col7 {
+    width: 100px;
+    position:absolute;
+    left:970px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+.checkbox {
+   position: relative;
+   top: 5px;
+   right: 5px;
+}
+
+
+
+
+
 
