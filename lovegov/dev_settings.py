@@ -44,7 +44,7 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages'))
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages','s3_folder_storage'))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 
@@ -58,11 +58,15 @@ AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-STATIC_URL = 'https://s3.amazonaws.com/lovegov'
 
-MEDIA_URL =  settings.MEDIA_URL
+DEFAULT_S3_PATH = "media"
+STATIC_S3_PATH = "static"
 
-ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
+MEDIA_ROOT = '/%s/' % DEFAULT_S3_PATH
+MEDIA_URL = 'https//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+STATIC_ROOT = "/%s/" % STATIC_S3_PATH
+STATIC_URL = 'https//%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_DIRS = settings.STATICFILES_DIRS
 STATICFILES_FINDERS = settings.STATICFILES_FINDERS

@@ -124,6 +124,7 @@ pip install django-extensions
 python-boto django-storages
 pip install django-storages
 pip install boto
+pip install django-s3-folder-storage
 
 ********** GETTING STARTED ************
 
