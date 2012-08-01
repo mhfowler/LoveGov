@@ -62,16 +62,11 @@ AWS_STORAGE_BUCKET_NAME = "lovegov"
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 STATIC_URL = 'https://s3.amazonaws.com/lovegov'
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 MEDIA_URL =  settings.MEDIA_URL
 
-# URL prefix for admin static files -- CSS, JavaScript and images. Make sure to use a trailing slash.
 ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
 
-# Additional locations of static files
 STATICFILES_DIRS = settings.STATICFILES_DIRS
-
-# List of finder classes that know how to find static files in various locations.
 STATICFILES_FINDERS = settings.STATICFILES_FINDERS
 
 ########################################################################################################################
