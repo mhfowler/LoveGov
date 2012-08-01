@@ -84,7 +84,7 @@ def userActivity(user, file=None,  min=None, max=None):
     return to_return
 
 def allUserActivity(file, min=None, max=None):
-    u = UserProfile.objects.filter(user_type="U")
+    u = UserProfile.objects.filter(ghost=False)
     for x in u:
         userActivity(x, file, min, max)
 
@@ -92,7 +92,7 @@ def allUserActivity(file, min=None, max=None):
 # Creates a printout summarizing all user activity for the day.
 #-----------------------------------------------------------------------------------------------------------------------
 def dailyActivity(request, days=1):
-    users = UserProfile.objects.filter(user_type="U")
+    users = UserProfile.objects.filter(ghost=False)
     activity = ""
     for u in users:
         activity += userSummary(u, request, days=days)

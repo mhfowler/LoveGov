@@ -37,7 +37,7 @@ def getFeed(filter, start=0, stop=10, saved=False):
             u_ids.extend(g.members.all().values_list("id", flat=True))
         users = UserProfile.objects.filter(id__in=u_ids)
     else:
-        users = UserProfile.objects.filter(user_type="U")
+        users = UserProfile.objects.filter(ghost=False)
     if submissions_only:
         if groups:
             u_ids = users.values_list("id", flat=True)
@@ -67,7 +67,7 @@ def updateRank(debug=True):
     scheduled_logger.debug("UPDATE RANK")
     content = Content.objects.all()
     filter = getDefaultFilter()
-    users = UserProfile.objects.filter(user_type='U')
+    users = UserProfile.objects.filter(ghost=False)
     for c in content:
         print (c.title + ": " + str(calcRank(content=c, filter_setting=filter, users=users, debug=debug)))
 
@@ -244,7 +244,7 @@ def feedSwitcher(feed_type = 'C', x=FEED_SIZE, users=-1, worldview=None, filter_
 def feed(x=FEED_SIZE, users=-1, worldview=None, filter_setting=None, debug=False, content=None):
     #### initialize default values if not inputted ####
     if users==-1:
-        users = UserProfile.objects.filter(user_type='U')
+        users = UserProfile.objects.filter(ghost=False)
     if not worldview:
         worldview = getLoveGovUser().getView()
     if not filter_setting:

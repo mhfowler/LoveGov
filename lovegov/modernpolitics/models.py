@@ -1042,6 +1042,7 @@ def initView():
     return view
 
 class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
+    type = models.CharField(max_length=1,default="U")
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
@@ -1087,9 +1088,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
-    # type = models.CharField(max_length=1,default="U")
     ghost = models.BooleanField(default=False)
     # Government Stuff
+    political_title = models.CharField(max_length=100, default="Citizen")
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
@@ -1172,6 +1173,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def isSuperHero(self):
         return self.alias in SUPER_HEROES
+
+    def isNormal(self):
+        return not (self.politician or self.elected_official)
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.

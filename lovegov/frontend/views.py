@@ -599,7 +599,7 @@ def profile(request, alias=None, vals={}):
             vals['json'] = json
 
             # Get users followers
-            if user_prof.user_type == "U":
+            if user_prof.isNormal():
                 prof_follow_me = list(user_prof.getFollowMe())
                 for follow_me in prof_follow_me:
                     comparison = getUserUserComparison(user_prof, follow_me)
@@ -671,7 +671,7 @@ def profile(request, alias=None, vals={}):
                 vals['num_notifications'] = num_notifications
 
             # get politician page values
-            if user_prof.user_type != "U":
+            if not user_prof.isNormal():
                 supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
                 if supported:
                     vals['yousupport'] = supported.confirmed
