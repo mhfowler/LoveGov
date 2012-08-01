@@ -1538,7 +1538,7 @@ def parseCongressRoll(XML):
                 ref = XML.amendment['ref']
 
                 if ref == 'bill-serial':
-                    num = XML.amendment.get('number')
+                    num = int(XML.amendment.get('number'))
                     if num and legislation:
                         amendments = legislation.legislation_amendments.all()
                         if (num - 1) < len(amendments):
