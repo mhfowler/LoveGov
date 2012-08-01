@@ -53,6 +53,8 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 #
 ########################################################################################################################
 
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
 AWS_ACCESS_KEY_ID = "AKIAJTOKT24MX6BS3NKA"
 AWS_SECRET_ACCESS_KEY = "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"
 AWS_STORAGE_BUCKET_NAME = "lovegov"
