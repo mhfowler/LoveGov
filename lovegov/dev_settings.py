@@ -57,9 +57,6 @@ AWS_ACCESS_KEY_ID = "AKIAJTOKT24MX6BS3NKA"
 AWS_SECRET_ACCESS_KEY = "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"
 AWS_STORAGE_BUCKET_NAME = "lovegov"
 
-from S3 import CallingFormat
-AWS_CALLING_FORMAT = CallingFormat.SUBDOMAIN
-
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 # URL prefix for static files.
