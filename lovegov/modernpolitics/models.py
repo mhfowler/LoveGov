@@ -2296,6 +2296,11 @@ def parseDate(date):
     return datetime.date(year=int(splitDate[0]), month=int(splitDate[1]), day=int(splitDate[2]))
 
 
+def truncateField(string,name,limit):
+    if len( string ) > limit:
+        print "[WARNING]: " + name + " truncated, length = " + str(len(string))
+    return string[:limit]
+
 class CongressSession(LGModel):
     session = models.IntegerField(primary_key=True)
 
@@ -2398,11 +2403,7 @@ class LegislationAction(LGModel):
         # Get other standard fields
         self.datetime = parseDateTime(XML['datetime'])
 
-        text = XML.text.encode('utf-8','ignore')
-        if len( text ) > 500:
-            print "[WARNING]: LegislationAction text truncated"
-            text = text[:500]
-        self.text = text
+        self.text = truncateField( XML.text.encode('utf-8','ignore') , "LegislationAction text" , 500 )
 
         #Begin duplicate action filtering
         already = LegislationAction.objects.filter( datetime=self.datetime , text=self.text , action_type=self.action_type )
@@ -2429,11 +2430,7 @@ class LegislationAction(LGModel):
 
         #Get state
         if XML.has_key('state'):
-            state = XML['state'].encode('utf-8','ignore')
-            if len( state ) > 100:
-                print "[WARNING]: LegislationAction state truncated"
-                state = state[:100]
-
+            state = truncateField( XML['state'].encode('utf-8','ignore') , "LegislationAction state" , 100 )
             already = already.filter( state = state ) # Refine duplicate filtering
             self.state = state
 
@@ -2444,15 +2441,9 @@ class LegislationAction(LGModel):
         action.save()
 
         for refer in XML.findChildren('reference',recursive=False):
-            ref_label = refer.get('label').encode('utf-8','ignore')
-            if len( ref_label ) > 400:
-                print "[WARNING]: LegislationReference ref_label truncated"
-                ref_label = ref_label[:400]
+            ref_label = truncateField( refer.get('label').encode('utf-8','ignore') , 'LegislationReference ref_label' , 400 )
 
-            ref_reference = refer.get('ref').encode('utf-8','ignore')
-            if len( ref_reference ) > 400:
-                print "[WARNING]: LegislationReference ref_reference truncated"
-                ref_reference = ref_reference[:400]
+            ref_reference = truncateField( refer.get('ref').encode('utf-8','ignore') , 'LegislationReference ref_reference' , 400 )
 
             reference = LegislationReference.lg.get_or_none(ref=ref_reference,label=ref_label)
             if not reference:
@@ -2478,10 +2469,12 @@ class LegislationCalendar(LegislationAction):
 
         if XML.has_key('number'):
             self.calendar_number = int(XML['number'])
+
         if XML.has_key('calendar'):
-            self.calendar = XML['calendar'].encode('utf-8','ignore')
+            self.calendar = truncateField( XML['calendar'].encode('utf-8','ignore') , 'LegislationCalendar calendar' , 100 )
+
         if XML.has_key('under'):
-            self.under = XML['under'].encode('utf-8','ignore')
+            self.under = truncateField( XML['under'].encode('utf-8','ignore') , 'LegislationCalendar under' , 100 )
 
         super(LegislationCalendar, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
@@ -2506,15 +2499,20 @@ class LegislationVote(LegislationAction):
         self.action_type = 'V'
 
         if XML.has_key('how'):
-            self.how = XML['how'].encode('utf-8','ignore')
+            self.how = truncateField( XML['how'].encode('utf-8','ignore') , 'LegislationVote how' , 100 )
+
         if XML.has_key('type'):
-            self.vote_type = XML['type'].encode('utf-8','ignore')
+            self.vote_type = truncateField( XML['type'].encode('utf-8','ignore') , 'LegislationVote vote_type' , 100 )
+
         if XML.has_key('roll'):
             self.roll = int(XML['roll'])
+
         if XML.has_key('where'):
-            self.where = XML['where'].encode('utf-8','ignore')
+            self.where = truncateField( XML['where'].encode('utf-8','ignore') , 'LegislationVote where' , 4 )
+
         if XML.has_key('result'):
-            self.result = XML['result'].encode('utf-8','ignore')
+            self.result = truncateField( XML['result'].encode('utf-8','ignore') , 'LegislationVote result' , 50 )
+
         if XML.has_key('suspension'):
             self.suspension = ( 1 == int(XML['suspension']) )
 
@@ -2639,7 +2637,7 @@ class CongressRoll(LGModel):
     category = models.CharField(max_length=100, null=True)
     type = models.CharField(max_length=100, null=True)
     question = models.CharField(max_length=1000, null=True)
-    required = models.CharField(max_length=20, null=True)
+    required = models.CharField(max_length=10, null=True)
     result = models.CharField(max_length=80, null=True)
     # Legislation
     legislation = models.ForeignKey(Legislation, null=True)

@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 
-__author__ = 'jvkoh'
-
-
 if __name__ == "__main__":
     from initialize import initializeLegislation
     from pprint import pprint
-
 
     print "================= initializeLegislation() ==================="
     print '============================================================='
@@ -14,5 +10,3 @@ if __name__ == "__main__":
     print "=================== Logged Errors ======================"
     print '========================================================'
     pprint(errors)
-
-

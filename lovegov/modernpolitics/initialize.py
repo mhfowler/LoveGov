@@ -1093,7 +1093,6 @@ def initializeLegislation():
 # RETURN: an error message string.  Returns an empty string on success
 #-----------------------------------------------------------------------------------------------------------------------
 def parseLegislation(XML):
-    warning = ''
     # If there's no bill or state for some reason, you can't parse the bill
     if not XML.bill:
         return 'Missing bill tag'
@@ -1135,19 +1134,9 @@ def parseLegislation(XML):
             legislation.bill_updated = updated
         legislation.state_date = parseDateTime(XML.state.get('datetime'))
 
-        state_text = XML.state.text.encode('utf-8','ignore')
-        if len( state_text ) > 50:
-            print "[WARNING]: Legislation state_text truncated"
-            warning += "[WARNING]: Legislation state_text truncated\n"
-            state_text = stat_text[:50]
-        legislation.state_text = state_text
+        legislation.state_text = truncateField( XML.state.text.encode('utf-8','ignore') , 'Legislation state_text' , 50 )
 
-        bill_summary = XML.summary.text.encode('utf-8','ignore')
-        if len( bill_summary ) > 400000:
-            print "[WARNING]: Legislation bill_summary truncated"
-            warning += "[WARNING]: Legislation bill_summary truncated\n"
-            bill_summary = bill_summary[:400000]
-        legislation.bill_summary = bill_summary
+        legislation.bill_summary = truncateField( XML.summary.text.encode('utf-8','ignore') , 'Legislation bill_summary' , 400000 )
 
         # Find and add bill sponsor
         sponsor_id = XML.sponsor.get('id')
@@ -1166,20 +1155,10 @@ def parseLegislation(XML):
             title_type = title.get('type')
 
             if title_type == 'official':
-                full_title = title.text.encode('utf-8','ignore')
-                if len( full_title ) > 5000:
-                    print "[WARNING]: Legislation full_title truncated"
-                    warning += "[WARNING]: Legislation full_title truncated\n"
-                    full_title = full_title[:5000]
-                legislation.full_title = full_title
+                legislation.full_title = truncateField( title.text.encode('utf-8','ignore') , 'Legislation full_title' , 5000 )
 
             elif title_type == 'short':
-                short_title = title.text.encode('utf-8','ignore')
-                if len( short_title ) > 500:
-                    print "[WARNING]: Legislation title truncated"
-                    warning += "[WARNING]: Legislation title truncated\n"
-                    short_title = short_title[:500]
-                legislation.title = short_title
+                legislation.title = truncateField( title.text.encode('utf-8','ignore') , 'Legislation title' , 500 )
 
     legislation.save()
 
@@ -1262,11 +1241,7 @@ def parseLegislation(XML):
         name = termXML.get('name')
 
         if name:
-            if len( name ) > 300:
-                print "[WARNING]: LegislationSubject name truncated " + name
-                warning += "[WARNING]: LegislationSubject name truncated " + name + "\n"
-                name = name[:300]
-
+            name = truncateField( name, 'LegislationSubject name', 300)
             subject = LegislationSubject.lg.get_or_none(name=name)
             if not subject:
                 subject = LegislationSubject(name=name)
@@ -1275,7 +1250,7 @@ def parseLegislation(XML):
 
     # Save the legislation
     legislation.save()
-    return warning
+    return ''
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Counts the number of govtrack legislation files there are
@@ -1391,7 +1366,7 @@ def parseLegislationAmendment(XML):
         if XML.status:
             if XML.status.has_key('datetime'):
                 amendment.status_datetime = parseDateTime(XML.status['datetime'])
-            amendment.status_text = XML.status.text.encode('utf-8','ignore')
+            amendment.status_text = truncateField( XML.status.text.encode('utf-8','ignore') , 'Amendment status_text' , 20 )
 
         if XML.sponsor and XML.sponsor.has_key('id'):
             sponsor = UserProfile.lg.get_or_none(govtrack_id=int(XML.sponsor['id']))
@@ -1402,9 +1377,10 @@ def parseLegislationAmendment(XML):
             amendment.offered_datetime = parseDateTime(XML.offered['datetime'])
 
         if XML.description:
-            amendment.description = XML.description.text.encode('utf-8','ignore')
+            amendment.description = truncateField( XML.description.text.encode('utf-8','ignore') , 'Amendment description' , 50000 )
+
         if XML.purpose:
-            amendment.purpose = XML.purpose.text.encode('utf-8','ignore')
+            amendment.purpose = truncateField( XML.purpose.text.encode('utf-8','ignore') , 'Amendment purpose' , 5000 )
 
 
 
@@ -1446,7 +1422,6 @@ def countXMLAmendments():
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
         fileListing = os.listdir(filePath)
-        fileCount = filecount(filePath)
         for infile in fileListing:
             db.reset_queries()
             if ".xml" in infile:
@@ -1520,7 +1495,10 @@ def parseCongressRoll(XML):
     # Initialize or find congress roll
     congress_roll = CongressRoll.lg.get_or_none(session=session,where=where,roll_number=roll_number,datetime=datetime)
     if not congress_roll:
+        print "Initializing Congress Roll #" + str(session_number) + "_" + where + str(roll_number)
         congress_roll = CongressRoll(session=session,where=where,roll_number=roll_number,datetime=datetime)
+
+    print "Found Congress Roll #" + str(session_number) + "_" + where + str(roll_number)
 
     legislation = None
     # Get the bill for this roll
@@ -1591,7 +1569,7 @@ def parseCongressRoll(XML):
         if updated:
             congress_roll.updated = updated
         if XML.roll.has_key('source'):
-            congress_roll.source = XML.roll['source'].encode('utf-8','ignore')
+            congress_roll.source = truncateField( XML.roll['source'].encode('utf-8','ignore') , "CongressRoll category", 100 )
         if XML.roll.has_key('aye'):
             congress_roll.aye = int(XML.roll['aye'])
         if XML.roll.has_key('nay'):
@@ -1601,15 +1579,15 @@ def parseCongressRoll(XML):
         if XML.roll.has_key('present'):
             congress_roll.present = int(XML.roll['present'])
         if XML.roll.category:
-            congress_roll.category = XML.category.text.encode('utf-8','ignore')
+            congress_roll.category = truncateField( XML.category.text.encode('utf-8','ignore') , "CongressRoll category", 100 )
         if XML.roll.type:
-            congress_roll.type = XML.type.text.encode('utf-8','ignore')
+            congress_roll.type = truncateField( XML.type.text.encode('utf-8','ignore') , "CongressRoll type", 100 )
         if XML.roll.question:
-            congress_roll.question = XML.question.text.encode('utf-8','ignore')
+            congress_roll.question = truncateField( XML.question.text.encode('utf-8','ignore') , "CongressRoll question", 1000 )
         if XML.roll.required:
-            congress_roll.required = XML.required.text.encode('utf-8','ignore')
+            congress_roll.required = truncateField( XML.required.text.encode('utf-8','ignore') , "CongressRoll required", 10 )
         if XML.roll.result:
-            congress_roll.result = XML.result.text.encode('utf-8','ignore')
+            congress_roll.result = truncateField( XML.result.text.encode('utf-8','ignore') , "CongressRoll result", 80 )
 
     congress_roll.save()
 
