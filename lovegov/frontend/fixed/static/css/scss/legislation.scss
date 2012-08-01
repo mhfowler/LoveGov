@@ -1,0 +1,186 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+
+div#content-leg-div
+{
+  position: absolute;
+  left: 250px;
+  top: 100;
+  width: 1000px;
+  border: 10px;
+  font-family: "Helvetica";
+
+  div.content-filter-box.menu_toggle
+  {
+    position: absolute;
+    left: 250px;
+    top: 100px;
+    width: 300px;
+
+    &.hovered
+    {
+      background-color: #8a2be2;
+
+      &.clicked
+      {
+        background-color: blue;
+      }
+    }
+
+    &.clicked
+    {
+      background-color: green;
+    }
+
+    span
+    {
+      h2
+      {
+        text-color: $red;
+      }
+    }
+  }
+
+
+  div.col1
+  {
+    width: 100px;
+    position:absolute;
+    left:1000px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+        text-color: $red;
+      }
+    }
+  }
+
+  div.col2
+  {
+    width: 100px;
+    position:absolute;
+    left:250px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+      text-color: $red;
+      }
+    }
+  }
+
+  div.col3
+  {
+    width: 100px;
+    position:absolute;
+    left:400px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+        text-color: $red;
+      }
+    }
+  }
+
+  div.col4
+  {
+    width: 100px;
+    position:absolute;
+    left:550px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+        text-color: $red;
+      }
+    }
+  }
+
+  div.col5
+  {
+    width: 130px;
+    position:absolute;
+    left:700px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+        text-color: $red;
+      }
+    }
+  }
+
+  div.col6
+  {
+    width: 100px;
+    position:absolute;
+    left:850px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+        text-color: $red;
+      }
+    }
+  }
+
+  div.col7
+  {
+    width: 100px;
+    position:absolute;
+    left:1000px;
+    top:150px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+
+    span
+    {
+      h3
+      {
+        text-color: $red;
+      }
+    }
+  }
+}
+
+input[type="checkbox"]
+{
+  position: relative;
+  top: 5px;
+  right: 5px;
+}

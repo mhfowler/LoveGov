@@ -1,0 +1,15 @@
+<p>
+    ==========================
+</p>
+
+<p>
+    user: {{ u.first_name }}
+    <br><br>
+    {{ access }}
+    <br><br>
+    times:
+    {% for x in pa %}
+        {{ x.page }}: {{ x.when }}
+        <br><br>
+    {% endfor %}
+</p>

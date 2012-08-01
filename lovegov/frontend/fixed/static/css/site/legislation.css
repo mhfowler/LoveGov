@@ -1,0 +1,110 @@
+
+div#content-leg-div {
+    position: absolute;
+    left: 80px;
+    top: 100;
+    width: 1000px;
+    border: 10px;
+    font-family: "Helvetica";
+}
+
+div#content-leg-div div.content-filter-box.menu_toggle {
+    position: absolute;
+    left: 80px;
+    top: 50px;
+    width: 300px;
+}
+
+div#content-leg-div.content-filter-box.menu_toggle.hovered {
+    background-color: #8a2be2;
+}
+
+div#content-leg-div.content-filter-box.menu_toggle.hovered.clicked {
+    background-color: blue;
+}
+
+div#content-leg-div.content-filter-box.menu_toggle.clicked {
+    background-color:green;
+}
+
+div#content-leg-div div.col1 {
+    width: 100px;
+    position:absolute;
+    left:70px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div#content-leg-div div.col2 {
+    width: 100px;
+    position:absolute;
+    left:220px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div#content-leg-div div.col3 {
+    width: 100px;
+    position:absolute;
+    left:370px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div#content-leg-div div.col4 {
+    width: 100px;
+    position:absolute;
+    left:520px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div#content-leg-div div.col5 {
+    width: 130px;
+    position:absolute;
+    left:670px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div#content-leg-div div.col6 {
+    width: 100px;
+    position:absolute;
+    left:820px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+div#content-leg-div div.col7 {
+    width: 100px;
+    position:absolute;
+    left:970px;
+    top:100px;
+    text-align: center;
+    border-style: solid;
+    overflow: hidden;
+}
+
+.checkbox {
+   position: relative;
+   top: 5px;
+   right: 5px;
+}
+
+
+
+
+
+

@@ -1,0 +1,516 @@
+@import 'master-mixins';
+@import 'invite-modal';
+
+div.profile-section-title
+{
+  @include h4;
+  color: $text-blue;
+}
+
+.group-button
+{
+  float: left;
+  margin-right: 10px;
+}
+
+div.hidden-message
+{
+  margin-left: 20px;
+}
+
+/* LEFT MODULE */
+div.middle-left
+{
+  position:relative;
+  float:left;
+  width:650px;
+
+/* Basic Info */
+  div.basic-info
+  {
+    position:relative;
+    margin-bottom:5px;
+    margin-left:30px;
+
+  /* Info Left Side */
+    div.basic-info-left
+    {
+      @include float-left;
+      margin-right: 20px;
+
+      div.group-privacy
+      {
+        font-size: 11px;
+        margin-top: 2px;
+        text-align: center;
+        color: $deep-gray;
+      }
+    }
+
+  /* Info Main Contents */
+    div.basic-info-main
+    {
+      @include float-left;
+      max-width: 520px;
+
+      .plus-color
+      {
+        color: $deep-gray;
+        font-weight: bold;
+      }
+
+      div.group-name
+      {
+        @include h2;
+        line-height: 30px;
+      }
+
+      div.group-scale
+      {
+        @include h5;
+        color: $text-blue;
+        margin-left: 2px;
+      }
+
+      div.group-summary
+      {
+        color: $deep-gray;
+        font-style: italic;
+        width: 380px;
+      }
+
+      .group-full-text-edit
+      {
+        width: 360px;
+        height: 150px;
+      }
+
+    /* Profile Stat Boxes */
+      div.group-stats
+      {
+        margin-top: 20px;
+        height: 80px;
+
+        div.stat-box
+        {
+          @include rounded-box(70px);
+          @include float-left;
+          padding: 0px 5px 0px 5px;
+          width:auto;
+          min-width:60px;
+          border-width: 2px;
+          border-color: $gray;
+          border-style: solid;
+          background-color: $gray;
+          margin-right: 10px;
+
+          div.group-stats-number
+          {
+            @include big-num;
+            color: white;
+            position: relative;
+            line-height: 52px;
+          }
+
+          div.group-stats-title
+          {
+            @include fontSize(12px);
+            color: $deep-gray;
+            position: relative;
+            top: -3px;
+          }
+        }
+
+        div.stat-box:hover
+        {
+          background-color: $light-gray;
+          border-color: $light-gray;
+        }
+
+        div.members-stat
+        {
+          background-color: white;
+
+          div.members-number
+          {
+            color: $red;
+          }
+        }
+
+        div.members-stat:hover
+        {
+          background-color: white;
+          border-color: $gray;
+
+          div.members-number
+          {
+            color: $red-light;
+          }
+        }
+      }
+
+    /* Profile Buttons */
+      div.group-buttons
+      {
+        margin-top: 10px;
+        height: 50px;
+      }
+    }
+  }
+
+/* Profile Bottom */
+  div.group-bottom
+  {
+    @include float-left;
+    display: block;
+    margin-top: 50px;
+
+  /* Activity Feed */
+    div.group-activity-container
+    {
+      @include float-left;
+      display: block;
+      width: 400px;
+      margin-right: 30px;
+
+      div.group-activity-feed
+      {
+        display: block;
+
+        div.action-separator
+        {
+          @include horizontalSeparator(400px);
+        }
+      }
+    }
+
+    /* Admins Container */
+    div.group-users-container
+    {
+      @include float-left;
+      width: 200px;
+
+      div.group-admins-container
+      {
+        margin-bottom: 30px;
+      }
+
+      div.member-image
+      {
+        @include float-left;
+        margin-bottom: 10px;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+/* Activity Feed */
+div.profile-activity-container
+{
+  @include float-left;
+  display: block;
+  width: 400px;
+  margin-right: 50px;
+
+  div.profile-activity-feed
+  {
+    display: block;
+
+    div.action-separator
+    {
+      @include horizontalSeparator(400px);
+    }
+  }
+}
+
+/* RIGHT MODULE */
+div.middle-right
+{
+  float:left;
+  //width:300px;
+  margin-left:20px;
+
+  div.right-separator
+  {
+    @include horizontalSeparator(300px);
+  }
+
+  div.follow-requests-container
+  {
+    width: 300px;
+
+    div.follow-request
+    {
+      padding: 15px 0px 15px 10px;
+    }
+  }
+
+  div.matching
+  {
+    @include rounded();
+    border-width: 3px;
+    border-color: $gray;
+    border-style: solid;
+    text-align:center;
+    position: relative;
+    margin-bottom:20px;
+    z-index:0;
+
+    div#qaweb
+    {
+      z-index:0;
+      position:relative;
+      width:300px;
+      height:300px;
+      text-align:left;
+    }
+
+    div#qaweb-title
+    {
+      @include rounded-bottom(10px);
+      position:relative;
+      background-color: $gray;
+      padding-top:10px;
+      padding-bottom:2px;
+      @include h5;
+      color: white;
+    }
+  }
+}
+
+/* Activity Feed */
+div.group-activity-container
+{
+  @include float-left;
+  width: 400px;
+  margin-right: 50px;
+
+  div.group-activity-feed
+  {
+    display: block;
+
+    div.action-separator
+    {
+      @include horizontalSeparator(400px);
+    }
+  }
+}
+
+div.group-histogram-container
+{
+  @include float-left;
+  width: 300px;
+  height: 300px;
+  @include rounded();
+  border-width: 3px;
+  border-color: $gray;
+  border-style: solid;
+  text-align:center;
+  z-index:0;
+  overflow:hidden;
+
+  .histogram-body {
+    height:265px;
+    width:300px;
+
+    .histogram-meta-box {
+      height:30px;
+      width:200px;
+      overflow:hidden;
+
+      .total_count {
+        @include big();
+        @include fontSize(20px);
+        float:left;
+        margin: 10px 0 0 25px;
+      }
+
+      .identical_count {
+        float:left;
+        @include big();
+        @include fontSize(20px);
+        float:left;
+        margin: 10px 0 0 20px;
+      }
+
+
+    }
+
+    .histogram-bars {
+
+      margin: 0 0 0 5px;
+
+      .bar {
+        float:left;
+        margin-left:25px;
+      }
+
+      .white_bar {
+        background-color:white;
+      }
+
+      .red_bar {
+        background-color:$red;
+        width:25px;
+        border: 1px solid $red;
+      }
+      .red_bar:hover {
+        border-color:$black;
+      }
+
+      .label {
+        @include really-big();
+        @include fontSize(14px);
+        margin-top: 5px;
+      }
+    }
+
+  }
+
+  div.histogram-title
+  {
+    @include rounded-bottom(18px);
+    position:relative;
+    background-color: $gray;
+    height: 37px;
+    color: white;
+
+    p{
+      position:relative;
+      top:-13px;
+      display:block;
+      @include h5;
+      color:white;
+    }
+  }
+
+}
+
+div.group-histogram-container:hover {
+  border-color:$black;
+  cursor:pointer;
+}
+
+div.requests-modal
+{
+  min-height: 300px;
+  border:1px solid $red;
+  position: absolute;
+  @include modal;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+  padding: 50px;
+
+  div.modal-section-title
+  {
+    @extend div.profile-section-title;
+    margin-bottom: 10px;
+  }
+
+  table.group-request-table
+  {
+    td
+    {
+      vertical-align: middle;
+      padding: 10px;
+    }
+  }
+
+  div.modal-horizontal-separator
+  {
+    @include horizontalSeparator(100%);
+  }
+
+  div.followers-container
+  {
+    margin-top:20px;
+
+    table.group-request-table
+    {
+      margin-right: 20px;
+      @include float-left;
+
+      td
+      {
+        vertical-align: middle;
+        padding: 10px 10px 10px 2px;
+      }
+    }
+  }
+
+  div.group-request-append
+  {
+    color: $dark-gray;
+    display: none;
+  }
+}
+
+
+div.motion-modal {
+  @include modal;
+  padding: 0px 20px 20px 20px;
+  text-align: left;
+
+  div.create-motion-icon {
+    background-image: url('/static/images/icons/Create_Motion.png');
+    background:contain;
+    width:80px;
+    height:80px;
+    float:left;
+  }
+
+  h3.create-motion-title {
+    margin-top:25px;
+    float:left;
+    margin-left:220px;
+    @include fontSize(26px);
+  }
+
+  div.modal-close {
+    margin-top:15px;
+  }
+
+  div.motion-title {
+    @include titleFont();
+    @include fontSize(22px);
+  }
+
+  select.action-select {
+    width:170px;
+  }
+  select.modifier-select {
+      width:250px;
+  }
+
+  textarea.because {
+    margin-top:10px;
+    width:440px;
+    height:150px;
+  }
+
+  div.row.first-row {
+    margin-top:0px;
+  }
+
+  div.row {
+    display:block;
+    margin-top:30px;
+  }
+
+  div.motion-info {
+    p.info-item {
+        line-height: 7px;
+    }
+    p.info-item.first-item {
+      margin-top:5px;
+    }
+  }
+
+  a.create-motion-button {
+    display:block;
+    @include div-button-padding($radius:10px,$padding:10px,$font-size:18px,$color:white,$background-color:$red,$hover-color:$red-light);
+    text-align:center;
+  }
+}

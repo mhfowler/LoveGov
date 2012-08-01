@@ -1,0 +1,86 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+@mixin notification-box
+{
+  border-bottom: solid 1px;
+  border-color: $gray;
+  background-color: white;
+}
+
+#header-notifications
+{
+  float: right;
+  margin-top: 5px;
+
+  #notifications-dropdown-button
+  {
+    border-top: solid 1px;
+    border-left: solid 1px;
+    border-color: $gray;
+    width: 30px;
+    height: 33px;
+    padding-top: 8px;
+    margin: 0px;
+    display: block;
+    text-align: center;
+
+    #notifications-number
+    {
+      @extend h4;
+      line-height: 16px;
+    }
+
+    #notifications-dropdown-arrow
+    {
+      background-image: url(/static/images/user-menu/downarrow.png);
+      display: block;
+      width: 12px;
+      height: 8px;
+      margin-left: auto;
+      margin-right: auto;
+      top: -5px;
+    }
+  }
+
+  #notifications-dropdown
+  {
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    border-color: $gray;
+    position: absolute;
+    color: $black;
+    font-size: 13px;
+    top: 47px;
+    width: 279px;
+    min-height: 200px;
+    z-index: 100;
+    background-color: white;
+
+    div.notification
+    {
+      @include notification-box;
+      padding-top: 10px;
+      padding-left: 10px;
+    }
+
+    div.notification:hover
+    {
+      background-color: $light-gray;
+    }
+
+    div.see-more-notifications
+    {
+      @include notification-box;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      text-align: center;
+    }
+
+    div.see-more-notifications:hover
+    {
+      background-color: $light-gray;
+    }
+  }
+}

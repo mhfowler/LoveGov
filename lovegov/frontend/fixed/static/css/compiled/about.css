@@ -1,0 +1,212 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+div._fade {
+  display: none; }
+
+div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  border-radius: 10px;
+  width: 230px;
+  height: 53px;
+  font-size: 20px;
+  font-family: "Sonus Light";
+  background-color: #f0f0f0;
+  color: #353535;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-bottom: 15px;
+  float: left;
+  margin: 10px 10px;
+  text-align: center; }
+  div.div-button span, div.div-button:active span, div.div-button:link span, div.div-button:visited span {
+    display: inline-block;
+    margin-top: 16px; }
+  div.div-button:hover, div.div-button:active:hover, div.div-button:link:hover, div.div-button:visited:hover {
+    color: white;
+    background-color: #ef503b;
+    cursor: pointer; }
+
+div.div-button.clicked {
+  color: white;
+  background-color: #ef503b; }
+
+div.top-nav, div.top-nav-left {
+  float: left; }
+
+div.nav-top-div {
+  padding-bottom: 15px;
+  display: inline-block; }
+
+div.nav-top-div-border {
+  border-bottom: 1px solid #cccccc;
+  width: 800px;
+  margin-left: 100px;
+  margin-top: 10px;
+  margin-bottom: 10px; }
+
+div.top-nav-left {
+  margin-right: 30px;
+  width: 1000px; }
+
+div#about-content {
+  margin-top: 25px;
+  display: inline-block; }
+  div#about-content li {
+    border: 0; }
+  div#about-content p.privacy_p {
+    margin-top: 5px;
+    margin-bottom: 25px;
+    margin-left: 25px;
+    margin-right: 25px; }
+  div#about-content div.privacy-column {
+    width: 475px;
+    float: left; }
+    div#about-content div.privacy-column h3 {
+      font-size: 21px; }
+  div#about-content h4 {
+    font-size: 18px; }
+  div#about-content h6 {
+    color: #959595; }
+  div#about-content div.about-content-block, div#about-content div.about-content-left, div#about-content div.about-content-right {
+    display: inline-block; }
+  div#about-content div.about-content-left {
+    width: 475px;
+    margin-right: 25px; }
+  div#about-content div.who-are-we-circle {
+    position: relative;
+    min-width: 475px;
+    margin-right: 25px;
+    float: left;
+    height: 500px; }
+  div#about-content div.mission {
+    margin-top: 25px;
+    position: relative;
+    margin-left: 25px; }
+    div#about-content div.mission h3 {
+      margin-bottom: 5px; }
+  div#about-content div.who-are-we-circle-div {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    border-radius: 100px; }
+    div#about-content div.who-are-we-circle-div img {
+      border-radius: 100px; }
+  div#about-content div.who-are-we-circle-div-green {
+    border: 2px #92b76c solid; }
+  div#about-content div.who-are-we-circle-div-green-hover {
+    -moz-box-shadow: 0 0 40px 5px #92b76c;
+    -webkit-box-shadow: 0 0 40px 5px #92b76c;
+    box-shadow: 0 0 40px 5px #92b76c; }
+  div#about-content div.who-are-we-circle-div-purple {
+    border: 2px #9797c6 solid; }
+  div#about-content div.who-are-we-circle-div-purple-hover {
+    -moz-box-shadow: 0 0 40px 5px #9797c6;
+    -webkit-box-shadow: 0 0 40px 5px #9797c6;
+    box-shadow: 0 0 40px 5px #9797c6; }
+  div#about-content div.who-are-we-circle-div-orange {
+    border: 2px #ea947d solid; }
+  div#about-content div.who-are-we-circle-div-orange-hover {
+    -moz-box-shadow: 0 0 40px 5px #ea947d;
+    -webkit-box-shadow: 0 0 40px 5px #ea947d;
+    box-shadow: 0 0 40px 5px #ea947d; }
+  div#about-content div.who-are-we-circle-div-blue {
+    border: 2px #93cad8 solid; }
+  div#about-content div.who-are-we-circle-div-blue-hover {
+    -moz-box-shadow: 0 0 40px 5px #93cad8;
+    -webkit-box-shadow: 0 0 40px 5px #93cad8;
+    box-shadow: 0 0 40px 5px #93cad8; }
+  div#about-content div.who-are-we-circle-div-teal {
+    border: 2px #639e9b solid; }
+  div#about-content div.who-are-we-circle-div-teal-hover {
+    -moz-box-shadow: 0 0 40px 5px #639e9b;
+    -webkit-box-shadow: 0 0 40px 5px #639e9b;
+    box-shadow: 0 0 40px 5px #639e9b; }
+  div#about-content div.who-are-we-circle-div-pink {
+    border: 2px #ea7d95 solid; }
+  div#about-content div.who-are-we-circle-div-pink-hover {
+    -moz-box-shadow: 0 0 40px 5px #ea7d95;
+    -webkit-box-shadow: 0 0 40px 5px #ea7d95;
+    box-shadow: 0 0 40px 5px #ea7d95; }
+  div#about-content div.who-are-we-circle-div-yellow {
+    border: 2px #f9d180 solid; }
+  div#about-content div.who-are-we-circle-div-yellow-hover {
+    -moz-box-shadow: 0 0 40px 5px #f9d180;
+    -webkit-box-shadow: 0 0 40px 5px #f9d180;
+    box-shadow: 0 0 40px 5px #f9d180; }
+  div#about-content div.who-are-we-circle-div-center {
+    width: 250px;
+    height: 250px;
+    position: absolute;
+    border-radius: 125px;
+    background-color: #ef503b;
+    border: 2px #ef503b solid; }
+    div#about-content div.who-are-we-circle-div-center img {
+      border-radius: 125px; }
+  div#about-content div.about-content-right {
+    width: 475px;
+    margin-left: 25px; }
+
+div#contact-div div.press-wrapper {
+  width: 700px;
+  margin: 20px 0 0 0; }
+  div#contact-div div.press-wrapper h4 {
+    font-size: 30px; }
+  div#contact-div div.press-wrapper p.press-text {
+    margin: 10px 0 0 0;
+    font-size: 26px; }
+div#contact-div h4.find-us {
+  font-size: 30px;
+  margin: 40px 0 20px 0; }
+
+a.about-link {
+  width: 200px;
+  height: 200px; }
+
+a.about-link:hover {
+  background-color: #e0e0e0; }
+
+div.faq-question {
+  margin: 30px 0; }
+  div.faq-question p {
+    margin: 10px 0;
+    font-size: 14px; }

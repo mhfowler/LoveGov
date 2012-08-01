@@ -1,0 +1,57 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+div.action {
+  padding: 15px 10px 0px 10px; }
+
+div.action:hover {
+  background-color: #e0e0e0; }
+
+table.action-container {
+  width: 100%; }
+
+td.action-thumbnail {
+  padding-right: 10px;
+  width: 25px;
+  text-align: center;
+  height: 25px;
+  vertical-align: middle; }
+
+td.action-text {
+  width: 350px;
+  vertical-align: middle; }
+
+td.action-timestamp {
+  color: #adadad;
+  text-align: right;
+  font-style: italic;
+  font-size: 10px; }

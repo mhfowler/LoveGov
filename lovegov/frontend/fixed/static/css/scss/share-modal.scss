@@ -1,0 +1,71 @@
+@import 'master-variables.scss';
+@import 'master-mixins.scss';
+
+div.share-modal {
+  margin-left: 20%;
+  margin-right: 20%;
+  width: 60%;
+  height: 250px;
+  top: 10%;
+  display: block;
+  background-color: white;
+  border: 1px solid $red;
+  z-index: 103;
+  -moz-box-shadow: 10px 10px 5px #888;
+  -webkit-box-shadow: 10px 10px 5px #888;
+  box-shadow: 10px 10px 5px #888;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: none;
+  position: fixed;
+}
+
+div.share-modal-container
+{
+  padding: 20px;
+  text-align: center;
+}
+
+div.share-modal-header
+{
+  text-align: center;
+  @include h3;
+  margin-bottom: 10px;
+}
+
+div.share-select-container
+{
+  margin-bottom:15px;
+}
+
+div.share-submit-container
+{
+  margin-bottom:15px;
+}
+
+div.share-submit-message
+{
+  color: $dark-gray;
+  @include fontSize(14px);
+  display: none;
+}
+
+a.share-button-modal
+{
+  @include fontSize(18px);
+  @include rounded(10px);
+  padding: 10px 15px 10px 15px;
+}
+
+a.share-button-modal:hover
+{
+  background-color: $light-gray;
+}
+
+div.shareModal div.share_content {
+  margin: 20px;
+}
+
+select.share_select {
+  width: 600px;
+}

@@ -1,0 +1,342 @@
+{% load thumbnail %}
+
+<div class="main-div">
+    <!-- Left Block -->
+    <div class="middle-left">
+        <div class="basic-info">
+            <div class="basic-info-left">
+                <div class="profile-img">
+                    {% thumbnail user_prof.getProfileImage.image "100x100" crop="center" as im %}
+                        <img src="{{ im.url }}" data-original_image="{{user_prof.getProfileImage.image.url}}" class="icon-really-big"/>
+                    {% endthumbnail %}
+                </div>
+                {% if viewer.id != user_prof.id and is_following_you%}
+                    <div class="profile-follows-you">
+                        FOLLOWS YOU
+                    </div>
+                {% endif %}
+            </div>
+            <div class="basic-info-main">
+                <div class="profile-username">
+                    {{ user_prof.get_name }}
+                </div>
+
+                <div class="profile-location">
+                    {% for location in prof_locations %}
+                        {% if not forloop.first %}
+                            <span class="plus-color">+</span>
+                        {% endif %}
+                        <a class="do-ajax-link invert_link" href="{{ location.get_url }}">{{ location.get_name }}</a>
+                    {% endfor %}
+                </div>
+
+                <div class="profile-school">
+                    {% for school in prof_schools %}
+                        {% if not forloop.first %}
+                            <span class="plus-color">+</span>
+                        {% endif %}
+                        <a class="do-ajax-link red-link" href="{{ school.get_url }}">{{ school.get_name }}</a>
+                    {% endfor %}
+                </div>
+
+                <div class="profile-summary">
+                    <div class="inline-div inline_hide">
+                        {{ user_prof.bio }}
+                    </div>
+                    {% if viewer.id == user_prof.id %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="UserProfile">
+                            <textarea type="text" maxlength="150" class="edit_input bio-inline-edit" name="bio">{{ user_prof.bio }}</textarea>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="profile-parties">
+                    {% for party in prof_parties %}
+                        <div class="party-image">
+                            <a href="{{ party.get_url }}">
+                                {% thumbnail party.party_label "100x18" as im %}
+                                    <img src="{{ im.url }}" />
+                                {% endthumbnail %}
+                            </a>
+                        </div>
+                    {% endfor %}
+                    <div class="clear-both"></div>
+                </div>
+
+                <div class="profile-stats">
+                    {% if user_prof.user_type == "U" %}
+                        <div class="stat-box followers-stat" id="profile_followers">
+                            <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
+                            <div class="profile-stats-title">follower{{ prof_follow_me|pluralize }}</div>
+                        </div>
+                    {% else %}
+                        <div class="stat-box profile-stat" id="profile_supporters">
+                            <div class="profile-stats-number supporters-number">{{ user_prof.num_supporters }}</div>
+                            <div class="profile-stats-title">supporter{{ user_prof.num_supporters|pluralize }}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="profile-stats-number messages-number">{{ user_prof.num_messages }}</div>
+                            <div class="profile-stats-title">message{{ user_prof.num_messages|pluralize }}</div>
+                        </div>
+                    {% endif %}
+                    <div class="stat-box">
+                        <div class="profile-stats-number">{{ responses }}</div>
+                        <div class="profile-stats-title">question{{ responses|pluralize }}</div>
+                    </div>
+                    {% if user_prof.user_type == "U" %}
+                        <div class="stat-box">
+                            <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
+                            <div class="profile-stats-title">petition{{ user_prof.num_petitions|pluralize }}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="profile-stats-number">{{ user_prof.num_articles }}</div>
+                            <div class="profile-stats-title">article{{ user_prof.num_articles|pluralize }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile-buttons">
+                    {% if viewer.id != user_prof.id %}
+                        {% if user_prof.user_type == 'U' %}
+                            {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                                <a href="" class="button-red float-left" id="user_follow_button">
+                                    follow
+                                </a>
+                            {% else %}
+                                <a href="" class="button-red float-left user-unfollow-button">
+                                    {% if is_user_confirmed %}
+                                        unfollow
+                                    {% elif is_user_requested %}
+                                        un-request
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        {% else %}
+                                <a href="" class="button-red float-left support_button politician-button unsupport"
+                                   data-p_id="{{ user_prof.id }}" data-confirmed="0"
+                                        {% if not yousupport %} style="display:none" {% endif %}>
+                                    unsupport
+                                </a>
+                                <a href="" class="button-red float-left support_button politician-button support"
+                                   data-p_id="{{ user_prof.id }}" data-confirmed="1"
+                                        {% if yousupport %} style="display:none" {% endif %}>
+                                    support
+                                </a>
+                            <a href="" class="button-red float-left message_button politician-button">
+                                message
+                            </a>
+                            <a class="message-sent"> message sent. </a>
+                            <div class="message-dialogue message-wrapper"  data-p_id="{{ user_prof.id }}">
+                                <div class="message-header-wrapper">
+                                    <h4 class="message-header"> Send a message to {{ user_prof.get_name }}</h4>
+                                    <div class="message_x"> </div>
+                                </div>
+                                <textarea class="message-textarea"> Dear {{ user_prof.get_name }}, </textarea>
+                                <a href="#" class="message-send message_send button-red"> send </a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="clear-both">
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-bottom">
+            <div class="profile-activity-container">
+                <div class="profile-section-title">Activity</div>
+                <div class="profile-activity-feed" id="profile_activity_feed">
+                    {% for action in actions_text %}
+                        {{ action|safe|escape }}
+                        {% if not forloop.last %}
+                            <div class="action-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a href="" class="long-button-gray" id="profile_more_actions">
+                    See more activity
+                </a>
+                <input type="hidden" id="num_actions" value="{{ num_actions }}"/>
+                <br>
+            </div>
+
+            <div class='profile-group-container'>
+                <div class="profile-section-title">Groups</div>
+                <div class='profile-groups' id="profile_group_feed">
+                    {% for group in prof_groups %}
+                        <a class="profile-group-link" href="{{ group.get_url }}">
+                            {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
+                                <img src="{{ im.url }}" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}" class="has_hover_comparison rounded"/>
+                            {% empty %}
+                                <img src="/static/images/profile_default.jpg" class="rounded"/>
+                            {% endthumbnail %}
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="clear-both"></div>
+                <a href="" class="long-button-gray" id="profile_more_groups">
+                    See more groups
+                </a>
+                <input type="hidden" id="num_groups" value="{{ num_groups }}"/>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Block -->
+    <div class="middle-right">
+
+        {% if viewer.id == user_prof.id %}
+
+            <div class="profile-section-title">
+                Follow privacy:
+                {% if viewer.private_follow %}
+                    <a href="" class="button-red public-follow">private</a>
+                {% else %}
+                    <a href="" class="button-red private-follow">public</a>
+                {% endif %}
+            </div>
+            <br>
+            <div class="right-separator"></div>
+            <br>
+
+            {% if prof_invites %}
+                <div class="profile-section-title">Group Invites</div>
+
+                <div class='group-invites-container'>
+                    {% for invite in prof_invites %}
+                        <div class="notification">
+                            <table>
+                                <tr>
+                                    <td class="notification-thumbnail">
+                                        {% thumbnail invite.group.getImage "25x25" crop="center" as im %}
+                                            <img src="{{ im.url }}" class="icon-small"/>
+                                        {% endthumbnail %}
+                                    </td>
+                                    <td class="notification-text notification_text">
+                                        <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a>
+                                        invited you to join
+                                        <a href="{{ invite.group.get_url }}">{{ invite.group.title }}</a>
+                                        <div class='notification-append notification_append_y'>Invite accepted</div>
+                                        <div class='notification-append notification_append_n'>Invite declined</div>
+                                    </td>
+                                    <td class="notification-buttons notification_buttons" data-g_id="{{ invite.group.id }}">
+                                        <div class="notification-follow-response notification_invite_response_y">accept</div>
+                                        <div class="notification-follow-response bottom notification_invite_response_n">decline</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        {% if not forloop.last %}
+                            <div class="right-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="right-separator"></div>
+                <br>
+            {% endif %}
+
+            {% if prof_requests %}
+                <div class="profile-section-title">Follow Requests</div>
+
+                <div class="follow-requests-container">
+                    {% for req in prof_requests %}
+                        <div class="notification">
+                        <table>
+                            <tr>
+                                <td class="notification-thumbnail">
+                                    {% thumbnail req.getFrom.getProfileImage.image "25x25" crop="center" as im %}
+                                        <img src="{{ im.url }}" class="icon-small"/>
+                                    {% endthumbnail %}
+                                </td>
+                                <td class="notification-text notification_text">
+                                    <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> requested to follow you
+                                    <div class='notification-append notification_append_y'>They are now following you</div>
+                                    <div class='notification-append notification_append_n'>Request declined</div>
+                                </td>
+                                <td class="notification-buttons notification_buttons">
+                                    <div class="notification-follow-response notification_follow_response_y">accept</div>
+                                    <div class="notification-follow-response bottom notification_follow_response_n">decline</div>
+                                    <input type="hidden" class="user_follow_id" value="{{ req.getFrom.id }}"/>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </table>
+                        </div>
+
+                        {% if not forloop.last %}
+                            <div class="right-separator"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="right-separator"></div>
+                <br>
+            {% endif %}
+
+            <div class="profile-section-title">Notifications</div>
+            <div id="profile_notifications" class="profile-notifications-container">
+                {% for note in notifications_text %}
+                    {{ note|safe|escape }}
+                    {% if not forloop.last %}
+                        <div class="right-separator"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <input type="hidden" id="num_notifications" value="{{ num_notifications }}"/>
+            <a href="" class="long-button-gray" id="see_more_notifications">See more notifications</a>
+
+        {% else %}
+            <div class="matching bind_link tooltip-right"  data-url="{{ user_prof.getWebURL }}" title="click to expand">
+                <div class="{{ user_prof.get_name|slugify }}-canvas" data-json="{{ json }}"></div>
+                <div id="qaweb-title">
+                    You & {{ user_prof.get_name }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="clearfix"></div>
+</div>
+
+<div id="profile_followers_modal" class="followers-modal">
+    <div class="modal-close followers_modal_close" ></div>
+    <div class="modal-section-title">Followers:</div>
+    <div class="modal-horizontal-separator"></div>
+    <div class="followers-container">
+        {% for follower in prof_follow_me %}
+            <table class="user-container">
+                <tr>
+                    <td>
+                        <a href="{{ follower.get_url }}">
+                            {% include "site/pieces/snippets/avatar.html" with user=follower width="38" height="38" hoveroff=False %}
+                        </a>
+                    </td>
+                    <td><a href="{{ follower.get_url }}">{{ follower.get_name }}</a></td>
+                </tr>
+            </table>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="profile-modal-wrapper"><div class="profile-img-modal"></div></div>
+
+<script>
+    $(document).ready(function()
+    {
+        $("." + "{{ user_prof.get_name|slugify }}" + "-canvas").visualComparison();
+    });
+</script>
+<script> var p_id = "{{ user_prof.id }}"; </script>
+<script> var view_id = "{{ viewer.id }}"; </script>
+<script> rebind='profile'; </script>

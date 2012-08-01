@@ -1,0 +1,9 @@
+div.user-name {
+  margin-top: 5px;
+  margin-bottom: 5px; }
+  div.user-name .user-name-pic {
+    vertical-align: middle;
+    padding-right: 5px; }
+  div.user-name .user-name-name {
+    vertical-align: middle;
+    padding: 5px; }

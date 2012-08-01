@@ -1,0 +1,78 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+footer.sticky-footer {
+  border-top: 1px solid #cccccc;
+  position: relative;
+  height: 180px;
+  clear: both;
+  margin-top: 600px;
+  padding: 30px 150px 30px 150px;
+  font-family: "Sonus Light", Helvetica, Arial, Verdana, sans-serif; }
+  footer.sticky-footer div.footer-content {
+    width: 1300px;
+    color: #959595; }
+    footer.sticky-footer div.footer-content div.footer-col {
+      float: left;
+      margin: 40px; }
+      footer.sticky-footer div.footer-content div.footer-col div.footer-invite.highlight {
+        color: #005468; }
+      footer.sticky-footer div.footer-content div.footer-col div.footer-feedback.highlight {
+        color: #005468; }
+  footer.sticky-footer ul a {
+    transition: text-decoration 0.5s;
+    -webkit-transition: text-decoration 0.5s;
+    color: #959595;
+    padding: 0; }
+    footer.sticky-footer ul a li {
+      list-style-type: none;
+      border: none;
+      padding: 0; }
+      footer.sticky-footer ul a li:hover {
+        text-decoration: underline; }
+    footer.sticky-footer ul a.highlight {
+      color: #005468; }
+    footer.sticky-footer ul a.notyethere {
+      display: none; }
+  footer.sticky-footer div.social_button {
+    float: left;
+    height: 40px;
+    width: 40px;
+    margin: 5px 5px 5px 0; }
+    footer.sticky-footer div.social_button.facebook {
+      background-image: url("/static/images/icons/facebook.png"); }
+      footer.sticky-footer div.social_button.facebook:hover {
+        background-image: url("/static/images/icons/facebook_hover.png"); }
+    footer.sticky-footer div.social_button.twitter {
+      background-image: url("/static/images/icons/twitter.png"); }
+      footer.sticky-footer div.social_button.twitter:hover {
+        background-image: url("/static/images/icons/twitter_hover.png"); }

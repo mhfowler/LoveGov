@@ -1,0 +1,18 @@
+{% load humanize %}
+{% with milestone=p.p_level|add:1 %}
+    <div class="petition_bar">
+        {% if p.current %}
+            <div class="petition-bar-wrapper bar-wrapper" data-percent="{{ p.getCompletionPercent }}">
+                <div class="red_bar"></div>
+            </div>
+            <div class="goal-statement">
+                {% load customtags %}
+                <span style="font-weight:bold"> {{p.current}} signature{{p.current|pluralize}} </span><span style="float:right">{{p.goal|subtract:p.current}} until next milestone</span>
+            </div>
+        {% else %}
+            <div class="goal-statement">
+                No one has signed this petition yet.
+            </div>
+        {% endif %}
+    </div>
+{% endwith %}

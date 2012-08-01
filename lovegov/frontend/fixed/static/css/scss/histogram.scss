@@ -1,0 +1,169 @@
+@import 'master-mixins';
+@import 'master-variables';
+
+.histogram-main {
+  @include main-div();
+  margin-top:25px;
+
+  .histogram-wrapper {
+    width:980px;
+    height:500px;
+    border: 1px solid $red;
+    overflow:hidden;
+
+
+    .histogram-body {
+      position:relative;
+      width:980px;
+      height:450px;
+
+      div.count {
+        @include big();
+        @include fontSize(40px);
+        position:absolute;
+        top: 40px;
+        left: 55px;
+      }
+
+      div.histogram-topic-selector-wrapper {
+        width: 500px;
+        height: 55px;
+        position: absolute;
+        top: 27px;
+        left: 230px;
+
+        .histogram-topic-icon-wrapper {
+          float:left;
+          margin-left:20px;
+        }
+      }
+
+      div.histogram-bars {
+        width: 850px;
+        height: 300px;
+        position: absolute;
+        top: 110px;
+        left: 65px;
+
+        .bar {
+          float:left;
+
+          .red_bar {
+            background-color:$red;
+          }
+
+          .label {
+            width:30px;
+            margin-top:10px;
+            text-align:center;
+            cursor:pointer;
+            padding:1px;
+            @include rounded(7px);
+          }
+          .label.clicked {
+            background-color:$light-gray;
+          }
+          .label:hover {
+            background-color:$light-gray;
+          }
+        }
+
+      }
+
+
+    }
+
+    .histogram-footer {
+      background-color:$red;
+      width:980px;
+      height:50px;
+
+      p {
+        float:left;
+        @include really-big();
+        @include fontSize(30px);
+        color:white;
+        margin: 15px 0 0 20px;
+
+        a {
+          font-style:italic;
+          color: white;
+        }
+        a:hover {
+          color: $black;
+        }
+      }
+
+      p.breakdown {
+        display:block;
+        margin-left: 160px;
+        text-align:center;
+      }
+
+      .histogram-topic {
+        float:right;
+        @include really-big();
+        @include fontSize(30px);
+        color:white;
+        margin: 15px 20px 0 0px;
+      }
+
+    }
+
+  }
+
+  div.members-header {
+    border-top: 1px solid $gray;
+    margin: 25px 0 0 0;
+    width:980px;
+
+    div.members-avatars-header {
+      padding-top:10px;
+      padding-bottom:4px;
+      float:left;
+      width:800px;
+      border-right:1px solid $gray;
+    }
+    div.identical-avatars-header {
+      padding-top:10px;
+      float:left;
+      margin:0 0 0 0;
+
+      h3.identical {
+        margin-left:25px;
+      }
+    }
+  }
+
+  div.group-members-wrapper {
+    margin: 0 0 0 0;
+    width: 980px;
+    border-top: 1px solid $gray;
+    text-align:center;
+
+    div.members-avatars {
+      float:left;
+      width:800px;
+      margin-bottom:20px;
+      border-right:1px solid $gray;
+    }
+
+    div.identical-avatars {
+      margin:0 0 0 0;
+      float:left;
+      width:170px;
+      text-align:center;
+
+      a.histogram-avatar {
+        margin: 20px 0px 0 30px;
+      }
+    }
+
+    a.histogram-avatar {
+      float:left;
+      margin: 20px 30px 0 0;
+    }
+
+  }
+}
+

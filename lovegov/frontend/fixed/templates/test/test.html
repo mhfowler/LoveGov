@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<a href="" id="share"> share </a>
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<script>
+
+    $("#share").click(function(event) {
+        event.preventDefault();
+        $.ajax
+                ({
+                    url:'/fb/action/',
+                    type:'GET',
+                    data: {'fb_action':'share',
+                        'fb_share_to':'jonnyk', 'message':'Check this message out',
+                        'action_to_page':window.location.pathname },
+                    success: function(data)
+                    {
+                        var obj = eval('(' + data + ')');
+                        if (obj.success==true) {
+                            alert("success!");
+                        }
+                        else if(obj.fb_error=='OAuthException') {
+                            alert(obj.fb_auth_path);
+                            window.location.href = obj.fb_auth_path;
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        $('body').html(jqXHR.responseText);
+                    }
+                });
+    });
+
+</script>
+
+</body>
+</html>

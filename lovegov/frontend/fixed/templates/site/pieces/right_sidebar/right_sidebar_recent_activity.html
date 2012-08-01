@@ -1,0 +1,17 @@
+<div class="sidebar-box clearfix">
+
+    <div class="topics-header">
+        <span class="content_header">Recent Activity </span>
+    </div>
+    
+    {% for action in recent_actions %}
+    
+    <p>{{ action.getVerbose }}
+    
+    {% endfor %}
+    
+    <div class="activity_box_piece">
+    
+    </div>
+
+</div>

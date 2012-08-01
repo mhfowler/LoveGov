@@ -1,0 +1,409 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+@font-face {
+  font-family: "Gill Sans Std Light";
+  src: url(../GillSansStd-Light.otf); }
+
+@font-face {
+  font-family: "Gill Sans Std";
+  src: url(../GillSansStd.otf); }
+
+@font-face {
+  font-family: "Sonus Light";
+  src: url(../SonusLig.otf); }
+
+/* Main Colors */
+/* Topic Colors */
+/* Fonts */
+/* Mixins */
+div#top {
+  z-index: 3;
+  position: relative;
+  width: 1000px;
+  height: 45px;
+  padding-bottom: 5px;
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5px;
+  padding-top: 5px;
+  box-shadow: 0 1px 8px #e0e0e0; }
+  div#top div.top-div, div#top div.top-logo, div#top div.link-wrapper {
+    float: left; }
+  div#top div.top-logo {
+    margin-left: 20px;
+    padding-left: 20px;
+    padding-right: 5px;
+    width: 110px;
+    height: 45px;
+    background-image: url("/static/images/beta-subtle.png");
+    background-size: contain; }
+  div#top div.top-logo:hover {
+    cursor: pointer;
+    background-image: url("/static/images/beta-subtle-hover.png"); }
+  div#top div.link-wrapper {
+    padding-left: 10px;
+    margin-top: 12px; }
+    div#top div.link-wrapper div {
+      float: left;
+      font-family: "Sonus Light";
+      font-size: 19px;
+      background-color: #fff; }
+    div#top div.link-wrapper div.top-links {
+      margin-right: 5px; }
+      div#top div.link-wrapper div.top-links a, div#top div.link-wrapper div.top-links a:link, div#top div.link-wrapper div.top-links a:active, div#top div.link-wrapper div.top-links a:visited {
+        color: #ef503b;
+        text-decoration: none;
+        padding-left: 12px;
+        padding-right: 12px; }
+      div#top div.link-wrapper div.top-links a:hover {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        background-color: #ef503b;
+        color: white; }
+      div#top div.link-wrapper div.top-links a.clicked {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        background-color: #ef503b;
+        color: white; }
+  div#top div.top-search {
+    float: left;
+    position: relative;
+    margin-left: 5px;
+    margin-top: 9px; }
+    div#top div.top-search input[type="text"]#searchbar {
+      position: relative;
+      float: left;
+      width: 325px;
+      font-size: 13px;
+      padding: 5px;
+      height: 20px; }
+    div#top div.top-search div#search-dropdown {
+      position: absolute;
+      width: 335px;
+      top: 31px;
+      border-left: 1px solid #cccccc;
+      border-right: 1px solid #cccccc;
+      border-bottom: 1px solid #cccccc;
+      border-top: 1px solid #ef503b;
+      background-color: white; }
+    div#top div.top-search img#searchglass {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      cursor: pointer; }
+  div#top a.reactivate-first-login {
+    margin: 3px 0px 0px 3px;
+    font-size: 16px;
+    float: left; }
+  div#top a.anon-sign-up {
+    float: left;
+    margin-top: 15px;
+    margin-left: 120px;
+    color: #ef503b; }
+  div#top a.anon-sign-up:hover {
+    color: #005468; }
+  div#top div#user-menu-container {
+    float: right;
+    margin-top: 7px;
+    height: 40px; }
+    div#top div#user-menu-container img {
+      cursor: pointer; }
+    div#top div#user-menu-container div#user-menu-dropdown {
+      position: absolute;
+      right: 0;
+      top: 55px;
+      border: 1px #cccccc solid;
+      width: 300px;
+      z-index: 1000;
+      background-color: white;
+      -moz-box-shadow: 0px 2px 12px #e0e0e0;
+      -webkit-box-shadow: 0px 2px 12px #e0e0e0;
+      box-shadow: 0px 2px 12px #e0e0e0; }
+      div#top div#user-menu-container div#user-menu-dropdown div.user-menu-pointer {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: -20px;
+        left: 30px; }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-pointer div.border {
+          position: absolute;
+          border-style: solid;
+          border-width: 10px;
+          border-color: transparent transparent #cccccc transparent; }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-pointer div.inner {
+          position: absolute;
+          border-style: solid;
+          border-width: 10px;
+          border-color: transparent transparent white transparent;
+          top: 1px; }
+      div#top div#user-menu-container div#user-menu-dropdown a, div#top div#user-menu-container div#user-menu-dropdown a:link, div#top div#user-menu-container div#user-menu-dropdown a:visited, div#top div#user-menu-container div#user-menu-dropdown a:active {
+        color: #ef503b; }
+      div#top div#user-menu-container div#user-menu-dropdown a:hover {
+        color: #fc8a81; }
+      div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard {
+        margin-bottom: 30px;
+        margin-top: 15px; }
+        div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard img#user-menu-dashboard-avatar {
+          padding-left: 15px;
+          padding-right: 15px;
+          float: left; }
+        div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-avatar-overlay {
+          opacity: 0.4;
+          background-color: #ef503b;
+          height: 75px;
+          width: 75px;
+          margin-left: 15px;
+          position: absolute;
+          cursor: pointer; }
+        div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard h5.user-menu-dashboard-avatar-overlay {
+          position: absolute;
+          color: white;
+          margin-left: 25px;
+          margin-top: 15px;
+          text-align: center;
+          cursor: pointer; }
+        div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-right {
+          width: 195px;
+          float: left; }
+          div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-right p.user-menu-dashboard-text {
+            margin-bottom: 0;
+            margin-top: 5px; }
+          div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-right table {
+            width: 195px;
+            margin-top: 10px; }
+            div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-right table img {
+              float: none;
+              padding: 0;
+              margin-left: 10px;
+              width: 20px; }
+            div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-right table td {
+              width: 97.5px; }
+            div#top div#user-menu-container div#user-menu-dropdown div#user-menu-dashboard div.user-menu-dashboard-right table a {
+              vertical-align: middle; }
+      div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right {
+        float: left;
+        border-top: 1px #cccccc solid;
+        padding-top: 8px;
+        padding-bottom: 8px; }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option a, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left a, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right a {
+          margin-left: 10px;
+          font-size: 15px;
+          float: left; }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.img-holder, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.img-holder, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.img-holder, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-left div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-right div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-left div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option-left div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option-right div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-right div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option-right div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option-left div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-left div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-right div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-left div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option-left div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option-right div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.user-menu-dashboard-option-right div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.user-menu-dashboard-option-right div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.user-menu-dashboard-option-left div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.img-holder-logout {
+          float: right;
+          margin-right: 10px;
+          width: 20px;
+          height: 20px; }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.img-holder-account {
+          background-image: url("/static/images/user-menu/gear_red.png"); }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left div.img-holder-logout, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right div.img-holder-logout {
+          background-image: url("/static/images/user-menu/logout.png"); }
+        div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option:hover, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left:hover, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right:hover {
+          cursor: pointer;
+          background-color: #ef503b; }
+          div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option:hover a, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left:hover a, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right:hover a {
+            color: white; }
+          div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option:hover div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left:hover div.img-holder-account, div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right:hover div.img-holder-account {
+            background-image: url("/static/images/user-menu/gear_white.png"); }
+      div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-left {
+        width: 149px;
+        border-right: 1px #cccccc solid; }
+      div#top div#user-menu-container div#user-menu-dropdown div.user-menu-dashboard-option-wrapper div.user-menu-dashboard-option-right {
+        width: 150px; }
+    div#top div#user-menu-container div.user-menu-options-wrapper {
+      float: left;
+      margin-top: 3px;
+      padding-left: 8px;
+      padding-right: 8px;
+      margin-right: 10px;
+      border-left: 1px #cccccc solid;
+      border-right: 1px #cccccc solid;
+      height: 30px; }
+      div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options {
+        float: left;
+        margin-top: 3px; }
+        div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options img.security-mode {
+          width: 25px;
+          height: 25px;
+          float: left;
+          margin-left: 10px; }
+        div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options div.header-notifications {
+          float: left;
+          cursor: pointer;
+          width: 25px;
+          height: 25px;
+          border-radius: 5px;
+          -moz-border-radius: 5px;
+          -webkit-border-radius: 5px;
+          -khtml-border-radius: 5px;
+          background-color: #ef503b;
+          margin-left: 13px; }
+          div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options div.header-notifications:hover {
+            background-color: #fc8a81; }
+          div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options div.header-notifications div#notifications-dropdown-button {
+            width: 25px;
+            height: 25px;
+            margin: 0px;
+            display: block;
+            text-align: center; }
+            div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options div.header-notifications div#notifications-dropdown-button div#notifications-number h5 {
+              color: white;
+              padding-top: 2px; }
+            div#top div#user-menu-container div.user-menu-options-wrapper div.user-menu-options div.header-notifications div#notifications-dropdown-button #notifications-dropdown-arrow {
+              background-image: url(/static/images/user-menu/downarrow.png);
+              display: block;
+              width: 12px;
+              height: 8px;
+              margin-left: auto;
+              margin-right: auto;
+              top: -5px; }
+    div#top div#user-menu-container #notifications-dropdown {
+      border: solid #cccccc 1px;
+      position: absolute;
+      font-size: 13px;
+      top: 55px;
+      width: 300px;
+      min-height: 200px;
+      z-index: 100;
+      background-color: white;
+      -moz-box-shadow: 10px 10px 12px #959595;
+      -webkit-box-shadow: 10px 10px 12px #959595;
+      box-shadow: 10px 10px 12px #959595; }
+      div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div {
+        text-align: center; }
+        div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div h5 {
+          margin-top: 10px; }
+        div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div div.notifications-header-border {
+          border-bottom: 1px solid #cccccc;
+          width: 300px;
+          margin-left: 0;
+          margin-top: 0;
+          margin-bottom: 0; }
+        div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div div.notifications-pointer {
+          width: 20px;
+          height: 20px;
+          position: absolute;
+          top: -20px;
+          left: 138px; }
+          div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div div.notifications-pointer div.border {
+            position: absolute;
+            border-style: solid;
+            border-width: 10px;
+            border-color: transparent transparent #cccccc transparent; }
+          div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div div.notifications-pointer div.inner {
+            position: absolute;
+            border-style: solid;
+            border-width: 10px;
+            border-color: transparent transparent white transparent;
+            top: 1px; }
+        div#top div#user-menu-container #notifications-dropdown div.notifications-dropdown-static-div div.notifications-ajax-load img {
+          position: absolute;
+          width: 50px;
+          left: 125px;
+          top: 90px; }
+      div#top div#user-menu-container #notifications-dropdown div.notification {
+        border-bottom: solid 1px;
+        border-color: #cccccc;
+        background-color: white;
+        padding-top: 10px;
+        padding-left: 10px; }
+      div#top div#user-menu-container #notifications-dropdown div.notification:hover {
+        background-color: #e0e0e0; }
+      div#top div#user-menu-container #notifications-dropdown div.see-more-notifications {
+        border-bottom: solid 1px;
+        border-color: #cccccc;
+        background-color: white;
+        border-bottom: solid 0;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        text-align: center; }
+      div#top div#user-menu-container #notifications-dropdown div.see-more-notifications:hover {
+        background-color: #e0e0e0; }
+    div#top div#user-menu-container div.user-menu {
+      float: right;
+      font-family: "Sonus Light";
+      cursor: pointer; }
+      div#top div#user-menu-container div.user-menu div#menu-down-arrow {
+        float: left;
+        margin-left: 10px;
+        margin-top: 17px;
+        margin-right: 10px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 8px solid #ef503b; }
+      div#top div#user-menu-container div.user-menu #user-name {
+        position: relative;
+        float: left;
+        margin-left: 5px;
+        margin-top: 13px;
+        color: #0F5569; }
+      div#top div#user-menu-container div.user-menu .user-img {
+        vertical-align: middle;
+        float: left; }
+    div#top div#user-menu-container .user-menu-dropdown-div-top {
+      border-top: 1px solid #CCC; }
+    div#top div#user-menu-container .user-menu-dropdown-div {
+      height: 50px;
+      width: 300px;
+      border-left: 1px solid #CCC;
+      border-right: 1px solid #CCC;
+      border-bottom: 1px solid #CCC;
+      font-size: 15px;
+      background-color: #FFFFFF;
+      cursor: pointer; }
+    div#top div#user-menu-container .user-menu-dropdown-div-hover {
+      background-color: #F0503B;
+      color: #FFFFFF; }
+    div#top div#user-menu-container .user-menu-dropdown-div-selected {
+      background-color: #F0503B;
+      color: #FFFFFF; }
+    div#top div#user-menu-container .user-menu-dropdown-div img {
+      float: right;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      padding-right: 8px;
+      margin-left: 20px; }
+    div#top div#user-menu-container .user-menu-dropdown-div a {
+      text-decoration: none;
+      float: right;
+      margin-top: 18px;
+      color: #000000; }
+
+div#user-upload-avatar-modal {
+  float: left;
+  background-color: white;
+  z-index: 103;
+  -moz-box-shadow: 10px 10px 5px #959595;
+  -webkit-box-shadow: 10px 10px 5px #959595;
+  box-shadow: 10px 10px 5px #959595;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: none;
+  border: 1px solid #ef503b;
+  position: absolute;
+  position: absolute;
+  width: 50%;
+  height: 500px;
+  top: 100px;
+  margin-left: 25%;
+  margin-right: 25%;
+  z-index: 1500; }
+  div#user-upload-avatar-modal div.upload-modal-main-div {
+    padding: 75px; }

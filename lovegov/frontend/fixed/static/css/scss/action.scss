@@ -1,0 +1,40 @@
+@import 'master-mixins';
+@import 'master-variables';
+
+div.action
+{
+  padding: 15px 10px 0px 10px;
+}
+
+div.action:hover
+{
+  background-color: $light-gray;
+}
+
+table.action-container
+{
+  width: 100%;
+}
+
+td.action-thumbnail
+{
+  padding-right: 10px;
+  width: 25px;
+  text-align: center;
+  height: 25px;
+  vertical-align: middle;
+}
+
+td.action-text
+{
+  width: 350px;
+  vertical-align: middle;
+}
+
+td.action-timestamp
+{
+  color: $dark-gray;
+  text-align: right;
+  font-style: italic;
+  @include fontSize(10px);
+}
