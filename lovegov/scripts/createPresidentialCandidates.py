@@ -18,6 +18,7 @@ def createPoliticianProfiles(sheet):
             password = 'president'
             politician = createUser(fullname,email,password)
             politician.user_profile.confirmed = True
+            politician.user_profile.politician = True
             politician.user_profile.save()
             image_path = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/presidentialCandidates/' + lastname.lower() + ".jpg")
             politician.user_profile.setProfileImage(file(image_path))
@@ -29,10 +30,7 @@ def answerQuestions(sheet):
         for column in range(2,sheet.ncols):
             politician_name = sheet.cell(0,column).value.split(" ")
             print politician_name
-            if politician_name[1] == "Obama" or politician_name[1] == "Paul":
-                politician = ElectedOfficial.objects.get(first_name=politician_name[0],last_name=politician_name[1])
-            else:
-                politician = Politician.objects.get(first_name=politician_name[0],last_name=politician_name[1])
+            politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1],politician=True)
             answer_text = sheet.cell(row,column).value
             answer_text = answer_text.encode('utf-8','ignore')
             print answer_text
