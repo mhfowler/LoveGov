@@ -1,7 +1,6 @@
 <br><br>
 <p>
-    ----------- Daily Usage for {{ user.id }} : {{ session.getSessionStart }}
-    {% if user.location.state %} [{{ user.location.state}}] {% endif %}
+    {% include 'emails/daily_summary/demographics.html' %}
     <ul>
         {% for x in session.getPA %}
             <li> {{ x.page }}
