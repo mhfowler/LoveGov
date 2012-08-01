@@ -7,6 +7,7 @@ SHOW_TOOLBAR = False
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH
+HOST = "http://local.lovegov.com:8000"
 
 DATABASES = {
     'default': {

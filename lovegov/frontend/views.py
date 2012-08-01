@@ -57,6 +57,10 @@ def viewWrapper(view, requires_login=False):
             vals['google'] = GOOGLE_LOVEGOV
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
+            if 'boto' in settings.DEFAULT_FILE_STORAGE:
+                vals['MEDIA_PREFIX'] = 'https://lovegov.s3.amazonaws.com/'
+            else:
+                vals['MEDIA_PREFIX'] = host_full
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"

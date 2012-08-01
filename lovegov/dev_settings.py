@@ -5,6 +5,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 PROJECT_PATH = settings.PROJECT_PATH
+HOST = "http://dev.lovegov.com"
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
