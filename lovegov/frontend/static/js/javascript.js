@@ -4947,11 +4947,3 @@ function loadBlog() {
  *
  **********************************************************************************************************************/
 
-function queryCheckedAttribute (checkbox) {
-     if ($(this).hasClass('clicked')) {
-        $(".checkbox").bindOnce("clickoutside", function(event) {
-            event.preventDefault();
-            checkbox.addClass("querychecked");
-        });
-     }
-}
