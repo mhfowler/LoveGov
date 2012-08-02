@@ -1273,7 +1273,7 @@ var Root = Node.extend
 
         HTML_appendImg: function(self)
         {
-            var src = 'src="' + "/static/images/you.png" + '"';
+            var src = 'src="' + STATIC_URL + "/images/you.png" + '"';
             $('#' + self.idDiv).append("<img id='" + self.idImg + "' " + src + " " + "/>");
             this.idImgObj = $('#' + this.idImg);
         },

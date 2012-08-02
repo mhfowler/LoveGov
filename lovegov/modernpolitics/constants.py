@@ -115,7 +115,7 @@ GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
 
-PRESIDENTIAL_IMG_FOLDER = "/static/images/presidential/"
+PRESIDENTIAL_IMG_FOLDER = settings.STATIC_URL + "images/presidential/"
 PRESIDENTIAL_CANDIDATES_IMG = {'rick@lovegov.com':PRESIDENTIAL_IMG_FOLDER + 'santorum.jpg',
                                'barack@lovegov.com':PRESIDENTIAL_IMG_FOLDER + 'obama.jpg',
                                'newt@lovegov.com':PRESIDENTIAL_IMG_FOLDER + 'gingrich.jpg',
@@ -143,7 +143,7 @@ FIRST_LOGIN_LAST_STAGE = 7
 ########################################### MAIN TOPICS ################################################################
 MAIN_TOPICS = ['Economy', 'Education', 'Energy', 'Environment', 'Health Care', 'National Security', 'Social Issues']
 
-MAIN_TOPIC_IMG_FOLDER = "/static/images/questionIcons/"
+MAIN_TOPIC_IMG_FOLDER = settings.STATIC_URL + "/images/questionIcons/"
 
 MAIN_TOPICS_IMG = {'Economy':MAIN_TOPIC_IMG_FOLDER + 'economy/eco_default.png',
                    'Education':MAIN_TOPIC_IMG_FOLDER + 'education/edu_default.png',
@@ -433,11 +433,11 @@ FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
 ###################################### STATIC FILE URLS ################################################################
 
 DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
-DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
-DEFAULT_NEWS_IMAGE_URL = '/static/images/icons/content-big/news.png'
-DEFAULT_PETITION_IMAGE_URL = '/static/images/icons/content-big/petition.png'
-DEFAULT_GROUP_IMAGE_URL = '/static/images/icons/content-big/group.png'
-DEFAULT_DISCUSSION_IMAGE_URL = '/static/images/icons/content-big/discussion.png'
+DEFAULT_PROFILE_IMAGE_URL = settings.STATIC_URL + '/images/profile_default.jpg'
+DEFAULT_NEWS_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/news.png'
+DEFAULT_PETITION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/petition.png'
+DEFAULT_GROUP_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/group.png'
+DEFAULT_DISCUSSION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'
 
