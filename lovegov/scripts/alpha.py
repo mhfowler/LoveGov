@@ -15,6 +15,7 @@ from lovegov.modernpolitics.backend import *
 # python
 import getpass
 from xlrd import open_workbook
+from lovegov.settings import PROJECT_PATH
 
 ########################################################################################################################
 
@@ -194,14 +195,14 @@ def scriptAddAlphaUser(args):
 #   answers questions for them
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptCreatePresidentialCandidates(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/Presidential_Candidates.xls')
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/Presidential_Candidates.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
     createPoliticianProfiles(sheet)
     answerQuestions(sheet)
 
 def scriptCreateCongressAnswers(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/congress.xls')
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/congress.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(3)
     metrics = {}
@@ -305,7 +306,7 @@ def scriptCreateCongressAnswers(args=None):
 
 
 def scriptCreateResponses(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/' + args[0])
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
     for row in range(1,sheet.nrows):
@@ -326,7 +327,7 @@ def scriptCreateResponses(args=None):
                 politician.user_profile.politician = True
                 politician.user_profile.save()
 
-                #image_path = os.path.join(settings.PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
+                #image_path = os.path.join(PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
                 #politician.user_profile.setProfileImage(file(image_path))
 
                 print "Successfully created and confirmed " + name

@@ -4,6 +4,7 @@
  *
  ***********************************************************************************************************************/
 var rebind;
+var STATIC_URL;
 
 function rebindFunction()
 {
@@ -1065,8 +1066,8 @@ function loadHeader()
 
     $('#logo-link').hover
         (
-            function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
-            function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
+            function(){ $(this).attr('src', STATIC_URL + 'images/top-logo-hover.png'); },
+            function(){ $(this).attr('src', STATIC_URL + 'images/top-logo-default.png'); }
         );
 
     function toggleUserMenu()
@@ -1107,7 +1108,7 @@ function loadHeader()
                 $.cookie('privacy','PUB', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+                    if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "images/public.png") }
                     $(this).attr('data-original-title',pubMessage);
                 });
                 break;
@@ -1117,7 +1118,7 @@ function loadHeader()
                 {
                     if ($(this).is('img'))
                     {
-                        $(this).attr("src","/static/images/user-menu/lockgray.png") ;
+                        $(this).attr("src",STATIC_URL + "images/user-menu/lockgray.png") ;
                         $(this).attr('data-original-title',priMessage);
                     }
                 });
@@ -1131,7 +1132,7 @@ function loadHeader()
         {
             if ($(this).is('img'))
             {
-                $(this).attr("src","/static/images/public.png");
+                $(this).attr("src",STATIC_URL + "images/public.png");
                 $(this).attr('data-original-title',pubMessage);
             }
 
@@ -1153,7 +1154,7 @@ function loadHeader()
                         {
                             if ($(this).is('img'))
                             {
-                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr("src",STATIC_URL + "images/user-menu/lockgray.png");
                                 $(this).attr('data-original-title',priMessage);
                             }
                         });
@@ -1162,7 +1163,7 @@ function loadHeader()
                         $.cookie('privacy','PUB', {path:'/'});
                         $(".security_setting").each(function()
                         {
-                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                            if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "images/public.png");
                                 $(this).attr('data-original-title',pubMessage);}
                         });
                         break;
@@ -4107,7 +4108,8 @@ function loadCreate()
                 {
                     $('#news-link-generation-wrapper').empty();
                     $('#news-link-generation').show();
-                    $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
+                    $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px">' +
+                        '<img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="' + STATIC_URL + 'images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
                     ajaxPost({
                         data: {'action':'getLinkInfo','remote_url':text},
@@ -4949,6 +4951,7 @@ function loadBlog() {
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
+<<<<<<< HEAD
 
 function checkboxClick() {
     $(":checkbox").change(function(){
@@ -4974,6 +4977,55 @@ function loadSessionFilter(){
 function loadTypeFilter(){
 
 }
+=======
+//
+//function loadcheckboxToggle() {
+//    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_session');
+//        checkboxCheck(checkbox);
+//    });
+//    $('#leg_type').bindOnce('click#leg_type', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_type');
+//        checkboxCheck(checkbox);
+//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//    {
+//    $('#leg_introduced').bindOnce('click#leg_introduced', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_introduced');
+//        checkboxCheck(checkbox);
+//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//        }
+//    $('#leg_sponsor').bindOnce('click#leg_type', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_type');
+//        checkboxCheck(checkbox);
+//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//
+//
+//
+//                event.preventDefault();
+//        var wrapper = $('#left-side-wrapper-invite');
+//        leftSideToggle(wrapper);
+//    }
+//    else
+//    {
+//        checkbox.addClass('checked');
+//        $('input:checkbox[value="' + val + '"]').attr('checked', false);
+//    }
+//}
+
+//
+//function checkboxUncheck(checkbox)
+//{
+//    check
+//}
+>>>>>>> fa112731f37bf123cfa5bac5a27c7a25e57377aa
 
 function loadIntroducedFilter(){
 

@@ -925,14 +925,14 @@ def matchSocial(request, vals={}):
 
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']
-    if not LOCAL:
-        obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
-        paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
-        romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
-    else:
-        obama = viewer
-        paul = viewer
-        romney = viewer
+#    if not LOCAL:
+    obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
+    paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
+    romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
+#    else:
+#        obama = viewer
+#        paul = viewer
+#        romney = viewer
     list = [obama,paul,romney]
     for x in list:
         x.prepComparison(viewer)
@@ -969,13 +969,14 @@ def matchRepresentatives(request, vals={}):
         congress = CongressSession.lg.get_or_none(session=CURRENT_CONGRESS)
         senator_tag = OfficeTag.lg.get_or_none(name="senator")
         rep_tag = OfficeTag.lg.get_or_none(name="representative")
+
         if congress:
-            rep_office = rep_tag.tag_offices.filter(state=address.state,district=address.district)[0]
-            representative = rep_ofice.office_terms.filter(end_date__gte=datetime.date.today())[0]
+            rep_office = rep_tag.tag_offices.filter(location__state=address.state,location__district=address.district)[0]
+            representative = rep_office.office_terms.filter(end_date__gte=datetime.date.today())[0].user
             if representative:
                 congressmen.append(representative)
 
-            senator_office = senator_tag.tag_offices.filter(state=address.state)[0]
+            senator_office = senator_tag.tag_offices.filter(location__state=address.state)[0]
             senators = map( lambda x : x.user , senator_office.office_terms.filter(end_date__gte=datetime.date.today()) )
             for senator in senators:
                 congressmen.append(senator)

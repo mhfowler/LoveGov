@@ -1971,9 +1971,9 @@ def changeContentPrivacy(request, vals={}):
     if error=='':
         content.save()
         vals['content'] = content
-        html =ajaxRender('site/snippets/content-privacy.html', vals, request)
+        html = ajaxRender('site/pieces/snippets/content-privacy.html', vals, request)
     to_return = {'html':html, 'error': error}
-    print "to_return: "+str(to_return)
+    print "to_return: "+ str(to_return)
     return HttpResponse(json.dumps(to_return))
 
 
