@@ -27,6 +27,7 @@ def createPoliticianProfiles(sheet):
 
 
 def answerQuestions(sheet):
+    errors = ''
     # For the cells in a question sheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
@@ -43,13 +44,14 @@ def answerQuestions(sheet):
             print answer_text
             # Check answer text
             if not answer_text:
-                print "Answer text not found"
+                errors += "Answer text not found\n"
                 continue
             # Find the answer
             answer = Answer.lg.get_or_none(answer_text=answer_text)
             if not answer:
-                print "Answer not found for text :: " + answer_text
+                errors += "Answer not found for text :: " + answer_text +'\n'
                 continue
+
             # Get the value and find the question
             answer_val = answer.value
             question = Question.lg.get_or_none(answers__answer_text=answer_text)
@@ -57,9 +59,17 @@ def answerQuestions(sheet):
                 # See if a response already exists
                 response = UserResponse.lg.get_or_none(responder=politician,question=question)
                 if not response:
+                    print "Response Created"
                     response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
                     response.autoSave(creator=politician)
                 else:
+                    print "Response Updated"
                     response.answer_val = answer_val
                     response.explanation = ''
                     response.save()
+            else:
+                errors += "Question Not Found for politician" + politician.get_name()
+
+
+    print "========= Errors =========="
+    print errors
