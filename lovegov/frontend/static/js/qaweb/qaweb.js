@@ -65,7 +65,7 @@ var QAWeb = Class.extend
                 self.imageLayer.add(image);
                 self.imageLayer.draw();
             };
-            imageObj.src = parentTopic.imgref['mini'].src;
+            imageObj.src = parentTopic.imgref['mini'].img;
         },
 
 
@@ -281,7 +281,7 @@ var QAWebHover = Class.extend
             var color = this.node.color;
             $('#question-weight-slider').css('background',color['default']);
             $('#dialogue-main').css("border-color",color['default']);
-            $('#dialogue-pointer img').attr('src',color['pointerImage'].src);
+            $('#dialogue-pointer img').attr('src',color['pointerImage'].img);
             $('.dialogue-buttons').css('backgroundColor',color['default']);
             $('.dialogue-buttons').hover
             (
@@ -1025,16 +1025,16 @@ var Question = Node.extend
             switch(state)
             {
                 case 'hover':
-                    if (this.answered) return this.imgref['answeredHover'].src;
-                    else return this.imgref['unansweredHover'].src;
+                    if (this.answered) return this.imgref['answeredHover'].img;
+                    else return this.imgref['unansweredHover'].img;
                     break;
                 case 'default':
-                    if (this.answered) return this.imgref['answeredDefault'].src;
-                    else return this.imgref['unansweredDefault'].src;
+                    if (this.answered) return this.imgref['answeredDefault'].img;
+                    else return this.imgref['unansweredDefault'].img;
                     break;
                 case 'answering':
-                    if (this.answered){ return this.imgref['answeredAnswering'].src; }
-                    else{ return this.imgref['unansweredAnswering'].src; }
+                    if (this.answered){ return this.imgref['answeredAnswering'].img; }
+                    else{ return this.imgref['unansweredAnswering'].img; }
                     break;
             }
         },
@@ -1147,7 +1147,7 @@ var Topic = Node.extend
                 position.top-=$('#qawebtopichover').height();
                 position.top+=5;
                 $('#topic-main').css('border-color',self.color['default']);
-                $('#topic-pointer img').attr('src',self.color['pointerImage'].src);
+                $('#topic-pointer img').attr('src',self.color['pointerImage'].img);
                 $('#qawebtopichover').css(position);
                 $('#topic-text').text(self.text);
                 $('#qawebtopichover').fadeIn(10);
@@ -1188,13 +1188,13 @@ var Topic = Node.extend
             switch(state)
             {
                 case 'default':
-                    return this.imgref['default'].src;
+                    return this.imgref['default'].img;
                     break;
                 case 'hover':
-                    return this.imgref['hover'].src;
+                    return this.imgref['hover'].img;
                     break;
                 case 'selected':
-                    return this.imgref['selected'].src;
+                    return this.imgref['selected'].img;
                     break;
             }
         },
@@ -1506,7 +1506,8 @@ function topicSwitch(topicID)
     for (var i=0; i<types.length;i++)
     {
         var image = new Image();
-        image.src = IMAGE_DIRECTORY + topicString + '/' + subname + "_" + types[i] + ".png";
+        var src = IMAGE_DIRECTORY + topicString + '/' + subname + "_" + types[i] + ".png";
+        image.img = src;
         imageDict[types[i]] = image;
     }
     return imageDict;
@@ -1529,7 +1530,7 @@ function makeQuestionImageArray(topic,states,types)
         for (var j=0;j<types.length;j++)
         {
             var image = new Image();
-            image.src = IMAGE_DIRECTORY + topic + "/" +  states[i] + "/" + subname + "_" + states[i] + types[j] + ".png";
+            image.img = IMAGE_DIRECTORY + topic + "/" +  states[i] + "/" + subname + "_" + states[i] + types[j] + ".png";
             imageDict[states[i] + types[j]] = image;
         }
     }
@@ -1541,7 +1542,7 @@ function colorSwitch(topicID)
     var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');
     var subname = topicString.substring(0,3);
     var image = new Image();
-    image.src =  IMAGE_DIRECTORY + topicString + "/" + subname + "_" + "pointer.png";
+    image.img =  IMAGE_DIRECTORY + topicString + "/" + subname + "_" + "pointer.png";
     switch(topicID)
     {
         case 0:
