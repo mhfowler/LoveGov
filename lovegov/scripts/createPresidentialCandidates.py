@@ -28,6 +28,9 @@ def createPoliticianProfiles(sheet):
 
 def answerQuestions(sheet):
     errors = ''
+    ans_not_found = 0
+    question_not_found = 0
+    text_not_found = 0
     # For the cells in a question sheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
@@ -44,18 +47,22 @@ def answerQuestions(sheet):
             print answer_text
             # Check answer text
             if not answer_text:
+                text_not_found += 1
                 errors += "Answer text not found\n"
                 continue
             # Find the answer
             answer = Answer.lg.get_or_none(answer_text=answer_text)
             if not answer:
-                errors += "Answer not found for text :: " + answer_text +'\n'
+                ans_not_found += 1
+                errors += "+++Answer not found for text :: " + answer_text +'\n'
                 continue
 
-            # Get the value and find the question
+            # Get the value and find the question that corresponds
             answer_val = answer.value
-            question = Question.lg.get_or_none(answers__answer_text=answer_text)
-            if question:
+            questions = answer.question_set.all()
+            if questions:
+                question = questions[0]
+
                 # See if a response already exists
                 response = UserResponse.lg.get_or_none(responder=politician,question=question)
                 if not response:
@@ -68,8 +75,13 @@ def answerQuestions(sheet):
                     response.explanation = ''
                     response.save()
             else:
-                errors += "Question Not Found for politician" + politician.get_name()
+                question_not_found += 1
+                errors += "---Question Not Found for politician " + politician.get_name() + '\n'
 
 
     print "========= Errors =========="
     print errors
+    print "========= Stats =========="
+    print "Answer Objects not found: " + str(ans_not_found)
+    print "Question Objects not found: " + str(question_not_found)
+    print "Answer Text not found: " + str(text_not_found)
