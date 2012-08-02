@@ -338,16 +338,16 @@ def scriptCreateResponses(args=None):
             answer_text = answer_text.encode('utf-8','ignore')
             print answer_text
 
-            if answer_text and Answer.objects.filter(answer_text=answer_text).exists():
-                answer = Answer.objects.get(answer_text=answer_text)
-                answer_val = answer.value
+            if answer_text:
+                answer = Answer.lg.get_or_none(answer_text=answer_text)
+                if answer:
+                    answer_val = answer.value
+                    question = Question.lg.get_or_none(answers__answer_text=answer_text)
+                    if question:
+                        response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
+                        response.autoSave(creator=politician)
 
-                if Question.objects.filter(answers__answer_text=answer_text).exists():
-                    question = Question.objects.get(answers__answer_text=answer_text)
-                    response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
-                    response.autoSave(creator=politician)
-
-                    print "Successfully answered question for " + politician_name[0]
+                        print "Successfully answered question for " + politician_name[0]
 
 #-----------------------------------------------------------------------------------------------------------------------
 #   add alpha user script
