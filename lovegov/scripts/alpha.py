@@ -11,11 +11,12 @@
 from lovegov.scripts.createPresidentialCandidates import answerQuestions
 from lovegov.scripts.createPresidentialCandidates import createPoliticianProfiles
 from lovegov.modernpolitics.backend import *
+from lovegov.settings import PROJECT_PATH
+
 
 # python
 import getpass
 from xlrd import open_workbook
-from lovegov.settings import PROJECT_PATH
 
 ########################################################################################################################
 
