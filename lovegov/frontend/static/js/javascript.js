@@ -8,6 +8,9 @@ var STATIC_URL;
 
 function rebindFunction()
 {
+    if (!(rebind=='login' || rebind=='blog')) {
+        rebindUniversalFrame();
+    }
     $(window).unbind('scroll');                                 // to unbind fix feed loading and qaweb scroll binding
     loadTopicSelect();                                          // topic select image functionality
     loadHoverComparison();                                      // hover comparison functionality
@@ -757,7 +760,6 @@ function loadAjaxifyAnchors()
  *      ~DocumentReady
  *
  ***********************************************************************************************************************/
-
 $(document).ready(function()
 {
     // csrf protect
@@ -790,8 +792,6 @@ $(document).ready(function()
         document.title = pageTitle;
     }
 
-    // universal frame binding
-    rebindUniversalFrame();
     // page specific bindings
     rebindFunction()
 });
@@ -2723,10 +2723,10 @@ function loadMoreUsers(event, replace)
 function loadCreateMotion() {
 
     $(".motion_action_select").bindOnce("change.motion", function(event) {
-       var action = $(this).val();
-       $(".motion_action_modifier").hide();
-       var class_name = action + "_modifier";
-       $("." + class_name).show();
+        var action = $(this).val();
+        $(".motion_action_modifier").hide();
+        var class_name = action + "_modifier";
+        $("." + class_name).show();
     });
 
     $('select.add_moderator_select').select2({
@@ -3111,7 +3111,7 @@ function getFeed(num)
     }
 
     setTimeout(function() {
-            $(".feed_loading").show();
+        $(".feed_loading").show();
     }, 100);
 
     ajaxPost({
@@ -4945,9 +4945,8 @@ function loadBlog() {
 }
 
 
-
 /***********************************************************************************************************************
- *h
+ *
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
