@@ -214,7 +214,7 @@
             <td class="action-thumbnail"><img src="{{ STATIC_URL }}/images/feed/answered.png"/></td>
             <td class="action-text">
                 {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
-                answered
+                answered static {{ STATIC_URL }}
                 {% include "site/pieces/notifications/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
         {% elif to_user.type == 'P' %}

@@ -1902,7 +1902,7 @@ class Action(Privacy):
         self.creator = relationship.creator
         self.save()
 
-    def getVerbose(self,view_user=None):
+    def getVerbose(self,view_user=None,vals={}):
         #Check for relationship
         relationship = Relationship.lg.get_or_none(id=self.relationship_id)
         if not relationship:
@@ -1921,16 +1921,16 @@ class Action(Privacy):
         elif view_user and to_user.id == view_user.id:
             to_you = True
 
-        action_context = {'to_user':to_user,
+        vals.update({'to_user':to_user,
                             'to_you':to_you,
                             'from_user':from_user,
                             'from_you':from_you,
                             'type':self.type,
                             'modifier':self.modifier,
                             'true':True,
-                            'timestamp':self.when}
+                            'timestamp':self.when})
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',action_context)
+        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
         return action_verbose
 
 
