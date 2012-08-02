@@ -2,7 +2,7 @@
 {% load thumbnail %}
 <a href="{{ question.getUrl }}">
     <div class="autocomplete-question autocomplete-div">
-    	{% with full_url=host_full|add:question.getMainTopic.getImageRef %}
+    	{% with full_url=question.getMainTopic.getImageRef|media_url:MEDIA_PREFIX %}
 	    	{% thumbnail full_url "25x25" crop="center" format="PNG" as im %}
 	    	<div class="autocomplete-image-wrapper">
                 <img src="{{im.url}}">

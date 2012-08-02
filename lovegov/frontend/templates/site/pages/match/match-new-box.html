@@ -4,7 +4,7 @@
 
     <div class="match-user-info">
         <a href="{{ item.get_url }}">
-            {% with full_url=host_full|add:item.getImageURL %}
+            {% with full_url=item.getImageURL|media_url:MEDIA_PREFIX %}
                 {% thumbnail full_url "65x65" crop="center" as im %}
                     <img src="{{ im.url }}" class="match-user-img"/>
                 {% endthumbnail %}

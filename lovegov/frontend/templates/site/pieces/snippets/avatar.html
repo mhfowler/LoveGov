@@ -1,4 +1,5 @@
 {% load thumbnail %}
+{% load customtags %}
 
 <div class="avatar-box">
 
@@ -13,7 +14,7 @@
             {% endthumbnail %}
 
         {% else %}
-            {% with full_url=host_full|add:user.getImageURL %}
+            {% with full_url=user.getImageURL|media_url:MEDIA_PREFIX %}
                 {% thumbnail full_url geometry crop="center" as im %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"
                          data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"

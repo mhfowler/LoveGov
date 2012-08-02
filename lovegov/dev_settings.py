@@ -3,8 +3,7 @@ import settings
 LOCAL = False
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-THUMBNAIL_DEBUG = DEBUG
-PROJECT_PATH = settings.PROJECT_PATH
+THUMBNAIL_DEBUG = False
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
@@ -28,11 +27,8 @@ DATABASES = {
 }
 
 STATIC_ROOT = '/static/dev/'
-
 MEDIA_ROOT = '/media/dev/'
-
 LOG_ROOT = "/log/dev/"
-
 LOGGING = settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
@@ -44,7 +40,7 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages'))
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages','s3_folder_storage'))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 
@@ -52,19 +48,22 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 #    static and media
 #
 ########################################################################################################################
+import s3_configuration
+AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
 
-AWS_ACCESS_KEY_ID = "AKIAJTOKT24MX6BS3NKA"
-AWS_SECRET_ACCESS_KEY = "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"
-AWS_STORAGE_BUCKET_NAME = "lovegov"
+DEFAULT_S3_PATH = "media"
+STATIC_S3_PATH = "static"
 
-STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-STATIC_URL = 'https://s3.amazonaws.com/lovegov'
-
-MEDIA_URL =  settings.MEDIA_URL
-
-ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
+MEDIA_ROOT = '/%s/' % DEFAULT_S3_PATH
+MEDIA_URL = 'https://%s.s3.amazonaws.com/media' % AWS_STORAGE_BUCKET_NAME
+STATIC_ROOT = "/%s/" % STATIC_S3_PATH
+STATIC_URL = 'https://%s.s3.amazonaws.com/static' % AWS_STORAGE_BUCKET_NAME
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_DIRS = settings.STATICFILES_DIRS
 STATICFILES_FINDERS = settings.STATICFILES_FINDERS
