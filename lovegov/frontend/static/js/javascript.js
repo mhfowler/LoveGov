@@ -4951,7 +4951,6 @@ function loadBlog() {
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
-<<<<<<< HEAD
 
 function checkboxClick() {
     $(":checkbox").change(function(){
@@ -4967,71 +4966,3 @@ function checkboxClick() {
         }
     });
 }
-
-function loadSessionFilter(){
-    if ($("#leg_session").hasClass('checked')) {
-
-    }
-}
-
-function loadTypeFilter(){
-
-}
-=======
-//
-//function loadcheckboxToggle() {
-//    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_session');
-//        checkboxCheck(checkbox);
-//    });
-//    $('#leg_type').bindOnce('click#leg_type', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_type');
-//        checkboxCheck(checkbox);
-//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//    {
-//    $('#leg_introduced').bindOnce('click#leg_introduced', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_introduced');
-//        checkboxCheck(checkbox);
-//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//        }
-//    $('#leg_sponsor').bindOnce('click#leg_type', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_type');
-//        checkboxCheck(checkbox);
-//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//
-//
-//
-//                event.preventDefault();
-//        var wrapper = $('#left-side-wrapper-invite');
-//        leftSideToggle(wrapper);
-//    }
-//    else
-//    {
-//        checkbox.addClass('checked');
-//        $('input:checkbox[value="' + val + '"]').attr('checked', false);
-//    }
-//}
-
-//
-//function checkboxUncheck(checkbox)
-//{
-//    check
-//}
->>>>>>> fa112731f37bf123cfa5bac5a27c7a25e57377aa
-
-function loadIntroducedFilter(){
-
-}
-
-function loadSponsorFilter(){
-
-}
-

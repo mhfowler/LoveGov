@@ -12,19 +12,28 @@
             <div class="col1">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_session"><label><h3>session</h3></label>
             </div>
-            <div class="session-select">
-                {% for session in congress_session %}
-                    <li><input type="checkbox" class="leg-checkbox unchecked" id="congress_session"><label><h3>session</h3></label>
-                </a
+            <div class="session-filter">
+                {% for session in sessions %}
+                    <li><input type="checkbox" class="session-filter" id="congress_session_filter"><label><h3>{{session}}</h3></label>
+                {% endfor %}
             </div>
             <div class="col2">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_type"><label><h3>type</h3></label>
             </div>
+            <div class="type-filter">
+                <li><input type="form" class="session-filter" id="bill_type_filter"><label><h3>session</h3></label>
+            </div>
             <div class="col3">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_introduced"><label><h3>introduced</h3></label>
             </div>
+            <div class="introduced-filter">
+                <li><input type="(dateform)" class="session-filter" id="bill_introduced_filter"><label><h3>session</h3></label>
+            </div>
             <div class="col4">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_sponsor"><label><h3>sponsor</h3></label>
+            </div>
+            <div class="sponsor-filter">
+                <li><input type="form" class="session-filter" id="sponsor_filter"><label><h3>session</h3></label>
             </div>
         </div>
     </div>
