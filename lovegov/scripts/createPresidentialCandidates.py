@@ -2,6 +2,7 @@
 
 # lovegov
 from lovegov.modernpolitics.backend import *
+from lovegov.settings import PROJECT_PATH
 
 ########################################################################################################################
 ########################################################################################################################
@@ -20,7 +21,7 @@ def createPoliticianProfiles(sheet):
             politician.user_profile.confirmed = True
             politician.user_profile.politician = True
             politician.user_profile.save()
-            image_path = os.path.join(settings.PROJECT_PATH, 'frontend/static/images/presidentialCandidates/' + lastname.lower() + ".jpg")
+            image_path = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/' + lastname.lower() + ".jpg")
             politician.user_profile.setProfileImage(file(image_path))
             print "Successfully created and confirmed " + fullname
 
