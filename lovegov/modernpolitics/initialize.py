@@ -1557,8 +1557,7 @@ def parseCongressRoll(XML):
             if amendment_type and amendment_number and amendment_session:
                 amendment = LegislationAmendment.lg.get_or_none(amendment_type=amendment_type,amendment_number=amendment_number,congress_session=amendment_session)
                 if amendment:
-                    congress_roll.\
-                    amendment = amendment
+                    congress_roll.amendment = amendment
 
 
     updated = None
