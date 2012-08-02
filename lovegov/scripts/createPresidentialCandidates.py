@@ -50,6 +50,7 @@ def answerQuestions(sheet):
             if not answer:
                 print "Answer not found for text :: " + answer_text
                 continue
+
             # Get the value and find the question
             answer_val = answer.value
             question = Question.lg.get_or_none(answers__answer_text=answer_text)
@@ -57,9 +58,13 @@ def answerQuestions(sheet):
                 # See if a response already exists
                 response = UserResponse.lg.get_or_none(responder=politician,question=question)
                 if not response:
+                    print "+Response Created!"
                     response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
                     response.autoSave(creator=politician)
                 else:
+                    print "Response Updated"
                     response.answer_val = answer_val
                     response.explanation = ''
                     response.save()
+            else:
+                print "==Question Not Found"
