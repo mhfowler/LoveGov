@@ -4951,8 +4951,6 @@ function loadBlog() {
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
-<<<<<<< HEAD
-
 function checkboxClick() {
     $(":checkbox").change(function(){
         if($(this).attr("checked"))
@@ -4977,7 +4975,7 @@ function loadSessionFilter(){
 function loadTypeFilter(){
 
 }
-=======
+
 //
 //function loadcheckboxToggle() {
 //    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
@@ -5025,7 +5023,6 @@ function loadTypeFilter(){
 //{
 //    check
 //}
->>>>>>> fa112731f37bf123cfa5bac5a27c7a25e57377aa
 
 function loadIntroducedFilter(){
 
