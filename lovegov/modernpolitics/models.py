@@ -2655,7 +2655,7 @@ class CongressVote(LGModel):
     roll = models.ForeignKey(CongressRoll,related_name="votes")
     voter = models.ForeignKey(UserProfile,related_name="congress_votes")
     votekey = models.CharField(max_length=1)
-    votevalue = models.CharField(max_length=10)
+    votevalue = models.CharField(max_length=15)
 
 
 

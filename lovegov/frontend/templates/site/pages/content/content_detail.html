@@ -4,7 +4,7 @@
             <div class="row"><div class="tencol"><a href='/feed'><span class='content_header'>Back to Your Feed</span></a></div></div>
             <div class="content-left-side">
                 {% load thumbnail %}
-                {% with full_url=host_full|add:content.getImageURL %}
+                {% with full_url=content.getImageURL|media_url:MEDIA_PREFIX %}
                     {% thumbnail full_url "250" upscale=False format="PNG" crop="center" as im %}
                         <div class="content-image-area" style="background-image: url('{{im.url}}'); height: {{im.height}}px">
                     {% endthumbnail %}

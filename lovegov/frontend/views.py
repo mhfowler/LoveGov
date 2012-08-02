@@ -57,8 +57,8 @@ def viewWrapper(view, requires_login=False):
             vals['google'] = GOOGLE_LOVEGOV
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
-            if 'boto' in settings.DEFAULT_FILE_STORAGE:
-                vals['MEDIA_PREFIX'] = settings.MEDIA_URL
+            if 's3' in settings.DEFAULT_FILE_STORAGE:
+                vals['MEDIA_PREFIX'] = settings.MEDIA_URL.replace('/media', '')
             else:
                 vals['MEDIA_PREFIX'] = host_full
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL

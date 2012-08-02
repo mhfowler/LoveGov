@@ -2,7 +2,7 @@
 {% load thumbnail %}
 <a href="{{ petition.getUrl }}">
     <div class="autocomplete-petition autocomplete-div">
-    	{% with full_url=host_full|add:petition.getMainTopic.getImageRef %}
+    	{% with full_url=petition.getMainTopic.getImageRef|media_url:MEDIA_PREFIX %}
 	    	{% thumbnail full_url "25x25" crop="center" format="PNG" as im %}
 	    	<div class="autocomplete-image-wrapper">
                 <img src="{{im.url}}">
