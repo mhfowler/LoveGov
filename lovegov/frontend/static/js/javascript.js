@@ -8,6 +8,9 @@ var STATIC_URL;
 
 function rebindFunction()
 {
+    if (!(rebind=='login' || rebind=='blog')) {
+        rebindUniversalFrame();
+    }
     $(window).unbind('scroll');                                 // to unbind fix feed loading and qaweb scroll binding
     loadTopicSelect();                                          // topic select image functionality
     loadHoverComparison();                                      // hover comparison functionality
@@ -757,7 +760,6 @@ function loadAjaxifyAnchors()
  *      ~DocumentReady
  *
  ***********************************************************************************************************************/
-
 $(document).ready(function()
 {
     // csrf protect
@@ -790,8 +792,6 @@ $(document).ready(function()
         document.title = pageTitle;
     }
 
-    // universal frame binding
-    rebindUniversalFrame();
     // page specific bindings
     rebindFunction()
 });
@@ -1066,8 +1066,8 @@ function loadHeader()
 
     $('#logo-link').hover
         (
-            function(){ $(this).attr('src', STATIC_URL + 'images/top-logo-hover.png'); },
-            function(){ $(this).attr('src', STATIC_URL + 'images/top-logo-default.png'); }
+            function(){ $(this).attr('src', STATIC_URL + '/images/top-logo-hover.png'); },
+            function(){ $(this).attr('src', STATIC_URL + '/images/top-logo-default.png'); }
         );
 
     function toggleUserMenu()
@@ -1108,7 +1108,7 @@ function loadHeader()
                 $.cookie('privacy','PUB', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "images/public.png") }
+                    if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "/images/public.png") }
                     $(this).attr('data-original-title',pubMessage);
                 });
                 break;
@@ -1118,7 +1118,7 @@ function loadHeader()
                 {
                     if ($(this).is('img'))
                     {
-                        $(this).attr("src",STATIC_URL + "images/user-menu/lockgray.png") ;
+                        $(this).attr("src",STATIC_URL + "/images/user-menu/lockgray.png") ;
                         $(this).attr('data-original-title',priMessage);
                     }
                 });
@@ -1132,7 +1132,7 @@ function loadHeader()
         {
             if ($(this).is('img'))
             {
-                $(this).attr("src",STATIC_URL + "images/public.png");
+                $(this).attr("src",STATIC_URL + "/images/public.png");
                 $(this).attr('data-original-title',pubMessage);
             }
 
@@ -1154,7 +1154,7 @@ function loadHeader()
                         {
                             if ($(this).is('img'))
                             {
-                                $(this).attr("src",STATIC_URL + "images/user-menu/lockgray.png");
+                                $(this).attr("src",STATIC_URL + "/images/user-menu/lockgray.png");
                                 $(this).attr('data-original-title',priMessage);
                             }
                         });
@@ -1163,7 +1163,7 @@ function loadHeader()
                         $.cookie('privacy','PUB', {path:'/'});
                         $(".security_setting").each(function()
                         {
-                            if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "images/public.png");
+                            if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "/images/public.png");
                                 $(this).attr('data-original-title',pubMessage);}
                         });
                         break;
@@ -2723,10 +2723,10 @@ function loadMoreUsers(event, replace)
 function loadCreateMotion() {
 
     $(".motion_action_select").bindOnce("change.motion", function(event) {
-       var action = $(this).val();
-       $(".motion_action_modifier").hide();
-       var class_name = action + "_modifier";
-       $("." + class_name).show();
+        var action = $(this).val();
+        $(".motion_action_modifier").hide();
+        var class_name = action + "_modifier";
+        $("." + class_name).show();
     });
 
     $('select.add_moderator_select').select2({
@@ -3111,7 +3111,7 @@ function getFeed(num)
     }
 
     setTimeout(function() {
-            $(".feed_loading").show();
+        $(".feed_loading").show();
     }, 100);
 
     ajaxPost({
@@ -4109,7 +4109,7 @@ function loadCreate()
                     $('#news-link-generation-wrapper').empty();
                     $('#news-link-generation').show();
                     $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px">' +
-                        '<img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="' + STATIC_URL + 'images/ajax-loader.gif"></div>');
+                        '<img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="' + STATIC_URL + '/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
                     ajaxPost({
                         data: {'action':'getLinkInfo','remote_url':text},
@@ -4945,14 +4945,11 @@ function loadBlog() {
 }
 
 
-
 /***********************************************************************************************************************
- *h
+ *
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
-<<<<<<< HEAD
-
 function checkboxClick() {
     $(":checkbox").change(function(){
         if($(this).attr("checked"))
@@ -4977,7 +4974,7 @@ function loadSessionFilter(){
 function loadTypeFilter(){
 
 }
-=======
+
 //
 //function loadcheckboxToggle() {
 //    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
@@ -5025,7 +5022,6 @@ function loadTypeFilter(){
 //{
 //    check
 //}
->>>>>>> fa112731f37bf123cfa5bac5a27c7a25e57377aa
 
 function loadIntroducedFilter(){
 
