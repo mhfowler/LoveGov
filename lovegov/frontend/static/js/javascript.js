@@ -90,9 +90,8 @@ function rebindFunction()
             loadSignInDialogue();
             loadLogin();
             break;
-        case 'legislation':                                 //legislation pages
-            checkSession();
-            Uncheck();
+        case 'legislation':                                 //legislation page
+            checkboxClick();
             break;
         default:
             break
@@ -4952,6 +4951,33 @@ function loadBlog() {
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
+<<<<<<< HEAD
+
+function checkboxClick() {
+    $(":checkbox").change(function(){
+        if($(this).attr("checked"))
+        {
+            $(this).addClass("checked");
+            $(this).removeClass("unchecked");
+        }
+        else
+        {
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+        }
+    });
+}
+
+function loadSessionFilter(){
+    if ($("#leg_session").hasClass('checked')) {
+
+    }
+}
+
+function loadTypeFilter(){
+
+}
+=======
 //
 //function loadcheckboxToggle() {
 //    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
@@ -4999,58 +5025,13 @@ function loadBlog() {
 //{
 //    check
 //}
+>>>>>>> fa112731f37bf123cfa5bac5a27c7a25e57377aa
 
-function showFooter() {
-    $('footer').show();
-
-    $('.footer_invite').bindOnce('click.footer_invite', function (event)
-    {
-        event.preventDefault();
-        var wrapper = $('#left-side-wrapper-invite');
-        leftSideToggle(wrapper);
-    });
-    $('.footer_feedback').bindOnce('click.footer_feedback', function (event)
-    {
-        event.preventDefault();
-        var wrapper = $('#left-side-wrapper-feedback');
-        leftSideToggle(wrapper);
-    });
-}
-
-function leftSideToggle(wrapper)
-{
-    if (wrapper.hasClass('clicked'))
-    {
-        closeLeftSideWrapper(wrapper);
-    }
-    else
-    {
-        wrapper.addClass('clicked');
-        wrapper.css({'z-index':'101'});
-        wrapper.children('.create-img').css({'z-index':'102'});
-        wrapper.animate({left:'-1px'},500);
-
-        wrapper.bindOnce('clickoutside',function(event)
-        {
-            if (event.target.className != "footer_button") {
-                closeLeftSideWrapper(wrapper);
-            }
-        });
-    }
+function loadIntroducedFilter(){
 
 }
 
-function closeLeftSideWrapper(wrapper)
-{
+function loadSponsorFilter(){
 
-    if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
-    else { wrapper.animate({left:'-493px'},500); }
-    setTimeout(function()
-    {
-        wrapper.css({'z-index':'100'});
-        wrapper.children('.create' +
-            'e-img').css({'z-index':'101'});
-    },500);
-
-    wrapper.removeClass('clicked');
 }
+
