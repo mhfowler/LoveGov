@@ -863,9 +863,6 @@ def initializeCongressFile(parsedXML,image_root):
 
         office_held.congress_sessions.add(current_session)
 
-        # Finally,
-        person.offices_held.add(office_held)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes a single congressman

@@ -4950,53 +4950,53 @@ function loadBlog() {
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
+//
+//function loadcheckboxToggle() {
+//    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_session');
+//        checkboxCheck(checkbox);
+//    });
+//    $('#leg_type').bindOnce('click#leg_type', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_type');
+//        checkboxCheck(checkbox);
+//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//    {
+//    $('#leg_introduced').bindOnce('click#leg_introduced', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_introduced');
+//        checkboxCheck(checkbox);
+//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//        }
+//    $('#leg_sponsor').bindOnce('click#leg_type', function (event)
+//    {
+//        event.preventDefault();
+//        var checkbox = $('#leg_type');
+//        checkboxCheck(checkbox);
+//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+//
+//
+//
+//                event.preventDefault();
+//        var wrapper = $('#left-side-wrapper-invite');
+//        leftSideToggle(wrapper);
+//    }
+//    else
+//    {
+//        checkbox.addClass('checked');
+//        $('input:checkbox[value="' + val + '"]').attr('checked', false);
+//    }
+//}
 
-function loadcheckboxToggle() {
-    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-    {
-        event.preventDefault();
-        var checkbox = $('#leg_session');
-        checkboxCheck(checkbox);
-    });
-    $('#leg_type').bindOnce('click#leg_type', function (event)
-    {
-        event.preventDefault();
-        var checkbox = $('#leg_type');
-        checkboxCheck(checkbox);
-        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-    {
-    $('#leg_introduced').bindOnce('click#leg_introduced', function (event)
-    {
-        event.preventDefault();
-        var checkbox = $('#leg_introduced');
-        checkboxCheck(checkbox);
-        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-        }
-    $('#leg_sponsor').bindOnce('click#leg_type', function (event)
-    {
-        event.preventDefault();
-        var checkbox = $('#leg_type');
-        checkboxCheck(checkbox);
-        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-
-
-
-                event.preventDefault();
-        var wrapper = $('#left-side-wrapper-invite');
-        leftSideToggle(wrapper);
-    }
-    else
-    {
-        checkbox.addClass('checked');
-        $('input:checkbox[value="' + val + '"]').attr('checked', false);
-    }
-}
-
-
-function checkboxUncheck(checkbox)
-{
-    check
-}
+//
+//function checkboxUncheck(checkbox)
+//{
+//    check
+//}
 
 function showFooter() {
     $('footer').show();
