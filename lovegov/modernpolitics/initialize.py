@@ -1604,8 +1604,8 @@ def parseCongressRoll(XML):
             print "[WARNING]: Voter not found in database.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
             continue
 
-        key = voterXML.get('vote')
-        value = voterXML.get('value')
+        key = truncateField( voterXML.get('vote') , 'CongressVote key' , 1)
+        value = truncateField( voterXML.get('value') , 'CongressVote value' , 15)
         # If only key or value is instantiated
         if bool(key) != bool(value):
             # Replace the other value with the corresponding value
