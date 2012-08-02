@@ -809,23 +809,21 @@ def initializeCongressFile(parsedXML,image_root):
         elif role_type == 'rep':
             role_tag = 'representative'
         else:
-            print "[WARNING]: role type " + role_type + " is not recognized for " + name
+            print "[ERROR]: role type " + role_type + " is not recognized for " + name
             continue # Skip this guy, can't make an Office without a tag
 
         role_state = None
         if role.has_key('state'):
             role_state = role['state']
+        else:
+            print "[ERROR]: no role state for " + name
 
         role_district = None
         if role.has_key('district') and role['district'].isdigit():
             role_district = int( role['district'] )
+        elif role_type == 'rep':
+            print "[ERROR]: no representative district for " + name
 
-        elif role.has_key('class'):
-            rd = role['class']
-            if type(rd) == list and rd[0].isdigit():
-                role_district = rd[0]
-            elif type(rd) == str and rd.isdigit():
-                role_district = rd
 
         # Find the tag related to this role
         current_tag = OfficeTag.lg.get_or_none(name=role_tag)
@@ -835,7 +833,11 @@ def initializeCongressFile(parsedXML,image_root):
             current_tag.save()
 
         # Find the office related to
-        office = current_tag.tag_offices.filter(location__state=role_state,location__district=role_district)
+        if role_district:
+            office = current_tag.tag_offices.filter(location__state=role_state,location__district=role_district)
+        else:
+            office = current_tag.tag_offices.filter(location__state=role_state)
+
         if office:
             office = office[0]
             print "Found office: " + office.location.state + " " + str(office.location.district)

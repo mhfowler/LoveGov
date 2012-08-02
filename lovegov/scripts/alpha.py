@@ -17,6 +17,7 @@ from lovegov.settings import PROJECT_PATH
 # python
 import getpass
 from xlrd import open_workbook
+from pprint import pprint
 
 ########################################################################################################################
 
@@ -203,127 +204,168 @@ def scriptCreatePresidentialCandidates(args=None):
     answerQuestions(sheet)
 
 def scriptCreateCongressAnswers(args=None):
+    # Open the spreadsheet and shit
     path = os.path.join(PROJECT_PATH, 'frontend/excel/congress.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(3)
     metrics = {}
 
+    # If no congress tag has been made, congress likely doesn't exist.
+    if not congress_tag:
+        print "No congress OfficeTag found.  Congress probably hasn't been initialized yet.  Aborting answer creation."
+        return None
+
+    # For cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in xrange(1,sheet.ncols,4):
+            #Set amendment and bill to none
             amendment = None
             bill = None
 
-            if sheet.cell(row,column).value != "":
-                congress_num = int(sheet.cell(row,column).value.replace("th",""))
-                session = CongressSession.lg.get_or_none(session=congress_num)
+            # If the sheet cell isn't empty
+            if sheet.cell(row,column).value == "":
+                continue
 
-                legislation = sheet.cell(row,column+2).value
-                if "Amdt" in legislation:
-                    legislation = legislation.split('.')
+            # Get the congress number
+            congress_num = int(sheet.cell(row,column).value.replace("th",""))
+            session = CongressSession.lg.get_or_none(session=congress_num)
+
+            # Get legislation value
+            legislation = sheet.cell(row,column+2).value
+            # If it's an amendment
+            if "Amdt" in legislation:
+                # Split the chamber and the number (at .) Format = <chamber>.Amdt.<number>
+                legislation = legislation.split('.')
+                chamber = legislation[0].lower()
+                number = int(legislation[2].strip())
+
+                metricName = "Amdt_" + str(congress_num) + "_" + chamber + "_" + str(number)
+
+                print "Searcing for " + metricName
+
+                # Find the amendment!
+                amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
+                if not amendment:
+                    print "Couldn't find amendment " + metricName
+            # Otherwise it's a bill
+            else:
+                # Make the number non-existent
+                legislation = legislation.split('.')
+                chamber = ''
+                number = -1
+                # If the split is length two, format is <chamber>.<number> (e.g. "h.220")
+                if len(legislation) == 2:
                     chamber = legislation[0].lower()
+                    number = int(legislation[1].strip())
+                # If the split is length three, format is <chamber>.<chamber>.<number> (e.g. "h.r.220")
+                elif len(legislation) == 3:
+                    chamber = (legislation[0] + legislation[1]).lower()
                     number = int(legislation[2].strip())
 
-                    metricName = str(congress_num) + "_" + chamber + "_" + str(number)
+                metricName = str(congress_num) + "_" + chamber + "_" + str(number)
 
-                    print str(congress_num) + "_" + chamber + "_" + str(number) + "_Amendment"
+                print "Searching for " + metricName
 
-                    amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
-                    if not amendment:
-                        print "Couldn't find amendment " + metricName
+                # Find the bill!
+                bill = Legislation.objects.filter(congress_session=session,bill_number=number,bill_type=chamber)
+                if not bill:
+                    print "Couldn't find bill " + metricName
 
+            # Get answer text and value from spreadsheet
+            answer_text = sheet.cell(row,0).value
+            answer_text = answer_text.encode('utf-8','ignore')
+            answer_value = sheet.cell(row,column+3).value
+            answer_value = answer_value.encode('utf-8','ignore')
+            # Convert answer value
+            if answer_value == "Yes":
+                answer_value = "+"
+            else:
+                answer_value = "-"
+            # Reset metrics value
+            metrics[metricName] = 0
+
+            congress_rolls = None
+            # Get votes from the bill or amendment
+            if bill:
+                congress_rolls = CongressRoll.objects.filter(legislation=bill)
+            elif amendment:
+                congress_rolls = CongressRoll.objects.filter(amendment=amendment)
+
+            votes = []
+
+            # Collect Votes from Congress Rolls
+            for roll in congress_rolls:
+                for vote in roll.votes:
+                    if vote.votekey == answer_value:
+                        votes.append(vote)
+
+            # For all votes
+            for vote in votes:
+                # Get Voter
+                voter = voter.voter
+
+                # Check that answer text was found
+                if not answer_text:
+                    print "Couldn't find answer text"
+                    continue
+
+                # Look for that answer in the database
+                answer = Answer.lg.get_or_none(answer_text=answer_text)
+                if not answer:
+                    print "Couldn't find answer for :: " + answer_text
+                    continue
+
+                answer_val = answer.value
+
+                # Look for that question in the database
+                question = Question.lg.get_or_none(answers__answer_text=answer_text)
+                if not question:
+                    print "Couldn't find question"
+                    continue
+
+                # Look for that response in the database
+                response = UserResponse.lg.get_or_none(responder=voter,question=question)
+                if not response: # If it doesn't exist, create it
+                    response = UserResponse(responder=voter,question=question,answer_val=answer_val,explanation="")
+                    response.autoSave(creator=voter)
+                # Otherwise, change the answer
                 else:
-                    legislation = legislation.split('.')
-                    chamber = ''
-                    number = -1
+                    response.answer_val = answer_val
+                    response.save()
 
-                    if len(legislation) == 2:
-                        chamber = legislation[0].lower()
-                        number = int(legislation[1].strip())
-
-                    elif len(legislation) == 3:
-                        chamber = (legislation[0] + legislation[1]).lower()
-                        number = int(legislation[2].strip())
-
-                    metricName = str(congress_num) + "_" + chamber + "_" + str(number)
-
-                    print "Searching for " + metricName
-
-                    bill = Legislation.objects.filter(congress_session=session,bill_number=number,bill_type=chamber)
-                    if not bill:
-                        print "Couldn't find bill " + metricName
-
-                answer_text = sheet.cell(row,0).value
-                answer_text = answer_text.encode('utf-8','ignore')
-
-                answer_value = sheet.cell(row,column+3).value
-                answer_value = answer_value.encode('utf-8','ignore')
-
-                if answer_value == "Yes":
-                    answer_value = "+"
-                else:
-                    answer_value = "-"
-
-                metrics[metricName] = 0
-
-                for congressman in UserProfile.objects.filter(elected_official=True):
-                    congress_vote = None
-
-                    if bill:
-                        congress_vote = CongressVote.lg.get_or_none(voter=congressman,votekey=answer_value,roll__legislation=bill)
-
-                    elif amendment:
-                        congress_vote = CongressVote.lg.get_or_none(voter=congressman,votekey=answer_value,roll__amendment=amendment)
-
-                    if congress_vote:
-                        if answer_text:
-
-                            answer = Answer.lg.get_or_none(answer_text=answer_text)
-                            if answer:
-                                answer_val = answer.value
-
-                                question = Question.lg.get_or_none(answers__answer_text=answer_text)
-                                if question:
-                                    response = UserResponse.lg.get_or_none(responder=congressman,question=question)
-
-                                    if not response:
-                                        response = UserResponse(responder=congressman,question=question,answer_val=answer_val,explanation="")
-                                        response.autoSave(creator=congressman)
-
-                                    else:
-                                        response.answer_val = answer_val
-                                        response.save()
-
-                                    #print "WORKED FOR " + electedofficial.get_name().encode('utf-8','ignore')
-                                    metrics[metricName]+= 1
-                                else:
-                                    print "Question doesn't exist"
-                            else:
-                                print "Couldn't find answer"
-                        else:
-                            print "Couldn't find answer text"
+                metrics[metricName] += 1
 
                 print metricName + " " + str(metrics[metricName])
-    print metrics
+
+    pprint(metrics)
 
 
 def scriptCreateResponses(args=None):
     path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
+
+    # For all cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
+            # Get politician Name
             politician_name = sheet.cell(0,column).value.split(" ")
             print politician_name
-            politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1], politician=True)
-            if not politician:
 
+            # Look for politician
+            politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1], politician=True)
+            # If they don't exist
+            if not politician:
+                # Create and print their name and email
                 name = politician_name[0] + " " + politician_name[1]
                 print "Creating " + name
                 email = politician_name[0] + '_' + politician_name[1] + "@lovegov.com"
                 password = 'politician'
 
+                # Create user
                 politician = createUser(name,email,password)
 
+                # Set some user facts
                 politician.user_profile.confirmed = True
                 politician.user_profile.politician = True
                 politician.user_profile.save()
@@ -334,20 +376,36 @@ def scriptCreateResponses(args=None):
                 print "Successfully created and confirmed " + name
                 politician = politician.user_profile
 
+            # Get and print answer text
             answer_text = sheet.cell(row,column).value
             answer_text = answer_text.encode('utf-8','ignore')
             print answer_text
 
-            if answer_text:
-                answer = Answer.lg.get_or_none(answer_text=answer_text)
-                if answer:
-                    answer_val = answer.value
-                    question = Question.lg.get_or_none(answers__answer_text=answer_text)
-                    if question:
-                        response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
-                        response.autoSave(creator=politician)
+            # Check for answer text
+            if not answer_text:
+                print "No answer text"
+                continue
 
-                        print "Successfully answered question for " + politician_name[0]
+            # Find answer
+            answer = Answer.lg.get_or_none(answer_text=answer_text)
+            if not answer:
+                print "Answer not found for text :: " + answer_text
+                continue
+
+            answer_val = answer.value
+            question = Question.lg.get_or_none(answers__answer_text=answer_text)
+            if question:
+
+                response = UserResponse.lg.get_or_none(responder=politician,question=question)
+                if not response:
+                    response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
+                    response.autoSave(creator=politician)
+                else:
+                    response.answer_val = answer_val
+                    response.explanation = ''
+                    response.save()
+
+                print "Successfully answered question for " + politician_name[0]
 
 #-----------------------------------------------------------------------------------------------------------------------
 #   add alpha user script
