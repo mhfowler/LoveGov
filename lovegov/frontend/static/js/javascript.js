@@ -89,6 +89,10 @@ function rebindFunction()
             loadSignInDialogue();
             loadLogin();
             break;
+        case 'legislation':                                 //legislation pages
+            checkSession();
+            Uncheck();
+            break;
         default:
             break
     }
@@ -4947,3 +4951,104 @@ function loadBlog() {
  *
  **********************************************************************************************************************/
 
+function loadcheckboxToggle() {
+    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+    {
+        event.preventDefault();
+        var checkbox = $('#leg_session');
+        checkboxCheck(checkbox);
+    });
+    $('#leg_type').bindOnce('click#leg_type', function (event)
+    {
+        event.preventDefault();
+        var checkbox = $('#leg_type');
+        checkboxCheck(checkbox);
+        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+    {
+    $('#leg_introduced').bindOnce('click#leg_introduced', function (event)
+    {
+        event.preventDefault();
+        var checkbox = $('#leg_introduced');
+        checkboxCheck(checkbox);
+        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+        }
+    $('#leg_sponsor').bindOnce('click#leg_type', function (event)
+    {
+        event.preventDefault();
+        var checkbox = $('#leg_type');
+        checkboxCheck(checkbox);
+        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
+
+
+
+                event.preventDefault();
+        var wrapper = $('#left-side-wrapper-invite');
+        leftSideToggle(wrapper);
+    }
+    else
+    {
+        checkbox.addClass('checked');
+        $('input:checkbox[value="' + val + '"]').attr('checked', false);
+    }
+}
+
+
+function checkboxUncheck(checkbox)
+{
+    check
+}
+
+function showFooter() {
+    $('footer').show();
+
+    $('.footer_invite').bindOnce('click.footer_invite', function (event)
+    {
+        event.preventDefault();
+        var wrapper = $('#left-side-wrapper-invite');
+        leftSideToggle(wrapper);
+    });
+    $('.footer_feedback').bindOnce('click.footer_feedback', function (event)
+    {
+        event.preventDefault();
+        var wrapper = $('#left-side-wrapper-feedback');
+        leftSideToggle(wrapper);
+    });
+}
+
+function leftSideToggle(wrapper)
+{
+    if (wrapper.hasClass('clicked'))
+    {
+        closeLeftSideWrapper(wrapper);
+    }
+    else
+    {
+        wrapper.addClass('clicked');
+        wrapper.css({'z-index':'101'});
+        wrapper.children('.create-img').css({'z-index':'102'});
+        wrapper.animate({left:'-1px'},500);
+
+        wrapper.bindOnce('clickoutside',function(event)
+        {
+            if (event.target.className != "footer_button") {
+                closeLeftSideWrapper(wrapper);
+            }
+        });
+    }
+
+}
+
+function closeLeftSideWrapper(wrapper)
+{
+
+    if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
+    else { wrapper.animate({left:'-493px'},500); }
+    setTimeout(function()
+    {
+        wrapper.css({'z-index':'100'});
+        wrapper.children('.create' +
+            'e-img').css({'z-index':'101'});
+    },500);
+
+    wrapper.removeClass('clicked');
+}
