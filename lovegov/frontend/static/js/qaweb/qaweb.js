@@ -1325,7 +1325,7 @@ var circle;
 var text;
 
 // The path to image files
-var IMAGE_DIRECTORY = '/static/images/questionIcons/';
+var IMAGE_DIRECTORY = STATIC_URL + '/images/questionIcons/';
 
 /**
  * QA Web Display Variables
