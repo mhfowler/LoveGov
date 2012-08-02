@@ -57,10 +57,12 @@ def answerQuestions(sheet):
                 errors += "+++Answer not found for text :: " + answer_text +'\n'
                 continue
 
-            # Get the value and find the question
+            # Get the value and find the question that corresponds
             answer_val = answer.value
-            question = Question.lg.get_or_none(answers__answer_text=answer_text)
-            if question:
+            questions = answer.question_set.all()
+            if questions:
+                question = questions[0]
+
                 # See if a response already exists
                 response = UserResponse.lg.get_or_none(responder=politician,question=question)
                 if not response:
@@ -74,7 +76,7 @@ def answerQuestions(sheet):
                     response.save()
             else:
                 question_not_found += 1
-                errors += "---Question Not Found for politician" + politician.get_name() + '\n'
+                errors += "---Question Not Found for politician " + politician.get_name() + '\n'
 
 
     print "========= Errors =========="
