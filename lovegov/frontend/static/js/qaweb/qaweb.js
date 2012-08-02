@@ -335,8 +335,8 @@ var QAWebHover = Class.extend
             if (this.node.security != "")
             {
                 var src;
-                if (this.node.security == "PUB") { src = '/static/images/public.png'; }
-                else { src = '/static/images/user-menu/lockgray.png'; }
+                if (this.node.security == "PUB") { src = STATIC_URL  + '/images/public.png'; }
+                else { src = STATIC_URL + '/images/user-menu/lockgray.png'; }
                 $('#privacy-image').attr("src",src).show();
             }
 
@@ -1412,12 +1412,12 @@ function initializeDragScroll()
     $(DRAGGER_ID).mousedown(function(event)
     {
         event.preventDefault();
-        $(this).css('cursor','url(/static/images/cursors/holdcursor.gif),auto');
+        $(this).css('cursor','url(' + STATIC_URL + '/images/cursors/holdcursor.gif),auto');
     });
     $(DRAGGER_ID).mouseup(function(event)
     {
         event.preventDefault();
-        $(this).css('cursor','url(/static/images/cursors/grabcursor.gif),auto');
+        $(this).css('cursor','url(' + STATIC_URL + '/images/cursors/grabcursor.gif),auto');
     });
 
 }
@@ -1516,7 +1516,7 @@ function questionSwitch(topicID)
 {
     var types = ['Default','Hover','Answering'];
     var states = ['unanswered','answered'];
-    var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');;
+    var topicString = assignTopicText(topicID).toLowerCase().replace(/\s+/g, '');
     return makeQuestionImageArray(topicString,states,types);
 }
 
