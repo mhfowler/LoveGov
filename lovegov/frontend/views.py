@@ -528,6 +528,7 @@ def groups(request, vals={}):
 
     mygroups_ids = mygroups.values_list("id", flat=True)
     groups = list(UserGroup.objects.all())
+    groups = random.sample(groups, min(10, len(groups)))
     for x in groups:
         x.prepComparison(viewer)
         x.you_are_member = (x.id in mygroups_ids)
@@ -537,7 +538,7 @@ def groups(request, vals={}):
     vals['what'] = "Groups"
 
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
-    url = '/friends/'
+    url = '/groups/'
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -552,6 +553,7 @@ def networks(request, vals={}):
 
     mygroups_ids = mygroups.values_list("id", flat=True)
     groups = list(Network.objects.all())
+    groups = random.sample(groups, min(10, len(groups)))
     for x in groups:
         x.prepComparison(viewer)
         x.you_are_member = (x.id in mygroups_ids)
@@ -561,7 +563,7 @@ def networks(request, vals={}):
     vals['what'] = "Networks"
 
     html = ajaxRender('deployment/pages/match/groups.html', vals, request)
-    url = '/friends/'
+    url = '/networks/'
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
