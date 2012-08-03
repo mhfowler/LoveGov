@@ -75,7 +75,7 @@ def answerQuestions(sheet):
                         duplicate_responses += 1
                         print "++DUPLICATE++ Potential duplicate response for user ID #" + str(politician.id) + " and question ID #" + str(question.id)
                     response = responses[0]
-                    response.answer = answer
+                    response.most_chosen_answer = answer
                     response.explanation = ''
                     response.most_chosen_num = 1
                     response.total_num = 1
