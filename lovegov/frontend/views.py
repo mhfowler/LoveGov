@@ -656,7 +656,7 @@ def profile(request, alias=None, vals={}):
             actions = user_prof.getActivity(num=num_actions)
             actions_text = []
             for action in actions:
-                actions_text.append( action.getVerbose(view_user=viewer) )
+                actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
             vals['actions_text'] = actions_text
             vals['num_actions'] = num_actions
 
