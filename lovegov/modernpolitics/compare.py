@@ -518,3 +518,10 @@ def fastCompare(questions, viewA, viewB, topics=None, tags=None):
                     if tag in tags:
                         comparison.getTagBucket(tag).update(similar, weight)
     return comparison
+
+
+#=======================================================================================================================
+# Compares two world views
+#=======================================================================================================================
+def compareWorldViews(viewA,viewB):
+    responsesA = viewA.responses.order_by(question_id)
