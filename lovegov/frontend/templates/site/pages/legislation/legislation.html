@@ -11,19 +11,19 @@
                 </h3>
             </div>
             <div class="session_filter unchecked">
-                <input type="checkbox" class="leg-checkbox unchecked" id="leg_session"><label><h3>session</h3></label>
+                <input type="checkbox"><label><h3>session</h3></label>
             </div>
             <div class="type_filter unchecked">
-                <input type="checkbox" class="leg-checkbox unchecked" id="leg_type"><label><h3>type</h3></label>
+                <input type="checkbox"><label><h3>type</h3></label>
             </div>
             <div class="introduced_filter unchecked">
-                <input type="checkbox" class="leg-checkbox unchecked" id="leg_introduced"><label><h3>date introduced</h3></label>
+                <input type="checkbox"><label><h3>date introduced</h3></label>
             </div>
             <div class="sponsor_filter unchecked">
-                <input type="checkbox" class="leg-checkbox unchecked" id="leg_sponsor"><label><h3>sponsor</h3></label>
+                <input type="checkbox"><label><h3>sponsor</h3></label>
             </div>
             <div class="myrepsvotes_filter unchecked">
-                <input type="checkbox" class="legislation-filter" id="leg_myrepvotes"><label><h3>include my representatives' votes</h3></label>
+                <input type="checkbox"><label><h3>include my representatives' votes</h3></label>
             </div>
         </div>
         <div class="legislation-selector">
@@ -37,28 +37,49 @@
             </div>
             <div class="type_selector">
                 <ul>
-                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type A</h3></label></li>
-                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type B</h3></label></li>
-                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type C</h3></label></li>
-                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type D</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type A</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type B</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type C</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type D</h3></label></li>
                 </ul>
             </div>
             <div class="introduced_selector">
                 <ul>
-                    <li><input type="form" class="legislation-selector introduced_selector"><label><h4>date form</h4></label></li>
-                    <li><input type="form" class="legislation-selector introduced_selector"><label><h4>date form</h4></label></li>
-                    <li><input type="form" class="legislation-selector introduced_selector"><label><h4>date form</h4></label></li>
+                    <li><input type="form"><label><h4>date form</h4></label></li>
+                    <li><input type="form"><label><h4>date form</h4></label></li>
+                    <li><input type="form"><label><h4>date form</h4></label></li>
                 </ul>
             </div>
-            <div id="sponsor_selector">
+            <div class="sponsor_selector">
                 <ul>
-                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_body"><label><h4>sponsor body</h4></label></li>
-                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_name"><label><h4>sponsor name</h4></label></li>
-                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_party"><label><h4>sponsor party</h4></label></li>
-                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_district"><label><h4>sponsor district</h4></label></li>
+                    <li><input type="form" id="sponsor_body"><label><h4>sponsor body</h4></label></li>
+                    <li><input type="form" id="sponsor_name"><label><h4>sponsor name</h4></label></li>
+                    <li><input type="form" id="sponsor_party"><label><h4>sponsor party</h4></label></li>
+                    <li><input type="form" id="sponsor_district"><label><h4>sponsor district</h4></label></li>
                 </ul>
             </div>
-
+        </div>
+    </div>
+    <div class="div-button">
+        <span>
+            Submit choices
+        </span>
+    </div>
+    <div class="div-filter-button">
+        <span>
+            Filter !
+        </span>
+    </div>
+    <div class="filter-results">
+        <div class="results-heading-">
+            <h3>
+                filter results:
+        </h3>
+        </div>
+    </div>
+    <div class="filter-congress-feed">
+        <input type="checkbox"><label><h3>filter feed for my regions</h3></label>
+    </div>
 
     <!-- Javascript -->
     <script> rebind='legislation'; </script>
