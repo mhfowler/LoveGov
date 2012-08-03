@@ -112,8 +112,7 @@ def viewWrapper(view, requires_login=False):
             else:
                 ignore = request.POST.get('log-ignore')
             if not ignore:
-                def saveAccess(req): PageAccess().autoSave(req)
-                thread.start_new_thread(saveAccess, (request,))
+                saveAccess.delay(request)
 
     return new_view
 
