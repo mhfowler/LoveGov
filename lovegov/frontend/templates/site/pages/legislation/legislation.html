@@ -3,80 +3,61 @@
 {% block content %}
 
 
-        <div class="sidebar">
-            <div class="div-toggle">
+    <div class="main-block">
+        <div class="legislation-filter">
+            <div class="filter-prompt">
                 <h3>
                     filter legislation by:
                 </h3>
             </div>
-            <div class="col1 unchecked">
+            <div class="session_filter unchecked">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_session"><label><h3>session</h3></label>
             </div>
-            <div class="filter-div">
-                <div id="session_filter">
-                    <ul>
-                        <li><input type="checkbox" class="leg-filter-session"><label><h3>109th Congress</h3></label></li>
-                        <li><input type="checkbox" class="leg-filter-session"><label><h3>110th Congress</h3></label></li>
-                        <li><input type="checkbox" class="leg-filter-session"><label><h3>111th Congress</h3></label></li>
-                        <li><input type="checkbox" class="leg-filter-session"><label><h3>112th Congress</h3></label></li>
-                    </ul>
-                    <div class="div-button" id="session-filter-button">
-                        <span>Submit choices</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col2">
+            <div class="type_filter unchecked">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_type"><label><h3>type</h3></label>
             </div>
-            <div class="filter-div">
-                <div id="type_filter">
-                    <ul>
-                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type A</h3></label></li>
-                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type B</h3></label></li>
-                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type C</h3></label></li>
-                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type D</h3></label></li>
-                    </ul>
-                    <div class="div-button" id="type-filter-button">
-                        <span>Submit choices</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col3">
+            <div class="introduced_filter unchecked">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_introduced"><label><h3>date introduced</h3></label>
             </div>
-            <div class="filter-div">
-                <div id="introduced_filter">
-                    <ul>
-                        <li><input type="form" class="leg-filter-introduced"><label><h4>date form</h4></label></li>
-                        <li><input type="form" class="leg-filter-introduced"><label><h4>date form</h4></label></li>
-                        <li><input type="form" class="leg-filter-introduced"><label><h4>date form</h4></label></li>
-                    </ul>
-                    <div class="div-button" id="introduced-filter-button">
-                        <span>Submit choices</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col4">
+            <div class="sponsor_filter unchecked">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_sponsor"><label><h3>sponsor</h3></label>
             </div>
-            <div class="filter-div">
-                <div id="sponsor_filter">
-                    <ul>
-                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor body</h4></label></li>
-                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor name</h4></label></li>
-                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor party</h4></label></li>
-                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor district</h4></label></li>
-                    </ul>
-                    <div class="div-button" id="sponsor-filter-button">
-                        <span>Submit choices</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col5">
-                <input type="checkbox" class="leg-checkbox unchecked" id="leg_myrepvotes"><label><h3>include my representatives' votes</h3></label>
+            <div class="myrepsvotes_filter unchecked">
+                <input type="checkbox" class="legislation-filter" id="leg_myrepvotes"><label><h3>include my representatives' votes</h3></label>
             </div>
         </div>
-    
+        <div class="legislation-selector">
+            <div class="session_selector">
+                <ul>
+                    <li><input type="checkbox"><label><h3>109th Congress</h3></label></li>
+                    <li><input type="checkbox"><label><h3>110th Congress</h3></label></li>
+                    <li><input type="checkbox"><label><h3>111th Congress</h3></label></li>
+                    <li><input type="checkbox"><label><h3>112th Congress</h3></label></li>
+                </ul>
+            </div>
+            <div class="type_selector">
+                <ul>
+                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type A</h3></label></li>
+                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type B</h3></label></li>
+                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type C</h3></label></li>
+                    <li><input type="checkbox" class="legislation-selector type_selector"><label><h3>Bill Type D</h3></label></li>
+                </ul>
+            </div>
+            <div class="introduced_selector">
+                <ul>
+                    <li><input type="form" class="legislation-selector introduced_selector"><label><h4>date form</h4></label></li>
+                    <li><input type="form" class="legislation-selector introduced_selector"><label><h4>date form</h4></label></li>
+                    <li><input type="form" class="legislation-selector introduced_selector"><label><h4>date form</h4></label></li>
+                </ul>
+            </div>
+            <div id="sponsor_selector">
+                <ul>
+                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_body"><label><h4>sponsor body</h4></label></li>
+                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_name"><label><h4>sponsor name</h4></label></li>
+                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_party"><label><h4>sponsor party</h4></label></li>
+                    <li><input type="form" class="legislation-selector sponsor_selector" id="sponsor_district"><label><h4>sponsor district</h4></label></li>
+                </ul>
+            </div>
 
 
     <!-- Javascript -->

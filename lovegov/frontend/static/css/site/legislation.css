@@ -32,10 +32,7 @@
 /* Mixins */
 
 
-
-
-
-div.div-toggle {
+div.filter-prompt {
     position:fixed;
     height:100px;
     width: 300px;
@@ -43,7 +40,7 @@ div.div-toggle {
     top: 80px;
 }
 
- div.sidebar {
+ div.main-block {
     position: fixed;
     left: 140px;
     top: 70px;
@@ -51,15 +48,9 @@ div.div-toggle {
     width: 800px;
     overflow: auto;
     padding-left: 9px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    border: solid;
-    border-color: #ef503b;
-    border-width: 1px;
 }
 
-div.sidebar div.col1 {
+div.main-block div.legislation-filter.session_filter {
     position: fixed;
     width: 250px;
     height: 30px;
@@ -70,7 +61,7 @@ div.sidebar div.col1 {
     overflow: auto;
 }
 
-div.sidebar div.filter-div div#session_filter {
+div.main-block div.filter-div div#session_filter {
     position: fixed;
     width: 250px;
     height: 600px;
@@ -81,7 +72,7 @@ div.sidebar div.filter-div div#session_filter {
     overflow: auto;
 }
 
-div.sidebar div.col2 {
+div.main-block div.legislation-filter.type_filter {
     position: fixed;
     width: 230px;
     height: 30px;
@@ -92,7 +83,7 @@ div.sidebar div.col2 {
     overflow: auto;
 }
 
- div.sidebar div.filter-div div#type_filter {
+ div.main-block div.filter-div div#type_filter {
     position: fixed;
     width: 250px;
     height: 600px;
@@ -103,7 +94,7 @@ div.sidebar div.col2 {
     overflow: auto;
 }
 
- div.sidebar div.col3 {
+ div.main-block div.legislation-filter.introduced_filter {
     position: fixed;
     width: 230px;
     height: 30px;
@@ -114,7 +105,7 @@ div.sidebar div.col2 {
     overflow: auto;
 }
 
- div.sidebar div.filter-div div#introduced_filter {
+ div.main-block div.filter-div div#introduced_filter {
     position: fixed;
     width: 700px;
     height: 600px;
@@ -125,7 +116,7 @@ div.sidebar div.col2 {
     overflow: auto;
 }
 
- div.sidebar div.col4 {
+ div.main-block div.legislation-filter.sponsor_filter {
     position: fixed;
     width: 230px;
     height: 30px;
@@ -136,7 +127,7 @@ div.sidebar div.col2 {
     overflow: auto;
 }
 
- div.sidebar div.filter-div div#sponsor_filter {
+ div.main-block div.filter-div div#sponsor_filter {
     position: fixed;
     width: 700px;
     height: 600px;
@@ -147,7 +138,7 @@ div.sidebar div.col2 {
     overflow: auto;
 }
 
- div.sidebar div.col5 {
+ div.main-block div.col5 {
     position: fixed;
     width: 340px;
     height: 30px;
