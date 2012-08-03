@@ -112,7 +112,7 @@ def viewWrapper(view, requires_login=False):
             else:
                 ignore = request.POST.get('log-ignore')
             if not ignore:
-                saveAccess.delay(request)
+                saveAccess(request)
 
     return new_view
 
