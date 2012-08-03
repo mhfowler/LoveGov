@@ -1,5 +1,0 @@
-CELERYD_LOG_FILE="/log/celery.log"
-
-CELERYD_CHDIR="/srv"
-
-CELERYD_NODES="lg"
