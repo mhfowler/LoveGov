@@ -486,42 +486,47 @@ class FastComparison:
             to_dump[k] = v.toDict()
         return json.dumps(to_dump)
 
+
+#=======================================================================================================================
+# Compares two world views
+# ----------------------------
 # takes in a set of questions and two worldviews, and compares them overall
 # and within buckets for inputted topics and tags
-def fastCompare(questions, viewA, viewB, topics=None, tags=None):
+#=======================================================================================================================
+def fastCompare(viewA,viewB,topics=None):
+    # Get both sets of responses
+    responsesA = viewA.responses.order_by('question')
+    responsesB = viewB.responses.order_by('question')
+    # Make a comparison object
+    comparison = FastComparison(topics)
 
-    q_ids = questions.values_list("id", flat=True)
-    responsesA = viewA.responses.filter(question__id__in=q_ids)
-    responsesB = viewB.responses.filter(question__id__in=q_ids)
+    # Set response list positions
+    a_index = 0
+    b_index = 0
 
-    comparison = FastComparison(topics, tags)
-
-    for rA in responsesA:
-        question = rA.question
-        weight = rA.weight
-        rB = responsesB.filter(question=question)
-        if rB:
-            rB = rB[0]
-            question = rA.question
-            similar = (rA.answer_id == rB.answer_id)
-            # total bucket
+    # While the response list positions are valid
+    while a_index < len(responsesA) and b_index < len(responsesB):
+        # Get the current responses in list
+        rA = responsesA[a_index]
+        rB = responsesB[b_index]
+        # If the question IDs match, compare their answers and save it!
+        if rA.question_id == rB.question_id:
+            similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
+            weight = rA.weight
             comparison.getTotalBucket().update(similar, weight)
-            # topic buckets
+            # And also do something with topic buckets...
             if topics:
                 topic = question.getMainTopic()
                 if topic in topics:
                     comparison.getTopicBucket(topic).update(similar, weight)
-            # tag buckets
-            if tags:
-                tags = question.getTags()
-                for tag in tags:
-                    if tag in tags:
-                        comparison.getTagBucket(tag).update(similar, weight)
+            # Then increment both counters
+            a_index += 1
+            b_index += 1
+
+        # Otherwise, if response A has the smaller question ID
+        elif responsesA[a_index].question_id < responsesB[b_index].quesion_id:
+            a_index += 1 # Increment position for response list A
+        else: # Otherwise response B has the smaller question ID
+            b_index += 1 # Increment position for response list B
+
     return comparison
-
-
-#=======================================================================================================================
-# Compares two world views
-#=======================================================================================================================
-def compareWorldViews(viewA,viewB):
-    responsesA = viewA.responses.order_by(question_id)
