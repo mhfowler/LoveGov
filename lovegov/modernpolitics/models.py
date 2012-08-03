@@ -1329,6 +1329,32 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
 
+    def getSupporters(self):
+        support = Supported.objects.filter(user=self, confirmed=True)
+        supporter_ids = support.values_list('to_user', flat=True)
+        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def support(self, politician):
+        supported = Supported.lg.get_or_none(user=self, to_user=politician)
+        if not supported:
+            supported = Supported(user=self, to_user=politician)
+            supported.autoSave()
+            politician.num_supporters += 1
+            politician.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            politician.num_supporters += 1
+            politician.save()
+
+    def unsupport(self, politician):
+        supported = Supported.lg.get_or_none(user=self, to_user=politician)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            politician.num_supporters -= 1
+            politician.save()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
@@ -1876,7 +1902,7 @@ class Action(Privacy):
         self.creator = relationship.creator
         self.save()
 
-    def getVerbose(self,view_user=None):
+    def getVerbose(self,view_user=None,vals={}):
         #Check for relationship
         relationship = Relationship.lg.get_or_none(id=self.relationship_id)
         if not relationship:
@@ -1895,16 +1921,16 @@ class Action(Privacy):
         elif view_user and to_user.id == view_user.id:
             to_you = True
 
-        action_context = {'to_user':to_user,
+        vals.update({'to_user':to_user,
                             'to_you':to_you,
                             'from_user':from_user,
                             'from_you':from_you,
                             'type':self.type,
                             'modifier':self.modifier,
                             'true':True,
-                            'timestamp':self.when}
+                            'timestamp':self.when})
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',action_context)
+        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
         return action_verbose
 
 
@@ -2642,8 +2668,8 @@ class CongressRoll(LGModel):
     required = models.CharField(max_length=10, null=True)
     result = models.CharField(max_length=80, null=True)
     # Legislation
-    legislation = models.ForeignKey(Legislation, null=True)
-    amendment = models.ForeignKey(LegislationAmendment, null=True)
+    legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
+    amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
 
 #=======================================================================================================================
@@ -3862,7 +3888,7 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 class Relationship(Privacy):
-    user = models.ForeignKey(UserProfile, related_name='frel')
+    user = models.ForeignKey(UserProfile, related_name='relationships')
     when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------

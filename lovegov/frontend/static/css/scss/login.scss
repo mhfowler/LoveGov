@@ -55,7 +55,6 @@ div#bottom
   float:left;
   width:425px;
   height:287px;
-  //@include staticImage($rel-path:'/images/icons/FB_login_hover.png');
   margin-left:20px;
 }
 
@@ -230,6 +229,10 @@ div.no-login-modal
           margin-top:0px;
           display:block;
 
+          a.img-test {
+            @include staticImage($rel-path:'/images/flags.gif');
+            background-size:contain;
+          }
           a.sign-in-fb {
             @include staticImage($rel-path:'/images/icons/FB_login.png');
             background-size:contain;

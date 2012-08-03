@@ -177,3 +177,10 @@ def recalculateNumMembers():
     for x in Group.objects.all():
         print x.get_name()
         x.countMembers()
+
+
+def removeAnswersWithoutQuestions():
+    for a in Answer.objects.all():
+        if a.question_set.count() < 1:
+            a.delete()
+

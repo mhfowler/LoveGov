@@ -129,7 +129,6 @@ def aliasDowncast(request, alias=None, vals={}):
         return viewWrapper(group, requires_login=True)(request, matched_group.id)
     return redirect(request)
 
-
 def redirect(request):
     return shortcuts.redirect('/home/')
 
@@ -657,7 +656,7 @@ def profile(request, alias=None, vals={}):
             actions = user_prof.getActivity(num=num_actions)
             actions_text = []
             for action in actions:
-                actions_text.append( action.getVerbose(view_user=viewer) )
+                actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
             vals['actions_text'] = actions_text
             vals['num_actions'] = num_actions
 
@@ -925,14 +924,14 @@ def matchSocial(request, vals={}):
 
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']
-#    if not LOCAL:
-    obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
-    paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
-    romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
-#    else:
-#        obama = viewer
-#        paul = viewer
-#        romney = viewer
+    if not LOCAL:
+        obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
+        paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
+        romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
+    else:
+        obama = viewer
+        paul = viewer
+        romney = viewer
     list = [obama,paul,romney]
     for x in list:
         x.prepComparison(viewer)

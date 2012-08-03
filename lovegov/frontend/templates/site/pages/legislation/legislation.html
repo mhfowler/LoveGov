@@ -2,41 +2,81 @@
 
 {% block content %}
 
-    <div class="sidebar-box">
-        <div class="div-toggle">
-            <h3>
-                filter legislation by:
-            </h3>
-        </div>
+
         <div class="sidebar">
-            <div class="col1">
+            <div class="div-toggle">
+                <h3>
+                    filter legislation by:
+                </h3>
+            </div>
+            <div class="col1 unchecked">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_session"><label><h3>session</h3></label>
             </div>
-            <div class="session-filter">
-                {% for congress_session in sessions %}
-                    <li><input type="checkbox" class="leg-filter" id="congress_session_filter_{{congress_session}}"><label><h3>{{congress_session}} Congress</h3></label>
-                {% endfor %}
+            <div class="filter-div">
+                <div id="session_filter">
+                    <ul>
+                        <li><input type="checkbox" class="leg-filter-session"><label><h3>109th Congress</h3></label></li>
+                        <li><input type="checkbox" class="leg-filter-session"><label><h3>110th Congress</h3></label></li>
+                        <li><input type="checkbox" class="leg-filter-session"><label><h3>111th Congress</h3></label></li>
+                        <li><input type="checkbox" class="leg-filter-session"><label><h3>112th Congress</h3></label></li>
+                    </ul>
+                    <div class="div-button" id="session-filter-button">
+                        <span>Submit choices</span>
+                    </div>
+                </div>
             </div>
             <div class="col2">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_type"><label><h3>type</h3></label>
             </div>
-            <div class="type-filter">
-                <li><input type="form" class="leg-filter" id="bill_type_filter"><label><h3>session</h3></label>
+            <div class="filter-div">
+                <div id="type_filter">
+                    <ul>
+                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type A</h3></label></li>
+                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type B</h3></label></li>
+                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type C</h3></label></li>
+                        <li><input type="checkbox" class="leg-filter-type"><label><h3>Bill Type D</h3></label></li>
+                    </ul>
+                    <div class="div-button" id="type-filter-button">
+                        <span>Submit choices</span>
+                    </div>
+                </div>
             </div>
             <div class="col3">
-                <input type="checkbox" class="leg-checkbox unchecked" id="leg_introduced"><label><h3>introduced</h3></label>
+                <input type="checkbox" class="leg-checkbox unchecked" id="leg_introduced"><label><h3>date introduced</h3></label>
             </div>
-            <div class="introduced-filter">
-                <li><input type="(dateform)" class="leg-filter" id="bill_introduced_filter"><label><h3>session</h3></label>
+            <div class="filter-div">
+                <div id="introduced_filter">
+                    <ul>
+                        <li><input type="form" class="leg-filter-introduced"><label><h4>date form</h4></label></li>
+                        <li><input type="form" class="leg-filter-introduced"><label><h4>date form</h4></label></li>
+                        <li><input type="form" class="leg-filter-introduced"><label><h4>date form</h4></label></li>
+                    </ul>
+                    <div class="div-button" id="introduced-filter-button">
+                        <span>Submit choices</span>
+                    </div>
+                </div>
             </div>
             <div class="col4">
                 <input type="checkbox" class="leg-checkbox unchecked" id="leg_sponsor"><label><h3>sponsor</h3></label>
             </div>
-            <div class="sponsor-filter">
-                <li><input type="form" class="sponsor-filter" id="sponsor_filter"><label><h3>session</h3></label>
+            <div class="filter-div">
+                <div id="sponsor_filter">
+                    <ul>
+                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor body</h4></label></li>
+                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor name</h4></label></li>
+                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor party</h4></label></li>
+                        <li><input type="form" class="leg-filter-sponsor"><label><h4>sponsor district</h4></label></li>
+                    </ul>
+                    <div class="div-button" id="sponsor-filter-button">
+                        <span>Submit choices</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col5">
+                <input type="checkbox" class="leg-checkbox unchecked" id="leg_myrepvotes"><label><h3>include my representatives' votes</h3></label>
             </div>
         </div>
-    </div>
+    
 
 
     <!-- Javascript -->

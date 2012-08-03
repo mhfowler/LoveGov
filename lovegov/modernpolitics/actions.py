@@ -1623,7 +1623,7 @@ def getUserActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
+        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
@@ -1650,7 +1650,7 @@ def getGroupActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
+        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
