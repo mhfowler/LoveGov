@@ -11,7 +11,7 @@
 from lovegov.scripts.createPresidentialCandidates import answerQuestions
 from lovegov.scripts.createPresidentialCandidates import createPoliticianProfiles
 from lovegov.modernpolitics.backend import *
-from lovegov.settings import PROJECT_PATH
+from lovegov.base_settings import PROJECT_PATH
 
 
 # python
