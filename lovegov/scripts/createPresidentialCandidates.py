@@ -31,6 +31,7 @@ def answerQuestions(sheet):
     ans_not_found = 0
     question_not_found = 0
     text_not_found = 0
+    duplicate_responses = 0
     # For the cells in a question sheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
@@ -57,22 +58,27 @@ def answerQuestions(sheet):
                 errors += "++WARNING++ Answer not found for text :: " + answer_text +'\n'
                 continue
 
-            # Get the value and find the question that corresponds
-            answer_val = answer.value
+            # Find the question that corresponds to this answer
             questions = answer.question_set.all()
             if questions:
                 question = questions[0]
 
                 # See if a response already exists
-                response = UserResponse.lg.get_or_none(responder=politician,question=question)
-                if not response:
-                    print "Response Created"
-                    response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
+                responses = politician.view.responses.filter(question=question)
+                if not responses:
+                    response = Response(question=question,most_chosen_answer=answer,explanation="")
+                    response.most_chosen_num = 1
+                    response.total_num = 1
                     response.autoSave(creator=politician)
                 else:
-                    print "Response Updated"
-                    response.answer_val = answer_val
+                    if len(responses) > 1:
+                        duplicate_responses += 1
+                        print "++DUPLICATE++ Potential duplicate response for user ID #" + str(politician.id) + " and question ID #" + str(question.id)
+                    response = responses[0]
+                    response.most_chosen_answer = answer
                     response.explanation = ''
+                    response.most_chosen_num = 1
+                    response.total_num = 1
                     response.save()
             else:
                 question_not_found += 1
@@ -82,6 +88,7 @@ def answerQuestions(sheet):
     print "========= Errors =========="
     print errors
     print "========= Stats =========="
+    print "Potential duplicate responses: " + str(duplicate_responses)
     print "Answer Objects not found in database: " + str(ans_not_found)
     print "Question Objects not found in database: " + str(question_not_found)
     print "Answer Text not given: " + str(text_not_found)
