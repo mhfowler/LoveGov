@@ -1,4 +1,4 @@
-from lovegov.settings import PROJECT_PATH
+from lovegov.base_settings import PROJECT_PATH
 from django.conf import settings
 import os
 import re

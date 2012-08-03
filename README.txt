@@ -133,6 +133,7 @@ python manage.py migrate djcelery
 brew install rabbitmq
 OR sudo apt-get install rabbitmq-server
 pip install librabbitmq
+pip install pika==0.9.5
 
 ********** GETTING STARTED ************
 
