@@ -112,7 +112,7 @@ def scriptCreateCongressAnswers(args=None):
 
             # Collect Votes from Congress Rolls
             for roll in congress_rolls:
-                for vote in roll.votes:
+                for vote in roll.votes.all():
                     if vote.votekey == answer_value:
                         votes.append(vote)
 
