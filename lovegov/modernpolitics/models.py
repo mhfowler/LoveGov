@@ -2772,7 +2772,6 @@ class Response(Content):
     total_num = models.IntegerField(default=0)
     weight = models.IntegerField(default=5)
     explanation = models.TextField(max_length=1000, blank=True)
-    responder = models.ForeignKey(UserProfile,null=True)
     answer_tallies = models.ManyToManyField('AnswerTally')
 
     #-------------------------------------------------------------------------------------------------------------------

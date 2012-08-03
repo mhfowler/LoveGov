@@ -127,11 +127,12 @@ pip install boto
 pip install django-s3-folder-storage
 
 celery
+pip install -U Celery
 pip install django-celery
 python manage.py migrate djcelery
 brew install rabbitmq
+OR sudo apt-get install rabbitmq-server
 pip install librabbitmq
-
 
 ********** GETTING STARTED ************
 
