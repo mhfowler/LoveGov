@@ -2766,9 +2766,15 @@ class NextQuestion(LGModel):
 #=======================================================================================================================
 class Response(Content):
     question = models.ForeignKey(Question)
-    answer_val = models.IntegerField()
+    answer_val = models.IntegerField(default=-1)
+    most_chosen_answer = models.ForeignKey(Answer,related_name="responses",null=True)
+    most_chosen_num = models.IntegerField(default=0)
+    total_num = models.IntegerField(default=0)
     weight = models.IntegerField(default=5)
-    answers = custom_fields.ListField(default=[])    # for storing checkbox response
+    explanation = models.TextField(max_length=1000, blank=True)
+    responder = models.ForeignKey(UserProfile,null=True)
+    answer_tallies = models.ManyToManyField('AnswerTally')
+
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
     #-------------------------------------------------------------------------------------------------------------------
@@ -2781,34 +2787,6 @@ class Response(Content):
 
     def getValue(self):
         return float(self.answer_val)
-
-
-#=======================================================================================================================
-# Response by a user.
-#
-#=======================================================================================================================
-class UserResponse(Response):
-    responder = models.ForeignKey(UserProfile)
-    explanation = models.TextField(max_length=1000, blank=True)
-    #-------------------------------------------------------------------------------------------------------------------
-    # Autosaves with sensible default values.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.title = unicode(self.question.title + " Response by " + self.responder.get_name())
-        self.type = 'R'
-        self.in_calc = False
-        self.save()
-        self.responder.getView().responses.add(self)
-        super(UserResponse, self).autoSave(creator=creator, privacy=privacy)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Updates answer appropriately.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoUpdate(self, answer_val, explanation):
-        self.answer_val = answer_val
-        self.explanation = explanation
-        self.save()
-        return self
 
 
 ########################################################################################################################
@@ -3168,35 +3146,9 @@ class UserComparison(ViewComparison):
 # Tuple for storing how many people in an aggregate view chose this answer.
 #
 #=======================================================================================================================
-class AggregateTuple(LGModel):
-    answer_val = models.IntegerField()
+class AnswerTally(LGModel):
+    answer = models.ForeignKey('Answer',null=True)
     tally = models.IntegerField()
-
-#=======================================================================================================================
-# Model for storing how a group of people answered a question.
-#
-#=======================================================================================================================
-class AggregateResponse(Response):
-    users = models.ManyToManyField(UserProfile)
-    responses = models.ManyToManyField(AggregateTuple)
-    answer_avg = models.DecimalField(default=0, max_digits=4, decimal_places=2)
-    total = models.IntegerField()
-    def autoSave(self):
-        self.type = 'Z'
-        self.in_feed = False
-        self.in_search = False
-        self.in_calc = False
-        self.save()
-        super(AggregateResponse, self).autoSave()
-
-    def getValue(self):
-        return float(self.answer_avg)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearResponses(self):
-        self.responses.all().delete()
 
 ########################################################################################################################
 ########################################################################################################################

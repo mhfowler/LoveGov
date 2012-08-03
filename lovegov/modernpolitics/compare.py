@@ -45,20 +45,20 @@ def updateGroupViews(debug=False, fast=True):
             print g.title
             updateGroupView(g)
 
-    """
-    networks = Network.objects.exclude(name="congress")
-    for g in networks:
-        updateGroupView(g)
-        if debug:
-            print "updated: " + enc(g.title) + " aggregate-view"
-    print "updated networks."
-
-    groups = UserGroup.objects.all()
-    for g in groups:
-        updateGroupView(g)
-        if debug:
-            print "updated: " + enc(g.title) + " aggregate-view"
-    print "updated usergroups." """
+#    """
+#    networks = Network.objects.exclude(name="congress")
+#    for g in networks:
+#        updateGroupView(g)
+#        if debug:
+#            print "updated: " + enc(g.title) + " aggregate-view"
+#    print "updated networks."
+#
+#    groups = UserGroup.objects.all()
+#    for g in groups:
+#        updateGroupView(g)
+#        if debug:
+#            print "updated: " + enc(g.title) + " aggregate-view"
+#    print "updated usergroups." """
 
 
 
@@ -312,13 +312,13 @@ def aggregateHelper(question, users, object, update=False):
     answers = {}
     # create aggregate tuples
     for choice in question.answers.all().order_by("value"):
-        tuple = AggregateTuple(answer_val=choice.value, tally=0)
-        answers[choice.value] = tuple
+        tuple = AggregateTuple(answer=choice, tally=0)
+        answers[choice_id] = tuple
     for p in users:
-        response = UserResponse.objects.filter(question=question, responder=p)
+        response = p.userresponse_set.filter(question=question)
         if response:
             # keep track of tally
-            index = response[0].answer_val
+            index = response[0].answer_id
             if index in answers:
                 answers[index].tally += 1
                 # calculate average
@@ -332,10 +332,10 @@ def aggregateHelper(question, users, object, update=False):
         # calculate most chosen
     most = 0
     which = -1
-    for value, tup in answers.items():
+    for ans_id, tup in answers.items():
         if tup.tally >= most:
             most = tup.tally
-            which = value
+            which = ans_id
         # set values
     object.answer_avg = str(mean)
     object.answer_val = which
@@ -503,7 +503,7 @@ def fastCompare(questions, viewA, viewB, topics=None, tags=None):
         if rB:
             rB = rB[0]
             question = rA.question
-            similar = (rA.answer_val == rB.answer_val)
+            similar = (rA.answer_id == rB.answer_id)
             # total bucket
             comparison.getTotalBucket().update(similar, weight)
             # topic buckets

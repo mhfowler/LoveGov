@@ -48,13 +48,13 @@ def answerQuestions(sheet):
             # Check answer text
             if not answer_text:
                 text_not_found += 1
-                errors += "Answer text not found\n"
+                errors += "++WARNING++ Answer text not found\n"
                 continue
             # Find the answer
             answer = Answer.lg.get_or_none(answer_text=answer_text)
             if not answer:
                 ans_not_found += 1
-                errors += "+++Answer not found for text :: " + answer_text +'\n'
+                errors += "++WARNING++ Answer not found for text :: " + answer_text +'\n'
                 continue
 
             # Get the value and find the question that corresponds
@@ -76,12 +76,12 @@ def answerQuestions(sheet):
                     response.save()
             else:
                 question_not_found += 1
-                errors += "---Question Not Found for politician " + politician.get_name() + '\n'
+                errors += "++WARNING++ Question Not Found for politician " + politician.get_name() + '\n'
 
 
     print "========= Errors =========="
     print errors
     print "========= Stats =========="
-    print "Answer Objects not found: " + str(ans_not_found)
-    print "Question Objects not found: " + str(question_not_found)
-    print "Answer Text not found: " + str(text_not_found)
+    print "Answer Objects not found in database: " + str(ans_not_found)
+    print "Question Objects not found in database: " + str(question_not_found)
+    print "Answer Text not given: " + str(text_not_found)
