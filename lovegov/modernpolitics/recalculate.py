@@ -179,8 +179,9 @@ def recalculateNumMembers():
         x.countMembers()
 
 
-def removeAnswersWithoutQuestions():
-    for a in Answer.objects.all():
-        if a.question_set.count() < 1:
-            a.delete()
-
+def calculateResponseAnswers():
+    for response in Response.objects.all():
+        if response.question:
+            for answer in response.question.answers.all():
+                if response.answer_val != -1 and answer.value == response.answer_val:
+                    response.answer = answer

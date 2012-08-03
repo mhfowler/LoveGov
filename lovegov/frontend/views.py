@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpRequest
 
 # lovegov
 from lovegov.modernpolitics.backend import *
-from lovegov.settings import UPDATE
+from lovegov.base_settings import UPDATE
 
 
 #-----------------------------------------------------------------------------------------------------------------------

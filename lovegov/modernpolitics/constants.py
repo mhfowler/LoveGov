@@ -9,7 +9,7 @@
 
 # django
 from django.conf import settings
-from lovegov.settings import PROJECT_PATH
+from lovegov.base_settings import PROJECT_PATH
 
 # python
 import sunlight

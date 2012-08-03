@@ -45,20 +45,20 @@ def updateGroupViews(debug=False, fast=True):
             print g.title
             updateGroupView(g)
 
-    """
-    networks = Network.objects.exclude(name="congress")
-    for g in networks:
-        updateGroupView(g)
-        if debug:
-            print "updated: " + enc(g.title) + " aggregate-view"
-    print "updated networks."
-
-    groups = UserGroup.objects.all()
-    for g in groups:
-        updateGroupView(g)
-        if debug:
-            print "updated: " + enc(g.title) + " aggregate-view"
-    print "updated usergroups." """
+#    """
+#    networks = Network.objects.exclude(name="congress")
+#    for g in networks:
+#        updateGroupView(g)
+#        if debug:
+#            print "updated: " + enc(g.title) + " aggregate-view"
+#    print "updated networks."
+#
+#    groups = UserGroup.objects.all()
+#    for g in groups:
+#        updateGroupView(g)
+#        if debug:
+#            print "updated: " + enc(g.title) + " aggregate-view"
+#    print "updated usergroups." """
 
 
 
@@ -312,13 +312,13 @@ def aggregateHelper(question, users, object, update=False):
     answers = {}
     # create aggregate tuples
     for choice in question.answers.all().order_by("value"):
-        tuple = AggregateTuple(answer_val=choice.value, tally=0)
-        answers[choice.value] = tuple
+        tuple = AggregateTuple(answer=choice, tally=0)
+        answers[choice_id] = tuple
     for p in users:
-        response = UserResponse.objects.filter(question=question, responder=p)
+        response = p.userresponse_set.filter(question=question)
         if response:
             # keep track of tally
-            index = response[0].answer_val
+            index = response[0].answer_id
             if index in answers:
                 answers[index].tally += 1
                 # calculate average
@@ -332,10 +332,10 @@ def aggregateHelper(question, users, object, update=False):
         # calculate most chosen
     most = 0
     which = -1
-    for value, tup in answers.items():
+    for ans_id, tup in answers.items():
         if tup.tally >= most:
             most = tup.tally
-            which = value
+            which = ans_id
         # set values
     object.answer_avg = str(mean)
     object.answer_val = which
@@ -486,35 +486,47 @@ class FastComparison:
             to_dump[k] = v.toDict()
         return json.dumps(to_dump)
 
+
+#=======================================================================================================================
+# Compares two world views
+# ----------------------------
 # takes in a set of questions and two worldviews, and compares them overall
 # and within buckets for inputted topics and tags
-def fastCompare(questions, viewA, viewB, topics=None, tags=None):
+#=======================================================================================================================
+def fastCompare(viewA,viewB,topics=None):
+    # Get both sets of responses
+    responsesA = viewA.responses.order_by('question')
+    responsesB = viewB.responses.order_by('question')
+    # Make a comparison object
+    comparison = FastComparison(topics)
 
-    q_ids = questions.values_list("id", flat=True)
-    responsesA = viewA.responses.filter(question__id__in=q_ids)
-    responsesB = viewB.responses.filter(question__id__in=q_ids)
+    # Set response list positions
+    a_index = 0
+    b_index = 0
 
-    comparison = FastComparison(topics, tags)
-
-    for rA in responsesA:
-        question = rA.question
-        weight = rA.weight
-        rB = responsesB.filter(question=question)
-        if rB:
-            rB = rB[0]
-            question = rA.question
-            similar = (rA.answer_val == rB.answer_val)
-            # total bucket
+    # While the response list positions are valid
+    while a_index < len(responsesA) and b_index < len(responsesB):
+        # Get the current responses in list
+        rA = responsesA[a_index]
+        rB = responsesB[b_index]
+        # If the question IDs match, compare their answers and save it!
+        if rA.question_id == rB.question_id:
+            similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
+            weight = rA.weight
             comparison.getTotalBucket().update(similar, weight)
-            # topic buckets
+            # And also do something with topic buckets...
             if topics:
                 topic = question.getMainTopic()
                 if topic in topics:
                     comparison.getTopicBucket(topic).update(similar, weight)
-            # tag buckets
-            if tags:
-                tags = question.getTags()
-                for tag in tags:
-                    if tag in tags:
-                        comparison.getTagBucket(tag).update(similar, weight)
+            # Then increment both counters
+            a_index += 1
+            b_index += 1
+
+        # Otherwise, if response A has the smaller question ID
+        elif responsesA[a_index].question_id < responsesB[b_index].quesion_id:
+            a_index += 1 # Increment position for response list A
+        else: # Otherwise response B has the smaller question ID
+            b_index += 1 # Increment position for response list B
+
     return comparison
