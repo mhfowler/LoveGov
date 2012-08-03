@@ -36,11 +36,6 @@ def scriptCreateCongressAnswers(args=None):
     sheet = wb.sheet_by_index(3)
     metrics = {}
 
-    # If no congress tag has been made, congress likely doesn't exist.
-    if not congress_tag:
-        print "No congress OfficeTag found.  Congress probably hasn't been initialized yet.  Aborting answer creation."
-        return None
-
     # For cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in xrange(1,sheet.ncols,4):
@@ -140,7 +135,7 @@ def scriptCreateCongressAnswers(args=None):
                 # Look for that question in the database
                 questions = answer.question_set.all()
                 if not questions:
-                    print "++WARNING++ Couldn't find question"
+                    print "++WARNING++ Couldn't find question for answer ID #" + str(answer.id)
                     continue
                 if questions.count() > 1:
                     print "++WARNING++ Multiple questions found for this answer"
@@ -149,13 +144,20 @@ def scriptCreateCongressAnswers(args=None):
                 question = questions[0]
 
                 # Look for that response in the database
-                response = UserResponse.lg.get_or_none(responder=voter,question=question)
-                if not response: # If it doesn't exist, create it
-                    response = UserResponse(responder=voter,question=question,answer=answer,explanation="")
+                responses = voter.view.responses.filter(question=question)
+                if not responses: # If it doesn't exist, create it
+                    response = Response(question=question,most_chosen_answer=answer,explanation="")
+                    response.total_num = 1
+                    response.most_chosen_num = 1
                     response.autoSave(creator=voter)
                 # Otherwise, change the answer
                 else:
-                    response.answer = answer
+                    if len(responses) > 1:
+                        print "++DUPLICATE++ Potential duplicate response for user ID #" + str(voter.id) + " and question ID #" + str(question.id)
+                    response = responses[0]
+                    response.most_chosen_answer = answer
+                    response.total_num = 1
+                    response.most_chosen_num = 1
                     response.save()
 
                 metrics[metricName] += 1
@@ -221,13 +223,20 @@ def scriptCreateResponses(args=None):
             if questions:
                 question = questions[0]
 
-                response = UserResponse.lg.get_or_none(responder=politician,question=question)
-                if not response:
-                    response = UserResponse(responder=politician,question=question,answer=answer,explanation="")
+                responses = politician.view.responses.filter(question=question)
+                if not responses:
+                    response = Response(question=question,most_chosen_answer=answer,explanation="")
+                    response.most_chosen_num = 1
+                    response.total_num = 1
                     response.autoSave(creator=politician)
                 else:
-                    response.answer = answer
+                    if len(responses) > 1:
+                        print "++DUPLICATE++ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
+                    response = responses[0]
+                    response.most_chosen_answer = answer
                     response.explanation = ''
+                    response.total_num = 1
+                    response.most_chosen_num = 1
                     response.save()
 
                 print "Successfully answered question for " + politician_name[0]
