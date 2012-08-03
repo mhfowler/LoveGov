@@ -29,13 +29,12 @@
                 <div style="clear:both"></div>
             </div>
 
-            <div class="group-comparison"> <div id="{{ x.title|slugify }}-canvas"></div> </div>
+            <div class="group-comparison"> <div id="{{ x.title|slugify }}-canvas" data-json="{{ x.compare }}"></div> </div>
 
             <div style="clear:both"></div>
 
             <script>
-                var json = eval('(' + '{{ x.compare|escapejs }}' + ')');
-                new VisualComparison("{{ x.title|slugify }}-canvas",json).draw();
+                $("#" + "{{ x.title|slugify }}" + "-canvas").visualComparison();
             </script>
 
         </div>
