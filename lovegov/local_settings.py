@@ -132,8 +132,7 @@ CACHES = {
 import djcelery
 djcelery.setup_loader()
 
-BROKER_URL = 'librabbitmq://guest:guest@localhost:5672/'
-
+BROKER_URL = settings.BROKER_URL
 
 ########################################################################################################################
 #    email
