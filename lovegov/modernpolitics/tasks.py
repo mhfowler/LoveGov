@@ -13,10 +13,12 @@ def saveAccess(request):
     page = getSourcePath(request)
     ipaddress = request.META['REMOTE_ADDR']
     type = request.method
-    if type == 'POST':
+    if type == 'POST' and 'action' in request.POST:
         action = request.POST['action']
-    else:
+    elif 'action' in request.GET:
         action = request.GET['action']
+    else:
+        action = None
     when = datetime.datetime.now()
     task_saveAccess.delay(user_prof_id, page, ipaddress, type, action, when)
 @task
