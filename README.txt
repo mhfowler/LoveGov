@@ -126,6 +126,13 @@ pip install django-storages
 pip install boto
 pip install django-s3-folder-storage
 
+celery
+pip install django-celery
+python manage.py migrate djcelery
+brew install rabbitmq
+pip install librabbitmq
+
+
 ********** GETTING STARTED ************
 
 Now that you have checked out a version of the project and installed all the dependencies you should be pretty much ready to go. 
