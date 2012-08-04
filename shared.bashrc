@@ -17,6 +17,11 @@ alias remotemysql="$PRE/scripts/mysql/remote_mysql.sh"
 alias nohuprun="$PRE/scripts/nohuprun.sh"
 alias nohuplog="vi /log/nohup.out"
 
+# celery
+alias supervisordstart="supervisord -c /srv/server/supervisord.conf"
+alias supervisorctlstart="supervisorctl -c /srv/server/supervisord.conf"
+alias supervisordconf="vi /srv/server/supervisord.conf"
+
 # apache
 alias apacheconfig="cd $PRE/apache"
 alias apacherestart="sudo /etc/init.d/apache2 restart"
@@ -37,6 +42,8 @@ alias devbackup="sudo $PRE/scripts/dev/dev_backup.sh"
 alias devreset="sudo $PRE/scripts/dev/dev_reset.sh"
 alias devmirror="sudo $PRE/scripts/dev/dev_mirror.sh"
 alias devupdate="sudo $PRE/scripts/dev/dev_update.sh"
+alias devpull="sudo $PRE/scripts/dev/dev_pull.sh"
+alias devwsgi="sudo touch $DEV/lovegov/apache/dev.wsgi"
 alias devsouth="sudo $PRE/scripts/dev/dev_south.sh"
 alias devlog="cd /log/dev"
 alias devindex="python $PRE/scripts/dev/dev_index.sh"
