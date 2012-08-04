@@ -107,10 +107,7 @@ def viewWrapper(view, requires_login=False):
             return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
+            ignore = request.REQUEST.get('log-ignore')
             if not ignore:
                 saveAccess(request)
 
@@ -1008,7 +1005,7 @@ def contentDetail(request, content, vals):
     vals['creator'] = creator_display
     vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
-    my_vote = user_votes.filter(content=content) 
+    my_vote = user_votes.filter(content=content)
     if my_vote:
         vals['my_vote'] = my_vote[0].value
     else:

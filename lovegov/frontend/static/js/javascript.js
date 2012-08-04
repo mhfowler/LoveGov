@@ -766,6 +766,10 @@ function loadAjaxifyAnchors()
  ***********************************************************************************************************************/
 $(document).ready(function()
 {
+
+    // check browser compatability
+    checkCompatability();
+
     // csrf protect
     $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
@@ -953,6 +957,25 @@ function replaceCenter(stuff)
     rebindFunction();
 }
 
+
+function checkCompatability() {
+    if( $.cookie('browser_compatability_checked') == null ) {
+        var incompatible = [];
+        $.each(Modernizr, function(index, element) {
+            if (!element) {
+                incompatible.push(index);
+            }
+        });
+        var incompatible_json = JSON.stringify(incompatible);
+        ajaxPost({
+            data: {'action': 'checkCompatability', 'incompatible': incompatible_json},
+            success: function(data)
+            {
+                $.cookie('browser_compatabilitiy_checked', incompatible_json);
+            }
+        });
+    }
+}
 
 /***********************************************************************************************************************
  *

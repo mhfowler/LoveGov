@@ -2043,11 +2043,21 @@ def setFirstLoginStage(request, vals={}):
     response.status_code = 500 if error else 200
     return response
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# saves the posted incompatability information to the db
+#-----------------------------------------------------------------------------------------------------------------------
+def checkCompatability(request, vals={}):
+    incompatible = json.loads(request.POST['incompatible'])
+    user = vals.get('viewer')
+    CompatabilityLog(incompatible=incompatible, user=user,
+        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
+        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+    return HttpResponse('compatability logged')
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
-# args: request
-# tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def actionPOST(request, vals={}):
     """Splitter between all actions."""

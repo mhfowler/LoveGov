@@ -2,6 +2,15 @@
 from lovegov.modernpolitics.initialize import *
 from celery.task.base import task
 
+def queueTask(task, args=(), kwargs=None):
+    kwargs = kwargs or {}
+    def call_task(*args, **kwargs):
+        if not LOCAL:
+            return task.delay(*args, **kwargs)
+        else:
+            return task(*args, **kwargs)
+    return call_task(*args, **kwargs)
+
 @task
 def testTask(message):
     temp_logger.debug("celery message! \n" + message)
@@ -20,7 +29,7 @@ def saveAccess(request):
     else:
         action = None
     when = datetime.datetime.now()
-    task_saveAccess.delay(user_prof_id, page, ipaddress, type, action, when)
+    queueTask(task=task_saveAccess, args=(user_prof_id, page, ipaddress, type, action, when))
 @task
 def task_saveAccess(user_prof_id, page, ipaddress, type, action, when):
     PageAccess(user_id=user_prof_id,
