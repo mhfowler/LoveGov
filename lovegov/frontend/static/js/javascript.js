@@ -766,12 +766,11 @@ function loadAjaxifyAnchors()
  ***********************************************************************************************************************/
 $(document).ready(function()
 {
+    // csrf protect
+    $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
     // check browser compatability
     checkCompatability();
-
-    // csrf protect
-    $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
@@ -959,7 +958,9 @@ function replaceCenter(stuff)
 
 
 function checkCompatability() {
-    if( $.cookie('browser_compatability_checked') == null ) {
+    var compatability_cookie =  $.cookie('compatability');
+    var csrf_check = $.cookie('csrftoken');
+    if (compatability_cookie == null) {
         var incompatible = [];
         $.each(Modernizr, function(index, element) {
             if (!element) {
@@ -968,10 +969,10 @@ function checkCompatability() {
         });
         var incompatible_json = JSON.stringify(incompatible);
         ajaxPost({
-            data: {'action': 'checkCompatability', 'incompatible': incompatible_json},
+            data: {'action': 'logCompatability', 'incompatible': incompatible_json},
             success: function(data)
             {
-                $.cookie('browser_compatabilitiy_checked', incompatible_json);
+                $.cookie('compatability', incompatible_json);
             }
         });
     }

@@ -2047,7 +2047,7 @@ def setFirstLoginStage(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # saves the posted incompatability information to the db
 #-----------------------------------------------------------------------------------------------------------------------
-def checkCompatability(request, vals={}):
+def logCompatability(request, vals={}):
     incompatible = json.loads(request.POST['incompatible'])
     user = vals.get('viewer')
     CompatabilityLog(incompatible=incompatible, user=user,

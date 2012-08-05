@@ -84,13 +84,16 @@ def viewWrapper(view, requires_login=False):
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                     if UPDATE or ("dev" in host_full):
                         if not user.developer:
                             normal_logger.debug('blocked: ' + user.get_name())
-                            #return shortcuts.redirect('/underconstruction/')
+                            return shortcuts.redirect('/underconstruction/')
 
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")

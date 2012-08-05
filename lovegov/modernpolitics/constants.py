@@ -571,7 +571,11 @@ ACTIONS = [
     'getLinkInfo',
     'removeMembers',
     'createMotion',
-    'checkCompatability'
+    'logCompatability'
+]
+
+UNAUTHENTICATED_ACTIONS = [
+    'logCompatability'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
