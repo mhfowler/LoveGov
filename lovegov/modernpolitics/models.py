@@ -1177,6 +1177,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def isNormal(self):
         return not (self.politician or self.elected_official)
 
+    def clearResponses(self):
+        return self.getView().clearResponses()
+
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1422,9 +1425,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Gets worldview for user.
     #-------------------------------------------------------------------------------------------------------------------
     def getView(self):
-        if self.view_id != -1:
+        if self.view_id and self.view_id != -1:
             return self.view
-        else: return None
+        else:
+            view = WorldView()
+            view.save()
+            self.view = view
+            self.save()
+            return self.view
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets username and email for userprofile and controllinguser
@@ -2772,6 +2780,9 @@ class Response(Content):
         self.main_image_id = self.question.main_image_id
         self.in_feed = False
         self.save()
+        if creator:
+            view = creator.getView()
+            view.responses.add(self)
         super(Response, self).autoSave(creator=creator, privacy=privacy)
         self.setMainTopic(self.question.getMainTopic())
 
@@ -3002,6 +3013,9 @@ class Persistent(Content):
 #=======================================================================================================================
 class WorldView(LGModel):
     responses = models.ManyToManyField(Response)
+
+    def clearResponses(self):
+        self.responses.all().delete()
 
 #=======================================================================================================================
 # Comparison of specific topic.
