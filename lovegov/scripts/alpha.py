@@ -111,7 +111,7 @@ def scriptCreateCongressAnswers(args=None):
             votes = []
 
             if not congress_rolls:
-                print "++ERROR++ Could not find bill or amendment for == " + str(legislation)
+                print "++ERROR++ Could not find bill or amendment for == " + str(legislation) + " " + str(congress_num)
                 continue
 
             # Collect Votes from Congress Rolls
