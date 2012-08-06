@@ -5,4 +5,4 @@ SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 rm $SCRIPTPATH/lovegov/db/local.db
 
 # resetup
-$SCRIPTPATH/local_setup.sh
+$SCRIPTPATH/local_setup_with_fixture.sh
