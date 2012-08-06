@@ -3,184 +3,251 @@
 @import 'master-mixins';
 
 
-div#content-leg-div
-{
+div.main-block {
   position: absolute;
-  left: 250px;
-  top: 100;
-  width: 1000px;
-  border: 10px;
-  font-family: "Helvetica";
+  left: 140px;
+  top: 110px;
+  height: 280px;
+  width: 780px;
+  overflow: hidden;
+  border-bottom: solid;
+  border-top: solid;
+  border-color: #ef503b;
+  border-width: 1px;
+  padding-left: 5px;
+  padding-top: 0px;
 
-  div.content-filter-box.menu_toggle
-  {
+  div.legislation-filter {
     position: absolute;
-    left: 250px;
-    top: 100px;
-    width: 300px;
+    left: 5px;
+    top: 5px;
+    height: 200px;
+    width: 350px;
+    margin-top: 10px;
+    padding-left: 9px;
 
-    &.hovered
-    {
-      background-color: #8a2be2;
-
-      &.clicked
-      {
-        background-color: blue;
-      }
+    div.filter-prompt {
+      display: block;
+      margin-bottom: 13px;
     }
 
-    &.clicked
-    {
-      background-color: green;
+     div.session_filter.unchecked {
+      display: block;
+      margin-bottom: 9px;
     }
 
-    span
-    {
-      h2
-      {
-        text-color: $red;
-      }
+    div.type_filter.unchecked {
+      display: block;
+      margin-bottom: 9px;
     }
-  }
 
+    div.introduced_filter.unchecked {
+      display: block;
+      margin-bottom: 9px;
+    }
 
-  div.col1
-  {
-    width: 100px;
-    position:absolute;
-    left:1000px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
+    div.sponsor_filter.unchecked {
+      display:block;
+      margin-bottom: 9px;
+    }
 
-    span
-    {
-      h3
-      {
-        text-color: $red;
-      }
+    div.myrepsvotes_filter.unchecked {
+      display:block;
     }
   }
 
-  div.col2
-  {
-    width: 100px;
-    position:absolute;
-    left:250px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
+  div.legislation-selector {
+    position: absolute;
+    left:370px;
+    top: 5px;
+    height: 280px;
+    width: 400px;
 
-    span
-    {
-      h3
-      {
-      text-color: $red;
-      }
+    div.session_selector {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      height: 500px;
+      width: 400px;
+      padding-left: 0px;
     }
-  }
 
-  div.col3
-  {
-    width: 100px;
-    position:absolute;
-    left:400px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
-
-    span
-    {
-      h3
-      {
-        text-color: $red;
-      }
+    div.type_selector {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      height: 500px;
+      width: 400px;
+      padding-left: 0px;
     }
-  }
 
-  div.col4
-  {
-    width: 100px;
-    position:absolute;
-    left:550px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
-
-    span
-    {
-      h3
-      {
-        text-color: $red;
-      }
+    div.introduced_selector {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      height: 500px;
+      width: 400px;
+      padding-left: 0px;
     }
-  }
 
-  div.col5
-  {
-    width: 130px;
-    position:absolute;
-    left:700px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
+    div.sponsor_selector {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      height: 500px;
+      width: 400px;
+      padding-left: 0px;
 
-    span
-    {
-      h3
-      {
-        text-color: $red;
-      }
-    }
-  }
+      ul {
 
-  div.col6
-  {
-    width: 100px;
-    position:absolute;
-    left:850px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
+        li {
 
-    span
-    {
-      h3
-      {
-        text-color: $red;
-      }
-    }
-  }
+          #sponsor_body {
+            display: block;
+          }
 
-  div.col7
-  {
-    width: 100px;
-    position:absolute;
-    left:1000px;
-    top:150px;
-    text-align: center;
-    border-style: solid;
-    overflow: hidden;
+          #sponsor_name {
+            display: block;
+          }
 
-    span
-    {
-      h3
-      {
-        text-color: $red;
+          #sponsor_party {
+            display: block;
+          }
+
+          #sponsor_district {
+            display: block;
+          }
+        }
       }
     }
   }
 }
 
-input[type="checkbox"]
-{
+div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  position: absolute;
+  left: 540px;
+  top:310px;
+  border-radius: 10px;
+  width: 160px;
+  height: 53px;
+  float: left;
+  font-size: 20px;
+  font-family: "Sonus Light";
+  background-color: #f0f0f0;
+  color: #353535;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-bottom: 15px;
+  margin: 10px 10px;
+  text-align: center;
+
+  span {
+    display: inline-block;
+    margin-top: 16px;
+  }
+
+  &:hover {
+    color: white;
+    background-color: #ef503b;
+    cursor: pointer;
+  }
+
+  .clicked {
+    color: white;
+    background-color: #ef503b;
+  }
+}
+
+div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link, div.div-filter-button:visited {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  position: absolute;
+  left: 710px;
+  top:310px;
+  border-radius: 10px;
+  width: 160px;
+  height: 53px;
+  float: left;
+  font-size: 20px;
+  font-family: "Sonus Light";
+  background-color: #f0f0f0;
+  color: #353535;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-bottom: 15px;
+  margin: 10px 10px;
+  text-align: center;
+
+  span {
+    display: inline-block;
+    margin-top: 16px;
+  }
+
+  &:hover {
+    color: white;
+    background-color: #A1C5C3;
+    cursor: pointer;
+  }
+
+  .clicked {
+    color: white;
+    background-color: #A1C5C3;
+  }
+}
+
+input[type="checkbox"]{
   position: relative;
+  display: block;
+  top: 6px;
+  right: 5px;
+}
+
+input[type="form"]{
+  position: relative;
+  display: block;
   top: 5px;
   right: 5px;
+  width:200px;
+}
+
+div.filter-results {
+  position: absolute;
+  left: 140px;
+  top: 400px;
+  height: 250px;
+  width: 780px;
+  overflow: hidden;
+
+  div.results-heading {
+    position: relative;
+    left: 5px;
+    top: 5px;
+  }
+}
+
+div.filter-congress-feed {
+  position: absolute;
+  left:1000px;
+  width: 200px;
+  top:130px;
 }
