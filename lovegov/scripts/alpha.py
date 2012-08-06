@@ -104,9 +104,9 @@ def scriptCreateCongressAnswers(args=None):
             congress_rolls = None
             # Get votes from the bill or amendment
             if bill:
-                congress_rolls = CongressRoll.objects.filter(legislation=bill).order_by('when')
+                congress_rolls = CongressRoll.objects.filter(legislation=bill).order_by('datetime')
             elif amendment:
-                congress_rolls = CongressRoll.objects.filter(amendment=amendment).order_by('when')
+                congress_rolls = CongressRoll.objects.filter(amendment=amendment).order_by('datetime')
 
             votes = []
 
