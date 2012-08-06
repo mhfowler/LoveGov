@@ -210,9 +210,9 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
 div.filter-results {
   margin-left: 160px;
   margin-top: 10px;
-  height: 250px;
+  height:auto;
   width: 780px;
-  overflow: hidden;
+  overflow: auto;
 
   div.results-heading {
     margin-left: 5px;

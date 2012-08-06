@@ -244,9 +244,9 @@ input[type="form"]{
 div.filter-results {
     margin-left: 160px;
     margin-top: 10px;
-    height: 250px;
+    height: auto;
     width: 780px;
-    overflow: hidden;
+    overflow: auto;
 }
 
 div.filter-results div.results-heading {
