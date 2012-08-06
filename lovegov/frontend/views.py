@@ -84,13 +84,16 @@ def viewWrapper(view, requires_login=False):
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                     if UPDATE or ("dev" in host_full):
                         if not user.developer:
                             normal_logger.debug('blocked: ' + user.get_name())
-                            #return shortcuts.redirect('/underconstruction/')
+                            return shortcuts.redirect('/underconstruction/')
 
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")
@@ -107,13 +110,9 @@ def viewWrapper(view, requires_login=False):
             return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
+            ignore = request.REQUEST.get('log-ignore')
             if not ignore:
-                def saveAccess(req): PageAccess().autoSave(req)
-                thread.start_new_thread(saveAccess, (request,))
+                saveAccess(request)
 
     return new_view
 
@@ -1009,7 +1008,7 @@ def contentDetail(request, content, vals):
     vals['creator'] = creator_display
     vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
-    my_vote = user_votes.filter(content=content) 
+    my_vote = user_votes.filter(content=content)
     if my_vote:
         vals['my_vote'] = my_vote[0].value
     else:

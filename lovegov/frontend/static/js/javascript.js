@@ -94,7 +94,11 @@ function rebindFunction()
             loadLogin();
             break;
         case 'legislation':                                 //legislation page
-            checkboxClick();
+            checkboxClick1();
+            checkboxClick2();
+            checkboxClick3();
+            checkboxClick4();
+            hiddenFilters();
             break;
         default:
             break
@@ -765,6 +769,9 @@ $(document).ready(function()
     // csrf protect
     $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
+    // check browser compatability
+    checkCompatability();
+
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
     if ( !History.enabled )
@@ -949,6 +956,27 @@ function replaceCenter(stuff)
     rebindFunction();
 }
 
+
+function checkCompatability() {
+    var compatability_cookie =  $.cookie('compatability');
+    var csrf_check = $.cookie('csrftoken');
+    if (compatability_cookie == null) {
+        var incompatible = [];
+        $.each(Modernizr, function(index, element) {
+            if (!element) {
+                incompatible.push(index);
+            }
+        });
+        var incompatible_json = JSON.stringify(incompatible);
+        ajaxPost({
+            data: {'action': 'logCompatability', 'incompatible': incompatible_json},
+            success: function(data)
+            {
+                $.cookie('compatability', incompatible_json);
+            }
+        });
+    }
+}
 
 /***********************************************************************************************************************
  *
@@ -4950,84 +4978,123 @@ function loadBlog() {
  *      -Legislation checkboxes
  *
  **********************************************************************************************************************/
-function checkboxClick() {
-    $(":checkbox").change(function(){
-        if($(this).attr("checked"))
+
+function hiddenFilters() {
+    $('#session_filter').hide(0);
+    $('#type_filter').hide(0);
+    $('#introduced_filter').hide(0);
+    $('#sponsor_filter').hide(0);
+}
+
+function checkboxClick1() {
+    $('.col1').click(function(){
+        if($(this).hasClass("unchecked"))
         {
-            $(this).addClass("checked");
+            $('#leg_session').attr('checked',true);
             $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#type_filter').hide('fast');
+            $('#introduced_filter').hide('fast');
+            $('#sponsor_filter').hide('fast');
+            $('#session_filter').show('fast');
         }
         else
         {
+            $('#leg_session').attr('checked',false);
             $(this).addClass("unchecked");
             $(this).removeClass("checked");
+            $('#session_filter').hide('');
         }
     });
 }
 
-function loadSessionFilter(){
-    if ($("#leg_session").hasClass('checked')) {
-
-    }
+function checkboxClick2() {
+    $('.col2').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_type').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#session_filter').hide('fast');
+            $('#introduced_filter').hide('fast');
+            $('#sponsor_filter').hide('fast');
+            $('#type_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_type').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#type_filter').hide('');
+        }
+    });
 }
 
-function loadTypeFilter(){
-
+function checkboxClick3() {
+    $('.col3').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_introduced').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#session_filter').hide('fast');
+            $('#type_filter').hide('fast');
+            $('#sponsor_filter').hide('fast');
+            $('#introduced_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_introduced').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#introduced_filter').hide('');
+        }
+    });
 }
 
-//
-//function loadcheckboxToggle() {
-//    $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_session');
-//        checkboxCheck(checkbox);
-//    });
-//    $('#leg_type').bindOnce('click#leg_type', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_type');
-//        checkboxCheck(checkbox);
-//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//    {
-//    $('#leg_introduced').bindOnce('click#leg_introduced', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_introduced');
-//        checkboxCheck(checkbox);
-//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//        }
-//    $('#leg_sponsor').bindOnce('click#leg_type', function (event)
-//    {
-//        event.preventDefault();
-//        var checkbox = $('#leg_type');
-//        checkboxCheck(checkbox);
-//        $('#leg_session').bindOnce('click#leg_checkbox', function (event)
-//
-//
-//
-//                event.preventDefault();
-//        var wrapper = $('#left-side-wrapper-invite');
-//        leftSideToggle(wrapper);
-//    }
-//    else
-//    {
-//        checkbox.addClass('checked');
-//        $('input:checkbox[value="' + val + '"]').attr('checked', false);
-//    }
-//}
-
-//
-//function checkboxUncheck(checkbox)
-//{
-//    check
-//}
-
-function loadIntroducedFilter(){
-
+function checkboxClick4() {
+    $('.col4').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_sponsor').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#session_filter').hide('fast');
+            $('#type_filter').hide('fast');
+            $('#introduced_filter').hide('fast');
+            $('#sponsor_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_sponsor').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#sponsor_filter').hide('');
+        }
+    });
 }
 
-function loadSponsorFilter(){
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

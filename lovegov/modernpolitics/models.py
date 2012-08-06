@@ -3724,6 +3724,16 @@ class PageAccess(LGModel):
                     self.action = request.GET['action']
             self.save()
 
+class CompatabilityLog(LGModel):
+    user = models.ForeignKey("UserProfile", null=True)
+    incompatible = custom_fields.ListField(default=[])
+    page = models.CharField(max_length=100, blank=True)
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    user_agent = models.CharField(max_length=250, blank=True)
+    when = models.DateTimeField(auto_now_add=True)
+    def autoSave(self):
+        self.save()
+        return self
 
 #-----------------------------------------------------------------------------------------------------------------------
 # ipAddrConvert
