@@ -523,7 +523,7 @@ def fastCompare(viewA,viewB,topics=None):
             b_index += 1
 
         # Otherwise, if response A has the smaller question ID
-        elif responsesA[a_index].question_id < responsesB[b_index].quesion_id:
+        elif responsesA[a_index].question_id < responsesB[b_index].question_id:
             a_index += 1 # Increment position for response list A
         else: # Otherwise response B has the smaller question ID
             b_index += 1 # Increment position for response list B
