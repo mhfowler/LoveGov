@@ -4963,6 +4963,7 @@ function showSelectors() {
         if ($(this).hasClass('checked')) {
             $(this).addClass('unchecked');
             $(this).removeClass('checked');
+            alert("clicked");
         }
         else {
             $(this).addClass('checked');
