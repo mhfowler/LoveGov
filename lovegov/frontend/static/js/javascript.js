@@ -4960,12 +4960,12 @@ function hiddenSelectors() {
 
 function showSelectors() {
     $('input:checkbox').closest('div').click(function() {
-        if ($(this).hasClass('checked')) {
+        if ($(this).hasClass('checked') && $(this).hasClass($('input:checkbox').getAttribute('data-filter'))) {
             $(this).addClass('unchecked');
             $(this).removeClass('checked');
             alert("clicked");
         }
-        else {
+        else if ($(this).hasClass('unchecked') && $(this).hasClass($('input:checkbox').getAttribute('data-filter'))) {
             $(this).addClass('checked');
             $(this).removeClass('unchecked');
         }
