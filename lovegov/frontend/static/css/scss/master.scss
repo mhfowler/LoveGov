@@ -41,6 +41,8 @@
 @import 'master-variables';
 @import 'master-mixins';
 
+@import "compass";
+
 html {
   /* Default to standard browser font-size of 16px */
   font-size: 16px;
@@ -55,5 +57,16 @@ body {
 
 * {
   /* Prevent padding from altering defined sizes */
-  box-sizing: border-box;
+  @include box-sizing(border-box);
+}
+
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 100;
+  src: local('Raleway-Thin'), url(http://themes.googleusercontent.com/static/fonts/raleway/v5/RJMlAoFXXQEzZoMSUteGWLO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+}
+
+body {
+  font-family: 'Raleway', cursive;
 }

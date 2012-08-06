@@ -188,8 +188,8 @@ for topic in MAIN_TOPICS:
     MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
 
 POLITICAL_PARTIES_IMAGES = []
-for imgRef in os.listdir(os.path.join(PROJECT_PATH, 'frontend/static/images/party_labels/')):
-    if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
+#for imgRef in os.listdir(os.path.join(PROJECT_PATH, 'frontend/static/images/party_labels/')):
+#    if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
 
 
 ########################################### PROCESS PATHS ##############################################################

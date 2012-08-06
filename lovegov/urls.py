@@ -81,7 +81,7 @@ URL_SPECIAL_NAMES = set([
 ])
 
 urlpatterns += patterns('django.views.generic.simple',
-    (r'^frame/$', 'direct_to_template', {'template': 'frame/frame.html'}),
+    (r'^frame/$', 'direct_to_template', {'template': 'pages/feed.html'}),
 )
 
 # lovegov urls

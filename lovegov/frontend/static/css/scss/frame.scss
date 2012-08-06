@@ -1,10 +1,6 @@
 @import "master-mixins";
 @import "master-variables";
 
-// Wrapper is a 
 div.wrapper {
-  background-color: green;
-  width: $default-page-width;
-  margin: 0 auto;
-  padding: 15px;
+	width: 100%;
 }

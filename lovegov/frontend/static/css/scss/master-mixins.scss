@@ -1,6 +1,18 @@
 @import 'master-variables';
 
 /* Mixins */
+@mixin valignable() 
+{
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+  }
+}
+
+
 @mixin rounded($radius: 20px)
 {
   border-radius: $radius;
@@ -403,8 +415,14 @@
   margin-bottom:18px;
 }
 
+// deprecated
 @mixin vertically-centered($h) {
   position: relative;
+  top:50%;
+  margin-top:-$h*1/2;
+}
+
+@mixin verticalAlign($h) {
   top:50%;
   margin-top:-$h*1/2;
 }

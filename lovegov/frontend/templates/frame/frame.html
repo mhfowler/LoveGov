@@ -13,14 +13,15 @@
 {# % include 'frame/left-sidebar/left-sidebar.html' % #}
 <!-- End Left Side Bar -->
 
-<!-- Content -->
 <div class="wrapper">
-	this is the wrapper
-	{% block content %}
-        {{ center }}
-    {% endblock %}
-</div>
+
+<!-- Content -->
+{% block content %}
+    {{ center }}
+{% endblock %}
 <!-- End Content -->
+
+</div>
 
 <!-- Comparison Hover -->
 {# % include "site/pieces/snippets/comparison_hover.html" % #}
