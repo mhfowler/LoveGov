@@ -1,6 +1,7 @@
 # celery tasks
 from lovegov.modernpolitics.initialize import *
-from celery.task.base import task
+if not LOCAL:
+    from celery.task.base import task
 
 def queueTask(task, args=(), kwargs=None):
     kwargs = kwargs or {}

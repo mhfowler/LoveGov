@@ -28,7 +28,6 @@ INSTALLED_APPS = (
     'haystack',
     'sorl.thumbnail',
     'debug_toolbar',
-    'djcelery',
     'django_extensions',
 
     # internal
