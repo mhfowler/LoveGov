@@ -767,64 +767,48 @@ def answer(request, vals={}):
     user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = request.POST.get('questionPRI')
+    my_response = user.view.responses.filter(question=question)
     if not privacy:
         privacy = getPrivacy(request)
-    my_response = user.view.responses.filter(question=question)
-    # save new response
     if 'choice' in request.POST:
         answer_id = request.POST['choice']
-        chosen_answer = Answer.lg.get_or_none(id=answer_id)
         weight = request.POST['weight']
         explanation = request.POST['explanation']
-        user.last_answered = datetime.datetime.now()
-        user.save()
-        if not my_response:
-            response = Response( question = question,
-                most_chosen_answer = chosen_answer,
-                weight = weight,
-                explanation = explanation)
-            response.most_chosen_num = 1
-            response.total_num = 1
-            response.autoSave(creator=user, privacy=privacy)
-
-            user.view.responses.add(response)
-
-            action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
-            action.autoSave()
-        # else update old response
-        else:
-            response = my_response[0]
-            response.most_chosen_answer = chosen_answer
-            response.weight = weight
-            response.explanation = explanation
-            # update creation relationship
-            response.most_chosen_num = 1
-            response.total_num = 1
-            response.saveEdited(privacy)
-            action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
-            action.autoSave()
-        if request.is_ajax():
-            url = response.get_url()
-            # get percentage agreed
-            agg = getLoveGovGroupView().filter(question=question)
-            if agg:
-                agg = agg[0]
-                choice = agg.answer_tallies.filter(answer_id=answer_id)
-                if agg.total_num and choice:
-                    percent_agreed = float(choice[0].tally) / float(agg.total_num)
-                else:
-                    percent_agreed = 0
-                    # print("total: " + str(agg.total))
-            else:
-                percent_agreed = 0
-            return HttpResponse(simplejson.dumps({'url': url,'answer_avg':percent_agreed}))
-        else:
-            return shortcuts.redirect(question.get_url())
+        return answerHelper(user=user, question=question, my_response=my_response,
+                privacy=privacy, answer_id=answer_id, weight=weight, explanation=explanation)
     else:
         if my_response:
             response = my_response[0]
             response.delete()
         return HttpResponse("+")
+
+def answerHelper(user, question, my_response, privacy, answer_id, weight, explanation):
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    user.last_answered = datetime.datetime.now()
+    user.save()
+    if not my_response:
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        response.most_chosen_num = 1
+        response.total_num = 1
+        response.autoSave(creator=user, privacy=privacy)
+        action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
+        action.autoSave()
+    # else update old response
+    else:
+        response = my_response[0]
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        # update creation relationship
+        response.most_chosen_num = 1
+        response.total_num = 1
+        response.saveEdited(privacy)
+        action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
+        action.autoSave()
+    return HttpResponse(simplejson.dumps({'url': response.get_url(),'answer_avg':0}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.

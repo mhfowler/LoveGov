@@ -6,4 +6,4 @@ source $SCRIPTPATH/local_env.sh
 
 #setup
 python $SCRIPTPATH/lovegov/local_manage.py syncdb
-python $SCRIPTPATH/lovegov/local_manage.py loaddata $SCRIPTPATH/lovegov/db/test_fixture.json
+python $SCRIPTPATH/lovegov/local_manage.py loaddata $SCRIPTPATH/lovegov/tests/fixtures/test_fixture.json
