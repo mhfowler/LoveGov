@@ -508,7 +508,8 @@ class Content(Privacy, LocationLevel):
         elif type == 'Q':
             object = self.question
         elif type == 'R':
-            object = self.response.userresponse
+            object = self.response
+
         elif type == 'I':
             object = self.userimage
         elif type == 'G':
