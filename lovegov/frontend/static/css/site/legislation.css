@@ -227,17 +227,13 @@ div.div-filter-button.clicked {
 
 
 input[type="checkbox"]{
-    position: relative;
-    display: block;
-    top: 6px;
-    right: 5px;
+    margin-top: 6px;
+    margin-right: 5px;
 }
 
 input[type="form"]{
-    position: relative;
-    display: block;
-    top: 5px;
-    right: 5px;
+    margin-top: 5px;
+    margin-right: 5px;
     width:200px;
 }
 
