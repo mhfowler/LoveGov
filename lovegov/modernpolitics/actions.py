@@ -1605,9 +1605,9 @@ def getNotifications(request, vals={}):
 
     vals['dropdown_notifications_text'] = notifications_text
     vals['num_notifications'] = num_notifications
-    html = ajaxRender('site/snippets/notification_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('site/snippets/notification_dropdown.html', vals, request)
+        html = ajaxRender('site/pieces/notifications/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1633,7 +1633,7 @@ def getUserActions(request, vals={}):
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
-    html = ajaxRender('site/snippets/action_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1660,7 +1660,7 @@ def getGroupActions(request, vals={}):
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
-    html = ajaxRender('site/snippets/action_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 #-----------------------------------------------------------------------------------------------------------------------
