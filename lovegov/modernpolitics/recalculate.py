@@ -180,8 +180,12 @@ def recalculateNumMembers():
 
 
 def calculateResponseAnswers():
+    count = 0
     for response in Response.objects.all():
-        if response.question:
+        if (not response.most_chosen_answer) and response.question:
             for answer in response.question.answers.all():
                 if response.answer_val != -1 and answer.value == response.answer_val:
                     response.answer = answer
+                    response.save()
+                    count += 1
+                    print count
