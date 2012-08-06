@@ -12,8 +12,8 @@
             {% for a in answers %}
                 <div class="answer-container">
                     <div class="answer-container-input-div">
-                        <input style="display:none" type=radio name="choice" value="{{ a.value }}"
-                                {% if a.value == response.answer_val %}
+                        <input style="display:none" type=radio name="choice" value="{{ a.id }}"
+                                {% if a.id == response.most_chosen_answer_id %}
                                CHECKED
                                 {% endif %}
                                 />

@@ -1109,27 +1109,27 @@ def valsQuestion(request, q_id, vals={}):
     agg = getLoveGovGroupView().filter(question=question)
     # get aggregate percentages for answers
     if agg:
-        agg = agg[0].aggregateresponse
+        agg = agg[0]
     for a in question.answers.all():
         if agg:
-            tuple = agg.responses.filter(answer_val=a.value)
-            if tuple and agg.total:
-                tuple = tuple[0]
-                percent = int(100*float(tuple.tally)/float(agg.total))
+            tallies = agg.answer_tallies.filter(answer_id=a.id)
+            if tallies and agg.total_num:
+                tally = tallies[0]
+                percent = int(100*float(tally.tally)/float(agg.total_num))
             else:
                 percent = 0
         else:
             percent = 0
-        answers.append(AnswerClass(a.answer_text, a.value, percent))
+        answers.append(AnswerClass(a.answer_text, a.id, percent))
     vals['answers'] = answers
     topic_text = question.getMainTopic().topic_text
     vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
     vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
 
 class AnswerClass:
-    def __init__(self, text, value, percent):
+    def __init__(self, text, id, percent):
         self.text = text
-        self.value = value
+        self.id = id
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------
