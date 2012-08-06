@@ -1,21 +1,24 @@
 @charset "UTF-8";
 
+/* static url */
+$STATIC_URL: '/static';
+
 @font-face
 {
   font-family: "Gill Sans Std Light";
-  src: url(../GillSansStd-Light.otf);
+  src: url(#{$STATIC_URL}/css/GillSansStd-Light.otf);
 }
 
 @font-face
 {
   font-family: "Gill Sans Std";
-  src: url(../GillSansStd.otf);
+  src: url(#{$STATIC_URL}/css/GillSansStd.otf);
 }
 
 @font-face
 {
 	font-family: "Sonus Light";
-	src: url(../SonusLig.otf);
+	src: url(#{$STATIC_URL}/css/SonusLig.otf);
 }
 
 /* Main Colors */
@@ -88,5 +91,3 @@ $gill-light: "Gill Sans Std Light";
 $gill-std: "Gill Sans Std";
 $title-font: "Sonus Light";
 
-/* static url */
-$STATIC_URL: '/static';

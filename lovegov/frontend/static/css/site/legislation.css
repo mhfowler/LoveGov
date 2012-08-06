@@ -32,92 +32,237 @@
 /* Mixins */
 
 
-div.sidebar-box {
-    position: fixed;
+
+div.main-block {
+    position: absolute;
     left: 140px;
-    top: 100px;
-    height: 800px;
-    width: 300px;
-    padding: 20px;
-    overflow: auto;
+    top: 110px;
+    height: 280px;
+    width: 780px;
+    overflow: hidden;
+    border-bottom: solid;
+    border-top: solid;
+    border-color: #ef503b;
+    border-width: 1px;
+    padding-left: 5px;
+    padding-top: 0px;
 }
 
-div.sidebar-box div.div-toggle {
-    position:fixed;
-    height:100px;
-    width: 300px;
-    left: 150px;
-    top: 100px;
+div.main-block div.legislation-filter {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    height: 200px;
+    width: 350px;
+    margin-top: 10px;
+    padding-left: 9px;
 }
 
-div.sidebar-box div.sidebar {
-    position: fixed;
+div.main-block div.legislation-filter div.filter-prompt {
+    display: block;
+    margin-bottom: 13px;
+}
+
+div.main-block div.legislation-filter div.session_filter.unchecked {
+    display: block;
+    margin-bottom: 9px;
+}
+
+div.main-block div.legislation-filter div.type_filter.unchecked {
+    display: block;
+    margin-bottom: 9px;
+}
+
+div.main-block div.legislation-filter div.introduced_filter.unchecked {
+    display: block;
+    margin-bottom: 9px;
+}
+
+div.main-block div.legislation-filter div.sponsor_filter.unchecked {
+    display:block;
+    margin-bottom: 9px;
+}
+
+div.main-block div.legislation-filter div.myrepsvotes_filter.unchecked {
+    display:block;
+}
+
+div.main-block div.legislation-selector {
+    position: absolute;
+    left:370px;
+    top: 5px;
+    height: 280px;
+    width: 400px;
+}
+
+div.main-block div.legislation-selector div.session_selector {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 500px;
+    width: 400px;
+    padding-left: 0px;
+}
+
+div.main-block div.legislation-selector div.type_selector {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 500px;
+    width: 400px;
+    padding-left: 0px;
+}
+
+div.main-block div.legislation-selector div.introduced_selector {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 500px;
+    width: 400px;
+    padding-left: 0px;
+}
+
+div.main-block div.legislation-selector div.sponsor_selector {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 500px;
+    width: 400px;
+    padding-left: 0px;
+}
+
+div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_body {
+    display: block;
+}
+
+div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_name {
+    display: block;
+}
+
+div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_party {
+    display: block;
+}
+
+div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_district {
+    display: block;
+}
+
+div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited {
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    position: absolute;
+    left: 540px;
+    top:310px;
+    border-radius: 10px;
+    width: 160px;
+    height: 53px;
+    float: left;
+    font-size: 20px;
+    font-family: "Sonus Light";
+    background-color: #f0f0f0;
+    color: #353535;
+    letter-spacing: 1px;
+    text-decoration: none;
+    outline: none;
+    border: 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-bottom: 15px;
+    margin: 10px 10px;
+    text-align: center; }
+div.div-button span, div.div-button:active span, div.div-button:link span, div.div-button:visited span {
+    display: inline-block;
+    margin-top: 16px; }
+div.div-button:hover, div.div-button:active:hover, div.div-button:link:hover, div.div-button:visited:hover {
+    color: white;
+    background-color: #ef503b;
+    cursor: pointer; }
+
+div.div-button.clicked {
+    color: white;
+    background-color: #ef503b;
+}
+
+div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link, div.div-filter-button:visited {
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    position: absolute;
+    left: 710px;
+    top:310px;
+    border-radius: 10px;
+    width: 160px;
+    height: 53px;
+    float: left;
+    font-size: 20px;
+    font-family: "Sonus Light";
+    background-color: #f0f0f0;
+    color: #353535;
+    letter-spacing: 1px;
+    text-decoration: none;
+    outline: none;
+    border: 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-bottom: 15px;
+    margin: 10px 10px;
+    text-align: center; }
+div.div-filter-button span, div.div-filter-button:active span, div.div-filter-button:link span, div.div-filter-button:visited span {
+    display: inline-block;
+    margin-top: 16px; }
+div.div-filter-button:hover, div.div-filter-button:active:hover, div.div-filter-button:link:hover, div.div-filter-button:visited:hover {
+    color: white;
+    background-color: #A1C5C3;
+    cursor: pointer; }
+
+div.div-filter-button.clicked {
+    color: white;
+    background-color: #A1C5C3;
+}
+
+
+input[type="checkbox"]{
+    position: relative;
+    display: block;
+    top: 6px;
+    right: 5px;
+}
+
+input[type="form"]{
+    position: relative;
+    display: block;
+    top: 5px;
+    right: 5px;
+    width:200px;
+}
+
+div.filter-results {
+    position: absolute;
     left: 140px;
-    top: 150px;
-    height: 800px;
-    width: 250px;
-    padding: 20px;
-    overflow: auto;
+    top: 400px;
+    height: 250px;
+    width: 780px;
+    overflow: hidden;
 }
 
-div.sidebar-box div.sidebar div.col1 {
-    position: fixed;
+div.filter-results div.results-heading {
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+div.filter-congress-feed {
+    position: absolute;
+    left:1000px;
     width: 200px;
-    height: 50px;
-    float: left;
-    top: 120px;
-    padding: 20px;
-    text-align: left;
-    border-style: solid;
-    overflow: auto;
+    top:130px;
 }
-
-div.sidebar-box div.sidebar div.col2 {
-    position: fixed;
-    width: 200px;
-    height: 50px;
-    float: left;
-    top: 160px;
-    padding: 20px;
-    text-align: left;
-    border-style: solid;
-    overflow: auto;
-}
-
-div.sidebar-box div.sidebar div.col3 {
-    position: fixed;
-    width: 200px;
-    height: 50px;
-    float: left;
-    top: 200px;
-    padding: 20px;
-    text-align: left;
-    border-style: solid;
-    overflow: auto;
-}
-
-div.sidebar-box div.sidebar div.col4 {
-    position: fixed;
-    width: 200px;
-    height: 50px;
-    float: left;
-    top: 240px;
-    padding: 20px;
-    text-align: left;
-    border-style: solid;
-    overflow: auto;
-}
-
-.checkbox {
-   position: relative;
-   top: 5px;
-   right: 5px;
-}
-
-.label {
-    text-align: left;
-}
-
-
-
-

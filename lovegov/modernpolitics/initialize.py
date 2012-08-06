@@ -809,23 +809,21 @@ def initializeCongressFile(parsedXML,image_root):
         elif role_type == 'rep':
             role_tag = 'representative'
         else:
-            print "[WARNING]: role type " + role_type + " is not recognized for " + name
+            print "[ERROR]: role type " + role_type + " is not recognized for " + name
             continue # Skip this guy, can't make an Office without a tag
 
         role_state = None
         if role.has_key('state'):
             role_state = role['state']
+        else:
+            print "[ERROR]: no role state for " + name
 
         role_district = None
         if role.has_key('district') and role['district'].isdigit():
             role_district = int( role['district'] )
+        elif role_type == 'rep':
+            print "[ERROR]: no representative district for " + name
 
-        elif role.has_key('class'):
-            rd = role['class']
-            if type(rd) == list and rd[0].isdigit():
-                role_district = rd[0]
-            elif type(rd) == str and rd.isdigit():
-                role_district = rd
 
         # Find the tag related to this role
         current_tag = OfficeTag.lg.get_or_none(name=role_tag)
@@ -835,7 +833,11 @@ def initializeCongressFile(parsedXML,image_root):
             current_tag.save()
 
         # Find the office related to
-        office = current_tag.tag_offices.filter(location__state=role_state,location__district=role_district)
+        if role_district:
+            office = current_tag.tag_offices.filter(location__state=role_state,location__district=role_district)
+        else:
+            office = current_tag.tag_offices.filter(location__state=role_state)
+
         if office:
             office = office[0]
             print "Found office: " + office.location.state + " " + str(office.location.district)
@@ -862,9 +864,6 @@ def initializeCongressFile(parsedXML,image_root):
             office_held.autoSave()
 
         office_held.congress_sessions.add(current_session)
-
-        # Finally,
-        person.offices_held.add(office_held)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1557,8 +1556,7 @@ def parseCongressRoll(XML):
             if amendment_type and amendment_number and amendment_session:
                 amendment = LegislationAmendment.lg.get_or_none(amendment_type=amendment_type,amendment_number=amendment_number,congress_session=amendment_session)
                 if amendment:
-                    congress_roll.\
-                    amendment = amendment
+                    congress_roll.amendment = amendment
 
 
     updated = None
@@ -1604,8 +1602,8 @@ def parseCongressRoll(XML):
             print "[WARNING]: Voter not found in database.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
             continue
 
-        key = voterXML.get('vote')
-        value = voterXML.get('value')
+        key = truncateField( voterXML.get('vote') , 'CongressVote key' , 1)
+        value = truncateField( voterXML.get('value') , 'CongressVote value' , 15)
         # If only key or value is instantiated
         if bool(key) != bool(value):
             # Replace the other value with the corresponding value

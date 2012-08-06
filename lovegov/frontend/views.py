@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpRequest
 
 # lovegov
 from lovegov.modernpolitics.backend import *
-from lovegov.settings import UPDATE
+from lovegov.base_settings import UPDATE
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -57,8 +57,8 @@ def viewWrapper(view, requires_login=False):
             vals['google'] = GOOGLE_LOVEGOV
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
-            if 'boto' in settings.DEFAULT_FILE_STORAGE:
-                vals['MEDIA_PREFIX'] = settings.MEDIA_URL
+            if 's3' in settings.DEFAULT_FILE_STORAGE:
+                vals['MEDIA_PREFIX'] = settings.MEDIA_URL.replace('/media', '')
             else:
                 vals['MEDIA_PREFIX'] = host_full
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
@@ -84,13 +84,16 @@ def viewWrapper(view, requires_login=False):
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                     if UPDATE or ("dev" in host_full):
                         if not user.developer:
                             normal_logger.debug('blocked: ' + user.get_name())
-                            #return shortcuts.redirect('/underconstruction/')
+                            return shortcuts.redirect('/underconstruction/')
 
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")
@@ -107,13 +110,9 @@ def viewWrapper(view, requires_login=False):
             return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
+            ignore = request.REQUEST.get('log-ignore')
             if not ignore:
-                def saveAccess(req): PageAccess().autoSave(req)
-                thread.start_new_thread(saveAccess, (request,))
+                saveAccess(request)
 
     return new_view
 
@@ -128,7 +127,6 @@ def aliasDowncast(request, alias=None, vals={}):
     if matched_group:
         return viewWrapper(group, requires_login=True)(request, matched_group.id)
     return redirect(request)
-
 
 def redirect(request):
     return shortcuts.redirect('/home/')
@@ -657,7 +655,7 @@ def profile(request, alias=None, vals={}):
             actions = user_prof.getActivity(num=num_actions)
             actions_text = []
             for action in actions:
-                actions_text.append( action.getVerbose(view_user=viewer) )
+                actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
             vals['actions_text'] = actions_text
             vals['num_actions'] = num_actions
 
@@ -969,13 +967,14 @@ def matchRepresentatives(request, vals={}):
         congress = CongressSession.lg.get_or_none(session=CURRENT_CONGRESS)
         senator_tag = OfficeTag.lg.get_or_none(name="senator")
         rep_tag = OfficeTag.lg.get_or_none(name="representative")
+
         if congress:
-            rep_office = rep_tag.tag_offices.filter(state=address.state,district=address.district)[0]
-            representative = rep_ofice.office_terms.filter(end_date__gte=datetime.date.today())[0]
+            rep_office = rep_tag.tag_offices.filter(location__state=address.state,location__district=address.district)[0]
+            representative = rep_office.office_terms.filter(end_date__gte=datetime.date.today())[0].user
             if representative:
                 congressmen.append(representative)
 
-            senator_office = senator_tag.tag_offices.filter(state=address.state)[0]
+            senator_office = senator_tag.tag_offices.filter(location__state=address.state)[0]
             senators = map( lambda x : x.user , senator_office.office_terms.filter(end_date__gte=datetime.date.today()) )
             for senator in senators:
                 congressmen.append(senator)
@@ -1009,7 +1008,7 @@ def contentDetail(request, content, vals):
     vals['creator'] = creator_display
     vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
-    my_vote = user_votes.filter(content=content) 
+    my_vote = user_votes.filter(content=content)
     if my_vote:
         vals['my_vote'] = my_vote[0].value
     else:

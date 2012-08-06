@@ -177,3 +177,11 @@ def recalculateNumMembers():
     for x in Group.objects.all():
         print x.get_name()
         x.countMembers()
+
+
+def calculateResponseAnswers():
+    for response in Response.objects.all():
+        if response.question:
+            for answer in response.question.answers.all():
+                if response.answer_val != -1 and answer.value == response.answer_val:
+                    response.answer = answer

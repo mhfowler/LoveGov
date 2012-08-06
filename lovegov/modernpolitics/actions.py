@@ -1623,7 +1623,7 @@ def getUserActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
+        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
@@ -1650,7 +1650,7 @@ def getGroupActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
+        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
@@ -1971,9 +1971,9 @@ def changeContentPrivacy(request, vals={}):
     if error=='':
         content.save()
         vals['content'] = content
-        html =ajaxRender('site/snippets/content-privacy.html', vals, request)
+        html = ajaxRender('site/pieces/snippets/content-privacy.html', vals, request)
     to_return = {'html':html, 'error': error}
-    print "to_return: "+str(to_return)
+    print "to_return: "+ str(to_return)
     return HttpResponse(json.dumps(to_return))
 
 
@@ -2043,11 +2043,21 @@ def setFirstLoginStage(request, vals={}):
     response.status_code = 500 if error else 200
     return response
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# saves the posted incompatability information to the db
+#-----------------------------------------------------------------------------------------------------------------------
+def logCompatability(request, vals={}):
+    incompatible = json.loads(request.POST['incompatible'])
+    user = vals.get('viewer')
+    CompatabilityLog(incompatible=incompatible, user=user,
+        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
+        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+    return HttpResponse('compatability logged')
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
-# args: request
-# tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def actionPOST(request, vals={}):
     """Splitter between all actions."""

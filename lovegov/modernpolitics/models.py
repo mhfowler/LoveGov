@@ -508,7 +508,8 @@ class Content(Privacy, LocationLevel):
         elif type == 'Q':
             object = self.question
         elif type == 'R':
-            object = self.response.userresponse
+            object = self.response
+
         elif type == 'I':
             object = self.userimage
         elif type == 'G':
@@ -1329,6 +1330,32 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
 
+    def getSupporters(self):
+        support = Supported.objects.filter(user=self, confirmed=True)
+        supporter_ids = support.values_list('to_user', flat=True)
+        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def support(self, politician):
+        supported = Supported.lg.get_or_none(user=self, to_user=politician)
+        if not supported:
+            supported = Supported(user=self, to_user=politician)
+            supported.autoSave()
+            politician.num_supporters += 1
+            politician.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            politician.num_supporters += 1
+            politician.save()
+
+    def unsupport(self, politician):
+        supported = Supported.lg.get_or_none(user=self, to_user=politician)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            politician.num_supporters -= 1
+            politician.save()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
@@ -1767,20 +1794,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
-    # The other version is less SQL queries
-#    def getUserResponses(self):
-#        qr = []
-#        responses = self.getView().responses
-#        questions = Question.objects.filter(official=True)
-#        for q in questions:
-#            r = responses.filter(question=q)
-#            qr.append((q,r))
-#        return qr
-
     def getUserResponses(self):
         qr = []
 
-        responses = list( self.getView().responses.all() )
+        responses = list( self.view.responses.all() )
 
         official_questions = list( Question.objects.filter(official=True) )
 
@@ -1876,7 +1893,7 @@ class Action(Privacy):
         self.creator = relationship.creator
         self.save()
 
-    def getVerbose(self,view_user=None):
+    def getVerbose(self,view_user=None,vals={}):
         #Check for relationship
         relationship = Relationship.lg.get_or_none(id=self.relationship_id)
         if not relationship:
@@ -1895,16 +1912,16 @@ class Action(Privacy):
         elif view_user and to_user.id == view_user.id:
             to_you = True
 
-        action_context = {'to_user':to_user,
+        vals.update({'to_user':to_user,
                             'to_you':to_you,
                             'from_user':from_user,
                             'from_you':from_you,
                             'type':self.type,
                             'modifier':self.modifier,
                             'true':True,
-                            'timestamp':self.when}
+                            'timestamp':self.when})
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',action_context)
+        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
         return action_verbose
 
 
@@ -2643,8 +2660,8 @@ class CongressRoll(LGModel):
     required = models.CharField(max_length=10, null=True)
     result = models.CharField(max_length=80, null=True)
     # Legislation
-    legislation = models.ForeignKey(Legislation, null=True)
-    amendment = models.ForeignKey(LegislationAmendment, null=True)
+    legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
+    amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
 
 #=======================================================================================================================
@@ -2656,7 +2673,7 @@ class CongressVote(LGModel):
     roll = models.ForeignKey(CongressRoll,related_name="votes")
     voter = models.ForeignKey(UserProfile,related_name="congress_votes")
     votekey = models.CharField(max_length=1)
-    votevalue = models.CharField(max_length=10)
+    votevalue = models.CharField(max_length=15)
 
 
 
@@ -2741,9 +2758,14 @@ class NextQuestion(LGModel):
 #=======================================================================================================================
 class Response(Content):
     question = models.ForeignKey(Question)
-    answer_val = models.IntegerField()
+    answer_val = models.IntegerField(default=-1)
+    most_chosen_answer = models.ForeignKey(Answer,related_name="responses",null=True)
+    most_chosen_num = models.IntegerField(default=0)
+    total_num = models.IntegerField(default=0)
     weight = models.IntegerField(default=5)
-    answers = custom_fields.ListField(default=[])    # for storing checkbox response
+    explanation = models.TextField(max_length=1000, blank=True)
+    answer_tallies = models.ManyToManyField('AnswerTally')
+
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
     #-------------------------------------------------------------------------------------------------------------------
@@ -2756,34 +2778,6 @@ class Response(Content):
 
     def getValue(self):
         return float(self.answer_val)
-
-
-#=======================================================================================================================
-# Response by a user.
-#
-#=======================================================================================================================
-class UserResponse(Response):
-    responder = models.ForeignKey(UserProfile)
-    explanation = models.TextField(max_length=1000, blank=True)
-    #-------------------------------------------------------------------------------------------------------------------
-    # Autosaves with sensible default values.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.title = unicode(self.question.title + " Response by " + self.responder.get_name())
-        self.type = 'R'
-        self.in_calc = False
-        self.save()
-        self.responder.getView().responses.add(self)
-        super(UserResponse, self).autoSave(creator=creator, privacy=privacy)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Updates answer appropriately.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoUpdate(self, answer_val, explanation):
-        self.answer_val = answer_val
-        self.explanation = explanation
-        self.save()
-        return self
 
 
 ########################################################################################################################
@@ -3143,35 +3137,9 @@ class UserComparison(ViewComparison):
 # Tuple for storing how many people in an aggregate view chose this answer.
 #
 #=======================================================================================================================
-class AggregateTuple(LGModel):
-    answer_val = models.IntegerField()
+class AnswerTally(LGModel):
+    answer = models.ForeignKey('Answer',null=True)
     tally = models.IntegerField()
-
-#=======================================================================================================================
-# Model for storing how a group of people answered a question.
-#
-#=======================================================================================================================
-class AggregateResponse(Response):
-    users = models.ManyToManyField(UserProfile)
-    responses = models.ManyToManyField(AggregateTuple)
-    answer_avg = models.DecimalField(default=0, max_digits=4, decimal_places=2)
-    total = models.IntegerField()
-    def autoSave(self):
-        self.type = 'Z'
-        self.in_feed = False
-        self.in_search = False
-        self.in_calc = False
-        self.save()
-        super(AggregateResponse, self).autoSave()
-
-    def getValue(self):
-        return float(self.answer_avg)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearResponses(self):
-        self.responses.all().delete()
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3759,6 +3727,16 @@ class PageAccess(LGModel):
                     self.action = request.GET['action']
             self.save()
 
+class CompatabilityLog(LGModel):
+    user = models.ForeignKey("UserProfile", null=True)
+    incompatible = custom_fields.ListField(default=[])
+    page = models.CharField(max_length=100, blank=True)
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    user_agent = models.CharField(max_length=250, blank=True)
+    when = models.DateTimeField(auto_now_add=True)
+    def autoSave(self):
+        self.save()
+        return self
 
 #-----------------------------------------------------------------------------------------------------------------------
 # ipAddrConvert
@@ -3864,7 +3842,7 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 class Relationship(Privacy):
-    user = models.ForeignKey(UserProfile, related_name='frel')
+    user = models.ForeignKey(UserProfile, related_name='relationships')
     when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------

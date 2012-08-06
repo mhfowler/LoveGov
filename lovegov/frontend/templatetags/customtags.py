@@ -47,5 +47,7 @@ def truncate_chars(value, max_length):
 @register.filter("media_url")
 def media_url(value, media_prefix):
     if not value.startswith(media_prefix):
+        if not value.startswith('/static') and not value.startswith('/media'):
+            value = "/media" + value
         value = media_prefix + value
     return value

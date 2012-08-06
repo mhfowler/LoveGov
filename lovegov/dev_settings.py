@@ -40,7 +40,10 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages','s3_folder_storage'))
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',
+                                                  'storages',
+                                                  's3_folder_storage',
+                                                  'djcelery',))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 
@@ -125,7 +128,16 @@ CACHES = {
 }
 
 ########################################################################################################################
-#    caching
+#    celery
+#
+########################################################################################################################
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = settings.BROKER_URL
+
+########################################################################################################################
+#    email
 #
 ########################################################################################################################
 

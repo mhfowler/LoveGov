@@ -19,10 +19,7 @@ def uploadFile(path, rel_path, bucket):
     k.set_contents_from_filename(path,cb=percent_cb, num_cb=10)
 
 def run(args):
-    if len(args) < 2:
-        origin_folder = settings.MEDIA_ROOT
-    else:
-        origin_folder = args[1]
+    origin_folder = args[1]
     if len(args) > 2:
         destination_folder = args[2]
     else:
@@ -35,5 +32,8 @@ def run(args):
             rel_path = path.replace(origin_folder, destination_folder, 1)
             uploadFile(path, rel_path, bucket)
 
-run(sys.argv)
+if len(sys.argv) < 2:
+    run(sys.argv)
+else:
+    print "not enough arguments."
 

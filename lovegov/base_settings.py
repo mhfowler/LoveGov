@@ -28,12 +28,11 @@ INSTALLED_APPS = (
     'haystack',
     'sorl.thumbnail',
     'debug_toolbar',
+    'django_extensions',
 
     # internal
     'lovegov.modernpolitics',
-    'lovegov.frontend',
-    'django_extensions'
-
+    'lovegov.frontend'
     )
 
 MIDDLEWARE_CLASSES = (
@@ -296,6 +295,13 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
         }
 }
+
+########################################################################################################################
+#    celery
+#
+########################################################################################################################
+
+BROKER_URL = 'librabbitmq://guest:guest@localhost:5672/'
 
 ########################################################################################################################
 #    email
