@@ -769,7 +769,7 @@ def answer(request, vals={}):
     privacy = request.POST.get('questionPRI')
     if not privacy:
         privacy = getPrivacy(request)
-    my_response = user.getView().responses.filter(question=question)
+    my_response = user.view.responses.filter(question=question)
     # save new response
     if 'choice' in request.POST:
         answer_val = request.POST['choice']
@@ -778,18 +778,20 @@ def answer(request, vals={}):
         user.last_answered = datetime.datetime.now()
         user.save()
         if not my_response:
-            response = UserResponse(responder=user,
-                question = question,
+            response = Response( question = question,
+                ## TODO Change answer_val
                 answer_val = answer_val,
                 weight = weight,
                 explanation = explanation)
             response.autoSave(creator=user, privacy=privacy)
+
+            user.view.responses.add(response)
+
             action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
             action.autoSave()
         # else update old response
         else:
             response = my_response[0]
-            user_response = response.userresponse
             user_response.answer_val = answer_val
             user_response.weight = weight
             user_response.explanation = explanation

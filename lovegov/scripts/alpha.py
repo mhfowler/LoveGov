@@ -104,9 +104,9 @@ def scriptCreateCongressAnswers(args=None):
             congress_rolls = None
             # Get votes from the bill or amendment
             if bill:
-                congress_rolls = CongressRoll.objects.filter(legislation=bill)
+                congress_rolls = CongressRoll.objects.filter(legislation=bill).order_by('when')
             elif amendment:
-                congress_rolls = CongressRoll.objects.filter(amendment=amendment)
+                congress_rolls = CongressRoll.objects.filter(amendment=amendment).order_by('when')
 
             votes = []
 
@@ -154,6 +154,11 @@ def scriptCreateCongressAnswers(args=None):
                     response.total_num = 1
                     response.most_chosen_num = 1
                     response.autoSave(creator=voter)
+
+                    voter.view.responses.add(response)
+
+                    metrics[metricName] += 1
+                    print metricName + " " + str(metrics[metricName])
                 # Otherwise, change the answer
                 else:
                     if len(responses) > 1:
@@ -163,10 +168,6 @@ def scriptCreateCongressAnswers(args=None):
                     response.total_num = 1
                     response.most_chosen_num = 1
                     response.save()
-
-                metrics[metricName] += 1
-
-                print metricName + " " + str(metrics[metricName])
 
     return metrics
 
