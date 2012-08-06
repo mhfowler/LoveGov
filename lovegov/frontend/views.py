@@ -402,8 +402,8 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
             else:
                 checked = False
                 weight = 5
-            answer = {'answer_text':answer.answer_text,'answer_id':answer.id,'user_answer':checked,'weight':weight}
-            answerArray.append(answer)
+            answer_json = {'answer_text':answer.answer_text,'answer_id':answer.id,'user_answer':checked,'weight':weight}
+            answerArray.append(answer_json)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
         if response: toAddquestion['user_explanation'] = response.downcast().explanation
         if not webCompare and response: toAddquestion['security'] = response.privacy
