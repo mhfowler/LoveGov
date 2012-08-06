@@ -397,12 +397,12 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
         answerArray = []
         for answer in question.answers.all():
             if response and (not webCompare or response.privacy == "PUB"):
-                checked = (answer.value == response.answer_val)
+                checked = (answer.id == response.most_chosen_answer.id)
                 weight = response.weight
             else:
                 checked = False
                 weight = 5
-            answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
+            answer = {'answer_text':answer.answer_text,'answer_id':answer.id,'user_answer':checked,'weight':weight}
             answerArray.append(answer)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
         if response: toAddquestion['user_explanation'] = response.downcast().explanation
@@ -442,7 +442,7 @@ def compareWeb(request,alias=None,vals={}):
     This is the view that generates the QAWeb
 
     @param request: the request from the user to the server containing metadata about the request
-    @type request: HttpRequest
+    @type request: HttpRequestquestions
     @param vals: the dictionary of values to pass into the template
     @type vals: dictionary
     @return: HttpResponse

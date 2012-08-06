@@ -140,7 +140,7 @@ var QAWebHover = Class.extend
 
                 for (var i=0; i<self.node.answers.length; i++)
                 {
-                    if (self.node.answers[i].answer_value == $input.val())
+                    if (self.node.answers[i].answer_id == $input.val())
                     {
                         self.node.answers[i].weight = self.node.weight;
                     }
@@ -319,7 +319,7 @@ var QAWebHover = Class.extend
             $('#answers-ul p').removeClass('answer-selected');
             for (var i=0; i<this.node.answers.length; i++)
             {
-                var input = "<input style='display:none' type=radio name='choice' value='" + this.node.answers[i].answer_value + "'/>";
+                var input = "<input style='display:none' type=radio name='choice' value='" + this.node.answers[i].answer_id + "'/>";
                 $('#answers-ul').append('<p class="answer-' + i + '">' + input + this.node.answers[i].answer_text + '</p>');
 
                 if (this.node.answers[i].user_answer)
@@ -1000,11 +1000,11 @@ var Question = Node.extend
             this.idImgObj = $('#' + this.idImg);
         },
 
-        HTML_selectRadioAnswer: function(answer_val)
+        HTML_selectRadioAnswer: function(answer_id)
         {
             for (var i=0; i<this.answers.length; i++)
             {
-                this.answers[i].user_answer = (this.answers[i].answer_value == answer_val);
+                this.answers[i].user_answer = (this.answers[i].answer_id == answer_id);
             }
         },
 
@@ -1491,7 +1491,7 @@ function assignQuestionTopic(topicID)
     return to_return;
 }
 
-/**
+/**e
  * This function returns  of images for the three states of each topic image
  *
  * @param topicID integer

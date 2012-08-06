@@ -234,6 +234,9 @@ def scriptCreateResponses(args=None):
                     response.most_chosen_num = 1
                     response.total_num = 1
                     response.autoSave(creator=politician)
+
+                    politician.view.responses.add(response)
+
                 else:
                     if len(responses) > 1:
                         print "++DUPLICATE++ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)

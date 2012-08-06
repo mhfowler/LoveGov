@@ -772,17 +772,19 @@ def answer(request, vals={}):
     my_response = user.view.responses.filter(question=question)
     # save new response
     if 'choice' in request.POST:
-        answer_val = request.POST['choice']
+        answer_id = request.POST['choice']
+        chosen_answer = Answer.lg.get_or_none(id=answer_id)
         weight = request.POST['weight']
         explanation = request.POST['explanation']
         user.last_answered = datetime.datetime.now()
         user.save()
         if not my_response:
             response = Response( question = question,
-                ## TODO Change answer_val
-                answer_val = answer_val,
+                most_chosen_answer = chosen_answer,
                 weight = weight,
                 explanation = explanation)
+            response.most_chosen_num = 1
+            response.total_num = 1
             response.autoSave(creator=user, privacy=privacy)
 
             user.view.responses.add(response)
@@ -792,12 +794,14 @@ def answer(request, vals={}):
         # else update old response
         else:
             response = my_response[0]
-            user_response.answer_val = answer_val
-            user_response.weight = weight
-            user_response.explanation = explanation
+            response.most_chosen_answer = chosen_answer
+            response.weight = weight
+            response.explanation = explanation
             # update creation relationship
-            user_response.saveEdited(privacy)
-            action = Action(privacy=getPrivacy(request),relationship=user_response.getCreatedRelationship())
+            response.most_chosen_num = 1
+            response.total_num = 1
+            response.saveEdited(privacy)
+            action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
             action.autoSave()
         if request.is_ajax():
             url = response.get_url()

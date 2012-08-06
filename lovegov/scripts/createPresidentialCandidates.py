@@ -70,6 +70,8 @@ def answerQuestions(sheet):
                     response.most_chosen_num = 1
                     response.total_num = 1
                     response.autoSave(creator=politician)
+                    politician.view.responses.add(politician)
+
                 else:
                     if len(responses) > 1:
                         duplicate_responses += 1
