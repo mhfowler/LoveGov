@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpRequest
 
 # lovegov
 from lovegov.modernpolitics.backend import *
-from lovegov.settings import UPDATE
+from lovegov.base_settings import UPDATE
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ def framedResponse(request, html, url, vals):
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
-        vals = {}
+        vals = {'STATIC_URL':settings.STATIC_URL}
         try:
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
@@ -57,6 +57,10 @@ def viewWrapper(view, requires_login=False):
             vals['google'] = GOOGLE_LOVEGOV
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
+            if 's3' in settings.DEFAULT_FILE_STORAGE:
+                vals['MEDIA_PREFIX'] = settings.MEDIA_URL.replace('/media', '')
+            else:
+                vals['MEDIA_PREFIX'] = host_full
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
@@ -80,13 +84,16 @@ def viewWrapper(view, requires_login=False):
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                     if UPDATE or ("dev" in host_full):
                         if not user.developer:
                             normal_logger.debug('blocked: ' + user.get_name())
-                            #return shortcuts.redirect('/underconstruction/')
+                            return shortcuts.redirect('/underconstruction/')
 
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")
@@ -103,13 +110,9 @@ def viewWrapper(view, requires_login=False):
             return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
+            ignore = request.REQUEST.get('log-ignore')
             if not ignore:
-                def saveAccess(req): PageAccess().autoSave(req)
-                thread.start_new_thread(saveAccess, (request,))
+                saveAccess(request)
 
     return new_view
 
@@ -124,7 +127,6 @@ def aliasDowncast(request, alias=None, vals={}):
     if matched_group:
         return viewWrapper(group, requires_login=True)(request, matched_group.id)
     return redirect(request)
-
 
 def redirect(request):
     return shortcuts.redirect('/home/')
@@ -592,14 +594,14 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias).downcast()
+            user_prof = UserProfile.objects.get(alias=alias)
             comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
             vals['json'] = json
 
             # Get users followers
-            if user_prof.user_type == "U":
+            if user_prof.isNormal():
                 prof_follow_me = list(user_prof.getFollowMe())
                 for follow_me in prof_follow_me:
                     comparison = getUserUserComparison(user_prof, follow_me)
@@ -608,7 +610,6 @@ def profile(request, alias=None, vals={}):
                 prof_follow_me.sort(key=lambda x:x.result,reverse=True)
                 vals['prof_follow_me'] = prof_follow_me[0:5]
             else:       # get politician supporters
-                user_prof = user_prof.downcast()
                 prof_support_me = user_prof.getSupporters()
                 vals['prof_support_me'] = prof_support_me[0:5]
 
@@ -654,7 +655,7 @@ def profile(request, alias=None, vals={}):
             actions = user_prof.getActivity(num=num_actions)
             actions_text = []
             for action in actions:
-                actions_text.append( action.getVerbose(view_user=viewer) )
+                actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
             vals['actions_text'] = actions_text
             vals['num_actions'] = num_actions
 
@@ -671,7 +672,7 @@ def profile(request, alias=None, vals={}):
                 vals['num_notifications'] = num_notifications
 
             # get politician page values
-            if user_prof.user_type != "U":
+            if not user_prof.isNormal():
                 supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
                 if supported:
                     vals['yousupport'] = supported.confirmed
@@ -771,6 +772,11 @@ def group(request, g_id=None, vals={}):
     vals['group_members'] = all_members[:num_members]
     vals['num_members'] = num_members
 
+    members = list( all_members )
+    for admin in admins:
+        members.remove(admin)
+    vals['normal_members'] = members
+
     vals['num_group_members'] = group.num_members
 
     followers = list(viewer.getFollowMe())
@@ -783,6 +789,7 @@ def group(request, g_id=None, vals={}):
     html = ajaxRender('site/pages/group/group.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
+
 
 def histogramDetail(request, g_id, vals={}):
 
@@ -862,17 +869,17 @@ def about(request, start="video", vals={}):
 def legislation(request, session=None, type=None, number=None, vals={}):
     vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
-        vals['sessions'] = [x['bill_session'] for x in Legislation.objects.values('bill_session').distinct()]
+        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
         return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(bill_session=session)
+    legs = Legislation.objects.filter(congress_session=session)
     if type==None:
-        type_list = [x['bill_type'] for x in Legislation.objects.filter(bill_session=session).values('bill_type').distinct()]
+        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
         vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
         return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
     if number==None:
-        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(bill_session=session, bill_type=type).values('bill_number').distinct()]
+        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(bill_session=session, bill_type=type, bill_number=number)
+    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
     if len(legs)==0:
         vals['error'] = "No legislation found with the given parameters."
     else:
@@ -880,6 +887,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -916,9 +924,9 @@ def matchSocial(request, vals={}):
 def matchPresidential(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        obama = ElectedOfficial.objects.get(first_name="Barack",last_name="Obama")
-        paul = ElectedOfficial.objects.get(first_name="Ronald",last_name="Paul")
-        romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+        obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
+        paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
+        romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
     else:
         obama = viewer
         paul = viewer
@@ -933,8 +941,8 @@ def matchPresidential(request, vals={}):
 def matchSenate(request, vals={}):
     viewer = vals['viewer']
     if not LOCAL:
-        elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
-        brown = ElectedOfficial.objects.get(first_name="Scott", last_name="Brown")
+        elizabeth = UserProfile.lg.get_or_none(first_name="Elizabeth", last_name="Warren", politician=True)
+        brown = UserProfile.lg.get_or_none(first_name="Scott", last_name="Brown", politician=True)
         voters = getLoveGovGroup()
     else:
         elizabeth = viewer
@@ -956,12 +964,21 @@ def matchRepresentatives(request, vals={}):
     if viewer.location:
         address = viewer.location
         congressmen = []
-        representative = Representative.lg.get_or_none(congresssessions=112,state=address.state,district=address.district)
-        if representative:
-            congressmen.append(representative)
-        senators = Senator.objects.filter(congresssessions=112,state=address.state)
-        for senator in senators:
-            congressmen.append(senator)
+        congress = CongressSession.lg.get_or_none(session=CURRENT_CONGRESS)
+        senator_tag = OfficeTag.lg.get_or_none(name="senator")
+        rep_tag = OfficeTag.lg.get_or_none(name="representative")
+
+        if congress:
+            rep_office = rep_tag.tag_offices.filter(location__state=address.state,location__district=address.district)[0]
+            representative = rep_office.office_terms.filter(end_date__gte=datetime.date.today())[0].user
+            if representative:
+                congressmen.append(representative)
+
+            senator_office = senator_tag.tag_offices.filter(location__state=address.state)[0]
+            senators = map( lambda x : x.user , senator_office.office_terms.filter(end_date__gte=datetime.date.today()) )
+            for senator in senators:
+                congressmen.append(senator)
+
         vals['congressmen'] = congressmen
         vals['state'] = address.state
         vals['district'] = address.district
@@ -991,7 +1008,7 @@ def contentDetail(request, content, vals):
     vals['creator'] = creator_display
     vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
-    my_vote = user_votes.filter(content=content) 
+    my_vote = user_votes.filter(content=content)
     if my_vote:
         vals['my_vote'] = my_vote[0].value
     else:
@@ -1025,8 +1042,22 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    html = ajaxRender('site/pages/content/petition_detail.html', vals, request)
-    url = '/petition/' + str(petition.id)
+    html = ajaxRender('site/pages/content/petition/petition_detail.html', vals, request)
+    url = petition.get_url()
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# detail of motion with attached forum
+#-----------------------------------------------------------------------------------------------------------------------
+def motionDetail(request, m_id, vals={}):
+
+    motion = Motion.objects.get(id=m_id)
+    vals['motion'] = motion
+
+    contentDetail(request=request, content=motion, vals=vals)
+    html = ajaxRender('site/pages/content/motion/motion_detail.html', vals, request)
+    url = motion.get_url()
+
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1038,7 +1069,7 @@ def newsDetail(request, n_id, vals={}):
     contentDetail(request=request, content=news, vals=vals)
 
     html = ajaxRender('site/pages/content/news_detail.html', vals, request)
-    url = '/news/' + str(news.id)
+    url =  news.get_url()
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

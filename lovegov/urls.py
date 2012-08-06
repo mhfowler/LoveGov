@@ -78,6 +78,7 @@ URL_SPECIAL_NAMES = set([
     'beta',
     'analytics',
     'api',
+    'motion'
 ])
 
 urlpatterns += patterns('django.views.generic.simple',
@@ -145,6 +146,7 @@ urlpatterns += patterns('',
     (r'^friends/$', viewWrapper(views.iFollow, requires_login=True)),
     (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
     (r'^networks/$', viewWrapper(views.networks, requires_login=True)),
+    (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
 
     # ajax pages
     (r'^action/$', viewWrapper(actions.actionPOST, requires_login=True)),                      # comment and other actions

@@ -55,7 +55,6 @@ div#bottom
   float:left;
   width:425px;
   height:287px;
-  //background-image:url(/static/images/login/banner-425x287.png);
   margin-left:20px;
 }
 
@@ -145,7 +144,7 @@ div.no-login-modal
       margin-top:20px;
       display:block;
       a.fb-button {
-        background-image:url(/static/images/icons/FB_login.png);
+        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
         background-size:contain;
         background-repeat:no-repeat;
         margin-left:30px;
@@ -154,7 +153,7 @@ div.no-login-modal
         height:35px;
       }
       a.twitter-button {
-        background-image:url(/static/images/icons/Twitter_login.png);
+        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
         background-size:contain;
         background-repeat:no-repeat;
         float:right;
@@ -162,10 +161,10 @@ div.no-login-modal
         height:35px;
       }
       a.fb-button:hover {
-        background-image:url(/static/images/icons/FB_login_hover.png);
+        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
       }
       a.twitter-button:hover {
-        background-image:url(/static/images/icons/Twitter_login_hover.png);
+        @include staticImage($rel-path:'/images/icons/Twitter_login_hover.png');
       }
 
     }
@@ -230,8 +229,12 @@ div.no-login-modal
           margin-top:0px;
           display:block;
 
+          a.img-test {
+            @include staticImage($rel-path:'/images/flags.gif');
+            background-size:contain;
+          }
           a.sign-in-fb {
-            background-image:url(/static/images/icons/FB_login.png);
+            @include staticImage($rel-path:'/images/icons/FB_login.png');
             background-size:contain;
             background-repeat:no-repeat;
             float:left;
@@ -239,7 +242,7 @@ div.no-login-modal
             height:40px;
           }
           a.sign-in-twitter {
-            background-image:url(/static/images/icons/Twitter_login.png);
+            @include staticImage($rel-path:'/images/icons/Twitter_login.png');
             background-size:contain;
             background-repeat:no-repeat;
             float:right;
@@ -247,10 +250,10 @@ div.no-login-modal
             height:40px;
           }
           a.sign-in-fb:hover {
-            background-image:url(/static/images/icons/FB_login_hover.png);
+            @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
           }
           a.sign-in-twitter:hover {
-            background-image:url(/static/images/icons/Twitter_login_hover.png);
+            @include staticImage($rel-path:'/images/icons/Twitter_login_hover.png');
           }
         }
 

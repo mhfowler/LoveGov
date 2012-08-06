@@ -31,14 +31,14 @@ def updatePoliticianImages():
 
 
 def recalculateAllUserStats():
-    users = UserProfile.objects.filter(user_type="U").all()
+    users = UserProfile.objects.all()
     for user in users:
         print "Calculating Stats For " + user.get_name()
         user.userStatsRecalculate()
 
 
 def recalculateAllFollowGroups():
-    users = UserProfile.objects.filter(user_type="U").all()
+    users = UserProfile.objects.filter(ghost=False)
     for user in users:
         print "Calculating Follow Groups For " + user.get_name()
         user.userFollowRecalculate()
@@ -177,3 +177,11 @@ def recalculateNumMembers():
     for x in Group.objects.all():
         print x.get_name()
         x.countMembers()
+
+
+def calculateResponseAnswers():
+    for response in Response.objects.all():
+        if response.question:
+            for answer in response.question.answers.all():
+                if response.answer_val != -1 and answer.value == response.answer_val:
+                    response.answer = answer

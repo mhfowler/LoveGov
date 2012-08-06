@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.forms import *
 from lovegov.modernpolitics.compare import *
 from lovegov.modernpolitics.feed import *
+from lovegov.modernpolitics.register import *
 from lovegov.modernpolitics.images import *
 
 from haystack.query import SearchQuerySet
@@ -269,8 +270,6 @@ def create(request, val={}):
         form = CreateNewsForm(request.POST)
     elif formtype =='G':
         form = CreateUserGroupForm(request.POST)
-    elif formtype =='M':
-        form = CreateMotionForm(request.POST)
 
     # if valid form, save to db
     if form.is_valid():
@@ -318,6 +317,56 @@ def create(request, val={}):
             return HttpResponse(json.dumps(vals))
         else:
             return shortcuts.redirect('/web/')
+
+def createMotion(request, vals={}):
+
+    group = Group.lg.get_or_none(id=request.POST['g_id'])
+
+    if group.democratic:
+        motion_type = request.POST['motion_type']
+        motion = None
+
+        if motion_type == 'add_moderator':
+            moderator = UserProfile.objects.get(id=request.POST['moderator_id'])
+            if moderator not in group.members.all():
+                error_message = "motion to add moderator of member who is not in group," + group.get_name()
+                LGException(error_message)
+                return HttpResponse(error_message)
+            elif moderator in group.admins.all():
+                error_message = "motion to add moderator of member who is already moderator," + group.get_name()
+                LGException(error_message)
+                return HttpResponse(error_message)
+            else:
+                motion = Motion(motion_type=motion_type, moderator=moderator,
+                    full_text=request.POST['because'], group=group)
+
+        elif motion_type == 'remove_moderator':
+            moderator = UserProfile.objects.get(id=request.POST['moderator_id'])
+            if moderator not in group.admins.all():
+                error_message = "motion to remove moderator who is not moderator of group," + group.get_name()
+                LGException(error_message)
+                return HttpResponse(error_message)
+            else:
+                motion = Motion(motion_type=motion_type, moderator=moderator,
+                    full_text=request.POST['because'], group=group)
+
+        elif motion_type == 'coup_detat':
+            motion = Motion(motion_type=motion_type, government_type=request.POST['government_type'],
+                full_text=request.POST['because'], group=group)
+
+        if motion:
+            motion.autoSave(creator=vals['viewer'], privacy=getPrivacy(request))
+            return HttpResponse(json.dumps({'success':True}))
+        else:
+            error_message = "create motion action did not create motion for group", group.get_name()
+            LGException(error_message)
+            return HttpResponse(error_message)
+
+    else:
+        error_message = "post to create motion for non-democratic group," + group.get_name()
+        LGException(error_message)
+        return HttpResponse(error_message)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends invite email and and addds email to valid emails.
@@ -702,7 +751,12 @@ def vote(request, vals):
         value = content.like(user=user, privacy=privacy)
     elif vote == -1:
         value = content.dislike(user=user, privacy=privacy)
-    to_return = {'my_vote':value, 'status':content.status}
+    if content.type == 'M':
+        motion = content.downcast()
+        motion = {'upvotes':motion.motion_upvotes, 'downvotes':motion.downvotes}
+    else:
+        motion = 0
+    to_return = {'my_vote':value, 'status':content.status, 'motion':motion}
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1569,7 +1623,7 @@ def getUserActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
+        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
@@ -1596,7 +1650,7 @@ def getGroupActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
+        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
@@ -1917,9 +1971,9 @@ def changeContentPrivacy(request, vals={}):
     if error=='':
         content.save()
         vals['content'] = content
-        html =ajaxRender('site/snippets/content-privacy.html', vals, request)
+        html = ajaxRender('site/pieces/snippets/content-privacy.html', vals, request)
     to_return = {'html':html, 'error': error}
-    print "to_return: "+str(to_return)
+    print "to_return: "+ str(to_return)
     return HttpResponse(json.dumps(to_return))
 
 
@@ -1989,11 +2043,21 @@ def setFirstLoginStage(request, vals={}):
     response.status_code = 500 if error else 200
     return response
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# saves the posted incompatability information to the db
+#-----------------------------------------------------------------------------------------------------------------------
+def logCompatability(request, vals={}):
+    incompatible = json.loads(request.POST['incompatible'])
+    user = vals.get('viewer')
+    CompatabilityLog(incompatible=incompatible, user=user,
+        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
+        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+    return HttpResponse('compatability logged')
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
-# args: request
-# tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def actionPOST(request, vals={}):
     """Splitter between all actions."""

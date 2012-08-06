@@ -1,24 +1,29 @@
 @charset "UTF-8";
 
+
 /* Default page width on large screens */
 $default-page-width: 1140px;
+
+/* static url */
+$STATIC_URL: '/static';
+
 
 @font-face
 {
   font-family: "Gill Sans Std Light";
-  src: url(../GillSansStd-Light.otf);
+  src: url(#{$STATIC_URL}/css/GillSansStd-Light.otf);
 }
 
 @font-face
 {
   font-family: "Gill Sans Std";
-  src: url(../GillSansStd.otf);
+  src: url(#{$STATIC_URL}/css/GillSansStd.otf);
 }
 
 @font-face
 {
 	font-family: "Sonus Light";
-	src: url(../SonusLig.otf);
+	src: url(#{$STATIC_URL}/css/SonusLig.otf);
 }
 
 /* Main Colors */
@@ -90,3 +95,4 @@ $body-fonts: Helvetica, Arial, Verdana, sans-serif;
 $gill-light: "Gill Sans Std Light";
 $gill-std: "Gill Sans Std";
 $title-font: "Sonus Light";
+

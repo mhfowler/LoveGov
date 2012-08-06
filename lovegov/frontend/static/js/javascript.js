@@ -4,9 +4,13 @@
  *
  ***********************************************************************************************************************/
 var rebind;
+var STATIC_URL;
 
 function rebindFunction()
 {
+    if (!(rebind=='login' || rebind=='blog')) {
+        rebindUniversalFrame();
+    }
     $(window).unbind('scroll');                                 // to unbind fix feed loading and qaweb scroll binding
     loadTopicSelect();                                          // topic select image functionality
     loadHoverComparison();                                      // hover comparison functionality
@@ -34,6 +38,11 @@ function rebindFunction()
             loadShareButton();
             break;
         case 'news':                                            // /news/#
+            loadThread();
+            loadRightSideBar();
+            loadShareButton();
+            break;
+        case 'motion':
             loadThread();
             loadRightSideBar();
             loadShareButton();
@@ -83,6 +92,13 @@ function rebindFunction()
         case 'login':                                       // login page
             loadSignInDialogue();
             loadLogin();
+            break;
+        case 'legislation':                                 //legislation page
+            checkboxClick1();
+            checkboxClick2();
+            checkboxClick3();
+            checkboxClick4();
+            hiddenFilters();
             break;
         default:
             break
@@ -748,11 +764,13 @@ function loadAjaxifyAnchors()
  *      ~DocumentReady
  *
  ***********************************************************************************************************************/
-
 $(document).ready(function()
 {
     // csrf protect
     $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
+
+    // check browser compatability
+    checkCompatability();
 
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
@@ -781,8 +799,6 @@ $(document).ready(function()
         document.title = pageTitle;
     }
 
-    // universal frame binding
-    rebindUniversalFrame();
     // page specific bindings
     rebindFunction()
 });
@@ -941,6 +957,27 @@ function replaceCenter(stuff)
 }
 
 
+function checkCompatability() {
+    var compatability_cookie =  $.cookie('compatability');
+    var csrf_check = $.cookie('csrftoken');
+    if (compatability_cookie == null) {
+        var incompatible = [];
+        $.each(Modernizr, function(index, element) {
+            if (!element) {
+                incompatible.push(index);
+            }
+        });
+        var incompatible_json = JSON.stringify(incompatible);
+        ajaxPost({
+            data: {'action': 'logCompatability', 'incompatible': incompatible_json},
+            success: function(data)
+            {
+                $.cookie('compatability', incompatible_json);
+            }
+        });
+    }
+}
+
 /***********************************************************************************************************************
  *
  *     ~Header
@@ -1057,8 +1094,8 @@ function loadHeader()
 
     $('#logo-link').hover
         (
-            function(){ $(this).attr('src','/static/images/top-logo-hover.png'); },
-            function(){ $(this).attr('src','/static/images/top-logo-default.png'); }
+            function(){ $(this).attr('src', STATIC_URL + '/images/top-logo-hover.png'); },
+            function(){ $(this).attr('src', STATIC_URL + '/images/top-logo-default.png'); }
         );
 
     function toggleUserMenu()
@@ -1099,7 +1136,7 @@ function loadHeader()
                 $.cookie('privacy','PUB', {path:'/'});
                 $(".security_setting").each(function()
                 {
-                    if ($(this).is('img')) { $(this).attr("src","/static/images/public.png") }
+                    if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "/images/public.png") }
                     $(this).attr('data-original-title',pubMessage);
                 });
                 break;
@@ -1109,7 +1146,7 @@ function loadHeader()
                 {
                     if ($(this).is('img'))
                     {
-                        $(this).attr("src","/static/images/user-menu/lockgray.png") ;
+                        $(this).attr("src",STATIC_URL + "/images/user-menu/lockgray.png") ;
                         $(this).attr('data-original-title',priMessage);
                     }
                 });
@@ -1123,7 +1160,7 @@ function loadHeader()
         {
             if ($(this).is('img'))
             {
-                $(this).attr("src","/static/images/public.png");
+                $(this).attr("src",STATIC_URL + "/images/public.png");
                 $(this).attr('data-original-title',pubMessage);
             }
 
@@ -1145,7 +1182,7 @@ function loadHeader()
                         {
                             if ($(this).is('img'))
                             {
-                                $(this).attr("src","/static/images/user-menu/lockgray.png");
+                                $(this).attr("src",STATIC_URL + "/images/user-menu/lockgray.png");
                                 $(this).attr('data-original-title',priMessage);
                             }
                         });
@@ -1154,7 +1191,7 @@ function loadHeader()
                         $.cookie('privacy','PUB', {path:'/'});
                         $(".security_setting").each(function()
                         {
-                            if ($(this).is('img')) { $(this).attr("src","/static/images/public.png");
+                            if ($(this).is('img')) { $(this).attr("src",STATIC_URL + "/images/public.png");
                                 $(this).attr('data-original-title',pubMessage);}
                         });
                         break;
@@ -2717,13 +2754,54 @@ function loadMoreUsers(event, replace)
 function loadCreateMotion() {
 
     $(".motion_action_select").bindOnce("change.motion", function(event) {
-       var action = $(this).val();
-       $(".motion_action_modifier").hide();
-       if (action == "add moderator") {
-           $(".add_moderator").show();
-       }
+        var action = $(this).val();
+        $(".motion_action_modifier").hide();
+        var class_name = action + "_modifier";
+        $("." + class_name).show();
     });
 
+    $('select.add_moderator_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.remove_moderator_select').select2({
+        placeholder: "Enter a moderator,"
+    });
+
+    $('select.motion_action_select').select2({
+        placeholder: "Choose an action."
+    });
+
+    $(".create_motion_button").bindOnce("click.motion", function(event) {
+        event.preventDefault();
+        var action =  $(".motion_action_select").val();
+        var because = $(".because_textarea").val();
+        var g_id = $(this).data('g_id');
+        var to_post = {'action': 'createMotion', 'g_id':g_id,
+            'motion_type':action, 'because':because};
+        if (action == 'add_moderator') {
+            to_post['moderator_id'] = $(".add_moderator_select").val();
+        }
+        if (action == 'remove_moderator') {
+            to_post['moderator_id'] = $(".remove_moderator_select").val();
+        }
+        if (action == 'coup_detat') {
+            to_post['government_type'] = "traditional";
+        }
+        ajaxPost({
+            data: to_post,
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (returned.success) {
+                    location.reload();
+                }
+                else {
+                    alert(data);
+                }
+            }
+        });
+    });
 }
 
 
@@ -3064,7 +3142,7 @@ function getFeed(num)
     }
 
     setTimeout(function() {
-            $(".feed_loading").show();
+        $(".feed_loading").show();
     }, 100);
 
     ajaxPost({
@@ -3241,6 +3319,9 @@ function vote(wrapper, content_id, v)
             if (my_vote==0) { neutral(wrapper); }
             if (my_vote==-1) { dislike(wrapper); }
             wrapper.find(".status").text(status);
+            if (returned.motion!=0) {
+                location.reload();
+            }
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -4063,7 +4144,8 @@ function loadCreate()
                 {
                     $('#news-link-generation-wrapper').empty();
                     $('#news-link-generation').show();
-                    $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px"><img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="/static/images/ajax-loader.gif"></div>');
+                    $('#news-link-generation-wrapper').append('<div style="width:530px;margin-bottom:25px">' +
+                        '<img style="width:75px;height:75px;margin-left:235px;" id="loading-img" src="' + STATIC_URL + '/images/ajax-loader.gif"></div>');
                     $('#news-summary').show();
                     ajaxPost({
                         data: {'action':'getLinkInfo','remote_url':text},
@@ -4897,3 +4979,130 @@ function loadLogin() {
 function loadBlog() {
     alert("blog!");
 }
+
+
+/***********************************************************************************************************************
+ *
+ *      -Legislation checkboxes
+ *
+ **********************************************************************************************************************/
+
+function hiddenFilters() {
+    $('#session_filter').hide(0);
+    $('#type_filter').hide(0);
+    $('#introduced_filter').hide(0);
+    $('#sponsor_filter').hide(0);
+}
+
+function checkboxClick1() {
+    $('.col1').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_session').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#type_filter').hide('fast');
+            $('#introduced_filter').hide('fast');
+            $('#sponsor_filter').hide('fast');
+            $('#session_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_session').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#session_filter').hide('');
+        }
+    });
+}
+
+function checkboxClick2() {
+    $('.col2').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_type').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#session_filter').hide('fast');
+            $('#introduced_filter').hide('fast');
+            $('#sponsor_filter').hide('fast');
+            $('#type_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_type').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#type_filter').hide('');
+        }
+    });
+}
+
+function checkboxClick3() {
+    $('.col3').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_introduced').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#session_filter').hide('fast');
+            $('#type_filter').hide('fast');
+            $('#sponsor_filter').hide('fast');
+            $('#introduced_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_introduced').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#introduced_filter').hide('');
+        }
+    });
+}
+
+function checkboxClick4() {
+    $('.col4').click(function(){
+        if($(this).hasClass("unchecked"))
+        {
+            $('#leg_sponsor').attr('checked',true);
+            $(this).removeClass("unchecked");
+            $(this).addClass("checked");
+            $('#session_filter').hide('fast');
+            $('#type_filter').hide('fast');
+            $('#introduced_filter').hide('fast');
+            $('#sponsor_filter').show('fast');
+        }
+        else
+        {
+            $('#leg_sponsor').attr('checked',false);
+            $(this).addClass("unchecked");
+            $(this).removeClass("checked");
+            $('#sponsor_filter').hide('');
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

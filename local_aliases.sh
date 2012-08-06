@@ -35,6 +35,7 @@ alias remotepython="source $LG/remote_env.sh && bpython -i $LG/autopython.py"
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"
 alias lg1jvkoh="ssh jvkoh@ec2-23-23-91-235.compute-1.amazonaws.com"
+alias lg1jsftp="sftp jvkoh@ec2-23-23-91-235.compute-1.amazonaws.com"
 
 # permission
 alias projectpermission="sudo chmod -R 770 $LG"

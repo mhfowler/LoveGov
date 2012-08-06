@@ -126,7 +126,6 @@ class UserPhysicalAddress(LGModel):
     state = models.CharField(max_length=2)
     district = models.IntegerField()
 
-
 class PhysicalAddress(LGModel):
     address_string = models.CharField(max_length=500, null=True)
     zip = models.CharField(max_length=20, null=True)
@@ -221,10 +220,15 @@ class Topic(LGModel):
         return self.image.url
 
 
+class OfficeTag(LGModel):
+    name = models.CharField(max_length=100)
+
+
 #=======================================================================================================================
 # Content
 #
 #=======================================================================================================================
+
 class Content(Privacy, LocationLevel):
     # unique identifier
     alias = models.CharField(max_length=1000, default="default")
@@ -262,10 +266,10 @@ class Content(Privacy, LocationLevel):
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
+        elif self.type =='M':
+            return '/motion/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
-        elif self.type=='F':
-            return '/topic/' + self.getMainTopic().alias + '/'
         elif self.type=='G':
             return '/group/' + str(self.id) + '/'
         elif self.type=='C':
@@ -504,7 +508,8 @@ class Content(Privacy, LocationLevel):
         elif type == 'Q':
             object = self.question
         elif type == 'R':
-            object = self.response.userresponse
+            object = self.response
+
         elif type == 'I':
             object = self.userimage
         elif type == 'G':
@@ -666,19 +671,20 @@ class Content(Privacy, LocationLevel):
                 action.autoSave()
                 print "creator: "+str(self.creator)
                 self.creator.notify(action)
-            return my_vote.value
         else:
             # create new vote
-            new_vote = Voted(value=1, content=self, user=user, privacy=privacy)
-            new_vote.autoSave()
+            my_vote = Voted(value=1, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
             # adjust content values about status and vote
             self.upvotes += 1
             self.status += STATUS_VOTE
             self.save()
-            action = Action(relationship=new_vote,modifier='L')
+            action = Action(relationship=my_vote,modifier='L')
             action.autoSave()
             self.creator.notify(action)
-            return new_vote.value
+        if self.type == 'M':
+            self.downcast().motionVote(my_vote)
+        return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
     # Add dislike vote to content from inputted user (or adjust his vote appropriately)
@@ -704,19 +710,20 @@ class Content(Privacy, LocationLevel):
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
                 self.creator.notify(action)
-            return my_vote.value
         else:
             # create new vote
-            new_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
-            new_vote.autoSave()
+            my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
             # adjust content values about status and vote
             self.downvotes += 1
             self.status -= STATUS_VOTE
             self.save()
-            action = Action(relationship=new_vote,modifier='D')
+            action = Action(relationship=my_vote,modifier='D')
             action.autoSave()
             self.creator.notify(action)
-            return new_vote.value
+        if self.type == 'M':
+            self.downcast().motionVote(my_vote)
+        return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a time delta of how old this content is.
@@ -1036,11 +1043,10 @@ def initView():
     return view
 
 class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
+    type = models.CharField(max_length=1,default="U")
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
-    # for downcasting
-    user_type = models.CharField(max_length=1, choices=USER_CHOICES, default='G')
     # twitter integration
     twitter_user_id = models.IntegerField(null=True)
     twitter_screen_name = models.CharField(max_length=200, null=True)
@@ -1083,9 +1089,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    ghost = models.BooleanField(default=False)
+    # Government Stuff
+    political_title = models.CharField(max_length=100, default="Citizen")
+    politician = models.BooleanField(default=False)
+    elected_official = models.BooleanField(default=False)
+    supporters = models.ManyToManyField('UserProfile', related_name='supportees')
+    num_supporters = models.IntegerField(default=0)
+    govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
-    type = models.CharField(max_length=1,default="U")
     # deprecated
     my_feed = models.ManyToManyField(FeedItem, related_name="newfeed")  # for storing feed based on my custom setting below
     filter_setting = models.ForeignKey(FilterSetting, null=True)
@@ -1161,18 +1174,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def isSuperHero(self):
         return self.alias in SUPER_HEROES
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Downcasts users appropriately based on type.
-    #-------------------------------------------------------------------------------------------------------------------
-    def downcast(self):
-        if self.user_type == 'P':
-            return self.politician
-        elif self.user_type == 'S':
-            return self.politician.electedofficial.senator
-        elif self.user_type == 'R':
-            return self.politician.electedofficial.representative
-        else:
-            return self
+    def isNormal(self):
+        return not (self.politician or self.elected_official)
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
@@ -1236,7 +1239,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Makes unique alias from name
     #-------------------------------------------------------------------------------------------------------------------
     def makeAlias(self):
-        alias = str.lower((self.first_name.replace(" ","") + self.last_name).encode('utf-8','ignore'))
+        alias = self.first_name.replace(" ","") + self.last_name
+        if type(alias) == unicode:
+            alias = alias.encode('utf-8','ignore')
+        alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
         self.alias = genAliasSlug(alias)
         self.alias = alias
@@ -1284,11 +1290,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return "Anonymous"
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Gets profilepage for this user.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getProfilePage(self):
-        return ProfilePage.objects.get(person=self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profile image for this user.
@@ -1328,6 +1329,32 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
+
+    def getSupporters(self):
+        support = Supported.objects.filter(user=self, confirmed=True)
+        supporter_ids = support.values_list('to_user', flat=True)
+        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def support(self, politician):
+        supported = Supported.lg.get_or_none(user=self, to_user=politician)
+        if not supported:
+            supported = Supported(user=self, to_user=politician)
+            supported.autoSave()
+            politician.num_supporters += 1
+            politician.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            politician.num_supporters += 1
+            politician.save()
+
+    def unsupport(self, politician):
+        supported = Supported.lg.get_or_none(user=self, to_user=politician)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            politician.num_supporters -= 1
+            politician.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Fills in fields based on facebook data
@@ -1767,20 +1794,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
-    # The other version is less SQL queries
-#    def getUserResponses(self):
-#        qr = []
-#        responses = self.getView().responses
-#        questions = Question.objects.filter(official=True)
-#        for q in questions:
-#            r = responses.filter(question=q)
-#            qr.append((q,r))
-#        return qr
-
     def getUserResponses(self):
         qr = []
 
-        responses = list( self.getView().responses.all() )
+        responses = list( self.view.responses.all() )
 
         official_questions = list( Question.objects.filter(official=True) )
 
@@ -1803,6 +1820,37 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         newAddress.currentAddress = True
         self.userAddress = newAddress
         self.save()
+
+
+#    def getSupporters(self):
+#        support = Supported.objects.filter(user=self, confirmed=True)
+#        supporter_ids = support.values_list('to_user', flat=True)
+#        return UserProfile.objects.filter(id__in=supporter_ids)
+
+    def addSupporter(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if not supported:
+            supported = Supported(user=user, to_user=self)
+            supported.confirmed()
+            supported.autoSave()
+            supporters.add(user)
+            self.num_supporters += 1
+            self.save()
+        if not supported.confirmed:
+            supported.confirmed = True
+            supported.save()
+            self.num_supporters += 1
+            self.save()
+
+    def removeSupporter(self, user):
+        supported = Supported.lg.get_or_none(user=user, to_user=self)
+        if supported and supported.confirmed:
+            supported.confirmed = False
+            supported.save()
+            self.num_supporters -= 1
+            self.save()
+        if user in supporters:
+            supporters.remove(user)
 
 #=======================================================================================================================
 # Permissions for user to modify shit.. right now just char Field, but could be expanded later
@@ -1845,7 +1893,7 @@ class Action(Privacy):
         self.creator = relationship.creator
         self.save()
 
-    def getVerbose(self,view_user=None):
+    def getVerbose(self,view_user=None,vals={}):
         #Check for relationship
         relationship = Relationship.lg.get_or_none(id=self.relationship_id)
         if not relationship:
@@ -1864,16 +1912,16 @@ class Action(Privacy):
         elif view_user and to_user.id == view_user.id:
             to_you = True
 
-        action_context = {'to_user':to_user,
+        vals.update({'to_user':to_user,
                             'to_you':to_you,
                             'from_user':from_user,
                             'from_you':from_you,
                             'type':self.type,
                             'modifier':self.modifier,
                             'true':True,
-                            'timestamp':self.when}
+                            'timestamp':self.when})
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',action_context)
+        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
         return action_verbose
 
 
@@ -1998,197 +2046,14 @@ class Notification(Privacy):
 
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
+class Office(Content):
+    governmental = models.BooleanField(default=False)
+    tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
 
-class Politician(UserProfile):
-    office_seeking = models.CharField(max_length=100)
-    num_supporters = models.IntegerField(default=0)
-    num_messages = models.IntegerField(default=0)
-
-    def getSupporters(self):
-        support = Supported.objects.filter(user=self, confirmed=True)
-        supporter_ids = support.values_list('to_user', flat=True)
-        return UserProfile.objects.filter(id__in=supporter_ids)
-
-    def support(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if not supported:
-            supported = Supported(user=user, to_user=self)
-            supported.autoSave()
-            self.num_supporters += 1
-            self.save()
-        if not supported.confirmed:
-            supported.confirmed = True
-            supported.save()
-            self.num_supporters += 1
-            self.save()
-
-    def unsupport(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if supported and supported.confirmed:
-            supported.confirmed = False
-            supported.save()
-            self.num_supporters -= 1
-            self.save()
-
-class ElectedOfficial(Politician):
-    # ENUMS
-    TITLE_CHOICES = ( ('S','Sen.'), ('R','Rep.'), ('M', 'Sel.') )
-    # Name/Title
-    title = models.CharField(max_length=1, choices=TITLE_CHOICES, null=True)
-    official_name = models.CharField(max_length=200,null=True)
-    # ID Numbers
-    govtrack_id = models.IntegerField(null=True)
-    pvs_id = models.IntegerField(null=True)
-    os_id = models.CharField(max_length=50, null=True)
-    bioguide_id = models.CharField(max_length=50, null=True)
-    metavid_id = models.CharField(max_length=150, null=True)
-    youtube_id = models.CharField(max_length=150, null=True)
-    twitter_id = models.CharField(max_length=150, null=True)
-    # Term Data
-    start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
-
-    def autoSave(self, personXML):
-        """
-        This method parses an individual person object from the  XML from people.xml from GovTrack
-
-        @param personXML:
-        @return:
-        """
-        def parseDate(date):
-            splitDate = str(date).split('-')
-            return datetime.date(year=int(splitDate[0]), month=int(splitDate[1]), day=int(splitDate[2]))
-            #representative.username = person['id']
-        self.govtrack_id = personXML['id']
-        if personXML.has_key('middlename'):
-            self.middle_name = personXML['middlename']
-        if personXML.has_key('nickname'):
-            self.nick_name = personXML['nickname']
-        if personXML.has_key('birthday'):
-            self.dob = parseDate(personXML['birthday'])
-        if personXML.has_key('gender'):
-            self.gender = personXML['gender']
-        if personXML.has_key('religion'):
-            self.religion = personXML['religion']
-        if personXML.has_key('pvsid'):
-            self.pvs_id = personXML['pvsid']
-        if personXML.has_key('osid'):
-            self.os_id = personXML['osid']
-        if personXML.has_key('bioguideid'):
-            self.bioguide_id = personXML['bioguideid']
-        if personXML.has_key('metavidid'):
-            self.metavid_id = personXML['metavidid']
-        if personXML.has_key('youtubeid'):
-            self.youtube_id = personXML['youtubeid']
-        if personXML.has_key('twitterid'):
-            self.twitter_id = personXML['twitterid']
-        if personXML.has_key('facebookgraphid'):
-            self.facebook_id = personXML['facebookgraphid']
-        self.start_date = parseDate(personXML.role['startdate'])
-        self.end_date = parseDate(personXML.role['enddate'])
-        self.party = personXML.role['party']
-        self.political_role = 'E'
-        # representative.url = list(person.role['url'])
-        self.confirmed = True
-        if ElectedOfficial.objects.filter(facebook_id=self.facebook_id).exists():
-            self.facebook_id=None
-        self.save()
-
-########################################################################################################################
-################################################# Representatives ######################################################
-class CongressSessions(LGModel):
-    session = models.IntegerField(primary_key=True)
-    people = models.ManyToManyField(ElectedOfficial)
-
-    def getReps(self):
-        return self.people.filter(title="R")
-
-    def getRepByStateDistrict(self,state,district):
-        representatives = self.people.filter(title="R")
-        representatives = Representative.objects.filter(representatives)
-        return representatives.filter(state=state,district=district)[0]
-
-    def getSenators(self):
-        return self.people.filter(title="S")
-
-    def getSenatorByState(self,state):
-        return self.people.filter(title="S").get(state=state)
-
-class SelectMan(ElectedOfficial):
-    represents = models.CharField(max_length=500)
-
-class Senator(ElectedOfficial):
-    state = models.CharField(max_length=2,null=True)
-    classNum = models.IntegerField(null=True)
-
-    def autoSave(self, personXML):
-        self.title = 'S'
-        self.state = personXML.role['state']
-        self.classNum = personXML.role['class']
-        super(Senator,self).autoSave(personXML)
-
-class Representative(ElectedOfficial):
-    state = models.CharField(max_length=2,null=True)
-    district = models.IntegerField(null=True)
-
-    def autoSave(self, personXML):
-        self.title = 'R'
-        self.state = personXML.role['state']
-        self.district = personXML.role['district']
-        super(Representative,self).autoSave(personXML)
-
-
-
-class USPresident(ElectedOfficial):
-    pass
-
-
-# External Imports
-class Committee(LGModel):
-    COMMITTEE_CHOICES = ( ('S','Senate'), ('H','House'), ('SS', 'Senate Subcommittee'), ('HS','House Subcommittee'), ("O","Other") )
-    name = models.CharField(max_length=1000)
-    code = models.CharField(max_length=20)
-    type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
-    parent = models.ForeignKey('self', null=True)
-    members = models.ManyToManyField(ElectedOfficial, through='CommitteeMember')
-
-    def saveXML(self,committeeXML,session):
-        type = committeeXML['type']
-        if type == "house": type="H"
-        else: type="S"
-        self.type = type
-        self.name = committeeXML['displayname'].encode("utf-8",'ignore')
-        print committeeXML['displayname'].encode("utf-8",'ignore')
-        self.code = committeeXML['code']
-        self.save()
-        for memberXML in committeeXML.findChildren('member',recursive=False):
-            committeeMember = CommitteeMember()
-            if memberXML.has_key('role'): committeeMember.role = memberXML['role']
-            committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(memberXML['id']))
-            committeeMember.committee = self
-            committeeMember.session =  CongressSessions.objects.get(session=session)
-            committeeMember.save()
-        for subcommitteeXML in committeeXML.findChildren('subcommittee',recursive=False):
-            committee = Committee()
-            committee.name = subcommitteeXML['displayname'].rstrip()
-            print subcommitteeXML['displayname'].encode("utf-8",'ignore')
-            committee.type = type
-            committee.parent = self
-            committee.code = subcommitteeXML['code']
-            committee.save()
-            for submemberXML in subcommitteeXML.findChildren('member'):
-                committeeMember = CommitteeMember()
-                if submemberXML.has_key('role'): committeeMember.role = submemberXML['role']
-                committeeMember.electedOfficial = ElectedOfficial.objects.get(govtrack_id=int(submemberXML['id']))
-                committeeMember.committee = committee
-                committeeMember.session = CongressSessions.objects.get(session=session)
-                committeeMember.save()
-
-class CommitteeMember(LGModel):
-    role = models.CharField(max_length=200,null=True)
-    session = models.ForeignKey(CongressSessions)
-    electedOfficial = models.ForeignKey(ElectedOfficial)
-    committee = models.ForeignKey(Committee)
+    def autoSave(self,creator=None,privacy='PUB'):
+        self.type = "O"
+        self.in_search = True
+        super(Office,self).autoSave(creator,privacy)
 
 
 ########################################################################################################################
@@ -2202,6 +2067,7 @@ class CommitteeMember(LGModel):
 # Petition
 #
 #=======================================================================================================================
+
 class Petition(Content):
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
@@ -2450,79 +2316,13 @@ def parseDate(date):
     return datetime.date(year=int(splitDate[0]), month=int(splitDate[1]), day=int(splitDate[2]))
 
 
-#=======================================================================================================================
-#
-# LegislationStatus
-#
-#=======================================================================================================================
-class LegislationStatus(LGModel):
-    STATUS_CHOICES = ( ('I','Introduced'), ('C','Calendar'), ('V', 'Vote'), ('E','Enacted'), ('T','ToPresident') )
-    status_text = models.CharField(max_length=1, choices=STATUS_CHOICES)
-    datetime = models.DateTimeField(null=True)
-    where = models.CharField(max_length=4, null=True)
-    result = models.CharField(max_length=20, null=True)
-    how = models.CharField(max_length=20, null=True)
-    roll = models.IntegerField(null=True)
+def truncateField(string,name,limit):
+    if len( string ) > limit:
+        print "[WARNING]: " + name + " truncated, length = " + str(len(string))
+    return string[:limit]
 
-    #-------------------------------------------------------------------------------------------------------------------
-    #  setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML   a legislation XML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, parsedXML):
-        if parsedXML.status.introduced:
-            self.status_text = 'I'
-            self.datetime = parseDateTime(parsedXML.status.introduced['datetime'])
-        elif parsedXML.status.calendar:
-            self.status_text = 'C'
-            self.datetime = parseDateTime(parsedXML.status.calendar['datetime'])
-        elif parsedXML.status.vote:
-            self.status_text = 'V'
-            self.datetime = parseDateTime(parsedXML.status.vote['datetime'])
-            self.where = parsedXML.status.vote['where']
-            self.result = parsedXML.status.vote['result']
-            self.how = parsedXML.status.vote['how']
-            if parsedXML.status.vote.has_key("roll") and parsedXML.status.vote['roll'] != '':
-                self.roll = int(parsedXML.status.vote['roll'])
-        elif parsedXML.status.vote2:
-            self.status_text = 'V'
-            self.datetime = parseDateTime(parsedXML.status.vote2['datetime'])
-            self.where = parsedXML.status.vote2['where']
-            self.result = parsedXML.status.vote2['result']
-            self.how = parsedXML.status.vote2['how']
-            if parsedXML.status.vote2.has_key("roll") and parsedXML.status.vote2['roll'] != '':
-                self.roll = int(parsedXML.status.vote2['roll'])
-        elif parsedXML.status.enacted:
-            self.status_text = 'E'
-            self.datetime = parseDateTime(parsedXML.status.enacted['datetime'])
-        elif parsedXML.status.topresident:
-            self.status_text = 'T'
-            self.datetime = parseDateTime(parsedXML.status.topresident['datetime'])
-        self.save()
-
-
-#=======================================================================================================================
-#
-# LegislationSubjects
-#
-#=======================================================================================================================
-class LegislationSubjects(LGModel):
-    term_name = models.CharField(max_length=300)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    termXML         the XML for terms from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation to attach the terms to
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, termXML, legislation):
-        term_name = termXML['name']
-        if not LegislationSubjects.objects.filter(term_name=term_name):
-            newSubject = LegislationSubjects(term_name=term_name)
-            newSubject.save()
-        legislation.subjects.add(LegislationSubjects.objects.get(term_name=term_name))
+class CongressSession(LGModel):
+    session = models.IntegerField(primary_key=True)
 
 
 #=======================================================================================================================
@@ -2531,89 +2331,59 @@ class LegislationSubjects(LGModel):
 #
 #=======================================================================================================================
 class Legislation(Content):
-    # identifying fields
-    bill_session = models.IntegerField(null=True)
+    # Bill Identifiers
+    congress_session = models.ForeignKey(CongressSession)
     bill_type = models.CharField(max_length=2)
     bill_number = models.IntegerField()
-    # descriptive fields
-    bill_updated = models.DateTimeField()
-    state_datetime = models.DateField()
-    state_text = models.CharField(max_length=500)
-    bill_status = models.OneToOneField(LegislationStatus)
-    introduced_datetime = models.DateField()
-    sponsor = models.ForeignKey(ElectedOfficial, related_name="sponsor_id",null=True)
-    cosponsors = models.ManyToManyField(ElectedOfficial, through='LegislationCosponsor')
-    committees = models.ManyToManyField(Committee, through="LegislationCommittee",null=True)
+    # Bill Times
+    bill_updated = models.DateTimeField(null=True)
+    bill_introduced = models.DateField(null=True)
+    # State
+    state_date = models.DateField(null=True)
+    state_text = models.CharField(max_length=50,null=True)
+    # Title
+    full_title = models.CharField(max_length=5000,null=True)
+    # Sponsors
+    # cosponsor relationship is stored in LegislationCosponsor object.  To retrieve them you can use "self.legislation_cosponsors"
+    sponsor = models.ForeignKey(UserProfile, related_name="sponsored_legislation", null=True)
+    committees = models.ManyToManyField('Committee', related_name="legislation_committees", null=True)
+    # Others
     bill_relation = models.ManyToManyField('self', null=True, symmetrical=False)
-    subjects = models.ManyToManyField(LegislationSubjects)
-    bill_summary = models.TextField(null=True)
+    bill_subjects = models.ManyToManyField('LegislationSubject', null=True, related_name="subject_bills")
+    bill_summary = models.TextField(null=True,max_length=400000)
+    # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML   the XML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, parsedXML):
-        if parsedXML.bill and parsedXML.bill.has_key('session'):
-            self.bill_session = int(parsedXML.bill['session'])
-        self.bill_type = parsedXML.bill['type']
-        self.bill_number = int(parsedXML.bill['number'])
-        self.bill_updated = parseDateTime(parsedXML.bill['updated'])
-        self.state_datetime = parseDateTime(parsedXML.state['datetime'])
-        self.state_text = parsedXML.state.contents[0]
-        self.introduced_datetime = parseDate(parsedXML.introduced['datetime'])
-        if parsedXML.sponsor.has_key('id'):
-            self.sponsor = ElectedOfficial.objects.get(govtrack_id=int(parsedXML.sponsor['id']))
-        self.bill_summary = parsedXML.summary.contents[0]
-        # new LegislationStatus, set and save Attributes from parsed XML
-        newLegislationStatus = LegislationStatus()
-        newLegislationStatus.setSaveAttributes(parsedXML=parsedXML)
-        self.bill_status = newLegislationStatus
+    def getTitle(self):
+        if self.title and self.title != '':
+            return self.title
+        elif self.full_title and self.full_title != '':
+            return self.full_title
+        else:
+            return 'No Legislation Title Available'
 
-        already = Legislation.lg.get_or_none(bill_type=self.bill_type, bill_number=self.bill_number, bill_session=self.bill_session)
-        if already:
-            return False
+    # Returns a list of UserProfile objects that are cosponsors
+    # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
+    def getCosponsors(self):
+        return map( lambda x : x.cosponsor, self.legislation_cosponsors.all() )
 
-        self.save()
-        # Parses all tags for all relevant information
-        for title in parsedXML.findAll('title'):
-            newLegislationTitle = LegislationTitle()
-            newLegislationTitle.setSaveAttributes(titleXML=title, legislation=self)
-        for cosponsor in parsedXML.findAll('cosponsor'):
-            legislationCosponsor = LegislationCosponsor()
-            legislationCosponsor.setSaveAttributes(cosponsorXML=cosponsor, legislation=self)
-        for action in parsedXML.findAll('action'):
-            newLegislationAction = LegislationAction()
-            newLegislationAction.setSaveAttributes(actionXML=action, legislation=self)
-            newLegislationAction.setSaveReferences(actionXML=action)
-        for calendar in parsedXML.actions.findAll('calendar'):
-            newLegislationCalendar = LegislationCalendar()
-            newLegislationCalendar.setSaveAttributes(calendarXML=calendar, legislation=self)
-            newLegislationCalendar.setSaveReferences(actionXML=calendar)
-        for vote in parsedXML.actions.findAll('vote'):
-            newLegislationVote = LegislationVote()
-            newLegislationVote.setSaveAttributes(voteXML=vote, legislation=self)
-            newLegislationVote.setSaveReferences(actionXML=vote)
-        for toPresident in parsedXML.actions.findAll('topresident'):
-            newLegislationToPresident = LegislationToPresident()
-            newLegislationToPresident.setSaveAttributes(toPresidentXML=toPresident, legislation=self)
-            newLegislationToPresident.setSaveReferences(actionXML=toPresident)
-        for signed in parsedXML.actions.findAll('signed'):
-            newLegislationSigned = LegislationSigned()
-            newLegislationSigned.setSaveAttributes(signedXML=signed, legislation=self)
-            newLegislationSigned.setSaveReferences(actionXML=signed)
-        for enacted in parsedXML.actions.findAll('enacted'):
-            newLegislationEnacted = LegislationEnacted()
-            newLegislationEnacted.setSaveAttributes(enactedXML=enacted, legislation=self)
-            newLegislationEnacted.setSaveReferences(actionXML=enacted)
-        for committee in parsedXML.committees.findAll('committee'):
-            if committee.has_key('name') and committee['name'] != "":
-                newLegislationCommittee = LegislationCommittee()
-                newLegislationCommittee.setSaveAttributes(parsedXML=parsedXML, committeeXML=committee, legislation=self)
-        for term in parsedXML.subjects.findAll('term'):
-            newLegislationSubject = LegislationSubjects()
-            newLegislationSubject.setSaveAttributes(termXML=term, legislation=self)
+    def getActions(self):
+        return self.legislation_actions.all()
+
+
+    def autoSave(self,creator=None,privacy='PUB'):
+        self.type = 'L'
+        if self.sponsor:
+            creator = self.sponsor
+            self.creator = creator
+        super(Legislation,self).autoSave(creator,privacy)
+
+#=======================================================================================================================
+#
+# LegislationSubject
+#
+#=======================================================================================================================
+class LegislationSubject(LGModel):
+    name = models.CharField(max_length=300)
 
 
 #=======================================================================================================================
@@ -2622,48 +2392,9 @@ class Legislation(Content):
 #
 #=======================================================================================================================
 class LegislationCosponsor(LGModel):
-    legislation = models.ForeignKey(Legislation)
-    elected_official = models.ForeignKey(ElectedOfficial)
-    joined = models.DateField()
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    cosponsorXML   the XML from a cosponsor tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, cosponsorXML, legislation):
-        self.legislation = legislation
-        self.elected_official = ElectedOfficial.objects.get(govtrack_id=int(cosponsorXML['id']))
-        self.joined = parseDate(cosponsorXML['joined'])
-        self.save()
-
-
-#=======================================================================================================================
-#
-# LegislationTitle
-#
-#=======================================================================================================================
-class LegislationTitle(LGModel):
-    bill = models.ForeignKey(Legislation)
-    title = models.CharField(max_length=1000)
-    title_type = models.CharField(max_length=50)
-    title_as = models.CharField(max_length=200)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    titleXML   the XML from a title tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, titleXML, legislation):
-        self.bill = legislation
-        self.title = titleXML.contents[0]
-        self.title_type = titleXML['type']
-        self.title_as = titleXML['as']
-        self.save()
+    legislation = models.ForeignKey(Legislation,related_name="legislation_cosponsors")
+    cosponsor = models.ForeignKey(UserProfile)
+    date = models.DateField(null=True)
 
 
 #=======================================================================================================================
@@ -2674,39 +2405,71 @@ class LegislationTitle(LGModel):
 class LegislationAction(LGModel):
     ACTION_CHOICES = ( ('A','Action'), ('C','Calendar'), ('V', 'Vote'),
                        ('E','Enacted'), ('S', 'Signed'), ('T', 'ToPresident') )
-    bill = models.ForeignKey(Legislation)
-    datetime = models.DateTimeField()
-    refer_committee = models.ForeignKey(Committee, null=True)
-    text = models.TextField(null=True)
+    datetime = models.DateTimeField(null=True)
+    legislation = models.ForeignKey(Legislation, null=True, related_name='legislation_actions')
+    amendment = models.ForeignKey('LegislationAmendment', null=True, related_name='amendment_actions')
+    committee = models.ForeignKey('Committee', null=True, related_name="legislation_activity")
+    state = models.TextField(max_length=100, null=True)
+    text = models.TextField(max_length=2000, null=True)
     action_type = models.CharField(max_length=1, choices=ACTION_CHOICES)
+    references = models.ManyToManyField('LegislationReference')
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    titleXML        the XML from a action tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, actionXML, legislation):
-        self.bill = legislation
-        self.datetime = parseDateTime(actionXML['datetime'])
-        self.text = actionXML.text
-        self.action_type = 'A'
-        self.save()
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveReferences
-    #   This method sets and saves references by extracting the information from parsedXML
-    #   @arg    actionXML   the XML from an action tag from parsedXML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveReferences(self, actionXML):
-        for reference in actionXML.findAll('reference'):
-            newLegislationRefLabel = LegislationRefLabel()
-            newLegislationRefLabel.action = self
-            newLegislationRefLabel.label = reference['label']
-            newLegislationRefLabel.ref = reference['ref']
-            newLegislationRefLabel.save()
+    def parseGovtrack(self,XML,legislation=None,amendment=None):
+
+        # If action type has not been already, this action has type "action"
+        if not self.action_type:
+            self.action_type = "A"
+        # Get other standard fields
+        self.datetime = parseDateTime(XML['datetime'])
+
+        self.text = truncateField( XML.text.encode('utf-8','ignore') , "LegislationAction text" , 500 )
+
+        #Begin duplicate action filtering
+        already = LegislationAction.objects.filter( datetime=self.datetime , text=self.text , action_type=self.action_type )
+
+        if legislation:
+            self.legislation = legislation
+            already = already.filter( legislation = legislation )
+        if amendment:
+            self.amendment = amendment
+            already = already.filter( amendment = amendment )
+
+        if XML.committee: # If this action has a committee
+            committee = None # Set initial to None
+            subcommittee_name = XML.committee.get('subcommittee') # get potential subcommittee name
+            if subcommittee_name: # if that name exists
+                committee = Committee.lg.get_or_none(title=subcommittee_name) # try to find that subcommittee
+            if not committee: # if no subcommittee was found
+                committee_name = XML.committee.get('name') # get the committee name
+                if committee_name: # if there is a committee name
+                    committee = Committee.lg.get_or_none(title=committee_name) # try to find that committee
+            if committee: # if a committee was found
+                already = already.filter( committee = committee ) # Refine duplicate filtering
+                self.committee = committee # set it!
+
+        #Get state
+        if XML.has_key('state'):
+            state = truncateField( XML['state'].encode('utf-8','ignore') , "LegislationAction state" , 100 )
+            already = already.filter( state = state ) # Refine duplicate filtering
+            self.state = state
+
+        action = self # Make the current action yourself
+        if already: # If an identical action exists
+            action = already[0]
+
+        action.save()
+
+        for refer in XML.findChildren('reference',recursive=False):
+            ref_label = truncateField( refer.get('label').encode('utf-8','ignore') , 'LegislationReference ref_label' , 400 )
+
+            ref_reference = truncateField( refer.get('ref').encode('utf-8','ignore') , 'LegislationReference ref_reference' , 400 )
+
+            reference = LegislationReference.lg.get_or_none(ref=ref_reference,label=ref_label)
+            if not reference:
+                reference = LegislationReference(ref=ref_reference,label=ref_label)
+                reference.save()
+            action.references.add(reference)
 
 
 #=======================================================================================================================
@@ -2720,25 +2483,21 @@ class LegislationCalendar(LegislationAction):
     calendar_number = models.IntegerField(null=True)
     under = models.CharField(max_length=100, null=True)
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    calendarXML   the XML from a calendar tag from parsedXML from govtrack.us
-    #   @arg    legislation   the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, calendarXML, legislation):
-        self.bill = legislation
-        self.datetime = parseDateTime(calendarXML['datetime'])
-        self.text = calendarXML.text
+
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'C'
-        if calendarXML.has_key('number'):
-            self.calendar_number = int(calendarXML['number'])
-        if calendarXML.has_key('calendar'):
-            self.calendar = calendarXML['calendar']
-        if calendarXML.has_key('under'):
-            self.under = calendarXML['under']
-        self.save()
+
+        if XML.has_key('number'):
+            self.calendar_number = int(XML['number'])
+
+        if XML.has_key('calendar'):
+            self.calendar = truncateField( XML['calendar'].encode('utf-8','ignore') , 'LegislationCalendar calendar' , 100 )
+
+        if XML.has_key('under'):
+            self.under = truncateField( XML['under'].encode('utf-8','ignore') , 'LegislationCalendar under' , 100 )
+
+        super(LegislationCalendar, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
+
 
 
 #=======================================================================================================================
@@ -2748,41 +2507,37 @@ class LegislationCalendar(LegislationAction):
 #
 #=======================================================================================================================
 class LegislationVote(LegislationAction):
-    how = models.CharField(max_length=150, null=True)
+    how = models.CharField(max_length=100, null=True)
     vote_type = models.CharField(max_length=100, null=True)
     roll = models.IntegerField(null=True)
     where = models.CharField(max_length=4, null=True)
     result = models.CharField(max_length=50, null=True)
-    state = models.CharField(max_length=100, null=True)
-    suspension = models.CharField(max_length=50, null=True)
+    suspension = models.BooleanField(default=False)
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    calendarXML   the XML from a vote tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, voteXML, legislation):
-        self.bill = legislation
-        self.datetime = parseDateTime(voteXML['datetime'])
-        self.text = voteXML.text
+
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'V'
-        if voteXML.has_key('how'):
-            self.how = voteXML['how']
-        if voteXML.has_key('type'):
-            self.vote_type = voteXML['type']
-        if voteXML.has_key('roll'):
-            self.roll = int(voteXML['roll'])
-        if voteXML.has_key('where'):
-            self.where = voteXML['where']
-        if voteXML.has_key('result'):
-            self.result = voteXML['result']
-        if voteXML.has_key('suspension'):
-            self.suspension = int(voteXML['suspension'])
-        if voteXML.has_key('state'):
-            self.state = voteXML['state']
-        self.save()
+
+        if XML.has_key('how'):
+            self.how = truncateField( XML['how'].encode('utf-8','ignore') , 'LegislationVote how' , 100 )
+
+        if XML.has_key('type'):
+            self.vote_type = truncateField( XML['type'].encode('utf-8','ignore') , 'LegislationVote vote_type' , 100 )
+
+        if XML.has_key('roll'):
+            self.roll = int(XML['roll'])
+
+        if XML.has_key('where'):
+            self.where = truncateField( XML['where'].encode('utf-8','ignore') , 'LegislationVote where' , 4 )
+
+        if XML.has_key('result'):
+            self.result = truncateField( XML['result'].encode('utf-8','ignore') , 'LegislationVote result' , 50 )
+
+        if XML.has_key('suspension'):
+            self.suspension = ( 1 == int(XML['suspension']) )
+
+        super(LegislationVote, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
+
 
 #=======================================================================================================================
 #
@@ -2791,18 +2546,12 @@ class LegislationVote(LegislationAction):
 #
 #=======================================================================================================================
 class LegislationToPresident(LegislationAction):
+    pass
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    toPresidentXML   the XML from a topresident tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, toPresidentXML, legislation):
-        super(LegislationToPresident, self).setSaveAttributes(toPresidentXML,legislation)
+
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'T'
-        self.save()
+        super(LegislationToPresident, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2814,17 +2563,10 @@ class LegislationToPresident(LegislationAction):
 class LegislationSigned(LegislationAction):
     pass
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    signedXML   the XML from a signed tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, signedXML, legislation):
-        super(LegislationSigned, self).setSaveAttributes(signedXML,legislation)
+
+    def parseGovtrack(self,XML,legislation=None,amendment=None):
         self.action_type = 'S'
-        self.save()
+        super(LegislationSigned, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2836,27 +2578,17 @@ class LegislationSigned(LegislationAction):
 class LegislationEnacted(LegislationAction):
     number = models.CharField(max_length=100)
     type = models.CharField(max_length=100, null=True)
-    state = models.CharField(max_length=100, null=True)
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    enactedXML   the XML from a enacted tag from parsedXML from govtrack.us
-    #   @arg    legislation     the legislation which contains this action
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, enactedXML, legislation):
-        self.bill = legislation
-        self.datetime = parseDateTime(enactedXML['datetime'])
-        self.text = enactedXML.text
-        if enactedXML.has_key('number'):
-            self.number = enactedXML['number']
-        if enactedXML.has_key('type'):
-            self.type = enactedXML['type']
-        if enactedXML.has_key('state'):
-            self.state = enactedXML['state']
+
+    def parseGovtrack(self, XML,legislation=None,amendment=None):
         self.action_type = 'E'
-        self.save()
+
+        if enactedXML.has_key('number'):
+            self.number = enactedXML['number'].encode('utf-8','ignore')
+        if enactedXML.has_key('type'):
+            self.type = enactedXML['type'].encode('utf-8','ignore')
+
+        super(LegislationEnacted, self).parseGovtrack(XML,legislation=legislation,amendment=amendment)
 
 
 #=======================================================================================================================
@@ -2864,120 +2596,41 @@ class LegislationEnacted(LegislationAction):
 # LegislationRefLabel
 #
 #=======================================================================================================================
-class LegislationRefLabel(LGModel):
-    action = models.ForeignKey(LegislationAction)
-    label = models.CharField(max_length=1000)
-    ref = models.CharField(max_length=1000)
+class LegislationReference(LGModel):
+    label = models.CharField(max_length=400)
+    ref = models.CharField(max_length=400)
 
-
-#=======================================================================================================================
-#
-# LegislationCommittee
-#
-#=======================================================================================================================
-class LegislationCommittee(LGModel):
-    legislation = models.ForeignKey(Legislation)
-    committee = models.ForeignKey(Committee, null=True)
-    activity = models.CharField(max_length=250)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML       the XML from govtrack.us
-    #   @arg    legislation     the legislation which contains this committee
-    #   @arg    committeeXML    the XML for a committee tag from parsedXML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, parsedXML, committeeXML, legislation):
-        self.legislation = legislation
-        self.activity = committeeXML['activity']
-        if committeeXML.has_key('code') and not committeeXML.has_key('subcommittee') and committeeXML['code'] != "":
-            if Committee.objects.filter(code=committeeXML['code']).exists():
-                self.committee = Committee.objects.filter(code=committeeXML['code'])[0]
-        elif committeeXML.has_key('subcommittee'):
-            subcommittee_name = committeeXML['subcommittee'] + " Subcommittee"
-            subcommittee_name = subcommittee_name.replace("Intellectual Property, Competition and the Internet","Intellectual Property, Competition, and the Internet")
-            committee_name = committeeXML['name']
-            if "House" in committee_name:
-                if "Judiciary" in committee_name or "Budget" in committee_name:
-                    committee_name = committee_name.replace("House ","House Committee on the ")
-                else:
-                    committee_name = committee_name.replace("House ","House Committee on ")
-            elif "Senate" in committee_name:
-                if "Judiciary" in committee_name or "Budget" in committee_name:
-                    committee_name = committee_name.replace("Senate ","Senate Committee on the ")
-                else:
-                    committee_name = committee_name.replace("Senate ","Senate Committee on ")
-            if Committee.objects.filter(name=committee_name).exists():
-                parent_committee = Committee.objects.get(name=committee_name)
-                if Committee.objects.filter(name=subcommittee_name, parent=parent_committee).exists():
-                    self.committee = Committee.objects.get(name=subcommittee_name, parent=parent_committee)
-        self.save()
 
 #=======================================================================================================================
 #
 # LegislationAmendment
 #
 #=======================================================================================================================
-class LegislationAmendment(LGModel):
-    session = models.IntegerField()
-    chamber = models.CharField(max_length=10)
-    number = models.IntegerField()
+class LegislationAmendment(Content):
+    # Identifiers
+    legislation= models.ForeignKey(Legislation, related_name="legislation_amendments")
+    congress_session = models.ForeignKey('CongressSession', related_name='session_amendments')
+    amendment_type = models.CharField(max_length=2)
+    amendment_number = models.IntegerField()
+    # Datetimes
     updated = models.DateTimeField(null=True)
-    legislation= models.ForeignKey(Legislation,null=True)
-    status_datetime = models.DateTimeField(null=True)
-    status = models.CharField(max_length=400)
-    sponsor_id = models.ForeignKey(ElectedOfficial,null=True)
-    committee = models.ForeignKey(Committee,null=True)
     offered_datetime = models.DateField(null=True)
-    description = models.TextField(max_length=50000)
-    purpose = models.TextField(max_length=5000)
+    # Status
+    status_datetime = models.DateTimeField(null=True)
+    status_text = models.CharField(max_length=20)
+    # Sponsors
+    sponsor = models.ForeignKey(UserProfile,null=True)
+    # Other
+    description = models.TextField(max_length=50000,null=True)
+    purpose = models.TextField(max_length=5000,null=True)
     amends_sequence = models.IntegerField(null=True)
 
-    def saveXML(self,xml):
-
-        if xml.amendment:
-            if xml.amendment.has_key('session'):
-                self.session = int(xml.amendment['session'])
-            if xml.amendment.has_key('chamber'):
-                self.chamber = xml.amendment['chamber']
-            if xml.amendment.has_key('number'):
-                self.number = int(xml.amendment['number'])
-            if xml.amendment.has_key('updated'):
-                self.updated = parseDateTime(xml.amendment['updated'])
-        if xml.amends:
-            if xml.amends.has_key('type') and xml.amends.has_key('number'):
-                self.legislation = Legislation.objects.get(bill_type=xml.amends['type'],bill_number=int(xml.amends['number']),bill_session=int(xml.amendment['session']))
-            if xml.amends.has_key('sequence') and xml.amends['sequence'] != "":
-                self.amends_sequence = int(xml.amends['sequence'])
-        if xml.status:
-            if xml.status.has_key('datetime'):
-                self.status_datetime = parseDateTime(xml.status['datetime'])
-            self.status_text = xml.status.contents[0]
-        if xml.sponsor and xml.sponsor.has_key('id'):
-            self.sponsor_id = ElectedOfficial.objects.get(govtrack_id=int(xml.sponsor['id']))
-            #TODO committee
-        if xml.offered and xml.offered.has_key('datetime'):
-            self.offered_datetime = parseDateTime(xml.offered['datetime'])
-        if xml.description:
-            self.description = xml.description.contents[0]
-        if xml.purpose:
-            self.purpose = xml.purpose.contents[0]
-
-        already = LegislationAmendment.lg.get_or_none(session=self.session, chamber=self.chamber, number=self.number, updated=self.updated)
-        if not already:
-            self.save()
-        else:
-            return False
-
-#=======================================================================================================================
-#
-# RollOption
-#
-#=======================================================================================================================
-class RollOption(LGModel):
-    key = models.CharField(max_length=100)
-    text = models.CharField(max_length=100)
+    def autoSave(self,creator=None,privacy='PUB'):
+        self.type = 'A'
+        if self.sponsor:
+            creator = self.sponsor
+            self.creator = creator
+        super(LegislationAmendment,self).autoSave(creator,privacy)
 
 
 #=======================================================================================================================
@@ -2986,77 +2639,29 @@ class RollOption(LGModel):
 #
 #=======================================================================================================================
 class CongressRoll(LGModel):
-    where = models.CharField(max_length=100)
-    session = models.ForeignKey(CongressSessions)
-    year = models.IntegerField()
+    # Basic Info
+    where = models.CharField(max_length=20)
+    session = models.ForeignKey(CongressSession)
     roll_number = models.IntegerField()
     source =  models.CharField(max_length=100)
+    # Times
     datetime = models.DateTimeField()
-    updated = models.DateTimeField()
-    aye = models.IntegerField()
-    nay = models.IntegerField()
-    nv = models.IntegerField()
-    present = models.IntegerField()
-    category = models.CharField(max_length=100)
-    type = models.CharField(max_length=250)
-    question = models.CharField(max_length=1000)
-    required = models.CharField(max_length=50)
-    result = models.CharField(max_length=100)
-    bill = models.ForeignKey(Legislation, null=True)
-    amendment = models.ForeignKey(LegislationAmendment, null=True)
-    options = models.ManyToManyField(RollOption)
-    voters = models.ManyToManyField(ElectedOfficial, through='VotingRecord')
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML       the XML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self, parsedXML):
-        self.where = parsedXML.roll['where']
-        self.session = CongressSessions.objects.get(session=int(parsedXML.roll['session']))
-        self.year = int(parsedXML.roll['year'])
-        self.roll_number = parsedXML.roll['roll']
-        self.source = parsedXML.roll['source']
-        self.datetime = parseDateTime(parsedXML.roll['datetime'])
-        self.updated = parseDateTime(parsedXML.roll['updated'])
-        self.aye = int(parsedXML.roll['aye'])
-        self.nay = int(parsedXML.roll['nay'])
-        self.nv = int(parsedXML.roll['nv'])
-        self.present = int(parsedXML.roll['present'])
-        self.category = parsedXML.category.contents[0]
-        self.type = parsedXML.type.contents[0]
-        self.question = parsedXML.question.contents[0]
-        self.required = parsedXML.required.contents[0]
-        self.result = parsedXML.result.contents[0]
-        if parsedXML.bill:
-            bill_type = parsedXML.bill['type']
-            bill_number = int(parsedXML.bill['number'])
-            bill_session = int(parsedXML.bill['session'])
-            if Legislation.objects.filter(bill_type=bill_type,bill_number=bill_number,bill_session=bill_session).exists():
-                bill =  Legislation.objects.get(bill_type=bill_type,bill_number=bill_number,bill_session=bill_session)
-                self.bill = bill
-                if parsedXML.amendment and parsedXML.amendment.has_key('number'):
-                    number = parsedXML.amendment['number']
-                    if "s" in number: chamber="s"
-                    else: chamber='h'
-                    number = int(number.replace("s",""))
-                    if LegislationAmendment.objects.filter(legislation=bill, chamber=chamber, amends_sequence=number):
-                        self.amendment = LegislationAmendment.objects.get(legislation=bill, chamber=chamber, amends_sequence=number)
-        self.save()
-        for option in parsedXML.findAll('option'):
-            if not RollOption.objects.filter(key=option['key']):
-                newOption = RollOption(key=option['key'], text=option.contents[0])
-                newOption.save()
-            self.options.add(RollOption.objects.get(key=option['key']))
-        for voterXML in parsedXML.findAll('voter'):
-            eoff = ElectedOfficial.lg.get_or_none(govtrack_id=int(voterXML['id']))
-            if eoff:
-                already = VotingRecord.lg.get_or_none(bill=self.bill,amendment=self.amendment,roll=self,electedofficial=eoff)
-                if not already:
-                    newVotingRecord = VotingRecord()
-                    newVotingRecord.setSaveAttributes(voterXML,self,self.bill,self.amendment)
+    updated = models.DateTimeField(null=True)
+    # Voting Data
+    aye = models.IntegerField(default=-1)
+    nay = models.IntegerField(default=-1)
+    nv = models.IntegerField(default=-1)
+    present = models.IntegerField(default=-1)
+    # votes are stored with a foreign key
+    # Text Info
+    category = models.CharField(max_length=100, null=True)
+    type = models.CharField(max_length=100, null=True)
+    question = models.CharField(max_length=1000, null=True)
+    required = models.CharField(max_length=10, null=True)
+    result = models.CharField(max_length=80, null=True)
+    # Legislation
+    legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
+    amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
 
 #=======================================================================================================================
@@ -3064,33 +2669,13 @@ class CongressRoll(LGModel):
 # VotingRecord
 #
 #=======================================================================================================================
-class VotingRecord(LGModel):
-    electedofficial = models.ForeignKey(ElectedOfficial)
-    roll = models.ForeignKey(CongressRoll)
-    bill = models.ForeignKey(Legislation, null=True)
-    amendment = models.ForeignKey(LegislationAmendment, null=True)
-    votekey = models.CharField(max_length=100)
-    votevalue = models.CharField(max_length=100)
+class CongressVote(LGModel):
+    roll = models.ForeignKey(CongressRoll,related_name="votes")
+    voter = models.ForeignKey(UserProfile,related_name="congress_votes")
+    votekey = models.CharField(max_length=1)
+    votevalue = models.CharField(max_length=15)
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # setSaveAttributes
-    #   This method sets and saves attributes by extracting the information from parsedXML
-    #   @arg    parsedXML       the XML from govtrack.us
-    #   @arg    legislation     the legislation which contains this committee
-    #   @arg    committeeXML    the XML for a committee tag from parsedXML from govtrack.us
-    #   @return void
-    #-------------------------------------------------------------------------------------------------------------------
-    def setSaveAttributes(self,parsedXML,rollObj,legislation=None,amendment=None):
-        if ElectedOfficial.objects.filter(govtrack_id=int(parsedXML['id'])).exists():
-            self.electedofficial = ElectedOfficial.objects.get(govtrack_id=int(parsedXML['id']))
-            self.roll = rollObj
-            if legislation is not None:
-                self.bill = legislation
-            if amendment is not None:
-                self.amendment = amendment
-            self.votekey = parsedXML['vote']
-            self.votevalue = parsedXML['value']
-            self.save()
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3173,9 +2758,14 @@ class NextQuestion(LGModel):
 #=======================================================================================================================
 class Response(Content):
     question = models.ForeignKey(Question)
-    answer_val = models.IntegerField()
+    answer_val = models.IntegerField(default=-1)
+    most_chosen_answer = models.ForeignKey(Answer,related_name="responses",null=True)
+    most_chosen_num = models.IntegerField(default=0)
+    total_num = models.IntegerField(default=0)
     weight = models.IntegerField(default=5)
-    answers = custom_fields.ListField(default=[])    # for storing checkbox response
+    explanation = models.TextField(max_length=1000, blank=True)
+    answer_tallies = models.ManyToManyField('AnswerTally')
+
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
     #-------------------------------------------------------------------------------------------------------------------
@@ -3188,34 +2778,6 @@ class Response(Content):
 
     def getValue(self):
         return float(self.answer_val)
-
-
-#=======================================================================================================================
-# Response by a user.
-#
-#=======================================================================================================================
-class UserResponse(Response):
-    responder = models.ForeignKey(UserProfile)
-    explanation = models.TextField(max_length=1000, blank=True)
-    #-------------------------------------------------------------------------------------------------------------------
-    # Autosaves with sensible default values.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.title = unicode(self.question.title + " Response by " + self.responder.get_name())
-        self.type = 'R'
-        self.in_calc = False
-        self.save()
-        self.responder.getView().responses.add(self)
-        super(UserResponse, self).autoSave(creator=creator, privacy=privacy)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Updates answer appropriately.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoUpdate(self, answer_val, explanation):
-        self.answer_val = answer_val
-        self.explanation = explanation
-        self.save()
-        return self
 
 
 ########################################################################################################################
@@ -3506,7 +3068,7 @@ class ViewComparison(LGModel):
         else: vals['user_url'] = ''
         return vals
 
-    def toDict(self, viewB_url=''):
+    def  toDict(self, viewB_url=''):
         from lovegov.modernpolitics.helpers import getMainTopics
         to_return = []
         fast_comparison = self.loadOptimized()
@@ -3527,6 +3089,7 @@ class ViewComparison(LGModel):
                 topic_dict['result'] = topic_bucket.getSimilarityPercent()
                 topic_dict['num_q'] = topic_bucket.num_questions
                 to_return.append(topic_dict)
+            to_return.sort(key=lambda x: x['order'])
             total_bucket = fast_comparison.getTotalBucket()
             vals = {'topics':to_return,'main':{'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}}
             vals['user_url'] = viewB_url
@@ -3574,35 +3137,9 @@ class UserComparison(ViewComparison):
 # Tuple for storing how many people in an aggregate view chose this answer.
 #
 #=======================================================================================================================
-class AggregateTuple(LGModel):
-    answer_val = models.IntegerField()
+class AnswerTally(LGModel):
+    answer = models.ForeignKey('Answer',null=True)
     tally = models.IntegerField()
-
-#=======================================================================================================================
-# Model for storing how a group of people answered a question.
-#
-#=======================================================================================================================
-class AggregateResponse(Response):
-    users = models.ManyToManyField(UserProfile)
-    responses = models.ManyToManyField(AggregateTuple)
-    answer_avg = models.DecimalField(default=0, max_digits=4, decimal_places=2)
-    total = models.IntegerField()
-    def autoSave(self):
-        self.type = 'Z'
-        self.in_feed = False
-        self.in_search = False
-        self.in_calc = False
-        self.save()
-        super(AggregateResponse, self).autoSave()
-
-    def getValue(self):
-        return float(self.answer_avg)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearResponses(self):
-        self.responses.all().delete()
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3731,6 +3268,7 @@ class Group(Content):
             group_joined.autoSave()
         group_joined.privacy = privacy
         group_joined.confirm()
+        group_joined.ever_member = True
         self.members.add(user)
         self.num_members += 1
         self.save()
@@ -3913,6 +3451,19 @@ class Group(Content):
         self.save()
         return self.alias
 
+    def getMotionExpiration(self):
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(days=self.motion_expiration)
+        expiration = now + delta
+        return  expiration
+
+    def coup(self, government_type):
+        self.government_type = government_type
+        if government_type == 'traditional':
+            self.democratic = False
+        else:
+            self.democratic = True
+        self.save()
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -3922,10 +3473,12 @@ class Motion(Content):
     group = models.ForeignKey(Group)
     motion_type = models.CharField(max_length=30, choices=MOTION_CHOICES, default='other')
     full_text = models.TextField()
-    expiration_date = models.DateTimeField(auto_now_add=True)
+    expiration_date = models.DateTimeField()
     passed = models.BooleanField(default=False)
     expired = models.BooleanField(default=False)
     above_threshold = models.BooleanField(default=False)
+    motion_upvotes = models.IntegerField(default=0)
+    motion_downvotes = models.IntegerField(default=0)
     # add/remove moderator motion
     moderator = models.ForeignKey(UserProfile, null=True)
     # change group government type
@@ -3936,9 +3489,78 @@ class Motion(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
         self.type='M'
+        expiration_date = self.group.getMotionExpiration()
+        self.expiration_date = expiration_date
+        self.in_feed = True
+        self.title = self.getTitle()
+        self.summary = self.full_text[:100]
         self.save()
         super(Motion, self).autoSave(creator=creator, privacy=privacy)
 
+    def getTitle(self):
+        if self.motion_type == "add_moderator":
+            return "MOTION: " + self.group.get_name() + " Add Moderator " + self.moderator.get_name()
+        elif self.motion_type == "remove_moderator":
+            return "MOTION: " + self.group.get_name() + " Remove Moderator " + self.moderator.get_name()
+        elif self.motion_type == "coup_detat":
+            return "MOTION: " + self.group.get_name() + " Coup D'etat"
+
+    def execute(self):
+        if self.motion_type == "add_moderator":
+            self.group.admins.add(self.moderator)
+        elif self.motion_type == "remove_moderator":
+            self.group.admins.remove(self.moderator)
+        elif self.motion_type == "coup_detat":
+            self.group.coup(self.government_type)
+
+    def motionVote(self, my_vote):
+        if self.isActionable():
+            group = self.group
+            user = my_vote.user
+            if group.hasMember(user):
+                motion_vote = MotionVoted.lg.get_or_none(user=user, content=self)
+                if motion_vote:
+                    motion_vote.value = my_vote.value
+                    motion_vote.save()
+                else:
+                    motion_vote = MotionVoted(user=user, content=self, value=my_vote.value, privacy=my_vote.privacy)
+                    motion_vote.autoSave()
+            self.calc()
+
+    def calc(self):
+
+        if self.isActionable():
+            group = self.group
+
+            votes = MotionVoted.objects.filter(content=self)
+            upvotes = votes.filter(value=1).count()
+            downvotes = votes.filter(value=-1).count()
+            totalvotes = upvotes + downvotes
+            self.motion_upvotes = upvotes
+            self.motion_downvotes = downvotes
+
+            participation = int(totalvotes / float(group.members.count()) * 100)
+            agreement = int(upvotes / float(totalvotes) * 100)
+
+            if participation > group.participation_threshold and agreement > group.agreement_threshold:
+                self.above_threshold = True
+
+            now = datetime.datetime.now()
+            expiration_date = self.expiration_date
+            if now > expiration_date:
+                self.expired = True
+                if self.above_threshold:
+                    self.passed = True
+            else:
+                if participation > group.agreement_threshold:
+                    self.passed = True
+            self.save()
+
+            if self.passed:
+                self.execute()
+
+    def isActionable(self):
+        return not (self.passed or self.expired)
 
 #=======================================================================================================================
 # Network Group
@@ -3998,6 +3620,55 @@ class UserGroup(Group):
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
 
+
+########################################################################################################################
+################################################### Committees #########################################################
+
+
+# External Imports
+class Committee(Group):
+    code = models.CharField(max_length=20)
+    committee_type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
+    parent = models.ForeignKey('self', null=True)
+
+    def autoSave(self):
+        self.group_type = 'C'
+        super(Committee, self).autoSave()
+
+    def joinMember(self, user, congress_session, role=None, privacy='PUB'):
+        committee_joined = CommitteeJoined.lg.get_or_none(user=user, group=self)
+        if not committee_joined:
+            committee_joined = CommitteeJoined(user=user, group=self)
+            committee_joined.autoSave()
+
+        committee_joined.privacy = privacy
+        committee_joined.congress_sessions.add(congress_session)
+        if role:
+            committee_joined.role = role
+        committee_joined.ever_member = True
+
+        if congress_session.session == CURRENT_CONGRESS:
+            committee_joined.confirm()
+            if user not in self.members.all():
+                self.members.add(user)
+                self.num_members += 1
+                self.save()
+
+
+    def removeMember(self, user, privacy='PUB'):
+        committee_joined = CommitteeJoined.lg.get_or_none(user=user, group=self)
+        if not committee_joined:
+            committee_joined = CommitteeJoined(user=user, group=self)
+            committee_joined.autoSave()
+        committee_joined.privacy = privacy
+        committee_joined.clear()
+        if user in self.members.all():
+            self.members.remove(user)
+            self.num_members -= 1
+            self.save()
+
+
+
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -4056,6 +3727,16 @@ class PageAccess(LGModel):
                     self.action = request.GET['action']
             self.save()
 
+class CompatabilityLog(LGModel):
+    user = models.ForeignKey("UserProfile", null=True)
+    incompatible = custom_fields.ListField(default=[])
+    page = models.CharField(max_length=100, blank=True)
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    user_agent = models.CharField(max_length=250, blank=True)
+    when = models.DateTimeField(auto_now_add=True)
+    def autoSave(self):
+        self.save()
+        return self
 
 #-----------------------------------------------------------------------------------------------------------------------
 # ipAddrConvert
@@ -4161,7 +3842,7 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 class Relationship(Privacy):
-    user = models.ForeignKey(UserProfile, related_name='frel')
+    user = models.ForeignKey(UserProfile, related_name='relationships')
     when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------
@@ -4198,6 +3879,10 @@ class Relationship(Privacy):
             object = self.uurelationship.userfollow
         elif type == 'SI':
             object = self.ucrelationship.signed
+        elif type == 'OH':
+            object = self.ucrelationship.officeheld
+        elif type == 'CJ':
+            object = self.ucrelationship.committeejoined
         else:
             object = self
         return object
@@ -4275,6 +3960,22 @@ class UCRelationship(Relationship):
     content = models.ForeignKey(Content, related_name='trel')
     def getTo(self):
         return self.content
+
+#=======================================================================================================================
+# Exact same as vote, except for debates.
+# inherits from relationship
+#=======================================================================================================================
+class OfficeHeld(UCRelationship):
+    office = models.ForeignKey('Office',related_name="office_terms")
+    start_date = models.DateField()
+    end_date = models.DateField()
+    election = models.BooleanField(default=False)
+    congress_sessions = models.ManyToManyField(CongressSession)
+
+    def autoSave(self):
+        self.content = self.office
+        self.relationship_type = "OH"
+        self.save()
 
 #=======================================================================================================================
 # Exact same as vote, except for debates.
@@ -4430,6 +4131,7 @@ class Attending(UCRelationship, Invite):
 #=======================================================================================================================
 class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
+    ever_member = models.BooleanField(default=False)
     def autoSave(self):
         self.relationship_type = 'JO'
         self.content = self.group
@@ -4501,6 +4203,19 @@ class Linked(LGModel):
         self.link_strength = self.association_strength + self.link_bonus
         self.save()
 
+
+#=======================================================================================================================
+# A Method that stores data on the relationship between an Elected Offical and a Committee
+#
+#=======================================================================================================================
+class CommitteeJoined(GroupJoined):
+    role = models.CharField(max_length=200,null=True)
+    congress_sessions = models.ManyToManyField(CongressSession)
+
+    def autoSave(self):
+        self.relationship_type = 'CJ'
+        super(CommitteeJoined, self).autoSave()
+
 ########################################################################################################################
 ########################################################################################################################
 #   For storing what goes on your profile page.
@@ -4540,49 +4255,6 @@ class TopicView(Privacy):
     view = models.TextField(max_length=10000, blank=True)
     topic = models.ForeignKey(Topic)
 
-#=======================================================================================================================
-# Stores information about what should be displyed on user's profile page.
-#
-#=======================================================================================================================
-class ProfilePage(LGModel):
-    person = models.ForeignKey(UserProfile)
-    bio = models.TextField(max_length=5000, blank=True)
-    my_views = models.ManyToManyField(TopicView)
-    # I don't want to use these. for efficiency. but here just in case.
-    my_content = models.ManyToManyField(MyContent)
-    my_people = models.ManyToManyField(MyPeople)
-    my_activity = models.ManyToManyField(MyAction)
-    #-------------------------------------------------------------------------------------------------------------------
-    # Adds content to profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def addContent(self, content):
-        new_content = MyContent(content=content, rank=0)
-        new_content.save()
-        self.my_content.add(new_content)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Adds politician to profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def addPerson(self, person):
-        new_person = MyPeople(person=person, rank=0)
-        new_person.save()
-        self.my_people.add(new_person)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Removes content from profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def removeContent(self, content):
-        to_remove = self.my_content.filter(content=content)
-        if to_remove:
-            to_remove.delete()
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Removes politician from profile page.
-    #-------------------------------------------------------------------------------------------------------------------
-    def removePerson(self, people):
-        to_remove = self.my_people.filter(person=person)
-        if to_remove:
-            to_remove.delete()
 
 
 ########################################################################################################################
@@ -4656,6 +4328,7 @@ class BlogEntry(LGModel):
 
 
 
+
 ########################################################################################################################
 ########################################################################################################################
 #  Deprecated
@@ -4697,8 +4370,6 @@ class LoveGov(LGModel):
         self.average_rating = int((sum/count)*10)
         self.save()
 
-
-
 #=======================================================================================================================
 # Each setting has a name and value, for any given setting, there should be only one default=True
 # this model is in addition to LoveGov, to make it easy to add settings after launch.. without
@@ -4725,8 +4396,5 @@ class qOrdered(LGModel):
 class QuestionOrdering(LGModel):
     alias = models.CharField(max_length=30)
     questions = models.ManyToManyField(qOrdered)
-
-
-
 
 

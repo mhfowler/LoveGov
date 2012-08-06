@@ -9,7 +9,7 @@
 
 # django
 from django.conf import settings
-from lovegov.settings import PROJECT_PATH
+from lovegov.base_settings import PROJECT_PATH
 
 # python
 import sunlight
@@ -30,7 +30,8 @@ ALLOWED_BROWSERS = ["Chrome","Mozilla"]
 
 TEAM_EMAILS =  ['max_fowler@brown.edu','jonathanvkoh@gmail.com',
                 'loweth.g@gmail.com','yoshi141@gmail.com',
-                'cschmidt@risd.edu', 'jsgreenf@gmail.com', 'ccapuozz@risd.edu']
+                'cschmidt@risd.edu', 'jsgreenf@gmail.com',
+                'ccapuozz@risd.edu', 'marcus330@gmail.com']
 YAY_EMAILS = TEAM_EMAILS
 DAILY_SUMMARY_EMAILS = TEAM_EMAILS
 
@@ -90,6 +91,10 @@ HOT_WINDOW = 3 # number of days to count votes within when using hot algo
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
+# for Congress Parsing
+CONGRESS_YEAR_OFFSET = 1787 ## CongressNum*2 + CONGRESS_YEAR_OFFSET = Congress Year Start
+CURRENT_CONGRESS = 112
+
 # for chunksize comparison
 COMPARISON_CHUNKSIZE = 2
 
@@ -110,7 +115,7 @@ GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
 
-PRESIDENTIAL_IMG_FOLDER = "/static/images/presidential/"
+PRESIDENTIAL_IMG_FOLDER = settings.STATIC_URL + "images/presidential/"
 PRESIDENTIAL_CANDIDATES_IMG = {'rick@lovegov.com':PRESIDENTIAL_IMG_FOLDER + 'santorum.jpg',
                                'barack@lovegov.com':PRESIDENTIAL_IMG_FOLDER + 'obama.jpg',
                                'newt@lovegov.com':PRESIDENTIAL_IMG_FOLDER + 'gingrich.jpg',
@@ -138,7 +143,7 @@ FIRST_LOGIN_LAST_STAGE = 7
 ########################################### MAIN TOPICS ################################################################
 MAIN_TOPICS = ['Economy', 'Education', 'Energy', 'Environment', 'Health Care', 'National Security', 'Social Issues']
 
-MAIN_TOPIC_IMG_FOLDER = "/static/images/questionIcons/"
+MAIN_TOPIC_IMG_FOLDER = settings.STATIC_URL + "/images/questionIcons/"
 
 MAIN_TOPICS_IMG = {'Economy':MAIN_TOPIC_IMG_FOLDER + 'economy/eco_default.png',
                    'Education':MAIN_TOPIC_IMG_FOLDER + 'education/edu_default.png',
@@ -243,7 +248,7 @@ TYPE_CHOICES = (
     ('G','group'),
     ('C','comment'),
     ('I','image'),
-    ('A','album'),
+    ('A','amendment'),
     ('Z','content-response'),
     ('D','discussion'),
     ('Y', 'persistent-debate'),
@@ -288,6 +293,8 @@ RELATIONSHIP_CHOICES = (
     ('MV','motion_voted'),
     ('DV','debate_voted'),
     ('DM', 'debate_messaged'),
+    ('OH', 'office_held'),
+    ('CJ', 'committee_joined')
     )
 
 RELATIONSHIP_DICT = {}
@@ -305,7 +312,7 @@ ACTION_MODIFIERS = (
     ('S', 'stop'),
     ('L', 'like'),
     ('U', 'unvoted')
-        )
+)
 
 # types of action which user should be notified about
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
@@ -316,6 +323,13 @@ NOTIFY_MODIFIERS = {
     'FO': ['A','D','R']
 }
 
+
+GOVTRACK_VOTES = (
+    ('+','Yea'),
+    ('-','Nay'),
+    ('P','Present'),
+    ('0','Not Voting')
+)
 
 
 # Timedelta that it takes for aggregate notifications to go stale.
@@ -337,8 +351,9 @@ CONTENT_PRIVACY_CHOICES = (
 GROUP_TYPE_CHOICES = (
     ('N','network'),
     ('P','party'),
+    ('C','committee'),
     ('U','user'),
-    ('S', 'system')
+    ('S','system')
 )
 
 # types of group government
@@ -365,15 +380,6 @@ PARTY_TYPE = (
     ('T', 'tea')
 )
 
-# types of users
-USER_CHOICES =  (
-    ('U','user'),
-    ('P','politician'),
-    ('S','senator'),
-    ('R','representative'),
-    ('G', 'ghost')
-)
-
 # types of motions
 MOTION_CHOICES = (
     ('other', 'Other'),
@@ -390,10 +396,20 @@ PERMISSION_CHOICES = (
     ('C', 'campaign')
 )
 
+COMMITTEE_CHOICES = (
+    ('S','senate'),
+    ('H','house'),
+    ('J','joint committee'),
+    ('SS','senate subcommittee'),
+    ('HS','house subcommittee'),
+    ('JS','joint subcommittee'),
+    ("O","other")
+)
+
 # type vals
 TYPE_DICT = {'event':'E', 'petition':'P', 'news':'N', 'legislation':'L',
              'question':'Q','response':'R','group':'G','comment':'C',
-             'image':'I','album':'A','content-response':'Z','debate':'D',
+             'image':'I','amendment':'A','content-response':'Z','debate':'D',
              'motion':'M', 'forum':'F'}
 
 # bill types
@@ -417,11 +433,11 @@ FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
 ###################################### STATIC FILE URLS ################################################################
 
 DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_default.jpg')
-DEFAULT_PROFILE_IMAGE_URL = '/static/images/profile_default.jpg'
-DEFAULT_NEWS_IMAGE_URL = '/static/images/icons/content-big/news.png'
-DEFAULT_PETITION_IMAGE_URL = '/static/images/icons/content-big/petition.png'
-DEFAULT_GROUP_IMAGE_URL = '/static/images/icons/content-big/group.png'
-DEFAULT_DISCUSSION_IMAGE_URL = '/static/images/icons/content-big/discussion.png'
+DEFAULT_PROFILE_IMAGE_URL = settings.STATIC_URL + '/images/profile_default.jpg'
+DEFAULT_NEWS_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/news.png'
+DEFAULT_PETITION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/petition.png'
+DEFAULT_GROUP_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/group.png'
+DEFAULT_DISCUSSION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'
 
@@ -553,7 +569,13 @@ ACTIONS = [
     'groupInviteResponse',
     'groupInvite',
     'getLinkInfo',
-    'removeMembers'
+    'removeMembers',
+    'createMotion',
+    'logCompatability'
+]
+
+UNAUTHENTICATED_ACTIONS = [
+    'logCompatability'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
@@ -621,5 +643,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'addAdmins',
     'removeAdmin',
     'groupInviteResponse',
-    'groupInvite'
+    'groupInvite',
+    'createMotion'
+    #checkCompatability,
 ]

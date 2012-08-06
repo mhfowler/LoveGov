@@ -975,9 +975,6 @@ var Topic = Node.extend
             var imgRef = topicObj['mini_img'];
 
 
-
-
-
             var test = new Kinetic.Stage(self.idDiv,this.base_width,this.base_height);
             var layer = new Kinetic.Layer();
             var circle = createCircle(self.base_width/2,self.base_height/2,colorObject,self.base_width/2-2, percentage);
@@ -1094,7 +1091,7 @@ var Root = Node.extend
 
         HTML_appendImg: function(self)
         {
-            var src = 'src="' + "/static/images/you.png" + '"';
+            var src = 'src="' + STATIC_URL + "/images/you.png" + '"';
             var style = "style='width:" + this.base_width + "px'";
             $('#' + self.idDiv).append("<img " + style + "id='" + self.idImg + "' " + src + " " + "/>");
             this.idImgObj = $('#' + this.idImg);
@@ -1163,7 +1160,7 @@ var circle;
 var text;
 
 // The path to image files
-var IMAGE_DIRECTORY = '/static/images/questionIcons/';
+var IMAGE_DIRECTORY = STATIC_URL + "/images/questionIcons/";
 
 /**
  * QA Web Display Variables

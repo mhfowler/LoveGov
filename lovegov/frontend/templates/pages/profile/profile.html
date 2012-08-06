@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="profile-stats">
-                    {% if user_prof.user_type == "U" %}
+                    {% if user_prof.isNormal %}
                         <div class="stat-box followers-stat" id="profile_followers">
                             <div class="profile-stats-number followers-number">{{ prof_follow_me|length }}</div>
                             <div class="profile-stats-title">follower{{ prof_follow_me|pluralize }}</div>
@@ -86,7 +86,7 @@
                         <div class="profile-stats-number">{{ responses }}</div>
                         <div class="profile-stats-title">question{{ responses|pluralize }}</div>
                     </div>
-                    {% if user_prof.user_type == "U" %}
+                    {% if user_prof.isNormal %}
                         <div class="stat-box">
                             <div class="profile-stats-number">{{ user_prof.num_petitions }}</div>
                             <div class="profile-stats-title">petition{{ user_prof.num_petitions|pluralize }}</div>
@@ -99,7 +99,7 @@
                 </div>
                 <div class="profile-buttons">
                     {% if viewer.id != user_prof.id %}
-                        {% if user_prof.user_type == 'U' %}
+                        {% if user_prof.isNormal %}
                             {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
                                 <a href="" class="button-red float-left" id="user_follow_button">
                                     follow
@@ -170,7 +170,7 @@
                             {% thumbnail group.getMainImage.image "80x80" crop="center" as im %}
                                 <img src="{{ im.url }}" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}" class="has_hover_comparison rounded"/>
                             {% empty %}
-                                <img src="/static/images/profile_default.jpg" class="rounded"/>
+                                <img src="{{ STATIC_URL }}/images/profile_default.jpg" class="rounded"/>
                             {% endthumbnail %}
                         </a>
                     {% endfor %}

@@ -55,7 +55,7 @@ def reinviteUser(request,vals={}):
     return HttpResponse("+")
 
 def writeAllUsers(request,vals={}):
-    allusers = UserProfile.objects.filter(user_type="U")
+    allusers = UserProfile.objects.filter(ghost=False)
     for user in allusers:
         vals = {'firstname':userProfile.first_name,'message':userProfile.invite_message,'email':userProfile.username,'password':new_password}
 

@@ -29,7 +29,7 @@
     {% elif type == 'VO' %}
         {% if modifier == 'L' %}
             <td class="notification-thumbnail">
-                <img src="/static/images/feed/heart-small.png"/>
+                <img src="{{ STATIC_URL }}/images/feed/heart-small.png"/>
             </td>
             <td class="notification-text">
                 {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -43,7 +43,7 @@
             </td>
         {% elif modifier == 'D' %}
             <td class="notification-thumbnail">
-                <img src="/static/images/feed/heart-small.png"/>
+                <img src="{{ STATIC_URL }}/images/feed/heart-small.png"/>
             </td>
             <td class="notification-text">
                 {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -57,7 +57,7 @@
             </td>
         {% else %}
             <td class="notification-thumbnail">
-                <img src="/static/images/feed/heart-small.png"/>
+                <img src="{{ STATIC_URL }}/images/feed/heart-small.png"/>
             </td>
             <td class="notification-text">
                 {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -297,7 +297,7 @@
 
     {% elif type == 'SI' %}
         <td class="notification-thumbnail">
-            <img src="/static/images/feed/check-small.png"/>
+            <img src="{{ STATIC_URL }}/images/feed/check-small.png"/>
         </td>
         <td class="notification-text">
             {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -312,7 +312,7 @@
 
     {% elif type == 'SH' %}
         <td class="notification-thumbnail">
-            <img src="/static/images/feed/share.png"/>
+            <img src="{{ STATIC_URL }}/images/feed/share.png"/>
         </td>
         <td class="notification-text">
             {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
@@ -327,21 +327,21 @@
 
     {% elif type == 'CR' %}
         {% if to_user.type == 'R' %}
-            <td class="notification-thumbnail"><img src="/static/images/feed/answered.png"/></td>
+            <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/feed/answered.png"/></td>
             <td class="notification-text">
             {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             answered
             {% include "site/pieces/notifications/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
         {% elif to_user.type == 'P' %}
-            <td class="notification-thumbnail"><img src="/static/images/feed/petition-small.png"/></td>
+            <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/feed/petition-small.png"/></td>
             <td class="notification-text">
             {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             created
             {% include "site/pieces/notifications/action_name_snippet.html" with user=to_user you=to_you %}
             </td>
         {% elif to_user.type == 'N' %}
-            <td class="notification-thumbnail"><img src="/static/images/feed/news-small.png"/></td>
+            <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/feed/news-small.png"/></td>
             <td class="notification-text">
             {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
             created
@@ -350,7 +350,7 @@
         {% endif %}
 
     {% elif type == 'ED' %}
-        <td class="notification-thumbnail"><img src="/static/images/feed/edit-feed.png"/></td>
+        <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/feed/edit-feed.png"/></td>
         <td class="notification-text">
         {% include "site/pieces/notifications/action_name_snippet.html" with user=from_user you=from_you capital=true %}
         edited

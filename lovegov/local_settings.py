@@ -1,40 +1,40 @@
 import os
-from lovegov import settings
+from lovegov import base_settings
 
 LOCAL = True
 DEBUG = True
 SHOW_TOOLBAR = False
 TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
-PROJECT_PATH = settings.PROJECT_PATH
+PROJECT_PATH = base_settings.PROJECT_PATH
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.sqlite3',
+         'ENGINE':  'django.db.backends.sqlite3',
         'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
-        'USER':      '',
-        'PASSWORD':  '',
+        'USER':     '',
+        'PASSWORD': '',
         'HOST':     '',
-        'PORT':    '',
-    },
+        'PORT':     '',
+        },
 }
 
-STATIC_ROOT = settings.STATIC_ROOT
+STATIC_ROOT = base_settings.STATIC_ROOT
 
 LOG_ROOT = "/log/"
 
-LOGGING = settings.setLogging(LOG_ROOT)
+LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ########################################################################################################################
 #    apps, middelware, urlconf
 #
 ########################################################################################################################
 
-ROOT_URLCONF = settings.ROOT_URLCONF
+ROOT_URLCONF = base_settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',))
+INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('south',))
 
-MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
+MIDDLEWARE_CLASSES = base_settings.MIDDLEWARE_CLASSES
 
 ########################################################################################################################
 #    static and media
@@ -42,22 +42,22 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 ########################################################################################################################
 
 # URL prefix for static files.
-STATIC_URL = settings.STATIC_URL
+STATIC_URL = base_settings.STATIC_URL
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
-MEDIA_ROOT = settings.MEDIA_ROOT
+MEDIA_ROOT = base_settings.MEDIA_ROOT
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
-MEDIA_URL =  settings.MEDIA_URL
+MEDIA_URL =  base_settings.MEDIA_URL
 
 # URL prefix for admin static files -- CSS, JavaScript and images. Make sure to use a trailing slash.
-ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
+ADMIN_MEDIA_PREFIX = base_settings.ADMIN_MEDIA_PREFIX
 
 # Additional locations of static files
-STATICFILES_DIRS = settings.STATICFILES_DIRS
+STATICFILES_DIRS = base_settings.STATICFILES_DIRS
 
 # List of finder classes that know how to find static files in various locations.
-STATICFILES_FINDERS = settings.STATICFILES_FINDERS
+STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
 ########################################################################################################################
 #    templates
@@ -65,34 +65,34 @@ STATICFILES_FINDERS = settings.STATICFILES_FINDERS
 ########################################################################################################################
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+TEMPLATE_LOADERS = base_settings.TEMPLATE_LOADERS
 
 # template dirs
-TEMPLATE_DIRS = settings.TEMPLATE_DIRS
+TEMPLATE_DIRS = base_settings.TEMPLATE_DIRS
 
 ########################################################################################################################
 #    authentication (and integration with facebook)
 #
 ########################################################################################################################
 
-FACEBOOK_APP_ID = 	settings.FACEBOOK_APP_ID
-FACEBOOK_APP_SECRET = 	settings.FACEBOOK_APP_SECRET
+FACEBOOK_APP_ID = 	base_settings.FACEBOOK_APP_ID
+FACEBOOK_APP_SECRET = 	base_settings.FACEBOOK_APP_SECRET
 
-TWITTER_KEY = settings.TWITTER_KEY
-TWITTER_SECRET = settings.TWITTER_SECRET
+TWITTER_KEY = base_settings.TWITTER_KEY
+TWITTER_SECRET = base_settings.TWITTER_SECRET
 
-AUTH_PROFILE_MODULE = settings.AUTH_PROFILE_MODULE
+AUTH_PROFILE_MODULE = base_settings.AUTH_PROFILE_MODULE
 
-AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS
+AUTHENTICATION_BACKENDS = base_settings.AUTHENTICATION_BACKENDS
 
-TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS
+TEMPLATE_CONTEXT_PROCESSORS = base_settings.TEMPLATE_CONTEXT_PROCESSORS
 
 ########################################################################################################################
 #    haystack and search
 #
 ########################################################################################################################
 
-HAYSTACK_CONNECTIONS = settings.HAYSTACK_CONNECTIONS
+HAYSTACK_CONNECTIONS = base_settings.HAYSTACK_CONNECTIONS
 
 ########################################################################################################################
 #    debug toolbar
@@ -126,7 +126,16 @@ CACHES = {
 }
 
 ########################################################################################################################
-#    caching
+#    celery
+#
+########################################################################################################################
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = base_settings.BROKER_URL
+
+########################################################################################################################
+#    email
 #
 ########################################################################################################################
 
@@ -140,25 +149,25 @@ EMAIL_FILE_PATH = '/log/emails'
 ########################################################################################################################
 
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = settings.TIME_ZONE
+TIME_ZONE = base_settings.TIME_ZONE
 
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = settings.LANGUAGE_CODE
-SITE_ID = settings.SITE_ID
+LANGUAGE_CODE = base_settings.LANGUAGE_CODE
+SITE_ID = base_settings.SITE_ID
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = settings.USE_I18N
+USE_I18N = base_settings.USE_I18N
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
-USE_L10N = settings.USE_L10N
+USE_L10N = base_settings.USE_L10N
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = settings.SECRET_KEY
+SECRET_KEY = base_settings.SECRET_KEY
 
-ADMINS = settings.ADMINS
+ADMINS = base_settings.ADMINS
 
-MANAGERS = settings.MANAGERS
+MANAGERS = base_settings.MANAGERS
 
 

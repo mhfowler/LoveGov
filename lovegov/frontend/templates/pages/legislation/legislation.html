@@ -2,18 +2,88 @@
 
 {% block content %}
 
-<div id="content-leg-div">
 
-Please select a congressional session.
+    <div class="main-block">
+        <div class="legislation-filter">
+            <div class="filter-prompt">
+                <h3>
+                    filter legislation by:
+                </h3>
+            </div>
+            <div class="session_filter unchecked">
+                <input type="checkbox"><label><h3>session</h3></label>
+            </div>
+            <div class="type_filter unchecked">
+                <input type="checkbox"><label><h3>type</h3></label>
+            </div>
+            <div class="introduced_filter unchecked">
+                <input type="checkbox"><label><h3>date introduced</h3></label>
+            </div>
+            <div class="sponsor_filter unchecked">
+                <input type="checkbox"><label><h3>sponsor</h3></label>
+            </div>
+            <div class="myrepsvotes_filter unchecked">
+                <input type="checkbox"><label><h3>include my representatives' votes</h3></label>
+            </div>
+        </div>
+        <div class="legislation-selector">
+            <div class="session_selector">
+                <ul>
+                    <li><input type="checkbox"><label><h3>109th Congress</h3></label></li>
+                    <li><input type="checkbox"><label><h3>110th Congress</h3></label></li>
+                    <li><input type="checkbox"><label><h3>111th Congress</h3></label></li>
+                    <li><input type="checkbox"><label><h3>112th Congress</h3></label></li>
+                </ul>
+            </div>
+            <div class="type_selector">
+                <ul>
+                    <li><input type="checkbox"><label><h3>Bill Type A</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type B</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type C</h3></label></li>
+                    <li><input type="checkbox"><label><h3>Bill Type D</h3></label></li>
+                </ul>
+            </div>
+            <div class="introduced_selector">
+                <ul>
+                    <li><input type="form"><label><h4>date form</h4></label></li>
+                    <li><input type="form"><label><h4>date form</h4></label></li>
+                    <li><input type="form"><label><h4>date form</h4></label></li>
+                </ul>
+            </div>
+            <div class="sponsor_selector">
+                <ul>
+                    <li><input type="form" id="sponsor_body"><label><h4>sponsor body</h4></label></li>
+                    <li><input type="form" id="sponsor_name"><label><h4>sponsor name</h4></label></li>
+                    <li><input type="form" id="sponsor_party"><label><h4>sponsor party</h4></label></li>
+                    <li><input type="form" id="sponsor_district"><label><h4>sponsor district</h4></label></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="div-button">
+        <span>
+            Submit choices
+        </span>
+    </div>
+    <div class="div-filter-button">
+        <span>
+            Filter !
+        </span>
+    </div>
+    <div class="filter-results">
+        <div class="results-heading-">
+            <h3>
+                filter results:
+        </h3>
+        </div>
+    </div>
+    <div class="filter-congress-feed">
+        <input type="checkbox"><label><h3>filter feed for my regions</h3></label>
+    </div>
 
-<ul>
-	{% for session in sessions %}
-	<li><a href='/legislation/{{session}}/'>{{session}}th Congress</a></li>
-	{% empty %}
-	<li>Congressional session data is unavailable.</li>
-	{% endfor %}
-</ul>
+    <!-- Javascript -->
+    <script> rebind='legislation'; </script>
 
-</div>
 
 {% endblock %}
+

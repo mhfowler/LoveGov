@@ -24,7 +24,7 @@
             </div>
 
             <p id="dialogue-loading" style="display:none">
-                <img src="/static/images/ajax-loader.gif" />
+                <img src="{{ STATIC_URL }}/images/ajax-loader.gif" />
             </p>
             <div id="answer-div">
                 <form class="qaweb-answerform" action="" method="post">
@@ -92,7 +92,7 @@
         </div>
 
         <div id="dialogue-pointer">
-            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+            <img src="{{ STATIC_URL }}/catherine/environment/env_dialogue-pointer.png">
         </div>
 
     </div>
@@ -107,7 +107,7 @@
         </div>
 
         <div id="topic-pointer">
-            <img src="/static/catherine/environment/env_dialogue-pointer.png">
+            <img src="{{ STATIC_URL }}/catherine/environment/env_dialogue-pointer.png">
         </div>
     </div>
 </div>
@@ -128,4 +128,4 @@
 </script>
 
 <!-- Web -->
-<script type='text/javascript' src="/static/js/qaweb/qaweb-temp.js"></script>
+<script type='text/javascript' src="{{ STATIC_URL }}/js/qaweb/qaweb-temp.js"></script>

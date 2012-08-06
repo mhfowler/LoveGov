@@ -126,9 +126,12 @@ def randomAnswers(user):
         answers = list(q.answers.all())
         my_answer = random.choice(answers)
         print "answered: ", my_answer.answer_text
-        response = UserResponse(responder=user,
+        response = Response(
             question = q,
             answer_val = my_answer.value,
+            most_chosen_answer = my_answer,
+            most_chosen_num = 1,
+            total_num = 1,
             weight = 5,
             explanation = "")
         response.autoSave(creator=user, privacy='PUB')

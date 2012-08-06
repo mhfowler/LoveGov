@@ -3,8 +3,7 @@ import settings
 LOCAL = False
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-THUMBNAIL_DEBUG = DEBUG
-PROJECT_PATH = settings.PROJECT_PATH
+THUMBNAIL_DEBUG = False
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
@@ -28,11 +27,8 @@ DATABASES = {
 }
 
 STATIC_ROOT = '/static/dev/'
-
 MEDIA_ROOT = '/media/dev/'
-
 LOG_ROOT = "/log/dev/"
-
 LOGGING = settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
@@ -44,7 +40,10 @@ LOGGING = settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',))
+INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south',
+                                                  'storages',
+                                                  's3_folder_storage',
+                                                  'djcelery',))
 
 MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 
@@ -52,20 +51,24 @@ MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
 #    static and media
 #
 ########################################################################################################################
+import s3_configuration
+AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
 
-# URL prefix for static files.
-STATIC_URL = settings.STATIC_URL
+DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
-MEDIA_URL =  settings.MEDIA_URL
+DEFAULT_S3_PATH = "media"
+STATIC_S3_PATH = "static"
 
-# URL prefix for admin static files -- CSS, JavaScript and images. Make sure to use a trailing slash.
-ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
+MEDIA_ROOT = '/%s/' % DEFAULT_S3_PATH
+MEDIA_URL = 'https://%s.s3.amazonaws.com/media' % AWS_STORAGE_BUCKET_NAME
+STATIC_ROOT = "/%s/" % STATIC_S3_PATH
+STATIC_URL = 'https://%s.s3.amazonaws.com/static' % AWS_STORAGE_BUCKET_NAME
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-# Additional locations of static files
 STATICFILES_DIRS = settings.STATICFILES_DIRS
-
-# List of finder classes that know how to find static files in various locations.
 STATICFILES_FINDERS = settings.STATICFILES_FINDERS
 
 ########################################################################################################################
@@ -125,7 +128,16 @@ CACHES = {
 }
 
 ########################################################################################################################
-#    caching
+#    celery
+#
+########################################################################################################################
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = settings.BROKER_URL
+
+########################################################################################################################
+#    email
 #
 ########################################################################################################################
 
