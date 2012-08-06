@@ -519,7 +519,7 @@ class Content(Privacy, LocationLevel):
         elif type == 'Y':
             object = self.persistent
         elif type == 'Z':
-            object = self.response.aggregateresponse
+            object = self.response
         elif type == 'M':
             object = self.motion
         elif type == 'F':

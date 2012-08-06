@@ -808,10 +808,10 @@ def answer(request, vals={}):
             # get percentage agreed
             agg = getLoveGovGroupView().filter(question=question)
             if agg:
-                agg = agg[0].aggregateresponse
-                choice = agg.responses.filter(answer_val=int(request.POST['choice']))
-                if agg.total and choice:
-                    percent_agreed = float(choice[0].tally) / float(agg.total)
+                agg = agg[0]
+                choice = agg.answer_tallies.filter(answer_id=answer_id)
+                if agg.total_num and choice:
+                    percent_agreed = float(choice[0].tally) / float(agg.total_num)
                 else:
                     percent_agreed = 0
                     # print("total: " + str(agg.total))
