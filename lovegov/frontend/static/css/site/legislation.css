@@ -47,7 +47,7 @@ div.main-block {
     padding-top: 0px;
 }
 
-div.main-block div.legislation-filter {
+div.main-block div.legislation_filter {
     margin-left: 5px;
     margin-top: 5px;
     height: 200px;
@@ -56,30 +56,30 @@ div.main-block div.legislation-filter {
     padding-left: 9px;
 }
 
-div.main-block div.legislation-filter div.filter-prompt {
+div.main-block div.legislation_filter div.filter_prompt {
     margin-bottom: 13px;
 }
 
-div.main-block div.legislation-filter div.session_filter.unchecked {
+div.main-block div.legislation_filter div.session_filter {
     margin-bottom: 9px;
 }
 
-div.main-block div.legislation-filter div.type_filter.unchecked {
+div.main-block div.legislation_filter div.type_filter {
     margin-bottom: 9px;
 }
 
-div.main-block div.legislation-filter div.introduced_filter.unchecked {
+div.main-block div.legislation_filter div.introduced_filter {
     margin-bottom: 9px;
 }
 
-div.main-block div.legislation-filter div.sponsor_filter.unchecked {
+div.main-block div.legislation_filter div.sponsor_filter {
     margin-bottom: 9px;
 }
 
-div.main-block div.legislation-filter div.myrepsvotes_filter.unchecked {
+div.main-block div.legislation_filter div.myrepsvotes_filter {
 }
 
-div.main-block div.legislation-selector {
+div.main-block div.legislation_selector {
     float:right;
     margin-left:5px;
     margin-top: -180px;
@@ -87,7 +87,7 @@ div.main-block div.legislation-selector {
     width: 400px;
 }
 
-div.main-block div.legislation-selector div.session_selector {
+div.main-block div.legislation_selector div.session_selector {
     position: absolute;
     left: 520px;
     top: 145px;
@@ -97,7 +97,7 @@ div.main-block div.legislation-selector div.session_selector {
     z-index:0
 }
 
-div.main-block div.legislation-selector div.type_selector {
+div.main-block div.legislation_selector div.type_selector {
     position: absolute;
     left: 520px;
     top: 145px;
@@ -107,7 +107,7 @@ div.main-block div.legislation-selector div.type_selector {
     z-index:-1;
 }
 
-div.main-block div.legislation-selector div.introduced_selector {
+div.main-block div.legislation_selector div.introduced_selector {
     position: absolute;
     left: 520px;
     top: 145px;
@@ -117,7 +117,7 @@ div.main-block div.legislation-selector div.introduced_selector {
     z-index:-2
 }
 
-div.main-block div.legislation-selector div.sponsor_selector {
+div.main-block div.legislation_selector div.sponsor_selector {
     position: absolute;
     left: 520px;
     top: 145px;
@@ -127,19 +127,19 @@ div.main-block div.legislation-selector div.sponsor_selector {
     z-index:-3
 }
 
-div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_body {
+div.main-block div.legislation_selector div.sponsor_selector ul li#sponsor_body {
     display: block;
 }
 
-div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_name {
+div.main-block div.legislation_selector div.sponsor_selector ul li#sponsor_name {
     display: block;
 }
 
-div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_party {
+div.main-block div.legislation_selector div.sponsor_selector ul li#sponsor_party {
     display: block;
 }
 
-div.main-block div.legislation-selector div.sponsor_selector ul li#sponsor_district {
+div.main-block div.legislation_selector div.sponsor_selector ul li#sponsor_district {
     display: block;
 }
 
@@ -224,7 +224,6 @@ div.div-filter-button.clicked {
     color: white;
     background-color: #ef503b;
 }
-
 
 input[type="checkbox"]{
     margin-top: 6px;

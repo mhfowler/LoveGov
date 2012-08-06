@@ -16,7 +16,7 @@ div.main-block {
   padding-left: 5px;
   padding-top: 0px;
 
-  div.legislation-filter {
+  div.legislation_filter {
     margin-left: 5px;
     margin-top: 5px;
     height: 200px;
@@ -24,31 +24,31 @@ div.main-block {
     margin-top: 10px;
     padding-left: 9px;
 
-    div.filter-prompt {
+    div.filter_prompt {
       margin-bottom: 13px;
     }
 
-     div.session_filter.unchecked {
+     div.session_filter {
       margin-bottom: 9px;
     }
 
-    div.type_filter.unchecked {
+    div.type_filter {
       margin-bottom: 9px;
     }
 
-    div.introduced_filter.unchecked {
+    div.introduced_filter {
       margin-bottom: 9px;
     }
 
-    div.sponsor_filter.unchecked {
+    div.sponsor_filter {
       margin-bottom: 9px;
 
-    div.myrepsvotes_filter.unchecked {
+    div.myrepsvotes_filter {
       display:block;
     }
   }
 
-  div.legislation-selector {
+  div.legislation_selector {
     float:right;
     margin-left:5px;
     margin-top: -180px;

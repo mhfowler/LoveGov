@@ -94,11 +94,10 @@ function rebindFunction()
             loadLogin();
             break;
         case 'legislation':                                 //legislation page
-            checkboxClick1();
-            checkboxClick2();
-            checkboxClick3();
-            checkboxClick4();
-            hiddenFilters();
+            hiddenSelectors();
+            showSelectors();
+
+
             break;
         default:
             break
@@ -4955,101 +4954,45 @@ function loadBlog() {
  *
  **********************************************************************************************************************/
 
-function hiddenFilters() {
-    $('#session_filter').hide(0);
-    $('#type_filter').hide(0);
-    $('#introduced_filter').hide(0);
-    $('#sponsor_filter').hide(0);
+function hiddenSelectors() {
+    $('.legislation_selector').hide(0);
 }
 
-function checkboxClick1() {
-    $('.col1').click(function(){
-        if($(this).hasClass("unchecked"))
-        {
-            $('#leg_session').attr('checked',true);
-            $(this).removeClass("unchecked");
-            $(this).addClass("checked");
-            $('#type_filter').hide('fast');
-            $('#introduced_filter').hide('fast');
-            $('#sponsor_filter').hide('fast');
-            $('#session_filter').show('fast');
+function showSelectors() {
+    $('input:checkbox').closest('div').click(function() {
+        if ($(this).hasClass('checked')) {
+            $(this).addClass('unchecked');
+            $(this).removeClass('checked');
         }
-        else
-        {
-            $('#leg_session').attr('checked',false);
-            $(this).addClass("unchecked");
-            $(this).removeClass("checked");
-            $('#session_filter').hide('');
+        else {
+            $(this).addClass('checked');
+            $(this).removeClass('unchecked');
         }
     });
 }
 
-function checkboxClick2() {
-    $('.col2').click(function(){
-        if($(this).hasClass("unchecked"))
-        {
-            $('#leg_type').attr('checked',true);
-            $(this).removeClass("unchecked");
-            $(this).addClass("checked");
-            $('#session_filter').hide('fast');
-            $('#introduced_filter').hide('fast');
-            $('#sponsor_filter').hide('fast');
-            $('#type_filter').show('fast');
-        }
-        else
-        {
-            $('#leg_type').attr('checked',false);
-            $(this).addClass("unchecked");
-            $(this).removeClass("checked");
-            $('#type_filter').hide('');
-        }
-    });
-}
 
-function checkboxClick3() {
-    $('.col3').click(function(){
-        if($(this).hasClass("unchecked"))
-        {
-            $('#leg_introduced').attr('checked',true);
-            $(this).removeClass("unchecked");
-            $(this).addClass("checked");
-            $('#session_filter').hide('fast');
-            $('#type_filter').hide('fast');
-            $('#sponsor_filter').hide('fast');
-            $('#introduced_filter').show('fast');
-        }
-        else
-        {
-            $('#leg_introduced').attr('checked',false);
-            $(this).addClass("unchecked");
-            $(this).removeClass("checked");
-            $('#introduced_filter').hide('');
-        }
-    });
-}
 
-function checkboxClick4() {
-    $('.col4').click(function(){
-        if($(this).hasClass("unchecked"))
-        {
-            $('#leg_sponsor').attr('checked',true);
-            $(this).removeClass("unchecked");
-            $(this).addClass("checked");
-            $('#session_filter').hide('fast');
-            $('#type_filter').hide('fast');
-            $('#introduced_filter').hide('fast');
-            $('#sponsor_filter').show('fast');
-        }
-        else
-        {
-            $('#leg_sponsor').attr('checked',false);
-            $(this).addClass("unchecked");
-            $(this).removeClass("checked");
-            $('#sponsor_filter').hide('');
-        }
-    });
-}
 
+
+
+
+
+
+
+
+
+function selectorShow () {
+    if ($('input:checkbox').attr("checked")) {
+
+        $(this).parent().addClass("checked");
+        $(this).parent().removeClass("unchecked");
+        $('.legislation_selector').hide(0);
+        var to_show = $(this).data('selector');
+        $("." + to_show).show();
+
+    }
+}
 
 
 

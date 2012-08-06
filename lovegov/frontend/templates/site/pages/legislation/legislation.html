@@ -4,29 +4,29 @@
 
 
     <div class="main-block">
-        <div class="legislation-filter">
-            <div class="filter-prompt">
+        <div class="legislation_filter">
+            <div class="filter_prompt">
                 <h3>
                     filter legislation by:
                 </h3>
             </div>
-            <div class="session_filter unchecked">
-                <input type="checkbox"><label><h3>session</h3></label>
+            <div class="session_filter unchecked" data-selector="session_selector">
+                <input type="checkbox" data-filter="session_filter" id="session_filter"><label for="session_filter"><h3>session</h3></label>
             </div>
-            <div class="type_filter unchecked">
-                <input type="checkbox"><label><h3>type</h3></label>
+            <div class="type_filter unchecked" data-selector="type_selector">
+                <input type="checkbox" data-filter="type_filter" id="type_filter"><label for="type_filter"><h3><span>type</span></h3></label>
             </div>
-            <div class="introduced_filter unchecked">
-                <input type="checkbox"><label><h3>date introduced</h3></label>
+            <div class="introduced_filter unchecked" data-selector="introduced_selector">
+                <input type="checkbox" data-filter="introduced_filter" id="introduced_filter"><label for="introduced_filter"><h3><span>date introduced</span></h3></label>
             </div>
-            <div class="sponsor_filter unchecked">
-                <input type="checkbox"><label><h3>sponsor</h3></label>
+            <div class="sponsor_filter unchecked" data-selector="sponsor_selector">
+                <input type="checkbox" data-filter="sponsor_filter" id="sponsor_filter"><label for="sponsor_filter"><h3><span>sponsor</span></h3></label>
             </div>
             <div class="myrepsvotes_filter unchecked">
-                <input type="checkbox"><label><h3>include my representatives' votes</h3></label>
+                <input type="checkbox"><label><h3 class="filter_label">include my representatives' votes</h3></label>
             </div>
         </div>
-        <div class="legislation-selector">
+        <div class="legislation_selector">
             <div class="session_selector">
                 <ul>
                     <li><input type="checkbox"><label><h3>109th Congress</h3></label></li>
