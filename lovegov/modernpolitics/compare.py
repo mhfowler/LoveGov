@@ -164,8 +164,7 @@ def getViewComparison(viewA, viewB, force=False, dateA=None, dateB=None):
 def viewCompare(viewA, viewB):
 
     topics = getMainTopics()
-    questions = Question.objects.filter(official=True)
-    fast_comparison = fastCompare(questions=questions, viewA=viewA, viewB=viewB, topics=topics)
+    fast_comparison = fastCompare(viewA=viewA, viewB=viewB, topics=topics)
 
     comparison = findViewComparison(viewA, viewB)
     if not comparison:
@@ -516,7 +515,7 @@ def fastCompare(viewA,viewB,topics=None):
             comparison.getTotalBucket().update(similar, weight)
             # And also do something with topic buckets...
             if topics:
-                topic = question.getMainTopic()
+                topic = rA.question.getMainTopic()
                 if topic in topics:
                     comparison.getTopicBucket(topic).update(similar, weight)
             # Then increment both counters
