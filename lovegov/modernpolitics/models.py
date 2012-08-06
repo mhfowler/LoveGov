@@ -1793,20 +1793,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
-    # The other version is less SQL queries
-#    def getUserResponses(self):
-#        qr = []
-#        responses = self.getView().responses
-#        questions = Question.objects.filter(official=True)
-#        for q in questions:
-#            r = responses.filter(question=q)
-#            qr.append((q,r))
-#        return qr
-
     def getUserResponses(self):
         qr = []
 
-        responses = list( self.getView().responses.all() )
+        responses = list( self.view.responses.all() )
 
         official_questions = list( Question.objects.filter(official=True) )
 
