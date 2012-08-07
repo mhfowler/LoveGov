@@ -41,7 +41,7 @@ div.main-block {
     overflow: hidden;
     border-bottom: solid;
     border-top: solid;
-    border-color: #ef503b;
+    border-color: #FC8A81;
     border-width: 1px;
     padding-left: 5px;
     padding-top: 0px;
@@ -113,7 +113,7 @@ div.main-block div.legislation_selector div.type_selector ul li {
 
 div.main-block div.legislation_selector div.introduced_selector {
     margin-left: 0px;
-    margin-top: 0px;
+    margin-top: -10px;
     height: 250px;
     width: 400px;
     padding-left: 0px;
@@ -151,14 +151,32 @@ div.main-block div.legislation_selector div.sponsor_selector ul li#sponsor_distr
     display: block;
 }
 
-div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited {
+div.div-select-button, div.div-select-button:active, div.div-select-button:link, div.div-select-button:visited {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #CCCCCC, #959595);
+
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #CCCCCC, #959595);
+
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #CCCCCC, #959595);
+
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #CCCCCC, #959595);
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
     position: absolute;
     left: 540px;
     top:310px;
     width: 140px;
     height: 33px;
     float: left;
-    font-size: 20px;
+    font-size: 15px;
     font-family: "Sonus Light";
     background-color: #f0f0f0;
     color: #353535;
@@ -175,27 +193,69 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
     margin-bottom: 15px;
     margin: 10px 10px;
     text-align: center; }
-div.div-button span, div.div-button:active span, div.div-button:link span, div.div-button:visited span {
+div.div-select-button span, div.div-select-button:active span, div.div-select-button:link span, div.div-select-button:visited span {
     display: inline-block;
-    margin-top: 5px; }
-div.div-button:hover, div.div-button:active:hover, div.div-button:link:hover, div.div-button:visited:hover {
-    color: white;
-    background-color: #ef503b;
-    cursor: pointer; }
+    margin-top: 6px; }
+div.div-select-button:hover, div.div-select-button:active:hover, div.div-select-button:link:hover, div.div-select-button:visited:hover {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
 
-div.div-button.clicked {
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #FC8A81, #EF503B);
     color: white;
-    background-color: #ef503b;
+}
+
+div.div-select-button.clicked {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EF503B), to(#FC8A81));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #EF503B, #FC8A81);
+    color: white;
 }
 
 div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link, div.div-filter-button:visited {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #CCCCCC, #959595);
+
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #CCCCCC, #959595);
+
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #CCCCCC, #959595);
+
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #CCCCCC, #959595);
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
     position: absolute;
     left: 710px;
     top:310px;
     width: 140px;
     height: 33px;
     float: left;
-    font-size: 20px;
+    font-size: 15px;
     font-family: "Sonus Light";
     background-color: #f0f0f0;
     color: #353535;
@@ -214,26 +274,39 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
     text-align: center; }
 div.div-filter-button span, div.div-filter-button:active span, div.div-filter-button:link span, div.div-filter-button:visited span {
     display: inline-block;
-    margin-top: 5px; }
+    margin-top: 6px; }
 div.div-filter-button:hover, div.div-filter-button:active:hover, div.div-filter-button:link:hover, div.div-filter-button:visited:hover {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #FC8A81, #EF503B);
     color: white;
-    background-color: #ef503b;
-    cursor: pointer; }
+}
 
 div.div-filter-button.clicked {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EF503B), to(#FC8A81));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #EF503B, #FC8A81);
     color: white;
-    background-color: #ef503b;
-}
-
-input[type="checkbox"]{
-    margin-top: 6px;
-    margin-right: 5px;
-}
-
-input[type="form"]{
-    margin-top: 5px;
-    margin-right: 5px;
-    width:200px;
 }
 
 div.filter-results {
@@ -251,6 +324,31 @@ div.filter-results div.results-heading {
 
 div.filter-congress-feed {
     margin-left:950px;
-    margin-top:-310px;
+    margin-top:-290px;
     width: 300px;
+}
+
+input[type="checkbox"]{
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+input[type="form"]{
+    margin-top: 0px;
+    margin-right: 5px;
+    height: 20px;
+    width:200px;
+    text-decoration-color:#000000
+}
+
+input[type="form"]:focus {
+    border: 1px solid #EF503B;
+}
+
+h5 {
+    color: #005468;
+}
+
+h5:hover {
+    color: #FC8A81;
 }
