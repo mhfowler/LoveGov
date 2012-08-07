@@ -4959,41 +4959,23 @@ function hiddenSelectors() {
 }
 
 function showSelectors() {
-    $('input:checkbox').closest('div').click(function() {
-        if ($(this).hasClass('checked') && $(this).hasClass($('input:checkbox').getAttribute('data-filter'))) {
-            $(this).addClass('unchecked');
-            $(this).removeClass('checked');
-            alert("clicked");
+    $('.filter_label').click(function() {
+        alert('click');
+        if ($(this).closest('div').hasClass('checked')) {
+            $(this).closest('div').addClass('unchecked');
+            $(this).closest('div').removeClass('checked');
+            alert("was checked");
         }
-        else if ($(this).hasClass('unchecked') && $(this).hasClass($('input:checkbox').getAttribute('data-filter'))) {
-            $(this).addClass('checked');
-            $(this).removeClass('unchecked');
+        else {
+            $(this).closest('div').addClass('checked');
+            $(this).closest('div').removeClass('unchecked');
+            alert("was unchecked");
         }
     });
 }
 
 
 
-
-
-
-
-
-
-
-
-
-function selectorShow () {
-    if ($('input:checkbox').attr("checked")) {
-
-        $(this).parent().addClass("checked");
-        $(this).parent().removeClass("unchecked");
-        $('.legislation_selector').hide(0);
-        var to_show = $(this).data('selector');
-        $("." + to_show).show();
-
-    }
-}
 
 
 
