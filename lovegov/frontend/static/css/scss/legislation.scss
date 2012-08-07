@@ -62,6 +62,10 @@ div.main-block {
       height: 500px;
       width: 400px;
       padding-left: 0px;
+
+      ul, li {
+        list-style-type: none;
+      }
     }
 
     div.type_selector {
@@ -71,6 +75,10 @@ div.main-block {
       height: 500px;
       width: 400px;
       padding-left: 0px;
+
+      ul, li {
+        list-style-type: none;
+      }
     }
 
     div.introduced_selector {
@@ -80,6 +88,10 @@ div.main-block {
       height: 500px;
       width: 400px;
       padding-left: 0px;
+
+      ul, li {
+        list-style-type: none;
+      }
     }
 
     div.sponsor_selector {
@@ -93,6 +105,7 @@ div.main-block {
       ul {
 
         li {
+          list-style-type:none;
 
           #sponsor_body {
             display: block;

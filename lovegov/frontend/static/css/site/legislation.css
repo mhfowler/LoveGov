@@ -97,6 +97,10 @@ div.main-block div.legislation_selector div.session_selector {
     z-index:0
 }
 
+div.main-block div.legislation_selector div.session_selector ul li {
+    list-style-type: none;
+}
+
 div.main-block div.legislation_selector div.type_selector {
     position: absolute;
     left: 520px;
@@ -105,6 +109,10 @@ div.main-block div.legislation_selector div.type_selector {
     width: 400px;
     padding-left: 0px;
     z-index:-1;
+}
+
+div.main-block div.legislation_selector div.type_selector ul li {
+    list-style-type: none;
 }
 
 div.main-block div.legislation_selector div.introduced_selector {
@@ -117,6 +125,10 @@ div.main-block div.legislation_selector div.introduced_selector {
     z-index:-2
 }
 
+div.main-block div.legislation_selector div.introduced_selector ul li {
+    list-style-type: none;
+}
+
 div.main-block div.legislation_selector div.sponsor_selector {
     position: absolute;
     left: 520px;
@@ -125,6 +137,10 @@ div.main-block div.legislation_selector div.sponsor_selector {
     width: 400px;
     padding-left: 0px;
     z-index:-3
+}
+
+div.main-block div.legislation_selector div.sponsor_selector ul li {
+    list-style-type: none;
 }
 
 div.main-block div.legislation_selector div.sponsor_selector ul li#sponsor_body {

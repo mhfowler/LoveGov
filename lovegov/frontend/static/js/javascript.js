@@ -4979,21 +4979,22 @@ function loadBlog() {
  **********************************************************************************************************************/
 
 function hiddenSelectors() {
-    $('.legislation_selector').hide(0);
+    $('.legislation_selector').children().hide(0);
 }
 
 function showSelectors() {
     $('.filter_label').click(function() {
-        alert('click');
         if ($(this).closest('div').hasClass('checked')) {
             $(this).closest('div').addClass('unchecked');
             $(this).closest('div').removeClass('checked');
-            alert("was checked");
+            $("." + $(this).closest('div').data('selector')).show('fast');
+            $("." + $(this).closest('div').data('selector')).siblings().hide(0);
         }
         else {
             $(this).closest('div').addClass('checked');
             $(this).closest('div').removeClass('unchecked');
-            alert("was unchecked");
+            $("." + $(this).closest('div').data('selector')).show('fast');
+            $("." + $(this).closest('div').data('selector')).siblings().hide(0);
         }
     });
 }
