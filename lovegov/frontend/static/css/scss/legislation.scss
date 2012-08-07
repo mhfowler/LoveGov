@@ -6,7 +6,7 @@
 div.main-block {
   margin-top: 50px;
   margin-left: 140px;
-  height: 280px;
+  height: 260px;
   width: 780px;
   overflow: hidden;
   border-bottom: solid;
@@ -51,15 +51,14 @@ div.main-block {
   div.legislation_selector {
     float:right;
     margin-left:5px;
-    margin-top: -180px;
-    height: 500px;
+    margin-top: -190px;
+    height: 250px;
     width: 400px;
 
     div.session_selector {
-      position: absolute;
-      left: 520px;
-      top: 145px;
-      height: 500px;
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 250px;
       width: 400px;
       padding-left: 0px;
 
@@ -69,10 +68,9 @@ div.main-block {
     }
 
     div.type_selector {
-      position: absolute;
-      left: 520px;
-      top: 145px;
-      height: 500px;
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 250px;
       width: 400px;
       padding-left: 0px;
 
@@ -82,10 +80,9 @@ div.main-block {
     }
 
     div.introduced_selector {
-      position: absolute;
-      left: 520px;
-      top: 145px;
-      height: 500px;
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 250px;
       width: 400px;
       padding-left: 0px;
 
@@ -95,10 +92,9 @@ div.main-block {
     }
 
     div.sponsor_selector {
-      position: absolute;
-      left: 520px;
-      top: 145px;
-      height: 500px;
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 250px;
       width: 400px;
       padding-left: 0px;
 
@@ -129,15 +125,11 @@ div.main-block {
 }
 
 div.div-button, div.div-button:active, div.div-button:link, div.div-button:visited {
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  -khtml-border-radius: 10px;
   position: absolute;
   left: 540px;
   top:310px;
-  border-radius: 10px;
-  width: 160px;
-  height: 53px;
+  width: 140px;
+  height: 33px;
   float: left;
   font-size: 20px;
   font-family: "Sonus Light";
@@ -159,7 +151,7 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
 
   span {
     display: inline-block;
-    margin-top: 16px;
+    margin-top: 5px;
   }
 
   &:hover {
@@ -175,15 +167,11 @@ div.div-button, div.div-button:active, div.div-button:link, div.div-button:visit
 }
 
 div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link, div.div-filter-button:visited {
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  -khtml-border-radius: 10px;
   position: absolute;
   left: 710px;
   top:310px;
-  border-radius: 10px;
-  width: 160px;
-  height: 53px;
+  width: 140px;
+  height: 33px;
   float: left;
   font-size: 20px;
   font-family: "Sonus Light";
@@ -205,7 +193,7 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
 
   span {
     display: inline-block;
-    margin-top: 16px;
+    margin-top: 5px;
   }
 
   &:hover {

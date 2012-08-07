@@ -96,8 +96,7 @@ function rebindFunction()
         case 'legislation':                                 //legislation page
             hiddenSelectors();
             showSelectors();
-
-
+            dateSelect();
             break;
         default:
             break
@@ -4999,6 +4998,9 @@ function showSelectors() {
     });
 }
 
+function dateSelect() {
+        $('.datepicker').datepicker();
+}
 
 
 
