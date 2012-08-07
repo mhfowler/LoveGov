@@ -84,13 +84,16 @@ def viewWrapper(view, requires_login=False):
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                     if UPDATE or ("dev" in host_full):
                         if not user.developer:
                             normal_logger.debug('blocked: ' + user.get_name())
-                            #return shortcuts.redirect('/underconstruction/')
+                            return shortcuts.redirect('/underconstruction/')
 
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")
@@ -107,13 +110,9 @@ def viewWrapper(view, requires_login=False):
             return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
-            if request.method == 'GET':
-                ignore = request.GET.get('log-ignore')
-            else:
-                ignore = request.POST.get('log-ignore')
+            ignore = request.REQUEST.get('log-ignore')
             if not ignore:
-                def saveAccess(req): PageAccess().autoSave(req)
-                thread.start_new_thread(saveAccess, (request,))
+                saveAccess(request)
 
     return new_view
 
@@ -398,13 +397,13 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
         answerArray = []
         for answer in question.answers.all():
             if response and (not webCompare or response.privacy == "PUB"):
-                checked = (answer.value == response.answer_val)
+                checked = (answer.id == response.most_chosen_answer.id)
                 weight = response.weight
             else:
                 checked = False
                 weight = 5
-            answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
-            answerArray.append(answer)
+            answer_json = {'answer_text':answer.answer_text,'answer_id':answer.id,'user_answer':checked,'weight':weight}
+            answerArray.append(answer_json)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
         if response: toAddquestion['user_explanation'] = response.downcast().explanation
         if not webCompare and response: toAddquestion['security'] = response.privacy
@@ -443,7 +442,7 @@ def compareWeb(request,alias=None,vals={}):
     This is the view that generates the QAWeb
 
     @param request: the request from the user to the server containing metadata about the request
-    @type request: HttpRequest
+    @type request: HttpRequestquestions
     @param vals: the dictionary of values to pass into the template
     @type vals: dictionary
     @return: HttpResponse
@@ -1009,7 +1008,7 @@ def contentDetail(request, content, vals):
     vals['creator'] = creator_display
     vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
-    my_vote = user_votes.filter(content=content) 
+    my_vote = user_votes.filter(content=content)
     if my_vote:
         vals['my_vote'] = my_vote[0].value
     else:
@@ -1110,27 +1109,27 @@ def valsQuestion(request, q_id, vals={}):
     agg = getLoveGovGroupView().filter(question=question)
     # get aggregate percentages for answers
     if agg:
-        agg = agg[0].aggregateresponse
+        agg = agg[0]
     for a in question.answers.all():
         if agg:
-            tuple = agg.responses.filter(answer_val=a.value)
-            if tuple and agg.total:
-                tuple = tuple[0]
-                percent = int(100*float(tuple.tally)/float(agg.total))
+            tallies = agg.answer_tallies.filter(answer_id=a.id)
+            if tallies and agg.total_num:
+                tally = tallies[0]
+                percent = int(100*float(tally.tally)/float(agg.total_num))
             else:
                 percent = 0
         else:
             percent = 0
-        answers.append(AnswerClass(a.answer_text, a.value, percent))
+        answers.append(AnswerClass(a.answer_text, a.id, percent))
     vals['answers'] = answers
     topic_text = question.getMainTopic().topic_text
     vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
     vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
 
 class AnswerClass:
-    def __init__(self, text, value, percent):
+    def __init__(self, text, id, percent):
         self.text = text
-        self.value = value
+        self.id = id
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------

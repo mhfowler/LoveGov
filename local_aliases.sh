@@ -1,5 +1,7 @@
 # absolute path to the directory of this script
 LG="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+LG=$(dirname $0)
+echo "lg: $LG"
 
 # aliases
 alias cmdcreate='vi $LG/local_aliases.sh'
@@ -18,8 +20,8 @@ alias mastermerge="$LG/local_merge.sh"
 alias lgscript='python $LG/lovegov/scripts/scheduled.py'
 alias lgcleardb='rm $LG/lovegov/db/local.db'
 alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
-alias lginitdb='python $LG/lovegov/local_manage.py loaddata $LG/lovegov/db/migrate.json && python $LG/lovegov/frontend/scripts.py initialize testdata'
 alias lgresetdb='$LG/local_reset.sh'
+alias lgresetfixture='$LG/local_reset_testfixture.sh'
 alias lgserver="$LG/local_server.sh"
 alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/frontend/static/css/compiled"
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
@@ -31,6 +33,7 @@ alias remoteserver="$LG/remote_server.sh"
 alias lgrun="source $LG/local_env.sh &&"
 alias remoterun="source $LG/remote_env.sh &&"
 alias remotepython="source $LG/remote_env.sh && bpython -i $LG/autopython.py"
+alias lgtest="python $LG/lovegov/local_manage.py test tests"
 
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"

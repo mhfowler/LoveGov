@@ -1,4 +1,4 @@
-import settings
+import base_settings
 
 LOCAL = False
 DEBUG = True
@@ -29,7 +29,7 @@ DATABASES = {
 STATIC_ROOT = '/static/dev/'
 MEDIA_ROOT = '/media/dev/'
 LOG_ROOT = "/log/dev/"
-LOGGING = settings.setLogging(LOG_ROOT)
+LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
 
@@ -38,11 +38,14 @@ LOGGING = settings.setLogging(LOG_ROOT)
 #
 ########################################################################################################################
 
-ROOT_URLCONF = settings.ROOT_URLCONF
+ROOT_URLCONF = base_settings.ROOT_URLCONF
 
-INSTALLED_APPS = settings.INSTALLED_APPS.__add__(('south','storages','s3_folder_storage'))
+INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('south',
+                                                  'storages',
+                                                  's3_folder_storage',
+                                                  'djcelery',))
 
-MIDDLEWARE_CLASSES = settings.MIDDLEWARE_CLASSES
+MIDDLEWARE_CLASSES = base_settings.MIDDLEWARE_CLASSES
 
 ########################################################################################################################
 #    static and media
@@ -65,8 +68,8 @@ STATIC_ROOT = "/%s/" % STATIC_S3_PATH
 STATIC_URL = 'https://%s.s3.amazonaws.com/static' % AWS_STORAGE_BUCKET_NAME
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-STATICFILES_DIRS = settings.STATICFILES_DIRS
-STATICFILES_FINDERS = settings.STATICFILES_FINDERS
+STATICFILES_DIRS = base_settings.STATICFILES_DIRS
+STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
 ########################################################################################################################
 #    templates
@@ -74,34 +77,34 @@ STATICFILES_FINDERS = settings.STATICFILES_FINDERS
 ########################################################################################################################
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+TEMPLATE_LOADERS = base_settings.TEMPLATE_LOADERS
 
 # template dirs
-TEMPLATE_DIRS = settings.TEMPLATE_DIRS
+TEMPLATE_DIRS = base_settings.TEMPLATE_DIRS
 
 ########################################################################################################################
 #    authentication (and integration with facebook)
 #
 ########################################################################################################################
 
-FACEBOOK_APP_ID = 	settings.FACEBOOK_APP_ID
-FACEBOOK_APP_SECRET = 	settings.FACEBOOK_APP_SECRET
+FACEBOOK_APP_ID = 	base_settings.FACEBOOK_APP_ID
+FACEBOOK_APP_SECRET = 	base_settings.FACEBOOK_APP_SECRET
 
-TWITTER_KEY = settings.TWITTER_KEY
-TWITTER_SECRET = settings.TWITTER_SECRET
+TWITTER_KEY = base_settings.TWITTER_KEY
+TWITTER_SECRET = base_settings.TWITTER_SECRET
 
-AUTH_PROFILE_MODULE = settings.AUTH_PROFILE_MODULE
+AUTH_PROFILE_MODULE = base_settings.AUTH_PROFILE_MODULE
 
-AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS
+AUTHENTICATION_BACKENDS = base_settings.AUTHENTICATION_BACKENDS
 
-TEMPLATE_CONTEXT_PROCESSORS = settings.TEMPLATE_CONTEXT_PROCESSORS
+TEMPLATE_CONTEXT_PROCESSORS = base_settings.TEMPLATE_CONTEXT_PROCESSORS
 
 ########################################################################################################################
 #    haystack and search
 #
 ########################################################################################################################
 
-HAYSTACK_CONNECTIONS = settings.HAYSTACK_CONNECTIONS
+HAYSTACK_CONNECTIONS = base_settings.HAYSTACK_CONNECTIONS
 
 ########################################################################################################################
 #    debug toolbar
@@ -109,7 +112,7 @@ HAYSTACK_CONNECTIONS = settings.HAYSTACK_CONNECTIONS
 ########################################################################################################################
 
 DEBUG_TOOLBAR_CONFIG = {
-'SHOW_TOOLBAR_CALLBACK': settings.show_toolbar,
+'SHOW_TOOLBAR_CALLBACK': base_settings.show_toolbar,
 }
 
 ########################################################################################################################
@@ -131,7 +134,7 @@ CACHES = {
 import djcelery
 djcelery.setup_loader()
 
-BROKER_URL = settings.BROKER_URL
+BROKER_URL = base_settings.BROKER_URL
 
 ########################################################################################################################
 #    email
@@ -149,29 +152,29 @@ EMAIL_HOST_PASSWORD = 'lglglgLG'
 EMAIL_PORT = '25'
 
 ########################################################################################################################
-#    misc settings
+#    misc base_settings
 #
 ########################################################################################################################
 
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = settings.TIME_ZONE
+TIME_ZONE = base_settings.TIME_ZONE
 
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = settings.LANGUAGE_CODE
-SITE_ID = settings.SITE_ID
+LANGUAGE_CODE = base_settings.LANGUAGE_CODE
+SITE_ID = base_settings.SITE_ID
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = settings.USE_I18N
+USE_I18N = base_settings.USE_I18N
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
-USE_L10N = settings.USE_L10N
+USE_L10N = base_settings.USE_L10N
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = settings.SECRET_KEY
+SECRET_KEY = base_settings.SECRET_KEY
 
-ADMINS = settings.ADMINS
+ADMINS = base_settings.ADMINS
 
-MANAGERS = settings.MANAGERS
+MANAGERS = base_settings.MANAGERS
 

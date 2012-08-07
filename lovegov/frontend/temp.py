@@ -1,6 +1,5 @@
 from lovegov.frontend.views import *
 
-
-recalculateAllComments()
+randomAnswers(getUser("Katy Perry"))
 
 

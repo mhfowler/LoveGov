@@ -508,7 +508,8 @@ class Content(Privacy, LocationLevel):
         elif type == 'Q':
             object = self.question
         elif type == 'R':
-            object = self.response.userresponse
+            object = self.response
+
         elif type == 'I':
             object = self.userimage
         elif type == 'G':
@@ -518,7 +519,7 @@ class Content(Privacy, LocationLevel):
         elif type == 'Y':
             object = self.persistent
         elif type == 'Z':
-            object = self.response.aggregateresponse
+            object = self.response
         elif type == 'M':
             object = self.motion
         elif type == 'F':
@@ -1176,6 +1177,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def isNormal(self):
         return not (self.politician or self.elected_official)
 
+    def clearResponses(self):
+        return self.getView().clearResponses()
+
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1421,9 +1425,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Gets worldview for user.
     #-------------------------------------------------------------------------------------------------------------------
     def getView(self):
-        if self.view_id != -1:
+        if self.view_id and self.view_id != -1:
             return self.view
-        else: return None
+        else:
+            view = WorldView()
+            view.save()
+            self.view = view
+            self.save()
+            return self.view
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets username and email for userprofile and controllinguser
@@ -1793,20 +1802,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-----------------------------------------------------------------------------------------------------------------------
     # Gets the users responses to questions in a list of  (question, response) tuples
     #-----------------------------------------------------------------------------------------------------------------------
-    # The other version is less SQL queries
-#    def getUserResponses(self):
-#        qr = []
-#        responses = self.getView().responses
-#        questions = Question.objects.filter(official=True)
-#        for q in questions:
-#            r = responses.filter(question=q)
-#            qr.append((q,r))
-#        return qr
-
     def getUserResponses(self):
         qr = []
 
-        responses = list( self.getView().responses.all() )
+        responses = list( self.view.responses.all() )
 
         official_questions = list( Question.objects.filter(official=True) )
 
@@ -2781,11 +2780,17 @@ class Response(Content):
         self.main_image_id = self.question.main_image_id
         self.in_feed = False
         self.save()
+        if creator:
+            view = creator.getView()
+            view.responses.add(self)
         super(Response, self).autoSave(creator=creator, privacy=privacy)
         self.setMainTopic(self.question.getMainTopic())
 
     def getValue(self):
         return float(self.answer_val)
+
+    def clearAnswerTallies(self):
+        self.answer_tallies.delete()
 
 
 ########################################################################################################################
@@ -3008,6 +3013,9 @@ class Persistent(Content):
 #=======================================================================================================================
 class WorldView(LGModel):
     responses = models.ManyToManyField(Response)
+
+    def clearResponses(self):
+        self.responses.all().delete()
 
 #=======================================================================================================================
 # Comparison of specific topic.
@@ -3734,6 +3742,16 @@ class PageAccess(LGModel):
                     self.action = request.GET['action']
             self.save()
 
+class CompatabilityLog(LGModel):
+    user = models.ForeignKey("UserProfile", null=True)
+    incompatible = custom_fields.ListField(default=[])
+    page = models.CharField(max_length=100, blank=True)
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    user_agent = models.CharField(max_length=250, blank=True)
+    when = models.DateTimeField(auto_now_add=True)
+    def autoSave(self):
+        self.save()
+        return self
 
 #-----------------------------------------------------------------------------------------------------------------------
 # ipAddrConvert

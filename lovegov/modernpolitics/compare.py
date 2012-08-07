@@ -45,23 +45,6 @@ def updateGroupViews(debug=False, fast=True):
             print g.title
             updateGroupView(g)
 
-#    """
-#    networks = Network.objects.exclude(name="congress")
-#    for g in networks:
-#        updateGroupView(g)
-#        if debug:
-#            print "updated: " + enc(g.title) + " aggregate-view"
-#    print "updated networks."
-#
-#    groups = UserGroup.objects.all()
-#    for g in groups:
-#        updateGroupView(g)
-#        if debug:
-#            print "updated: " + enc(g.title) + " aggregate-view"
-#    print "updated usergroups." """
-
-
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -79,17 +62,6 @@ def updateCalcViews(debug=False):
         updateContentView(c)
         if debug:
             print "updated: " + enc(c.title) + " calculated-view"
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Updates content-content links for all content.
-#-----------------------------------------------------------------------------------------------------------------------
-def updateAllContentLinks(debug=False):
-    scheduled_logger.debug("UPDATE CONTENT LINKS")
-    contents = Content.objects.filter(in_calc=True)
-    for c in contents:
-        if debug:
-            print "updating: " + enc(c.title) + " content-links"
-        updateContentLinks(c, debug=debug)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates comparisons between all users.
@@ -164,8 +136,7 @@ def getViewComparison(viewA, viewB, force=False, dateA=None, dateB=None):
 def viewCompare(viewA, viewB):
 
     topics = getMainTopics()
-    questions = Question.objects.filter(official=True)
-    fast_comparison = fastCompare(questions=questions, viewA=viewA, viewB=viewB, topics=topics)
+    fast_comparison = fastCompare(viewA=viewA, viewB=viewB, topics=topics)
 
     comparison = findViewComparison(viewA, viewB)
     if not comparison:
@@ -179,11 +150,6 @@ def viewCompare(viewA, viewB):
     comparison.save()
 
     return comparison
-
-#    for t in topics:
-#        topic_bucket = fast_comparison.getTopicBucket(t)
-#        by_topic = comparison.updateTopic(t, topic_bucket)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Returns a comparison between both views, either by retrieving or by calculating and then saving.
@@ -222,20 +188,7 @@ def updateGroupView(group):
     users = group.members.all()
     worldview = group.group_view
     if worldview:
-        # update old questions
-        for r in worldview.responses.all():
-            agg = r.aggregateresponse   # downcast
-            q = agg.question
-            aggregateHelper(question=q, users=users, object=agg, update=True)
-            # new questions
-        old_ids = worldview.responses.all().values_list("question", flat=True)
-        #print ("test: " + old_ids)
-        new_questions = Question.objects.filter(official=True).exclude(id__in=old_ids)
-        for q in new_questions:
-            agg = AggregateResponse(title=group.title + ' ' + q.title + " Aggregate", question=q)
-            agg = aggregateHelper(question=q, users=users, object=agg)
-            worldview.responses.add(agg)
-    # create world view, recall
+        aggregateView(users, worldview)
     else:
         wv = WorldView()
         wv.save()
@@ -243,119 +196,75 @@ def updateGroupView(group):
         group.save()
         updateGroupView(group)
 
+def aggregateView(users, view):
+    for r in view.responses.all():
+        q = r.question
+        aggregateHelper(question=q, users=users, aggregate=r)
+    old_ids = view.responses.all().values_list("question", flat=True)
+    new_questions = Question.objects.filter(official=True).exclude(id__in=old_ids)
+    for q in new_questions:
+        agg = aggregateHelper(question=q, users=users)
+        view.responses.add(agg)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a piece of content, and updates or creates its associated content response by aggregating users whol liked.
 #-----------------------------------------------------------------------------------------------------------------------
 def updateContentView(content):
-    questions = Question.objects.filter(official=True)
     user_ids = Voted.objects.filter(content=content, value=1).values_list("user", flat=True)
     users = UserProfile.objects.filter(id__in=user_ids)
-    # update
     if content.calculated_view_id != -1:
         worldview = content.getCalculatedView()
-        for w in worldview.responses.all():
-            agg = w.downcast()
-            q = agg.question
-            aggregateHelper(question=q, users=users, object=agg, update=True)
-            # new questions
-        old_ids = worldview.responses.all().values_list("question", flat=True)
-        new_questions = Question.objects.exclude(id__in=old_ids)
-        for q in new_questions:
-            agg = AggregateResponse(title=content.title + ' ' + q.title + " Aggregate", question=q)
-            agg = aggregateHelper(question=q, users=users, object=agg)
-            worldview.responses.add(agg)
-    # create
+        aggregateView(users, worldview)
     else:
         worldview = WorldView()
         worldview.save()
         content.calculated_view_id = worldview.id
         content.save()
-        for q in questions:
-            agg = AggregateResponse(title=content.title + ' ' + q.title + " Aggregate", question=q)
-            agg = aggregateHelper(question=q, users=users, object=agg)
-            worldview.responses.add(agg)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Takes in a piece of content, and updates or creates content links between it and the most highly associated content.
-#-----------------------------------------------------------------------------------------------------------------------
-def updateContentLinks(content, debug=False):
-    filter = getDefaultFilter()
-    links = content.getLinks()
-    supporters = content.getSupporters()                # people who agree with or upvote this content
-    for l in links: # update association for already formed links
-        l.association_strength=calcRank(content=l.to_content, users=supporters, filter_setting=filter)
-        l.autoSave()
-        # re highest associated content
-    associated = feed(users=supporters, filter_setting=filter)     # content most highly regarded by supporters of this content
-    for x in associated:
-        c = x[0]
-        rank = x[1]
-        if c!=content:
-            if debug:
-                print (" ** rank[" + enc(c.title) + "]: " + str(rank))
-            update = links.filter(to_content=c)
-            if update:
-                link = update[0]
-                link.association_strength=rank
-                link.autoSave()
-            else:
-                link = Linked(from_content=content, to_content=c, association_strength=rank)
-                link.autoSave()
+        updateContentView(content)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a question and a set of users, and an AggregateResponse and calculates
 # tuples, answer_avg and answer_val for that agg, then saves and returns agg.
 #-----------------------------------------------------------------------------------------------------------------------
-def aggregateHelper(question, users, object, update=False):
-    sum = 0
-    total = 0
+def aggregateHelper(question, users, aggregate=None):
+    if not aggregate:
+        aggregate = Response(question=question)
+        aggregate.autoSave()
+    total_num = 0
     answers = {}
-    # create aggregate tuples
-    for choice in question.answers.all().order_by("value"):
-        tuple = AggregateTuple(answer=choice, tally=0)
-        answers[choice_id] = tuple
+    # create or get answer tally objects
+    for choice in question.answers.all():
+        already = aggregate.answer_tallies.filter(answer=choice)
+        if not already:
+            tuple = AnswerTally(answer=choice, tally=0)
+            tuple.save()
+            aggregate.answer_tallies.add(tuple)
+        else:
+            tuple = already[0]
+            tuple.tally = 0
+        answers[choice.id] = tuple
+    most_chosen_num = 0
+    most_chosen_answer_id = -1
     for p in users:
-        response = p.userresponse_set.filter(question=question)
+        response = p.view.responses.filter(question=question)
         if response:
-            # keep track of tally
-            index = response[0].answer_id
+            index = response[0].most_chosen_answer_id
             if index in answers:
-                answers[index].tally += 1
-                # calculate average
-            sum += index
-            total += 1
-        # calculate mean
-    if total:
-        mean = float(sum)/float(total)
-    else:
-        mean = 5
-        # calculate most chosen
-    most = 0
-    which = -1
-    for ans_id, tup in answers.items():
-        if tup.tally >= most:
-            most = tup.tally
-            which = ans_id
-        # set values
-    object.answer_avg = str(mean)
-    object.answer_val = which
-    object.total = total
-    # if update
-    if update:
-        object.save()
-        object.smartClearResponses()
-        object.users.clear()
-    # else new
-    else:
-        object.autoSave()
-        # add users
-    for u in users:
-        object.users.add(u)
-        # add agg tuples
-    for tuple in answers.itervalues():
-        tuple.save()
-        object.responses.add(tuple)
-    return object
+                total_num += 1
+                tuple = answers[index]
+                tuple.tally += 1
+                if tuple.tally >= most_chosen_num:
+                    most_chosen_num = tuple.tally
+                    most_chosen_answer_id = index
+    # set aggregate response values
+    aggregate.most_chosen_answer_id = most_chosen_answer_id
+    aggregate.most_chosen_num = most_chosen_num
+    aggregate.total_num = total_num
+    aggregate.question = question
+    aggregate.save()
+
+    return aggregate
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate responses for lovegov group, and sets lovegov user responses to most highly chosen answer of all
@@ -516,7 +425,7 @@ def fastCompare(viewA,viewB,topics=None):
             comparison.getTotalBucket().update(similar, weight)
             # And also do something with topic buckets...
             if topics:
-                topic = question.getMainTopic()
+                topic = rA.question.getMainTopic()
                 if topic in topics:
                     comparison.getTopicBucket(topic).update(similar, weight)
             # Then increment both counters
@@ -524,7 +433,7 @@ def fastCompare(viewA,viewB,topics=None):
             b_index += 1
 
         # Otherwise, if response A has the smaller question ID
-        elif responsesA[a_index].question_id < responsesB[b_index].quesion_id:
+        elif responsesA[a_index].question_id < responsesB[b_index].question_id:
             a_index += 1 # Increment position for response list A
         else: # Otherwise response B has the smaller question ID
             b_index += 1 # Increment position for response list B

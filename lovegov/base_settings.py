@@ -28,12 +28,12 @@ INSTALLED_APPS = (
     'haystack',
     'sorl.thumbnail',
     'debug_toolbar',
-    'djcelery',
     'django_extensions',
 
     # internal
     'lovegov.modernpolitics',
-    'lovegov.frontend'
+    'lovegov.frontend',
+    'lovegov.tests'
     )
 
 MIDDLEWARE_CLASSES = (
@@ -315,6 +315,12 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'team@lovegov.com'
 EMAIL_HOST_PASSWORD = 'freeGOV2'
 EMAIL_PORT = 587
+
+########################################################################################################################
+#   testing
+#
+########################################################################################################################
+FIXTURE_DIRS = os.path.join(PROJECT_PATH, 'tests/fixtures')
 
 ########################################################################################################################
 #    misc settings

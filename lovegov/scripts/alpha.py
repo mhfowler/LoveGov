@@ -104,14 +104,14 @@ def scriptCreateCongressAnswers(args=None):
             congress_rolls = None
             # Get votes from the bill or amendment
             if bill:
-                congress_rolls = CongressRoll.objects.filter(legislation=bill)
+                congress_rolls = CongressRoll.objects.filter(legislation=bill).order_by('datetime')
             elif amendment:
-                congress_rolls = CongressRoll.objects.filter(amendment=amendment)
+                congress_rolls = CongressRoll.objects.filter(amendment=amendment).order_by('datetime')
 
             votes = []
 
             if not congress_rolls:
-                print "++ERROR++ Could not find bill or amendment for == " + str(legislation)
+                print "++ERROR++ Could not find bill or amendment for == " + str(legislation) + " " + str(congress_num)
                 continue
 
             # Collect Votes from Congress Rolls
@@ -154,6 +154,11 @@ def scriptCreateCongressAnswers(args=None):
                     response.total_num = 1
                     response.most_chosen_num = 1
                     response.autoSave(creator=voter)
+
+                    voter.view.responses.add(response)
+
+                    metrics[metricName] += 1
+                    print metricName + " " + str(metrics[metricName])
                 # Otherwise, change the answer
                 else:
                     if len(responses) > 1:
@@ -163,10 +168,6 @@ def scriptCreateCongressAnswers(args=None):
                     response.total_num = 1
                     response.most_chosen_num = 1
                     response.save()
-
-                metrics[metricName] += 1
-
-                print metricName + " " + str(metrics[metricName])
 
     return metrics
 
@@ -233,6 +234,9 @@ def scriptCreateResponses(args=None):
                     response.most_chosen_num = 1
                     response.total_num = 1
                     response.autoSave(creator=politician)
+
+                    politician.view.responses.add(response)
+
                 else:
                     if len(responses) > 1:
                         print "++DUPLICATE++ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)

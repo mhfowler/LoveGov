@@ -768,6 +768,9 @@ $(document).ready(function()
     // csrf protect
     $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
+    // check browser compatability
+    checkCompatability();
+
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
     if ( !History.enabled )
@@ -952,6 +955,27 @@ function replaceCenter(stuff)
     rebindFunction();
 }
 
+
+function checkCompatability() {
+    var compatability_cookie =  $.cookie('compatability');
+    var csrf_check = $.cookie('csrftoken');
+    if (compatability_cookie == null) {
+        var incompatible = [];
+        $.each(Modernizr, function(index, element) {
+            if (!element) {
+                incompatible.push(index);
+            }
+        });
+        var incompatible_json = JSON.stringify(incompatible);
+        ajaxPost({
+            data: {'action': 'logCompatability', 'incompatible': incompatible_json},
+            success: function(data)
+            {
+                $.cookie('compatability', incompatible_json);
+            }
+        });
+    }
+}
 
 /***********************************************************************************************************************
  *

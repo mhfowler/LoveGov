@@ -767,58 +767,48 @@ def answer(request, vals={}):
     user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = request.POST.get('questionPRI')
+    my_response = user.view.responses.filter(question=question)
     if not privacy:
         privacy = getPrivacy(request)
-    my_response = user.getView().responses.filter(question=question)
-    # save new response
     if 'choice' in request.POST:
-        answer_val = request.POST['choice']
+        answer_id = request.POST['choice']
         weight = request.POST['weight']
         explanation = request.POST['explanation']
-        user.last_answered = datetime.datetime.now()
-        user.save()
-        if not my_response:
-            response = UserResponse(responder=user,
-                question = question,
-                answer_val = answer_val,
-                weight = weight,
-                explanation = explanation)
-            response.autoSave(creator=user, privacy=privacy)
-            action = Action(privacy=getPrivacy(request),relationship=response.getCreatedRelationship())
-            action.autoSave()
-        # else update old response
-        else:
-            response = my_response[0]
-            user_response = response.userresponse
-            user_response.answer_val = answer_val
-            user_response.weight = weight
-            user_response.explanation = explanation
-            # update creation relationship
-            user_response.saveEdited(privacy)
-            action = Action(privacy=getPrivacy(request),relationship=user_response.getCreatedRelationship())
-            action.autoSave()
-        if request.is_ajax():
-            url = response.get_url()
-            # get percentage agreed
-            agg = getLoveGovGroupView().filter(question=question)
-            if agg:
-                agg = agg[0].aggregateresponse
-                choice = agg.responses.filter(answer_val=int(request.POST['choice']))
-                if agg.total and choice:
-                    percent_agreed = float(choice[0].tally) / float(agg.total)
-                else:
-                    percent_agreed = 0
-                    # print("total: " + str(agg.total))
-            else:
-                percent_agreed = 0
-            return HttpResponse(simplejson.dumps({'url': url,'answer_avg':percent_agreed}))
-        else:
-            return shortcuts.redirect(question.get_url())
+        return answerHelper(user=user, question=question, my_response=my_response,
+                privacy=privacy, answer_id=answer_id, weight=weight, explanation=explanation)
     else:
         if my_response:
             response = my_response[0]
             response.delete()
         return HttpResponse("+")
+
+def answerHelper(user, question, my_response, privacy, answer_id, weight, explanation):
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    user.last_answered = datetime.datetime.now()
+    user.save()
+    if not my_response:
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        response.most_chosen_num = 1
+        response.total_num = 1
+        response.autoSave(creator=user, privacy=privacy)
+        action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
+        action.autoSave()
+    # else update old response
+    else:
+        response = my_response[0]
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        # update creation relationship
+        response.most_chosen_num = 1
+        response.total_num = 1
+        response.saveEdited(privacy)
+        action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
+        action.autoSave()
+    return HttpResponse(simplejson.dumps({'url': response.get_url(),'answer_avg':0}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
@@ -1599,9 +1589,9 @@ def getNotifications(request, vals={}):
 
     vals['dropdown_notifications_text'] = notifications_text
     vals['num_notifications'] = num_notifications
-    html = ajaxRender('site/snippets/notification_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('site/snippets/notification_dropdown.html', vals, request)
+        html = ajaxRender('site/pieces/notifications/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1627,7 +1617,7 @@ def getUserActions(request, vals={}):
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
-    html = ajaxRender('site/snippets/action_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1654,7 +1644,7 @@ def getGroupActions(request, vals={}):
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
-    html = ajaxRender('site/snippets/action_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/notifications/action_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2043,11 +2033,21 @@ def setFirstLoginStage(request, vals={}):
     response.status_code = 500 if error else 200
     return response
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# saves the posted incompatability information to the db
+#-----------------------------------------------------------------------------------------------------------------------
+def logCompatability(request, vals={}):
+    incompatible = json.loads(request.POST['incompatible'])
+    user = vals.get('viewer')
+    CompatabilityLog(incompatible=incompatible, user=user,
+        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
+        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+    return HttpResponse('compatability logged')
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
-# args: request
-# tags: USABLE
 #-----------------------------------------------------------------------------------------------------------------------
 def actionPOST(request, vals={}):
     """Splitter between all actions."""
