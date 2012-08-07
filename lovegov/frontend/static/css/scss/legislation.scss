@@ -6,7 +6,7 @@
 div.main-block {
   margin-top: 50px;
   margin-left: 140px;
-  height: 260px;
+  height: 250px;
   width: 780px;
   overflow: hidden;
   border-bottom: solid;
@@ -145,7 +145,7 @@ div.div-select-button, div.div-select-button:active, div.div-select-button:link,
   border-radius: 5px;
   position: absolute;
   left: 540px;
-  top:310px;
+  top:300px;
   width: 140px;
   height: 33px;
   float: left;
@@ -229,7 +229,7 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
   border-radius: 5px;
   position: absolute;
   left: 710px;
-  top:310px;
+  top:300px;
   width: 140px;
   height: 33px;
   float: left;
@@ -334,4 +334,8 @@ h5 {
   &:hover {
     color: #ef503b;
   }
+}
+
+.datepicker {
+  font-size: 11px;
 }

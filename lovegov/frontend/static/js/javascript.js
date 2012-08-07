@@ -4999,8 +4999,12 @@ function showSelectors() {
 }
 
 function dateSelect() {
-        $('.datepicker').datepicker();
+        $('.datepicker').datepicker({
+            changeMonth: true,
+            changeYear: true
+        })
 }
+
 
 
 
