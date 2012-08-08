@@ -1,4 +1,5 @@
 # absolute path to the directory of this script
+
 LG="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 LG=$(dirname $0)
 echo "lg: $LG"

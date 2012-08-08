@@ -81,6 +81,10 @@ URL_SPECIAL_NAMES = set([
     'motion'
 ])
 
+urlpatterns += patterns('django.views.generic.simple',
+    (r'^frame/$', 'direct_to_template', {'template': 'pages/feed.html'}),
+)
+
 # lovegov urls
 urlpatterns += patterns('',
 
@@ -178,4 +182,5 @@ urlpatterns += patterns('',
     # REDIRECT
     (r'(?P<alias>\S+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
-    (r'^$', views.redirect))
+    (r'^$', views.redirect)
+)

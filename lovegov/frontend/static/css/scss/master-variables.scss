@@ -1,7 +1,12 @@
 @charset "UTF-8";
 
+
+/* Default page width on large screens */
+$default-page-width: 1140px;
+
 /* static url */
 $STATIC_URL: '/static';
+
 
 @font-face
 {
