@@ -331,11 +331,11 @@ def createMotion(request, vals={}):
             if moderator not in group.members.all():
                 error_message = "motion to add moderator of member who is not in group," + group.get_name()
                 LGException(error_message)
-                return HttpResponse(error_message)
+                return HttpResponseServerError(error_message)
             elif moderator in group.admins.all():
                 error_message = "motion to add moderator of member who is already moderator," + group.get_name()
                 LGException(error_message)
-                return HttpResponse(error_message)
+                return HttpResponseServerError(error_message)
             else:
                 motion = Motion(motion_type=motion_type, moderator=moderator,
                     full_text=request.POST['because'], group=group)
@@ -345,7 +345,7 @@ def createMotion(request, vals={}):
             if moderator not in group.admins.all():
                 error_message = "motion to remove moderator who is not moderator of group," + group.get_name()
                 LGException(error_message)
-                return HttpResponse(error_message)
+                return HttpResponseServerError(error_message)
             else:
                 motion = Motion(motion_type=motion_type, moderator=moderator,
                     full_text=request.POST['because'], group=group)

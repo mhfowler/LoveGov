@@ -49,23 +49,33 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {'STATIC_URL':settings.STATIC_URL}
-        try:
+        try: # Catch all error messages
+
+            # if ie<9 redirect to upgrade page
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
 
-            vals['fb_state'] = fbGetRedirect(request, vals)
+            # google analytics
             vals['google'] = GOOGLE_LOVEGOV
+
+            # static file serving and host
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
             if 's3' in settings.DEFAULT_FILE_STORAGE:
                 vals['MEDIA_PREFIX'] = settings.MEDIA_URL.replace('/media', '')
             else:
                 vals['MEDIA_PREFIX'] = host_full
+
+            # optimization for profile image
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
+
+            # page info
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
 
             if requires_login:
+
+                    # who is logged in?
                     controlling_user = getControllingUser(request)
                     vals['controlling_user'] = controlling_user
 
@@ -76,17 +86,22 @@ def viewWrapper(view, requires_login=False):
                     else:
                         user = getAnonUser()
                         vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+
+                    # get user profile associated with controlling user
                     vals['user'] = user
                     vals['viewer'] = user
 
+                    # first login
                     first_login = user.first_login
                     vals['firstLoginStage'] = first_login
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                        # If this action can't be performed without being authenticated
                         if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            # Redirect to login page
                             return shortcuts.redirect("/login" + request.path)
-                        else:
+                        else: # otherwise action can be done without authentication
                             return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
@@ -95,19 +110,20 @@ def viewWrapper(view, requires_login=False):
                             normal_logger.debug('blocked: ' + user.get_name())
                             return shortcuts.redirect('/underconstruction/')
 
+                    # if user not confirmed redirect to login page
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")
 
+            # vals for not logged in pages
+            else:
+                vals['fb_state'] = fbGetRedirect(request, vals)
+
+            # if everything worked, and there wasn't an error, return the view
             return view(request,vals=vals,*args,**kwargs)
 
+        # Any errors caught here
         except LGException as e:
             return errorMessage(request, message=e.getClientMessage(), vals=vals)
-
-        except ImproperlyConfigured:
-            response = shortcuts.redirect('/login' + request.path)
-            response.delete_cookie('sessionid')
-            errors_logger.error('deleted cookie')
-            return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
             ignore = request.REQUEST.get('log-ignore')
@@ -130,12 +146,6 @@ def aliasDowncast(request, alias=None, vals={}):
 
 def redirect(request):
     return shortcuts.redirect('/home/')
-
-def splash(request):
-    return splashForm(request, 'site/pages/splash/splash.html')
-
-def learnmore(request):
-    return splashForm(request, 'site/pages/splash/learnmore.html')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -224,7 +234,6 @@ def login(request, to_page='web/', message="", vals={}):
     @type vals: dictionary
     @return:
     """
-
     if not vals.get('firstLoginStage'):
         to_page = "match/representatives/"
 
@@ -366,7 +375,6 @@ def frame(request, vals):
     userProfile = vals['viewer']
     vals['new_notification_count'] = userProfile.getNumNewNotifications()
     vals['firstLogin'] = userProfile.checkFirstLogin()
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets values for right side bar and puts in dictionary
