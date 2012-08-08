@@ -197,8 +197,11 @@ def calculatePoliticianTitles():
 
         if not offices_held:
             p.political_title = "Politician"
+            p.save()
 
         else:
+            title = ''
+
             offices_held = map( lambda x : x.downcast() , offices_held )
             offices_held.sort(reverse=True)
             recent_office = offices_held[0].office
@@ -209,10 +212,14 @@ def calculatePoliticianTitles():
                 elif t.name == 'representative':
                     p.political_title = "Representative"
 
-            loc = ''
-            loc += recent_office.location.state
-            if recent_office.location.district != -1:
-                loc += "-" + str(recent_office.location.district)
+            if title:
+                loc = ''
+                loc += recent_office.location.state
+                if recent_office.location.district != -1:
+                    loc += "-" + str(recent_office.location.district)
 
-            if loc:
-                p.political_title += " [" + loc + "]"
+                if loc:
+                    title += " [" + loc + "]"
+
+                p.political_title = title
+                p.save()
