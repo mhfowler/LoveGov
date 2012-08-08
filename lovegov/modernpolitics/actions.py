@@ -239,7 +239,7 @@ def loadGroupUsers(request,vals={}):
     vals['defaultImage'] = getDefaultImage().image
     for member in more_members:
         vals['member'] = member
-        html += ajaxRender('site/snippets/group-member.div.html',vals,request)
+        html += ajaxRender('site/pieces/misc/group-member.div.html',vals,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1673,7 +1673,7 @@ def getGroupMembers(request, vals={}):
     vals['members_text'] = members_text
     num_members += MEMBER_INCREMENT
     vals['num_members'] = num_members
-    html = ajaxRender('site/snippets/member-snippet.html', vals, request)
+    html = ajaxRender('site/pieces/misc/member-snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_members':num_members}))
 
 #-----------------------------------------------------------------------------------------------------------------------
