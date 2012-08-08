@@ -1248,7 +1248,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
         self.alias = genAliasSlug(alias)
-        self.alias = alias
         self.save()
         return self.alias
 
@@ -2325,7 +2324,7 @@ def parseDate(date):
 
 def truncateField(string,name,limit):
     if len( string ) > limit:
-        print "[WARNING]: " + name + " truncated, length = " + str(len(string))
+        print "+WW+ " + name + " truncated, length = " + str(len(string))
     return string[:limit]
 
 class CongressSession(LGModel):
@@ -3982,6 +3981,7 @@ class UCRelationship(Relationship):
 #=======================================================================================================================
 class OfficeHeld(UCRelationship):
     office = models.ForeignKey('Office',related_name="office_terms")
+    confirmed = models.BooleanField(default=False)
     start_date = models.DateField()
     end_date = models.DateField()
     election = models.BooleanField(default=False)
@@ -3991,6 +3991,11 @@ class OfficeHeld(UCRelationship):
         self.content = self.office
         self.relationship_type = "OH"
         self.save()
+
+    def isCurrent(self):
+        if (datetime.date.today() - self.end_date).days >= 0:
+            return True
+        return False
 
 #=======================================================================================================================
 # Exact same as vote, except for debates.

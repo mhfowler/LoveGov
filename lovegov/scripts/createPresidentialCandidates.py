@@ -27,6 +27,13 @@ def createPoliticianProfiles(sheet):
 
 
 def answerQuestions(sheet):
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "+DD+ = Duplicate"
+    print "======================"
+
     errors = ''
     ans_not_found = 0
     question_not_found = 0
@@ -49,13 +56,13 @@ def answerQuestions(sheet):
             # Check answer text
             if not answer_text:
                 text_not_found += 1
-                errors += "++WARNING++ Answer text not found\n"
+                errors += "+WW+ Answer text not found\n"
                 continue
             # Find the answer
             answer = Answer.lg.get_or_none(answer_text=answer_text)
             if not answer:
                 ans_not_found += 1
-                errors += "++WARNING++ Answer not found for text :: " + answer_text +'\n'
+                errors += "+WW+ Answer not found for text :: " + answer_text +'\n'
                 continue
 
             # Find the question that corresponds to this answer
@@ -75,7 +82,7 @@ def answerQuestions(sheet):
                 else:
                     if len(responses) > 1:
                         duplicate_responses += 1
-                        print "++DUPLICATE++ Potential duplicate response for user ID #" + str(politician.id) + " and question ID #" + str(question.id)
+                        print "+DD+ Potential duplicate response for user ID #" + str(politician.id) + " and question ID #" + str(question.id)
                     response = responses[0]
                     response.most_chosen_answer = answer
                     response.explanation = ''
@@ -84,7 +91,7 @@ def answerQuestions(sheet):
                     response.save()
             else:
                 question_not_found += 1
-                errors += "++WARNING++ Question Not Found for politician " + politician.get_name() + '\n'
+                errors += "+WW+ Question Not Found for politician " + politician.get_name() + '\n'
 
 
     print "========= Errors =========="

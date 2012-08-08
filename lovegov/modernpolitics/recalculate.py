@@ -223,3 +223,33 @@ def calculatePoliticianTitles():
 
                 p.political_title = title
                 p.save()
+
+
+def removeDeprecatedPoliticians():
+    print "Tags:"
+    print "======================"
+    print "+II+ = Information"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
+    # For all politicians (with govtrack ids)
+    for p in UserProfile.objects.filter(politician=True,ghost=True):
+        # Find anyone with that same alias
+        dups = UserProfile.objects.filter(alias=p.alias)
+        for person in dups:
+            # Any person who also has that alias
+            if not person.politician and not person.ghost:
+                # Is most likely a deprecated politician
+                print "+II+ Deleting" + person.get_name() + " - Num duplicates: " + str(dups)
+                person.delete()
+
+    # Do it again! except with name
+    for p in UserProfile.objects.filter(politician=True,ghost=True):
+        # Find anyone with that same name
+        dups = UserProfile.objects.filter(first_name=p.first_name,last_name=p.last_name)
+        for person in dups:
+            # Any person who also has that name
+            if not person.politician and not person.ghost:
+                # Is most likely a deprecated politician
+                print "+II+ Deleting" + person.get_name() + " - Num duplicates: " + str(dups)
+                person.delete()
