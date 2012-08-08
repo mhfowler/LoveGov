@@ -97,6 +97,7 @@ function rebindFunction()
             hiddenSelectors();
             showSelectors();
             dateSelect();
+            defaultShowRepsVotes();
             break;
         default:
             break
@@ -4999,13 +5000,15 @@ function showSelectors() {
 }
 
 function dateSelect() {
-        $('.datepicker').datepicker({
-            changeMonth: true,
-            changeYear: true
-        })
+    $('.datepicker').datepicker({
+        changeMonth: true,
+        changeYear: true
+    })
 }
 
-
+function defaultShowRepsVotes () {
+    $('#myrepsvotes_filter').attr('checked', true);
+}
 
 
 

@@ -6,7 +6,7 @@
     <div class="main-block">
         <div class="legislation_filter">
             <div class="filter_prompt">
-                <h5>
+                <h5 class="no-hover">
                     filter legislation by:
                 </h5>
             </div>
@@ -22,7 +22,7 @@
             <div class="sponsor_filter unchecked" data-selector="sponsor_selector">
                 <input type="checkbox" id="sponsor_filter"><label class="filter_label" for="sponsor_filter"><h5><span>sponsor</span></h5></label>
             </div>
-            <div class="myrepsvotes_filter unchecked">
+            <div class="myrepsvotes_filter checked">
                 <input type="checkbox" id="myrepsvotes_filter"><label class="filter_label" for="myrepsvotes_filter"><h5><span>include my representatives' votes</span></h5></label>
             </div>
         </div>
@@ -57,7 +57,7 @@
                 <ul>
                     <li><input type="form" id="sponsor_body" placeholder="Select a representative body"><label><h5>sponsor body</h5></label></li>
                     <li><input type="form" id="sponsor_name" placeholder="Search for a sponsor"><label><h5>sponsor name</h5></label></li>
-                    <li><input type="form" id="sponsor_party" placeholder="Choose a political party"><label><h5>sponsor party</h5></label></li>
+                    <li><input type="form" id="sponsor_party" placeholder="Choose a party or movement"><label><h5>sponsor party</h5></label></li>
                     <li><input type="form" id="sponsor_district" placeholder="Choose a district"><label><h5>sponsor district</h5></label></li>
                 </ul>
             </div>
@@ -75,13 +75,13 @@
     </div>
     <div class="filter-results">
         <div class="results-heading-">
-            <h5>
+            <h5 class="no-hover">
                 results:
             </h5>
         </div>
     </div>
     <div class="filter-congress-feed">
-        <input type="checkbox"><label><h5>filter feed for my regions</h5></label>
+        <input type="checkbox" id="filter-congress-feed"><label for="filter-congress-feed"><h5 class="no-hover">filter feed for my regions</h5></label>
     </div>
     <!-- Javascript -->
     <script> rebind='legislation'; </script>

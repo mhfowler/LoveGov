@@ -6,8 +6,8 @@
 div.main-block {
   margin-top: 50px;
   margin-left: 140px;
-  height: 250px;
-  width: 780px;
+  height: 240px;
+  width: 660px;
   overflow: hidden;
   border-bottom: solid;
   border-top: solid;
@@ -20,7 +20,7 @@ div.main-block {
     margin-left: 5px;
     margin-top: 5px;
     height: 200px;
-    width: 350px;
+    width: 310px;
     margin-top: 10px;
     padding-left: 9px;
 
@@ -49,16 +49,15 @@ div.main-block {
   }
 
   div.legislation_selector {
-    float:right;
-    margin-left:5px;
-    margin-top: -190px;
-    height: 250px;
-    width: 400px;
+    margin-left: 305px;
+    margin-top: -200px;
+    height: 240px;
+    width: 280px;
 
     div.session_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 250px;
+      height: 240px;
       width: 400px;
       padding-left: 0px;
 
@@ -70,7 +69,7 @@ div.main-block {
     div.type_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 250px;
+      height: 240px;
       width: 400px;
       padding-left: 0px;
 
@@ -82,7 +81,7 @@ div.main-block {
     div.introduced_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 250px;
+      height: 240px;
       width: 400px;
       padding-left: 0px;
 
@@ -94,7 +93,7 @@ div.main-block {
     div.sponsor_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 250px;
+      height: 240px;
       width: 400px;
       padding-left: 0px;
 
@@ -143,12 +142,10 @@ div.div-select-button, div.div-select-button:active, div.div-select-button:link,
   -webkit-border-radius: 5px;
   -khtml-border-radius: 5px;
   border-radius: 5px;
-  position: absolute;
-  left: 540px;
-  top:300px;
-  width: 140px;
+  margin-left: 480px;
+  margin-top: -40px;
+  width: 100px;
   height: 33px;
-  float: left;
   font-size: 15px;
   font-family: "Sonus Light";
   background-color: #f0f0f0;
@@ -163,9 +160,8 @@ div.div-select-button, div.div-select-button:active, div.div-select-button:link,
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  margin-bottom: 15px;
-  margin: 10px 10px;
   text-align: center;
+  z-index:1;
 
   span {
     display: inline-block;
@@ -227,12 +223,10 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
   -webkit-border-radius: 5px;
   -khtml-border-radius: 5px;
   border-radius: 5px;
-  position: absolute;
-  left: 710px;
-  top:300px;
-  width: 140px;
+  margin-left: 585px;
+  margin-top: -33px;
+  width: 100px;
   height: 33px;
-  float: left;
   font-size: 15px;
   font-family: "Sonus Light";
   background-color: #f0f0f0;
@@ -247,9 +241,8 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  margin-bottom: 15px;
-  margin: 10px 10px;
   text-align: center;
+  z-index:1;
 
   span {
     display: inline-block;
@@ -294,7 +287,7 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
 
 div.filter-results {
   margin-left: 160px;
-  margin-top: 10px;
+  margin-top: 18px;
   height:auto;
   width: 780px;
   overflow: auto;
@@ -306,8 +299,8 @@ div.filter-results {
 }
 
 div.filter-congress-feed {
-  margin-left:950px;
-  margin-top:-290px;
+  margin-left:850px;
+  margin-top:-275px;
   width: 300px;
 }
 }
@@ -322,6 +315,8 @@ input[type="form"]{
   margin-right: 5px;
   width:200px;
   height: 20px;
+  text-decoration-color:#000000;
+  font-size: 14px;
 
   :focus {
     border: 1px solid #EF503B;
@@ -334,8 +329,11 @@ h5 {
   &:hover {
     color: #ef503b;
   }
+  .no-hover {
+    color: #005468;
+  }
 }
 
 .datepicker {
-  font-size: 11px;
+  font-size: 14px;
 }

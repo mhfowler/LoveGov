@@ -36,8 +36,8 @@
 div.main-block {
     margin-top: 50px;
     margin-left: 140px;
-    height: 250px;
-    width: 780px;
+    height: 240px;
+    width: 660px;
     overflow: hidden;
     border-bottom: solid;
     border-top: solid;
@@ -51,7 +51,7 @@ div.main-block div.legislation_filter {
     margin-left: 5px;
     margin-top: 5px;
     height: 200px;
-    width: 350px;
+    width: 310px;
     margin-top: 10px;
     padding-left: 9px;
 }
@@ -80,17 +80,16 @@ div.main-block div.legislation_filter div.myrepsvotes_filter {
 }
 
 div.main-block div.legislation_selector {
-    float:right;
-    margin-left:5px;
-    margin-top: -190px;
-    height: 260px;
-    width: 400px;
+    margin-left: 305px;
+    margin-top: -200px;
+    height: 240px;
+    width: 280px;
 }
 
 div.main-block div.legislation_selector div.session_selector {
     margin-left: 0px;
     margin-top: 0px;
-    height: 250px;
+    height: 240px;
     width: 400px;
     padding-left: 0px;
 }
@@ -102,7 +101,7 @@ div.main-block div.legislation_selector div.session_selector ul li {
 div.main-block div.legislation_selector div.type_selector {
     margin-left: 0px;
     margin-top: 0px;
-    height: 250px;
+    height: 240px;
     width: 400px;
     padding-left: 0px;
 }
@@ -114,7 +113,7 @@ div.main-block div.legislation_selector div.type_selector ul li {
 div.main-block div.legislation_selector div.introduced_selector {
     margin-left: 0px;
     margin-top: -10px;
-    height: 250px;
+    height: 240px;
     width: 400px;
     padding-left: 0px;
 }
@@ -126,7 +125,7 @@ div.main-block div.legislation_selector div.introduced_selector ul li {
 div.main-block div.legislation_selector div.sponsor_selector {
     margin-left: 0px;
     margin-top: 0px;
-    height: 250px;
+    height: 240px;
     width: 400px;
     padding-left: 0px;
 }
@@ -170,12 +169,10 @@ div.div-select-button, div.div-select-button:active, div.div-select-button:link,
     -webkit-border-radius: 5px;
     -khtml-border-radius: 5px;
     border-radius: 5px;
-    position: absolute;
-    left: 540px;
-    top:300px;
-    width: 140px;
+    margin-left: 480px;
+    margin-top: -40px;
+    width: 100px;
     height: 33px;
-    float: left;
     font-size: 15px;
     font-family: "Sonus Light";
     background-color: #f0f0f0;
@@ -190,9 +187,8 @@ div.div-select-button, div.div-select-button:active, div.div-select-button:link,
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    margin-bottom: 15px;
-    margin: 10px 10px;
-    text-align: center; }
+    text-align: center;
+    z-index:1; }
 div.div-select-button span, div.div-select-button:active span, div.div-select-button:link span, div.div-select-button:visited span {
     display: inline-block;
     margin-top: 6px; }
@@ -249,12 +245,10 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
     -webkit-border-radius: 5px;
     -khtml-border-radius: 5px;
     border-radius: 5px;
-    position: absolute;
-    left: 710px;
-    top:300px;
-    width: 140px;
+    margin-left: 585px;
+    margin-top: -33px;
+    width: 100px;
     height: 33px;
-    float: left;
     font-size: 15px;
     font-family: "Sonus Light";
     background-color: #f0f0f0;
@@ -269,9 +263,8 @@ div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link,
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    margin-bottom: 15px;
-    margin: 10px 10px;
-    text-align: center; }
+    text-align: center;
+    z-index:1; }
 div.div-filter-button span, div.div-filter-button:active span, div.div-filter-button:link span, div.div-filter-button:visited span {
     display: inline-block;
     margin-top: 6px; }
@@ -311,7 +304,7 @@ div.div-filter-button.clicked {
 
 div.filter-results {
     margin-left: 160px;
-    margin-top: 10px;
+    margin-top: 18px;
     height: auto;
     width: 780px;
     overflow: auto;
@@ -323,8 +316,8 @@ div.filter-results div.results-heading {
 }
 
 div.filter-congress-feed {
-    margin-left:950px;
-    margin-top:-290px;
+    margin-left:850px;
+    margin-top:-275px;
     width: 300px;
 }
 
@@ -338,6 +331,7 @@ input[type="form"]{
     margin-right: 5px;
     height: 20px;
     width:200px;
+    font-size: 14px;
     text-decoration-color:#000000
 }
 
@@ -353,6 +347,11 @@ h5:hover {
     color: #FC8A81;
 }
 
-.datepicker {
-    font-size: 11px;
+h5.no-hover:hover {
+    color: #005468;
 }
+
+.datepicker {
+    font-size: 14px;
+}
+
