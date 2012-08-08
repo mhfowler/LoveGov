@@ -208,9 +208,9 @@ def calculatePoliticianTitles():
 
             for t in recent_office.tags.all():
                 if t.name == 'senator':
-                    p.political_title = "Senator"
+                    title = "Senator"
                 elif t.name == 'representative':
-                    p.political_title = "Representative"
+                    title = "Representative"
 
             if title:
                 loc = ''
