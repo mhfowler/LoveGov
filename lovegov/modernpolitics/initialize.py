@@ -375,7 +375,7 @@ def initializeCongressNetwork():
         network.summary = "all members of Congress."
         network.autoSave()
         # join all members
-        congress = ElectedOfficial.objects.all()
+        congress = UserProfile.objects.filter(elected_official=True)
         for u in congress:
             network.members.add(u)
             u.networks.add(network)
