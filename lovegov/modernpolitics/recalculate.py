@@ -206,7 +206,7 @@ def calculatePoliticianTitles():
             offices_held.sort(reverse=True)
             recent_office = offices_held[0].office
 
-            for t in recent_office.tags:
+            for t in recent_office.tags.all():
                 if t.name == 'senator':
                     p.political_title = "Senator"
                 elif t.name == 'representative':
