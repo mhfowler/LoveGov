@@ -192,7 +192,7 @@ def calculateResponseAnswers():
 
 
 def calculatePoliticianTitles():
-    for p in UserProfile(politician=True):
+    for p in UserProfile.objects.filter(politician=True):
         offices_held = p.relationship_set.filter(relationship_type="OH")
 
         if not offices_held:
@@ -216,4 +216,3 @@ def calculatePoliticianTitles():
 
             if loc:
                 p.political_title += " [" + loc + "]"
-            
