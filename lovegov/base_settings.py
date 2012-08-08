@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'debug_toolbar',
     'django_extensions',
+    'compressor',
 
     # internal
     'lovegov.modernpolitics',
@@ -53,7 +54,7 @@ MIDDLEWARE_CLASSES = (
 STATIC_ROOT = '/static/'
 
 # URL prefix for static files.
-STATIC_URL = '/static'
+STATIC_URL = '/static/'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 MEDIA_ROOT = '/media/'              # !!!!
@@ -75,7 +76,10 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'compressor.finders.CompressorFinder',
     )
+
+
 
 ########################################################################################################################
 #    templates
@@ -145,6 +149,7 @@ def show_toolbar(request):
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': show_toolbar,
     }
+
 
 ########################################################################################################################
 #    logging (different settings use different logging)

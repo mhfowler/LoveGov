@@ -1,4 +1,4 @@
-import settings
+import base_settings
 
 LOCAL = False
 DEBUG = True
