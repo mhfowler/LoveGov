@@ -377,29 +377,6 @@ function userFollowResponse(event,response,div)
     return false;
 }
 
-function groupInviteResponse(event,response,div)
-{
-    event.preventDefault();
-    var g_id = div.siblings(".group-join-id").val();
-    ajaxPost({
-            data: {
-                'action':'groupInviteResponse',
-                'g_id': g_id,
-                'response': response
-            },
-            success: function(data)
-            {
-                return true;
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
-            }
-        }
-    );
-    return false;
-}
-
 function setFollowPrivacy(event,private_follow,div)
 {
     event.preventDefault();
@@ -448,6 +425,29 @@ function setFollowPrivacy(event,private_follow,div)
 
     });
 }
+
+function groupInviteResponse(event,response,div)
+{
+    event.preventDefault();
+    var g_id = div.data("g_id");
+    ajaxPost({
+            data: {
+                'action':'groupInviteResponse',
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                //alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
+
 
 /***********************************************************************************************************************
  *
@@ -2590,28 +2590,6 @@ function groupFollowResponse(event,response,div)
     );
 }
 
-function groupInviteResponse(event,response,div)
-{
-    event.preventDefault();
-    var g_id = div.data("g_id");
-    ajaxPost({
-            data: {
-                'action':'groupInviteResponse',
-                'g_id': g_id,
-                'response': response
-            },
-            success: function(data)
-            {
-                //alert(data);
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
-            }
-        }
-    );
-}
-
 var group_more_actions = true;
 var group_more_members = true;
 
@@ -2669,7 +2647,7 @@ function getMoreGroupMembers()
             success: function(data)
             {
                 var obj = eval('(' + data + ')');
-                $('#group_members_container').append(obj.html);
+                $('.group_members_container').append(obj.html);
                 $('#num_members').val(obj.num_members);
                 if( 'error' in obj && obj.error == 'No more members' )
                 {

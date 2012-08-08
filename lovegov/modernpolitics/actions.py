@@ -1663,14 +1663,10 @@ def getGroupMembers(request, vals={}):
         num_members = int(request.POST['num_members'])
     print num_members
     members = group.getMembers(num=MEMBER_INCREMENT,start=num_members)
-    print len(members)
+    print "member count: " + str(len(members))
     if len(members) == 0:
         return HttpResponse(json.dumps({'error':'No more members'}))
-    members_text = []
-    for member in members:
-        member_text = render_to_string('site/pieces/misc/group-member-new.html', {'member':member} )
-        members_text.append( member_text )
-    vals['members_text'] = members_text
+    vals['get_members'] = members
     num_members += MEMBER_INCREMENT
     vals['num_members'] = num_members
     html = ajaxRender('site/pieces/misc/member-snippet.html', vals, request)
