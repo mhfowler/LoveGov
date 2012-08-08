@@ -189,3 +189,31 @@ def calculateResponseAnswers():
                     response.save()
                     count += 1
                     print count
+
+
+def calculatePoliticianTitles():
+    for p in UserProfile(politician=True):
+        offices_held = p.relationship_set.filter(relationship_type="OH")
+
+        if not offices_held:
+            p.political_title = "Politician"
+
+        else:
+            offices_held = map( lambda x : x.downcast() , offices_held )
+            offices_held.sort(reverse=True)
+            recent_office = offices_held[0].office
+
+            for t in recent_office.tags:
+                if t.name == 'senator':
+                    p.political_title = "Senator"
+                elif t.name == 'representative':
+                    p.political_title = "Representative"
+
+            loc = ''
+            loc += recent_office.location.state
+            if recent_office.location.district != -1:
+                loc += "-" + str(recent_office.location.district)
+
+            if loc:
+                p.political_title += " [" + loc + "]"
+            

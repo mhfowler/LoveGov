@@ -21,7 +21,7 @@ from django.utils import simplejson
 
 # python
 import urllib2
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture

@@ -1,14 +1,3 @@
-
-celery
-pip install -U Celery
-pip install django-celery
-python manage.py migrate djcelery
-brew install rabbitmq
-OR sudo apt-get install rabbitmq-server
-pip install librabbitmq
-pip install pika==0.9.5
-pip install supervisor
-
 ********** GETTING STARTED ************
 
 Now that you have checked out a version of the project and installed all the dependencies you should be pretty much ready to go. 
@@ -85,3 +74,88 @@ Now when you open a new terminal shell, you will have access to a number of alia
 We are using Sassy CSS (SCSS) which is compiled to CSS. See http://sass-lang.com/ for more information. 
 
 
+********** DEPENDENCIES ************
+
+Install all dependencies for the project. With setuptools it shouldn't be that bad. Tried to include some links to send you in the right direction.
+http://pypi.python.org/pypi/setuptools
+
+Django
+https://www.djangoproject.com/
+pip install Django
+
+PIL imaging library
+http://www.pythonware.com/products/pil/
+pip install PIL
+
+sorl-thumbnail  
+http://thumbnail.sorl.net/installation.html
+pip install sorl-thumbnail
+
+memcached      
+http://memcached.org/
+https://wincent.com/wiki/Installing_memcached_1.4.1_on_Mac_OS_X_10.6_Snow_Leopar             
+
+python-memcached
+http://pypi.python.org/pypi/python-memcached/
+pip install python-memcached
+
+BeautifulSoup   
+http://www.crummy.com/software/BeautifulSoup/
+pip install beautifulsoup4
+
+xlrd
+http://pypi.python.org/pypi/xlrd
+pip install xlrd
+
+haystack (v2.X)
+http://haystacksearch.org/
+https://github.com/toastdriven/django-haystack/
+pip install -e git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
+* don't do this: 'pip install django-haystack' (v1.X)
+
+whoosh
+http://pypi.python.org/pypi/Whoosh/
+pip install Whoosh
+
+debug_toolbar
+http://pypi.python.org/pypi/django-debug-toolbar
+pip install django-debug-toolbar
+
+httpagentparser
+git clone https://github.com/shon/httpagentparser.git
+then run "python setup.py install"
+
+sunlight
+http://python-sunlight.readthedocs.org/en/latest/index.html
+pip install sunlight
+
+googlemaps
+http://pypi.python.org/pypi/googlemaps/
+pip install googlemaps
+
+south
+pip install South
+
+oauth2
+pip install oauth2
+
+sass
+gem install sass
+
+django-extensions
+pip install django-extensions
+
+python-boto django-storages
+pip install django-storages
+pip install boto
+pip install django-s3-folder-storage
+
+celery
+pip install -U Celery
+pip install django-celery
+python manage.py migrate djcelery
+brew install rabbitmq
+OR sudo apt-get install rabbitmq-server
+pip install librabbitmq
+pip install pika==0.9.5
+pip install supervisor
