@@ -240,7 +240,7 @@ def removeDeprecatedPoliticians():
             # Any person who also has that alias
             if not person.politician and not person.ghost:
                 # Is most likely a deprecated politician
-                print "+II+ Deleting" + person.get_name() + " - Num duplicates: " + str(dups)
+                print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
                 person.delete()
 
     # Do it again! except with name
@@ -251,5 +251,5 @@ def removeDeprecatedPoliticians():
             # Any person who also has that name
             if not person.politician and not person.ghost:
                 # Is most likely a deprecated politician
-                print "+II+ Deleting" + person.get_name() + " - Num duplicates: " + str(dups)
+                print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
                 person.delete()

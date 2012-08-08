@@ -594,7 +594,9 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias)
+            user_prof = UserProfile.lg.get_or_none(alias=alias)
+            ## TODO :: make a warning for multiple aliases!
+
             comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
