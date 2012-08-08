@@ -20,7 +20,6 @@ import string
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
-import pprint
 
 browser_logger = logging.getLogger('browserlogger')
 
@@ -125,7 +124,7 @@ def randomAnswers(user):
     for q in questions:
         answers = list(q.answers.all())
         my_answer = random.choice(answers)
-        print "answered: ", my_answer.answer_text
+        # print "answered: ", my_answer.answer_text
         response = Response(
             question = q,
             answer_val = my_answer.value,

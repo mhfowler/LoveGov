@@ -519,7 +519,7 @@ class Content(Privacy, LocationLevel):
         elif type == 'Y':
             object = self.persistent
         elif type == 'Z':
-            object = self.response.aggregateresponse
+            object = self.response
         elif type == 'M':
             object = self.motion
         elif type == 'F':
@@ -1177,6 +1177,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def isNormal(self):
         return not (self.politician or self.elected_official)
 
+    def clearResponses(self):
+        return self.getView().clearResponses()
+
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1245,7 +1248,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
         self.alias = genAliasSlug(alias)
-        self.alias = alias
         self.save()
         return self.alias
 
@@ -1422,9 +1424,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Gets worldview for user.
     #-------------------------------------------------------------------------------------------------------------------
     def getView(self):
-        if self.view_id != -1:
+        if self.view_id and self.view_id != -1:
             return self.view
-        else: return None
+        else:
+            view = WorldView()
+            view.save()
+            self.view = view
+            self.save()
+            return self.view
 
     #-------------------------------------------------------------------------------------------------------------------
     # Sets username and email for userprofile and controllinguser
@@ -2318,7 +2325,7 @@ def parseDate(date):
 
 def truncateField(string,name,limit):
     if len( string ) > limit:
-        print "[WARNING]: " + name + " truncated, length = " + str(len(string))
+        print "+WW+ " + name + " truncated, length = " + str(len(string))
     return string[:limit]
 
 class CongressSession(LGModel):
@@ -2773,11 +2780,17 @@ class Response(Content):
         self.main_image_id = self.question.main_image_id
         self.in_feed = False
         self.save()
+        if creator:
+            view = creator.getView()
+            view.responses.add(self)
         super(Response, self).autoSave(creator=creator, privacy=privacy)
         self.setMainTopic(self.question.getMainTopic())
 
     def getValue(self):
         return float(self.answer_val)
+
+    def clearAnswerTallies(self):
+        self.answer_tallies.delete()
 
 
 ########################################################################################################################
@@ -3000,6 +3013,9 @@ class Persistent(Content):
 #=======================================================================================================================
 class WorldView(LGModel):
     responses = models.ManyToManyField(Response)
+
+    def clearResponses(self):
+        self.responses.all().delete()
 
 #=======================================================================================================================
 # Comparison of specific topic.
@@ -3967,6 +3983,7 @@ class UCRelationship(Relationship):
 #=======================================================================================================================
 class OfficeHeld(UCRelationship):
     office = models.ForeignKey('Office',related_name="office_terms")
+    confirmed = models.BooleanField(default=False)
     start_date = models.DateField()
     end_date = models.DateField()
     election = models.BooleanField(default=False)
@@ -3976,6 +3993,11 @@ class OfficeHeld(UCRelationship):
         self.content = self.office
         self.relationship_type = "OH"
         self.save()
+
+    def isCurrent(self):
+        if (datetime.date.today() - self.end_date).days >= 0:
+            return True
+        return False
 
 #=======================================================================================================================
 # Exact same as vote, except for debates.

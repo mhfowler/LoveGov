@@ -1,6 +1,5 @@
 # absolute path to this script
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-echo 'whereami: '$SCRIPTPATH
 
 #path stuff
 export PYTHONPATH=${PYTHONPATH}:$SCRIPTPATH

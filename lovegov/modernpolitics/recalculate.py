@@ -180,8 +180,76 @@ def recalculateNumMembers():
 
 
 def calculateResponseAnswers():
+    count = 0
     for response in Response.objects.all():
-        if response.question:
+        if (not response.most_chosen_answer) and response.question:
             for answer in response.question.answers.all():
                 if response.answer_val != -1 and answer.value == response.answer_val:
                     response.answer = answer
+                    response.save()
+                    count += 1
+                    print count
+
+
+def calculatePoliticianTitles():
+    for p in UserProfile.objects.filter(politician=True):
+        offices_held = p.relationships.filter(relationship_type="OH")
+
+        if not offices_held:
+            p.political_title = "Politician"
+            p.save()
+
+        else:
+            title = ''
+
+            offices_held = map( lambda x : x.downcast() , offices_held )
+            offices_held.sort(reverse=True)
+            recent_office = offices_held[0].office
+
+            for t in recent_office.tags.all():
+                if t.name == 'senator':
+                    title = "Senator"
+                elif t.name == 'representative':
+                    title = "Representative"
+
+            if title:
+                loc = ''
+                loc += recent_office.location.state
+                if recent_office.location.district != -1:
+                    loc += "-" + str(recent_office.location.district)
+
+                if loc:
+                    title += " [" + loc + "]"
+
+                p.political_title = title
+                p.save()
+
+
+def removeDeprecatedPoliticians():
+    print "Tags:"
+    print "======================"
+    print "+II+ = Information"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
+    # For all politicians (with govtrack ids)
+    for p in UserProfile.objects.filter(politician=True,ghost=True):
+        # Find anyone with that same alias
+        dups = UserProfile.objects.filter(alias=p.alias)
+        for person in dups:
+            # Any person who also has that alias
+            if not person.politician and not person.ghost:
+                # Is most likely a deprecated politician
+                print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
+                person.delete()
+
+    # Do it again! except with name
+    for p in UserProfile.objects.filter(politician=True,ghost=True):
+        # Find anyone with that same name
+        dups = UserProfile.objects.filter(first_name=p.first_name,last_name=p.last_name)
+        for person in dups:
+            # Any person who also has that name
+            if not person.politician and not person.ghost:
+                # Is most likely a deprecated politician
+                print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
+                person.delete()

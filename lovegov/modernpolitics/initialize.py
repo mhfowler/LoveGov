@@ -375,7 +375,7 @@ def initializeCongressNetwork():
         network.summary = "all members of Congress."
         network.autoSave()
         # join all members
-        congress = ElectedOfficial.objects.all()
+        congress = UserProfile.objects.filter(elected_official=True)
         for u in congress:
             network.members.add(u)
             u.networks.add(network)
@@ -763,6 +763,11 @@ def parseDate(date):
 # Begins Congress Initialization
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCongress():
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
     for num in range(109,113):
         print num
         # Get/open current XML file
@@ -772,7 +777,7 @@ def initializeCongress():
         try:
             fileXML = open(filePath)
         except:
-            print '[ERROR]: Could not open ' + filePath
+            print '+EE+ Could not open ' + filePath
             continue
 
         parsedXML = BeautifulSoup(fileXML)
@@ -809,26 +814,26 @@ def initializeCongressFile(parsedXML,image_root):
         elif role_type == 'rep':
             role_tag = 'representative'
         else:
-            print "[ERROR]: role type " + role_type + " is not recognized for " + name
+            print "+EE+ role type " + role_type + " is not recognized for " + name
             continue # Skip this guy, can't make an Office without a tag
 
         role_state = None
         if role.has_key('state'):
             role_state = role['state']
         else:
-            print "[ERROR]: no role state for " + name
+            print "+EE+ no role state for " + name
 
         role_district = None
         if role.has_key('district') and role['district'].isdigit():
             role_district = int( role['district'] )
         elif role_type == 'rep':
-            print "[ERROR]: no representative district for " + name
+            print "+EE+ no representative district for " + name
 
 
         # Find the tag related to this role
         current_tag = OfficeTag.lg.get_or_none(name=role_tag)
         if not current_tag:
-            print "Initializing office tag: " + role_tag
+            print "+II+ Initializing office tag: " + role_tag
             current_tag = OfficeTag(name=role_tag)
             current_tag.save()
 
@@ -840,9 +845,9 @@ def initializeCongressFile(parsedXML,image_root):
 
         if office:
             office = office[0]
-            print "Found office: " + office.location.state + " " + str(office.location.district)
+            print "+II+ Found office: " + office.location.state + " " + str(office.location.district)
         if not office: # If it doesn't exist, make that office
-            print "Initializing office: " + role_state + " " + str(role_district)
+            print "+II+ Initializing office: " + role_state + " " + str(role_district)
             loc = PhysicalAddress(district=role_district, state=role_state)
             loc.save()
             office = Office(location=loc)
@@ -858,9 +863,7 @@ def initializeCongressFile(parsedXML,image_root):
         # See if this Office Held already exists.
         office_held = OfficeHeld.lg.get_or_none(user=person,office=office,start_date=start_date,end_date=end_date)
         if not office_held: # If it  doesn't, create it
-            office_held = OfficeHeld(user=person,office=office,start_date=start_date,end_date=end_date)
-            if (datetime.date.today() - end_date).days >= 0:
-                office_held.current = True
+            office_held = OfficeHeld(user=person,office=office,start_date=start_date,end_date=end_date,confirmed=True)
             office_held.autoSave()
 
         office_held.congress_sessions.add(current_session)
@@ -883,21 +886,21 @@ def initializeXMLCongressman(personXML,image_root=''):
         facebook_id = int( personXML['facebookgraphid'] )
         user_prof = UserProfile.lg.get_or_none( facebook_id = facebook_id )
         if user_prof:
-            print "Found " + name + " by Facebook ID"
+            print "+II+ Found " + name + " by Facebook ID"
 
     # Otherwise try to find this person by govtrack id
     govtrack_id = personXML.get('id')
     if not user_prof and govtrack_id:
         user_prof = UserProfile.lg.get_or_none( govtrack_id=govtrack_id )
         if user_prof:
-            print "Found " + name + " by Govtrack ID"
+            print "+II+ Found " + name + " by Govtrack ID"
 
     # Otherwise make a new person
     if not user_prof:
         password = "congress"
         email = fname + str(govtrack_id)
 
-        print "Initializing " + name
+        print "+II+ Initializing " + name
         congressControl = createUser(name,email,password)
         user_prof = congressControl.user_profile
         user_prof.ghost = True
@@ -934,13 +937,13 @@ def initializeXMLCongressman(personXML,image_root=''):
                 if cur_party:
                     user_prof.parties.add(cur_party)
                 else:
-                    print "[WARNING]: party " + party_name + " is not initialized.  Cannot add " + name
+                    print "+WW+ party " + party_name + " is not initialized.  Cannot add " + name
 
     image_path = image_root + str(govtrack_id) + ".jpeg"
     try:
         user_prof.setProfileImage(file(image_path))
     except:
-        print "[WARNING]: no image for elected official " + name + " at " + image_path
+        print "+WW+ no image for elected official " + name + " at " + image_path
 
     user_prof.confirmed = True
     user_prof.save()
@@ -951,13 +954,19 @@ def initializeXMLCongressman(personXML,image_root=''):
 # Initialize all committee files and all committees
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeCommittees():
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
+
     for num in range(109,113):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
 
         try:
             fileXML = open(filePath)
         except:
-            print '[ERROR]: Could not open ' + filePath
+            print '+EE+ Could not open ' + filePath
             continue
 
         parsedXML = BeautifulSoup(fileXML)
@@ -990,7 +999,7 @@ def initializeCommittee(committeeXML,session):
     elif type == 'joint':
         type = 'J'
     else:
-        print '[WARNING]: Committee type ' + type + ' not recognized in committee ' + name
+        print '+WW+ Committee type ' + type + ' not recognized in committee ' + name
         return None
 
     code = committeeXML.get('code')
@@ -998,18 +1007,18 @@ def initializeCommittee(committeeXML,session):
     # Find this committee
     committee = Committee.lg.get_or_none(title=name,committee_type=type,code=code)
     if not committee:
-        print "Initializing Committee: " + name
+        print "+II+ Initializing Committee: " + name
         committee = Committee(title=name,committee_type=type,code=code)
         committee.autoSave()
     else:
-        print "Found Committee: " + name
+        print "+II+ Found Committee: " + name
 
     for memberXML in committeeXML.findChildren('member',recursive=False):
         member = UserProfile.lg.get_or_none( govtrack_id=memberXML.get('id') )
         if member:
             committee.joinMember( member , session , memberXML.get('role') )
         else:
-            print '[WARNING]: Committee ' + name + ' could not find govtrack ID #' + memberXML.get('id')
+            print '+WW+ Committee ' + name + ' could not find govtrack ID #' + memberXML.get('id')
 
     return committee
 
@@ -1029,25 +1038,25 @@ def initializeSubCommittee(committeeXML,session,parent):
     elif parent.committee_type == 'J':
         type = 'JS'
     else:
-        print '[WARNING]: Committee type ' + parent.committee_type + ' not recognized in committee ' + name
+        print '+WW+ Committee type ' + parent.committee_type + ' not recognized in committee ' + name
         return None
 
     code = committeeXML.get('code')
 
     committee = Committee.lg.get_or_none(title=name,committee_type=type,code=code,parent=parent)
     if not committee:
-        print "Initializing Subcommittee: " + name
+        print "+II+ Initializing Subcommittee: " + name
         committee = Committee(title=name,committee_type=type,code=code,parent=parent)
         committee.autoSave()
     else:
-        print "Found Subcommittee: " + name
+        print "+II+ Found Subcommittee: " + name
 
     for memberXML in committeeXML.findChildren('member',recursive=False):
         member = UserProfile.lg.get_or_none( govtrack_id=memberXML.get('id') )
         if member:
             committee.joinMember( member , session , memberXML.get('role') )
         else:
-            print '[WARNING]: Committee ' + name + ' could not find govtrack ID #' + memberXML.get('id')
+            print '+WW+ Committee ' + name + ' could not find govtrack ID #' + memberXML.get('id')
 
     return committee
 
@@ -1058,6 +1067,13 @@ def initializeSubCommittee(committeeXML,session,parent):
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLegislation():
     missed_files = []
+
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
+
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n" \
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
@@ -1066,7 +1082,7 @@ def initializeLegislation():
         try:
             fileListing = os.listdir(filePath)
         except:
-            print '[ERROR]: Could not open ' + filePath
+            print '+EE+ Could not open ' + filePath
             continue
 
         for infile in fileListing:
@@ -1077,14 +1093,14 @@ def initializeLegislation():
                 try:
                     fileXML = open(filePath + infile)
                 except:
-                    print '[ERROR]: Could not open ' + filePath + infile
+                    print '+EE+ Could not open ' + filePath + infile
                     continue
 
                 parsedXML = BeautifulSoup(fileXML)
                 result = parseLegislation(parsedXML)
 
                 if result != '':
-                    print "[ERROR]: " + result + '.  Bill was not initialized'
+                    print "+EE+ " + result + '.  Bill was not initialized'
                     missed_files.append((filePath + infile,result))
 
     return missed_files
@@ -1120,11 +1136,11 @@ def parseLegislation(XML):
     # Check for bill existence and get bill
     legislation = Legislation.lg.get_or_none( congress_session=session , bill_number=number , bill_type=type , bill_introduced=introduced )
     if not legislation:
-        print "Initializing Legislation: " + type + str(number)
+        print "+II+ Initializing Legislation: " + type + str(number)
         legislation = Legislation( congress_session=session , bill_type=type , bill_number=number , bill_introduced=introduced )
         legislation.autoSave()
     else:
-        print "Found Legislation: " + type + str(number)
+        print "+II+ Found Legislation: " + type + str(number)
 
     # Update basic bill info
     updated = parseDateTime(XML.bill.get('updated'))
@@ -1147,9 +1163,9 @@ def parseLegislation(XML):
             if sponsor:
                 legislation.sponsor = sponsor
             else:
-                print "[WARNING]: Sponsor ID not found in database #" + sponsor_id + " in Legislation " + type + str(number)
+                print "+WW+ Sponsor ID not found in database #" + sponsor_id + " in Legislation " + type + str(number)
         else:
-            print "[WARNING]: Sponsor ID not found in Legislation " + type + str(number)
+            print "+WW+ Sponsor ID not found in Legislation " + type + str(number)
 
     # Parses all title tags
     if XML.titles:
@@ -1170,14 +1186,14 @@ def parseLegislation(XML):
             # Check for cosponsor ID
             cosponsor_id = cosponsorXML.get('id')
             if not cosponsor_id:
-                print "[WARNING]: Cosponsor ID not found in Legislation " + type + str(number)
+                print "+WW+ Cosponsor ID not found in Legislation " + type + str(number)
                 continue
 
 
             # Check for the actual cosponsor's profile
             cosponsor = UserProfile.lg.get_or_none(govtrack_id=cosponsor_id)
             if not cosponsor:
-                print "[WARNING]: Cosponsor ID not found in database #" + cosponsor_id + " in Legislation " + type + str(number)
+                print "+WW+ Cosponsor ID not found in database #" + cosponsor_id + " in Legislation " + type + str(number)
                 continue
 
             # Check for the LegislationCosponsor relationship
@@ -1216,7 +1232,7 @@ def parseLegislation(XML):
             new_legislation_action = LegislationAction()
 
         if not new_legislation_action:
-            print "[WARNING]: Action type " + name + " not recognized, action skipped"
+            print "+WW+ Action type " + name + " not recognized, action skipped"
             continue
 
         new_legislation_action.parseGovtrack(actionXML,legislation=legislation)
@@ -1271,6 +1287,13 @@ def countLegislation():
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLegislationAmendments():
     missed_files = []
+
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
+
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
@@ -1280,7 +1303,7 @@ def initializeLegislationAmendments():
         try:
             fileListing = os.listdir(filePath)
         except:
-            print '[ERROR]: Could not open ' + filePath
+            print '+EE+ Could not open ' + filePath
             continue
 
         for infile in fileListing:
@@ -1290,14 +1313,14 @@ def initializeLegislationAmendments():
                 try:
                     fileXML = open(filePath + infile)
                 except:
-                    print '[ERROR]: Could not open ' + filePath + infile
+                    print '+EE+ Could not open ' + filePath + infile
                     continue
 
                 parsedXML = BeautifulSoup(fileXML)
                 result = parseLegislationAmendment(parsedXML)
 
                 if result != '':
-                    print "[ERROR]: " + result + '.  Amendment was not initialized'
+                    print "+EE+ " + result + '.  Amendment was not initialized'
                     missed_files.append((filePath + infile,result))
 
     return missed_files
@@ -1343,11 +1366,11 @@ def parseLegislationAmendment(XML):
     # Find or initialize the amendment
     amendment = LegislationAmendment.lg.get_or_none(congress_session=session,amendment_type=type,amendment_number=number)
     if not amendment:
-        print "Initializing Amendment: " + type + str(number)
+        print "+II+ Initializing Amendment: " + type + str(number)
         amendment = LegislationAmendment(congress_session=session,amendment_type=type,amendment_number=number,legislation=legislation)
         amendment.autoSave()
     else:
-        print "Found Amendment: " + type + str(number)
+        print "+II+ Found Amendment: " + type + str(number)
 
     # Get update dates
     updated = None
@@ -1409,7 +1432,7 @@ def parseLegislationAmendment(XML):
             new_amendment_action = LegislationAction()
 
         if not new_amendment_action:
-            print "[WARNING]: Action type " + name + " not recognized, action skipped"
+            print "+WW+ Action type " + name + " not recognized, action skipped"
             continue
 
         new_amendment_action.parseGovtrack(actionXML,amendment=amendment)
@@ -1439,6 +1462,13 @@ def countXMLAmendments():
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeVotingRecord():
     missed_files = []
+
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "======================"
+
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
@@ -1448,7 +1478,7 @@ def initializeVotingRecord():
         try:
             fileListing = os.listdir(filePath)
         except:
-            print '[ERROR]: Could not open ' + filePath
+            print '+EE+ Could not open ' + filePath
             continue
 
         for infile in fileListing:
@@ -1458,14 +1488,14 @@ def initializeVotingRecord():
                 try:
                     fileXML = open(filePath + infile)
                 except:
-                    print '[ERROR]: Could not open ' + filePath + infile
+                    print '+EE+ Could not open ' + filePath + infile
                     continue
 
                 parsedXML = BeautifulSoup(fileXML)
                 result = parseCongressRoll(parsedXML)
 
                 if result != '':
-                    print "[ERROR]: " + result + '.  CongressRoll was not initialized'
+                    print "+EE+ " + result + '.  CongressRoll was not initialized'
                     missed_files.append((filePath + infile,result))
 
     return missed_files
@@ -1495,10 +1525,10 @@ def parseCongressRoll(XML):
     # Initialize or find congress roll
     congress_roll = CongressRoll.lg.get_or_none(session=session,where=where,roll_number=roll_number,datetime=datetime)
     if not congress_roll:
-        print "Initializing Congress Roll #" + str(session_number) + "_" + where + str(roll_number)
+        print "+II+ Initializing Congress Roll #" + str(session_number) + "_" + where + str(roll_number)
         congress_roll = CongressRoll(session=session,where=where,roll_number=roll_number,datetime=datetime)
 
-    print "Found Congress Roll #" + str(session_number) + "_" + where + str(roll_number)
+    print "+II+ Found Congress Roll #" + str(session_number) + "_" + where + str(roll_number)
 
     legislation = None
     # Get the bill for this roll
@@ -1594,12 +1624,12 @@ def parseCongressRoll(XML):
     for voterXML in XML.roll.findChildren('voter'):
         voter_id = voterXML.get('id')
         if not voter_id:
-            print "[WARNING]: Voter tag without ID.  Vote not parsed.  Congress Roll #" + str(roll_number)
+            print "+WW+ Voter tag without ID.  Vote not parsed.  Congress Roll #" + str(roll_number)
             continue
 
         voter = UserProfile.lg.get_or_none(govtrack_id=voter_id)
         if not voter:
-            print "[WARNING]: Voter not found in database.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
+            print "+WW+ Voter not found in database.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
             continue
 
         key = truncateField( voterXML.get('vote') , 'CongressVote key' , 1)
@@ -1614,7 +1644,7 @@ def parseCongressRoll(XML):
                     key = k
 
         if not key and not value:
-            print "[WARNING]: Voter tag without vote or value.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
+            print "+WW+ Voter tag without vote or value.  Vote not parsed.  Congress Roll #" + str(roll_number) + " and Voter ID #" + str(voter_id)
             continue
 
         vote = CongressVote.lg.get_or_none(roll=congress_roll,votekey=key,votevalue=value,voter=voter)

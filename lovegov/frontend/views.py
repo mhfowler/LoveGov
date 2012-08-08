@@ -397,13 +397,13 @@ def getUserWebResponsesJSON(request,vals={},webCompare=False):
         answerArray = []
         for answer in question.answers.all():
             if response and (not webCompare or response.privacy == "PUB"):
-                checked = (answer.value == response.answer_val)
+                checked = (answer.id == response.most_chosen_answer.id)
                 weight = response.weight
             else:
                 checked = False
                 weight = 5
-            answer = {'answer_text':answer.answer_text,'answer_value':answer.value,'user_answer':checked,'weight':weight}
-            answerArray.append(answer)
+            answer_json = {'answer_text':answer.answer_text,'answer_id':answer.id,'user_answer':checked,'weight':weight}
+            answerArray.append(answer_json)
         toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
         if response: toAddquestion['user_explanation'] = response.downcast().explanation
         if not webCompare and response: toAddquestion['security'] = response.privacy
@@ -442,7 +442,7 @@ def compareWeb(request,alias=None,vals={}):
     This is the view that generates the QAWeb
 
     @param request: the request from the user to the server containing metadata about the request
-    @type request: HttpRequest
+    @type request: HttpRequestquestions
     @param vals: the dictionary of values to pass into the template
     @type vals: dictionary
     @return: HttpResponse
@@ -594,7 +594,9 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias)
+            user_prof = UserProfile.lg.get_or_none(alias=alias)
+            ## TODO :: make a warning for multiple aliases!
+
             comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
@@ -1109,27 +1111,27 @@ def valsQuestion(request, q_id, vals={}):
     agg = getLoveGovGroupView().filter(question=question)
     # get aggregate percentages for answers
     if agg:
-        agg = agg[0].aggregateresponse
+        agg = agg[0]
     for a in question.answers.all():
         if agg:
-            tuple = agg.responses.filter(answer_val=a.value)
-            if tuple and agg.total:
-                tuple = tuple[0]
-                percent = int(100*float(tuple.tally)/float(agg.total))
+            tallies = agg.answer_tallies.filter(answer_id=a.id)
+            if tallies and agg.total_num:
+                tally = tallies[0]
+                percent = int(100*float(tally.tally)/float(agg.total_num))
             else:
                 percent = 0
         else:
             percent = 0
-        answers.append(AnswerClass(a.answer_text, a.value, percent))
+        answers.append(AnswerClass(a.answer_text, a.id, percent))
     vals['answers'] = answers
     topic_text = question.getMainTopic().topic_text
     vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
     vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
 
 class AnswerClass:
-    def __init__(self, text, value, percent):
+    def __init__(self, text, id, percent):
         self.text = text
-        self.value = value
+        self.id = id
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------
