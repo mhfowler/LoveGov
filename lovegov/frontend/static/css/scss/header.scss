@@ -5,102 +5,29 @@
 @import "compass";
 
 
-header {
-  $magnifying-glass-size: 20px;
-  $search-bar-height: 40px;
-  $search-bar-width: 300px;
-  $header-height: 55px;
-  $logo-height: 38px;
-  $logo-beta-height: 14px;
+header
+{
+  width: 100%;
+  border-bottom: 2px $gray solid;
 
-
-  background-color: $red;
-  color: white;
-  font-family: 'Raleway', cursive;
-  position: relative;
-  height: $header-height;
-  @include valignable;
-
-  margin-bottom: 30px;
-  padding: 0;
-  img.logo {
-    margin-left: 40px;
-    height: $logo-height;
-    cursor: pointer;
-    
-    &:hover {
-      @include filter(blur(1px));
-    }
-  }
-  img.beta {
-    height: $logo-beta-height;
-  }
-  ul.header-links {
-    li {
-      @include inline-block;
-      vertical-align: bottom;
-      font-size: 20px;
-      margin: 8px 1px 0 1px;
-      padding: 5px 15px 14px 15px;
-      cursor: pointer;
-      @include transition(padding, margin);
-      @include transition-duration(0.15s);
-      @include border-top-radius(5px);
-      &:hover {
-        background-color: $white;
-        color: $black;
-        padding-bottom: 10px;
-        margin-top: 12px;
-      }
-    }
-    list-style-type: none;
-    @include inline-block;
-    margin: 0;
+  div.header-logo
+  {
+    @include staticImage('/images/header/logo.png');
+    @include inline-block();
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 156px;
+    height: 50px;
   }
 
-  img.gear {
-      cursor: pointer;
-      @include transition(none);
-      &:hover {
-        @include transform(rotate(360deg));
-        @include transition();
-        @include transition-duration(1.0s);
-      }
-    }
+  div.nav-button
+  {
+    @include inline-block();
+  }
 
-  div.search {
-    display: inline-block;
-    margin: 0 10px;
-    height: $search-bar-height;
-    vertical-align: middle;
-    position: relative;
-    img {
-      position: absolute;
-      left: $magnifying-glass-size/2;
-      @include verticalAlign($magnifying-glass-size);
-      cursor: pointer;
-      height: $magnifying-glass-size;
-      @include transition;
-      @include transition-duration(0.5s);
-      &:hover {
-        @include transform(scale(1.2));
-      }
-    }
-    input {
-      color: $red;
-      height: 100%;
-      font-size: 18px;
-      font-family: 'Raleway', cursive;
-      border: none;
-      padding: 6px 6px 6px $magnifying-glass-size*2;
-      width: $search-bar-width;
-      &::-webkit-input-placeholder {
-        color: $red;
-      }
-      &:-moz-placeholder {
-        color: $red;
-      }
-    }
+  div.search
+  {
+    @include inline-block();
   }
 }
 

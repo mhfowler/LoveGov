@@ -1,0 +1,74 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+$button-padding: 0.5em;
+
+div.feed-main
+{
+  width: 100%;
+  padding: 10px;
+
+  div.feed-top-bar
+  {
+    width: 100%;
+    padding: 1em;
+
+    div.feed-buttons-container
+    {
+      @include inline-block;
+
+      .base-button
+      {
+        float: left;
+        border: solid $light-gray;
+        border-width: 1px 0px 1px 1px;
+        padding: $button-padding;
+      }
+
+      .last-button
+      {
+        border-width: 1px;
+      }
+
+      div.sort-button
+      {
+        @extend .base-button;
+      }
+
+      div.filter-button
+      {
+        @extend .base-button;
+        padding: 0;
+      }
+
+      div.filter-text
+      {
+        padding: $button-padding $button-padding 0 $button-padding;
+      }
+
+      div.filter-bottom
+      {
+        background-color: $red-light;
+        width: 100%;
+        height: $button-padding;
+      }
+
+      a.create-button
+      {
+        float: right;
+        @include inline-block();
+        font-size: 20px;
+        color: white;
+        background-color: $red;
+        text-align: center;
+        padding: 1em;
+      }
+
+    }
+
+  }
+
+}

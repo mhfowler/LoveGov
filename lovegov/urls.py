@@ -82,7 +82,7 @@ URL_SPECIAL_NAMES = set([
 ])
 
 urlpatterns += patterns('django.views.generic.simple',
-    (r'^frame/$', 'direct_to_template', {'template': 'pages/feed.html'}),
+    (r'^frame/$', 'direct_to_template', {'template': 'site/pages/feed.html'}),
 )
 
 # lovegov urls
@@ -113,7 +113,7 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # main pages
-    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
+    (r'^home/$', viewWrapper(views.feed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                                                   # about
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
@@ -135,7 +135,7 @@ urlpatterns += patterns('',
     (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.group, requires_login=True)),
     (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),               # histogram detail of group
-    (r'^feed/$', viewWrapper(views.theFeed, requires_login=True)),                            # the feed
+    (r'^feed/$', viewWrapper(views.feed, requires_login=True)),                            # the feed
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),            # profile/comparison
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),                   # profile/comparison
     (r'^nextquestion/$', viewWrapper(views.nextQuestion, requires_login=True)),               # sensibly redirects to next question
