@@ -4,102 +4,145 @@
 
 @import "compass"; 
 
-aside.sidebar {
-  width: 17%;
-  float: left;
-  padding: 0 40px;
-  h2 {
-    border-bottom: 1px solid $gray;
-    &:after {
-      display: block;
-      content: '';
-      width: 40px;
-      height: 3px;
-      background-color: $gray;
-      // Shift down
-      position: relative;
-      top: 4px;
-    }
-    &:hover {
-      &:after {
-        background-color: $red;
-      };
-    }
-  }
-  ul li {
-    list-style: none;
-  }
 
-}
+$button-top-padding: 5px;
+$button-side-padding: 12px;
 
-div.group-feed-page {
-  width: 80%;
-  float: left;
-  section.details {
+div.feed-main
+{
+  width: 100%;
+  padding: 10px;
 
-    $group-image-height: 100px;
+  div.feed-top-bar
+  {
+    width: 100%;
+    margin-bottom: 15px;
 
-    @include border-radius(8px);
-    @include clearfix;
-    border: 1px solid $gray;
-    margin: 1.5em;
-    padding: 2em;
-    position: relative;
-    div.col {
-      @include inline-block;
-    }
-    div.title-col {
-      @extend div.col;
-      width: 50%;
-      vertical-align: top;
-    }
-    div.description-col {
-      @extend div.col;
-      width: 25%;
-      vertical-align: top;
-    }
-    div.title-details {
-      @extend div.col;
-      position: relative;
-      height: 150px;
-      vertical-align: top;
-    }
-    img.group-image {
-      @extend div.col;
-      height: $group-image-height;
-      margin-right: 2em;
-    }
-    // Group title
-    h1 {
-      font-size: 5.4em;
-      margin: 0;
-    }
-    // Group location
-    h2 {
-      font-size: 1.6em;
-      margin: 0;
-      color: $deep-gray;
-    }
-    div.membership {
-      position: absolute;
-      bottom: 0;
-      font-size: 2.0em;
-    }
-    div.match {
-      background-color: $red;
-      width: 90px;
-      height: 90px;
-      color: $white;
-      font-size: 1.5em;
-      text-align: center;
-      vertical-align: middle;
-      div.number {
-        font-size: 3em;
+    div.feed-left-buttons
+    {
+      float: left;
+      padding: 12px 0;
+
+      div.feed-buttons-container
+      {
+        display: block;
+        float: left;
+        margin-right: 20px;
+
+        div.buttons-container-text
+        {
+          float: left;
+          padding: $button-top-padding+1;
+          color: $dark-gray;
+        }
+
+        div.base-button
+        {
+          float: left;
+          border: solid $light-gray;
+          border-width: 1px 0px 1px 1px;
+          padding: $button-top-padding $button-side-padding;
+        }
+
+        div.last-button
+        {
+          border-right-width: 1px;
+        }
+
+        div.sort-button
+        {
+          @extend .base-button;
+        }
+
+        div.filter-button
+        {
+          @extend .base-button;
+          padding: 0;
+        }
+
+        div.filter-text
+        {
+          padding: $button-top-padding $button-side-padding 0 $button-side-padding;
+        }
+
+        div.filter-bottom-bar
+        {
+          background-color: $red-light;
+          width: 100%;
+          height: $button-top-padding;
+        }
+
       }
+
     }
-    div.stats-link {
+
+    div.create-button
+    {
+      display: block;
+      float: right;
+      @include inline-block();
+      font-size: 18px;
+      color: white;
+      background-color: $red;
       text-align: center;
-      font-size: 1em;
+      padding: 13px;
+      text-decoration: none;
+    }
+
+  }
+
+  div.feed-content
+  {
+    width: 100%;
+
+    div.feed-item
+    {
+      height: 120px;
+      margin-bottom:10px;
+
+      div.feed-item-bar
+      {
+        height: 100%;
+        width: 0.75%;
+        float: left;
+        background-color: $red-light;
+      }
+
+      div.feed-item-content
+      {
+        border: 1px solid $light-gray;
+        height: 100%;
+        width: 99%;
+        float: right;
+
+        div.feed-item-left-buttons
+        {
+          border-right: 1px solid $light-gray;
+          width: 40px;
+          height: 100%;
+          display: block;
+          float: left;
+
+          div.item-topic-image
+          {
+            border-bottom: 1px solid $light-gray;
+            width: 100%;
+            height: 40px;
+            display:block;
+          }
+        }
+
+        div.feed-item-user-info
+        {
+          display: block;
+          float: right;
+          height: 100%;
+          width: 150px;
+
+
+        }
+
+      }
     }
   }
 }
