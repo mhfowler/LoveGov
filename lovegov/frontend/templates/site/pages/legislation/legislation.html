@@ -97,9 +97,9 @@
             </h5>
             <p>
                 <ul>
-                    {% for session in sessions %}
+                    {% for l in bills %}
 
-                        <li><h5>{{ session }}</h5></li>
+                        <li><h5>{% include 'site/pages/legislation/legislation-stub.html' %}</h5></li>
 
                     {% endfor %}
                 </ul>

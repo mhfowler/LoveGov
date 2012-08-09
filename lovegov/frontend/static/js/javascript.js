@@ -828,8 +828,14 @@ function ajaxLink(div, loadimg)
     ajaxReload(link, loadimg);
 }
 
+var sessions = getSessions()
+var dict = {'action': "ajaxGetFeed",
+            'session': sessions}
+ajaxPost(dict);
+
 // wrapper for ajax post
 function ajaxPost(dict) {
+    var action = dict['action']
     var data = dict['data'];
     var success_fun = dict['success'];
     var error_fun = function(jqXHR, textStatus, errorThrown) {

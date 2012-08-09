@@ -876,6 +876,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
         vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
         return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
+    legs = Legislation.objects.filter(congress_session=session, bill_type=type)
     if number==None:
         vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
         return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
@@ -884,17 +885,14 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['error'] = "No legislation found with the given parameters."
     else:
 	leg = legs[0]
-        vals['leg_titles'] = leg.legislationtitle_set.all()
-        vals['leg'] = leg
+        vals['leg_titles'] = [x['full_title'] for x in Legislation.objects.values('full_title').distinct()]
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 
-def legislationHelper(subject, date_introduced, vals={}):
-    l = Legislation.objects.filter(subject=subject, date_introduced__gt=date_introduced)
+def legislationHelper(request, vals={}):
+    l = Legislation.objects.filter(session=110)
     vals['bills'] = l
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-stub.html', vals=vals, request=request)
-
-
+    return l
 #-----------------------------------------------------------------------------------------------------------------------
 # Match page.
 #-----------------------------------------------------------------------------------------------------------------------
