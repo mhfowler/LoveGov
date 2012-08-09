@@ -5,23 +5,20 @@
 {% include 'site/frame/html-header.html' %}
 
 <body>
-<!-- Header -->
-{% include 'site/frame/header.html' %}
-<!-- End Header -->
 
-<!-- Left Side Bar -->
-{# % include 'frame/left-sidebar/left-sidebar.html' % #}
-<!-- End Left Side Bar -->
+    <div class="global-wrapper">
 
-<div class="wrapper">
+        <!-- Header -->
+        {% include 'site/frame/header.html' %}
+        <!-- End Header -->
 
-<!-- Content -->
-{% block content %}
-    {{ center }}
-{% endblock %}
-<!-- End Content -->
+        <!-- Content -->
+        {% block content %}
+            {{ center }}
+        {% endblock %}
+        <!-- End Content -->
 
-</div>
+    </div>
 
 <!-- Comparison Hover -->
 {# % include "site/pieces/snippets/comparison_hover.html" % #}

@@ -52,6 +52,9 @@ def viewWrapper(view, requires_login=False):
             # google analytics
             vals['google'] = GOOGLE_LOVEGOV
 
+            # Error otherwise?
+            vals['fb_state'] = fbGetRedirect(request, vals)
+
             # static file serving and host
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
@@ -395,42 +398,9 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # new feeds page
 #-----------------------------------------------------------------------------------------------------------------------
-def theFeed(request, g_alias=None, vals={}):
+def feed(request, g_alias=None, vals={}):
 
-    viewer = vals['viewer']
-    rightSideBar(request, vals)
-    shareButton(request, vals)
-
-    if not g_alias:
-        current_group = getLoveGovGroup()
-    else:
-        current_group = Group.objects.get(alias=g_alias)
-    vals['current_group'] = current_group
-
-    if current_group.hasMember(viewer):
-        vals['default_post_to_group'] = current_group
-    else:
-        vals['default_post_to_group'] = getLoveGovGroup()
-
-    filter_name = request.GET.get('filter_name')
-    if not filter_name:
-        filter_name = 'default'
-
-    feed_json = {'ranking': 'N',
-                 'levels':[],
-                 'topics':[],
-                 'types':[],
-                 'groups':[],
-                 'submissions_only': 1,
-                 'display': 'L',
-                 'feed_start': 0,
-                 'filter_name': filter_name}
-
-    vals['feed_json'] = json.dumps(feed_json)
-    vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
-    vals['num_pinterest'] = range(3)
-
-    html = ajaxRender('site/pages/feed/feed.html', vals, request)
+    html = ajaxRender('site/pages/feed/main.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
 

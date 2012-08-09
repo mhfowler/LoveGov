@@ -50,8 +50,15 @@ html {
 
 body {
   font-family:$body-fonts;
-  color:green;
-  font-size: 62.5%; /* 1em = 10px */
+  color:$black;
+  font-size: 10px;
+}
+
+div.global-wrapper
+{
+  max-width: 1140px;
+  width: 100%;
+  margin: auto;
 }
 
 
@@ -65,8 +72,4 @@ body {
   font-style: normal;
   font-weight: 100;
   src: local('Raleway-Thin'), url(http://themes.googleusercontent.com/static/fonts/raleway/v5/RJMlAoFXXQEzZoMSUteGWLO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
-}
-
-body {
-  font-family: 'Raleway', cursive;
 }
