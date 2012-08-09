@@ -64,3 +64,9 @@ class ComparisonTestCase(unittest.TestCase):
         comparison = katy.getComparison(randy)
         self.assertEqual(comparison.result, 50)
 
+    def testAlias(self):
+        g = Group(title="This is test group")
+        g.autoSave()
+        alias = g.alias
+        self.assertEqual(alias, "thisistestgroup")
+

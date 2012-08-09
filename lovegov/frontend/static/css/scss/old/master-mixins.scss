@@ -1,0 +1,455 @@
+@import 'master-variables';
+
+/* Mixins */
+@mixin valignable() 
+{
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+  }
+}
+
+@mixin rounded($radius: 20px)
+{
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+}
+
+@mixin rounded-bottom($radius: 20px)
+{
+  border-bottom-right-radius: $radius;
+  border-bottom-left-radius: $radius;
+  -moz-border-bottom-right-radius: $radius;
+  -moz-border-bottom-left-radius: $radius;
+  -webkit-border-bottom-right-radius: $radius;
+  -webkit-border-bottom-left-radius: $radius;
+  -khtml-border-bottom-right-radius: $radius;
+  -khtml-border-bottom-left-radius: $radius;
+}
+
+@mixin rounded-top($radius: 20px)
+{
+  border-top-right-radius: $radius;
+  border-top-left-radius: $radius;
+  -moz-border-top-right-radius: $radius;
+  -moz-border-top-left-radius: $radius;
+  -webkit-border-top-right-radius: $radius;
+  -webkit-border-top-left-radius: $radius;
+  -khtml-border-top-right-radius: $radius;
+  -khtml-border-top-left-radius: $radius;
+}
+
+@mixin rounded-right($radius: 20px)
+{
+  border-top-right-radius: $radius;
+  border-bottom-right-radius: $radius;
+  -moz-border-top-right-radius: $radius;
+  -moz-border-bottom-right-radius: $radius;
+  -webkit-border-top-right-radius: $radius;
+  -webkit-border-bottom-right-radius: $radius;
+  -khtml-border-top-right-radius: $radius;
+  -khtml-border-bottom-right-radius: $radius;
+}
+
+@mixin fontSize($fontSize: 20px)
+{
+  font-size:$fontSize;
+}
+
+@mixin setMargin($margin_left:0,$margin_right:0,$margin_top:0,$margin_bottom:0)
+{
+  margin-left:$margin_left;
+  margin-right:$margin_right;
+  margin-top:$margin_top;
+  margin-bottom:$margin_bottom;
+}
+
+@mixin verticalSeparator($height,$margin-left,$margin-top)
+{
+  float:left;
+  border-left: 1px solid $red;
+  height:$height;
+  margin-left:$margin-left;
+  margin-top:$margin-top;
+}
+
+@mixin triangle-down($size: 5px, $color: $red) {
+  width: 0;
+  height: 0;
+  border-left: $size solid transparent;
+  border-right: $size solid transparent;
+  border-top: $size*2 solid $color;
+}
+
+@mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
+{
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+  border-radius: $radius;
+  width:$width;
+  height:$height;
+  font-size: $font-size;
+  font-family: $title-font;
+  background-color:$background-color;
+  color: $color;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@mixin div-button-padding($radius:10px,$padding:10px,$font-size:18px,$color:white,$background-color:$red,$hover-color:$red-light)
+{
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -khtml-border-radius: $radius;
+  border-radius: $radius;
+  padding:$padding;
+  font-size: $font-size;
+  font-family: $title-font;
+  background-color:$background-color;
+  color: $color;
+  letter-spacing: 1px;
+  text-decoration: none;
+  outline: none;
+  border: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  &:hover
+  {
+    background-color:$hover-color;
+  }
+
+}
+
+@mixin horizontalSeparator($width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
+{
+  border-bottom: 1px solid $color;
+  width:$width;
+  margin-left:$margin-left;
+  margin-top:$margin-top;
+  margin-bottom:$margin-bottom;
+}
+
+@mixin gillLight
+{
+  font-family: $gill-light, $body-fonts;
+}
+
+@mixin gillStd
+{
+  font-family: $gill-std, $body-fonts;
+}
+
+@mixin titleFont
+{
+  font-family: $title-font, $body-fonts;
+}
+
+@mixin rounded-box($size: 70px)
+{
+  @include rounded();
+  height: $size;
+  width: $size;
+  display: block;
+  text-align: center;
+}
+
+@mixin notification-box
+{
+  border-bottom: solid 1px;
+  border-color: $gray;
+  background-color: white;
+}
+
+@mixin borderBox
+{
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@mixin round-rectangle($width,$height,$radius,$background-color)
+{
+  width:$width;
+  height:$height;
+  @include rounded($radius);
+  background-color:$background-color;
+}
+
+@mixin rotate($degrees) {
+  transform:rotate($deg);
+  -ms-transform:rotate($deg); /* IE 9 */
+  -moz-transform:rotate($deg); /* Firefox */
+  -webkit-transform:rotate($deg); /* Safari and Chrome */
+  -o-transform:rotate($deg); /* Opera */
+}
+
+@mixin box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
+{
+  -moz-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
+  -webkit-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
+  box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
+}
+
+@mixin trianglePointer($test)
+{
+  div.#{$test}
+  {
+    height:50px;
+    width:50px;
+    background-color:$red;
+  }
+}
+
+@mixin trianglePointer($direction,$width,$color-inner,$color-border,$offset)
+{
+  width:$width * 2;
+  height:$width * 2;
+  position:absolute;
+  $border-color-inner:'null';
+  $border-color-border:'null';
+
+  @if $direction == 'down'
+  {
+    $border-color-border: $color-border transparent transparent transparent;
+    $border-color-inner: $color-inner transparent transparent transparent;
+    bottom:($width*-2);
+    left:$offset;
+  }
+  @else if $direction == "up"
+  {
+    $border-color-border: transparent transparent $color-border transparent;
+    $border-color-inner: transparent transparent $color-inner transparent;
+    top:($width*-2);
+    left:$offset;
+  }
+  @else if $direction == "left"
+  {
+    $border-color-border: transparent $color-border transparent transparent;
+    $border-color-inner: transparent $color-inner transparent transparent;
+    left:0;
+    top:($width*-2);
+  }
+  @else if $direction == "right"
+  {
+    $border-color-border: transparent transparent transparent $color-border;
+    $border-color-inner: transparent transparent transparent $color-inner;
+    right:($width*-2);
+    top:$offset;
+  }
+
+  div.border
+  {
+    position:absolute;
+    border-style: solid;
+    border-width: $width;
+    border-color: $border-color-border;
+  }
+
+  div.inner
+  {
+    position:absolute;
+    border-style: solid;
+    border-width: $width;
+    border-color:$border-color-inner;
+
+    @if $direction == "right"
+    {
+      right:1px;
+    }
+    @else if $direction == "up"
+    {
+      top:1px;
+    }
+  }
+}
+
+
+
+
+
+
+@function box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
+{
+  @return $horizontal-offset $vertical-offset $optional-blur $color;
+}
+
+
+@mixin main-div
+{
+  width: 1000px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin float-left
+{
+  float:left;
+}
+
+@mixin h1
+{
+  font-family:$title-font;
+  color:$text-blue;
+  font-size: 50px;
+}
+
+@mixin h2
+{
+  font-family:$title-font;
+  color:$red;
+  font-size: 32px;
+}
+
+@mixin h3
+{
+  font-family:$title-font;
+  color: $text-blue;
+  font-size: 26px;
+}
+
+@mixin h4
+{
+  font-family:$title-font;
+  color: $red;
+  font-size: 22px;
+}
+
+@mixin h5
+{
+  font-family:$title-font;
+  color: $deep-gray;
+  font-size: 18px;
+}
+
+@mixin h6
+{
+  font-family:$title-font;
+  color: $text-blue;
+  font-size: 13px;
+}
+
+@mixin big-num
+{
+/* extra big numbers - percents etc */
+  font-size:50px;
+  font-weight:bold;
+  font-family: $body-fonts;
+}
+
+@mixin modal {
+  float: left;
+  background-color: white;
+  z-index: 103;
+  -moz-box-shadow: 10px 10px 5px $deep-gray;
+  -webkit-box-shadow: 10px 10px 5px $deep-gray;
+  box-shadow: 10px 10px 5px $deep-gray;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: none;
+  border:1px solid $red;
+  position:absolute;
+}
+
+@mixin huge
+{
+  font-family: $title-font;
+  color: $black;
+  font-size:24px;
+  line-height:30px;
+  margin-bottom:25px;
+}
+
+@mixin really-big
+{
+  font-family: $title-font;
+  color: $deep-gray;
+  font-size:20px;
+  line-height:28px;
+  margin-bottom:20px;
+}
+
+@mixin small
+{
+  font-size: 12px;
+  color: #959595;
+}
+
+@mixin body
+{
+  font-family: Helvetica, Arial, Verdana, sans-serif;
+  font-size: 13px;
+  color: #353535;
+}
+
+@mixin big
+{
+  font-family: $title-font;
+  color: $text-blue;
+  font-size:18px;
+  line-height:26px;
+  margin-bottom:18px;
+}
+
+// deprecated
+@mixin vertically-centered($h) {
+  position: relative;
+  top:50%;
+  margin-top:-$h*1/2;
+}
+
+@mixin verticalAlign($h) {
+  top:50%;
+  margin-top:-$h*1/2;
+}
+
+@mixin edit-link($side-length:16px)
+{
+    @include staticImage($rel-path:'/images/edit-pencil.png');
+    background-size: $side-length $side-length;
+    width: $side-length;
+    height: $side-length;
+    cursor: pointer;
+    display: inline-block;
+
+    &:hover
+    {
+      @include staticImage($rel-path:'/images/edit-pencil-blue.png');
+    }
+
+}
+
+// $opacity is a float
+@mixin opacity($opacity) {
+  -moz-opacity: $opacity;
+  -khtml-opacity: $opacity;
+  opacity: $opacity;
+}
+
+
+// static images
+@mixin staticImage($rel-path)
+{
+  background-image: url(#{$STATIC_URL}#{$rel-path});
+}
+
+
