@@ -93,6 +93,9 @@ function rebindFunction()
             loadSignInDialogue();
             loadLogin();
             break;
+        case 'blog':
+            loadSignInDialogue();
+            break;
         case 'legislation':                                 //legislation page
             checkboxClick1();
             checkboxClick2();

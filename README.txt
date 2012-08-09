@@ -219,7 +219,6 @@ Now when you open a new terminal shell, you will have access to a number of alia
 
 We are using Sassy CSS (SCSS) which is compiled to CSS. See http://sass-lang.com/ for more information. 
 
-<<<<<<< HEAD
 
 ********** DEPENDENCIES ************
 
