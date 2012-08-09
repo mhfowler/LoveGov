@@ -3,20 +3,18 @@
 
 <header>
 
-	<img src="/static/images/white_logo.png" class="logo">
-    <img src="/static/images/beta.png" class="beta">
-    <ul class="header-links">
-        <li>feed</li>
-        <li>questions</li>
-        <li>match</li>
-        <li>about</li>
-    </ul>
+
+    <div class="header-logo"></div>
+    <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
+    <div class="nav-button">home</div>
+    <div class="nav-button">about</div>
+    <div class="nav-button">match</div>
 
     <div class="search">
-		<input type="text" placeholder="Search">
-		<img src="/static/images/search.png">
-	</div>
-    <img src="/static/images/gear.png" class="gear">
-    <img src="/static/images/people.png">
+        <input type="text" placeholder="Search">
+        <img src="{{ STATIC_URL }}/images/search.png">
+    </div>
+    <img src="{{ STATIC_URL }}/images/gear.png" class="gear">
+    <img src="{{ STATIC_URL }}/images/people.png">
 
 </header>
