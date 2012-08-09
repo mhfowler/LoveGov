@@ -2,7 +2,8 @@
 @import 'master-variables';
 @import 'master-mixins';
 
-@import "compass";
+@import "compass"; 
+
 
 $button-top-padding: 5px;
 $button-side-padding: 12px;
@@ -144,5 +145,4 @@ div.feed-main
       }
     }
   }
-
 }

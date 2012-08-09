@@ -397,8 +397,6 @@ def initializePassCodes():
 def initializeValidEmails():
     brownExtension = ValidEmailExtension(extension='brown.edu')
     brownExtension.save()
-    clayEmail = ValidEmail(email='rioisk@gmail.com', description="clay's gmail")
-    clayEmail.save()
     maxEmail = ValidEmail(email="max_fowler@brown.edu", description="max's email")
     maxEmail.save()
 
@@ -548,11 +546,7 @@ def initializeUsers():
     stalin.first_name = 'Joseph'
     stalin.last_name = 'Stalin'
     superUserHelper(stalin)
-    # CLAY
-    clay = ControllingUser.objects.create_user('clayton_dunwell@brown.edu', 'clayton_dunwell@brown.edu', 'texers')
-    clay.first_name = 'Clayton'
-    clay.last_name = 'Dunwell'
-    superUserHelper(clay)
+
 
 def initializeQ():
     title = 'LoveGov Question'
@@ -711,23 +705,6 @@ def initializeContent():
 def testAddNewContent():
     p1 = Petition(type="P", title="NEW PETITION", summary="new petition summary", full_text="this is the new petition full text")
     p1.save()
-
-def initializeDebate():
-    moderator = UserProfile.objects.get(username='stalin')
-    now = datetime.datetime.now()
-    newDebate = Debate(type="D", title="Health Care Debate", summary="Watch as Maximus Fowler and Clayton Dunwell duke it out", active=True, debate_when=now, moderator=moderator)
-    newDebate.save()
-    topic = Topic.objects.get(topic_text="Health Care")
-    newDebate.topics.add(topic)
-    modrelationship = Debaters(side="M", user=moderator, content=newDebate, relationship_type="I", privacy='PUB')
-    modrelationship.save()
-    debater1 = UserProfile.objects.get(username='stalin')
-    debater2 = UserProfile.objects.get(username='katy')
-    rel1 = Debaters(side="L", user=debater1, content=newDebate, relationship_type="I", privacy='PUB')
-    rel2 = Debaters(side="R", user=debater2, content=newDebate, relationship_type="I", privacy='PUB')
-    rel1.save()
-    rel2.save()
-
 
 def initializePersistentDebate():
     debate = Persistent(title="Star Wars Debate", summary="Who shot first?")

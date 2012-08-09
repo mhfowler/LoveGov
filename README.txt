@@ -219,7 +219,6 @@ Now when you open a new terminal shell, you will have access to a number of alia
 
 We are using Sassy CSS (SCSS) which is compiled to CSS. See http://sass-lang.com/ for more information. 
 
-<<<<<<< HEAD
 
 ********** DEPENDENCIES ************
 
@@ -306,5 +305,11 @@ OR sudo apt-get install rabbitmq-server
 pip install librabbitmq
 pip install pika==0.9.5
 pip install supervisor
-=======
->>>>>>> refactor
+
+compass
+http://compass-style.org
+gem install compass
+
+pip install cssmin
+
+pip install django_compressor

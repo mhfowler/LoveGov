@@ -93,6 +93,9 @@ function rebindFunction()
             loadSignInDialogue();
             loadLogin();
             break;
+        case 'blog':
+            loadSignInDialogue();
+            break;
         case 'legislation':                                 //legislation page
             checkboxClick1();
             checkboxClick2();
@@ -925,7 +928,7 @@ function bindCloseClick(element) {
 function ajaxReload(theurl, loadimg)
 {
     $('#search-dropdown').hide();
-    $('#main-content').hide();
+    $('#main_content').hide();
     if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},1000); }
     $.ajax
         ({
@@ -950,9 +953,9 @@ function ajaxReload(theurl, loadimg)
 function replaceCenter(stuff)
 {
     $('body').css("overflow","scroll");
-    $('#main-content').css("top","0px");
-    $("#main-content").html(stuff);
-    $('#main-content').show();
+    $('#main_content').css("top","0px");
+    $("#main_content").html(stuff);
+    $('#main_content').show();
     rebindFunction();
 }
 

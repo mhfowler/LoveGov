@@ -1,8 +1,7 @@
 # lovegov
 from lovegov.frontend import views, tests, analytics
-from lovegov.modernpolitics import actions, lgwidget, api, twitter
+from lovegov.modernpolitics import posts, lgwidget, api, twitter
 from lovegov.frontend.views import viewWrapper
-from lovegov.frontend import admin_views
 
 # django
 from django.conf.urls import patterns, include, url
@@ -126,7 +125,6 @@ urlpatterns += patterns('',
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail
-    (r'^topic/(\S+)/$', viewWrapper(views.topicDetail, requires_login=True)),                 # topic detail
     (r'^petition/(\d+)/$', viewWrapper(views.petitionDetail, requires_login=True)),           # petition detail
     (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),                   # news detail
     (r'^network/(\S+)/$', viewWrapper(views.network, requires_login=True)),                   # network page
@@ -149,12 +147,11 @@ urlpatterns += patterns('',
     (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
 
     # ajax pages
-    (r'^action/$', viewWrapper(actions.actionPOST, requires_login=True)),                      # comment and other actions
+    (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),                      # comment and other actions
     (r'^answer/$', viewWrapper(views.profile, requires_login=True)),                           # comment and other actions
     (r'^fb/action/$', viewWrapper(views.facebookAction, requires_login=True)),
 
     # widget pages
-    (r'^widget/about/$', views.widgetAbout),                                    # widget about page
     (r'^widget/$', redirect_to, {'url':"/widget/about/"}),                      # widget about page
     (r'^widget/access/$', lgwidget.access),                                     # widget api access
 
@@ -165,8 +162,6 @@ urlpatterns += patterns('',
     (r'^css/$', viewWrapper(tests.css, requires_login=True)),
 
     #admin
-    (r'^developer/$', viewWrapper(admin_views.adminHome, requires_login=True)),
-    (r'^alpha/admin_action/$', viewWrapper(admin_views.adminAction, requires_login=True)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(site.urls)),
 

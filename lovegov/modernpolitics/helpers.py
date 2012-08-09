@@ -384,12 +384,6 @@ def photoKey(type=".jpg"):
 # Alpha
 #-------------------------------------------------------------------------------------------------------------------
 def removeUser(email):
-    """
-    Removes an Alpha user.
-
-    @param email: email address of user to remove
-    @type email: string
-    """
     control = ControllingUser.objects.get(username=email)
     control.delete()
     return True
