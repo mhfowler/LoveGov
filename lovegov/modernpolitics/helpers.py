@@ -406,7 +406,6 @@ def isUniqueAlias(alias):
         return False
     return True
 
-
 def genAliasSlug(alias):
     nonce = 0
     while not isUniqueAlias(alias):

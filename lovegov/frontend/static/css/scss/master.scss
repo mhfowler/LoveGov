@@ -61,6 +61,11 @@ div.global-wrapper
   margin: auto;
 }
 
+div.main-content {
+  margin-top:20px;
+  border-top:1px solid $gray;
+}
+
 * {
   /* Prevent padding from altering defined sizes */
   @include box-sizing(border-box);

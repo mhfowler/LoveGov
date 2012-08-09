@@ -3295,7 +3295,6 @@ class Group(Content):
         self.num_members -= 1
         self.save()
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
     #-------------------------------------------------------------------------------------------------------------------
@@ -3332,8 +3331,7 @@ class Group(Content):
         worldview = WorldView()
         worldview.save()
         self.group_view = worldview
-        if not self.alias:
-            self.alias = self.makeAlias()
+        self.alias = self.makeAlias()
         self.in_calc = False
         self.save()
         super(Group, self).autoSave(creator=creator, privacy=privacy)
@@ -3453,8 +3451,8 @@ class Group(Content):
     def makeAlias(self):
         from django.template.defaultfilters import slugify
         from lovegov.modernpolitics.helpers import genAliasSlug
-        alias = slugify(self.title)
-        self.alias = genAliasSlug(alias)
+
+        self.alias = genAliasSlug(str.lower(str(self.title.replace(" ","_"))))
         self.save()
         return self.alias
 

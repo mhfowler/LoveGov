@@ -36,6 +36,16 @@ def framedResponse(request, html, url, vals):
         frame(request, vals)
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
+def homeResponse(request, focus_html, url, vals):
+    if request.is_ajax() and request.method == 'POST':
+            to_return = {'focus_html':focus_html, 'url':url, 'title':vals['page_title']}
+            return HttpResponse(json.dumps(to_return))
+    else:
+        vals['focus_html'] = focus_html
+        homeSidebar(request, vals)
+        html = ajaxRender('site/pages/home/home.html', vals, request)
+        return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all views. Requires_login=True if requires login.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -195,7 +205,8 @@ def aliasDowncast(request, alias=None, vals={}):
         return viewWrapper(profile, requires_login=True)(request, alias)
     matched_group = Group.lg.get_or_none(alias=alias)
     if matched_group:
-        return viewWrapper(group, requires_login=True)(request, matched_group.id)
+        the_view = viewWrapper(groupFeed, requires_login=True)
+        return the_view(request=request, g_alias=matched_group.alias)
     return redirect(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -403,6 +414,15 @@ def feed(request, g_alias=None, vals={}):
     html = ajaxRender('site/pages/feed/main.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
+
+def groupFeed(request, g_alias, vals={}):
+    group = Group.objects.get(alias=g_alias)
+    focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
+    url = group.get_url()
+    return homeResponse(request, focus_html, url, vals)
+
+def homeSidebar(request, vals):
+    vals['sidebar'] = 'sidebar'
 
 #-----------------------------------------------------------------------------------------------------------------------
 # page to display all of your friends comparisons
@@ -679,7 +699,7 @@ def group(request, g_id=None, vals={}):
 
     vals['non_member_followers'] = followers
 
-    html = ajaxRender('site/pages/group/group.html', vals, request)
+    html = ajaxRender('site/pages/home/home.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
