@@ -16,6 +16,12 @@
             <div class="type_filter unchecked" data-selector="type_selector">
                 <input type="checkbox" id="type_filter"><label class="filter_label" for="type_filter"><h5><span>type</span></h5></label>
             </div>
+            <div class="subject_filter unchecked" data-selector="subject_selector">
+                <input type="checkbox" id="subject_filter"><label class="filter_label" for="subject_filter"><h5><span>subjects</span></h5></label>
+            </div>
+            <div class="committee_filter unchecked" data-selector="committee_selector">
+                <input type="checkbox" id="committee_filter"><label class="filter_label" for="committee_filter"><h5><span>committees</span></h5></label>
+            </div>
             <div class="introduced_filter unchecked" data-selector="introduced_selector">
                 <input type="checkbox" id="introduced_filter"><label class="filter_label" for="introduced_filter"><h5><span>date introduced</span></h5></label>
             </div>
@@ -41,6 +47,17 @@
                     <li><input type="checkbox" id="bill_typeB"><label for="bill_typeB"><h5><span>Bill Type B</span></h5></label></li>
                     <li><input type="checkbox" id="bill_typeC"><label for="bill_typeC"><h5><span>Bill Type C</span></h5></label></li>
                     <li><input type="checkbox" id="bill_typeD"><label for="bill_typeD"><h5><span>Bill Type D</span></h5></label></li>
+                </ul>
+            </div>
+            <div class="subject_selector">
+                <ul>
+                    <li><input type="form" id="subject_form" placeholder="Select subjects"><label for="subject_form"><h5>subjects</h5></label></li>
+                </ul>
+            </div>
+            <div class="committee_selector">
+                <ul>
+                    <li><input type="form" id="committeeA"><label for="committeeA"><h5><span>House</span></h5></label></li>
+                    <li><input type="form" id="committeeB"><label for="committeeB"><h5><span>Senate</span></h5></label></li>
                 </ul>
             </div>
             <div class="introduced_selector">
@@ -78,6 +95,15 @@
             <h5 class="no-hover">
                 results:
             </h5>
+            <p>
+                <ul>
+                    {% for session in sessions %}
+
+                        <li><h5>{{ session }}</h5></li>
+
+                    {% endfor %}
+                </ul>
+            </p>
         </div>
     </div>
     <div class="filter-congress-feed">

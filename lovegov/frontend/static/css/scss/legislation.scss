@@ -4,9 +4,9 @@
 
 
 div.main-block {
-  margin-top: 50px;
+  margin-top: 40px;
   margin-left: 140px;
-  height: 240px;
+  height: 280px;
   width: 660px;
   overflow: hidden;
   border-bottom: solid;
@@ -19,7 +19,7 @@ div.main-block {
   div.legislation_filter {
     margin-left: 5px;
     margin-top: 5px;
-    height: 200px;
+    height: 260px;
     width: 310px;
     margin-top: 10px;
     padding-left: 9px;
@@ -33,6 +33,14 @@ div.main-block {
     }
 
     div.type_filter {
+      margin-bottom: 9px;
+    }
+
+    div.subject_filter {
+      margin-bottom: 9px;
+    }
+
+    div.committee_filter {
       margin-bottom: 9px;
     }
 
@@ -67,6 +75,30 @@ div.main-block {
     }
 
     div.type_selector {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 240px;
+      width: 400px;
+      padding-left: 0px;
+
+      ul, li {
+        list-style-type: none;
+      }
+    }
+
+    div.subject_selector {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 240px;
+      width: 400px;
+      padding-left: 0px;
+
+      ul, li {
+        list-style-type: none;
+      }
+    }
+
+    div.committee_selector {
       margin-left: 0px;
       margin-top: 0px;
       height: 240px;
@@ -300,7 +332,7 @@ div.filter-results {
 
 div.filter-congress-feed {
   margin-left:850px;
-  margin-top:-275px;
+  margin-top:-500px;
   width: 300px;
 }
 }

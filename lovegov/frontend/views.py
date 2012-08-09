@@ -889,6 +889,11 @@ def legislation(request, session=None, type=None, number=None, vals={}):
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 
+def legislationHelper(subject, date_introduced, vals={}):
+    l = Legislation.objects.filter(subject=subject, date_introduced__gt=date_introduced)
+    vals['bills'] = l
+    return renderToResponseCSRF(template='site/pages/legislation/legislation-stub.html', vals=vals, request=request)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Match page.
