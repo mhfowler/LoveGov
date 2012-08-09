@@ -1,3 +1,4 @@
+{% load customtags %}
 {% load thumbnail %}
 
 <div class="feed-item">
@@ -12,9 +13,11 @@
 
             <div class="item-topic-image">
 
-{#                {% thumbnail item.getMainTopic.getImageURL "40x40" crop="center"  as im %}#}
-{#                    <img src="{{ im.url }}" />#}
-{#                {% endthumbnail %}#}
+                {% with topic=item.getMainTopic %}
+                    {% thumbnail topic.image "40x40" format="PNG" as im %}
+                        <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
+                    {% endthumbnail %}
+                {% endwith %}
 
             </div>
 
@@ -29,8 +32,14 @@
         </div>
 
         <div class="feed-item-main">
-            <h4>{{ item.title }}</h4>
-            {{ item.full_text }}
+
+            {% thumbnail item.link_screenshot "250x500" format="PNG" as im %}
+                <img src="{{ im.url }}"/>
+            {% endthumbnail %}
+
+            <a href="{{item.link}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
+            {{ item.link_summary|truncatechars:50|linebreaks }}
+
         </div>
 
         <div class="feed-item-user-info">
