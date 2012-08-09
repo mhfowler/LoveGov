@@ -18,7 +18,7 @@ div.feed-main
 
     div.feed-buttons-container
     {
-      @include inline-block();
+      @include inline-block;
 
       .base-button
       {

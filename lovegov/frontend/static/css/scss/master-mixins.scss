@@ -12,7 +12,6 @@
   }
 }
 
-
 @mixin rounded($radius: 20px)
 {
   border-radius: $radius;
@@ -86,9 +85,6 @@
   border-right: $size solid transparent;
   border-top: $size*2 solid $color;
 }
-
-
-
 
 @mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
 {
@@ -373,7 +369,6 @@
   border:1px solid $red;
   position:absolute;
 }
-
 
 @mixin huge
 {
