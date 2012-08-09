@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Add Alpha Users</title>
+</head>
+<body>
+<h2>Admin Manage Portal</h2>
+{% if not forbidden %}
+    <div style="height:400px">
+        <div style="float:left;width:325px;">
+            Add User
+            <form action="" method="post" style="float:left;">{% csrf_token %}
+                <table>
+                    {{ createUserForm.as_table }}
+                    <tr><th></th><td><input style="float:right" type="submit" name="createUser" value="Submit" /><input id="email-preview-button" style="float:right" type="button" value="Preview Email"/></td></tr>
+                </table>
+            </form>
+        </div>
+        <div style="float:left;margin-left:40px">
+            Search User
+            <div>
+                <form id="searchuser" action="" method="post" style="float:left;">{% csrf_token %}
+                    <table>
+                        {{ searchUserForm.as_table }}
+                        <tr><th></th><td><input style="float:right" type="submit" name="searchUser" value="Search" /></td></tr>
+                    </table>
+                </form>
+            </div>
+            <div id="searchuser-results" style="float:left;margin-top:10px;">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="email-preview" style="margin-left:50px;width:750px">
+        <h2>E-Mail Preview</h2>
+        <span id="subject-preview">Subject: Welcome to LoveGov Alpha</span>
+        <div id="main" style="
+            position:relative;
+            margin-top:40px;
+            margin-left:40px;
+            margin-right:40px;
+            margin-bottom:40px;
+            padding:30px;
+            border:1px solid #f0503b;
+            font-family:Helvetica, Verdana, sans-serif;
+            font-size:12pt;">
+
+            <img src="http://cathschmidt.com/logosmall.png">
+
+            <h2 style="color:#005468;font-weight:normal;" id="greeting">Hello,</h2>
+
+            <p id="message-text">
+                LoveGov Alpha is now up and running! We would really appreciate it if you logged in and test run the features
+                of our site. Please keep in mind that Alpha only contains a portion of the functionality intended for the
+                Brown/RISD beta, so you will see us regularly adding new features over the next month. If you encounter any
+                problems while using our siteor just want to send us comments then please don't hesitate to contact us -
+                we want to hear your opinions!
+            </p>
+
+            <p>
+                You may login at <a href="http://www.lovegov.com/alpha/login" style="text-decoration:none;color:#959595;">
+                www.lovegov.com/alpha/login</a>. Your username and password are as follows:
+            </p>
+
+            <p>
+                <a style="color:#005468;">username: </a><span id="username"></span>
+                <br/>
+                <a style="color:#005468;">password: </a>4aWfJ83L
+            </p>
+
+            <p>You will have the option to change your password once you log in. We hope you enjoy our site!</p>
+
+            <p>Love,</p>
+
+            <h2 style="color:#005468;font-weight:normal;">LoveGov Team</h2>
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/jquery/js/jquery-ui-1.8.18.custom.min.js"></script>
+    <link type="text/css" href="{{ STATIC_URL }}/jquery/css/smoothness/jquery-ui-1.8.18.custom.css" rel="Stylesheet" />
+    <script type="text/javascript">
+        var csrf = '{{ csrf_token|escapejs }}';
+
+        $(document).ready(function()
+        {
+            $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
+
+            $('#email-preview').dialog({autoOpen:false,width:750});
+
+            $( "#email-preview-button" ).click(function()
+            {
+                $('#email-preview').dialog( "open" );
+                return false;
+            });
+
+            $('#id_firstname').keyup(function()
+            {
+                $('#greeting').html("Hello " + $(this).val() + ",");
+            });
+
+            $('#id_subject').keyup(function()
+            {
+                $('#subject-preview').html("<strong>Subject:</strong>" + $(this).val());
+            });
+
+            $('#id_message').keyup(function()
+            {
+                $('#message-text').html($(this).val());
+            });
+
+            $('#id_email').keyup(function()
+            {
+                $('#username').html($(this).val());
+            });
+
+            $('#searchuser').submit(function(event)
+            {
+                event.preventDefault();
+                $.ajax({
+                    url:'/alpha/admin_action/',
+                    type: 'POST',
+                    data: {'action':'searchuser','firstname': $('#search_firstname').val(),'lastname':$('#search_lastname').val()},
+                    success: function(data)
+                    {
+                        var object = eval('(' + data + ')');
+                        $('#searchuser-results').empty();
+                        for (var i=0; i<object.length; i++)
+                        {
+                            var firstname = object[i].first_name;
+                            var lastname = object[i].last_name;
+                            var user_id =  object[i].id;
+                            $('#searchuser-results').append('<span id="span' + user_id + '">' + firstname + ' ' + lastname + '<input style="margin-left:15px" type="submit" id="' + user_id + '" value="Re-Send Invite" />' + '</span><br>');
+                            $('#' + user_id).click(function(event)
+                            {
+                                var user_id = parseInt($(this).attr('id'));
+                                event.preventDefault();
+                                var submit_button = $(this).detach();
+                                $.ajax({
+                                    url:'/alpha/admin_action/',
+                                    type: 'POST',
+                                    data: {'action':'reinviteuser','id': user_id},
+                                    success: function(data)
+                                    {
+                                        $('#span' + user_id).html('Invite Sent');
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown)
+                                    {
+                                        alert("Failed.  Try again or contact server admins");
+                                        $('#span' + user_id).append(submit_button);
+                                    }
+                                });
+                            })
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        alert("Oops we made an error.  Try submitting again.");
+                    }
+                });
+            });
+        });
+    </script>
+{% endif %}
+{{ forbidden }}
+</body>
+</html>

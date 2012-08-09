@@ -1,0 +1,48 @@
+{% load thumbnail %}
+{% load customtags %}
+
+<div class="match-box-div">
+
+    <div class="match-user-info">
+        <a href="{{ item.get_url }}">
+            {% with full_url=item.getImageURL|media_url:MEDIA_PREFIX %}
+                {% thumbnail full_url "65x65" crop="center" as im %}
+                    <img src="{{ im.url }}" class="match-user-img"/>
+                {% endthumbnail %}
+            {% endwith %}
+        </a>
+
+        <div class="match-user-text">
+            <a href="{{ item.get_url }}">
+            <h4>{{ item.get_name|truncatechars:20 }}</h4>
+            </a>
+
+            {% if item.type == "U" %}
+                    <h5>{{ item.political_title }}</h5>
+            {% endif %}
+
+            {% if item.type == "U" %}
+                {% for party in item.parties.all %}
+                <div class="party-image">
+                    {% thumbnail party.party_label "100x20" as label %}
+                        <img src="{{ label.url }}" />
+                    {% endthumbnail %}
+                </div>
+                {% endfor %}
+            {% elif item.type == "G" %}
+                <h5>Members: {{ item.getNumMembers }}</h5>
+            {% endif %}
+        </div>
+        <div class="clear-both"></div>
+    </div>
+
+    <div class="qaweb bind_link tooltip-bottom" data-url="{{ item.getWebURL }}">
+        <div class="{{ item.get_name|slugify }}-canvas" data-json="{{ item.compare }}"></div>
+        <div class="see-answers"> click comparison to see their responses </div>
+    </div>
+
+    <script>
+        $("." + "{{ item.get_name|slugify }}" + "-canvas").visualComparison();
+    </script>
+
+</div>

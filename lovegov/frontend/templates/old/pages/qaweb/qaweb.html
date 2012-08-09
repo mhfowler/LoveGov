@@ -1,0 +1,318 @@
+<div id="qaweb-interactive">
+    <div id="dragger">
+
+        {% if firstLoginStage == 3 %}
+        <div id="first_user" class="first-user-box" data-state="left">
+
+            <div id="first_user_intro">
+
+                <h4>Welcome to the Q&A Web</h4>
+                <p class="first-user-text">
+                    Define your political beliefs by answering
+                    questions about political issues. Questions are
+                    based off legislation that has appeared in
+                    congress over the past few years.
+                </p>
+                <p class="small-margin">
+                    <a id="learn_how_it_works" class="button-red">Learn how it works</a>
+                <p>
+                <p class="no-margin">
+                    or <a id="skip_qaweb" class="text-underline red-link">skip</a>
+                </p>
+
+            </div>
+
+            <div id="first_user_progress" style="display:none">
+
+                <div id="progress_number">
+                    <h2>1</h2>
+                </div>
+
+                <div class="first_user_progress_text">
+                    <span class="bold">Topic </span><span class="no-bold">- click one of the topic icons to see questions</span>
+                </div>
+
+                <div class="end-of-web end_of_web" style="display:none">
+                    <h2>That's the Web!</h2>
+                    <p>
+                        Next, answer at least 3 questions
+                        from each topic to begin accurate
+                        matching.
+                    </p>
+                </div>
+
+                <div id="progress_bar">
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endif %}
+
+        <!-- QAWeb graphical components go here -->
+    </div>
+</div>
+
+<div id="topic_progress" class="topic-progress-div">
+
+    <div class="progress-header">
+        <div class="progress-div">
+            <h6 class="bold text-gray" style="text-align:center">Web Progress</h6>
+            <h6 id="match_strength" class="text-gray" style="font-style:italic;text-align:center"></h6>
+        </div>
+        <div class="progress-div" id="topic_progress_fill">
+            <div></div>
+        </div>
+        <div id="progress-canvas-div">
+        </div>
+    </div>
+
+</div>
+
+{% if firstLoginStage == 3 %}
+<script type="text/javascript">
+    var progressBar =  '<div class="progress_bar_fill" style="width:70px">&nbsp;</div>';
+    var progressBarDivider = '<div class="progress_bar_divider" style="width:5px">&nbsp;</div>';
+    var progressNum = 1;
+
+    function firstUserExperience()
+    {
+        $('#skip_qaweb').click(function()
+        {
+            $('#first_user').fadeOut('slow');
+            $('._topic_label').remove();
+            setFirstLoginStage(4, stageFour);
+        });
+
+        $('#learn_how_it_works').click(function()
+        {
+            var div = $('#first_user');
+            var offset = div.offset();
+            $('#qaweb-interactive').parent().append(div.detach().offset(offset));
+            var newPosition = $('.top-logo').offset();
+            newPosition.top+=70;
+            div.animate(newPosition);
+            $('#first_user_intro').hide();
+            $('#first_user_progress').show();
+            $('._topic_label').addClass("step-one").show('bounce',300);
+        });
+    }
+    firstUserExperience();
+
+    function nextStep()
+    {
+        $('#progress_bar').append(progressBar).append(progressBarDivider);
+        $('#progress_number h2').text(++progressNum);
+    }
+
+    function stepTwo()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Question ");
+        $('.first_user_progress_text').children(".no-bold").text("- Unanswered questions appear as question marks, once answered a check mark graphic appears.");
+    }
+
+    function stepThree()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Importance ");
+        $('.first_user_progress_text').children(".no-bold").text("- Adjusting the importance affects how we weight your answers and help us match you more accurately.");
+    }
+
+    function stepFour()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Answers ");
+        $('.first_user_progress_text').children(".no-bold").text("- These answers are the basis for comparisons between politicians, friends and networks.");
+    }
+
+    function stepFive()
+    {
+        nextStep();
+        $('.first_user_progress_text').children(".bold").text("Navigation ");
+        $('.first_user_progress_text').children(".no-bold").text("- click and drag your mouse to move around the web.  You can also click next to jump to the next question.");
+    }
+
+    function stepSix()
+    {
+        $('#progress_bar').append(progressBar);
+        $('#progress_number').hide();
+        $('.first_user_progress_text').hide();
+        $('.end_of_web').show();
+        $('#first_user').fadeOut(10000);
+        setFirstLoginStage(4, stageFour);
+
+    }
+</script>
+{% endif %}
+
+<div id="qawebhover" class="everything" style="cursor:default;position:absolute;display:none;z-index:500;">
+    <div class="dialogue-wrapper">
+        <div id="dialogue-main">
+            <div style="height:10px">
+                <span id="dialogue-exit-span">X</span>
+            </div>
+            <div id="question">
+                <!-- question text goes here -->
+            </div>
+
+            <p id="dialogue-loading" style="display:none">
+                <img src="{{ STATIC_URL }}/images/ajax-loader.gif" />
+            </p>
+            <div id="answer-div">
+                <form class="qaweb-answerform" action="" method="post">
+                    <div id="question-weight-div" style="display:none;">
+                        <span style="margin-right:15px;font-size:13px">Importance</span>
+                        <div id="question-weight-slider" style="width:275px;display:inline-block"></div>
+                        <input id="weight-input" type="hidden" name="weight" value="5"/>
+                    </div>
+                    <div id="answers">
+                        <ul id="answers-ul">
+
+                        </ul>
+
+                        <div id="value_statement" style="display:none">
+                            <h6>Explanation</h6>
+                            <textarea style="width:400px;height:70px" id="user_explanation" class="explanation" name="explanation" placeholder="(Optional) Enter your view on this question here."></textarea>
+                        </div>
+                        <input type="hidden" name="action" value="answer"/>
+                        <input id="q_id" type="hidden" name="q_id" value=""/>
+
+                    </div>
+
+                    <div id="qa-buttons" style="display:none">
+                        <span id="answer-saved" style="float:left;display:none;font-weight:bold;color:#EF503B">Answer Saved</span>
+                        <!--<a class="dialogue-buttons" href="">learn more</a>-->
+                        <img id="privacy-image" class="security_setting" src="{{ STATIC_URL }}/images/public.png" style="width:25px;height:25px"/>
+                        <a class="discuss dialogue-buttons" href="">discuss</a>
+                        <a id="next_button" class="dialogue-buttons" href="">next</a>
+                    </div>
+                </form>
+            </div>
+            <div id="answer-reply" style="display:none;">
+                <div id="answer-reply-canvas">
+
+                </div>
+                <div id="answer-reply-text" align="center" style="font-size:14pt;">
+                    <span></span>
+                    <a class="discuss dialogue-buttons" href="/alpha/question/">discuss</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="dialogue-pointer">
+            <img src="{{ STATIC_URL }}/catherine/environment/env_dialogue-pointer.png">
+        </div>
+
+    </div>
+</div>
+
+<div id="qawebtopichover" class="everything" style="cursor:default;position:absolute;display:none;z-index:900;">
+    <div id="dialogue-wrapper">
+        <div id="topic-main">
+            <div id="topic-text">
+
+            </div>
+        </div>
+
+        <div id="topic-pointer">
+            <img src="{{ STATIC_URL }}/catherine/environment/env_dialogue-pointer.png">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    rebind = 'qaweb';
+    $("#question-weight-slider").slider({value: 5, min: 0, max: 10, height:20});
+    var questionsArray = eval('(' + "{{ questionsArray|escapejs }}" + ')');
+    {% if firstLoginStage == 3  %}
+        var firstLogin = true;
+    {% else %}
+        var firstLogin = false;
+    {% endif %}
+
+
+    var pubMessage = "You are in PUBLIC mode.  You should use this mode when you want others to know where you stand on the issues. Click to change to private mode.";
+    var priMessage = "You are in PRIVATE mode.  You should use this mode when you want to use LoveGov anonymously.  Click to change to public mode.";
+
+    $(".security_setting").each(function(event)
+    {
+        if (!$(this).hasClass("has_security_setting"))
+        {
+            $(this).bind("click", function()
+            {
+                switch($.cookie('privacy'))
+                {
+                    case "PUB":
+                        $.cookie('privacy','PRI', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img'))
+                            {
+                                $(this).attr("src","{{ STATIC_URL }}/images/user-menu/lockgray.png");
+                                $(this).attr('data-original-title',priMessage);
+                            }
+                        });
+                        break;
+                    case "PRI":
+                        $.cookie('privacy','PUB', {path:'/'});
+                        $(".security_setting").each(function()
+                        {
+                            if ($(this).is('img')) { $(this).attr("src","{{ STATIC_URL }}/images/public.png");
+                                $(this).attr('data-original-title',pubMessage);}
+                        });
+                        break;
+                }
+            });
+
+            $(this).addClass("has_security_setting");
+        }
+    });
+
+    function stageFour() {
+        launchFirstLoginModal('<h2>Privacy on LoveGov</h2>' +
+                '<p>We think in-depth, complex privacy settings are too confusing. That\'s why on LoveGov ' +
+                'there are two modes: public and anonymous. You can quickly switch between modes next to your ' +
+                'profile picture at the top.</p>' +
+                '<p><img src="{{ STATIC_URL }}/images/public.png" class="privacy-img"> When in public mode, everything you do, ' +
+                'such as signing petitions or writing comments, is attributed to your account.</p>' +
+                '<p><img src="{{ STATIC_URL }}/images/user-menu/lockgray.png" class="privacy-img"> When in anonymous mode, any content you create ' +
+                'is attributed to an anonymous user.</p>' +
+                '<p>On questions in the Q&A web, you can individually toggle the visibility of your answers. Public ' +
+                'answers will be viewable by others, anonymous answers will be displayed as though you had not answered ' +
+                'that question.</p>' +
+                '<button class="tutorial-button">Next</button>');
+        $('button.tutorial-button').bindOnce('click', function() {
+            setFirstLoginStage('5', function() {
+                launchFirstLoginModal("<p>Now that you\'ve answered a few questions, take a look at how your " +
+                        'matches have changed.</p><p>You can always jump back to the Q&A web by clicking the q&a link up top.' +
+                        '<button class="tutorial-button">Show me my matches</button>');
+                $('button.tutorial-button').bindOnce('click', function() { window.location = "/match" });
+            });
+        });
+    }
+
+    function bindSkipFirstLogin() {
+        $('div.skip-tutorial a').bindOnce('click', function() {
+            var success = function() {
+                $('div.first-login-modal').hide();
+            };
+            setFirstLoginStage('7', success);
+        });
+    }
+
+    var firstLoginStage = {{ firstLoginStage }};
+
+    switch (firstLoginStage) {
+        case 3: break;
+        case 4: stageFour(); break;
+        default: break;
+    }
+
+    bindCloseFirstLoginModal();
+
+</script>
+
+<!-- Web -->
+<script type='text/javascript' src="{{ STATIC_URL }}/js/qaweb/qaweb.js"></script>

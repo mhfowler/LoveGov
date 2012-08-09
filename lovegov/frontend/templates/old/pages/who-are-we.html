@@ -1,0 +1,82 @@
+{% load customtags %}
+{% load thumbnail %}
+
+<div class="who-are-we-circle" id="who_are_we_circle">
+    {% for developer in developers %}
+        <div class="who-are-we-circle-div {% cycle_list colors_cycle as color %}{{ color }}"
+             style="left:{{ x|add:side_half }}px;top:{{ y|add:side_half }}px;width:{{ side }}px;height:{{ side }}px;border-radius:{{ side_half }}px;z-index:2"
+             data-json='{"first_name":"{{developer.first_name}}","last_name":"{{ developer.last_name }}","user_title":"{{ developer.user_title }}","x":"{{ developer.x }}","y":"{{ developer.y }}"}' >
+            {% thumbnail developer.getProfileImage.image "300x300" crop="center" format="PNG" as img %}
+                <img src="{{ img.url }}" style="border-radius:{{ side_half }}px;width:{{ side }}px"/>
+            {% endthumbnail %}
+        </div>
+
+        {% cycle_list colors as col %}
+
+        <div style="-ms-transform:rotate({{ developer.angle }}deg);
+                -moz-transform:rotate({{ developer.angle }}deg);
+                -webkit-transform:rotate({{ developer.angle }}deg);
+                -o-transform:rotate({{ developer.angle }}deg);
+                background-color:{{ col }};
+                position:absolute;
+                top:{{ developer.y2|add:70 }}px;
+                left:{{ developer.x2 }}px;
+                width:{{ side }}px;
+                height:2px;
+                z-index:1;">
+        </div>
+
+    {% endfor %}
+    <div class="who-are-we-circle-div-center" style="z-index:3;left:{{ x }}px;top:{{ y }}px;width:{{ main_side }}px;height:{{ main_side }}px;border-radius:{{ main_side_half }}px">
+        <div style="display:none; text-align:center; margin-top:70px;">
+            <h5 class="text-blue"></h5>
+            <h6></h6>
+        </div>
+        <h3 class="capitalize-text" style="position:relative;color:white;text-align:center;top:70px">The Team</h3>
+    </div>
+    &nbsp;
+</div>
+
+<div class="mission">
+    <h2 class="capitalize-text bold small-margin">our mission</h2>
+    <p class="huge">
+        LoveGov’s mission is to develop tools that facilitate democracy. We are committed to non-partisanship,
+        government transparency and the right to individual privacy.
+    </p>
+    <p class="huge">
+        We believe that active and informed citizens make a better democracy. Political information should be easy to
+        access, understand, and act upon. Current politics removes people from the discourse because it’s too
+        frustrating, complicated and time consuming. By simplifying the process of staying knowledgeable and being
+        involved, we hope everyone can participate in politics and actually make a difference.
+    </p>
+    <br>
+    <h3>Non-Partisanship</h3>
+    <p class="huge">
+        LoveGov is a platform where all parties are given equal access to tools and information.
+        Non-Partisanship means we strive to ensure that none of our mechanisms or questions favor one perspective over another.
+        We're building a forum where differing worldviews can argue on equal footing in the public spotlight, for the benefit of everyone.
+    </p>
+    <h3>Government Transparency</h3>
+    <p class="huge">
+        Voters need to know if their representatives’ actions are consistent with their claims, what impact legislation
+        has on their lives, and how the political process actually works—otherwise they cannot be effective voters and
+        hold their representatives accountable for their actions.
+    </p>
+    <h3>Right to Individual Privacy</h3>
+    <p class="huge">
+        Democracies are founded on the principle that citizens privately cast their ballots. People need to have the
+        option of expressing their views without fear of consequences from their community or government, otherwise
+        minority viewpoints will not be expressed. This is why we have a strong privacy policy. We will NEVER sell or
+        share your personal information. On LoveGov, citizens are able to express themselves while controlling their
+        information.
+    </p>
+    <p class="huge">
+        Our privacy settings are simple. In public mode, everyone can see your activity. In private mode, nobody can
+        see your activity—you are anonymous. That’s it. We don’t have custom privacy settings because they are too
+        convoluted, and ultimately don’t completely protect your private information. If you are doing something on
+        LoveGov that you don’t want anyone to know about, then do it in private mode.
+    </p>
+    <h2>Please see our <a href="/blog/">blog</a> for further discussions of our mission and policies and to learn about what features will come next!</h2>
+
+
+</div>

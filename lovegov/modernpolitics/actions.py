@@ -260,10 +260,9 @@ def loadHistogram(request, vals={}):
 # Creates a piece of content and stores it in database.
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def create(request, val={}):
-    """Creates a piece of content and stores it in database."""
+def create(request, vals={}):
     formtype = request.POST['type']
-    viewer = val['viewer']
+    viewer = vals['viewer']
     if formtype == 'P':
         form = CreatePetitionForm(request.POST)
     elif formtype == 'N':
@@ -283,7 +282,7 @@ def create(request, val={}):
                 viewer.num_articles += 1
                 viewer.save()
                 from lovegov.frontend.views import newsDetail
-                return newsDetail(request=request,n_id=c.id,vals=val)
+                return newsDetail(request=request,n_id=c.id,vals=vals)
             return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
         else:
             if formtype == "G":
@@ -1812,7 +1811,7 @@ def shareContent(request, vals={}):
         else:
             if group_ids:
                 groups = user.getGroups()
-                share_groups = user.getGroups().filter(id__in=group_ids)
+                share_groups = groups.filter(id__in=group_ids)
             else:
                 share_groups = []
 

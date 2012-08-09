@@ -159,7 +159,6 @@ class LocationLevel(models.Model):
             return 'None'
 
 
-
 #=======================================================================================================================
 # Topic
 #
@@ -228,7 +227,6 @@ class OfficeTag(LGModel):
 # Content
 #
 #=======================================================================================================================
-
 class Content(Privacy, LocationLevel):
     # unique identifier
     alias = models.CharField(max_length=1000, default="default")

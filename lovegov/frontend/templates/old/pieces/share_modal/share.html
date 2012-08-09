@@ -1,0 +1,74 @@
+<div class="share-modal-container">
+
+    <div class="modal-close share_modal_close" ></div>
+
+    <div class="share_content">
+
+        <div class="share-modal-header"> Share this with your followers </div>
+
+        <form>
+
+            <div class="share-select-container">
+                <select multiple class="share_select">
+                <option value='all_followers'>All my followers</option>
+            <!--
+                <option value='all_groups'>All my groups</option>
+                <option value='all_networks'>All my networks</option>
+                -->
+                <optgroup label="Followers">
+                    {% for follower in my_followers %}
+                    <option value='follower_{{follower.id}}'>{{follower.get_name}}</option>
+                    {% endfor %}
+                </optgroup>
+                <!--
+                <optgroup label="Groups">
+                    {% for follower in my_groups %}
+                    <option value='group_{{follower.id}}'>{{follower.get_name}}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="Networks">
+                    {% for follower in my_networks %}
+                    <option value='network_{{follower.id}}'>{{follower.get_name}}</option>
+                    {% endfor %}
+                </optgroup>
+                -->
+                </select>
+            </div>
+
+            <div class="share-submit-container">
+                <a href='' id='share_submit_content' class="share-button-modal">Submit</a>
+            </div>
+
+        </form>
+
+        <div class="share-submit-message" id="share_submit_message" ></div>
+
+    </div>
+
+</div>
+
+<script>
+$('select.share_select').select2({
+    placeholder: "Enter a follower,"
+});
+
+// Prevents click being fired twice.
+// This is necessary because share.html gets appended to body
+$('#share_submit_content').unbind();
+$('#share_submit_content').click(function(e) {
+	e.preventDefault();
+    var share_this = $("#share_id").data('share_id');
+	var share_with = $('.share_select').select2("val");
+	if (share_with!='') {
+		ajaxPost({
+			data: {'action': 'shareContent', 'share_with': JSON.stringify(share_with), 'share_this':share_this},
+			success: function(data)
+            {
+                $('#share_submit_message').html('Thanks for sharing!');
+                $('#share_submit_message').fadeIn(200);
+                window.setTimeout("$('div.overdiv').fadeOut(600); $('div.shareModal').fadeOut(600);",1000);
+            }
+		});
+	}
+});
+</script>

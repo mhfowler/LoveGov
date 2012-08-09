@@ -1,0 +1,17 @@
+<div class="match-title">
+    <h3>{{ match_title }}</h3>
+</div>
+
+<div class="match-content">
+    {% if prof1 %}
+        {% include 'site/pages/match/match-new-box.html' with item=prof1 %}
+    {% endif %}
+
+    {% if prof2 %}
+        {% include 'site/pages/match/match-new-box.html' with item=prof2 %}
+    {% endif %}
+
+    {% if prof3 %}
+        {% include 'site/pages/match/match-new-box.html' with item=prof3 %}
+    {% endif %}
+</div>

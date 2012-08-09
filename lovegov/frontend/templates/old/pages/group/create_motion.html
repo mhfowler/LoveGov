@@ -1,0 +1,75 @@
+<div class="motion_modal motion-modal modal-box">
+
+    <div class="row first-row">
+        <div class="create-motion-icon"></div>
+        <h3 class="create-motion-title"> Create a Motion </h3>
+        <div class="modal-close general_modal_close"></div>
+    </div>
+
+    <div class="row motion-row motion-to">
+        <div class="onecol"></div>
+        <div class="threecol motion-title"> motion to </div>
+        <div class="threecol">
+
+            <select class='motion_action_select action-select'>
+                <option value="add_moderator"> Add Moderator </option>
+                <option value="remove_moderator"> Remove Moderator </option>
+                <option value="coup_detat"> Coup d'etat </option>
+            </select>
+
+        </div>
+        <div class="modifier threecol">
+            <div class="add_moderator_modifier motion_action_modifier">
+                <select class="add_moderator_select modifier-select">
+                    <optgroup label="Members">
+                        {% for member in normal_members %}
+                            <option class="normal_member" value='{{ member.id }}'>{{ member.get_name }}</option>
+                        {% empty %}
+                            no moderators
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="remove_moderator_modifier motion_action_modifier" style="display:none">
+                <select class="remove_moderator_select modifier-select">
+                    <optgroup label="Moderators">
+                        {% for member in group_admins %}
+                            <option class="moderator_member" value='{{ member.id }}'>{{ member.get_name }}</option>
+                        {% empty %}
+                            no non-moderators
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="coup_detat_modifier motion_action_modifier" style="display:none">
+                This will create a motion to give the moderators full control of this group and remove motion functionality
+                in the future.
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row motion-row full-text-wrapper">
+        <div class="onecol"></div>
+        <div class="threecol motion-title"> because  </div>
+        <textarea class="because because_textarea"></textarea>
+    </div>
+
+    <div class="row motion-info">
+        <div class="onecol"></div>
+        <div class="threecol motion-title"> to pass </div>
+        <div class="fivecol motion-info">
+            <p class="info-item first-item"> needs {{ group.participation_threshold }}% of group to upvote </p>
+            <p class="info-item"> needs {{ group.agreement_threshold }}% of votes to be upvotes </p>
+            <p class="info-item"> passes or expires {{ group.getMotionExpiration }}</p>
+        </div>
+        <div class="twocol">
+            <a href="#" class="create_motion_button create-motion-button red-button" data-g_id="{{ group.id }}"> create </a>
+        </div>
+    </div>
+
+</div>
+
+

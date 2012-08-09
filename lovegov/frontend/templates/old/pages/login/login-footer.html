@@ -1,0 +1,40 @@
+<div id="bottom">
+    <div style="float:left;">
+        <span id="mailingList">Join our mailing list:</span>
+        <form id='emailForm' action="" method='post'>
+            <input id="emailInput" name="email" type="text" value=""/>
+            <input id="emailSubmit" type="submit" value="Submit" name="submitemail"/>
+        </form>
+        <div style="clear:both;padding-top:10px;">
+            <a href="http://www.facebook.com/pages/Lovegov/368496463180373" target="_blank"><img src="{{ STATIC_URL }}/images/facebook.png" ></a>
+            <a href="http://twitter.com/welovegov" target="_blank"><img src="{{ STATIC_URL }}/images/twitter.png"/></a>
+            <a class="big_link" href="/blog/" style="position:relative;bottom:10px;margin-left:5px">Blog</a>
+            <span id="emailMessage">{{ emailMessage }}</span>
+        </div>
+    </div>
+
+    <div style="float:right">
+        <h4 class="text-blue" style="margin-bottom:10px">development team</h4>
+        <div>
+            <div class="team_left">
+                <div class="developer_names">Joschka Tryba</div>
+                <div class="developer_title">Founder, CEO</div>
+                <a class="light" href="mailto:joschka@lovegov.com">joschka@lovegov.com</a>
+            </div>
+            <div class="team_center">
+                <div class="developer_names">Maximus Fowler</div>
+                <div class="developer_title">Founder, Developer</div>
+                <a href="mailto:max@lovegov.com">max@lovegov.com</a>
+            </div>
+            <div class="team_right">
+                <div class="developer_names">Catherine Schmidt</div>
+                <div class="developer_title">Lead Designer</div>
+                <a href="mailto:cat@lovegov.com">cat@lovegov.com</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vertical Break -->
+    <div class="vertical-separator" style="float:right;margin-right:30px;"></div>
+
+</div>

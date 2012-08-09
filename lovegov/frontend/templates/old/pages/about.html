@@ -1,0 +1,64 @@
+<div class="main-div data_start" data-start="{{ start_page }}">
+
+    <div class="nav-top-div">
+        <div class="top-nav-left">
+            <div id="howitworks-button" class="div-button"><span>How it works</span></div>
+            <div id="whoarewe-button" class="div-button"><span>Team & Mission</span></div>
+            <div id="faq-button" class="div-button"><span>FAQ</span></div>
+            <div id="privacy-button" class="div-button"><span>Privacy</span></div>
+            <div id="contact-button" class="div-button"><span>Contact</span></div>
+            <div id="jobs-button" class="div-button"><span>Jobs</span></div>
+            <div id="video-button" class="div-button"><span>Video</span></div>
+            <div id="terms-button" class="div-button"><span>Terms Of Use</span></div>
+        </div>
+        <div id="about-content">
+
+            <div id="privacy-div" class="_fade">
+                {% include 'site/pages/microcopy/privacy.html' %}
+            </div>
+
+            <div id="whoarewe-div" class="_fade">
+                {% include 'site/pages/about/who-are-we.html' %}
+            </div>
+
+            <div id="howitworks-div" class="_fade">
+                {% include 'site/pages/about/how-it-works.html' %}
+            </div>
+
+            <div id="faq-div" class="_fade">
+                {% include 'site/pages/about/faq.html' %}
+            </div>
+
+            <div id="jobs-div" class="_fade">
+                {% include 'site/pages/about/jobs.html' %}
+            </div>
+
+            <div id="contact-div" class="_fade">
+                {% include 'site/pages/about/contact.html' %}
+            </div>
+
+            <div id="video-div" class="_fade" style="text-align:center">
+                {% include 'site/pages/about/video.html' %}
+            </div>
+
+            <div id="terms-div" class="_fade">
+                {% include 'site/pages/about/terms.html' %}
+            </div>
+
+        </div>
+    </div>
+
+    <div class="nav-top-div-border"></div>
+
+
+
+</div>
+
+<script type="text/javascript">
+
+    rebind = 'about';
+
+    var about_center_x = {{ x|add:side_half }};
+    var about_center_y = {{ y|add:side_half }};
+
+</script>

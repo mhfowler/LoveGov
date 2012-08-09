@@ -1,0 +1,60 @@
+<div class="sidebar-box clearfix">
+	
+    <div id="topic-questions" class="panel">
+
+        <div class="topics-header">
+            <span class="content_header">Answer Questions </span>
+        </div>
+
+        <div class="topic-icons-wrapper q-topics-wrapper">
+            {% for t in main_topics %}
+                {% load thumbnail %}
+                <div class="topic-icon-wrapper q-topic-wrapper topic-filter">
+                    {% thumbnail t.image "25x25" format="PNG" as im %}
+                        <img class="topic-img normal q-topic-img" src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                    {% thumbnail t.selected "25x25" format="PNG" as im %}
+                        <img class="topic-img selected q-topic-img tooltip-top" src="{{ im.url }}" title='{{t.topic_text}}'/>
+                    {% endthumbnail %}
+                    <input type="hidden" class="t-alias" value="{{t.alias}}">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div id="random-questions" class="panel">
+
+        <!-- by topic -->
+        {% for x in questions_dict.topics %}
+            {% with t=x.0 questions=x.1 %}
+            <div id="topic-{{t.alias}}" class="topic-div">
+                <div class="topic-questions-header">
+                    <h3  class="panel-title lower-title"> {{ t.topic_text }} </h3>
+                </div>
+                {% for q in questions %}
+                    <div class="question">
+                        <a class="q-title do-ajax-link" href="{{ q.get_url }}">{{ q.get_name }}</a>
+                        <input class="q-id" type="hidden" name="q-id" value="{{ q.id }}"/>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+            {% endwith %}
+        {% endfor %}
+
+        <!-- random questions from all topics -->
+        <div id="topic-all" class="topic-div">
+            <h3  id="random-title" class="panel-title lower-title"> All </h3>
+            {% for q in questions_dict.all %}
+                <div  class="question">
+                    <a class="q-title" href="{{ q.get_url }}">{{ q.get_name }}</a>
+                    <input class="q-id" type="hidden" name="q-id" value="{{ q.id }}"/>
+                </div>
+                <br>
+            {% empty %}
+                Congratulations, you have answered every question!
+            {% endfor %}
+        </div>
+    </div>
+</div>

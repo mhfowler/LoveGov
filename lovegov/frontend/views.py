@@ -1,4 +1,3 @@
-
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -13,7 +12,6 @@ from django.http import HttpResponse, HttpRequest
 # lovegov
 from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
@@ -132,18 +130,9 @@ def viewWrapper(view, requires_login=False):
 
     return new_view
 
-
 #-----------------------------------------------------------------------------------------------------------------------
-# Splash page and learn more.
+# basic pages
 #-----------------------------------------------------------------------------------------------------------------------
-def aliasDowncast(request, alias=None, vals={}):
-    if UserProfile.lg.get_or_none(alias=alias):
-        return viewWrapper(profile, requires_login=True)(request, alias)
-    matched_group = Group.lg.get_or_none(alias=alias)
-    if matched_group:
-        return viewWrapper(group, requires_login=True)(request, matched_group.id)
-    return redirect(request)
-
 def redirect(request):
     return shortcuts.redirect('/home/')
 
@@ -158,35 +147,9 @@ def continueAtOwnRisk(request):
     response.set_cookie('atyourownrisk', 'yes')
     return response
 
-def splashForm(request,templateURL):
-    vals = {}
-    if request.method=='POST':
-        emailform = EmailListForm(request.POST)
-        if emailform.is_valid():
-            emailform.save()
-            return render_to_response(templateURL, vals, RequestContext(request))
-        else:
-            return render_to_response(templateURL, vals, RequestContext(request))
-    else:
-        emailform = EmailListForm()
-        vals['emailform'] = emailform
-        return render_to_response(templateURL, vals, RequestContext(request))
-
-def postEmail(request):
-    if request.method=='POST' and request.POST['email']:
-        email = request.POST['email']
-        emails = EmailList.objects.filter(email=email)
-        if not emails:
-            newEmail = EmailList(email=email)
-            newEmail.save()
-        if request.is_ajax():
-            return HttpResponse('+')
-        else:
-            vals = {'emailMessage':"Thanks! We'll keep you updated!"}
-            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-    else:
-        return shortcuts.redirect('/comingsoon/')
-
+#-----------------------------------------------------------------------------------------------------------------------
+# da blog
+#-----------------------------------------------------------------------------------------------------------------------
 def blog(request,category=None,number=None,vals=None):
     if request.method == 'GET':
 
@@ -221,19 +184,20 @@ def blog(request,category=None,number=None,vals=None):
         return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Alpha login page.
+# points alias urls to correct pages
+#-----------------------------------------------------------------------------------------------------------------------
+def aliasDowncast(request, alias=None, vals={}):
+    if UserProfile.lg.get_or_none(alias=alias):
+        return viewWrapper(profile, requires_login=True)(request, alias)
+    matched_group = Group.lg.get_or_none(alias=alias)
+    if matched_group:
+        return viewWrapper(group, requires_login=True)(request, matched_group.id)
+    return redirect(request)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# login page
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
-    """
-    Handles logging a user into LoveGov
-
-    @param request:
-    @type request: HttpRequest
-    @param to_page:
-    @param vals:
-    @type vals: dictionary
-    @return:
-    """
     if not vals.get('firstLoginStage'):
         to_page = "match/representatives/"
 
@@ -266,8 +230,7 @@ def loginAuthenticate(request,user,to_page=''):
 
 def loginPOST(request, to_page='web',message="",vals={}):
     vals['registerform'] = RegisterForm()
-
-    # LOGIN via POST
+    # LOGIN
     if request.POST['button'] == 'login':
         # Authenticate user
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
@@ -286,7 +249,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
         return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
-    # REGISTER via POST
+    # REGISTER
     elif request.POST['button'] == 'register':
         # Make the register form
         registerform = RegisterForm(request.POST)
@@ -301,7 +264,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
 
-    # RECOVER via POST
+    # RECOVER
     elif request.POST['button'] == 'recover':
         user = ControllingUser.lg.get_or_none(username=request.POST['username'])
         if user: resetPassword(user)

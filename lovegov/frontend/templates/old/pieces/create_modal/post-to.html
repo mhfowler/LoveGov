@@ -1,0 +1,19 @@
+<tr class="post-to-wrapper">
+
+    <td class="post-to">
+        <div class="sub-title">Post to Group:</div>
+        <div class="create-error post_to_error"></div>
+    </td>
+    <td class="post-to-group  menu_toggle menu-toggle">
+        <div class="post-to-choices">
+            {% for g in all_my_groups %}
+                <div class="group-box share_group_box tooltip-top" data-g_id="{{ g.id }}" title="{{ g.title }}">
+                    {% include 'site/pieces/snippets/avatar.html' with height="50" width="50" user=g hoveroff=1 %}
+                </div>
+            {% empty %}
+                You are not a member of any groups.
+            {% endfor %}
+            <div style="clear:both"></div>
+        </div>
+    </td>
+</tr>

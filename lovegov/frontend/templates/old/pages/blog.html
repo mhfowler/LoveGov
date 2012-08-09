@@ -1,0 +1,209 @@
+{% extends 'site/frame/no-login-frame.html' %}
+
+{% block title %}
+    blog
+{% endblock %}
+
+{% block content %}
+
+    <div id="blog_left">
+        <h4 class="capitalize_text" style="margin-bottom:25px"><a class="clear_link_red" href="/blog/">Blog</a></h4>
+        <div id="recent_blog_posts" class="blog_left_div">
+            <a href="/about/"> <h5 class="text-blue" style="margin-bottom:10px;">About Us</h5> </a>
+            <h5 class="text-blue">Recent Blog Posts</h5>
+            <ul class="list_none">
+                {% for blogPost in blogPosts|slice:":5" %}
+                <li>
+                    <a href="{{ blogPost.getURL }}">{{ blogPost.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="blog_categories" class="blog_left_div">
+            <h5 class="text-blue">Categories</h5>
+            <ul class="list_none">
+                {% for category in categories %}
+                    <li>
+                        <a class="category_blog" href="/blog/{{ category|lower }}">{{ category }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="blog_left_div">
+            <h5 class="text-blue">Developers</h5>
+            <ul class="list_none">
+                {% for developer in developers %}
+                    <li>
+                        <a class="developer_blog" href="/blog/{{ developer.alias }}">{{ developer.get_name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div id="blog_right">
+    {% if viewer.isDeveloper and ownBlog %}
+        <div id="blog-submit">
+            <h3 id="postnew">Post New Blog Entry</h3>
+            <form id="blogform" action="" method='post'>
+                <table>
+                    <tr>
+                        <td>Title:</td>
+                        <td><input class="blog_text_input" name="title" type="text"/></td>
+                    </tr>
+                    <tr>
+                        <td>Text:</td>
+                        <td><textarea class="blog_textarea_input" name="text"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input class="button-red" type="submit" value="Submit" name="submitblog" style="float:right;"/>
+                            <div style="float:left;">
+                                <span id="blog_submit_error" class="blog_span"></span>
+                                <input class="blog_checkbox" type="checkbox" name="news"/>
+                                <span class="blog_span">News</span>
+                                <input class="blog_checkbox" type="checkbox" name="general"/>
+                                <span class="blog_span">General</span>
+                                <input class="blog_checkbox" type="checkbox" name="update"/>
+                                <span class="blog_span">Update</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endif %}
+        <div id="blog-entries">
+            {% if blogPost %}
+                {% include 'site/pages/blog/blog-item.html' %}
+            {% else %}
+                {% for blogPost in blogPosts %}
+                    {% include 'site/pages/blog/blog-item.html' %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not viewer %}
+        {% include 'site/pages/login/login-footer.html' %}
+    {% endif %}
+
+    <script type="text/javascript">
+
+    /*
+        $('.category_blog').click(function(event)
+        {
+            event.preventDefault();
+            var category = $(this).attr('href').replace('/blog/','');
+            $.ajax
+            ({
+                url:'/action/',
+                type:'POST',
+                data:{'action':'getBlogPosts','category':category},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    $('#blog-entries').html(returned.html);
+                },
+                failure: function(a,b,c)
+                {
+
+                }
+            })
+        });
+
+        $('.developer_blog').click(function(event)
+        {
+            event.preventDefault();
+            var url = $(this).attr('href');
+            $.ajax
+            ({
+                url:'/action/',
+                type:'POST',
+                data:{'action':'getBlogPosts','url':url},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    $('#blog-entries').html(returned.html);
+                },
+                failure: function(a,b,c)
+                {
+
+                }
+            })
+        });
+        */
+        {% if blogPosts and viewer == blogPosts.0.creator or viewer == blogPost.creator %}
+            $('.delete_blog_post').click(function(event)
+            {
+                event.preventDefault();
+                var thisEntry = $(this);
+                var href = thisEntry.attr('href');
+                $.ajax
+                ({
+                    url:'/action/',
+                    type:'POST',
+                    data:{'action':'blogAction','url':href},
+                    success: function(data)
+                    {
+                        thisEntry.closest('.blog_item').remove();
+                        alert("Success");
+                    },
+                    failure: function(a,b,c)
+                    {
+
+                    }
+                })
+
+            });
+        {% endif %}
+
+
+
+        $('#postnew').click(function()
+        {
+            $('#blogform').toggle();
+        });
+
+        $('#blogform').submit(function(event)
+        {
+            event.preventDefault();
+            var dataArray = $(this).serializeArray();
+            var json = {};
+            for (var i =0; i<dataArray.length; i++)
+            {
+                json[dataArray[i].name] = dataArray[i].value
+            }
+            var data = {'action':'blogAction'};
+            $.extend(data,json);
+            $.ajax
+            ({
+                url:'/action/',
+                type:'POST',
+                data:data,
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    if (returned.error)
+                    {
+                        $('#blog_submit_error').text(returned.error);
+                    }
+                    else
+                    {
+                        $('#blog-entries').prepend(returned.html);
+                    }
+                },
+                failure: function(a,b,c)
+                {
+                    alert("Failed to submit!  Talk to Clay/Max");
+                }
+            })
+        });
+
+    </script>
+
+
+{% endblock %}

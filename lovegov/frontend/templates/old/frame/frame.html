@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<!-- html header -->
+{% include 'site/frame/html-header.html' %}
+
+<body>
+<!-- Header -->
+{% include 'site/frame/header.html' %}
+<!-- End Header -->
+
+<!-- Left Side Bar -->
+{# % include 'frame/left-sidebar/left-sidebar.html' % #}
+<!-- End Left Side Bar -->
+
+<div class="wrapper">
+
+<!-- Content -->
+{% block content %}
+    {{ center }}
+{% endblock %}
+<!-- End Content -->
+
+</div>
+
+<!-- Comparison Hover -->
+{# % include "site/pieces/snippets/comparison_hover.html" % #}
+<!-- End Comparison Hover -->
+
+
+<!-- Reusable page elements 
+<div id="agg_notification_modal" class="agg-notifications-modal"></div>
+<div id="share_id" data-share_id=""></div>
+<div class="overdiv"></div>
+<div class="share-modal shareModal">
+    {# % include 'site/pieces/share_modal/share.html' % #}
+</div>
+
+<div class="modal">
+    <div class="modal-close general_modal_close"></div>
+    <span id="general_modal_content"></span>
+</div>
+
+<div class="first-login-modal first-login">
+    <div class="modal-close"></div>
+    <a class="first-login-restart first_login_restart" href="#"> restart </a>
+    <div class="first-login-content"></div>
+</div>
+<!-- End of page reusable page elements -->
+
+{# % include 'site/frame/footer/footer.html' % #}
+
+</body>
+
+</html>
