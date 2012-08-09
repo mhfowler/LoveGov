@@ -1,0 +1,56 @@
+<div class="feed-main">
+
+    <div class="feed-top-bar">
+
+        <div class="feed-sort-buttons">
+
+            Sort by:
+            <div class="sort-button">New</div>
+            <div class="sort-button">Hot</div>
+            <div class="sort-button">Best</div>
+
+        </div>
+
+        <div class="feed-filter-buttons">
+
+            Filter by:
+            <div class="filter-button">News</div>
+            <div class="filter-button">Petitions</div>
+            <div class="filter-button">Polls</div>
+            <div class="filter-button">Discussion</div>
+            <div class="filter-button">None</div>
+
+        </div>
+
+        <div class="feed-type-buttons">
+
+            <div class="feed-type-button">
+
+            </div>
+
+            <div class="feed-type-button">
+
+            </div>
+
+        </div>
+
+        <a href="" class="create-button">
+            <!-- SORL THUMBNAIL IMAGE -->
+            Create
+        </a>
+
+    </div>
+
+    <div class="feed-content">
+
+        {% for item in feed_items %}
+
+            <div class="feed-item">
+                {% include "site/pages/feed/item.html" with item=item %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
