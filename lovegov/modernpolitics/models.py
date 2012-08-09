@@ -946,7 +946,6 @@ class FilterSetting(LGModel):
         else:
             return 0
 
-
 class SimpleFilter(LGModel):
     name = models.CharField(max_length=200, default="default")
     created_when = models.DateTimeField(auto_now_add=True, null=True)
@@ -980,7 +979,6 @@ class SimpleFilter(LGModel):
         }
         return to_return
 
-
 #=======================================================================================================================
 # To track promotional codes we advertise to users.
 #
@@ -1003,11 +1001,6 @@ class AnonID(LGModel):
 # Fields for userprofile
 #=======================================================================================================================
 class FacebookProfileModel(models.Model):
-    '''
-    Abstract class to add to your profile model.
-    NOTE: If you don't use this this abstract class, make sure you copy/paste
-    the fields in.
-    '''
     about_me = models.TextField(blank=True)
     facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access')
