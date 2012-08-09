@@ -287,10 +287,10 @@
 
 
 
-@function box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
-{
-  @return $horizontal-offset $vertical-offset $optional-blur $color;
-}
+//@function box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
+//{
+//  @return $horizontal-offset $vertical-offset $optional-blur $color;
+//}
 
 
 @mixin main-div

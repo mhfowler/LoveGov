@@ -1,51 +1,64 @@
-{% load customtags %}
 {% load thumbnail %}
+{% load customtags %}
+
 
 <div class="feed-item">
 
-    <div class="feed-item-bar">
+    <table class="feed-item-content">
+        <tr>
 
-    </div>
+            <td class="feed-item-left-buttons">
 
-    <div class="feed-item-content">
+                <div class="item-topic-image">
 
-        <div class="feed-item-left-buttons">
+                    {% with topic=item.getMainTopic %}
+                        {% thumbnail topic.image "40x40" format="PNG" as im %}
+                            <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
+                        {% endthumbnail %}
+                    {% endwith %}
 
-            <div class="item-topic-image">
+                </div>
 
-                {% with topic=item.getMainTopic %}
-                    {% thumbnail topic.image "40x40" format="PNG" as im %}
-                        <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
-                    {% endthumbnail %}
-                {% endwith %}
+                <div class="item-ranking">
 
-            </div>
+                    <div class="heart-plus"></div>
+                    <div class="heart-number">{{ item.status }}</div>
+                    <div class="heart-minus"></div>
 
-            <div class="item-ranking">
+                </div>
 
-            </div>
+            </td>
 
-        </div>
+            <td class="feed-item-image">
+                {% thumbnail item.getImageURL "200x118" crop="center" as im %}
+                    <img src="{{ im.url }}"/>
+                {% endthumbnail %}
+            </td>
 
-        <div class="feed-item-image">
+            {% block feed-item-content %}
+            <td class="feed-item-main">
 
-        </div>
+                <div class="feed-item-group-name">
+                    Save the whales
+                </div>
 
-        <div class="feed-item-main">
+                <div class="feed-item-title">
+                    <a href="{{item.link}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
+                </div>
 
-            {% thumbnail item.link_screenshot "250x500" format="PNG" as im %}
-                <img src="{{ im.url }}"/>
-            {% endthumbnail %}
+                <div class="feed-item-description">
+                    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it lo...
+                </div>
 
-            <a href="{{item.link}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
-            {{ item.link_summary|truncatechars:50|linebreaks }}
+    {#            {{ item.link_summary|truncatechars:50|linebreaks }}#}
+            </td>
+            {% endblock %}
 
-        </div>
+            <td class="feed-item-user-info">
 
-        <div class="feed-item-user-info">
+            </td>
 
-        </div>
-
-    </div>
+        </tr>
+    </table>
 
 </div>

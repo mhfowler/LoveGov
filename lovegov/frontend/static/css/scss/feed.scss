@@ -13,15 +13,14 @@ div.feed-main
   width: 100%;
   padding: 10px;
 
-  div.feed-top-bar
+  table.feed-top-bar
   {
     width: 100%;
     margin-bottom: 15px;
 
-    div.feed-left-buttons
+    td.feed-left-buttons
     {
-      float: left;
-      padding: 12px 0;
+      vertical-align: middle;
 
       div.feed-buttons-container
       {
@@ -42,6 +41,11 @@ div.feed-main
           border: solid $light-gray;
           border-width: 1px 0px 1px 1px;
           padding: $button-top-padding $button-side-padding;
+
+          &:hover
+          {
+            background-color: $light-gray;
+          }
         }
 
         div.last-button
@@ -53,96 +57,120 @@ div.feed-main
         {
           @extend .base-button;
         }
-
-        div.filter-button
-        {
-          @extend .base-button;
-          padding: 0;
-        }
-
-        div.filter-text
-        {
-          padding: $button-top-padding $button-side-padding 0 $button-side-padding;
-        }
-
-        div.filter-bottom-bar
-        {
-          background-color: $red-light;
-          width: 100%;
-          height: $button-top-padding;
-        }
-
       }
 
     }
 
-    div.create-button
+    table.create-button
     {
-      display: block;
       float: right;
-      @include inline-block();
-      font-size: 18px;
-      color: white;
-      background-color: $red;
-      text-align: center;
-      padding: 13px;
-      text-decoration: none;
     }
 
+    td.create-button
+    {
+      @include staticImage('images/icons/white_create.png');
+      background-repeat: no-repeat;
+      background-position: 12px 7px;
+      font-size: 22px;
+      color: white;
+      background-color: $red;
+      vertical-align: middle;
+      height: 60px;
+      padding: 0 18px 0 75px;
+      text-decoration: none;
+
+      &:hover
+      {
+        background-color: $red-light;
+      }
+    }
   }
 
   div.feed-content
   {
     width: 100%;
 
-    div.feed-item
+    table.feed-item-content
     {
+      border: 1px solid $light-gray;
       height: 120px;
       margin-bottom:10px;
+      width: 100%;
+      padding: 0px;
+      @include single-box-shadow($gray,0px,0px,5px);
 
-      div.feed-item-bar
+      td.feed-item-left-buttons
       {
+        border-right: 1px solid $light-gray;
+        width: 41px;
         height: 100%;
-        width: 0.75%;
-        float: left;
-        background-color: $red-light;
-      }
 
-      div.feed-item-content
-      {
-        border: 1px solid $light-gray;
-        height: 100%;
-        width: 99%;
-        float: right;
-
-        div.feed-item-left-buttons
+        div.item-topic-image
         {
-          border-right: 1px solid $light-gray;
-          width: 40px;
-          height: 100%;
-          display: block;
-          float: left;
+          border-bottom: 1px solid $light-gray;
+          width: 100%;
+          height: 40px;
+          display:block;
+        }
 
-          div.item-topic-image
+        div.item-ranking
+        {
+          text-align: center;
+
+          div.heart-plus
           {
-            border-bottom: 1px solid $light-gray;
-            width: 100%;
-            height: 40px;
-            display:block;
+            @include staticImage('images/icons/plusheart-gray.png');
+            background-repeat: no-repeat;
+            height: 18px;
+            width: 18px;
+            margin: 8px auto 4px auto;
+
+            &:hover
+            {
+              @include staticImage('images/icons/plusheart-red.png');
+            }
+          }
+
+          div.heart-minus
+          {
+            @include staticImage('images/icons/minusheart-gray.png');
+            background-repeat: no-repeat;
+            height: 18px;
+            width: 18px;
+            margin: 4px auto 0px auto;
+
+            &:hover
+            {
+              @include staticImage('images/icons/minusheart-red.png');
+            }
           }
         }
+      }
 
-        div.feed-item-user-info
+      td.feed-item-image
+      {
+        width: 200px;
+      }
+
+      td.feed-item-main
+      {
+        margin-left: 10px;
+
+        div.feed-item-description
         {
-          display: block;
-          float: right;
-          height: 100%;
-          width: 150px;
-
-
+          width: 100%;
         }
 
       }
+
+      td.feed-item-user-info
+      {
+        display: block;
+        float: right;
+        height: 100%;
+        width: 150px;
+      }
+
     }
   }
 }
