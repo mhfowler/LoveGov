@@ -1,0 +1,98 @@
+@charset "UTF-8";
+
+
+/* Default page width on large screens */
+$default-page-width: 1140px;
+
+/* static url */
+$STATIC_URL: '/static';
+
+
+@font-face
+{
+  font-family: "Gill Sans Std Light";
+  src: url(#{$STATIC_URL}/css/GillSansStd-Light.otf);
+}
+
+@font-face
+{
+  font-family: "Gill Sans Std";
+  src: url(#{$STATIC_URL}/css/GillSansStd.otf);
+}
+
+@font-face
+{
+	font-family: "Sonus Light";
+	src: url(#{$STATIC_URL}/css/SonusLig.otf);
+}
+
+/* Main Colors */
+$text-blue-light: #0094A3;
+$text-blue: #005468;
+$red: #EF503B;
+$red-light: #FC8A81;
+$black: #353535;
+$black-gray: #4C4C4C;
+$deep-gray: #959595;
+$dark-gray: #ADADAD;
+$gray: #CCCCCC;
+$light-gray: #E0E0E0;
+$white-gray: #F0F0F0;
+$white: #FFF;
+
+/* Topic Colors */
+$green: #92B76C;
+$green-light: #BED4A7;
+$purple: #9797C6;
+$purple-light: #C0C0C0;
+$yellow: #F9D180;
+$yellow-light: #FBE3B3;
+$blue: #93CAD8;
+$blue-light: #C4DCDE;
+$teal: #639E9B;
+$teal-light: #A1C5C3;
+$pink: #EA7D95;
+$pink-light: #FBCCD6;
+$orange: #EA947D;
+$orange-light: #F2BEB0;
+$color-name-list:'green','purple','orange','blue','teal','pink','yellow';
+$color-list:$green,$purple,$orange,$blue,$teal,$pink,$yellow;
+
+@function colorMap($color-name)
+{
+  @if $color-name == 'blue'
+  {
+    @return $blue;
+  }
+  @else if $color-name == 'teal'
+  {
+    @return $teal;
+  }
+  @else if $color-name == 'green'
+  {
+    @return $green;
+  }
+  @else if $color-name == 'purple'
+  {
+    @return $purple;
+  }
+  @else if $color-name == 'orange'
+  {
+    @return $orange;
+  }
+  @else if $color-name == 'pink'
+  {
+    @return $pink;
+  }
+  @else if $color-name == 'yellow'
+  {
+    @return $yellow;
+  }
+}
+
+/* Fonts */
+$body-fonts: Helvetica, Arial, Verdana, sans-serif;
+$gill-light: "Gill Sans Std Light";
+$gill-std: "Gill Sans Std";
+$title-font: "Sonus Light";
+
