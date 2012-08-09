@@ -18,11 +18,11 @@ div.feed-main
 
     div.feed-buttons-container
     {
-      @include inline-block();
+      float: left;
 
       .base-button
       {
-        float: left;
+        @include inline-block();
         border: solid $light-gray;
         border-width: 1px 0px 1px 1px;
         padding: $button-padding;
