@@ -4,7 +4,8 @@
 
 @import "compass";
 
-$button-padding: 0.5em;
+$button-top-padding: 5px;
+$button-side-padding: 12px;
 
 div.feed-main
 {
@@ -14,61 +15,134 @@ div.feed-main
   div.feed-top-bar
   {
     width: 100%;
-    padding: 1em;
+    margin-bottom: 15px;
 
-    div.feed-buttons-container
+    div.feed-left-buttons
     {
       float: left;
+      padding: 12px 0;
 
-      .base-button
+      div.feed-buttons-container
       {
-        @include inline-block();
-        border: solid $light-gray;
-        border-width: 1px 0px 1px 1px;
-        padding: $button-padding;
-      }
+        display: block;
+        float: left;
+        margin-right: 20px;
 
-      .last-button
-      {
-        border-width: 1px;
-      }
+        div.buttons-container-text
+        {
+          float: left;
+          padding: $button-top-padding+1;
+          color: $dark-gray;
+        }
 
-      div.sort-button
-      {
-        @extend .base-button;
-      }
+        div.base-button
+        {
+          float: left;
+          border: solid $light-gray;
+          border-width: 1px 0px 1px 1px;
+          padding: $button-top-padding $button-side-padding;
+        }
 
-      div.filter-button
-      {
-        @extend .base-button;
-        padding: 0;
-      }
+        div.last-button
+        {
+          border-right-width: 1px;
+        }
 
-      div.filter-text
-      {
-        padding: $button-padding $button-padding 0 $button-padding;
-      }
+        div.sort-button
+        {
+          @extend .base-button;
+        }
 
-      div.filter-bottom
-      {
-        background-color: $red-light;
-        width: 100%;
-        height: $button-padding;
-      }
+        div.filter-button
+        {
+          @extend .base-button;
+          padding: 0;
+        }
 
-      a.create-button
-      {
-        float: right;
-        @include inline-block();
-        font-size: 20px;
-        color: white;
-        background-color: $red;
-        text-align: center;
-        padding: 1em;
+        div.filter-text
+        {
+          padding: $button-top-padding $button-side-padding 0 $button-side-padding;
+        }
+
+        div.filter-bottom-bar
+        {
+          background-color: $red-light;
+          width: 100%;
+          height: $button-top-padding;
+        }
+
       }
 
     }
 
+    div.create-button
+    {
+      display: block;
+      float: right;
+      @include inline-block();
+      font-size: 18px;
+      color: white;
+      background-color: $red;
+      text-align: center;
+      padding: 13px;
+      text-decoration: none;
+    }
+
+  }
+
+  div.feed-content
+  {
+    width: 100%;
+
+    div.feed-item
+    {
+      height: 120px;
+      margin-bottom:10px;
+
+      div.feed-item-bar
+      {
+        height: 100%;
+        width: 0.75%;
+        float: left;
+        background-color: $red-light;
+      }
+
+      div.feed-item-content
+      {
+        border: 1px solid $light-gray;
+        height: 100%;
+        width: 99%;
+        float: right;
+
+        div.feed-item-left-buttons
+        {
+          border-right: 1px solid $light-gray;
+          width: 40px;
+          height: 100%;
+          display: block;
+          float: left;
+
+          div.item-topic-image
+          {
+            border-bottom: 1px solid $light-gray;
+            width: 100%;
+            height: 40px;
+            display:block;
+          }
+        }
+
+        div.feed-item-user-info
+        {
+          display: block;
+          float: right;
+          height: 100%;
+          width: 150px;
+
+
+        }
+
+      }
+    }
   }
 
 }

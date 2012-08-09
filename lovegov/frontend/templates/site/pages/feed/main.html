@@ -2,61 +2,72 @@
 
     <div class="feed-top-bar">
 
-        <div class="feed-buttons-container">
+        <div class="feed-left-buttons">
 
-            Sort by:
-            <div class="sort-button">New</div>
-            <div class="sort-button">Hot</div>
-            <div class="sort-button last-button">Best</div>
+            <div class="feed-buttons-container">
+
+                <div class='buttons-container-text'>Sort by:</div>
+                <div class="sort-button">New</div>
+                <div class="sort-button">Hot</div>
+                <div class="sort-button last-button">Best</div>
+
+            </div>
+
+            <div class="feed-buttons-container">
+
+                <div class='buttons-container-text'>Filter by:</div>
+
+                <div class="filter-button">
+                    <div class="filter-text">News</div>
+                    <div class="filter-bottom-bar"></div>
+                </div>
+
+                <div class="filter-button">
+                    <div class="filter-text">Petition</div>
+                    <div class="filter-bottom-bar"></div>
+                </div>
+
+                <div class="filter-button">
+                    <div class="filter-text">Polls</div>
+                    <div class="filter-bottom-bar"></div>
+                </div>
+
+                <div class="filter-button">
+                    <div class="filter-text">Discussion</div>
+                    <div class="filter-bottom-bar"></div>
+                </div>
+
+                <div class="filter-button last-button">
+                    <div class="filter-text">None</div>
+                    <div class="filter-bottom-bar"></div>
+                </div>
+
+            </div>
+
+            {% comment %}
+            <div class="feed-buttons-container">
+
+                <div class="feed-type-button">
+
+                </div>
+
+                <div class="feed-type-button">
+
+                </div>
+
+            </div>
+            {% endcomment %}
+
+            <div style="clear:both"></div>
 
         </div>
 
-        <div class="feed-buttons-container">
-
-            Filter by:
-
-            <div class="filter-button">
-                <div class="filter-text">News</div>
-                <div class="filter-bottom-bar"></div>
-            </div>
-
-            <div class="filter-button">
-                <div class="filter-text">Petition</div>
-                <div class="filter-bottom-bar"></div>
-            </div>
-
-            <div class="filter-button">
-                <div class="filter-text">Polls</div>
-                <div class="filter-bottom-bar"></div>
-            </div>
-
-            <div class="filter-button">
-                <div class="filter-text">Discussion</div>
-                <div class="filter-bottom-bar"></div>
-            </div>
-
-            <div class="filter-button last-button">
-                <div class="filter-text">None</div>
-            </div>
-
-        </div>
-
-        <div class="feed-buttons-container">
-
-            <div class="feed-type-button">
-
-            </div>
-
-            <div class="feed-type-button">
-
-            </div>
-
-        </div>
-
-        <a href="" class="create-button">
+        <div class="create-button">
             <!-- SORL THUMBNAIL IMAGE -->
-            Create
-        </a>
+            create
+        </div>
+
+        <div style="clear:both"></div>
 
     </div>
 
@@ -64,9 +75,7 @@
 
         {% for item in feed_items %}
 
-            <div class="feed-item">
-                {% include "site/pages/feed/item.html" with item=item %}
-            </div>
+            {% include "site/pages/feed/item.html" with item=item %}
 
         {% endfor %}
 

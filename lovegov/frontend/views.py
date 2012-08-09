@@ -450,6 +450,8 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def feed(request, g_alias=None, vals={}):
 
+    vals['feed_items'] = Content.objects.filter(type="N")
+
     html = ajaxRender('site/pages/feed/main.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
