@@ -171,5 +171,10 @@ ADMINS = base_settings.ADMINS
 MANAGERS = base_settings.MANAGERS
 
 from compressor_settings import *
+COMPRESS_ENABLED = False
 
-COMPRESS_ENABLED = True
+STATIC_URL = '/static'
+
+print "STATIC_URL: " + STATIC_URL
+
+

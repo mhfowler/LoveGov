@@ -305,3 +305,11 @@ OR sudo apt-get install rabbitmq-server
 pip install librabbitmq
 pip install pika==0.9.5
 pip install supervisor
+
+compass
+http://compass-style.org
+gem install compass
+
+pip install cssmin
+
+pip install django_compressor

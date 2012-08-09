@@ -4,11 +4,11 @@
 
 @import "compass";
 
-
 header
 {
   width: 100%;
-  border-bottom: 2px $gray solid;
+  padding: 3px 5px;
+  border-bottom: 1px $gray solid;
 
   div.header-logo
   {
@@ -16,7 +16,7 @@ header
     @include inline-block();
     background-size: 100%;
     background-repeat: no-repeat;
-    width: 156px;
+    width: 155px;
     height: 50px;
   }
 
