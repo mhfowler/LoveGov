@@ -1,0 +1,85 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+
+div.group-menu
+{
+  float: right;
+}
+
+div.group-main
+{
+
+  div.group-top
+  {
+    margin-bottom: 20px;
+
+    span.group-title
+    {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 16px;
+      margin-right: 10px;
+      @include inline-block();
+    }
+
+    span.group-scale
+    {
+      color: $dark-gray;
+      font-size: 12px;
+      @include inline-block();
+      margin-right: 10px;
+    }
+
+    span.group-num-members
+    {
+      font-size: 12px;
+      @include inline-block();
+    }
+  }
+
+  div.group-info
+  {
+    height: 100px;
+
+    div.group-image
+    {
+      float: left;
+      height: 90px;
+      width: 140px;
+      background-color: $gray; //Temporary
+      margin-right: 20px;
+    }
+
+    div.group-match
+    {
+      float: left;
+      height: 100px;
+      color: $red;
+
+      div.match-number
+      {
+        font-size: 64px;
+        font-weight: bold;
+        height: 64px;
+        line-height: 64px;
+        text-align: center;
+      }
+
+      div.match-title
+      {
+        width: 100%;
+        font-size: 20px;
+        line-height: 20px;
+        height: 20px;
+        text-align: center;
+      }
+
+    }
+
+  }
+
+}
