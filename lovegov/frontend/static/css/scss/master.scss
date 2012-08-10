@@ -185,7 +185,7 @@ p
 
 p.huge
 {
-  font-family: $gill-light;
+  @include titleFont;
   color: $black;
   font-size:24px;
   line-height:30px;
@@ -194,7 +194,7 @@ p.huge
 
 p.really-big
 {
-  font-family: $gill-light;
+  @include titleFont;
   color: $deep-gray;
   font-size:20px;
   line-height:28px;
@@ -203,7 +203,7 @@ p.really-big
 
 p.big
 {
-  font-family: $gill-light;
+  @include titleFont;
   color: $text-blue;
   font-size:18px;
   line-height:26px;
