@@ -6,30 +6,38 @@
 
     <div class="navbar-section">
         <a class="home_link section_title" href="#/groups/"> <div class="navbar_title navbar-title"> Groups </div> <span class="red_triangle red-triangle"></span> </a>
+        <div class="navbar_links_wrapper">
         {% for x in groups %}
             {% include 'site/pages/home/navbar_snippet.html' %}
         {% endfor %}
+        </div>
     </div>
 
     <div class="navbar-section">
         <a class="home_link section_title" href="#/elections/"> <div class="navbar_title navbar-title"> Elections </div> <span class="red_triangle red-triangle"></span>  </a>
+        <div class="navbar_links_wrapper">
         {% for x in groups %}
             {% include 'site/pages/home/navbar_snippet.html' %}
         {% endfor %}
+        </div>
     </div>
 
     <div class="navbar-section">
         <a class="home_link section_title" href="#/politicians/"> <div class="navbar_title navbar-title"> Politicians </div> <span class="red_triangle red-triangle"></span> </a>
+        <div class="navbar_links_wrapper">
         {% for x in groups %}
             {% include 'site/pages/home/navbar_snippet.html' %}
         {% endfor %}
+        </div>
     </div>
 
-    <div class="navbar-section section_title">
-        <a class="home_link" href="#/friends/"> <div class="navbar_title navbar-title"> Friends </div> <span class="red_triangle red-triangle"></span> </a>
+    <div class="navbar-section">
+        <a class="home_link section_title" href="#/friends/"> <div class="navbar_title navbar-title"> Friends </div> <span class="red_triangle red-triangle"></span> </a>
+        <div class="navbar_links_wrapper">
         {% for x in groups %}
             {% include 'site/pages/home/navbar_snippet.html' %}
         {% endfor %}
+        </div>
     </div>
 
 </div>
