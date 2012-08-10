@@ -34,8 +34,9 @@ td.home-main {
   }
 }
 
-
 div.left-navbar {
+
+  @include titleFont();
 
   div.navbar-section {
     margin-top:15px;
@@ -49,6 +50,7 @@ div.left-navbar {
   div.navbar-title {
     @include inline-block;
     @include grayText();
+    @include fontSize(24px);
   }
   span.red-triangle {
     @include inline-block;
@@ -56,13 +58,17 @@ div.left-navbar {
     height:18px;
     @include staticImage('/images/icons/arrow_right_red.png');
     @include transition(.25s);
+    margin-left:15px;
   }
   span.red-triangle-down {
     @include transform(rotate(90deg));
     @include transition(.25s);
   }
 
-  @include titleFont();
+  div.navbar_links_wrapper {
+    height:0px;
+    overflow:hidden;
+  }
 
 }
 
