@@ -45,6 +45,7 @@ div.left-navbar {
 
   div.navbar-title {
     @include inline-block;
+    @include grayText();
   }
   span.red-triangle {
     @include inline-block;

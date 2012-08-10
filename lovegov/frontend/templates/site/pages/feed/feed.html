@@ -1,0 +1,77 @@
+<div class="feed-main">
+
+    <table class="feed-top-bar">
+        <tr>
+
+            <td class="feed-left-buttons">
+
+                <div class="feed-buttons-container">
+
+                    <div class='buttons-container-text'>Sort by:</div>
+                    <div class="sort-button">New</div>
+                    <div class="sort-button">Hot</div>
+                    <div class="sort-button last-button">Best</div>
+
+                </div>
+
+                <div class="feed-buttons-container">
+
+                    <div class='buttons-container-text'>Filter by:</div>
+
+                    <div class="sort-button">News</div>
+                    <div class="sort-button">Petition</div>
+                    <div class="sort-button">Poll</div>
+                    <div class="sort-button">Discussion</div>
+
+                </div>
+
+                {% comment %}
+                <div class="feed-buttons-container">
+
+                    <div class="feed-type-button">
+
+                    </div>
+
+                    <div class="feed-type-button">
+
+                    </div>
+
+                </div>
+                {% endcomment %}
+
+                <div style="clear:both"></div>
+
+            </td>
+
+            <td>
+                <table class='create-button'>
+                    <tr>
+                        <td class="create-button">
+                            create
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+        </tr>
+    </table>
+
+    <div class="feed-content">
+
+        {% for item in feed_items %}
+
+            {% if item.type == "N" %}
+                {% include "site/pages/feed/news-item.html" with item=item %}
+            {% elif item.type == "P" %}
+                {% include "site/pages/feed/petition-item.html" with item=item %}
+            {% elif item.type == "S" %}
+                {% include "site/pages/feed/poll-item.html" with item=item %}
+            {% elif item.type == "D" %}
+                {% include "site/pages/feed/discussion-item.html" with item=item %}
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</div>
