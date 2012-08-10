@@ -1,0 +1,68 @@
+{% load thumbnail %}
+{% load customtags %}
+{% load humanize %}
+
+<div class="feed-item">
+
+    <div class="feed-item-content">
+
+        <!---- FLOATED RIGHT --->
+        <div class="feed-item-user-info">
+
+            <div class="feed-item-comments">
+                <div class="feed-num-comments">
+                    {{ item.num_comments }}
+                </div>
+            </div>
+
+            <div class="feed-user-name">
+
+                <div class="feed-avatar-image">
+                    {% include "site/pieces/avatar.html" with user=item.creator height='35' width='35' %}
+                </div>
+
+                <div class="feed-avatar-text">
+                    <div class="feed-avatar-name">
+                        {{ item.creator.get_name }}
+                    </div>
+                    <div class="feed-avatar-timestamp">
+                        {{ item.created_when|naturaltime }}
+                    </div>
+                </div>
+
+                <div style="clear:both"></div>
+
+            </div>
+
+        </div>
+
+        <div class="feed-item-left-buttons">
+
+            {% block content-image %}
+
+                <div class="item-content-image">
+
+                </div>
+
+            {% endblock %}
+
+            <div class="item-ranking">
+
+                <div class="heart-plus"></div>
+                <div class="heart-number">{{ item.status }}</div>
+                <div class="heart-minus"></div>
+
+            </div>
+
+        </div>
+
+        {% block feed-image %}
+
+        {% endblock %}
+
+        {% block feed-item-content %}
+
+        {% endblock %}
+    </div>
+
+</div>

@@ -2,7 +2,7 @@
 @import 'master-variables';
 @import 'master-mixins';
 
-@import "compass"; 
+@import "compass";
 
 
 $button-top-padding: 5px;
@@ -88,29 +88,35 @@ div.feed-main
 
   div.feed-content
   {
-    width: 100%;
 
-    table.feed-item-content
+    div.feed-item-content
     {
       border: 1px solid $light-gray;
       height: 120px;
       margin-bottom:10px;
-      width: 100%;
       padding: 0px;
-      @include single-box-shadow($gray,0px,0px,5px);
+      @include single-box-shadow($white-gray,0px,0px,10px);
+      overflow: hidden;
 
-      td.feed-item-left-buttons
+
+      div.feed-item-left-buttons
       {
         border-right: 1px solid $light-gray;
-        width: 41px;
-        height: 100%;
+        width: 40px;
+        float: left;
 
-        div.item-topic-image
+        div.item-content-image
         {
           border-bottom: 1px solid $light-gray;
-          width: 100%;
           height: 40px;
+          background-repeat: no-repeat;
+          background-position: 5px 5px;
           display:block;
+
+          &.news-image { @include staticImage('images/icons/content-type/news.png'); }
+          &.poll-image { @include staticImage('images/icons/content-type/poll.png'); }
+          &.petition-image { @include staticImage('images/icons/content-type/petition.png'); }
+          &.discussion-image { @include staticImage('images/icons/content-type/discussion.png'); }
         }
 
         div.item-ranking
@@ -119,7 +125,7 @@ div.feed-main
 
           div.heart-plus
           {
-            @include staticImage('images/icons/plusheart-gray.png');
+            @include staticImage('images/icons/hearts/plusheart-gray.png');
             background-repeat: no-repeat;
             height: 18px;
             width: 18px;
@@ -127,13 +133,13 @@ div.feed-main
 
             &:hover
             {
-              @include staticImage('images/icons/plusheart-red.png');
+              @include staticImage('images/icons/hearts/plusheart-red.png');
             }
           }
 
           div.heart-minus
           {
-            @include staticImage('images/icons/minusheart-gray.png');
+            @include staticImage('images/icons/hearts/minusheart-gray.png');
             background-repeat: no-repeat;
             height: 18px;
             width: 18px;
@@ -141,36 +147,93 @@ div.feed-main
 
             &:hover
             {
-              @include staticImage('images/icons/minusheart-red.png');
+              @include staticImage('images/icons/hearts/minusheart-red.png');
             }
           }
         }
       }
 
-      td.feed-item-image
+      div.feed-item-image
       {
-        width: 200px;
+        width: 180px;
+        float: left;
+        margin-right: 20px;
       }
 
-      td.feed-item-main
+      div.feed-item-main
       {
-        margin-left: 10px;
+        margin-top: 8px;
 
-        div.feed-item-description
+        div.feed-item-title
         {
-          width: 100%;
+          margin-bottom: 2px;
         }
 
+        div.feed-item-group-name
+        {
+          color: $red;
+          font-style: italic;
+        }
       }
 
-      td.feed-item-user-info
+      div.feed-item-user-info
       {
         display: block;
         float: right;
-        height: 100%;
-        width: 150px;
-      }
+        width: 160px;
+        height: 118px;
+        padding-top: 2px;
+        margin-right: 5px;
+        margin-left: 20px;
 
+        div.feed-item-comments
+        {
+          @include staticImage('images/icons/red_comment.png');
+          background-repeat: no-repeat;
+          background-size: 60px 50px;
+          background-position: 90px 10px;
+          padding-left: 95px;
+          padding-top: 20px;
+          height: 70px;
+
+          div.feed-num-comments
+          {
+            font-size: 20px;
+            color: white;
+            text-align: center;
+            width: 50px;
+          }
+        }
+
+        div.feed-user-name
+        {
+          height: 40px;
+
+          div.feed-avatar-image
+          {
+            float: left;
+            margin-right: 5px;
+          }
+
+          div.feed-avatar-text
+          {
+            float: left;
+
+            div.feed-avatar-name
+            {
+              margin-top: 2px;
+              font-size: 14px;
+            }
+
+            div.feed-avatar-timestamp
+            {
+              color: $dark-gray;
+              font-size: 10px;
+            }
+          }
+
+        }
+      }
     }
   }
 }

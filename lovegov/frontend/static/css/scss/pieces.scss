@@ -1,0 +1,27 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+
+// avatar-with-name
+div.avatar-with-name
+{
+  padding: 5px;
+
+  div.avatar-name
+  {
+    float: left;
+    margin-top: 5px;
+    text-size: 10px;
+  }
+
+  div.avatar-image
+  {
+    float: left;
+    margin-right: 5px;
+
+  }
+}
+
