@@ -159,7 +159,6 @@ class LocationLevel(models.Model):
             return 'None'
 
 
-
 #=======================================================================================================================
 # Topic
 #
@@ -228,7 +227,6 @@ class OfficeTag(LGModel):
 # Content
 #
 #=======================================================================================================================
-
 class Content(Privacy, LocationLevel):
     # unique identifier
     alias = models.CharField(max_length=1000, default="default")
@@ -948,7 +946,6 @@ class FilterSetting(LGModel):
         else:
             return 0
 
-
 class SimpleFilter(LGModel):
     name = models.CharField(max_length=200, default="default")
     created_when = models.DateTimeField(auto_now_add=True, null=True)
@@ -982,7 +979,6 @@ class SimpleFilter(LGModel):
         }
         return to_return
 
-
 #=======================================================================================================================
 # To track promotional codes we advertise to users.
 #
@@ -1005,11 +1001,6 @@ class AnonID(LGModel):
 # Fields for userprofile
 #=======================================================================================================================
 class FacebookProfileModel(models.Model):
-    '''
-    Abstract class to add to your profile model.
-    NOTE: If you don't use this this abstract class, make sure you copy/paste
-    the fields in.
-    '''
     about_me = models.TextField(blank=True)
     facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access')
@@ -1248,7 +1239,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
         self.alias = genAliasSlug(alias)
-        self.alias = alias
         self.save()
         return self.alias
 
@@ -2024,6 +2014,7 @@ class Notification(Privacy):
             notification_context['content'] = relationship.getTo()
 
         vals.update(notification_context)
+        vals['hover_off'] = True
 
         notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
         return notification_verbose
@@ -2325,7 +2316,7 @@ def parseDate(date):
 
 def truncateField(string,name,limit):
     if len( string ) > limit:
-        print "[WARNING]: " + name + " truncated, length = " + str(len(string))
+        print "+WW+ " + name + " truncated, length = " + str(len(string))
     return string[:limit]
 
 class CongressSession(LGModel):
@@ -3304,7 +3295,6 @@ class Group(Content):
         self.num_members -= 1
         self.save()
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
     #-------------------------------------------------------------------------------------------------------------------
@@ -3461,8 +3451,8 @@ class Group(Content):
     def makeAlias(self):
         from django.template.defaultfilters import slugify
         from lovegov.modernpolitics.helpers import genAliasSlug
-        alias = slugify(self.title)
-        self.alias = genAliasSlug(alias)
+
+        self.alias = genAliasSlug(str.lower(str(self.title.replace(" ","_"))))
         self.save()
         return self.alias
 
@@ -3982,6 +3972,7 @@ class UCRelationship(Relationship):
 #=======================================================================================================================
 class OfficeHeld(UCRelationship):
     office = models.ForeignKey('Office',related_name="office_terms")
+    confirmed = models.BooleanField(default=False)
     start_date = models.DateField()
     end_date = models.DateField()
     election = models.BooleanField(default=False)
@@ -3991,6 +3982,11 @@ class OfficeHeld(UCRelationship):
         self.content = self.office
         self.relationship_type = "OH"
         self.save()
+
+    def isCurrent(self):
+        if (datetime.date.today() - self.end_date).days >= 0:
+            return True
+        return False
 
 #=======================================================================================================================
 # Exact same as vote, except for debates.

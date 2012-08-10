@@ -36,6 +36,13 @@ def scriptCreateCongressAnswers(args=None):
     sheet = wb.sheet_by_index(3)
     metrics = {}
 
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "+DD+ = Duplicate"
+    print "======================"
+
     # For cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in xrange(1,sheet.ncols,4):
@@ -65,7 +72,7 @@ def scriptCreateCongressAnswers(args=None):
                 # Find the amendment!
                 amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
                 if not amendment:
-                    print "++WARNING++ Couldn't find amendment " + metricName
+                    print "+WW+ Couldn't find amendment " + metricName
             # Otherwise it's a bill
             else:
                 # Make the number non-existent
@@ -86,7 +93,7 @@ def scriptCreateCongressAnswers(args=None):
                 # Find the bill!
                 bill = Legislation.objects.filter(congress_session=session,bill_number=number,bill_type=chamber)
                 if not bill:
-                    print "++WARNING++ Couldn't find bill " + metricName
+                    print "+WW+ Couldn't find bill " + metricName
 
             # Get answer text and value from spreadsheet
             answer_text = sheet.cell(row,0).value
@@ -111,7 +118,7 @@ def scriptCreateCongressAnswers(args=None):
             votes = []
 
             if not congress_rolls:
-                print "++ERROR++ Could not find bill or amendment for == " + str(legislation) + " " + str(congress_num)
+                print "+EE+ Could not find bill or amendment for == " + str(legislation) + " " + str(congress_num)
                 continue
 
             # Collect Votes from Congress Rolls
@@ -127,22 +134,22 @@ def scriptCreateCongressAnswers(args=None):
 
                 # Check that answer text was found
                 if not answer_text:
-                    print "++WARNING++ Couldn't find answer text"
+                    print "+WW+ Couldn't find answer text"
                     continue
 
                 # Look for that answer in the database
                 answer = Answer.lg.get_or_none(answer_text=answer_text)
                 if not answer:
-                    print "++WARNING++ Couldn't find answer for :: " + answer_text
+                    print "+WW+ Couldn't find answer for :: " + answer_text
                     continue
 
                 # Look for that question in the database
                 questions = answer.question_set.all()
                 if not questions:
-                    print "++WARNING++ Couldn't find question for answer ID #" + str(answer.id)
+                    print "+WW+ Couldn't find question for answer ID #" + str(answer.id)
                     continue
                 if questions.count() > 1:
-                    print "++WARNING++ Multiple questions found for this answer"
+                    print "+WW+ Multiple questions found for this answer"
 
                 # If it's found, take the first item of the query set
                 question = questions[0]
@@ -162,7 +169,7 @@ def scriptCreateCongressAnswers(args=None):
                 # Otherwise, change the answer
                 else:
                     if len(responses) > 1:
-                        print "++DUPLICATE++ Potential duplicate response for user ID #" + str(voter.id) + " and question ID #" + str(question.id)
+                        print "+DD+ Potential duplicate response for user ID #" + str(voter.id) + " and question ID #" + str(question.id)
                     response = responses[0]
                     response.most_chosen_answer = answer
                     response.total_num = 1
@@ -177,7 +184,14 @@ def scriptCreateResponses(args=None):
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
 
-    # For all cells in the spreadsheet
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "+DD+ = Duplicate"
+    print "======================"
+
+# For all cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
             # Get politician Name
@@ -215,13 +229,13 @@ def scriptCreateResponses(args=None):
 
             # Check for answer text
             if not answer_text:
-                print "++WARNING++ No answer text"
+                print "+WW+ No answer text"
                 continue
 
             # Find answer
             answer = Answer.lg.get_or_none(answer_text=answer_text)
             if not answer:
-                print "++WARNING++ Answer not found for text :: " + answer_text
+                print "+WW+ Answer not found for text :: " + answer_text
                 continue
 
             questions = answer.question_set.all()
@@ -239,7 +253,7 @@ def scriptCreateResponses(args=None):
 
                 else:
                     if len(responses) > 1:
-                        print "++DUPLICATE++ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
+                        print "+DD+ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
                     response = responses[0]
                     response.most_chosen_answer = answer
                     response.explanation = ''

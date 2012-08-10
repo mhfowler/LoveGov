@@ -1,6 +1,17 @@
 @import 'master-variables';
 
 /* Mixins */
+@mixin valignable() 
+{
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+  }
+}
+
 @mixin rounded($radius: 20px)
 {
   border-radius: $radius;
@@ -33,6 +44,18 @@
   -khtml-border-top-left-radius: $radius;
 }
 
+@mixin rounded-right($radius: 20px)
+{
+  border-top-right-radius: $radius;
+  border-bottom-right-radius: $radius;
+  -moz-border-top-right-radius: $radius;
+  -moz-border-bottom-right-radius: $radius;
+  -webkit-border-top-right-radius: $radius;
+  -webkit-border-bottom-right-radius: $radius;
+  -khtml-border-top-right-radius: $radius;
+  -khtml-border-bottom-right-radius: $radius;
+}
+
 @mixin fontSize($fontSize: 20px)
 {
   font-size:$fontSize;
@@ -62,9 +85,6 @@
   border-right: $size solid transparent;
   border-top: $size*2 solid $color;
 }
-
-
-
 
 @mixin div-button($radius:10px,$width:150px,$height:50px,$font-size:18px,$color:white,$background-color:$white-gray)
 {
@@ -267,10 +287,10 @@
 
 
 
-@function box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
-{
-  @return $horizontal-offset $vertical-offset $optional-blur $color;
-}
+//@function box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
+//{
+//  @return $horizontal-offset $vertical-offset $optional-blur $color;
+//}
 
 
 @mixin main-div
@@ -350,7 +370,6 @@
   position:absolute;
 }
 
-
 @mixin huge
 {
   font-family: $title-font;
@@ -391,8 +410,14 @@
   margin-bottom:18px;
 }
 
+// deprecated
 @mixin vertically-centered($h) {
   position: relative;
+  top:50%;
+  margin-top:-$h*1/2;
+}
+
+@mixin verticalAlign($h) {
   top:50%;
   margin-top:-$h*1/2;
 }

@@ -1,4 +1,3 @@
-
 ########################################################################################################################
 ########################################################################################################################
 #
@@ -8,12 +7,7 @@
 ########################################################################################################################
 ########################################################################################################################
 
-from django.http import HttpResponse, HttpRequest
-
-# lovegov
-from lovegov.modernpolitics.backend import *
-from lovegov.base_settings import UPDATE
-
+from lovegov.frontend.views_helpers import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
@@ -42,6 +36,16 @@ def framedResponse(request, html, url, vals):
         frame(request, vals)
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
+def homeResponse(request, focus_html, url, vals):
+    if request.is_ajax() and request.method == 'POST':
+            to_return = {'focus_html':focus_html, 'url':url, 'title':vals['page_title']}
+            return HttpResponse(json.dumps(to_return))
+    else:
+        vals['focus_html'] = focus_html
+        homeSidebar(request, vals)
+        html = ajaxRender('site/pages/home/home.html', vals, request)
+        return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all views. Requires_login=True if requires login.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -49,23 +53,36 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {'STATIC_URL':settings.STATIC_URL}
-        try:
+        try: # Catch all error messages
+
+            # if ie<9 redirect to upgrade page
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
 
-            vals['fb_state'] = fbGetRedirect(request, vals)
+            # google analytics
             vals['google'] = GOOGLE_LOVEGOV
+
+            # Error otherwise?
+            vals['fb_state'] = fbGetRedirect(request, vals)
+
+            # static file serving and host
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
             if 's3' in settings.DEFAULT_FILE_STORAGE:
                 vals['MEDIA_PREFIX'] = settings.MEDIA_URL.replace('/media', '')
             else:
                 vals['MEDIA_PREFIX'] = host_full
+
+            # optimization for profile image
             vals['defaultProfileImage'] = host_full + DEFAULT_PROFILE_IMAGE_URL
+
+            # page info
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
 
             if requires_login:
+
+                    # who is logged in?
                     controlling_user = getControllingUser(request)
                     vals['controlling_user'] = controlling_user
 
@@ -76,17 +93,22 @@ def viewWrapper(view, requires_login=False):
                     else:
                         user = getAnonUser()
                         vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+
+                    # get user profile associated with controlling user
                     vals['user'] = user
                     vals['viewer'] = user
 
+                    # first login
                     first_login = user.first_login
                     vals['firstLoginStage'] = first_login
 
                     # if not authenticated user, and not lovegov_try cookie, redirect to login page
                     if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                        # If this action can't be performed without being authenticated
                         if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                            # Redirect to login page
                             return shortcuts.redirect("/login" + request.path)
-                        else:
+                        else: # otherwise action can be done without authentication
                             return view(request,vals=vals,*args,**kwargs)
 
                     # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
@@ -95,19 +117,20 @@ def viewWrapper(view, requires_login=False):
                             normal_logger.debug('blocked: ' + user.get_name())
                             return shortcuts.redirect('/underconstruction/')
 
+                    # if user not confirmed redirect to login page
                     if not user.confirmed:
                         return shortcuts.redirect("/need_email_confirmation/")
 
+            # vals for not logged in pages
+            else:
+                vals['fb_state'] = fbGetRedirect(request, vals)
+
+            # if everything worked, and there wasn't an error, return the view
             return view(request,vals=vals,*args,**kwargs)
 
+        # Any errors caught here
         except LGException as e:
             return errorMessage(request, message=e.getClientMessage(), vals=vals)
-
-        except ImproperlyConfigured:
-            response = shortcuts.redirect('/login' + request.path)
-            response.delete_cookie('sessionid')
-            errors_logger.error('deleted cookie')
-            return response
 
         finally:  # save page access, if there isn't specifically set value to log-ignore
             ignore = request.REQUEST.get('log-ignore')
@@ -116,26 +139,11 @@ def viewWrapper(view, requires_login=False):
 
     return new_view
 
-
 #-----------------------------------------------------------------------------------------------------------------------
-# Splash page and learn more.
+# basic pages
 #-----------------------------------------------------------------------------------------------------------------------
-def aliasDowncast(request, alias=None, vals={}):
-    if UserProfile.lg.get_or_none(alias=alias):
-        return viewWrapper(profile, requires_login=True)(request, alias)
-    matched_group = Group.lg.get_or_none(alias=alias)
-    if matched_group:
-        return viewWrapper(group, requires_login=True)(request, matched_group.id)
-    return redirect(request)
-
 def redirect(request):
     return shortcuts.redirect('/home/')
-
-def splash(request):
-    return splashForm(request, 'site/pages/splash/splash.html')
-
-def learnmore(request):
-    return splashForm(request, 'site/pages/splash/learnmore.html')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -148,35 +156,14 @@ def continueAtOwnRisk(request):
     response.set_cookie('atyourownrisk', 'yes')
     return response
 
-def splashForm(request,templateURL):
-    vals = {}
-    if request.method=='POST':
-        emailform = EmailListForm(request.POST)
-        if emailform.is_valid():
-            emailform.save()
-            return render_to_response(templateURL, vals, RequestContext(request))
-        else:
-            return render_to_response(templateURL, vals, RequestContext(request))
-    else:
-        emailform = EmailListForm()
-        vals['emailform'] = emailform
-        return render_to_response(templateURL, vals, RequestContext(request))
+def tryLoveGov(request, to_page="home/", vals={}):
+    response = shortcuts.redirect("/" + to_page)
+    response.set_cookie('lovegov_try', 1)
+    return response
 
-def postEmail(request):
-    if request.method=='POST' and request.POST['email']:
-        email = request.POST['email']
-        emails = EmailList.objects.filter(email=email)
-        if not emails:
-            newEmail = EmailList(email=email)
-            newEmail.save()
-        if request.is_ajax():
-            return HttpResponse('+')
-        else:
-            vals = {'emailMessage':"Thanks! We'll keep you updated!"}
-            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-    else:
-        return shortcuts.redirect('/comingsoon/')
-
+#-----------------------------------------------------------------------------------------------------------------------
+# da blog
+#-----------------------------------------------------------------------------------------------------------------------
 def blog(request,category=None,number=None,vals=None):
     if request.method == 'GET':
 
@@ -211,20 +198,21 @@ def blog(request,category=None,number=None,vals=None):
         return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Alpha login page.
+# points alias urls to correct pages
+#-----------------------------------------------------------------------------------------------------------------------
+def aliasDowncast(request, alias=None, vals={}):
+    if UserProfile.lg.get_or_none(alias=alias):
+        return viewWrapper(profile, requires_login=True)(request, alias)
+    matched_group = Group.lg.get_or_none(alias=alias)
+    if matched_group:
+        the_view = viewWrapper(groupFeed, requires_login=True)
+        return the_view(request=request, g_alias=matched_group.alias)
+    return redirect(request)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
-    """
-    Handles logging a user into LoveGov
-
-    @param request:
-    @type request: HttpRequest
-    @param to_page:
-    @param vals:
-    @type vals: dictionary
-    @return:
-    """
-
     if not vals.get('firstLoginStage'):
         to_page = "match/representatives/"
 
@@ -257,8 +245,7 @@ def loginAuthenticate(request,user,to_page=''):
 
 def loginPOST(request, to_page='web',message="",vals={}):
     vals['registerform'] = RegisterForm()
-
-    # LOGIN via POST
+    # LOGIN
     if request.POST['button'] == 'login':
         # Authenticate user
         user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
@@ -277,7 +264,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
         return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
-    # REGISTER via POST
+    # REGISTER
     elif request.POST['button'] == 'register':
         # Make the register form
         registerform = RegisterForm(request.POST)
@@ -292,7 +279,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
 
-    # RECOVER via POST
+    # RECOVER
     elif request.POST['button'] == 'recover':
         user = ControllingUser.lg.get_or_none(username=request.POST['username'])
         if user: resetPassword(user)
@@ -360,58 +347,6 @@ def needConfirmation(request, vals={}):
     return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets frame values and puts in dictionary.
-#-----------------------------------------------------------------------------------------------------------------------
-def frame(request, vals):
-    userProfile = vals['viewer']
-    vals['new_notification_count'] = userProfile.getNumNewNotifications()
-    vals['firstLogin'] = userProfile.checkFirstLogin()
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# gets values for right side bar and puts in dictionary
-#-----------------------------------------------------------------------------------------------------------------------
-def rightSideBar(request, vals):
-    userProfile = vals['viewer']
-    vals['questions_dict'] = getQuestionsDictionary(questions=getOfficialQuestions(vals), vals=vals)
-    getMainTopics(vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# gets the users responses to questions
-#-----------------------------------------------------------------------------------------------------------------------
-def getUserResponses(request,vals={}):
-    userProfile = vals['viewer']
-    vals['qr'] = userProfile.getUserResponses()
-
-#-----------------------------------------------------------------------------------------------------------------------
-# gets the users responses proper format for web
-#-----------------------------------------------------------------------------------------------------------------------
-def getUserWebResponsesJSON(request,vals={},webCompare=False):
-
-    questionsArray = {}
-    topics = getMainTopics(vals)
-    for t in topics:
-        questionsArray[t.topic_text] = []
-
-    for (question,response) in vals['viewer'].getUserResponses():
-        answerArray = []
-        for answer in question.answers.all():
-            if response and (not webCompare or response.privacy == "PUB"):
-                checked = (answer.id == response.most_chosen_answer.id)
-                weight = response.weight
-            else:
-                checked = False
-                weight = 5
-            answer_json = {'answer_text':answer.answer_text,'answer_id':answer.id,'user_answer':checked,'weight':weight}
-            answerArray.append(answer_json)
-        toAddquestion = {'id':question.id,'text':question.question_text,'answers':answerArray,'user_explanation':"",'childrenData':[]}
-        if response: toAddquestion['user_explanation'] = response.downcast().explanation
-        if not webCompare and response: toAddquestion['security'] = response.privacy
-        else: toAddquestion['security'] = ""
-        questionsArray[question.getMainTopic().topic_text].append(toAddquestion)
-    vals['questionsArray'] = json.dumps(questionsArray)
-
-#-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
 #-----------------------------------------------------------------------------------------------------------------------
 def web(request, vals={}):
@@ -474,44 +409,22 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # new feeds page
 #-----------------------------------------------------------------------------------------------------------------------
-def theFeed(request, g_alias=None, vals={}):
+def feed(request, g_alias=None, vals={}):
 
-    viewer = vals['viewer']
-    rightSideBar(request, vals)
-    shareButton(request, vals)
+    vals['feed_items'] = Content.objects.filter(type="N")
 
-    if not g_alias:
-        current_group = getLoveGovGroup()
-    else:
-        current_group = Group.objects.get(alias=g_alias)
-    vals['current_group'] = current_group
-
-    if current_group.hasMember(viewer):
-        vals['default_post_to_group'] = current_group
-    else:
-        vals['default_post_to_group'] = getLoveGovGroup()
-
-    filter_name = request.GET.get('filter_name')
-    if not filter_name:
-        filter_name = 'default'
-
-    feed_json = {'ranking': 'N',
-                 'levels':[],
-                 'topics':[],
-                 'types':[],
-                 'groups':[],
-                 'submissions_only': 1,
-                 'display': 'L',
-                 'feed_start': 0,
-                 'filter_name': filter_name}
-
-    vals['feed_json'] = json.dumps(feed_json)
-    vals['my_filters'] = viewer.my_filters.all().order_by("created_when")
-    vals['num_pinterest'] = range(3)
-
-    html = ajaxRender('site/pages/feed/feed.html', vals, request)
+    html = ajaxRender('site/pages/feed/main.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
+
+def groupFeed(request, g_alias, vals={}):
+    group = Group.objects.get(alias=g_alias)
+    focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
+    url = group.get_url()
+    return homeResponse(request, focus_html, url, vals)
+
+def homeSidebar(request, vals):
+    vals['sidebar'] = 'sidebar'
 
 #-----------------------------------------------------------------------------------------------------------------------
 # page to display all of your friends comparisons
@@ -594,7 +507,9 @@ def profile(request, alias=None, vals={}):
             frame(request, vals)
             getUserResponses(request,vals)
             # get comparison of person you are looking at
-            user_prof = UserProfile.objects.get(alias=alias)
+            user_prof = UserProfile.lg.get_or_none(alias=alias)
+            ## TODO :: make a warning for multiple aliases!
+
             comparison, json = user_prof.getComparisonJSON(viewer)
             vals['user_prof'] = user_prof
             vals['comparison'] = comparison
@@ -786,7 +701,7 @@ def group(request, g_id=None, vals={}):
 
     vals['non_member_followers'] = followers
 
-    html = ajaxRender('site/pages/group/group.html', vals, request)
+    html = ajaxRender('site/pages/home/home.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -804,26 +719,6 @@ def histogramDetail(request, g_id, vals={}):
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
-
-
-def loadHistogram(resolution, g_id, which, increment=1, vals={}):
-    bucket_list = getBucketList(resolution)
-    vals['buckets'] = bucket_list
-    bucket_uids = {}
-    for x in bucket_list:
-        bucket_uids[x] = []
-    histogram_metadata = {'total':0,
-                          'identical':0,
-                          'identical_uids':[],
-                          'resolution':resolution,
-                          'g_id':g_id,
-                          'which':which,
-                          'increment':increment,
-                          'topic_alias':'all',
-                          'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
-    vals['histogram_metadata'] = json.dumps(histogram_metadata)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
@@ -865,7 +760,6 @@ def about(request, start="video", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
-
 def legislation(request, session=None, type=None, number=None, vals={}):
     vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
@@ -889,10 +783,6 @@ def legislation(request, session=None, type=None, number=None, vals={}):
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 
-def legislationHelper(request, vals={}):
-    l = Legislation.objects.filter(session=110)
-    vals['bills'] = l
-    return l
 #-----------------------------------------------------------------------------------------------------------------------
 # Match page.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -996,40 +886,6 @@ def matchRepresentatives(request, vals={}):
     if not congressmen:
         vals['invalid_address'] = True
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# helper for content-detail
-#-----------------------------------------------------------------------------------------------------------------------
-def contentDetail(request, content, vals):
-    rightSideBar(request, vals)
-    shareButton(request, vals)
-    vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
-    vals['topic'] = content.getMainTopic()
-    vals['content'] = content
-    viewer = vals['viewer']
-    creator_display = content.getCreatorDisplay(viewer)
-    vals['creator'] = creator_display
-    vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
-    user_votes = Voted.objects.filter(user=vals['viewer'])
-    my_vote = user_votes.filter(content=content)
-    if my_vote:
-        vals['my_vote'] = my_vote[0].value
-    else:
-        vals['my_vote'] = 0
-    vals['iown'] = (creator_display.you)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# displays a list of all questions of that topic, along with attached forum
-#-----------------------------------------------------------------------------------------------------------------------
-def topicDetail(request, topic_alias=None, vals={}):
-    if not topic_alias:
-        return HttpResponse("list of all topics")
-    else:
-        topic = Topic.objects.get(alias=topic_alias)
-        contentDetail(request, topic.getForum(), vals)
-        frame(request, vals)
-        return renderToResponseCSRF('site/pages/content/topic_detail.html', vals, request)
-
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1076,14 +932,6 @@ def newsDetail(request, n_id, vals={}):
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# get share button values
-#-----------------------------------------------------------------------------------------------------------------------
-def shareButton(request, vals={}):
-    viewer = vals['viewer']
-    vals['my_followers'] = viewer.getFollowMe()
-    getMyGroups(request, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def questionDetail(request, q_id=-1, vals={}):
@@ -1099,85 +947,6 @@ def questionDetail(request, q_id=-1, vals={}):
     html = ajaxRender('site/pages/content/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
-
-def valsQuestion(request, q_id, vals={}):
-    user = vals['viewer']
-    question = Question.objects.filter(id=q_id)[0]
-    contentDetail(request=request, content=question, vals=vals)
-    vals['question'] = question
-    my_response = user.getView().responses.filter(question=question)
-    if my_response:
-        vals['response']=my_response[0]
-    answers = []
-    agg = getLoveGovGroupView().filter(question=question)
-    # get aggregate percentages for answers
-    if agg:
-        agg = agg[0]
-    for a in question.answers.all():
-        if agg:
-            tallies = agg.answer_tallies.filter(answer_id=a.id)
-            if tallies and agg.total_num:
-                tally = tallies[0]
-                percent = int(100*float(tally.tally)/float(agg.total_num))
-            else:
-                percent = 0
-        else:
-            percent = 0
-        answers.append(AnswerClass(a.answer_text, a.id, percent))
-    vals['answers'] = answers
-    topic_text = question.getMainTopic().topic_text
-    vals['topic_img_ref'] = MAIN_TOPICS_IMG[topic_text]
-    vals['topic_color'] = MAIN_TOPICS_COLORS[topic_text]['light']
-
-class AnswerClass:
-    def __init__(self, text, id, percent):
-        self.text = text
-        self.id = id
-        self.percent = percent
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates the html for a comment thread.
-#-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}):
-    """Creates the html for a comment thread."""
-    if not user_votes:
-        user_votes = Voted.objects.filter(user=user)
-    if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
-    comments = Comment.objects.filter(on_content=object).order_by('-status')
-    viewer = vals['viewer']
-    if comments:
-        to_return = ''
-        for c in comments:
-            if c.active or c.num_comments:
-                margin = 30*(depth+1)
-                to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
-                my_vote = user_votes.filter(content=c) # check if i like comment
-                if my_vote:
-                    i_vote = my_vote[0].value
-                else: i_vote = 0
-                i_own = user_comments.filter(id=c.id) # check if i own comment
-                vals.update({'comment': c,
-                        'my_vote': i_vote,
-                        'owner': i_own,
-                        'votes': c.upvotes - c.downvotes,
-                        'display_name': c.getThreadDisplayName(viewer, getSourcePath(request)),
-                        'creator': c.getCreatorDisplay(viewer),
-                        'public': c.getPublic(),
-                        'margin': margin,
-                        'width': 690-(30*depth+1)-30,
-                        'defaultImage':getDefaultImage().image,
-                        'depth':depth})
-
-                context = RequestContext(request,vals)
-                template = loader.get_template('site/pieces/snippets/cath_comment.html')
-                comment_string = template.render(context)  # render comment html
-                to_return += comment_string
-                to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
-                to_return += "</div>"   # close list
-        return to_return
-    else:
-        return ''
 
 #-----------------------------------------------------------------------------------------------------------------------
 # sensibly redirects to next question
@@ -1304,7 +1073,6 @@ def groupEdit(request, g_id=None, section="", vals={}):
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1404,12 +1172,6 @@ def facebookAction(request, to_page="/web/", vals={}):
             return response
 
 #-----------------------------------------------------------------------------------------------------------------------
-# learn about our widget
-#-----------------------------------------------------------------------------------------------------------------------
-def widgetAbout(request, vals={}):
-    return HttpResponse("Get our widget!")
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Search page
 #-----------------------------------------------------------------------------------------------------------------------
 def search(request, term='', vals={}):
@@ -1424,17 +1186,3 @@ def search(request, term='', vals={}):
     html = ajaxRender('site/pages/search/search.html', vals, request)
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Tryin' to love some gov
-#-----------------------------------------------------------------------------------------------------------------------
-def tryLoveGov(request, to_page="home/", vals={}):
-    response = shortcuts.redirect("/" + to_page)
-    response.set_cookie('lovegov_try', 1)
-    return response
-
-#-----------------------------------------------------------------------------------------------------------------------
-# LoveGov API
-#-----------------------------------------------------------------------------------------------------------------------
-
-

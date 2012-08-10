@@ -1,0 +1,15 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+aside.sidebar {
+  width: 25%;
+  background-color: green;
+}
+
+div.content {
+  width: 70%;
+  background-color: $gray;
+}

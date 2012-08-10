@@ -1,0 +1,33 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+
+header
+{
+  width: 100%;
+  border-bottom: 2px $gray solid;
+
+  div.header-logo
+  {
+    @include staticImage('/images/header/logo.png');
+    @include inline-block();
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 156px;
+    height: 50px;
+  }
+
+  div.nav-button
+  {
+    @include inline-block();
+  }
+
+  div.search
+  {
+    @include inline-block();
+  }
+}
+

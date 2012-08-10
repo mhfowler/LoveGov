@@ -41,7 +41,47 @@
 @import 'master-variables';
 @import 'master-mixins';
 
+@import "compass";
 
+html {
+  /* Default to standard browser font-size of 16px */
+  font-size: 16px;
+}
+
+body {
+  font-family:$body-fonts;
+  color:$black;
+  font-size: 10px;
+}
+
+div.global-wrapper
+{
+  max-width: 1140px;
+  width: 100%;
+  margin: auto;
+}
+
+div.main-content {
+  margin-top:20px;
+  border-top:1px solid $gray;
+}
+
+* {
+  /* Prevent padding from altering defined sizes */
+  @include box-sizing(border-box);
+}
+
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 100;
+  src: local('Raleway-Thin'), url(http://themes.googleusercontent.com/static/fonts/raleway/v5/RJMlAoFXXQEzZoMSUteGWLO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+}
+
+td
+{
+ padding: 0px;
+}
 
 .main-div
 {
@@ -421,7 +461,7 @@ img.rounded
 
 .big-num
 {
-  /*tribute to cs17 project bignum. rest in peace. */
+/*tribute to cs17 project bignum. rest in peace. */
   font-weight:bold;
   font-size: 52px;
   color:$red;
@@ -514,27 +554,27 @@ div.heart {
 }
 
 div.heart_minus {
-  @include staticImage($rel-path:'/images/icons/minusheart-gray.png');
+  background-image: url('/static/icons/minusheart-gray.png');
 }
 
 div.heart_minus.clicked {
-  @include staticImage($rel-path:'/images/icons/minusheart-red.png');
+  background-image: url('/static/icons/minusheart-red.png');
 }
 
 div.heart_minus:hover {
-  @include staticImage($rel-path:'/images/icons/minusheart-red.png');
+  background-image: url('/static/icons/minusheart-red.png');
 }
 
 div.heart_plus {
-  @include staticImage($rel-path:'/images/icons/plusheart-gray.png');
+  background-image: url('/static/icons/plusheart-gray.png');
 }
 
 div.heart_plus.clicked {
-  @include staticImage($rel-path:'/images/icons/plusheart-red.png');
+  background-image: url('/static/icons/plusheart-red.png');
 }
 
 div.heart_plus:hover {
-  @include staticImage($rel-path:'/images/icons/plusheart-red.png');
+  background-image: url('/static/icons/plusheart-red.png');
 }
 
 div.overdiv {
@@ -546,28 +586,28 @@ div.overdiv {
   top: 0px;
   left: 0px;
   width: 100%; height: 100%;
-  z-index: 100;
+  z-index: 102;
   display: none;
 }
 
 span.content_header {
-    color: $gray;
-    font-size: 28px;
-    @include gillLight;
-    margin-bottom: 20px;
-    display: block;
+  color: $gray;
+  font-size: 28px;
+  @include gillLight;
+  margin-bottom: 20px;
+  display: block;
 }
 
 input.tab-button, a.tab-button, span.tab-button {
-	background-color: $red;
-	@include rounded-bottom(8px);
-	color: $white;
-	padding: 8px;
-	border: none;
+  background-color: $red;
+  @include rounded-bottom(8px);
+  color: $white;
+  padding: 8px;
+  border: none;
   margin-bottom: 6px;
-	&.alt {
-		background-color: $gray;
-	}
+  &.alt {
+    background-color: $gray;
+  }
   &:hover {
     padding-top: 14px;
     margin-bottom: 0;
@@ -650,8 +690,8 @@ input.tab-button, a.tab-button, span.tab-button {
   text-decoration: none;
   background-color: #000000;
   -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
 }
 
 .tooltip-arrow {
@@ -663,10 +703,10 @@ input.tab-button, a.tab-button, span.tab-button {
 .fade {
   opacity: 0;
   -webkit-transition: opacity 0.15s linear;
-     -moz-transition: opacity 0.15s linear;
-      -ms-transition: opacity 0.15s linear;
-       -o-transition: opacity 0.15s linear;
-          transition: opacity 0.15s linear;
+  -moz-transition: opacity 0.15s linear;
+  -ms-transition: opacity 0.15s linear;
+  -o-transition: opacity 0.15s linear;
+  transition: opacity 0.15s linear;
 }
 
 .fade.in {
@@ -696,7 +736,7 @@ span#email-label
 
 div.edit-link
 {
-  @include staticImage($rel-path:'/images/edit-pencil.png');
+  background-image: url('/static/images/edit-pencil.png');
   background-size: 16px 16px;
   width: 16px;
   height: 16px;
@@ -705,7 +745,7 @@ div.edit-link
 
   &:hover
   {
-    @include staticImage($rel-path:'/images/edit-pencil-blue.png');
+    background-image: url('/static/images/edit-pencil-blue.png');
   }
 }
 
@@ -816,11 +856,11 @@ div.modal-close
   float: right;
   height: 10px;
   width: 10px;
-  @include staticImage($rel-path:'/images/icons/x.png');
+  background-image: url('/static/icons/x.png');
   cursor: pointer;
   &:hover
   {
-    @include staticImage($rel-path:'/images/icons/x_hover.png');
+    background-image: url('/static/icons/x_hover.png');
   }
 }
 
@@ -888,7 +928,7 @@ div.autocomplete-header {
   text-align: center;
 }
 
-div.autocomplete-user 
+div.autocomplete-user
 {
   position: relative;
   padding: 5px;
@@ -971,13 +1011,4 @@ div.qaweb:hover {
     display:block;
   }
   margin-bottom:0px;
-}
-
-
-div.modal-box {
-  display:none;
-}
-
-.test-static {
-  @include staticImage($rel-path:'/test.jpg');
 }

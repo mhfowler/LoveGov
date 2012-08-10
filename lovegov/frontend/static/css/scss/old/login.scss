@@ -1,0 +1,775 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+#main
+{
+  width:1000px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:15px;
+}
+
+input
+{
+  float: left;
+  border:1px solid #CCC
+}
+
+div.blocks
+{
+  width:1000px;
+  display:inline-block;
+  margin-bottom:35px;;
+}
+
+div#no-frame-top
+{
+  z-index:3;
+  position:relative;
+  width:1000px;
+  height:160px;
+  padding:0px;
+  display:block;
+
+  box-shadow: none;
+
+  @extend .blocks;
+  margin-bottom:5px;
+}
+div#middle
+{
+  margin-top:0px;
+  @extend .blocks;
+}
+div#bottom
+{
+  @extend .blocks;
+  border-top:1px solid #CCC;
+  padding-top:20px;
+}
+
+#middle-left
+{
+  position:relative;
+  float:left;
+  width:425px;
+  height:287px;
+  margin-left:20px;
+}
+
+.form-div
+{
+
+
+}
+
+div.no-login-modal
+{
+  min-height: 100px;
+  border:1px solid $red;
+  position: absolute;
+  top: 100px;
+  @include modal;
+  width: 40%;
+  margin-left: 30%;
+  margin-right: 30%;
+  padding: 50px;
+
+  div.no-login-content
+  {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#middle-right
+{
+  position:relative;
+  float:right;
+  margin-right:20px;
+  margin-top:0px;
+  width:440px;
+
+  div.state-div {
+    display:none;
+  }
+
+  div#create-account-div {
+    h3.new-to-lovegov {
+      color:$dark-gray;
+      @include fontSize(28px);
+      text-align:center;
+    }
+    a.create-account-button {
+      display:block;
+      text-align:center;
+      margin-top:15px;
+      @include div-button-padding($radius:7px,$padding:12px,$font-size:30px,$color:white,$background-color:$red,$hover-color:$red-light);
+    }
+    div.try-it {
+      display:block;
+      text-align:center;
+      @include fontSize(18px);
+      margin-top:15px;
+    }
+    p.mission {
+      display:block;
+      margin-top:20px;
+      font-family:$gill-light;
+      color:$deep-gray;
+      display:block;
+      font-size:20px;
+      text-align:center;
+    }
+  }
+
+  div#sign-up-div {
+    text-align:center;
+    a.sign-up-with-email-button {
+      @include div-button-padding($radius:7px,$padding:14px,$font-size:26px,$color:white,$background-color:$gray,$hover-color:$light-gray);
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+
+    p {
+      margin-left:10px;
+      margin-top:40px;
+      @include fontSize(18px);
+      @include titleFont();
+      text-transform: uppercase;
+    }
+
+    div.connect-with {
+      margin-top:20px;
+      display:block;
+      a.fb-button {
+        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+        background-size:contain;
+        background-repeat:no-repeat;
+        margin-left:30px;
+        float:left;
+        width:200px;
+        height:35px;
+      }
+      a.twitter-button {
+        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+        background-size:contain;
+        background-repeat:no-repeat;
+        float:right;
+        width:200px;
+        height:35px;
+      }
+      a.fb-button:hover {
+        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+      }
+      a.twitter-button:hover {
+        @include staticImage($rel-path:'/images/icons/Twitter_login_hover.png');
+      }
+
+    }
+
+    div.connect-message {
+      display:block;
+      margin-top:30px;
+      p.no-post {
+        margin-top:8px;
+        text-transform: none;
+        @include titleFont();
+        @include fontSize(14px);
+      }
+    }
+  }
+
+}
+
+#no-frame-top {
+
+  div.top-right {
+    float:right;
+    margin-top:30px;
+    margin-right:0px;
+
+    div.sign-in {
+      position:relative;
+      float:right;
+      margin-left:50px;
+      margin-right:0px;
+      p {
+        margin-top:8px;
+        float:left;
+        color:$dark-gray;
+      }
+      a.sign-in-button {
+        margin-left:10px;
+        float:left;
+        @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+      }
+
+      div.sign-in-dialogue {
+        display:none;
+        position:absolute;
+        left:-195px;
+        top:55px;
+        padding: 30px;
+        z-index:20;
+        border: 1px solid $black;
+        width:310px;
+        height:180px;
+        background-color:white;
+
+        div.dialogue-pointer
+        {
+          @include trianglePointer($direction:'up',$width:15px,$color-inner:#FFFFFF,$color-border:black,$offset:30px);
+          z-index:25;
+          left:320px;
+        }
+
+        div.connect-buttons {
+          margin-top:0px;
+          display:block;
+
+          a.img-test {
+            @include staticImage($rel-path:'/images/flags.gif');
+            background-size:contain;
+          }
+          a.sign-in-fb {
+            @include staticImage($rel-path:'/images/icons/FB_login.png');
+            background-size:contain;
+            background-repeat:no-repeat;
+            float:left;
+            width:150px;
+            height:40px;
+          }
+          a.sign-in-twitter {
+            @include staticImage($rel-path:'/images/icons/Twitter_login.png');
+            background-size:contain;
+            background-repeat:no-repeat;
+            float:right;
+            width:150px;
+            height:40px;
+          }
+          a.sign-in-fb:hover {
+            @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+          }
+          a.sign-in-twitter:hover {
+            @include staticImage($rel-path:'/images/icons/Twitter_login_hover.png');
+          }
+        }
+
+        p {
+          clear:both;
+          text-align:center;
+          display:block;
+          text-transform: uppercase;
+          margin:0px;
+          margin-top:5px;
+          @include titleFont();
+          @include fontSize(20px);
+          width:100%;
+        }
+
+        input.sign-in-input {
+          display:block;
+          margin-top:5px;
+          width:300px;
+          height:30px;
+          color:#adadad;
+          padding-left:5px;
+          @include titleFont();
+          @include fontSize(18px);
+        }
+        input.password-input {
+          margin-top:8px;
+        }
+
+        div.dialogue-bottom {
+          display:block;
+          width:100%;
+          margin-top:10px;
+
+          span.login-error {
+            @include fontSize(14px);
+            float:left;
+            width:110px;
+            text-align:center;
+            margin: 14px 0px 0px 0;
+            color:$red;
+          }
+          a.forgot-link {
+            float:right;
+            margin: 21px 17px 0px 0;
+          }
+          input.login-button {
+            float:right;
+            margin: 15px 0 0px 0;
+            @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+          }
+        }
+
+      }
+
+    }
+
+    div.mission-statement
+    {
+      display:none;
+    }
+  }
+}
+
+
+div.mission-statement
+{
+  clear:both;
+  font-family:$gill-light;
+  color:$deep-gray;
+  display:block;
+  width:325px;
+  font-size:20px;
+  text-align:right;
+  margin-top:50px;
+  margin-right:0px;
+}
+
+
+#post-twitter-div {
+
+  input.twitter-input {
+    height:28px;
+    width:410px;
+    padding:3px;
+    font-size:22px;
+    color:$black;
+    font-family:$gill-light;
+  }
+
+  input.top {
+    margin-top:10px;
+  }
+  input.middle {
+    margin-top:10px;
+    margin-bottom:10px;
+  }
+  input.bottom {
+    margin-bottom:15px;
+  }
+  input.register-button {
+    float:right;
+  }
+}
+
+
+
+.developer_title
+{
+  color: $dark-gray;
+}
+
+.developer_names
+{
+  color: $text-blue;
+  font-weight:lighter;
+}
+
+.team
+{
+  float:left;
+}
+
+$margin:20px;
+
+.team_left
+{
+  @extend .team;
+  @include setMargin(0,$margin);
+}
+
+.team_right
+{
+  @extend .team;
+  @include setMargin($margin,0);
+}
+
+.team_center
+{
+  @extend .team;
+  @include setMargin($margin,$margin);
+}
+
+p.fb_login_p
+{
+  float:left;
+  font-family: $gill-light;
+  color:$deep-gray;
+  font-size:17px;
+  margin-bottom:0;
+}
+
+h1
+{
+  @extend h1;
+  margin-top:15px;
+}
+
+h3
+{
+  @extend h3;
+  font-size:21px;
+}
+
+#what-is-p
+{
+  width: 565px;
+  font-size: 24px;
+  color: $deep-gray;
+  line-height: 150%;
+  float: right;
+  font-family: $gill-light;
+}
+
+p.privacy_p
+{
+  margin-top:5px;
+  margin-bottom:25px;
+  margin-left:25px;
+  margin-right:25px;
+
+}
+
+#loginform
+{
+  float:left;
+}
+
+.input-span
+{
+  position:absolute;
+  left:6px;
+  color:$deep-gray;
+  cursor:text;
+  font-size:28px;
+  font-family:$gill-light;
+}
+
+#username-span
+{
+  top:54px;
+}
+
+#password-span
+{
+  top:120px;
+}
+
+#fullname-span
+{
+  top:54px;
+}
+
+#email-span
+{
+  top:120px;
+}
+
+#email2-span
+{
+  top:186px;
+}
+
+#password-register-span
+{
+  top:252px;
+}
+
+.login-input
+{
+  height:28px;
+  width:410px;
+  padding:3px;
+  font-size:22px;
+  color:$black;
+  font-family:$gill-light;
+}
+
+div#register-div {
+
+  position:relative;
+  top:-40px;
+
+  h2.register-title {
+    margin-bottom:10px;
+  }
+
+  input#zip-register-input {
+    width:150px;
+    float:left;
+  }
+
+  table.register-form {
+    input.register-button {
+      @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+      float:right;
+      font-size:23px;
+    }
+  }
+
+  table td
+  {
+    text-align:right;
+    padding-bottom:10px;
+    padding-right:5px;
+  }
+
+  tr.privacy-policy {
+    margin-top:5px;
+    float:left;
+  }
+}
+
+.account-actions, .account-actions:link, .account-actions:visited, .account-actions:active
+{
+  @include setMargin(0,15px);
+  margin-top: 21px;
+  font-size: 15px;
+  color:$deep-gray;
+
+}
+
+.account-actions:hover
+{
+  text-decoration:underline;
+  color:$text-blue;
+}
+
+span.privacy-agree
+{
+  font-size:18px;
+  font-family:$gill-light;
+  margin-left:10px;
+}
+
+div.get-started-left
+{
+/*tribute to cs17 project bignum. rest in peace. */
+  font-weight:bold;
+  font-size:170px;
+  color:$red;
+  float:left;
+  @include setMargin(0,15px);
+}
+
+.get-started-right
+{
+  float:left;
+  text-align:center;
+}
+
+.get-started-bottom
+{
+  float:left;
+}
+
+.get-started-paragraph
+{
+  font-family:$gill-light;
+  font-size:17px;
+  line-height:150%;
+  @include setMargin(15px,15px,10px);
+}
+
+p.recovery-error
+{
+  @include fontSize(17px);
+  @include setMargin($margin-top:5px);
+  float:left;
+  width:260px;
+  text-align:left;
+}
+
+div.vertical-separator
+{
+  @include verticalSeparator($height:70px,$margin-left:25px,$margin-top:5px);
+}
+
+#why-facebook-hover
+{
+  position:absolute;
+  width:250px;
+  height:135px;
+  border-radius:5px;
+  padding:25px;
+  opacity:0.95;
+  background-color:#f0503b;
+  color:white;
+  font-weight:bold;
+  text-align:center;
+  top:-10px;
+  left:60px;
+  font-size:19px;
+  font-family:$gill-light;
+
+  a
+  {
+    position:absolute;
+    top:10px;
+    right:10px;
+    color:white;
+    cursor:pointer;
+  }
+
+  p
+  {
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+}
+
+#emailForm
+{
+  float:left;
+}
+
+#mailingList
+{
+  float:left;
+  margin-right:15px;
+  margin-top:2px;
+  font-family:$gill-light;
+  font-size:16px;
+}
+
+#emailInput
+{
+  width:165px;
+}
+
+#emailSubmit
+{
+  width:60px;
+}
+
+#emailMessage
+{
+  float:right;
+}
+
+#facebook-button
+{
+  border:0;
+  width:415px;
+}
+
+.about-div
+{
+  width:1000px;
+  float:left;
+  margin-bottom:20px;
+
+  h3
+  {
+    @include fontSize(24px);
+  }
+}
+
+.get-started-container
+{
+  padding-top:15px;
+  width:320px;
+  float:left;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+}
+
+.get-started-container:hover
+{
+  background-color:#F0F0F0;
+}
+
+.bottom-box {
+  padding-top:15px;
+  width:320px;
+  float:left;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+}
+
+#privacy-div
+{
+  float:left;
+  margin-top:20px;
+
+  li
+  {
+    border:0;
+  }
+
+}
+
+#privacy-div div
+{
+  width:475px;
+  float:left;
+}
+
+.get-started-container-left
+{
+  padding-right:10px;
+}
+
+.get-started-container-right
+{
+  padding-left:10px;
+}
+
+.get-started-container-center
+{
+  padding-left:10px;
+  padding-right:10px;
+}
+
+table
+{
+  border-spacing:0;
+}
+
+.forgot-password
+{
+  width:425px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+
+div.upper {
+
+}
+
+div.screenshots-div {
+  display:block;
+  margin-top:0px;
+
+  div.screenshot {
+    margin-left:10px;
+    clear:both;
+    box-shadow: 0px 0px 15px 5px #f0f0f0;
+    height:230px;
+  }
+  div.screenshot.qa_screenshot {
+    margin-left:15px;
+  }
+
+  h4.explanation-header {
+    margin-top:27px;
+    margin-left:10px;
+    @include fontSize(26px);
+  }
+
+  p.explanation {
+    padding: 0 10px 0 10px;
+    margin-top:15px;
+    @include titleFont();
+    @include fontSize(18px);
+  }
+
+}

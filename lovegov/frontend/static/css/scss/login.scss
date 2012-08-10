@@ -58,12 +58,6 @@ div#bottom
   margin-left:20px;
 }
 
-.form-div
-{
-
-
-}
-
 div.no-login-modal
 {
   min-height: 100px;
@@ -144,7 +138,7 @@ div.no-login-modal
       margin-top:20px;
       display:block;
       a.fb-button {
-        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+        @include staticImage($rel-path:'/images/login/FB_login.png');
         background-size:contain;
         background-repeat:no-repeat;
         margin-left:30px;
@@ -153,7 +147,7 @@ div.no-login-modal
         height:35px;
       }
       a.twitter-button {
-        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+        @include staticImage($rel-path:'/images/login/Twitter_login.png');
         background-size:contain;
         background-repeat:no-repeat;
         float:right;
@@ -161,10 +155,10 @@ div.no-login-modal
         height:35px;
       }
       a.fb-button:hover {
-        @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+        @include staticImage($rel-path:'/images/login/FB_login_hover.png');
       }
       a.twitter-button:hover {
-        @include staticImage($rel-path:'/images/icons/Twitter_login_hover.png');
+        @include staticImage($rel-path:'/images/login/Twitter_login_hover.png');
       }
 
     }
@@ -180,7 +174,6 @@ div.no-login-modal
       }
     }
   }
-
 }
 
 #no-frame-top {
@@ -214,8 +207,6 @@ div.no-login-modal
         padding: 30px;
         z-index:20;
         border: 1px solid $black;
-        width:310px;
-        height:180px;
         background-color:white;
 
         div.dialogue-pointer
@@ -229,12 +220,8 @@ div.no-login-modal
           margin-top:0px;
           display:block;
 
-          a.img-test {
-            @include staticImage($rel-path:'/images/flags.gif');
-            background-size:contain;
-          }
           a.sign-in-fb {
-            @include staticImage($rel-path:'/images/icons/FB_login.png');
+            @include staticImage($rel-path:'/images/login/FB_login.png');
             background-size:contain;
             background-repeat:no-repeat;
             float:left;
@@ -242,7 +229,7 @@ div.no-login-modal
             height:40px;
           }
           a.sign-in-twitter {
-            @include staticImage($rel-path:'/images/icons/Twitter_login.png');
+            @include staticImage($rel-path:'/images/login/Twitter_login.png');
             background-size:contain;
             background-repeat:no-repeat;
             float:right;
@@ -250,10 +237,10 @@ div.no-login-modal
             height:40px;
           }
           a.sign-in-fb:hover {
-            @include staticImage($rel-path:'/images/icons/FB_login_hover.png');
+            @include staticImage($rel-path:'/images/login/FB_login_hover.png');
           }
           a.sign-in-twitter:hover {
-            @include staticImage($rel-path:'/images/icons/Twitter_login_hover.png');
+            @include staticImage($rel-path:'/images/login/Twitter_login_hover.png');
           }
         }
 
@@ -308,9 +295,7 @@ div.no-login-modal
         }
 
       }
-
     }
-
     div.mission-statement
     {
       display:none;
@@ -358,8 +343,6 @@ div.mission-statement
     float:right;
   }
 }
-
-
 
 .developer_title
 {

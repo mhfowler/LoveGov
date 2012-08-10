@@ -1,0 +1,29 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+
+div.home-sidebar {
+  @include inline-block;
+}
+
+div.home-main {
+  @include inline-block;
+  border-left:1px solid $gray;
+  margin-left:20px;
+
+  div.home-header {
+
+  }
+  div.feed-wrapper {
+    margin-top:20px;
+  }
+
+}
+
+
+
+
+

@@ -32,7 +32,7 @@ LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = base_settings.ROOT_URLCONF
 
-INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('south',))
+INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('south','djcelery','s3_folder_storage','storages'))
 
 MIDDLEWARE_CLASSES = base_settings.MIDDLEWARE_CLASSES
 
@@ -144,12 +144,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/log/emails'
 
 ########################################################################################################################
-#   testing
-#
-########################################################################################################################
-FIXTURE_DIRS = base_settings.FIXTURE_DIRS
-
-########################################################################################################################
 #    misc settings
 #
 ########################################################################################################################
@@ -175,5 +169,12 @@ SECRET_KEY = base_settings.SECRET_KEY
 ADMINS = base_settings.ADMINS
 
 MANAGERS = base_settings.MANAGERS
+
+from compressor_settings import *
+COMPRESS_ENABLED = False
+
+STATIC_URL = '/static'
+
+print "STATIC_URL: " + STATIC_URL
 
 

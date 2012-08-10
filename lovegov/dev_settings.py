@@ -71,6 +71,13 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_DIRS = base_settings.STATICFILES_DIRS
 STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
+from compressor_settings import *
+COMPRESS_ENABLED = True
+
+STATIC_URL = '/static/'
+
+print "STATIC_URL: " + STATIC_URL
+
 ########################################################################################################################
 #    templates
 #

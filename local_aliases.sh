@@ -1,4 +1,5 @@
 # absolute path to the directory of this script
+
 LG="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #LG=$(dirname $0)
 echo "lg: $LG"
@@ -23,7 +24,7 @@ alias lgresyncdb='python $LG/lovegov/local_manage.py syncdb'
 alias lgresetdb='$LG/local_reset.sh'
 alias lgresetfixture='$LG/local_reset_testfixture.sh'
 alias lgserver="$LG/local_server.sh"
-alias lgsass="sass --watch $LG/lovegov/frontend/static/css/scss:$LG/lovegov/frontend/static/css/compiled"
+alias lgsass="compass watch $LG"
 alias lgshell="python $LG/lovegov/local_manage.py shell" 
 alias lgindex="python $LG/lovegov/local_manage.py rebuild_index"
 alias lgcharm="lgdir && charm ."

@@ -20,7 +20,6 @@ import string
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
-import pprint
 
 browser_logger = logging.getLogger('browserlogger')
 
@@ -385,12 +384,6 @@ def photoKey(type=".jpg"):
 # Alpha
 #-------------------------------------------------------------------------------------------------------------------
 def removeUser(email):
-    """
-    Removes an Alpha user.
-
-    @param email: email address of user to remove
-    @type email: string
-    """
     control = ControllingUser.objects.get(username=email)
     control.delete()
     return True
@@ -412,7 +405,6 @@ def isUniqueAlias(alias):
     if Group.objects.filter(alias=alias).count() > 0:
         return False
     return True
-
 
 def genAliasSlug(alias):
     nonce = 0

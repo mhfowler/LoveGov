@@ -1,8 +1,7 @@
 # lovegov
 from lovegov.frontend import views, tests, analytics
-from lovegov.modernpolitics import actions, lgwidget, api, twitter
+from lovegov.modernpolitics import posts, lgwidget, api, twitter
 from lovegov.frontend.views import viewWrapper
-from lovegov.frontend import admin_views
 
 # django
 from django.conf.urls import patterns, include, url
@@ -81,6 +80,10 @@ URL_SPECIAL_NAMES = set([
     'motion'
 ])
 
+urlpatterns += patterns('django.views.generic.simple',
+    (r'^frame/$', 'direct_to_template', {'template': 'site/pages/feed.html'}),
+)
+
 # lovegov urls
 urlpatterns += patterns('',
 
@@ -109,7 +112,7 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # main pages
-    (r'^home/$', viewWrapper(views.theFeed, requires_login=True)),                            # home page with feeds
+    (r'^home/$', viewWrapper(views.feed, requires_login=True)),                            # home page with feeds
     (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
     (r'^about/$', viewWrapper(views.about, requires_login=True)),                                                   # about
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
@@ -122,7 +125,6 @@ urlpatterns += patterns('',
 
     # content pages
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail
-    (r'^topic/(\S+)/$', viewWrapper(views.topicDetail, requires_login=True)),                 # topic detail
     (r'^petition/(\d+)/$', viewWrapper(views.petitionDetail, requires_login=True)),           # petition detail
     (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),                   # news detail
     (r'^network/(\S+)/$', viewWrapper(views.network, requires_login=True)),                   # network page
@@ -131,7 +133,7 @@ urlpatterns += patterns('',
     (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.group, requires_login=True)),
     (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),               # histogram detail of group
-    (r'^feed/$', viewWrapper(views.theFeed, requires_login=True)),                            # the feed
+    (r'^feed/$', viewWrapper(views.feed, requires_login=True)),                            # the feed
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),            # profile/comparison
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),                   # profile/comparison
     (r'^nextquestion/$', viewWrapper(views.nextQuestion, requires_login=True)),               # sensibly redirects to next question
@@ -145,12 +147,11 @@ urlpatterns += patterns('',
     (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
 
     # ajax pages
-    (r'^action/$', viewWrapper(actions.actionPOST, requires_login=True)),                      # comment and other actions
+    (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),                      # comment and other actions
     (r'^answer/$', viewWrapper(views.profile, requires_login=True)),                           # comment and other actions
     (r'^fb/action/$', viewWrapper(views.facebookAction, requires_login=True)),
 
     # widget pages
-    (r'^widget/about/$', views.widgetAbout),                                    # widget about page
     (r'^widget/$', redirect_to, {'url':"/widget/about/"}),                      # widget about page
     (r'^widget/access/$', lgwidget.access),                                     # widget api access
 
@@ -161,8 +162,6 @@ urlpatterns += patterns('',
     (r'^css/$', viewWrapper(tests.css, requires_login=True)),
 
     #admin
-    (r'^developer/$', viewWrapper(admin_views.adminHome, requires_login=True)),
-    (r'^alpha/admin_action/$', viewWrapper(admin_views.adminAction, requires_login=True)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(site.urls)),
 
@@ -178,4 +177,5 @@ urlpatterns += patterns('',
     # REDIRECT
     (r'(?P<alias>\S+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
-    (r'^$', views.redirect))
+    (r'^$', views.redirect)
+)

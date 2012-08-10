@@ -1,0 +1,64 @@
+{% load thumbnail %}
+{% load customtags %}
+
+
+<div class="feed-item">
+
+    <table class="feed-item-content">
+        <tr>
+
+            <td class="feed-item-left-buttons">
+
+                <div class="item-topic-image">
+
+                    {% with topic=item.getMainTopic %}
+                        {% thumbnail topic.image "40x40" format="PNG" as im %}
+                            <img src="{{ im.url }}" title="{{topic.topic_text}}" class="tooltip-top"/>
+                        {% endthumbnail %}
+                    {% endwith %}
+
+                </div>
+
+                <div class="item-ranking">
+
+                    <div class="heart-plus"></div>
+                    <div class="heart-number">{{ item.status }}</div>
+                    <div class="heart-minus"></div>
+
+                </div>
+
+            </td>
+
+            <td class="feed-item-image">
+                {% thumbnail item.getImageURL "200x118" crop="center" as im %}
+                    <img src="{{ im.url }}"/>
+                {% endthumbnail %}
+            </td>
+
+            {% block feed-item-content %}
+            <td class="feed-item-main">
+
+                <div class="feed-item-group-name">
+                    Save the whales
+                </div>
+
+                <div class="feed-item-title">
+                    <a href="{{item.link}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
+                </div>
+
+                <div class="feed-item-description">
+                    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it lo...
+                </div>
+
+    {#            {{ item.link_summary|truncatechars:50|linebreaks }}#}
+            </td>
+            {% endblock %}
+
+            <td class="feed-item-user-info">
+
+            </td>
+
+        </tr>
+    </table>
+
+</div>

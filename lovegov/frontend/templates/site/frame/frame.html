@@ -2,59 +2,21 @@
 <html>
 
 <!-- html header -->
-{% include 'site/frame/boilerplate/html-header.html' %}
+{% include 'site/frame/html-header.html' %}
 
 <body>
-<!-- Header -->
-{% include 'site/frame/header/new-header.html' %}
-<!-- End Header -->
 
-<!-- Left Side Bar -->
-{% include 'site/frame/left_sidebar/left_sidebar.html' %}
-<!-- End Left Side Bar -->
+    <div class="global-wrapper">
 
-<!-- Loading Image -->
-{% include 'site/pieces/snippets/loading.html' %}
-<!-- End Loading Image -->
+        {% include 'site/frame/header.html' %}
 
-<!-- Content -->
-<div id="main-content">
-    {% block content %}
-        {{ center }}
-    {% endblock %}
-</div>
-<!-- End Content -->
+        <div class="main-content main_content">
+            {% block content %}
+                {{ center }}
+            {% endblock %}
+        </div>
 
-<!-- Comparison Hover -->
-{% include "site/pieces/snippets/comparison_hover.html" %}
-<!-- End Comparison Hover -->
-
-<!-- share -->
-<div id="share_id" data-share_id=""></div>
-<div class="overdiv"></div>
-<div class="share-modal shareModal">
-    {% include 'site/pieces/share_modal/share.html' %}
-</div>
-
-<div class="modal">
-    <div class="modal-close general_modal_close"></div>
-    <span id="general_modal_content"></span>
-</div>
-
-
-<div id="agg_notification_modal" class="agg-notifications-modal"></div>
-
-<div class="first-login-modal first-login">
-    <div class="modal-close"></div>
-    <a class="first-login-restart first_login_restart" href="#"> restart </a>
-    <div class="first-login-content"></div>
-</div>
-
-<div id="dev-debug"></div>
-
-<div style="clear:both"></div>
-
-{% include 'site/frame/footer/footer.html' %}
+    </div>
 
 </body>
 

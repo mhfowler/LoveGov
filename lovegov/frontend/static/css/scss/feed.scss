@@ -1,0 +1,176 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass"; 
+
+
+$button-top-padding: 5px;
+$button-side-padding: 12px;
+
+div.feed-main
+{
+  width: 100%;
+  padding: 10px;
+
+  table.feed-top-bar
+  {
+    width: 100%;
+    margin-bottom: 15px;
+
+    td.feed-left-buttons
+    {
+      vertical-align: middle;
+
+      div.feed-buttons-container
+      {
+        display: block;
+        float: left;
+        margin-right: 20px;
+
+        div.buttons-container-text
+        {
+          float: left;
+          padding: $button-top-padding+1;
+          color: $dark-gray;
+        }
+
+        div.base-button
+        {
+          float: left;
+          border: solid $light-gray;
+          border-width: 1px 0px 1px 1px;
+          padding: $button-top-padding $button-side-padding;
+
+          &:hover
+          {
+            background-color: $light-gray;
+          }
+        }
+
+        div.last-button
+        {
+          border-right-width: 1px;
+        }
+
+        div.sort-button
+        {
+          @extend .base-button;
+        }
+      }
+
+    }
+
+    table.create-button
+    {
+      float: right;
+    }
+
+    td.create-button
+    {
+      @include staticImage('images/icons/white_create.png');
+      background-repeat: no-repeat;
+      background-position: 12px 7px;
+      font-size: 22px;
+      color: white;
+      background-color: $red;
+      vertical-align: middle;
+      height: 60px;
+      padding: 0 18px 0 75px;
+      text-decoration: none;
+
+      &:hover
+      {
+        background-color: $red-light;
+      }
+    }
+  }
+
+  div.feed-content
+  {
+    width: 100%;
+
+    table.feed-item-content
+    {
+      border: 1px solid $light-gray;
+      height: 120px;
+      margin-bottom:10px;
+      width: 100%;
+      padding: 0px;
+      @include single-box-shadow($gray,0px,0px,5px);
+
+      td.feed-item-left-buttons
+      {
+        border-right: 1px solid $light-gray;
+        width: 41px;
+        height: 100%;
+
+        div.item-topic-image
+        {
+          border-bottom: 1px solid $light-gray;
+          width: 100%;
+          height: 40px;
+          display:block;
+        }
+
+        div.item-ranking
+        {
+          text-align: center;
+
+          div.heart-plus
+          {
+            @include staticImage('images/icons/plusheart-gray.png');
+            background-repeat: no-repeat;
+            height: 18px;
+            width: 18px;
+            margin: 8px auto 4px auto;
+
+            &:hover
+            {
+              @include staticImage('images/icons/plusheart-red.png');
+            }
+          }
+
+          div.heart-minus
+          {
+            @include staticImage('images/icons/minusheart-gray.png');
+            background-repeat: no-repeat;
+            height: 18px;
+            width: 18px;
+            margin: 4px auto 0px auto;
+
+            &:hover
+            {
+              @include staticImage('images/icons/minusheart-red.png');
+            }
+          }
+        }
+      }
+
+      td.feed-item-image
+      {
+        width: 200px;
+      }
+
+      td.feed-item-main
+      {
+        margin-left: 10px;
+
+        div.feed-item-description
+        {
+          width: 100%;
+        }
+
+      }
+
+      td.feed-item-user-info
+      {
+        display: block;
+        float: right;
+        height: 100%;
+        width: 150px;
+      }
+
+    }
+  }
+}

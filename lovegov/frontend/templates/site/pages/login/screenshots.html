@@ -6,7 +6,7 @@
     <div class="bottom-box get-started-container-left">
         <div class="screenshot qa_screenshot">
             <a href="" class="no_login_link" data-link="/try/web/">
-                {% with full_url='/static/images/web_preview_2.png'|media_url:MEDIA_PREFIX %}
+                {% with full_url='/static/images/login/web_preview_2.png'|media_url:MEDIA_PREFIX %}
                     {% thumbnail full_url "300x300" as im %}
                         <img src="{{ im.url }}"/>
                     {% endthumbnail %}
@@ -23,7 +23,7 @@
     <div class="bottom-box get-started-container-center">
         <div class="screenshot match_screenshot">
             <a href="" class="no_login_link" data-link="/try/match/">
-                {% with full_url='/static/images/match_preview.png'|media_url:MEDIA_PREFIX %}
+                {% with full_url='/static/images/login/match_preview.png'|media_url:MEDIA_PREFIX %}
                     {% thumbnail full_url "300x300" as im %}
                         <img src="{{ im.url }}"/>
                     {% endthumbnail %}
@@ -40,7 +40,7 @@
     <div class="bottom-box get-started-container-right">
         <div class="screenshot discuss_screenshot">
             <a href="" class="no_login_link" data-link="/try/home/">
-                {% with full_url='/static/images/feed_preview.png'|media_url:MEDIA_PREFIX %}
+                {% with full_url='/static/images/login/feed_preview.png'|media_url:MEDIA_PREFIX %}
                     {% thumbnail full_url "300x300" as im %}
                         <img src="{{ im.url }}"/>
                     {% endthumbnail %}

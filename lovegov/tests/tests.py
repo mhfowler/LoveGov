@@ -12,9 +12,9 @@ def testAnswer(user1, user2, question, same=True, weight1=5, weight2=5):
     else:
         a1 = answers[0]
         a2 = answers[1]
-    answerHelper(user=user1, question=question, my_response=None,
+    answerAction(user=user1, question=question, my_response=None,
         privacy='PUB', answer_id=a1.id, weight=weight1, explanation="")
-    answerHelper(user=user2, question=question, my_response=None,
+    answerAction(user=user2, question=question, my_response=None,
         privacy='PUB', answer_id=a2.id, weight=weight2, explanation="")
 
 
@@ -63,4 +63,10 @@ class ComparisonTestCase(unittest.TestCase):
         self.assertEqual(comparison.result, 50)
         comparison = katy.getComparison(randy)
         self.assertEqual(comparison.result, 50)
+
+    def testAlias(self):
+        g = Group(title="This is test group")
+        g.autoSave()
+        alias = g.alias
+        self.assertEqual(alias, "thisistestgroup")
 

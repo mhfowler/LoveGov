@@ -1,0 +1,17 @@
+{% load customtags %}
+{% load thumbnail %}
+<a href="{{ petition.getUrl }}">
+    <div class="autocomplete-petition autocomplete-div">
+    	{% with full_url=petition.getMainTopic.getImageRef|media_url:MEDIA_PREFIX %}
+	    	{% thumbnail full_url "25x25" crop="center" format="PNG" as im %}
+	    	<div class="autocomplete-image-wrapper">
+                <img src="{{im.url}}">
+            </div>
+	    	{% endthumbnail %}
+    	{% endwith %}
+        <div class="autocomplete-name">
+            {{petition.title|truncate_chars:80}}
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</a>
