@@ -445,6 +445,12 @@
   opacity: $opacity;
 }
 
+// gray title font
+@mixin grayText() {
+  color:$light-gray;
+  @include titleFont();
+}
+
 
 // static images
 @mixin staticImage($rel-path)

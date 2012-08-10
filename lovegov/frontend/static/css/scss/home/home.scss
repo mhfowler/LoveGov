@@ -5,23 +5,32 @@
 @import "compass";
 
 
-div.home-sidebar {
-  @include inline-block;
+table.home {
+  width:100%;
+td.home-sidebar {
+  width:200px;
 }
 
-div.home-main {
-  @include inline-block;
-  border-left:1px solid $gray;
-  margin-left:20px;
-
+td.home-main {
+  padding-left:20px;
   div.home-header {
-
+    width:100%;
+    div.group-title {
+      text-transform: uppercase;
+    }
+    div.expand-info {
+      width:100%;
+      text-align:center;
+    }
   }
   div.feed-wrapper {
     margin-top:20px;
+    width:100%;
+    border: 1px solid $gray;
   }
-
+  }
 }
+
 
 div.left-navbar {
 
@@ -32,6 +41,22 @@ div.left-navbar {
       display:block;
       margin: 10px 0 0 10px;
     }
+  }
+
+  div.navbar-title {
+    @include inline-block;
+    @include grayText();
+  }
+  span.red-triangle {
+    @include inline-block;
+    width:9px;
+    height:18px;
+    @include staticImage('/images/icons/arrow_right_red.png');
+    @include transition(.25s);
+  }
+  span.red-triangle-down {
+    @include transform(rotate(90deg));
+    @include transition(.25s);
   }
 
   @include titleFont();
