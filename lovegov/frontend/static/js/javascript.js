@@ -9,22 +9,30 @@ function bind(selector, events, data, handler) {
     $(document).on(events, selector, data, handler);
 }
 
-
-function action(action, data, success, error) {
-    if( action==null ) {
-        return;
-    }
-    data['action'] = action;
+function action(dict) {
+     var data = dict['data'];
+     var success_fun = dict['success'];
+     var error_fun = function(jqXHR, textStatus, errorThrown) {
+         if(jqXHR.status==403) {
+             //launch403Modal(jqXHR.responseText);
+             return;
+         }
+         var superError = dict['error'];
+         if (superError) {
+             superError();
+         } else {
+             $("body").html(jqXHR.responseText);
+         }
+     };
+     data['url'] = window.location.href;
     $.ajax({
         url: '/action/',
         type: 'POST',
         data: data,
-        success: success,
-        error: error,
+        success: success_fun,
+        error: error_fun
     });
 }
-
-
 
 $(document).ready(function()
 {
@@ -42,7 +50,7 @@ $(document).ready(function()
         // This is because we can optionally choose to support HTML4 browsers or not.
         return false;
     }
-    // Bind to StateChange Event
+    // Bind to StateChange Eveent
     History.Adapter.bind(window,'statechange',function()
     {
         // Note: We are using statechange instead of popstate
@@ -64,10 +72,8 @@ $(document).ready(function()
  *
  ***********************************************************************************************************************/
 
-
 function checkCompatability() {
     var compatability_cookie =  $.cookie('compatability');
-    var csrf_check = $.cookie('csrftoken');
     if (compatability_cookie == null) {
         var incompatible = [];
         $.each(Modernizr, function(index, element) {
@@ -76,15 +82,14 @@ function checkCompatability() {
             }
         });
         var incompatible_json = JSON.stringify(incompatible);
-        action('logCompatibility', 
-            {'incompatibile': incompatible_json}, 
-            function(data) {
+        action({
+            data: {'action': 'logCompatability', 'incompatible': incompatible_json},
+            success: function(data) {
                 $.cookie('compatability', incompatible_json);
-            }
+            }}
         );
     }
 }
-
 
 /***********************************************************************************************************************
  *
@@ -92,22 +97,114 @@ function checkCompatability() {
  *
  ***********************************************************************************************************************/
 
-bind("tooltip-top", "tooltip", {'placement': 'top', 'animation': 'true'});
-bind("tooltip-bottom", "tooltip", {'placement': 'bottom', 'animation': 'true'});
-bind("tooltip-right", "tooltip", {'placement': 'right', 'animation': 'true'});
-bind("tooltip-left", "tooltip", {'placement': 'left', 'animation': 'true'});
+bind(".tooltip-top", "tooltip", {'placement': 'top', 'animation': 'true'});
+bind(".tooltip-bottom", "tooltip", {'placement': 'bottom', 'animation': 'true'});
+bind(".tooltip-right", "tooltip", {'placement': 'right', 'animation': 'true'});
+bind(".tooltip-left", "tooltip", {'placement': 'left', 'animation': 'true'});
 
+bind(".bind_link", "click", null, function(event) {
+    event.preventDefault();
+    var url = $(this).data('url');
+    window.location.href = url;
+});
 
+/***********************************************************************************************************************
+ *
+ *      ~Home
+ *
+ ***********************************************************************************************************************/
 
+bind(".home_link", 'click', null, function(event) {
+    event.preventDefault();
+    homeReload($(this).attr("href"));
+});
 
-bind(".bind_link", "click", function(event) {
-        event.preventDefault();
-        var url = $(this).data('url');
-        window.location.href = url;
-    });
+function homeReload(theurl) {
+    $('#search-dropdown').hide();
+    $('.home_focus').hide();
+    $.ajax
+        ({
+            url:theurl,
+            type: 'POST',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                $(".home_focus").html(returned.focus_html);
+                $(".home_focus").fadeIn();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+}
+/***********************************************************************************************************************
+ *
+ *      ~Ajax links
+ *
+ ***********************************************************************************************************************/
+bind(".do_ajax_link", 'click', null, function(event) {
+    ajaxReload($(this).attr("href"), true);
+});
 
+function ajaxReload(theurl, loadimg)
+{
+    $('#search-dropdown').hide();
+    $('#main_content').hide();
+    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},1000); }
+    $.ajax
+        ({
+            url:theurl,
+            type: 'GET',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                $('body').css("overflow","scroll");
+                $('#main_content').css("top","0px");
+                $("#main_content").html(returned.html);
+                $('#main_content').show();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+}
 
+/***********************************************************************************************************************
+ *
+ *      ~Sign In Dialogue
+ *
+ **********************************************************************************************************************/
+bind(".sign-in-input", 'focusin', null, function(event) {
+    $(this).val("");
+    $(this).css('color', 'black');
+});
 
+bind(".sign-in-input", 'focusout', null, function(event) {
+    var entered = $(this).val();
+    if (entered == "") {
+        $(this).val($(this).data('orig'));
+        $(this).css('color', '#adadad');
+    }
+});
+
+bind(null, "click", null, function(event) {
+    var outside = $(this).parents(".sign_in_dialogue").length == 0;
+    if ((event.target.id != "sign_in_button") && outside) {
+        $(".sign_in_dialogue").hide();
+    }
+});
+
+bind(".sign_in_button", 'click', null, function(event) {
+    event.preventDefault();
+    $(".sign_in_dialogue").show();
+});
 
 // /***********************************************************************************************************************
 //  *
@@ -804,19 +901,7 @@ bind(".bind_link", "click", function(event) {
 //     page_auto_update = setInterval(updatePage, 10000);
 // }
 
-// /**
-//  * Ajaxifies a link.  Note this function can accept multiple input formats
-//  *
-//  * @param div       <a> jQuery object or a url as a String
-//  * @param loadimg   the loading image div
-//  */
-// function ajaxLink(div, loadimg)
-// {
-//     var link;
-//     if (div instanceof jQuery && div.attr('href')){ link = div.attr("href"); }
-//     else { link = div;}
-//     ajaxReload(link, loadimg);
-// }
+
 
 // // wrapper for ajax post
 // function ajaxPost(dict) {
@@ -4848,36 +4933,6 @@ bind(".bind_link", "click", function(event) {
 //     $('footer').hide();
 // }
 
-// /***********************************************************************************************************************
-//  *
-//  *      ~Sign In Dialogue
-//  *
-//  **********************************************************************************************************************/
-// function loadSignInDialogue() {
-
-//     $(".sign-in-input").focusin(function(event) {
-//         $(this).val("");
-//         $(this).css('color', 'black');
-//     });
-//     $(".sign-in-input").focusout(function(event) {
-//         var entered = $(this).val();
-//         if (entered == "") {
-//             $(this).val($(this).data('orig'));
-//             $(this).css('color', '#adadad');
-//         }
-//     });
-
-//     $(".sign_in_dialogue").bind("clickoutside.menuoff", function(event) {
-//         if (event.target.id != "sign_in_button") {
-//             $(this).hide();
-//         }
-//     });
-
-//     $(".sign_in_button").click(function(event) {
-//         event.preventDefault();
-//         $(".sign_in_dialogue").show();
-//     });
-// }
 
 // /***********************************************************************************************************************
 //  *

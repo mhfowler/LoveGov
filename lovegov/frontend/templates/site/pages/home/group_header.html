@@ -1,0 +1,12 @@
+{% extends 'site/pages/home/header_expandable.html' %}
+
+<div class="home_header_summary">
+    {% block header_summary %}
+            <h4> {{ group.title }} </h4>
+    {% endblock %}
+</div>
+<div class="home_header_expanded">
+    {% block header_expanded %}
+        this is group header expanded shown
+    {% endblock %}
+</div>

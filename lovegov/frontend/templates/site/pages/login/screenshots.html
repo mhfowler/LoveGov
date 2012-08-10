@@ -1,0 +1,57 @@
+{% load thumbnail %}
+{% load customtags %}
+
+<div class="screenshots-div _fade">
+
+    <div class="bottom-box get-started-container-left">
+        <div class="screenshot qa_screenshot">
+            <a href="" class="no_login_link" data-link="/try/web/">
+                {% with full_url='/static/images/login/web_preview_2.png'|media_url:MEDIA_PREFIX %}
+                    {% thumbnail full_url "300x300" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                {% endwith %}
+            </a>
+        </div>
+        <h4 class="explanation-header"> 1. Q&A </h4>
+        <p class="explanation">
+            Define your political beliefs by answering questions about political issues. Questions
+            are based off legislation that has appeared in congress over the past few years.
+        </p>
+    </div>
+
+    <div class="bottom-box get-started-container-center">
+        <div class="screenshot match_screenshot">
+            <a href="" class="no_login_link" data-link="/try/match/">
+                {% with full_url='/static/images/login/match_preview.png'|media_url:MEDIA_PREFIX %}
+                    {% thumbnail full_url "300x300" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                {% endwith %}
+            </a>
+        </div>
+        <h4 class="explanation-header"> 2. Match </h4>
+        <p class="explanation">
+            See where you stand politically in your social world. Compare yourself with presidential candidates,
+            congress, as well as your friends.
+        </p>
+    </div>
+
+    <div class="bottom-box get-started-container-right">
+        <div class="screenshot discuss_screenshot">
+            <a href="" class="no_login_link" data-link="/try/home/">
+                {% with full_url='/static/images/login/feed_preview.png'|media_url:MEDIA_PREFIX %}
+                    {% thumbnail full_url "300x300" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% endthumbnail %}
+                {% endwith %}
+            </a>
+        </div>
+        <h4 class="explanation-header"> 3. Discuss </h4>
+        <p class="explanation">
+            Make petitions, share news, and debate the issues with others.  As our site grows you will have more
+            ways to express yourself and participate in your democracy.
+        </p>
+    </div>
+
+</div>
