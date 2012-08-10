@@ -156,7 +156,7 @@ def twitterRegister(request, vals={}):
                 return response
 
     vals['state'] = 'post-twitter'
-    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+    return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper which returns dictionary from twitter access token cookie if it exists

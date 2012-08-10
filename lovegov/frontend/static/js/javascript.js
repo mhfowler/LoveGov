@@ -119,6 +119,11 @@ bind(".home_link", 'click', null, function(event) {
     homeReload($(this).attr("href"));
 });
 
+bind(".section_title", 'click', null, function(event) {
+    event.preventDefault();
+    $(this).find('.red_triangle').toggleClass("red-triangle-down");
+});
+
 function homeReload(theurl) {
     $('#search-dropdown').hide();
     $('.home_focus').hide();
