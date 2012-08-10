@@ -759,7 +759,7 @@ def about(request, start="video", vals={}):
         vals['colors'] = MAIN_TOPIC_COLORS_LIST
         vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
 
-        html = ajaxRender('site/pages/about/about.html', vals, request)
+        html = ajaxRender('site/pages/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 
