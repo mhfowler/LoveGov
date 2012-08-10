@@ -46,11 +46,11 @@
 
             {% endblock %}
 
-            <div class="item-ranking">
-
-                <div class="heart-plus"></div>
-                <div class="heart-number">{{ item.status }}</div>
-                <div class="heart-minus"></div>
+            <div class="item-ranking" data-c_id="{{ item.id }}">
+                
+                <div class="heart-plus heart_plus"></div>
+                <div class="heart-number heart_number">{{ item.status }}</div>
+                <div class="heart-minus heart_minus"></div>
 
             </div>
 

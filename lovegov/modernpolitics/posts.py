@@ -728,17 +728,10 @@ def vote(request, vals):
     privacy = getPrivacy(request)
     content = Content.objects.get(id=request.POST['c_id'])
     vote = int(request.POST['vote'])
-    # save vote
-    if vote == 1:
-        value = content.like(user=user, privacy=privacy)
-    elif vote == -1:
-        value = content.dislike(user=user, privacy=privacy)
-    if content.type == 'M':
-        motion = content.downcast()
-        motion = {'upvotes':motion.motion_upvotes, 'downvotes':motion.downvotes}
-    else:
-        motion = 0
-    to_return = {'my_vote':value, 'status':content.status, 'motion':motion}
+
+    value = voteAction(vote,user,content,privacy)
+
+    to_return = { 'my_vote':value, 'status':content.status }
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
