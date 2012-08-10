@@ -233,7 +233,7 @@ def login(request, to_page='web/', message="", vals={}):
 
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
-        response = renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+        response = renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
     response.delete_cookie('lovegov_try')
     return response
 
@@ -262,7 +262,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             error = 'Invalid Login/Password'
         # Return whatever error was found
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
-        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
 
     # REGISTER
     elif request.POST['button'] == 'register':
@@ -274,7 +274,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
-            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
 
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
@@ -344,7 +344,7 @@ def needConfirmation(request, vals={}):
                                            'Check your email for a confirmation link.  '\
                                            'It might be in your spam folder.'
     vals['state'] = 'need-confirmation'
-    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+    return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
@@ -415,20 +415,22 @@ def feed(request, g_alias=None, vals={}):
 
     vals['feed_items'] = Content.objects.filter(type__in=c_types)
 
-    html = ajaxRender('site/pages/feed/main.html', vals, request)
+    html = ajaxRender('site/pages/feed/feed.html', vals, request)
     url = '/home/'
     return framedResponse(request, html, url, vals)
 
 def groupFeed(request, g_alias, vals={}):
     group = Group.objects.get(alias=g_alias)
     vals['group'] = group
+    c_types = ['N',"P"]
+    vals['feed_items'] = Content.objects.filter(type__in=c_types)
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
 def homeSidebar(request, vals):
     vals['sidebar'] = 'sidebar'
-    vals['groups'] = Network.objects.all()
+    vals['groups'] = UserGroup.objects.all()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # page to display all of your friends comparisons

@@ -1,12 +1,16 @@
 <!-- left sidebar -->
-<div class="home-sidebar threecol">
+<table class="home">
+    <tr>
+<td class="home-sidebar">
 
     {% include 'site/pages/home/navbar.html' %}
 
-</div>
+</td>
 
 <!-- main area, which gets reloaded as you switch between tabs-->
-<div class="home-main home_focus tencol">
+<td class="home-main home_focus">
     {{ focus_html }}
-</div>
+</td>
+    </tr>
+</table>
 

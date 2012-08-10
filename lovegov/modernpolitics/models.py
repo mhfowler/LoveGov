@@ -3181,6 +3181,15 @@ class Group(Content):
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote closes
 
     #-------------------------------------------------------------------------------------------------------------------
+    # gets url for content
+    #-------------------------------------------------------------------------------------------------------------------
+    def get_url(self):
+        if self.alias != "default":
+            return '/' + self.alias + '/'
+        else:
+            return '/group/' + str(self.id) + '/'
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Downcasts Group to appropriate child model.
     #-------------------------------------------------------------------------------------------------------------------
     def downcast(self):
@@ -3582,10 +3591,6 @@ class Network(Group):
         self.system = True
         self.group_privacy = "P"
         super(Network, self).autoSave()
-
-    def get_url(self):
-        return '/network/' + self.alias + '/'
-
 
 #=======================================================================================================================
 # Network Group
