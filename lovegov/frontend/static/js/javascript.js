@@ -634,6 +634,7 @@ function neutral(div)
 
 //     ajaxPost({
 //         'data': content_data,
+
 //         success: function(data)
 //         {
 //             var obj = eval('(' + data + ')');
@@ -665,6 +666,7 @@ function neutral(div)
 //             event.preventDefault();
 //             $(this).siblings('.inline_hide').hide();
 //             $(this).hide();
+
 //             $(this).siblings('.inline_edit').show();
 //         }
 //     );

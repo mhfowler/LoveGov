@@ -80,10 +80,6 @@ URL_SPECIAL_NAMES = set([
     'motion'
 ])
 
-urlpatterns += patterns('django.views.generic.simple',
-    (r'^frame/$', 'direct_to_template', {'template': 'site/pages/feed.html'}),
-)
-
 # lovegov urls
 urlpatterns += patterns('',
 
