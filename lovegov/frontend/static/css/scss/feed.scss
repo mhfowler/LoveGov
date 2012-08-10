@@ -102,7 +102,7 @@ div.feed-main
       td.feed-item-left-buttons
       {
         border-right: 1px solid $light-gray;
-        width: 41px;
+        width: 40px;
         height: 100%;
 
         div.item-topic-image
@@ -152,8 +152,9 @@ div.feed-main
         width: 200px;
       }
 
-      td.feed-item-main
+      div.feed-item-main
       {
+        margin-top: 5px;
         margin-left: 10px;
 
         div.feed-item-description
