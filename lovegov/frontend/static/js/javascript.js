@@ -473,6 +473,7 @@ bind(".bind_link", "click", function(event) {
 
 //     ajaxPost({
 //         'data': content_data,
+
 //         success: function(data)
 //         {
 //             var obj = eval('(' + data + ')');
@@ -504,6 +505,7 @@ bind(".bind_link", "click", function(event) {
 //             event.preventDefault();
 //             $(this).siblings('.inline_hide').hide();
 //             $(this).hide();
+
 //             $(this).siblings('.inline_edit').show();
 //         }
 //     );
