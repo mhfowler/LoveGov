@@ -45,3 +45,28 @@ def answerAction(user, question, my_response, privacy, answer_id, weight, explan
         action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
         action.autoSave()
     return response
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Likes or dislikes content based on post.
+#-----------------------------------------------------------------------------------------------------------------------
+def voteAction(vote,user,content,privacy):
+    """
+    Likes or dislikes content based on vote.
+    vote( int , Content ) ==> int
+    vote( vote , content ) ==> new value
+    """
+
+    if content.type == "M":
+        motion = content.downcast()
+        if not user in motion.group.members.all():
+            return 0
+
+    value = 0
+    # save vote
+    if vote == 1:
+        value = content.like(user=user, privacy=privacy)
+    elif vote == -1:
+        value = content.dislike(user=user, privacy=privacy)
+
+    return value

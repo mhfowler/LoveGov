@@ -1,0 +1,5 @@
+<a class="home_link navbar-link" href="{{ x.get_url }}">
+    <span class="item-title"> {{ x.get_name }} </span>
+        {% with new=x.getNew %} {% if new %} <span class="item-new"> {{ x.getNew }} </span>  {% endif %}
+    {% endwith %}
+</a>

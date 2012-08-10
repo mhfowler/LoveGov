@@ -119,6 +119,20 @@ bind(".home_link", 'click', null, function(event) {
     homeReload($(this).attr("href"));
 });
 
+bind(".section_title", 'click', null, function(event) {
+    event.preventDefault();
+    if ($(this).hasClass("clicked")) {
+        $(this).find('.red_triangle').removeClass("red-triangle-down");
+        $(this).siblings(".navbar_links_wrapper").animate({"height":'0px'});
+        $(this).removeClass("clicked");
+    }
+    else {
+        $(this).find('.red_triangle').addClass("red-triangle-down");
+        $(this).siblings(".navbar_links_wrapper").animate({"height":'100px'});
+        $(this).addClass("clicked");
+    }
+});
+
 function homeReload(theurl) {
     $('#search-dropdown').hide();
     $('.home_focus').hide();
@@ -205,6 +219,70 @@ bind(".sign_in_button", 'click', null, function(event) {
     event.preventDefault();
     $(".sign_in_dialogue").show();
 });
+
+/***********************************************************************************************************************
+  *
+  *      ~Feed
+  *
+  **********************************************************************************************************************/
+
+// Votes on the feed Binding
+bind( "div.heart_plus" , "click" , null , function(event)
+{
+   var wrapper = $(this).parent();
+   var c_id = wrapper.data('c_id');
+   vote( wrapper , c_id , 1 );
+});
+
+bind( "div.heart_minus" , "click" , null , function(event)
+{
+    var wrapper = $(this).parent();
+    var c_id = wrapper.data('c_id');
+    vote( wrapper , c_id , -1 );
+});
+
+// Vote for the feed AJAX request
+function vote(wrapper, content_id, v)
+{
+     action({
+         data: {'action':'vote','c_id':content_id, 'vote':v },
+         success: function(data)
+         {
+             var returned = eval('(' + data + ')');
+             var my_vote = parseInt( returned.my_vote );
+             var status = returned.status;
+
+             if ( my_vote==1 ) { like(wrapper); }
+             if ( my_vote==0 ) { neutral(wrapper); }
+             if ( my_vote==-1 ) { dislike(wrapper); }
+
+             wrapper.find(".heart_number").text(status);
+         }
+     });
+}
+
+// Vote for the feed GUI update functions
+function like(div)
+{
+     div.find(".heart_plus").addClass("clicked");
+     div.find(".heart_minus").removeClass("clicked");
+}
+function dislike(div)
+{
+     div.find(".heart_plus").removeClass("clicked");
+     div.find(".heart_minus").addClass("clicked");
+}
+function neutral(div)
+{
+     div.find(".heart_plus").removeClass("clicked");
+     div.find(".heart_minus").removeClass("clicked");
+}
+
+
+
+
+
+
 
 // /***********************************************************************************************************************
 //  *
@@ -3339,46 +3417,6 @@ bind(".sign_in_button", 'click', null, function(event) {
 // }
 
 
-// function vote(wrapper, content_id, v)
-// {
-//     ajaxPost({
-//         data: {'action':'vote','c_id':content_id, 'vote':v},
-//         success: function(data)
-//         {
-//             var returned = eval('(' + data + ')');
-//             var my_vote = parseInt(returned.my_vote);
-//             var status = returned.status;
-//             if (my_vote==1) { like(wrapper); }
-//             if (my_vote==0) { neutral(wrapper); }
-//             if (my_vote==-1) { dislike(wrapper); }
-//             wrapper.find(".status").text(status);
-//             if (returned.motion!=0) {
-//                 location.reload();
-//             }
-//         },
-//         error: function(jqXHR, textStatus, errorThrown)
-//         {
-//             $("body").html(jqXHR.responseText);
-//             alert('error');
-//         }
-//     });
-// }
-
-// function like(div)
-// {
-//     div.find(".heart_plus").addClass("clicked");
-//     div.find(".heart_minus").removeClass("clicked");
-// }
-// function dislike(div)
-// {
-//     div.find(".heart_plus").removeClass("clicked");
-//     div.find(".heart_minus").addClass("clicked");
-// }
-// function neutral(div)
-// {
-//     div.find(".heart_plus").removeClass("clicked");
-//     div.find(".heart_minus").removeClass("clicked");
-// }
 
 // /*
 //  visually and in data representation sets all feed parameters to defaults
