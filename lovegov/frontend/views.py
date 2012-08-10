@@ -421,12 +421,14 @@ def feed(request, g_alias=None, vals={}):
 
 def groupFeed(request, g_alias, vals={}):
     group = Group.objects.get(alias=g_alias)
+    vals['group'] = group
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
 def homeSidebar(request, vals):
     vals['sidebar'] = 'sidebar'
+    vals['groups'] = Network.objects.all()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # page to display all of your friends comparisons

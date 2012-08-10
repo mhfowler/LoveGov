@@ -23,6 +23,21 @@ div.home-main {
 
 }
 
+div.left-navbar {
+
+  div.navbar-section {
+    margin-top:15px;
+
+    a.navbar-link {
+      display:block;
+      margin: 10px 0 0 10px;
+    }
+  }
+
+  @include titleFont();
+
+}
+
 
 
 
