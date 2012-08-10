@@ -411,7 +411,9 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def feed(request, g_alias=None, vals={}):
 
-    vals['feed_items'] = Content.objects.filter(type="N")
+    c_types = ['N',"P"]
+
+    vals['feed_items'] = Content.objects.filter(type__in=c_types)
 
     html = ajaxRender('site/pages/feed/main.html', vals, request)
     url = '/home/'
