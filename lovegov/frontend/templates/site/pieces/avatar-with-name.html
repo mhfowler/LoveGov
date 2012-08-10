@@ -1,0 +1,11 @@
+<div class="avatar-with-name">
+
+    <div class="avatar-image">
+        {% include "site/pieces/avatar.html" with user=user height='30' width='30' %}
+    </div>
+
+    <div class="avatar-name">
+        {{ user.get_name }}
+    </div>
+
+</div>

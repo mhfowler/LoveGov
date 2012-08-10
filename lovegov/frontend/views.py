@@ -411,7 +411,9 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def feed(request, g_alias=None, vals={}):
 
-    vals['feed_items'] = Content.objects.filter(type="N")
+    c_types = ['N',"P"]
+
+    vals['feed_items'] = Content.objects.filter(type__in=c_types)
 
     html = ajaxRender('site/pages/feed/main.html', vals, request)
     url = '/home/'
@@ -419,12 +421,14 @@ def feed(request, g_alias=None, vals={}):
 
 def groupFeed(request, g_alias, vals={}):
     group = Group.objects.get(alias=g_alias)
+    vals['group'] = group
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
 def homeSidebar(request, vals):
     vals['sidebar'] = 'sidebar'
+    vals['groups'] = Network.objects.all()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # page to display all of your friends comparisons
@@ -753,7 +757,7 @@ def about(request, start="video", vals={}):
         vals['colors'] = MAIN_TOPIC_COLORS_LIST
         vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
 
-        html = ajaxRender('site/pages/about/about.html', vals, request)
+        html = ajaxRender('site/pages/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
 

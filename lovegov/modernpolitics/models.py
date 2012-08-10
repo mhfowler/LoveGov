@@ -648,14 +648,17 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def like(self, user, privacy):
         my_vote = Voted.lg.get_or_none(user=user, content=self)
+
         if my_vote:
             # if already liked, do nothing
             if my_vote.value == 1:
                 pass
-            # if disliked or neutral, increase vote by
+
+            # if disliked or neutral, increase vote by 1
             else:
                 my_vote.value += 1
                 my_vote.autoSave()
+
                 # adjust content values about status and vote
                 if my_vote.value == 1:
                     self.upvotes += 1
@@ -665,10 +668,11 @@ class Content(Privacy, LocationLevel):
                     mod = 'U'
                 self.status += STATUS_VOTE
                 self.save()
+                # make the action and notify
                 action = Action(relationship=my_vote,modifier=mod)
                 action.autoSave()
-                print "creator: "+str(self.creator)
                 self.creator.notify(action)
+
         else:
             # create new vote
             my_vote = Voted(value=1, content=self, user=user, privacy=privacy)
@@ -677,11 +681,14 @@ class Content(Privacy, LocationLevel):
             self.upvotes += 1
             self.status += STATUS_VOTE
             self.save()
+            # make the action and notify
             action = Action(relationship=my_vote,modifier='L')
             action.autoSave()
             self.creator.notify(action)
+
         if self.type == 'M':
             self.downcast().motionVote(my_vote)
+
         return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
