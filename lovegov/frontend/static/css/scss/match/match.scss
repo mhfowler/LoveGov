@@ -8,6 +8,17 @@
   margin-right:auto;
   font-family: $gill-light;
   text-align: center;
+
+  div.news {
+    float:left;
+    margin: 0 0 0 40px;
+    width:400px;
+  }
+  h4.big-title {
+    margin: 150px 0px 0 0px;
+    @include fontSize(30px);
+    color:$black;
+  }
 }
 
 
@@ -174,7 +185,7 @@ div.match-representatives {
   .match-selection-line-break
   {
     float:left;
-    width:451px;
+    width:440px;
     height:7px;
     border-bottom:1px solid #CCC;
   }
