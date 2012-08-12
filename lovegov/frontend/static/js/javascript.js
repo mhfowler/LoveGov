@@ -123,7 +123,16 @@ bind(".home_link", 'click', null, function(event) {
 
 bind(".section_title", 'click', null, function(event) {
     event.preventDefault();
-    $(this).find('.red_triangle').toggleClass("red-triangle-down");
+    if ($(this).hasClass("clicked")) {
+        $(this).find('.red_triangle').removeClass("red-triangle-down");
+        $(this).siblings(".navbar_links_wrapper").animate({"height":'0px'});
+        $(this).removeClass("clicked");
+    }
+    else {
+        $(this).find('.red_triangle').addClass("red-triangle-down");
+        $(this).siblings(".navbar_links_wrapper").animate({"height":'100px'});
+        $(this).addClass("clicked");
+    }
 });
 
 function homeReload(theurl) {

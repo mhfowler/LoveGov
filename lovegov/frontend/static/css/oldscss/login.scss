@@ -116,7 +116,7 @@ div.no-login-modal
     p.mission {
       display:block;
       margin-top:20px;
-      font-family:$gill-light;
+      @include titleFont;
       color:$deep-gray;
       display:block;
       font-size:20px;
@@ -322,7 +322,7 @@ div.no-login-modal
 div.mission-statement
 {
   clear:both;
-  font-family:$gill-light;
+  @include titleFont;
   color:$deep-gray;
   display:block;
   width:325px;
@@ -341,7 +341,7 @@ div.mission-statement
     padding:3px;
     font-size:22px;
     color:$black;
-    font-family:$gill-light;
+    @include titleFont;
   }
 
   input.top {
@@ -400,7 +400,7 @@ $margin:20px;
 p.fb_login_p
 {
   float:left;
-  font-family: $gill-light;
+  @include titleFont;
   color:$deep-gray;
   font-size:17px;
   margin-bottom:0;
@@ -425,7 +425,7 @@ h3
   color: $deep-gray;
   line-height: 150%;
   float: right;
-  font-family: $gill-light;
+  @include titleFont;
 }
 
 p.privacy_p
@@ -449,7 +449,7 @@ p.privacy_p
   color:$deep-gray;
   cursor:text;
   font-size:28px;
-  font-family:$gill-light;
+  @include titleFont;
 }
 
 #username-span
@@ -489,7 +489,7 @@ p.privacy_p
   padding:3px;
   font-size:22px;
   color:$black;
-  font-family:$gill-light;
+  @include titleFont;
 }
 
 div#register-div {
@@ -545,7 +545,7 @@ div#register-div {
 span.privacy-agree
 {
   font-size:18px;
-  font-family:$gill-light;
+  @include titleFont;
   margin-left:10px;
 }
 
@@ -572,7 +572,7 @@ div.get-started-left
 
 .get-started-paragraph
 {
-  font-family:$gill-light;
+  @include titleFont;
   font-size:17px;
   line-height:150%;
   @include setMargin(15px,15px,10px);
@@ -607,7 +607,7 @@ div.vertical-separator
   top:-10px;
   left:60px;
   font-size:19px;
-  font-family:$gill-light;
+  @include titleFont;
 
   a
   {
@@ -635,7 +635,7 @@ div.vertical-separator
   float:left;
   margin-right:15px;
   margin-top:2px;
-  font-family:$gill-light;
+  @include titleFont;
   font-size:16px;
 }
 

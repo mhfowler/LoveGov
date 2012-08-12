@@ -1,12 +1,60 @@
 {% extends 'site/pages/home/header_expandable.html' %}
+{% load humanize %}
 
-<div class="home_header_summary">
-    {% block header_summary %}
-            <div class="group-title"> {{ group.title }} </div>
-    {% endblock %}
-</div>
-<div class="home_header_expanded">
-    {% block header_expanded %}
-        this is group header expanded shown
-    {% endblock %}
-</div>
+{% block header_summary %}
+
+    <div class="group-menu">
+
+    </div>
+
+    <div class="group-main">
+
+        <div class="group-top">
+
+            <span class="group-title"> {{ group.title }} </span>
+            <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+            <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+
+        </div>
+
+        <div class="group-info">
+
+            <div class="group-image">
+
+            </div>
+
+            <div class="group-match">
+
+                <div class="match-number">
+                    69
+                </div>
+
+                <div class="match-title">match</div>
+
+            </div>
+
+            <div class="group-description">
+
+                <div class="group-description-title">Description</div>
+                <div class="group-description-text">
+
+                </div>
+
+            </div>
+
+            <div class="group-moderators">
+
+            </div>
+
+            <div style="clear:both"></div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+{% block header_expanded %}
+    this is group header expanded shown
+{% endblock %}
