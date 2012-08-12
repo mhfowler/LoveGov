@@ -83,3 +83,21 @@ div.group-main
   }
 
 }
+
+
+div.group-expanded-info {
+  margin: 10px 0 20px 0;
+
+  div.group-histogram {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color:$dark-gray;
+  }
+  div.group-members {
+    float:right;
+    width:200px;
+    height:200px;
+    background-color:$dark-gray;
+  }
+}

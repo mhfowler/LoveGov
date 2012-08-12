@@ -28,6 +28,12 @@ def cycle_list(parser, token):
     return CycleListNode(args[1], args[3])
 
 @register.filter
+def increment(list):
+    previous = list[0]
+    list[0] = previous + 1
+    return previous
+
+@register.filter
 def subtract(value, arg):
     return int(value) - int(arg)
 

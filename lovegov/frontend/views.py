@@ -80,6 +80,9 @@ def viewWrapper(view, requires_login=False):
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
 
+            # helper for key stroke sequences
+            vals['sequence'] = [0]
+
             if requires_login:
 
                     # who is logged in?

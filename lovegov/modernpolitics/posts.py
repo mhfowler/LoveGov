@@ -1412,6 +1412,23 @@ def ajaxFeedHelper(content, user):
     return list
 
 #-----------------------------------------------------------------------------------------------------------------------
+# get feed
+#-----------------------------------------------------------------------------------------------------------------------
+def getFeed(request, vals):
+
+    feed_ranking = request.POST['feed_rank']
+    feed_types = json.loads(request.POST['feed_types'])
+    path = request.POST['path']
+    alias = path.replace("/","")
+    viewer = vals['viewer']
+    feed_items = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
+        feed_types=feed_types, feed_start=0, num=10)
+    vals['feed_items'] = feed_items
+    html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
+    to_return = {'html':html, 'num_items':len(feed_items)}
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
 #-----------------------------------------------------------------------------------------------------------------------
 def saveFilter(request, vals={}):

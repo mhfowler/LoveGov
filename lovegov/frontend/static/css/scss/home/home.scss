@@ -9,6 +9,7 @@ table.home {
   width:100%;
 td.home-sidebar {
   width:200px;
+  overflow:hidden;
 }
 
 td.home-main {
@@ -16,14 +17,22 @@ td.home-main {
   div.home-header {
     width:100%;
 
-    div.home-header-expanded
+    div.home_header_expanded
     {
-      display: none;
+      height:0px;
+      overflow:hidden;
     }
 
     div.expand-info {
+      @include titleFont();
+      color:$dark-gray;
       width:100%;
+      background-color:$light-gray;
       text-align:center;
+    }
+    div.expand-info:hover {
+      cursor:pointer;
+      background-color:$gray;
     }
   }
   div.feed-wrapper {
@@ -37,13 +46,34 @@ td.home-main {
 div.left-navbar {
 
   @include titleFont();
+  overflow:hidden;
+
+  p.asterisk-pointer {
+    color:$black;
+    position:absolute;
+    @include titleFont();
+    @include fontSize(22px);
+    display:none;
+  }
 
   div.navbar-section {
-    margin-top:15px;
+    margin-bottom:10px;
+    width:200px;
 
     a.navbar-link {
+      padding:5px 0 5px 5px;
       display:block;
-      margin: 10px 0 0 10px;
+      margin: 0px 0 0 10px;
+      color:$black;
+      width:180px;
+    }
+    a.navbar-link:hover {
+      color:white;
+      background-color:$light-gray;
+    }
+    a.navbar-link.clicked {
+      color:white;
+      background-color:$light-gray;
     }
   }
 
@@ -51,7 +81,21 @@ div.left-navbar {
     @include inline-block;
     @include grayText();
     @include fontSize(24px);
+    padding: 5px;
   }
+  div.navbar-title:hover {
+    //text-decoration:underline;
+    background-color:$light-gray;
+    color:white;
+  }
+  a.section_title.clicked {
+    div.navbar-title {
+      //text-decoration:underline;
+      background-color:$light-gray;
+      color:white;
+    }
+  }
+
   span.red-triangle {
     @include inline-block;
     width:9px;
@@ -59,15 +103,26 @@ div.left-navbar {
     @include staticImage('/images/icons/arrow_right_red.png');
     @include transition(.25s);
     margin-left:15px;
+    margin-bottom:3px;
   }
   span.red-triangle-down {
     @include transform(rotate(90deg));
     @include transition(.25s);
   }
+  span.red-triangle:hover {
+    cursor:pointer;
+  }
 
   div.navbar_links_wrapper {
     height:0px;
     overflow:hidden;
+
+    a.create-link {
+      float:right;
+      @include fontSize(12px);
+      margin-right:10px;
+      padding-right:5px;
+    }
   }
 
 }
