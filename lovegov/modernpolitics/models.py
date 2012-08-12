@@ -3465,10 +3465,8 @@ class Group(Content):
             return DEFAULT_GROUP_IMAGE_URL
 
     def makeAlias(self):
-        from django.template.defaultfilters import slugify
         from lovegov.modernpolitics.helpers import genAliasSlug
-
-        self.alias = genAliasSlug(str.lower(str(self.title.replace(" ","_"))))
+        self.alias = genAliasSlug(self.title)
         self.save()
         return self.alias
 

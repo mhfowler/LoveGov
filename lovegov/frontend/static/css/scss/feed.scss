@@ -102,6 +102,20 @@ div.feed-main
       margin-top:70px;
     }
 
+    div.load-more {
+      width:100%;
+      height:30px;
+      background-color: $light-gray;
+      color:$black;
+      text-align:center;
+      padding:6px;
+      margin-top:20px;
+    }
+    div.load-more:hover {
+      background-color: $dark-gray;
+      cursor:pointer;
+    }
+
     div.feed-content
     {
 

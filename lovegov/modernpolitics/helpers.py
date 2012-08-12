@@ -20,6 +20,7 @@ import string
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
+from curses.ascii import isalnum
 
 browser_logger = logging.getLogger('browserlogger')
 
@@ -407,8 +408,22 @@ def isUniqueAlias(alias):
     return True
 
 def genAliasSlug(alias):
+    alias = stripAlias(alias)
     nonce = 0
+    orig_alias = alias
     while not isUniqueAlias(alias):
         nonce += 1
-        alias = alias+str(nonce)
+        alias = orig_alias + str(nonce)
     return alias
+
+def stripAlias(alias):
+    to_return = ''
+    for c in alias:
+        if c == ' ':
+            k = '_'
+        elif isalnum(c):
+            k = c
+        else:
+            k = ''
+        to_return += k
+    return str.lower(to_return)

@@ -9,46 +9,58 @@
 
     <div class="group-main">
 
-        <div class="group-top">
 
-            <span class="group-title"> {{ group.title }} </span>
-            <span class="group-scale"> {{ group.getScaleVerbose }} </span>
-            <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+            <div class="group-top">
 
-        </div>
-
-        <div class="group-info">
-
-            <div class="group-image">
+                <span class="group-title"> {{ group.title }} </span>
+                <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+                <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+                <div class="group-action"> take poll </div>
 
             </div>
 
-            <div class="group-match">
+            <div class="group-info">
 
-                <div class="match-number">
-                    69
-                </div>
-
-                <div class="match-title">match</div>
-
-            </div>
-
-            <div class="group-description">
-
-                <div class="group-description-title">Description</div>
-                <div class="group-description-text">
+                <div class="group-image">
 
                 </div>
 
+                <div class="group-match">
+
+                    <div class="match-number">
+                        69
+                    </div>
+
+                    <div class="match-title">match</div>
+
+                </div>
+
+                <div class="group-description">
+
+                    <div class="group-info-title">Description</div>
+                    <p class="group-description-summary">
+                        {{ group.summary }}
+                    </p>
+                    <p class="group-description-text">
+                            {{ group.full_text }}
+                    </p>
+                </div>
+
+                <!-- float right -->
+                <div class="group-actions">
+                    <div class="group-action"> invite/add members </div>
+                    <div class="group-action"> create motion </div>
+                    <div class="group-action"> leave group </div>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div class="group-moderators">
+                    <div class="group-info-title">Moderators</div>
+                </div>
+
+                <div style="clear:both"></div>
+
             </div>
-
-            <div class="group-moderators">
-
-            </div>
-
-            <div style="clear:both"></div>
-
-        </div>
 
     </div>
 

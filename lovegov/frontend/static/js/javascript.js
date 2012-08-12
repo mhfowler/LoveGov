@@ -484,9 +484,10 @@ var feed_start = 0;
 function getFeed() {
     var replace = (feed_start==0);
     var feed_types_json = JSON.stringify(feed_types);
+    var time = 10;
     var feed_timeout = setTimeout(function(){
         $(".feed_fetching").show();
-    },1000);
+    },time);
     action({
             data: {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'start':feed_start, 'feed_types':feed_types_json},
             success: function(data) {
@@ -504,8 +505,10 @@ function getFeed() {
     );
 }
 
-
-
+/* load more feed items */
+bind(".load_more" , "click" , null , function(event) {
+    getFeed();
+});
 
 // /***********************************************************************************************************************
 //  *

@@ -236,7 +236,7 @@ def login(request, to_page='web/', message="", vals={}):
 
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
-        response = renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+        response = renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
     response.delete_cookie('lovegov_try')
     return response
 

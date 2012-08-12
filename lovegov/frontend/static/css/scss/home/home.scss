@@ -29,6 +29,7 @@ td.home-main {
       width:100%;
       background-color:$light-gray;
       text-align:center;
+      margin-top:10px;
     }
     div.expand-info:hover {
       cursor:pointer;
@@ -36,9 +37,7 @@ td.home-main {
     }
   }
   div.feed-wrapper {
-    margin-top:20px;
     width:100%;
-    border: 1px solid $gray;
   }
   }
 }
