@@ -98,10 +98,14 @@ div.group-main
         @include grayText();
         @include fontSize(18px);
     }
-    div.group-description {
+    div.group-summary {
       float: left;
       margin-left: 30px;
-      height: 100px;
+      width: 200px;
+      overflow:hidden;
+      p.group-description-text {
+        display:none;
+      }
     }
     div.group-moderators {
       float:right;
@@ -126,10 +130,15 @@ div.group-expanded-info {
     background-color:$dark-gray;
   }
   div.group-members {
-    float:right;
-    margin-right:50px;
+    float:left;
+    margin-left:30px;
     width:200px;
     height:200px;
     background-color:$dark-gray;
+  }
+  div.group-description {
+    float:left;
+    margin-left: 40px;
+    width: 350px;
   }
 }

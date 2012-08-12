@@ -17,6 +17,10 @@ td.home-main {
   div.home-header {
     width:100%;
 
+    div.home_header_summary {
+      overflow:hidden;
+    }
+
     div.home_header_expanded
     {
       height:0px;
