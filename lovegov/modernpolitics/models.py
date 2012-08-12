@@ -1646,7 +1646,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def joinLoveGovGroup(self):
         from modernpolitics.backend import getLoveGovGroup
         lovegov = getLoveGovGroup()
-        lovegov.members.add(self)
+        lovegov.joinMember(self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Clears m2m and deletes tuples

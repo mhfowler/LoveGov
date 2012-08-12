@@ -1,0 +1,13 @@
+{% for item in feed_items %}
+
+    {% if item.type == "N" %}
+        {% include "site/pages/feed/news-item.html" with item=item %}
+    {% elif item.type == "P" %}
+        {% include "site/pages/feed/petition-item.html" with item=item %}
+    {% elif item.type == "S" %}
+        {% include "site/pages/feed/poll-item.html" with item=item %}
+    {% elif item.type == "D" %}
+        {% include "site/pages/feed/discussion-item.html" with item=item %}
+    {% endif %}
+
+{% endfor %}

@@ -1,4 +1,5 @@
-<a class="home_link navbar-link" href="{{ x.get_url }}">
+{% load customtags %}
+<a class="home_link navbar-link navbar_link" href="{{ x.get_url }}" data-sequence="{{ sequence|increment }}">
     <span class="item-title"> {{ x.get_name }} </span>
         {% with new=x.getNew %} {% if new %} <span class="item-new"> {{ x.getNew }} </span>  {% endif %}
     {% endwith %}

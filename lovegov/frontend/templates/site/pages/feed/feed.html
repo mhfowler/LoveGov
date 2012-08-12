@@ -8,9 +8,9 @@
                 <div class="feed-buttons-container">
 
                     <div class='buttons-container-text'>Sort by:</div>
-                    <div class="sort-button">New</div>
-                    <div class="sort-button">Hot</div>
-                    <div class="sort-button last-button">Best</div>
+                    <div class="sort-button rank_button" data-rank="N" >New</div>
+                    <div class="sort-button rank_button" data-rank="H">Hot</div>
+                    <div class="sort-button rank_button last-button" data-rank="B">Best</div>
 
                 </div>
 
@@ -18,10 +18,10 @@
 
                     <div class='buttons-container-text'>Filter by:</div>
 
-                    <div class="sort-button">News</div>
-                    <div class="sort-button">Petition</div>
-                    <div class="sort-button">Poll</div>
-                    <div class="sort-button last-button">Discussion</div>
+                    <div class="sort-button type_button" data-type="N" >News</div>
+                    <div class="sort-button type_button" data-type="P">Petition</div>
+                    <div class="sort-button type_button" data-type="O">Poll</div>
+                    <div class="sort-button type_button last-button" data-type="D">Discussion</div>
 
                 </div>
 
@@ -56,22 +56,9 @@
         </tr>
     </table>
 
-    <div class="feed-content">
-
-        {% for item in feed_items %}
-
-            {% if item.type == "N" %}
-                {% include "site/pages/feed/news-item.html" with item=item %}
-            {% elif item.type == "P" %}
-                {% include "site/pages/feed/petition-item.html" with item=item %}
-            {% elif item.type == "S" %}
-                {% include "site/pages/feed/poll-item.html" with item=item %}
-            {% elif item.type == "D" %}
-                {% include "site/pages/feed/discussion-item.html" with item=item %}
-            {% endif %}
-
-        {% endfor %}
-
+    <div class="feed-content-wrapper">
+        <div class="feed-content feed_content"></div>
+        <div class="feed-fetching feed_fetching"></div>
     </div>
 
 </div>

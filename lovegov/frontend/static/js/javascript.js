@@ -66,7 +66,18 @@ $(document).ready(function()
         if (event.state != null) { window.location.reload(); }
     };
 
+    // init home page
+    initHomePage();
+
 });
+
+/* does some javascript manipulation of home page */
+function initHomePage() {
+    var navlink = getNavLink(path);
+    selectNavLink(navlink);
+    getFeed();
+}
+
 
 /***********************************************************************************************************************
  *
@@ -116,28 +127,148 @@ bind(".bind_link", "click", null, function(event) {
  *
  ***********************************************************************************************************************/
 
-bind(".home_link", 'click', null, function(event) {
-    event.preventDefault();
-    homeReload($(this).attr("href"));
-});
-
-bind(".section_title", 'click', null, function(event) {
+/* red triangle toggles navsection options */
+bind(".red_triangle", 'click', null, function(event) {
+    var navbar_section = $(this).parents(".navbar_section");
     event.preventDefault();
     if ($(this).hasClass("clicked")) {
-        $(this).find('.red_triangle').removeClass("red-triangle-down");
-        $(this).siblings(".navbar_links_wrapper").animate({"height":'0px'});
-        $(this).removeClass("clicked");
-    }
-    else {
-        $(this).find('.red_triangle').addClass("red-triangle-down");
-        $(this).siblings(".navbar_links_wrapper").animate({"height":'100px'});
-        $(this).addClass("clicked");
+        navSectionToggle(navbar_section, false, true);
+    } else {
+        navSectionToggle(navbar_section, true, true);
     }
 });
+
+/* reload home page, by just replacing focus */
+bind(".home_link", 'click', null, function(event) {
+    event.preventDefault();
+    if (!$(this).hasClass("clicked")) {
+        selectNavLink($(this));
+        homeReload($(this).attr("href"));
+    }
+});
+
+/* reload home page, by just replacing focus */
+bind(null, 'keydown', null, function(event) {
+    var change = 0;
+    switch (event.which) {
+        case 38: change=-1; break;
+        case 40: change=1; break;
+    }
+    if (change) {
+        event.preventDefault();
+        var current_selected = $(".home_link.clicked");
+        if (current_selected) {
+            var current_sequence = current_selected.data('sequence');
+            var next_sequence = current_sequence + change;
+            var navlink = $('.home_link[data-sequence="' + next_sequence + '"]');
+            if (navlink.length) {
+                selectNavLink(navlink);
+                homeReload(navlink.attr("href"));
+            }
+        }
+    }
+});
+
+function navSectionToggle(navbar_section, show, animate) {
+    if (animate) {
+        var animation_time = 100;
+    } else {
+        animation_time = 0;
+    }
+    if (show) {
+        navSectionShow(navbar_section, animation_time);
+    } else {
+        navSectionHide(navbar_section, animation_time);
+    }
+}
+
+function selectNavLink(navlink) {
+    if (navlink) {
+        $(".home_link").removeClass("clicked");
+        navlink.addClass("clicked");
+        if (navlink.hasClass("navbar_link")) {
+            var navbar_section = navlink.parents(".navbar_section");
+            navSectionToggle(navbar_section, true, false);
+        }
+        moveAsterisk(navlink);
+    }
+}
+
+/* helper to get navlink element from url */
+function getNavLink(url) {
+    return $('.home_link[href="' + url + '"]');
+}
+
+function navSectionHide(navbar_section, animation_time) {
+    var redtriangle = navbar_section.find(".red_triangle");
+    var navbarlinks = redtriangle.siblings(".navbar_links_wrapper");
+    redtriangle.removeClass("red-triangle-down");
+    navbarlinks.animate({"height":'0px'}, animation_time);
+    redtriangle.removeClass("clicked");
+    // check if currently selected link is in section being hidden
+    var current_link = getNavLink(path);
+    if (current_link) {
+        var current_wrapper = current_link.parents(".navbar_links_wrapper");
+        if (current_wrapper.attr("class") == navbarlinks.attr("class")) {
+            var to_where = current_link.parents(".navbar_section").find(".section_title");
+            moveAsterisk(to_where);
+        }
+    }
+    navbar_section.removeClass("shown");
+}
+function navSectionShow(navbar_section, animation_time) {
+    if (!navbar_section.hasClass("shown")) {
+        navbar_section.addClass("shown");
+        var redtriangle = navbar_section.find(".red_triangle");
+        var navbarlinks = redtriangle.siblings(".navbar_links_wrapper");
+        redtriangle.addClass("red-triangle-down");
+        navbarlinks.css('height', 'auto');
+        var autoHeight = navbarlinks.height();
+        navbarlinks.css('height', '0px');
+        navbarlinks.animate({"height":autoHeight}, animation_time);
+        redtriangle.addClass("clicked");
+        // check if currently selected link is in section being hidden
+        var current_link = getNavLink(path);
+        if (current_link) {
+            var current_wrapper = current_link.parents(".navbar_links_wrapper");
+            if (current_wrapper.attr("class") == navbarlinks.attr("class")) {
+                moveAsterisk(current_link);
+            }
+        }
+    }
+}
+
+/* expands home header to show expanded info */
+bind(".expand_info", 'click', null, function(event) {
+    expandInfoToggle(true);
+});
+
+var info_expanded = false;
+function expandInfoToggle(animate) {
+    if (animate) {
+        var animation_time = 100;
+    } else {
+        animation_time = 0;
+    }
+    var expanded =  $(".home_header_expanded");
+    if (expanded.hasClass("expanded")) {
+        expanded.animate({"height":'10px'}, animation_time);
+        expanded.removeClass("expanded");
+        info_expanded = false;
+        $(".expand_info").text('+ expand info');
+    } else {
+        expanded.css('height', 'auto');
+        var autoHeight = expanded.height();
+        expanded.css('height', '0px');
+        expanded.animate({"height":autoHeight}, animation_time);
+        expanded.addClass("expanded");
+        info_expanded = true;
+        $(".expand_info").text('- reduce info');
+    }
+}
 
 function homeReload(theurl) {
     $('#search-dropdown').hide();
-    $('.home_focus').hide();
     $.ajax
         ({
             url:theurl,
@@ -147,8 +278,10 @@ function homeReload(theurl) {
             {
                 var returned = eval('(' + data + ')');
                 History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                path = returned.url;
                 $(".home_focus").html(returned.focus_html);
-                $(".home_focus").fadeIn();
+                initFocus();
+                getFeed();
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -156,6 +289,33 @@ function homeReload(theurl) {
             }
         });
 }
+
+/* does js necessary to make focus appear correctly after reload */
+function initFocus() {
+    // if group info was expanded, expand this as well
+    if (info_expanded) {
+        expandInfoToggle(false);
+    }
+    // if parameters were selected, select them
+    selectRank(feed_rank);
+    $.each(feed_types, function(i, e) {
+        selectType(e);
+    });
+}
+
+/* move asterisk, when section is selected */
+function moveAsterisk(to_where) {
+    if (to_where.hasClass("navbar_link")) {
+        var offset = -4;
+    } else {
+        offset = to_where.height()/2;
+    }
+    var position = to_where.offset();
+    var top = position.top - offset;
+    var left = position.left - 40;
+    $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
+}
+
 /***********************************************************************************************************************
  *
  *      ~Ajax links

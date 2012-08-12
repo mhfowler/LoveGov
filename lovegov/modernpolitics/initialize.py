@@ -35,7 +35,9 @@ def getDefaultFilter():
     return getHotFilter()
 
 def getLoveGovGroup():
-    return Group.lg.get_or_none(alias="LoveGov_Group") or Group.lg.get_or_none(alias="lovegov-group") or initializeLoveGovGroup()
+    return Group.lg.get_or_none(alias="LoveGov_Group") or \
+           Group.lg.get_or_none(alias="lovegov-group") or \
+           Group.lg.get_or_none(alias="lovegov_group") or initializeLoveGovGroup()
 
 def getLoveGovGroupView():
     return getLoveGovGroup().group_view.responses.all()
@@ -127,7 +129,7 @@ def initializeLoveGovUser():
 # Currently, just makes lovegov worldview equal to aggregate of all users on site. But could also do more later.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLoveGovGroup():
-    if Group.objects.filter(alias="LoveGov_Group") or Group.objects.filter(alias="lovegov-group"):
+    if Group.objects.filter(alias="LoveGov_Group") or Group.objects.filter(alias="lovegov-group") or Group.objects.filter(alias="lovegov_group"):
         print("...lovegov group already initialized.")
     else:
         group = Group(title="LoveGov Group", group_type='O', full_text="We are lovegov.", system=True, alias="LoveGov_Group")
@@ -427,6 +429,7 @@ def initializeDB():
     initializeNormalBob()
     initializeGeorgeBush()
     initializeContent()
+    initializeSomeUserGroups()
     # valid emails
     initializeValidEmails()
     initializeValidRegisterCodes()
@@ -719,6 +722,25 @@ def initializePersistentDebate():
     debate.turns_total = 4
     debate.save()
     debate.topics.add(topic)
+
+def initializeSomeUserGroups():
+    ug1 = UserGroup(title="Save The Whales",
+        summary="This is a group about saving the whales. " \
+                "We feel very strongly about saving whales. " \
+                "Do you want to save whales? Because we do." \
+                "Lorem ipsum dolor sit amet, consectetur " \
+                "adipiscing elit. Duis tempor nisl non magna" \
+                "viverra pulvinar. Sed eu risus quis dolor" \
+                "euismod aliquet eu ac velit. Duis eu lobortis")
+    ug1.autoSave()
+    ug1.joinMember(getUser("Randy Johnson"))
+    ug2 = UserGroup(title="I made a group, no I didn't")
+    ug2.autoSave()
+    ug3 = UserGroup(title="Woop woop Group")
+    ug3.autoSave()
+    ug4 = UserGroup(title="woop woop Group")
+    ug4.autoSave()
+    print "initialized: some user groups"
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Counts the number of files in a path

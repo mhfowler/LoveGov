@@ -8,5 +8,6 @@ rm $SCRIPTPATH/lovegov/db/local.db
 $SCRIPTPATH/local_setup_with_initialize.sh
 
 # dump result
+echo "dumping result."
 python $SCRIPTPATH/lovegov/local_manage.py dumpdata > $SCRIPTPATH/lovegov/tests/fixtures/test_fixture.json
 

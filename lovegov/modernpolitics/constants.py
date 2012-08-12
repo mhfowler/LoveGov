@@ -571,7 +571,8 @@ ACTIONS = [
     'getLinkInfo',
     'removeMembers',
     'createMotion',
-    'logCompatability'
+    'logCompatability',
+    'getFeed'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

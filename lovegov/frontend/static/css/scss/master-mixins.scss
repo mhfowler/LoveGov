@@ -447,7 +447,7 @@
 
 // gray title font
 @mixin grayText() {
-  color:$light-gray;
+  color:$dark-gray;
   @include titleFont();
 }
 

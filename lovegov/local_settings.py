@@ -175,6 +175,3 @@ COMPRESS_ENABLED = False
 
 STATIC_URL = '/static'
 
-print "STATIC_URL: " + STATIC_URL
-
-
