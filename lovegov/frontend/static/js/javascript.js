@@ -688,6 +688,39 @@ function leftSideToggle(wrapper)
 
 }
 
+
+/***********************************************************************************************************************
+ *
+ *      ~User menu
+ *
+ ***********************************************************************************************************************/
+
+bind("img.gear", "click", function(e) { 
+    $('div.user-menu').fadeToggle(50);
+});
+
+
+function toggleUserMenu()
+{
+    $('.user-menu').toggleClass("user-menu-unselected");
+    $('.user-menu').toggleClass("user-menu-selected");
+    $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
+    var left = $('#user-menu-dropdown').width()-$('.user-menu').width()+$('.user-img').width()+$('#user-name').width()/2-$('.user-menu-pointer').width()/2;
+    $('.user-menu-pointer').css('left',left);
+}
+
+$('#user-menu-dropdown').bind("clickoutside",function(event)
+{
+    if ($('#user-menu-dropdown').css('display') != 'none')
+    {
+        $('#user-menu').removeClass("user-menu-selected");
+        $('#user-menu').addClass("user-menu-unselected");
+        $('#user-menu-dropdown').hide();
+    }
+});
+
+
+
 // /***********************************************************************************************************************
 //  *
 //  *      ~Header links
