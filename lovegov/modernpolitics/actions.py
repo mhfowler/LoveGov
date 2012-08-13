@@ -113,7 +113,7 @@ def joinGroupAction(group,user,privacy):
         if group_joined.confirmed:
             return "joined"
     else: #If it doesn't exist, create it
-        group_joined = GroupJoined(user=user, content=group, group=group, privacy=getPrivacy(request))
+        group_joined = GroupJoined(user=user, content=group, group=group, privacy=privacy)
         group_joined.autoSave()
 
     #REGARDLESS OF GROUP PRIVACY: If the user is invited and requests to join, add them.

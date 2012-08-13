@@ -29,11 +29,12 @@ td.home-main {
 
     div.expand-info {
       @include titleFont();
-      color:$dark-gray;
+      color:$deep-gray;
       width:100%;
       background-color:$light-gray;
       text-align:center;
       margin-top:10px;
+
     }
     div.expand-info:hover {
       cursor:pointer;

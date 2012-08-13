@@ -45,7 +45,9 @@
 
                 <!-- float right -->
                 <div class="group-actions">
-                    <div class="group-action"> invite/add members </div>
+                    {% if is_user_admin %}
+                        <div class="group-action invite_members"> invite/add members </div>
+                    {% endif %}
 
                     <div class="group-action"> create motion </div>
 
