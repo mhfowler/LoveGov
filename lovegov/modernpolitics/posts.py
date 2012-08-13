@@ -1951,6 +1951,14 @@ def actionPOST(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getModal(request,vals={}):
     modal_name = request.POST.get('modal_name')
-    if not modal_name:
-        LGException("modal requested without a modal name")
-        return error
+    modal_html = ''
+
+    if modal_name == "invite_modal":
+        pass
+    elif modal_name == "group_invite_modal":
+        modal_html = "Yay! It works."
+
+    if modal_html:
+        return HttpResponse( json.dumps({'modal_html':modal_html}) )
+    else:
+        raise LGException( "invalid modal name requested: " + str(modal_name) )

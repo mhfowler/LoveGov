@@ -528,7 +528,7 @@ bind(".load_more" , "click" , null , function(event) {
   *
   **********************************************************************************************************************/
 
-bind("div.about-div-button", "click", 
+bind("div.about-div-button", "click",
     function(e) {
         $('div.about-div-button').removeClass("active");
         $("div.about-section").hide();
@@ -879,11 +879,11 @@ function groupInviteResponse(event,response,div)
 
 /***********************************************************************************************************************
  *
- *     ~Modal Stuff
+ *     ~Modal General
  *
  **********************************************************************************************************************/
 
-bind( 'div.global_overdiv' , 'click' , null , function(event)
+bind( 'div.modal_overdiv' , 'click' , null , function(event)
 {
     event.preventDefault();
     $(this).hide();
@@ -894,7 +894,7 @@ bind( 'div.modal_close' , 'click' , null , function(event)
 {
     event.preventDefault();
     $('div.modal_wrapper').hide();
-    $('div.global_overdiv').hide();
+    $('div.modal_overdiv').hide();
 });
 
 function getModal(modal_name,data)
@@ -909,19 +909,29 @@ function getModal(modal_name,data)
         {
             var returned = eval('(' + response_data + ')');
             $('div.modal_content').html( returned.modal_html );
+
+            var modal_wrapper = $('div.modal_wrapper');
+
+            //Get New Modal Position
+            var body_middle = $('body').width()/2;
+            var left_offset = modal_wrapper.outerWidth()/2;
+            var left_position = body_middle - left_offset;
+            modal_wrapper.css('left',left_position);
+
+            modal_wrapper.fadeIn(500);
+            $('div.modal_overdiv').fadeIn(500);
         }
     });
 }
 
 
+/***********************************************************************************************************************
+ *
+ *     ~Group Invite Modal
+ *
+ **********************************************************************************************************************/
 
-
-
-
-
-
-
-
-
-
-
+bind( 'div.group_invite_members' , 'click' , null , function(event)
+{
+    getModal('group_invite_modal');
+});

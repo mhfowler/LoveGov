@@ -586,7 +586,7 @@ div.overdiv {
   top: 0px;
   left: 0px;
   width: 100%; height: 100%;
-  z-index: 102;
+  z-index: 2;
   display: none;
 }
 
@@ -756,12 +756,11 @@ div.edit-link
 }
 
 
-div.modal {
-  z-index: 103;
-  position: fixed;
-  left: 50%;
-  top: 50%;
+div.modal-general {
+  z-index: 3;
+  position: absolute;
   padding: 15px;
+  top: 100px;
   background-color: white;
   -moz-box-shadow: 10px 10px 5px $deep-gray;
   -webkit-box-shadow: 10px 10px 5px $deep-gray;
@@ -772,7 +771,7 @@ div.modal {
 }
 
 div.first-login-modal {
-  z-index: 103;
+  z-index: 3;
   position: absolute;
   left: 50%;
   top: 50%;

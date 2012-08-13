@@ -603,11 +603,13 @@ ACTIONS = [
     'removeMembers',
     'createMotion',
     'logCompatability',
-    'getFeed'
+    'getFeed',
+    'getModal'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
-    'logCompatability'
+    'logCompatability',
+    'getModal'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
