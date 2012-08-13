@@ -37,7 +37,7 @@
 
                 <div class="group-summary">
 
-                    <div class="group-info-title">Who We Are</div>
+                    <div class="group-info-title">Description</div>
                     <p class="group-summary-text">
                         {{ group.summary|truncatechars:100 }}
                     </p>
@@ -45,9 +45,9 @@
 
                 <!-- float right -->
                 <div class="group-actions">
-                    {% if is_user_admin %}
-                        <div class="group-action invite_members"> invite/add members </div>
-                    {% endif %}
+{#                    {% if is_user_admin %}#}
+                        <div class="group-action group_invite_members"> invite/add members </div>
+{#                    {% endif %}#}
 
                     <div class="group-action"> create motion </div>
 
@@ -88,7 +88,13 @@
         </div>
 
         <div class="group-members">
-            members
+            <div class="group-info-title">Members</div>
+            {% for member in group_members %}
+                <div class="group-member-avatar">
+                    {% include 'site/pieces/avatar.html' with user=member width="40" height="40" %}
+                </div>
+            {% endfor %}
+            <div style="clear:both"></div>
         </div>
 
         <div class="group-description">

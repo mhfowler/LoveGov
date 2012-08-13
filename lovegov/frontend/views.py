@@ -33,6 +33,7 @@ def framedResponse(request, html, url, vals):
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
+        vals['notifications_num'] = vals['viewer'].getNotifications(new=True).count()
         frame(request, vals)
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
@@ -461,10 +462,7 @@ def groupPage(request, g_alias, vals={}):
     vals['group_admins'] = group.admins.all()
 
     # Get the list of all members and truncate it to be the number of members showing
-    all_members = list( group.getMembers() )
-    num_members_shown = MEMBER_INCREMENT
-    vals['group_members'] = all_members[:num_members_shown]
-    vals['num_members_shown'] = num_members_shown
+    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
 
     # Get the total number of members
     vals['num_members'] = group.num_members
