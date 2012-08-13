@@ -1,0 +1,275 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+
+$button-top-padding: 5px;
+$button-side-padding: 12px;
+
+div.feed-main
+{
+  width: 100%;
+  padding: 10px;
+
+  table.feed-top-bar
+  {
+    width: 100%;
+    margin-bottom: 15px;
+
+    td.feed-left-buttons
+    {
+      vertical-align: middle;
+
+      div.feed-buttons-container
+      {
+        display: block;
+        float: left;
+        margin-right: 20px;
+
+        div.buttons-container-text
+        {
+          float: left;
+          padding: $button-top-padding+1;
+          color: $dark-gray;
+        }
+
+        div.base-button
+        {
+          float: left;
+          border: solid $light-gray;
+          border-width: 1px 0px 1px 1px;
+          padding: $button-top-padding $button-side-padding;
+
+          &:hover
+          {
+            background-color: $light-gray;
+            cursor:pointer;
+          }
+        }
+        div.base-button.clicked {
+          background-color: $light-gray;
+        }
+
+        div.last-button
+        {
+          border-right-width: 1px;
+        }
+
+        div.sort-button
+        {
+          @extend .base-button;
+        }
+      }
+
+    }
+
+    table.create-button
+    {
+      float: right;
+    }
+
+    td.create-button
+    {
+      @include staticImage('/images/icons/white_create.png');
+      background-repeat: no-repeat;
+      background-position: 12px 7px;
+      font-size: 22px;
+      color: white;
+      background-color: $red;
+      vertical-align: middle;
+      height: 60px;
+      padding: 0 18px 0 75px;
+      text-decoration: none;
+
+      &:hover
+      {
+        cursor:pointer;
+        background-color: $red-light;
+      }
+    }
+  }
+
+  div.feed-content-wrapper {
+
+    div.feed-fetching {
+      @include staticImage("/images/gifs/fetching.gif");
+      width:500px;
+      height:330px;
+      margin:auto;
+      display:none;
+      margin-bottom:50px;
+      margin-top:70px;
+    }
+
+    div.load-more {
+      width:100%;
+      height:30px;
+      background-color: $light-gray;
+      color:$black;
+      text-align:center;
+      padding:6px;
+      margin-top:20px;
+    }
+    div.load-more:hover {
+      background-color: $dark-gray;
+      cursor:pointer;
+    }
+
+    div.feed-content
+    {
+
+      div.feed-item-content
+      {
+        border: 1px solid $light-gray;
+        height: 120px;
+        margin-bottom:10px;
+        padding: 0px;
+        @include single-box-shadow($white-gray,0px,0px,10px);
+        overflow: hidden;
+
+
+        div.feed-item-left-buttons
+        {
+          border-right: 1px solid $light-gray;
+          width: 40px;
+          float: left;
+
+          div.item-content-image
+          {
+            border-bottom: 1px solid $light-gray;
+            height: 40px;
+            background-repeat: no-repeat;
+            background-position: 5px 5px;
+            display:block;
+
+            &.news-image { @include staticImage('/images/icons/content-type/news.png'); }
+            &.poll-image { @include staticImage('/images/icons/content-type/poll.png'); }
+            &.petition-image { @include staticImage('/images/icons/content-type/petition.png'); }
+            &.discussion-image { @include staticImage('/images/icons/content-type/discussion.png'); }
+          }
+
+          div.item-ranking
+          {
+            text-align: center;
+
+            div.heart-plus
+            {
+              @include staticImage('/images/icons/hearts/plusheart-gray.png');
+              background-repeat: no-repeat;
+              height: 18px;
+              width: 18px;
+              margin: 8px auto 4px auto;
+              cursor: pointer;
+
+              &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+              &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+            }
+
+            div.heart-minus
+            {
+              @include staticImage('/images/icons/hearts/minusheart-gray.png');
+              background-repeat: no-repeat;
+              height: 18px;
+              width: 18px;
+              margin: 4px auto 0px auto;
+              cursor: pointer;
+
+              &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+              &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+            }
+          }
+        }
+
+        div.feed-item-image
+        {
+          width: 180px;
+          float: left;
+          margin-right: 20px;
+        }
+
+        div.feed-item-main
+        {
+          margin-top: 8px;
+
+          div.feed-item-title
+          {
+            margin-bottom: 2px;
+            h3.title-text {
+              color:blue;
+            }
+            h3.title-text:hover {
+              color:$black;
+            }
+          }
+
+          div.feed-item-group-name
+          {
+            color: $red;
+            font-style: italic;
+          }
+        }
+
+        div.feed-item-user-info
+        {
+          display: block;
+          float: right;
+          width: 160px;
+          height: 118px;
+          padding-top: 2px;
+          margin-right: 5px;
+          margin-left: 20px;
+
+          div.feed-item-comments
+          {
+            @include staticImage('/images/icons/red_comment.png');
+            background-repeat: no-repeat;
+            background-size: 60px 50px;
+            background-position: 90px 10px;
+            padding-left: 95px;
+            padding-top: 20px;
+            height: 70px;
+
+            div.feed-num-comments
+            {
+              font-size: 20px;
+              color: white;
+              text-align: center;
+              width: 50px;
+            }
+          }
+
+          div.feed-user-name
+          {
+            height: 40px;
+
+            div.feed-avatar-image
+            {
+              float: left;
+              margin-right: 5px;
+            }
+
+            div.feed-avatar-text
+            {
+              float: left;
+
+              div.feed-avatar-name
+              {
+                margin-top: 2px;
+                font-size: 14px;
+              }
+
+              div.feed-avatar-timestamp
+              {
+                color: $dark-gray;
+                font-size: 10px;
+              }
+            }
+
+          }
+        }
+      }
+    }
+  }
+}
