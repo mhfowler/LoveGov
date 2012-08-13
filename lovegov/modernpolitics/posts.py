@@ -1944,3 +1944,13 @@ def actionPOST(request, vals={}):
     else:
         action_func = action + '(request, vals)'
         return eval(action_func)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Splitter between all modals
+#-----------------------------------------------------------------------------------------------------------------------
+def getModal(request,vals={}):
+    modal_name = request.POST.get('modal_name')
+    if not modal_name:
+        LGException("modal requested without a modal name")
+        return error
