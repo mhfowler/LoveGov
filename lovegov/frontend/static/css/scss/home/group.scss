@@ -4,6 +4,12 @@
 
 @import "compass";
 
+div.group-info-title
+{
+  @include grayText();
+  @include fontSize(18px);
+  margin-bottom: 5px;
+}
 
 div.group-main
 {
@@ -101,13 +107,6 @@ div.group-main
 
     }
 
-    div.group-info-title
-    {
-      @include grayText();
-      @include fontSize(18px);
-      margin-bottom: 5px;
-    }
-
     div.group-summary
     {
       float: left;
@@ -137,23 +136,35 @@ div.group-main
 }
 
 
-div.group-expanded-info {
+div.group-expanded-info
+{
   margin: 15px 0 20px 0;
 
-  div.group-histogram {
+  div.group-histogram
+  {
     float:left;
     width:230px;
     height:200px;
-    background-color:$dark-gray;
+    background-color:$gray;
   }
-  div.group-members {
+
+  div.group-members
+  {
     float:left;
     margin-left:30px;
     width:200px;
     height:200px;
-    background-color:$dark-gray;
+
+    div.group-member-avatar
+    {
+      margin-right:10px;
+      margin-bottom:10px;
+      float: left;
+    }
   }
-  div.group-description {
+
+  div.group-description
+  {
     float:left;
     margin-left: 40px;
     width: 350px;

@@ -1,0 +1,60 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+@mixin notification-box
+{
+  border-bottom: solid 1px;
+  border-color: $gray;
+  background-color: white;
+}
+
+div.notifications-dropdown
+{
+  border: solid 1px $gray;
+  position: absolute;
+  left: -135px;
+  top: 40px;
+  color: $black;
+  font-size: 13px;
+  width: 300px;
+  z-index: 1;
+  background-color: white;
+  cursor: auto;
+  display: none;
+
+  div.notifications-header
+  {
+    @include grayText();
+    @include fontSize(18px);
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-bottom: solid 1px $gray;
+  }
+
+  div.notification
+  {
+    @include notification-box;
+    padding-top: 10px;
+    padding-left: 10px;
+
+    &:hover{ background-color: $light-gray; }
+  }
+
+  div.no-notifications
+  {
+    @include notification-box;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    @include grayText();
+  }
+
+  div.see-more-notifications
+  {
+    @include notification-box;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    text-align: center;
+
+    &:hover{ background-color: $light-gray; }
+  }
+}

@@ -3,7 +3,110 @@
 {% block profile_main %}
 
     <div class='profile'>
-        profile profile
+
+        <div class="profile-top">
+            <div class="political-statement">
+
+                <div class="profile-header">
+                    Political Statement
+                </div>
+
+                <p class="political-statement-text">
+                    {{ profile.bio }}
+                </p>
+
+            </div>
+
+            <div class="profile-about">
+
+                <div class="profile-header">
+                    About
+                </div>
+
+                <div class="about-item">
+                    <span class="label"> age: </span> <span class="value"> 20 </span>
+                </div>
+                <div class="about-item">
+                    <span class="label"> position: </span> <span class="value"> Citizen </span>
+                </div>
+                <div class="about-item">
+                    <span class="label"> location: </span> <span class="value"> Rhode Island </span>
+                </div>
+                <div class="about-item">
+                    <span class="label"> parties: </span> <span class="value"> 20 </span>
+                </div>
+
+            </div>
+            <div style="clear:both"></div>
+        </div>
+
+
+        <div class="profile-breakdown">
+            <span class="match-breakdown breakdown-box">
+                <div class="profile-header">
+                    Match Breakdown
+                </div>
+                <div class="stuff">
+                    {% include 'site/pieces/match_breakdown.html' with comparison=comparison %}
+                </div>
+                <div class="view-all"> see comparison breakdown </div>
+            </span>
+            <span class="profile-groups breakdown-box">
+                 <div class="profile-header">
+                     Groups
+                 </div>
+                <div class="stuff">
+                    {% for g in profile_groups %}
+                        <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
+                    {% endfor %}
+                </div>
+                <div class="view-all"> view all </div>
+            </span>
+            <span class="profile-politicians breakdown-box">
+                 <div class="profile-header">
+                     Politicians
+                 </div>
+                <div class="stuff">
+                    {% for p in profile_politicians %}
+                        <a class="profile-avatar" href="{{ p.get_url }}">
+                            {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="view-all"> view all </div>
+            </span>
+
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="profile-bottom">
+
+            <div class="profile-tabs">
+                <a href="#" class="profile-tab profile_tab questions_tab clicked"> Questions </a>
+                <div class="separator-line"></div>
+                <a href="#" class="profile-tab profile_tab posts_tab"> Posts </a>
+                <div class="separator-line"></div>
+                <a href="#" class="profile-tab profile_tab activity_tab"> Activity </a>
+                <div class="separator-line end"></div>
+            </div>
+
+            <div class="profile-focus">
+
+                    <div class="questions_focus profile_focus">
+                        {% include 'site/pages/profile/profile_questions.html' %}
+                    </div>
+
+                    <div class="posts_focus profile_focus">
+                        {% include 'site/pages/feed/feed.html' %}
+                    </div>
+
+                    <div class="activity_focus profile_focus">
+                        {% include 'site/pages/profile/profile_activity.html' %}
+                    </div>
+
+            </div>
+
+        </div>
     </div>
 
 {% endblock %}

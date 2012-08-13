@@ -171,6 +171,7 @@ class Topic(LGModel):
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
     # fields for images
+    icon = models.ImageField(null=True, upload_to="defaults/")
     image = models.ImageField(null=True, upload_to="defaults/")
     hover = models.ImageField(null=True, upload_to="defaults/")
     selected = models.ImageField(null=True, upload_to="defaults/")
@@ -217,6 +218,9 @@ class Topic(LGModel):
 
     def getImageURL(self):
         return self.image.url
+
+    def getIconURL(self):
+        return self.icon.url
 
 
 class OfficeTag(LGModel):
@@ -1202,6 +1206,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                     sessions += 1
                 last = x.when
         return sessions
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # returns all content this user has created in public mode
+    #-------------------------------------------------------------------------------------------------------------------
+    def getContent(self):
+        return Content.objects.filter(in_feed=True, creator=self, privacy="PUB")
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets string represetning parties of user
@@ -3117,6 +3127,36 @@ class ViewComparison(LGModel):
             vals = {'topics':to_return,'main':{'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}}
             vals['user_url'] = viewB_url
             return vals
+
+    def toBreakdown(self):
+        from lovegov.modernpolitics.helpers import LGException
+        from lovegov.modernpolitics.helpers import getMainTopics
+        fast_comparison = self.loadOptimized()
+        if not fast_comparison:
+            raise LGException("no fast comparison whaaa")
+        else:
+            topics = getMainTopics()
+            topics_comparisons = []
+            to_return ={'topics':topics_comparisons}
+            for topic in topics:
+                topic_text = topic.topic_text
+                t = {'topic':topic,
+                     'order':MAIN_TOPICS_CLOCKWISE_ORDER[topic_text],
+                     'light_color':MAIN_TOPICS_COLORS[topic_text]['default'],
+                     'dark_color':MAIN_TOPICS_COLORS[topic_text]['light']}
+                topic_bucket = fast_comparison.getTopicBucket(topic)
+                t['result'] = topic_bucket.getSimilarityPercent()
+                t['empty'] = 100 - t['result']
+                t['num_q'] = topic_bucket.num_questions
+                topics_comparisons.append(t)
+            topics_comparisons.sort(key=lambda x: x['order'])
+            total_bucket = fast_comparison.getTotalBucket()
+            to_return['main'] = {'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}
+            to_return['main']['empty'] = 100 - to_return['main']['result']
+            return to_return
+
+
+
 
     def toJSON(self, viewB_url=''):
         return json.dumps(self.toDict(viewB_url))

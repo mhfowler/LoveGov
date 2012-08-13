@@ -260,6 +260,11 @@ def initializeTopicImage(x):
         selected_ref = os.path.join(PROJECT_PATH, selected_ref)
         file = open(selected_ref)
         x.selected.save(photoKey(".png"), File(file))
+        # initialize icon
+        icon_ref = 'frontend/static/images/icons/colored_topic_icons/' + x.alias + '.png'
+        icon_ref = os.path.join(PROJECT_PATH, icon_ref)
+        file = open(icon_ref)
+        x.icon.save(photoKey(".png"), File(file))
         # save
         x.save()
         print("initialized: " + x.topic_text + " image")
