@@ -703,7 +703,7 @@ def groupEdit(request, g_id=None, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
-def legislation(request, session=None, type=None, number=None, vals={}):
+def legislation(request, session=110, type='sj', number=2999, vals={}):
     vals['session'], vals['type'], vals['number'] = session, type, number
     if session==None:
         vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
