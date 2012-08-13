@@ -1,3 +1,18 @@
+{% comment %}
+ 
+<!--    
+
+    Snippet paramaters: 
+        user: reference to the owner UserProfile
+        width: the width of the avatar image
+        height: the height of the avatar image 
+
+     -->
+
+
+{% endcomment %}
+
+
 {% load thumbnail %}
 {% load customtags %}
 
@@ -8,7 +23,7 @@
         {% if private %}
 
             {% thumbnail defaultProfileImage geometry crop="center" as im %}
-                <img class="avatar-image" src="{{ im.url }}" style="float: {% firstof float 'none' %}" />
+                <img class="avatar-image" src="{{ im.url }}" />
             {% empty %}
                 {{ defaultProfileImage }}
             {% endthumbnail %}
@@ -18,11 +33,11 @@
                 {% thumbnail full_url geometry crop="center" as im %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"
                          data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
-                         src="{{ im.url }}" style="float: {% firstof float 'none' %}" />
+                         src="{{ im.url }}" />
                 {% empty %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"
                          data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
-                         src="{{ full_url }}" style="float: {% firstof float 'none' %}" />
+                         src="{{ full_url }}" />
                 {% endthumbnail %}
             {% endwith %}
 
