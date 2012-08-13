@@ -12,7 +12,10 @@
         <li>about</li>
     </ul>
 
-    {% include 'site/pieces/avatar.html' with height='30' width='30' float='right' %}
+    <span class="name">{{user.get_name}}</span>
+    
+    {% include 'site/pieces/avatar.html' with user=user height='30' width='30' %}
+    
     <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
     <div class="notices setting-icon">
         <div class='notifications_dropdown_button'>{{ notifications_num }}</div>

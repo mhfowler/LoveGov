@@ -3,61 +3,295 @@
 @import 'master-mixins';
 @import "compass";
 
-div.top {
+div.profile-page {
+  width:1140px;
+  div.top {
 
-  width:100%;
-  overflow:hidden;
+    width:100%;
+    overflow:hidden;
 
-  span.name {
-    float:left;
-    @include fontSize(22px);
-    @include inline-block;
-    color: $black;
+    span.name {
+      float:left;
+      @include fontSize(22px);
+      @include inline-block;
+      color: $black;
+    }
+
+    span.state {
+      float:left;
+      margin-left:10px;
+      margin-top:6px;
+      @include fontSize(16px);
+      color:$gray;
+    }
+
+    span.redheart {
+      float:left;
+      margin-left:8px;
+      margin-top:6px;
+    }
+
+    span.upvotes {
+      float:left;
+      margin-left:8px;
+      margin-top:6px;
+      color:$red;
+      @include fontSize(16px);
+    }
+
+    span.redline {
+      float:left;
+      margin-left:8px;
+      margin-top:16px;
+      width:850px;
+      border-top: 1px solid $red;
+    }
+
   }
 
-  span.state {
-    float:left;
-    margin-left:10px;
-    margin-top:6px;
-    @include fontSize(16px);
-    color:$gray;
-  }
+/* everything below little top part */
+  div.not-top {
+    table.profile-table {
+      width:100%;
 
-  span.redheart {
-    float:left;
-    margin-left:8px;
-    margin-top:6px;
-  }
+      margin-top:10px;
+      td.left-bar {
+        width:150px;
+        margin-right:30px;
 
-  span.upvotes {
-    float:left;
-    margin-left:8px;
-    margin-top:6px;
-    color:$red;
-    @include fontSize(16px);
-  }
+        div.follows-you {
+          width:100%;
+          height:30px;
+          margin-top:5px;
+          text-align:center;
+          background-color:$green;
+          color:white;
+          p {
+            text-transform:uppercase;
+            @include fontSize(13px);
+            padding:7px;
+          }
+        }
 
-  span.redline {
-    float:left;
-    margin-left:8px;
-    margin-top:16px;
-    width:800px;
-    border-top: 1px solid $red;
-  }
+        div.match-percent {
+          color:$red;
+          @include fontSize(64px);
+          margin-top:14px;
+          line-height:48px;
+        }
+        div.match-from {
+          @include fontSize(24px);
+          color:$red;
+          margin-top:14px;
+          line-height:24px;
+        }
+        div.match-from.how-many {
+          font-weight:bold;
+          margin-top:10px;
+        }
 
-}
 
-div.not-top {
-  margin-top:10px;
-  div.left-bar {
-    @include inline-block;
-    width:150px;
-    margin-right:30px;
-    border-right:1px solid $gray;
-  }
+        div.stats {
+          div.stats-row-one {
+            margin-top:12px;
+          }
+          div.stats-row-two {
+            margin-top:6px;
+          }
 
-  div.profile-main {
-    @include inline-block;
-    border-left:1px solid $gray;
+          div.stats-box {
+            float:left;
+            width:40px;
+            height:40px;
+            border: 1px solid $gray;
+            margin-left:15px;
+            text-align:center;
+            div.num {
+              @include fontSize(20px);
+            }
+            div.label {
+              @include fontSize(8px);
+            }
+            &:hover {
+              cursor:pointer;
+              background-color:$dark-gray;
+            }
+          }
+          div.left-box {
+            margin-left:0;
+          }
+
+          div.gray-box {
+            background-color:$light-gray;
+            div.num {
+              color:white;
+            }
+          }
+          div.white-box {
+            div.num {
+              color:$red;
+            }
+          }
+        }
+
+        div.follow-button {
+          margin-top:20px;
+        }
+        div.profile-bar-button {
+          width:100%;
+          height:40px;
+          padding-top:5px;
+          padding-left:10px;
+          background-color:$light-gray;
+          text-align:left;
+          @include fontSize(24px);
+          &:hover {
+            background-color:$red;
+            color:white;
+          }
+        }
+      }
+
+      td.profile-main {
+        padding-left:30px;
+      }
+    }
+
+    div.profile {
+      width:100%;
+
+      div.profile-header {
+        @include fontSize(18px);
+      }
+
+      a.box-link {
+        width:100%;
+        background-color:$gray;
+        color:$black;
+        padding:5px;
+        display:block;
+        &:hover {
+          background-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+
+      div.political-statement {
+        float:left;
+        width:400px;
+        p.political-statement-text {
+          padding-left:10px;
+          margin-top:6px;
+        }
+      }
+      div.profile-about {
+        margin-left:30px;
+        float:left;
+
+        div.about-items {
+          margin-top:25px;
+        }
+        div.about-item {
+          margin-top:10px;
+        }
+        span.value {
+          margin-left:15px;
+        }
+      }
+
+      div.profile-breakdown {
+        width:100%;
+        margin-top:20px;
+
+        span.breakdown-box {
+          float:left;
+          width:240px;
+          margin-right:80px;
+          height:200px;
+
+          div.stuff {
+            //background-color:$gray;
+            width:100%;
+            height:150px;
+            margin-top:10px;
+          }
+
+          div.view-all {
+            width:100%;
+            margin-top:10px;
+            background-color:$light-gray;
+            padding:5px;
+            padding-left:10px;
+            &:hover {
+              background-color:$dark-gray;
+              cursor:pointer;
+            }
+          }
+        }
+      }
+
+      span.profile-groups {
+        a.box-link {
+          margin-top:10px;
+        }
+        a.box-link.first-box {
+          margin-top:0;
+        }
+      }
+
+      span.profile-politicians {
+        a.profile-avatar {
+          float:left;
+          margin-right:20px;
+          margin-bottom:20px;
+          &:hover {
+            cursor:pointer;
+          }
+        }
+      }
+
+      div.profile-tabs {
+        width:100%;
+        margin-top:100px;
+        a.profile-tab {
+          float:left;
+          position:relative;
+          top:-41px;
+          background-color:$light-gray;
+          padding:6px 14px;
+          @include fontSize(20px);
+          color:$black;
+          border: 1px solid $gray;
+          border-bottom: none;
+          &:hover {
+            border-color:$black;
+          }
+        }
+        a.profile-tab.clicked {
+          background-color:white;
+          z-index:1;
+          &:hover {
+            border-color:$black;
+          }
+        }
+        div.separator-line {
+          float:left;
+          border-bottom:1px solid $gray;
+          width:15px;
+        }
+        div.separator-line.end {
+          width:630px;
+        }
+      }
+    }
+
+    div.profile-focus {
+      div.profile_focus {
+        display:none;
+      }
+      div.profile_focus.questions_focus {
+        display:block;
+      }
+    }
   }
 }
