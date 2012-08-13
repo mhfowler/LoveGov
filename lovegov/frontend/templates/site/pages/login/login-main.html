@@ -11,7 +11,7 @@
 
         <div id="middle-right">
 
-            <div id="create-account-div" class="state-div">
+            <div id="create-account-div" class="state-div" style="display:block;">
                 {% include 'site/pages/login/create-account.html' %}
             </div>
 
@@ -49,62 +49,6 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
-            $("#create-account-div").show();
-
-            /*
-            $('#what-is-lovegov').click(function()
-            {
-                $('._fade').fadeOut(300);
-                $('.about-div').fadeToggle(300);
-            }); */
-
-            $('.privacy_policy').click(function()
-            {
-                $('._fade').fadeOut(300);
-                $('#privacy-div').fadeToggle(300);
-            });
-
-            $('#why-facebook').click(function()
-            {
-                $('#why-facebook-hover').fadeToggle(300);
-                return false;
-            });
-
-            $('#why-facebook-hover').bind('clickoutside',function()
-            {
-                $(this).fadeOut(300);
-            });
-
-            $("#why-facebook-hover a").click(function()
-            {
-                $('#why-facebook-hover').fadeOut(300);
-            });
-
-            $('#create-account').click(function(event)
-            {
-                event.preventDefault();
-                $('#login-div').hide();
-                $('#register-div').show();
-            });
-
-            $('#no-facebook').click(function()
-            {
-                $('#fb-div').hide();
-                $('#login-div').show();
-            });
-
-            $(".create_account_button").click(function(event) {
-                event.preventDefault();
-                $("#create-account-div").hide();
-                $("#sign-up-div").show();
-            });
-
-            $(".sign_up_with_email_button").click(function(event) {
-                event.preventDefault();
-                $("#sign-up-div").hide();
-                $("#register-div").show();
-            });
-
             var register_state = "{{ state }}";
             if (register_state == 'register_error') {
                 $(".state-div").hide();
@@ -119,6 +63,9 @@
                 $("#need-confirmation-div").show();
             }
 
+            if (login_state == 'login_error') {
+                $(".sign_in_dialogue").show();
+            }
         });
     </script>
 

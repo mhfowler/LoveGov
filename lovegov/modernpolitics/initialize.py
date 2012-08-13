@@ -430,6 +430,7 @@ def initializeDB():
     initializeGeorgeBush()
     initializeContent()
     initializeSomeUserGroups()
+    initializeSomeTestContent()
     # valid emails
     initializeValidEmails()
     initializeValidRegisterCodes()

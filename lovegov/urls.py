@@ -69,7 +69,7 @@ urlpatterns += patterns('',
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
 
     # other main pages
-    (r'^home/$', viewWrapper(views.feed, requires_login=True)),
+    (r'^home/$', viewWrapper(views.redirect, requires_login=True)),
     (r'^web/$', viewWrapper(views.web, requires_login=True)),
     (r'^about/$', viewWrapper(views.about, requires_login=True)),
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),
