@@ -72,7 +72,7 @@ STATICFILES_DIRS = base_settings.STATICFILES_DIRS
 STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
 from compressor_settings import *
-COMPRESS_ENABLED = True
+COMPRESS_ENABLED = False
 
 ########################################################################################################################
 #    templates
