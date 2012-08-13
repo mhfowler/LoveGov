@@ -208,7 +208,7 @@ def aliasDowncast(request, alias=None, vals={}):
         return viewWrapper(profile, requires_login=True)(request, alias)
     matched_group = Group.lg.get_or_none(alias=alias)
     if matched_group:
-        the_view = viewWrapper(groupFeed, requires_login=True)
+        the_view = viewWrapper(groupPage, requires_login=True)
         return the_view(request=request, g_alias=matched_group.alias)
     return redirect(request)
 
@@ -236,7 +236,7 @@ def login(request, to_page='web/', message="", vals={}):
 
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
-        response = renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+        response = renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
     response.delete_cookie('lovegov_try')
     return response
 
@@ -410,101 +410,50 @@ def compareWeb(request,alias=None,vals={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# new feeds page
+# MAIN HOME PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def feed(request, g_alias=None, vals={}):
+def me(request, vals):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
-    c_types = ['N',"P"]
+def groups(request, vals):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
-    vals['feed_items'] = Content.objects.filter(type__in=c_types)
+def elections(request, vals):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
-    html = ajaxRender('site/pages/feed/feed.html', vals, request)
-    url = '/home/'
-    return framedResponse(request, html, url, vals)
+def politicians(request, vals):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
-def groupFeed(request, g_alias, vals={}):
+def friends(request, vals):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# group detail
+#-----------------------------------------------------------------------------------------------------------------------
+def groupPage(request, g_alias, vals={}):
     group = Group.objects.get(alias=g_alias)
     vals['group'] = group
-    c_types = ['N',"P"]
-    vals['feed_items'] = Content.objects.filter(type__in=c_types)
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
-def homeSidebar(request, vals):
-    vals['sidebar'] = 'sidebar'
-    vals['groups'] = UserGroup.objects.all()
-
 #-----------------------------------------------------------------------------------------------------------------------
-# page to display all of your friends comparisons
+# election detail
 #-----------------------------------------------------------------------------------------------------------------------
-def iFollow(request, vals={}):
-
-    viewer = vals['viewer']
-
-    group = viewer.i_follow
-    vals['ifollow'] = group
-
-    friends = list(viewer.getIFollow())
-    for x in friends:
-        comparison = x.getComparison(viewer)
-        x.result = comparison.result
-    friends.sort(key=lambda x:x.result,reverse=True)
-    vals['friends'] = friends
-
-    loadHistogram(5, group.id, 'mini', vals=vals)
-
-    html = ajaxRender('site/pages/match/friends.html', vals, request)
-    url = '/friends/'
-    return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# page to display all of your groups
-#-----------------------------------------------------------------------------------------------------------------------
-def groups(request, vals={}):
-
-    viewer = vals['viewer']
-
-    mygroups = viewer.getUserGroups()
-    vals['mygroups'] = mygroups
-
-    mygroups_ids = mygroups.values_list("id", flat=True)
-    groups = list(UserGroup.objects.all())
-    for x in groups:
-        x.prepComparison(viewer)
-        x.you_are_member = (x.id in mygroups_ids)
-    groups.sort(key=lambda x:x.result,reverse=True)
-    vals['groups'] = groups
-
-    vals['what'] = "Groups"
-
-    html = ajaxRender('site/pages/match/groups.html', vals, request)
-    url = '/friends/'
-    return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# page to display all of your networks
-#-----------------------------------------------------------------------------------------------------------------------
-def networks(request, vals={}):
-
-    viewer = vals['viewer']
-
-    mygroups = viewer.getNetworks()
-    vals['mygroups'] = mygroups
-
-    mygroups_ids = mygroups.values_list("id", flat=True)
-    groups = list(Network.objects.all())
-    for x in groups:
-        x.prepComparison(viewer)
-        x.you_are_member = (x.id in mygroups_ids)
-    groups.sort(key=lambda x:x.result,reverse=True)
-    vals['groups'] = groups
-
-    vals['what'] = "Networks"
-
-    html = ajaxRender('site/pages/match/groups.html', vals, request)
-    url = '/friends/'
-    return framedResponse(request, html, url, vals)
+def electionPage(request, e_alias, vals={}):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Profile Link
@@ -616,286 +565,6 @@ def profile(request, alias=None, vals={}):
             return shortcuts.redirect('/alpha/' + to_alias)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Network page
-#-----------------------------------------------------------------------------------------------------------------------
-def network(request, alias=None, vals={}):
-    if not alias:
-        user = vals['viewer']
-        return shortcuts.redirect(user.getNetwork().get_url())
-    network = Network.lg.get_or_none(alias=alias)
-    if not network:
-        vals['basic_message'] = "No network matches the given network ID"
-        html = ajaxRender('site/pages/basic_message.html', vals, request)
-        url = '/network/' + alias + '/'
-        return framedResponse(request, html, url, vals)
-    return group(request,g_id=network.id,vals=vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Group page
-#-----------------------------------------------------------------------------------------------------------------------
-def group(request, g_id=None, vals={}):
-
-    viewer = vals['viewer']
-
-    if not g_id:
-        return HttpResponse('Group id not provided to view function')
-    group = Group.lg.get_or_none(id=g_id)
-    if not group:
-        return HttpResponse('Group id not found in database')
-
-    vals['group'] = group
-    comparison, json = group.getComparisonJSON(viewer)
-    vals['comparison'] = comparison
-    vals['json'] = json
-
-    loadHistogram(5, group.id, 'mini', increment=5, vals=vals)
-
-    # Get Follow Requests
-    vals['group_requests'] = list(group.getFollowRequests())
-
-    # Get Activity
-    num_actions = NOTIFICATION_INCREMENT
-    actions = group.getActivity(num=num_actions)
-    actions_text = []
-    for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer) )
-    vals['actions_text'] = actions_text
-    vals['num_actions'] = num_actions
-
-    # Is the current viewer already (requesting to) following this group?
-    vals['is_user_follow'] = False
-    vals['is_user_confirmed'] = False
-    vals['is_user_rejected'] = False
-    vals['is_visible'] = False
-    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
-    if group_joined:
-        if group_joined.confirmed:
-            vals['is_visible'] = True
-        if group_joined.requested:
-            vals['is_user_follow'] = True
-        if group_joined.confirmed:
-            vals['is_user_confirmed'] = True
-        if group_joined.rejected:
-            vals['is_user_rejected'] = True
-
-    if not group.group_privacy == 'S':
-        vals['is_visible'] = True
-
-    if group == viewer.i_follow:
-        vals['is_visible'] = True
-
-    vals['is_user_admin'] = False
-    admins = list( group.admins.all() )
-    for admin in admins:
-        if admin.id == viewer.id:
-            vals['is_user_admin'] = True
-    vals['group_admins'] = group.admins.all()
-
-    all_members = list(group.getMembers())
-    num_members = MEMBER_INCREMENT
-    vals['group_members'] = all_members[:num_members]
-    vals['num_members'] = num_members
-
-    members = list( all_members )
-    for admin in admins:
-        members.remove(admin)
-    vals['normal_members'] = members
-
-    vals['num_group_members'] = group.num_members
-
-    followers = list(viewer.getFollowMe())
-    for member in all_members:
-        if member in followers:
-            followers.remove(member)
-
-    vals['non_member_followers'] = followers
-
-    html = ajaxRender('site/pages/home/home.html', vals, request)
-    url = group.get_url()
-    return framedResponse(request, html, url, vals)
-
-
-def histogramDetail(request, g_id, vals={}):
-
-    viewer = vals['viewer']
-    group = Group.objects.get(id=g_id)
-
-    vals['group'] = group
-    getMainTopics(vals)
-
-    loadHistogram(20, group.id, 'full', vals=vals)
-
-    html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
-    url = group.getHistogramURL()
-    return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# About Link
-#-----------------------------------------------------------------------------------------------------------------------
-def about(request, start="video", vals={}):
-    if request.method == 'GET':
-        vals['start_page'] = start
-        developers = UserProfile.objects.filter(developer=True).order_by('id')
-        developers = developers.reverse()
-        skew = 185
-        side = 110
-        main_side = 165
-        offset = 450
-        angle_offset = math.pi/3
-        for num in range(0,len(developers)):
-            angle = 2.0*math.pi*(float(num)/float(len(developers)))+angle_offset
-            cosine = math.cos(angle)
-            sine = math.sin(angle)
-            developers[num].x = int(cosine*skew)+(offset/2)-(side/2)
-            developers[num].y = int(sine*skew)+skew
-            developers[num].angle = math.degrees(angle)-180
-            developers[num].x2 = int(cosine*skew/2)+(offset/2)-(side/2)
-            developers[num].y2 =  int(sine*skew/2)+(offset/2)-(side/2)
-        vals['developers'] = developers
-        vals['side'] = side
-        vals['skew'] = skew
-        vals['side_half'] = side/2
-        vals['main_side'] = main_side
-        vals['main_side_half'] = main_side/2
-        vals['x'] = (offset-main_side)/2
-        vals['y'] = skew - ((main_side-side)/2)
-        vals['colors'] = MAIN_TOPIC_COLORS_LIST
-        vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
-
-        html = ajaxRender('site/pages/about.html', vals, request)
-        url = '/about/'
-        return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Legislation-related pages
-#-----------------------------------------------------------------------------------------------------------------------
-def legislation(request, session=None, type=None, number=None, vals={}):
-    vals['session'], vals['type'], vals['number'] = session, type, number
-    if session==None:
-        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session)
-    if type==None:
-        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
-        vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session, bill_type=type)
-    if number==None:
-        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
-    if len(legs)==0:
-        vals['error'] = "No legislation found with the given parameters."
-    else:
-	leg = legs[0]
-        vals['leg_titles'] = [x['full_title'] for x in Legislation.objects.values('full_title').distinct()]
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Match page.
-#-----------------------------------------------------------------------------------------------------------------------
-def newMatch(request,start='presidential', vals={}):
-
-    sections = {'presidential':0,
-                'senate':1,
-                'social':2,
-                'representatives':3}
-    vals['start_sequence'] = sections[start]
-
-    viewer = vals['viewer']
-    comparison, json = viewer.getComparisonJSON(viewer)
-    viewer.compare = json
-    viewer.result = comparison.result
-
-    matchSocial(request, vals)
-    matchPresidential(request, vals)
-    matchSenate(request, vals)
-    matchRepresentatives(request, vals)
-
-    html = ajaxRender('site/pages/match/match-new.html', vals, request)
-    url = "/match/"
-    return framedResponse(request, html, url, vals)
-
-def matchSocial(request, vals={}):
-    viewer = vals['viewer']
-    vals['friends'] = viewer.getIFollow(num=6)
-    vals['groups'] = viewer.getUserGroups(num=6)
-    vals['networks'] = viewer.getNetworks()[:4]
-
-def matchPresidential(request, vals={}):
-    viewer = vals['viewer']
-    if not LOCAL:
-        obama = UserProfile.lg.get_or_none(first_name="Barack",last_name="Obama", politician=True)
-        paul = UserProfile.lg.get_or_none(first_name="Ronald",last_name="Paul", politician=True)
-        romney = UserProfile.lg.get_or_none(first_name="Mitt",last_name="Romney", politician=True)
-    else:
-        obama = viewer
-        paul = viewer
-        romney = viewer
-    list = [obama,paul,romney]
-    for x in list:
-        x.prepComparison(viewer)
-
-    list.sort(key=lambda x:x.result,reverse=True)
-    vals['presidential'] = list
-
-def matchSenate(request, vals={}):
-    viewer = vals['viewer']
-    if not LOCAL:
-        elizabeth = UserProfile.lg.get_or_none(first_name="Elizabeth", last_name="Warren", politician=True)
-        brown = UserProfile.lg.get_or_none(first_name="Scott", last_name="Brown", politician=True)
-        voters = getLoveGovGroup()
-    else:
-        elizabeth = viewer
-        brown = viewer
-        voters = viewer
-
-    for x in [elizabeth, brown, voters]:
-        x.prepComparison(viewer)
-
-    vals['elizabeth'] = elizabeth
-    vals['brown'] = brown
-    vals['mass'] = voters
-
-def matchRepresentatives(request, vals={}):
-
-    viewer = vals['viewer']
-    congressmen = []
-
-    if viewer.location:
-        address = viewer.location
-        congressmen = []
-        congress = CongressSession.lg.get_or_none(session=CURRENT_CONGRESS)
-        senator_tag = OfficeTag.lg.get_or_none(name="senator")
-        rep_tag = OfficeTag.lg.get_or_none(name="representative")
-
-        if congress:
-            rep_office = rep_tag.tag_offices.filter(location__state=address.state,location__district=address.district)[0]
-            representative = rep_office.office_terms.filter(end_date__gte=datetime.date.today())[0].user
-            if representative:
-                congressmen.append(representative)
-
-            senator_office = senator_tag.tag_offices.filter(location__state=address.state)[0]
-            senators = map( lambda x : x.user , senator_office.office_terms.filter(end_date__gte=datetime.date.today()) )
-            for senator in senators:
-                congressmen.append(senator)
-
-        vals['congressmen'] = congressmen
-        vals['state'] = address.state
-        vals['district'] = address.district
-        vals['latitude'] = address.latitude
-        vals['longitude'] = address.longitude
-
-    for x in congressmen:
-        x.prepComparison(viewer)
-
-    congressmen.sort(key=lambda x:x.result,reverse=True)
-
-    if not congressmen:
-        vals['invalid_address'] = True
-
-#-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
 def petitionDetail(request, p_id, vals={}, signerLimit=8):
@@ -958,26 +627,70 @@ def questionDetail(request, q_id=-1, vals={}):
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# sensibly redirects to next question
+# detail for a poll
 #-----------------------------------------------------------------------------------------------------------------------
-def nextQuestion(request, vals={}):
-    question = getNextQuestion(request, vals)
-    valsQuestion(request, question.id, vals)
+def pollDetail(request, p_id=-1, vals={}):
+    return HttpResponse("Poll!")
 
-    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
-    url = question.get_url()
+#-----------------------------------------------------------------------------------------------------------------------
+# detail for a discussion
+#-----------------------------------------------------------------------------------------------------------------------
+def discussionDetail(request, p_id=-1, vals={}):
+    return HttpResponse("Discussion!")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# closeup of histogram
+#-----------------------------------------------------------------------------------------------------------------------
+def histogramDetail(request, g_id, vals={}):
+
+    viewer = vals['viewer']
+    group = Group.objects.get(id=g_id)
+
+    vals['group'] = group
+    getMainTopics(vals)
+
+    loadHistogram(20, group.id, 'full', vals=vals)
+
+    html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
+    url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
 
-def getNextQuestion(request, vals={}):
-    user = vals['viewer']
-    responses = user.getView().responses
-    answered_ids = responses.values_list('question__id', flat=True)
-    unanswered = Question.objects.exclude(id__in=answered_ids)
-    if unanswered:
-        return random.choice(unanswered)
-    else:
-        question = Question.objects.all()
-        return random.choice(question)
+#-----------------------------------------------------------------------------------------------------------------------
+# About Link
+#-----------------------------------------------------------------------------------------------------------------------
+def about(request, start="video", vals={}):
+    if request.method == 'GET':
+        vals['start_page'] = start
+        developers = UserProfile.objects.filter(developer=True).order_by('id')
+        developers = developers.reverse()
+        skew = 185
+        side = 110
+        main_side = 165
+        offset = 450
+        angle_offset = math.pi/3
+        for num in range(0,len(developers)):
+            angle = 2.0*math.pi*(float(num)/float(len(developers)))+angle_offset
+            cosine = math.cos(angle)
+            sine = math.sin(angle)
+            developers[num].x = int(cosine*skew)+(offset/2)-(side/2)
+            developers[num].y = int(sine*skew)+skew
+            developers[num].angle = math.degrees(angle)-180
+            developers[num].x2 = int(cosine*skew/2)+(offset/2)-(side/2)
+            developers[num].y2 =  int(sine*skew/2)+(offset/2)-(side/2)
+        vals['developers'] = developers
+        vals['side'] = side
+        vals['skew'] = skew
+        vals['side_half'] = side/2
+        vals['main_side'] = main_side
+        vals['main_side_half'] = main_side/2
+        vals['x'] = (offset-main_side)/2
+        vals['y'] = skew - ((main_side-side)/2)
+        vals['colors'] = MAIN_TOPIC_COLORS_LIST
+        vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
+
+        html = ajaxRender('site/pages/about.html', vals, request)
+        url = '/about/'
+        return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password
@@ -1025,7 +738,9 @@ def account(request, section="", vals={}):
         url = '/account/'
         return framedResponse(request, html, url, vals)
 
-
+#-----------------------------------------------------------------------------------------------------------------------
+# group edit
+#-----------------------------------------------------------------------------------------------------------------------
 def groupEdit(request, g_id=None, section="", vals={}):
     viewer = vals['viewer']
 
@@ -1081,6 +796,31 @@ def groupEdit(request, g_id=None, section="", vals={}):
         html = ajaxRender('site/pages/group/group_edit.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Legislation-related pages
+#-----------------------------------------------------------------------------------------------------------------------
+def legislation(request, session=None, type=None, number=None, vals={}):
+    vals['session'], vals['type'], vals['number'] = session, type, number
+    if session==None:
+        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
+        return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
+    legs = Legislation.objects.filter(congress_session=session)
+    if type==None:
+        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
+        vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
+        return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
+    if number==None:
+        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
+        return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
+    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
+    if len(legs)==0:
+        vals['error'] = "No legislation found with the given parameters."
+    else:
+        leg = legs[0]
+        vals['leg_titles'] = leg.legislationtitle_set.all()
+        vals['leg'] = leg
+    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept

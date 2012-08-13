@@ -9,46 +9,55 @@
 
     <div class="group-main">
 
-        <div class="group-top">
 
-            <span class="group-title"> {{ group.title }} </span>
-            <span class="group-scale"> {{ group.getScaleVerbose }} </span>
-            <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+            <div class="group-top">
 
-        </div>
-
-        <div class="group-info">
-
-            <div class="group-image">
+                <span class="group-title"> {{ group.title }} </span>
+                <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+                <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+                <div class="group-action"> take poll </div>
 
             </div>
 
-            <div class="group-match">
+            <div class="group-info">
 
-                <div class="match-number">
-                    69
-                </div>
-
-                <div class="match-title">match</div>
-
-            </div>
-
-            <div class="group-description">
-
-                <div class="group-description-title">Description</div>
-                <div class="group-description-text">
+                <div class="group-image">
 
                 </div>
 
+                <div class="group-match">
+
+                    <div class="match-number">
+                        69
+                    </div>
+
+                    <div class="match-title">match</div>
+
+                </div>
+
+                <div class="group-summary">
+
+                    <div class="group-info-title">Who We Are</div>
+                    <p class="group-summary-text">
+                        {{ group.summary|truncatechars:100 }}
+                    </p>
+                </div>
+
+                <!-- float right -->
+                <div class="group-actions">
+                    <div class="group-action"> invite/add members </div>
+                    <div class="group-action"> create motion </div>
+                    <div class="group-action"> leave group </div>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div class="group-moderators">
+                    <div class="group-info-title">Moderators</div>
+                </div>
+
+                <div style="clear:both"></div>
+
             </div>
-
-            <div class="group-moderators">
-
-            </div>
-
-            <div style="clear:both"></div>
-
-        </div>
 
     </div>
 
@@ -65,6 +74,17 @@
 
         <div class="group-members">
             members
+        </div>
+
+        <div class="group-description">
+            <div class="group-info-title">About Us</div>
+            {{ group.full_text }}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam blandit porttitor blandit. Proin feugiat mattis leo, non semper massa eleifend vel. Nunc tincidunt vehicula mauris, quis aliquam ante convallis vitae. Maecenas velit arcu, porttitor a facilisis non, euismod ultrices elit. Donec non mi sem, et congue ante. Vestibulum mollis interdum dapibus. Maecenas at risus metus, quis ullamcorper urna. Pellentesque et felis in dolor scelerisque cursus.
+
+            Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque euismod nibh sit amet justo iaculis ut egestas lectus sagittis. In tincidunt imperdiet sem, et iaculis ante aliquam vel. Proin eleifend tortor sed magna tristique pharetra. Curabitur ligula diam, sollicitudin eu euismod non, lobortis a enim. Vivamus dapibus urna non lorem scelerisque at malesuada enim volutpat. Morbi imperdiet sollicitudin tortor eget consequat. Sed aliquam posuere nisi ac faucibus.
+
+            Proin consectetur congue massa, eget volutpat eros ornare eget. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque egestas, orci nec eleifend rutrum, tortor diam malesuada neque, at tincidunt quam ligula vitae enim. Vestibulum at arcu eget tortor rutrum consequat. Sed ipsum lorem, accumsan in lacinia vitae, rhoncus sit amet odio. Vivamus sit amet felis diam. Mauris accumsan metus leo, ac posuere risus.
+
         </div>
 
         <div style="clear:both;"></div>

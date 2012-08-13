@@ -281,6 +281,7 @@ function homeReload(theurl) {
                 path = returned.url;
                 $(".home_focus").html(returned.focus_html);
                 initFocus();
+                feed_start=0;
                 getFeed();
             },
             error: function(jqXHR, textStatus, errorThrown)

@@ -14,6 +14,48 @@ from lovegov.modernpolitics.initialize import *
 from operator import itemgetter
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Returns a queryset of feed items, given inputted parameters
+#-----------------------------------------------------------------------------------------------------------------------
+def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
+
+    # get all content in the running
+    content = getContentFromAlias(alias)
+
+    # filter
+    if feed_types:
+        content = content.filter(type__in=feed_types)
+
+    # sort
+    if feed_ranking == 'N':
+        content = content.order_by("-created_when")
+    elif feed_ranking == 'H':
+        content = content.order_by("-status")
+    elif feed_ranking == 'B':
+        content = content.order_by("-status")
+
+    # paginate
+    content = content[feed_start:feed_start+num]
+    return content
+
+
+def getContentFromAlias(alias):
+    object = aliasToObject(alias)
+    content = []
+    if object:
+        content = object.getContent()
+    elif alias == 'me':
+        content = Petition.objects.all()
+    elif alias == 'groups':
+        content = Petition.objects.all()
+    elif alias == 'elections':
+        content = Petition.objects.all()
+    elif alias == 'politicians':
+        content = Petition.objects.all()
+    elif alias == 'friends':
+        content = Petition.objects.all()
+    return content
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Takes in a filter object, which has all feeds of SimpleFilter, except m2m as id lists
 #-----------------------------------------------------------------------------------------------------------------------
 def getFeed(filter, start=0, stop=10, saved=False):
@@ -136,7 +178,7 @@ def updateSiteFeeds(debug=False):
     # filter = getBestFilter()
     # updateFeedHelper(a_feed=best_feed, filter_setting=filter, content=content)
 
-def getFeedItems(start, stop, feed_type=None, topics=None):
+def oldGetFeedItems(start, stop, feed_type=None, topics=None):
     if feed_type == 'N':
         feed = getNewFeed()
     elif feed_type == 'H':

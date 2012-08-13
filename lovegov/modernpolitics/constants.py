@@ -19,12 +19,56 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## SPECIAL ALIASES #############################################################
+
 SUPER_HEROES = ['lovegov', 'anonymous']
 
-########################################## PROHIBITED BROWSERS #########################################################
+HOME_URLS = ['me', 'groups', 'elections', 'politicians', 'friends']
 
-PROHIBITED_BROWSERS = ["MSIE"]
-ALLOWED_BROWSERS = ["Chrome","Mozilla"]
+# Users and groups are prevented from generating aliases which match these strings
+# Be liberal about this list - it should include potential app URLs in addition to those actually being used
+URL_SPECIAL_NAMES = [
+    'login',
+    'passwordRecovery',
+    'confirm',
+    'need_email_confirmation',
+    'fb',
+    'twitter',
+    'logout',
+    'underconstruction',
+    'upgrade',
+    'continue',
+    'try',
+    'home',
+    'web',
+    'about',
+    'account',
+    'match',
+    'search',
+    'question',
+    'topic',
+    'petition',
+    'news',
+    'networks',
+    'action',
+    'answer',
+    'widget',
+    'test'
+    'test2',
+    'test3',
+    'css',
+    'images',
+    'static',
+    'javascript',
+    'js',
+    'jquery',
+    'developer',
+    'alpha',
+    'beta',
+    'analytics',
+    'api',
+    'motion'
+]
 
 ########################################## EMAIL LISTS #################################################################
 
@@ -88,23 +132,15 @@ TIME_BONUS = 5          # this should be how many upvotes a day we think a good 
 # constants for hot filter
 HOT_WINDOW = 3 # number of days to count votes within when using hot algo
 
-
 ########################################### DEFAULT SETTINGS ###########################################################
 
 # for Congress Parsing
 CONGRESS_YEAR_OFFSET = 1787 ## CongressNum*2 + CONGRESS_YEAR_OFFSET = Congress Year Start
 CURRENT_CONGRESS = 112
 
-# for chunksize comparison
-COMPARISON_CHUNKSIZE = 2
-
 # initial bonus on creation
 STATUS_CREATION = 0
-
-# increase with vote
 STATUS_VOTE = 1
-
-# increase with various actions
 STATUS_COMMENT = 1
 STATUS_SHARE = 0
 STATUS_FOLLOW = 0
@@ -126,17 +162,7 @@ DEFAULT_CONTENT_NOTIFICATIONS = ['CO', 'VO', 'FC', 'XX', 'ED', 'MV', 'DV', 'SI',
 DEFAULT_USER_NOTIFICATIONS = ['SI', 'CR', 'JO', 'DM', 'AE']
 DEFAULT_EMAIL_NOTIFICATIONS = ['VO', 'DM', 'CO', 'FO', 'JO']
 
-
-NUM_QUESTIONS = 5
-
 HISTOGRAM_RESOLUTION = 10
-
-DEFAULT_INVITE_SUBJECT = "Welcome to LoveGov Alpha"
-
-DEFAULT_INVITE_MESSAGE = "LoveGov Alpha is now up and running! We would really appreciate it if you logged in and test run the features of our site. "\
-                         "Please keep in mind that Alpha only contains a portion of the functionality intended for the Brown/RISD beta, "\
-                         "so you will see us regularly adding new features over the next month. If you encounter any problems while using our site"\
-                         "or just want to send us comments then please don't hesitate to contact us - we want to hear your opinions!"
 
 FIRST_LOGIN_LAST_STAGE = 7
 
@@ -193,14 +219,14 @@ for topic in MAIN_TOPICS:
     MAIN_TOPIC_COLORS_LIST.insert(MAIN_TOPICS_CLOCKWISE_ORDER[topic],MAIN_TOPICS_COLORS[topic]['default'])
 
 POLITICAL_PARTIES_IMAGES = []
-#for imgRef in os.listdir(os.path.join(PROJECT_PATH, 'frontend/static/images/party_labels/')):
-#    if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
+for imgRef in os.listdir(os.path.join(PROJECT_PATH, 'frontend/static/images/party_labels/')):
+    if imgRef != "filter.svg": POLITICAL_PARTIES_IMAGES.append({'path':'/static/images/party_labels/' + imgRef,'name':imgRef.replace(".png",'')})
 
 
 ########################################### PROCESS PATHS ##############################################################
 
-#PHANTOMJS = os.path.join(PROJECT_PATH, 'alpha/process/phantomjs/bin/./phantomjs')
-#PHANTOMJS_RASTERIZE = os.path.join(PROJECT_PATH, 'alpha/process/phantomjs/examples/rasterize.js')
+PHANTOMJS = os.path.join(PROJECT_PATH, 'frontend/process/phantomjs/bin/./phantomjs')
+PHANTOMJS_RASTERIZE = os.path.join(PROJECT_PATH, 'frontend/process/phantomjs/examples/rasterize.js')
 
 ########################################## CHOICES #####################################################################
 
@@ -244,14 +270,12 @@ TYPE_CHOICES = (
     ('N','news'),
     ('L','legislation'),
     ('Q','question'),
+    ('O','poll'),
     ('R','response'),
     ('G','group'),
     ('C','comment'),
-    ('I','image'),
     ('A','amendment'),
-    ('Z','content-response'),
     ('D','discussion'),
-    ('Y', 'persistent-debate'),
     ('M', 'motion'),
     )
 
@@ -425,7 +449,7 @@ BILL_TYPES = {
 }
 
 # types of content that show up in the feed
-FEED_CONTENT_TYPES = ['P','N','L','G']
+FEED_CONTENT_TYPES = ['P','N','L']
 
 # Facebook Stuff
 FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
@@ -440,6 +464,13 @@ DEFAULT_GROUP_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/group
 DEFAULT_DISCUSSION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'
+
+########################################## PROHIBITED BROWSERS #########################################################
+
+PROHIBITED_BROWSERS = ["MSIE"]
+ALLOWED_BROWSERS = ["Chrome","Mozilla"]
+
+########################################## LEGISLATION #################################################################
 
 IMPORTANT_LEGISLATION = [
     ('112','h3'),

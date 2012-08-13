@@ -13,6 +13,18 @@ div.group-menu
 div.group-main
 {
 
+  div.group-action {
+    padding:5px;
+    background-color:$light-gray;
+    width:160px;
+    text-align:center;
+    margin-bottom:7px;
+  }
+  div.group-action:hover {
+    background-color:$dark-gray;
+    cursor:pointer;
+  }
+
   div.group-top
   {
     margin-bottom: 20px;
@@ -39,6 +51,9 @@ div.group-main
       font-size: 12px;
       @include inline-block();
     }
+    div.group-action {
+      float:right;
+    }
   }
 
   div.group-info
@@ -48,7 +63,7 @@ div.group-main
     div.group-image
     {
       float: left;
-      height: 90px;
+      height: 100px;
       width: 140px;
       background-color: $gray; //Temporary
       margin-right: 20px;
@@ -79,6 +94,26 @@ div.group-main
       }
 
     }
+    div.group-info-title {
+        @include grayText();
+        @include fontSize(18px);
+    }
+    div.group-summary {
+      float: left;
+      margin-left: 30px;
+      width: 200px;
+      overflow:hidden;
+      p.group-description-text {
+        display:none;
+      }
+    }
+    div.group-moderators {
+      float:right;
+      margin-right: 170px;
+    }
+    div.group-actions {
+      float:right;
+    }
 
   }
 
@@ -86,18 +121,24 @@ div.group-main
 
 
 div.group-expanded-info {
-  margin: 10px 0 20px 0;
+  margin: 15px 0 20px 0;
 
   div.group-histogram {
     float:left;
-    width:200px;
+    width:230px;
     height:200px;
     background-color:$dark-gray;
   }
   div.group-members {
-    float:right;
+    float:left;
+    margin-left:30px;
     width:200px;
     height:200px;
     background-color:$dark-gray;
+  }
+  div.group-description {
+    float:left;
+    margin-left: 40px;
+    width: 350px;
   }
 }

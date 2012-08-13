@@ -51,6 +51,8 @@ def compileFolder(relative_path):
                 os.makedirs(full_path)
             compileFolder(directory_relative_path)
 
-compileFolder('')
+#compileFolder('')
+
+os.system('compass compile')
 
 replace(master_variables_file, new_static, old_static)

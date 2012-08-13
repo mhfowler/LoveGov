@@ -12,10 +12,8 @@ COMPRESS_CSS_FILTERS = ['compressor.filters.css_default.CssAbsoluteFilter',
                         'compressor.filters.cssmin.CSSMinFilter',
                         'compressor.filters.template.TemplateFilter']
 
-
 COMPRESS_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
 COMPRESS_STORAGE = STATICFILES_STORAGE
 
-STATIC_URL = COMPRESS_URL
 COMPRESS_ROOT = "LoveGov/frontend"

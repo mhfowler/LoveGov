@@ -17,6 +17,10 @@ td.home-main {
   div.home-header {
     width:100%;
 
+    div.home_header_summary {
+      overflow:hidden;
+    }
+
     div.home_header_expanded
     {
       height:0px;
@@ -29,6 +33,7 @@ td.home-main {
       width:100%;
       background-color:$light-gray;
       text-align:center;
+      margin-top:10px;
     }
     div.expand-info:hover {
       cursor:pointer;
@@ -36,9 +41,7 @@ td.home-main {
     }
   }
   div.feed-wrapper {
-    margin-top:20px;
     width:100%;
-    border: 1px solid $gray;
   }
   }
 }

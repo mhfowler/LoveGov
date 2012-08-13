@@ -860,8 +860,8 @@ class BasicInfo(models.Model):
     ethnicity = models.CharField(max_length=30, blank=True, null=True)
     party = models.CharField(max_length=100, blank=True, null=True)
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
-    invite_message = models.CharField(max_length=10000, blank=True, default=DEFAULT_INVITE_MESSAGE)
-    invite_subject = models.CharField(max_length=1000, blank=True, default=DEFAULT_INVITE_SUBJECT)
+    invite_message = models.CharField(max_length=10000, blank=True, default="default")
+    invite_subject = models.CharField(max_length=1000, blank=True, default="default")
     bio = models.CharField(max_length=150, blank=True, null=True)
 
     class Meta:
@@ -3188,6 +3188,12 @@ class Group(Content):
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote closes
 
     #-------------------------------------------------------------------------------------------------------------------
+    # gets content posted to group, for feed
+    #-------------------------------------------------------------------------------------------------------------------
+    def getContent(self):
+        return Content.objects.filter(posted_to=self, in_feed=True)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # gets url for content
     #-------------------------------------------------------------------------------------------------------------------
     def get_url(self):
@@ -3465,10 +3471,8 @@ class Group(Content):
             return DEFAULT_GROUP_IMAGE_URL
 
     def makeAlias(self):
-        from django.template.defaultfilters import slugify
         from lovegov.modernpolitics.helpers import genAliasSlug
-
-        self.alias = genAliasSlug(str.lower(str(self.title.replace(" ","_"))))
+        self.alias = genAliasSlug(self.title)
         self.save()
         return self.alias
 

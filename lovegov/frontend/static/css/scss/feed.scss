@@ -85,6 +85,7 @@ div.feed-main
 
       &:hover
       {
+        cursor:pointer;
         background-color: $red-light;
       }
     }
@@ -100,6 +101,20 @@ div.feed-main
       display:none;
       margin-bottom:50px;
       margin-top:70px;
+    }
+
+    div.load-more {
+      width:100%;
+      height:30px;
+      background-color: $light-gray;
+      color:$black;
+      text-align:center;
+      padding:6px;
+      margin-top:20px;
+    }
+    div.load-more:hover {
+      background-color: $dark-gray;
+      cursor:pointer;
     }
 
     div.feed-content
@@ -181,6 +196,12 @@ div.feed-main
           div.feed-item-title
           {
             margin-bottom: 2px;
+            h3.title-text {
+              color:blue;
+            }
+            h3.title-text:hover {
+              color:$black;
+            }
           }
 
           div.feed-item-group-name

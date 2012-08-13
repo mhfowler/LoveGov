@@ -71,8 +71,3 @@ def voteAction(vote,user,content,privacy):
 
     return value
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Returns a queryset of feed items, given inputted parameters
-#-----------------------------------------------------------------------------------------------------------------------
-def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
-    return Petition.objects.all()
