@@ -935,3 +935,24 @@ bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
     getModal('group_invite_modal');
 });
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Notifications
+ *
+ **********************************************************************************************************************/
+
+bind( 'div.notifications_dropdown_button' , 'click' , null , function(event)
+{
+    $('div.notifications_dropdown').toggle();
+});
+
+bind( null , 'click' , null , function(event)
+{
+    if( !$(event.target).hasClass('notifications_dropdown') &&
+        !$(event.target).hasClass('notifications_dropdown_button'))
+    {
+        $('div.notifications_dropdown').hide();
+    }
+});

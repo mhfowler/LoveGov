@@ -768,6 +768,11 @@ div.modal-general {
   @include rounded(5px);
   display: none;
   border:1px solid $red;
+
+  div.modal-content
+  {
+    float:left;
+  }
 }
 
 div.first-login-modal {
@@ -855,11 +860,11 @@ div.modal-close
   float: right;
   height: 10px;
   width: 10px;
-  background-image: url('/static/icons/x.png');
+  @include staticImage('/images/icons/x.png');
   cursor: pointer;
   &:hover
   {
-    background-image: url('/static/icons/x_hover.png');
+    @include staticImage('/images/icons/x_hover.png');
   }
 }
 
