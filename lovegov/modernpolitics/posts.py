@@ -1382,7 +1382,7 @@ def ajaxGetFeed(request, vals={}):
     }
 
     content = getFeed(filter, start=feed_start, stop=feed_end)
-    items = ajaxFeedHelper(content, vals['viewer'])
+    items = contentToFeedItems(content, vals['viewer'])
     vals['items']=items
     vals['display']=feed_display
 
@@ -1399,18 +1399,6 @@ def ajaxGetFeed(request, vals={}):
         to_return = {'cards':json.dumps(cards), 'num':len(content)}
     return HttpResponse(json.dumps(to_return))
 
-def ajaxFeedHelper(content, user):
-    list = []
-    user_votes = Voted.objects.filter(user=user)
-    for c in content:
-        vote = user_votes.filter(content=c)
-        if vote:
-            my_vote=vote[0].value
-        else:
-            my_vote=0
-        list.append((c,my_vote))    # content, my_vote
-    return list
-
 #-----------------------------------------------------------------------------------------------------------------------
 # get feed
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1422,12 +1410,25 @@ def getFeed(request, vals):
     path = request.POST['path']
     alias = path.replace("/","")
     viewer = vals['viewer']
-    feed_items = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
+    content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
         feed_types=feed_types, feed_start=feed_start, num=10)
+    feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
     to_return = {'html':html, 'num_items':len(feed_items)}
     return HttpResponse(json.dumps(to_return))
+
+def contentToFeedItems(content, user):
+    list = []
+    user_votes = Voted.objects.filter(user=user)
+    for c in content:
+        vote = user_votes.filter(content=c)
+        if vote:
+            my_vote=vote[0].value
+        else:
+            my_vote=0
+        list.append((c,my_vote))    # content, my_vote
+    return list
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting

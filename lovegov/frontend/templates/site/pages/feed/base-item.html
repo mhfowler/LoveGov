@@ -48,9 +48,9 @@
 
             <div class="item-ranking" data-c_id="{{ item.id }}">
 
-                <div class="heart-plus heart_plus"></div>
+                <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
                 <div class="heart-number heart_number">{{ item.status }}</div>
-                <div class="heart-minus heart_minus"></div>
+                <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
 
             </div>
 

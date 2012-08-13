@@ -19,7 +19,7 @@ from operator import itemgetter
 def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
 
     # get all content in the running
-    content = getContentFromAlias(alias)
+    content = getContentFromAlias(alias, viewer)
 
     # filter
     if feed_types:
@@ -38,21 +38,25 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
     return content
 
 
-def getContentFromAlias(alias):
+def getContentFromAlias(alias, viewer):
     object = aliasToObject(alias)
     content = []
     if object:
         content = object.getContent()
     elif alias == 'me':
-        content = Petition.objects.all()
+        groups_ids = viewer.getGroups().values_list("id", flat=True)
+        friends_ids = viewer.getIFollow().values_list("id", flat=True)
+        content = Content.objects.filter(Q(posted_to_id__in=groups_ids) | Q(creator_id__in=friends_ids))
     elif alias == 'groups':
-        content = Petition.objects.all()
+        groups_ids = viewer.getGroups().values_list("id", flat=True)
+        content = Content.objects.filter(in_feed=True, posted_to_id__in=groups_ids)
     elif alias == 'elections':
         content = Petition.objects.all()
     elif alias == 'politicians':
-        content = Petition.objects.all()
+        content = Legislation.objects.all()
     elif alias == 'friends':
-        content = Petition.objects.all()
+        friends_ids = viewer.getIFollow().values_list("id", flat=True)
+        content = Content.objects.filter(in_feed=True, creator_id__in=friends_ids)
     return content
 
 #-----------------------------------------------------------------------------------------------------------------------

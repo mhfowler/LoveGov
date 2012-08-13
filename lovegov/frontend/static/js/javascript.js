@@ -75,6 +75,7 @@ $(document).ready(function()
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
+    selectRank("H");
     getFeed();
 }
 
