@@ -5,24 +5,30 @@
 @import "compass";
 
 
-div.group-menu
-{
-  float: right;
-}
-
 div.group-main
 {
 
-  div.group-action {
+  .group-action
+  {
     padding:5px;
     background-color:$light-gray;
     width:160px;
     text-align:center;
     margin-bottom:7px;
+
+    &:hover
+    {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
   }
-  div.group-action:hover {
-    background-color:$dark-gray;
-    cursor:pointer;
+
+  div.group-take-poll
+  {
+    @extend .group-action;
+    color: white;
+    background-color:$red;
+    &:hover { background-color: $red-light; }
   }
 
   div.group-top
@@ -94,24 +100,35 @@ div.group-main
       }
 
     }
-    div.group-info-title {
-        @include grayText();
-        @include fontSize(18px);
+
+    div.group-info-title
+    {
+      @include grayText();
+      @include fontSize(18px);
+      margin-bottom: 5px;
     }
-    div.group-summary {
+
+    div.group-summary
+    {
       float: left;
       margin-left: 30px;
       width: 200px;
       overflow:hidden;
-      p.group-description-text {
+
+      p.group-description-text
+      {
         display:none;
       }
     }
-    div.group-moderators {
+
+    div.group-moderators
+    {
       float:right;
       margin-right: 170px;
     }
-    div.group-actions {
+
+    div.group-actions
+    {
       float:right;
     }
 

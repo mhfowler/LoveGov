@@ -8,7 +8,7 @@ header
 {
   width: 100%;
   padding: 3px 5px;
-  font-family: Sonus-ExtraLight;
+  font-family: Sonus-Light;
   div.header-logo
   {
     @include staticImage('/images/header/logo.png');
@@ -21,7 +21,7 @@ header
     cursor: pointer;
     @include transition(0.15s);
     &:hover {
-    //  @include filter(blur(1px));
+      @include opacity(0.55);
     }
   }
   ul {
