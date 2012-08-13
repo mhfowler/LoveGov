@@ -8,7 +8,8 @@
 // avatar-with-name
 div.avatar-with-name
 {
-  padding: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
 
   div.avatar-name
   {
@@ -20,7 +21,7 @@ div.avatar-with-name
   div.avatar-image
   {
     float: left;
-    margin-right: 5px;
+    margin-right: 10px;
 
   }
 }

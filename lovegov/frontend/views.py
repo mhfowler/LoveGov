@@ -441,8 +441,48 @@ def friends(request, vals):
 # group detail
 #-----------------------------------------------------------------------------------------------------------------------
 def groupPage(request, g_alias, vals={}):
+    # Get the group and current viewer
+    viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
+
+    # Set group and group comparison
     vals['group'] = group
+    vals['group_comparison'] = group.getComparison(viewer)
+
+    # Figure out if this user is an admin
+    vals['is_user_admin'] = False
+    admins = list( group.admins.all() )
+    for admin in admins:
+        if admin.id == viewer.id:
+            vals['is_user_admin'] = True
+            break
+
+    # Get list of all Admins
+    vals['group_admins'] = group.admins.all()
+
+    # Get the list of all members and truncate it to be the number of members showing
+    all_members = list( group.getMembers() )
+    num_members_shown = MEMBER_INCREMENT
+    vals['group_members'] = all_members[:num_members_shown]
+    vals['num_members_shown'] = num_members_shown
+
+    # Get the total number of members
+    vals['num_members'] = group.num_members
+
+    # Is the current viewer already (requesting to) following this group?
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
+    if group_joined:
+        if group_joined.confirmed:
+            vals['is_user_confirmed'] = True
+        if group_joined.requested:
+            vals['is_user_requested'] = True
+        if group_joined.rejected:
+            vals['is_user_rejected'] = True
+
+    # Render and return HTML
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
