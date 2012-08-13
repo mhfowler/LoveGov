@@ -59,7 +59,7 @@ div.global-wrapper
   max-width: 1140px;
   min-width: 1024px;
   width: 100%;
-  margin: auto;
+  margin: auto;print "static url: " + STATIC_URL
 }
 
 div.main-content {

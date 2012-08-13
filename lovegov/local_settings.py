@@ -174,4 +174,3 @@ from compressor_settings import *
 COMPRESS_ENABLED = False
 
 STATIC_URL = '/static'
-
