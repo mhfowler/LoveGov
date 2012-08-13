@@ -410,7 +410,6 @@ def addValidEmail(email):
     print("added: " + str(new_email.email))
 
 def isUniqueAlias(alias):
-    from lovegov.urls import URL_SPECIAL_NAMES
     if alias in URL_SPECIAL_NAMES:
         return False
     if UserProfile.objects.filter(alias=alias).count() > 0:
