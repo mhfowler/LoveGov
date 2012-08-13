@@ -425,10 +425,13 @@ def feed(request, g_alias=None, vals={}):
 def groupFeed(request, g_alias, vals={}):
     group = Group.objects.get(alias=g_alias)
     vals['group'] = group
-    c_types = ['N',"P"]
-    vals['feed_items'] = Content.objects.filter(type__in=c_types)
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()
+    return homeResponse(request, focus_html, url, vals)
+
+def groups(request, vals):
+    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def homeSidebar(request, vals):
@@ -455,30 +458,6 @@ def iFollow(request, vals={}):
     loadHistogram(5, group.id, 'mini', vals=vals)
 
     html = ajaxRender('site/pages/match/friends.html', vals, request)
-    url = '/friends/'
-    return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# page to display all of your groups
-#-----------------------------------------------------------------------------------------------------------------------
-def groups(request, vals={}):
-
-    viewer = vals['viewer']
-
-    mygroups = viewer.getUserGroups()
-    vals['mygroups'] = mygroups
-
-    mygroups_ids = mygroups.values_list("id", flat=True)
-    groups = list(UserGroup.objects.all())
-    for x in groups:
-        x.prepComparison(viewer)
-        x.you_are_member = (x.id in mygroups_ids)
-    groups.sort(key=lambda x:x.result,reverse=True)
-    vals['groups'] = groups
-
-    vals['what'] = "Groups"
-
-    html = ajaxRender('site/pages/match/groups.html', vals, request)
     url = '/friends/'
     return framedResponse(request, html, url, vals)
 

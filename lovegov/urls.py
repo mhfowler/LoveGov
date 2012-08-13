@@ -137,10 +137,13 @@ urlpatterns += patterns('',
     (r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^friends/$', viewWrapper(views.iFollow, requires_login=True)),
-    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
-    (r'^networks/$', viewWrapper(views.networks, requires_login=True)),
     (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
+
+    (r'^me/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^elections/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^politicians/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^friends/$', viewWrapper(views.groups, requires_login=True)),
 
     # ajax pages
     (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),                      # comment and other actions
