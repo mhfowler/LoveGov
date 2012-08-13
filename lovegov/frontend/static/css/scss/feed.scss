@@ -72,7 +72,7 @@ div.feed-main
 
     td.create-button
     {
-      @include staticImage('images/icons/white_create.png');
+      @include staticImage('/images/icons/white_create.png');
       background-repeat: no-repeat;
       background-position: 12px 7px;
       font-size: 22px;
@@ -144,10 +144,10 @@ div.feed-main
             background-position: 5px 5px;
             display:block;
 
-            &.news-image { @include staticImage('images/icons/content-type/news.png'); }
-            &.poll-image { @include staticImage('images/icons/content-type/poll.png'); }
-            &.petition-image { @include staticImage('images/icons/content-type/petition.png'); }
-            &.discussion-image { @include staticImage('images/icons/content-type/discussion.png'); }
+            &.news-image { @include staticImage('/images/icons/content-type/news.png'); }
+            &.poll-image { @include staticImage('/images/icons/content-type/poll.png'); }
+            &.petition-image { @include staticImage('/images/icons/content-type/petition.png'); }
+            &.discussion-image { @include staticImage('/images/icons/content-type/discussion.png'); }
           }
 
           div.item-ranking
@@ -156,28 +156,28 @@ div.feed-main
 
             div.heart-plus
             {
-              @include staticImage('images/icons/hearts/plusheart-gray.png');
+              @include staticImage('/images/icons/hearts/plusheart-gray.png');
               background-repeat: no-repeat;
               height: 18px;
               width: 18px;
               margin: 8px auto 4px auto;
               cursor: pointer;
 
-              &:hover{ @include staticImage('images/icons/hearts/plusheart-red.png'); }
-              &.clicked{ @include staticImage('images/icons/hearts/plusheart-red.png'); }
+              &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+              &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
             }
 
             div.heart-minus
             {
-              @include staticImage('images/icons/hearts/minusheart-gray.png');
+              @include staticImage('/images/icons/hearts/minusheart-gray.png');
               background-repeat: no-repeat;
               height: 18px;
               width: 18px;
               margin: 4px auto 0px auto;
               cursor: pointer;
 
-              &:hover{ @include staticImage('images/icons/hearts/minusheart-red.png'); }
-              &.clicked{ @include staticImage('images/icons/hearts/minusheart-red.png'); }
+              &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+              &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
             }
           }
         }
@@ -223,7 +223,7 @@ div.feed-main
 
           div.feed-item-comments
           {
-            @include staticImage('images/icons/red_comment.png');
+            @include staticImage('/images/icons/red_comment.png');
             background-repeat: no-repeat;
             background-size: 60px 50px;
             background-position: 90px 10px;
