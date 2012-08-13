@@ -7,13 +7,14 @@
             <div class="topic-column" style="border-color:{{ t.dark_color }}"
                  data-t_alias="{{ t.alias }}" data-result="{{ t.result }}" data-num_q="{{ t.num_q }}">
                 <div class="white_area" style="height:{{t.empty}}%"></div>
-                <div class="colored_area" style="background-color:{{ t.light_color }};height:{{t.result}}%">
+                <div class="colored_area tooltip-top" title="{{ t.topic_text }}"
+                     style="background-color:{{ t.light_color }};height:{{t.result}}%">
                     <p class="percent">
                         {{ t.result }}%
                     </p>
                 </div>
                 <div class="topic_icon">
-                    {% with full_url=topic.getImageURL|media_url:MEDIA_PREFIX %}
+                    {% with full_url=topic.getIconURL|media_url:MEDIA_PREFIX %}
                         {% thumbnail full_url "20" crop="center" format="PNG" as im %}
                             <img src="{{ im.url }}" />
                         {% empty %}

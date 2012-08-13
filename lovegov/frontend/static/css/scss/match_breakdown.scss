@@ -42,7 +42,7 @@ div.match_breakdown {
     }
   }
   div.topic_icon {
-    @include opacity(0.5);
+    //@include opacity(1);
     position:absolute;
     top:100%;
     margin:auto;

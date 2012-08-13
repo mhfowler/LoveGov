@@ -219,6 +219,9 @@ class Topic(LGModel):
     def getImageURL(self):
         return self.image.url
 
+    def getIconURL(self):
+        return self.icon.url
+
 
 class OfficeTag(LGModel):
     name = models.CharField(max_length=100)
