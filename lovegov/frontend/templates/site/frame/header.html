@@ -12,6 +12,7 @@
         <li>match</li>
     </ul>
 
+    {% include 'site/pieces/avatar.html' with height='30' width='30' float='right' %}
     <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
     <div class="notices setting-icon">5<img src="{{STATIC_URL}}/images/icons/arrow_red.png"></div>
     <img src="{{ STATIC_URL }}/images/setting_red.png" class="spin setting-icon">
@@ -20,4 +21,5 @@
         <input type="text" placeholder="Search">
         <img src="{{ STATIC_URL }}/images/search.png">
     </div>
+
 </header>

@@ -39,6 +39,10 @@ header
         background-color: $red;
         color: white;
       }
+      &:active {
+        background-color: $orange;
+        color: white;
+      }
     }
   }
 
@@ -74,15 +78,7 @@ header
     float: right;
     height: 25px;
     margin: 10px 0 10px 10px;
-    &.spin {
-      height: 25px;
-      @include transition(0s);
-      @include transform(rotate(0));
-      &:hover {
-        @include transform(rotate(360deg));
-        @include transition(0.5s);
-      }
-    }
+    cursor: pointer;
   }
 
   div.notices {
@@ -100,6 +96,11 @@ header
       bottom: -5px;
       left: 4px;
     }
+  }
+
+  div.avatar-box {
+    float: right;
+    margin: 10px;
   }
 
 }
