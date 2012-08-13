@@ -608,9 +608,215 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
 
 
 
+/***********************************************************************************************************************
+ *
+ *      ~Following
+ *
+ ***********************************************************************************************************************/
+bind('div.user_follow' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    userFollow(event,$(this),true,p_id);
+});
 
+bind('div.user_unfollow' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    userFollow(event,$(this),false,p_id);
+});
 
+/* user follower */
+function userFollow(event,div,follow,p_id)
+{
+    event.preventDefault();
+    // If follow is true, request to follow
+    // If follow is false, stop following
+    var follow_action = 'userFollowRequest';
+    if( !follow )
+    {
+        follow_action = 'userFollowStop';
+    }
+    action({
+            data: {
+                'action': follow_action,
+                'p_id': p_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var response = returned.response;
 
+                if( response == "followed")
+                {
+                    div.html("unfollow");
+                    div.removeClass('user_follow');
+                    div.addClass('user_unfollow');
+                }
+                else if( response == "requested")
+                {
+                    div.html("un-request");
+                    div.removeClass('user_follow');
+                    div.addClass('user_unfollow');
+                }
+                else if( response == "removed")
+                {
+                    div.html("follow");
+                    div.removeClass('user_unfollow');
+                    div.addClass('user_follow');
+                }
+            }
+        }
+    );
+}
+
+bind( 'div.group_join' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    groupFollow(event,$(this),true,g_id);
+});
+
+bind( 'div.group_leave' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    groupFollow(event,$(this),false,g_id);
+});
+
+function groupFollow(event,div,follow,g_id)
+{
+    event.preventDefault();
+    // If follow is true, this is a join request
+    // Otherwise they are leaving the group
+    var follow_action = 'joinGroupRequest';
+    if( !follow )
+    {
+        follow_action = 'leaveGroup';
+    }
+    action({
+            data: {
+                'action': follow_action,
+                'g_id': g_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var response = returned.response;
+
+                if( response == "joined")
+                {
+                    div.html("leave group");
+                    div.removeClass("group_join");
+                    div.addClass("group_leave");
+                }
+                else if( response == "requested")
+                {
+                    div.html("un-request group");
+                    div.removeClass("group_join");
+                    div.addClass("group_leave")
+                }
+                else if( response == "removed")
+                {
+                    div.html("join group");
+                    div.removeClass("group_leave");
+                    div.addClass("group_join")
+                }
+            }
+        }
+    );
+}
+
+function userFollowResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.siblings(".user_follow_id").val();
+    ajaxPost({
+            data: {
+                'action':'followResponseResponse',
+                'p_id': follow_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                return true;
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+    return false;
+}
+
+function setFollowPrivacy(event,private_follow,div)
+{
+    event.preventDefault();
+    div.unbind();
+    ajaxPost({
+        data: {
+            'action':'followprivacy',
+            'p_id': p_id,
+            'private_follow': private_follow
+        },
+        success: function(data)
+        {
+            if( data == "follow privacy set")
+            {
+                if( private_follow )
+                {
+                    div.html("private");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,0,$(this));
+                        }
+                    );
+                }
+                else
+                {
+                    div.html("public");
+                    div.click(
+                        function(event)
+                        {
+                            setFollowPrivacy(event,1,$(this));
+                        }
+                    );
+                }
+            }
+            else
+            {
+                //alert(data);
+            }
+
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+
+    });
+}
+
+function groupInviteResponse(event,response,div)
+{
+    event.preventDefault();
+    var g_id = div.data("g_id");
+    ajaxPost({
+            data: {
+                'action':'groupInviteResponse',
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+                //alert(data);
+            },
+            error: function(error, textStatus, errorThrown)
+            {
+                $('body').html(error.responseText);
+            }
+        }
+    );
+}
 
 
 
