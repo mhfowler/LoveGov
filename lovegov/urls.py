@@ -34,61 +34,15 @@ if LOCAL:
                                      {'document_root': settings.MEDIA_ROOT}))
     del(_media_url, serve)
 
-
-# Users and groups are prevented from generating aliases which match these strings
-# Be liberal about this list - it should include potential app URLs in addition to those actually being used
-URL_SPECIAL_NAMES = set([
-    'login',
-    'passwordRecovery',
-    'confirm',
-    'need_email_confirmation',
-    'fb',
-    'twitter',
-    'logout',
-    'underconstruction',
-    'upgrade',
-    'continue',
-    'try',
-    'home',
-    'web',
-    'about',
-    'account',
-    'match',
-    'search',
-    'question',
-    'topic',
-    'petition',
-    'news',
-    'networks',
-    'action',
-    'answer',
-    'widget',
-    'test'
-    'test2',
-    'test3',
-    'css',
-    'images',
-    'static',
-    'javascript',
-    'js',
-    'jquery',
-    'developer',
-    'alpha',
-    'beta',
-    'analytics',
-    'api',
-    'motion'
-])
-
 # lovegov urls
 urlpatterns += patterns('',
 
     # login page
-    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),                            # login
+    (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),
     (r'^login/$', viewWrapper(views.login)),
-    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),                  # password recovery
-    (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),                   # confirm
-    (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),                # need confirmation
+    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
+    (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
+    (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
 
     # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),
@@ -107,56 +61,56 @@ urlpatterns += patterns('',
     (r'^try/$', viewWrapper(views.tryLoveGov)),
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
-    # main pages
-    (r'^home/$', viewWrapper(views.feed, requires_login=True)),                            # home page with feeds
-    (r'^web/$', viewWrapper(views.web, requires_login=True)),                                 # big look at web
-    (r'^about/$', viewWrapper(views.about, requires_login=True)),                                                   # about
-    (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),                       # about
-    (r'^account/$', viewWrapper(views.account,requires_login=True)),                          # account/change password
-    (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),         # account/change password
-    (r'^match/$', viewWrapper(views.newMatch, requires_login=True)),                           # match page
-    (r'^match/(\w+)/$', viewWrapper(views.newMatch, requires_login=True)),                    # match page
+    # home pages
+    (r'^me/$', viewWrapper(views.me, requires_login=True)),
+    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
+    (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
+    (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
+
+    # other main pages
+    (r'^home/$', viewWrapper(views.feed, requires_login=True)),
+    (r'^web/$', viewWrapper(views.web, requires_login=True)),
+    (r'^about/$', viewWrapper(views.about, requires_login=True)),
+    (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),
+    (r'^account/$', viewWrapper(views.account,requires_login=True)),
+    (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
 
+    # detail pages
+    (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),
+    (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),
+    (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),
+    (r'^poll/(\d+)/$', viewWrapper(views.pollDetail, requires_login=True)),
+    (r'^petition/(\d+)/$', viewWrapper(views.petitionDetail, requires_login=True)),
+    (r'^discussion/(\d+)/$', viewWrapper(views.discussionDetail, requires_login=True)),
+    (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
 
-    # content pages
-    (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),           # question detail
-    (r'^petition/(\d+)/$', viewWrapper(views.petitionDetail, requires_login=True)),           # petition detail
-    (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),                   # news detail
-    (r'^network/(\S+)/$', viewWrapper(views.network, requires_login=True)),                   # network page
-    (r'^network/$', viewWrapper(views.network, requires_login=True)),                         # network page
+    # special pages
+    (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),              # profile/comparison
     (r'^group/(\d+)/edit/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
-    (r'^group/(\d+)/$', viewWrapper(views.group, requires_login=True)),
-    (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),               # histogram detail of group
-    (r'^feed/$', viewWrapper(views.feed, requires_login=True)),                            # the feed
-    (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),            # profile/comparison
-    (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),                   # profile/comparison
-    (r'^nextquestion/$', viewWrapper(views.nextQuestion, requires_login=True)),               # sensibly redirects to next question
+    (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
+    (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+
+    # legislation
     (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=True)),
     (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
-
-    (r'^me/$', viewWrapper(views.groups, requires_login=True)),
-    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
-    (r'^elections/$', viewWrapper(views.groups, requires_login=True)),
-    (r'^politicians/$', viewWrapper(views.groups, requires_login=True)),
-    (r'^friends/$', viewWrapper(views.groups, requires_login=True)),
 
     # ajax pages
-    (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),                      # comment and other actions
-    (r'^answer/$', viewWrapper(views.profile, requires_login=True)),                           # comment and other actions
+    (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),
+    (r'^answer/$', viewWrapper(views.profile, requires_login=True)),
     (r'^fb/action/$', viewWrapper(views.facebookAction, requires_login=True)),
 
     # widget pages
-    (r'^widget/$', redirect_to, {'url':"/widget/about/"}),                      # widget about page
-    (r'^widget/access/$', lgwidget.access),                                     # widget api access
+    (r'^widget/$', redirect_to, {'url':"/widget/about/"}),                                      # widget about page
+    (r'^widget/access/$', lgwidget.access),                                                     # widget api access
 
     # test pages
-    (r'^test/$', viewWrapper(tests.test, requires_login=True)),                                    # test page, for whatever you want!
-    (r'^test2/$', viewWrapper(tests.test2, requires_login=True)),                                  # for testing logging
+    (r'^test/$', viewWrapper(tests.test, requires_login=True)),                                 # test page, for whatever you want!
+    (r'^test2/$', viewWrapper(tests.test2, requires_login=True)),                               # for testing logging
     (r'^test3/$', viewWrapper(tests.test3, requires_login=True)),
     (r'^css/$', viewWrapper(tests.css, requires_login=True)),
 
@@ -165,10 +119,10 @@ urlpatterns += patterns('',
     url(r'^admin/', include(site.urls)),
 
     # analytics
-    (r'^analytics/activity/(\d+)/$', viewWrapper(analytics.dailyActivity, requires_login=True)),                   # analytics of daily activity
-    (r'^analytics/activity/$', viewWrapper(analytics.dailyActivity, requires_login=True)),                        # analytics of daily activity
-    (r'^analytics/total/(\S+)/$', viewWrapper(analytics.totalActivity, requires_login=True)),                     # analytics of total user activity
-    (r'^analytics/total/$', viewWrapper(analytics.totalActivity, requires_login=True)),                           # analytics of all activity
+    (r'^analytics/activity/(\d+)/$', viewWrapper(analytics.dailyActivity, requires_login=True)),
+    (r'^analytics/activity/$', viewWrapper(analytics.dailyActivity, requires_login=True)),
+    (r'^analytics/total/(\S+)/$', viewWrapper(analytics.totalActivity, requires_login=True)),
+    (r'^analytics/total/$', viewWrapper(analytics.totalActivity, requires_login=True)),
 
     # api
     (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),

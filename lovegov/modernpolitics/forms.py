@@ -54,8 +54,8 @@ class CreateUserForm(forms.Form):
     firstname = forms.CharField(widget=forms.TextInput(attrs={'style':'width:225px'}),required=True)
     lastname = forms.CharField(widget=forms.TextInput(attrs={'style':'width:225px'}),required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={'style':'width:225px'}),required=True)
-    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:225px'}),required=True, initial=DEFAULT_INVITE_SUBJECT)
-    message = forms.CharField(widget=forms.Textarea(attrs={'style':'width:225px'}),required=True, initial=DEFAULT_INVITE_MESSAGE)
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:225px'}),required=True, initial="LoveGov")
+    message = forms.CharField(widget=forms.Textarea(attrs={'style':'width:225px'}),required=True, initial="LoveGov")
 
     def checkUserExists(self):
         return ControllingUser.objects.filter(username=self.cleaned_data['email']).exists()

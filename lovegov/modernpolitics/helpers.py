@@ -49,7 +49,7 @@ class LGException(Exception):
 # returns an object from an alias
 #-----------------------------------------------------------------------------------------------------------------------
 def aliasToObject(alias):
-    if alias in SPECIAL_ALIASES:
+    if alias in HOME_URLS:
         return None
     else:
         to_return = Group.lg.get_or_none(alias=alias)

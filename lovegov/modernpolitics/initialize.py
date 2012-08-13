@@ -742,6 +742,34 @@ def initializeSomeUserGroups():
     ug4.autoSave()
     print "initialized: some user groups"
 
+def initializeSomeTestContent():
+
+    katy = UserProfile.objects.get(first_name="Katy", last_name="Perry")
+    randy = UserProfile.objects.get(first_name="Randy", last_name="Johnson")
+    randomAnswers(katy)
+    save_the = UserGroup.objects.get(alias__contains="whales")
+    woop =  UserGroup.objects.get(alias="woop_woop_group")
+
+    for x in Content.objects.all():
+        x.posted_to = woop
+        x.save()
+
+    n = News(title="This is test news about something",
+        link="www.facebook.com", link_summary="kkkkkk", posted_to=save_the)
+    n.autoSave(creator=katy)
+
+    n = News(title="Blah blah blah blah blah blah blah",
+        link="www.reddit.com", link_summary="oh adsf asdfkjd ohd", posted_to=save_the)
+    n.autoSave(creator=katy)
+
+    n = News(title="Rabla reee",
+        link="www.reddit.com", link_summary="oh adsf asdfkjd ohd", posted_to=save_the)
+    n.autoSave(creator=katy)
+
+    n = News(title="One more for the books",
+        link="www.nytimes.com", link_summary="oh adsf asdfkjd lemme get it", posted_to=save_the)
+    n.autoSave(creator=randy)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Counts the number of files in a path
 #-----------------------------------------------------------------------------------------------------------------------
