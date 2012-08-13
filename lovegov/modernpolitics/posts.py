@@ -764,51 +764,13 @@ def answer(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
-    from_user = vals['viewer']
+    viewer = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast()  # Parties have a slightly different joinMember
-    #Secret groups and System Groups cannot be join requested
-    if group.system:
-        return HttpResponse("cannot request to join system group")
-    #Get GroupJoined relationship if it exists already
-    already = GroupJoined.objects.filter(user=from_user, group=group)
-    if already:
-        group_joined = already[0]
-        if group_joined.confirmed:
-            return HttpResponse("you are already a member of group")
-    else: #If it doesn't exist, create it
-        group_joined = GroupJoined(user=from_user, content=group, group=group, privacy=getPrivacy(request))
-        group_joined.autoSave()
-    if group_joined.invited:
-        group.joinMember(from_user, privacy=getPrivacy(request))
-        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
-        action.autoSave()
-        for admin in group.admins.all():
-            admin.notify(action)
-        return HttpResponse("follow success")
-    #If the group is privacy secret...
-    if group.group_privacy == 'S':
-        return HttpResponse("cannot request to join secret group")
-    #If the group type is open...
-    if group.group_privacy == 'O':
-        group.joinMember(from_user, privacy=getPrivacy(request))
-        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
-        action.autoSave()
-        for admin in group.admins.all():
-            admin.notify(action)
-        return HttpResponse("follow success")
-    #If the group type is private and not requested yet
-    else: # group.group_privacy == 'P'
-        if group_joined.requested and not group_joined.rejected:
-            return HttpResponse("you have already requested to join this group")
-        group_joined.clear()
-        group_joined.request()
-        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier='R')
-        action.autoSave()
-        for admin in group.admins.all():
-            admin.notify(action)
-        return HttpResponse("follow request")
 
+    response = joinGroupAction(group,viewer,getPrivacy(request))
+
+    return HttpResponse( json.dumps({'response':response}) )
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or rejects a user GroupJoined, if GroupJoined was requested.
 #
@@ -967,36 +929,10 @@ def individualGroupInvite(follow_id, group, inviter, request):
 def userFollowRequest(request, vals={}):
     from_user = vals['viewer']
     to_user = UserProfile.objects.get(id=request.POST['p_id'])
-    #No Self Following
-    if to_user.id == from_user.id:
-        return HttpResponse("cannot follow yourself")
-    already = UserFollow.objects.filter(user=from_user, to_user=to_user)
-    #If there's already a follow relationship
-    if already: #If it exists, get it
-        user_follow = already[0]
-        if user_follow.confirmed: #If you're confirmed following already, you're done
-            return HttpResponse("already following this person")
-    else: #If there's no follow relationship, make one
-        user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
-        user_follow.autoSave()
-    # If this user is public follow
-    if not to_user.private_follow:
-        from_user.follow(to_user)
-        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='D')
-        action.autoSave()
-        to_user.notify(action)
-        return HttpResponse("follow success")
-    #otherwise, if you've already requested to follow this user, you're done
-    elif user_follow.requested and not user_follow.rejected:
-        return HttpResponse("already requested to follow this person")
-    #Otherwise, make the request to follow this user
-    else:
-        user_follow.clear()
-        user_follow.request()
-        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='R')
-        action.autoSave()
-        to_user.notify(action)
-        return HttpResponse("follow request")
+
+    response = userFollowAction(from_user,to_user,getPrivacy(request))
+
+    return HttpResponse( json.dumps({'response':response}) )
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or denies user follow, if user follow was requested.
@@ -1036,20 +972,13 @@ def userFollowStop(request, vals={}):
     """Removes connection between users."""
     from_user = vals['viewer']
     to_user = UserProfile.lg.get_or_none(id=request.POST['p_id'])
-    if to_user:
-        already = UserFollow.objects.filter(user=from_user, to_user=to_user)
-        if not already:
-            user_follow = UserFollow(user=from_user, to_user=to_user, privacy=getPrivacy(request))
-            user_follow.autoSave()
-        else:
-            user_follow = already[0]
-        from_user.unfollow(to_user)
-        action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='S')
-        action.autoSave()
-        to_user.notify(action)
-        # to_user.notify(action)
-        return HttpResponse("follow removed")
-    return HttpResponse("To User does not exist")
+    if not to_user:
+        LGException('User ID #' + str(from_user.id) + ' made a stop-follow post request with no to_user ID')
+        return HttpResponse( json.dumps({'response':'failed'}) )
+
+    userFollowStopAction(from_user,to_user,getPrivacy(request))
+
+    return HttpResponse( json.dumps({'response':'removed'}) )
 
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1084,27 +1013,17 @@ def joinGroupInvite(request, vals={}):
 def leaveGroup(request, vals={}):
     """Leaves group if user is a member (and does stuff if user would be last admin)"""
     # if not system then remove
-    from_user = vals['viewer']
+    viewer = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast()
-    group_joined = GroupJoined.objects.get(group=group, user=from_user)
-    if group_joined and not group.system:
-        group.removeMember(from_user)
-        group.admins.remove(from_user)
-        if not group.admins.all() and not group.group_type == 'P':
-            members = list( group.members.all() )
-            if not members:
-                group.active = False
-                group.save()
-            for member in members:
-                group.admins.add(member)
-        action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier='S')
-        action.autoSave()
-        for admin in group.admins.all():
-            admin.notify(action)
-        return HttpResponse("follow removed")
-    else:
-        return HttpResponse("system group")
+
+    if group.id == getLoveGovGroup().id:
+        LGException('User ID #' + str(viewer.id) + ' attempted to leave the LoveGov group')
+        return HttpResponse( json.dumps({'response':'fail'}) )
+
+    leaveGroupAction(group,viewer,getPrivacy(request))
+
+    return HttpResponse( json.dumps({'response':'removed'}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds content to group.
@@ -2025,3 +1944,13 @@ def actionPOST(request, vals={}):
     else:
         action_func = action + '(request, vals)'
         return eval(action_func)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Splitter between all modals
+#-----------------------------------------------------------------------------------------------------------------------
+def getModal(request,vals={}):
+    modal_name = request.POST.get('modal_name')
+    if not modal_name:
+        LGException("modal requested without a modal name")
+        return error
