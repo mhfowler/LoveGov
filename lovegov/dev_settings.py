@@ -74,10 +74,6 @@ STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 from compressor_settings import *
 COMPRESS_ENABLED = True
 
-STATIC_URL = '/static/'
-
-print "STATIC_URL: " + STATIC_URL
-
 ########################################################################################################################
 #    templates
 #
