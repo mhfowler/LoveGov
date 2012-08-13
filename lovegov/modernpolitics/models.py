@@ -3191,7 +3191,7 @@ class Group(Content):
     # gets content posted to group, for feed
     #-------------------------------------------------------------------------------------------------------------------
     def getContent(self):
-        return Content.objects.filter(in_feed=True)
+        return Content.objects.filter(posted_to=self, in_feed=True)
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets url for content
