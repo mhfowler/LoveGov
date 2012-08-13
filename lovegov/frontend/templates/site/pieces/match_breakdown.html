@@ -13,7 +13,7 @@
                     </p>
                 </div>
                 <div class="topic_icon">
-                    {% with full_url=topic.getImageURL|media_url:MEDIA_PREFIX %}
+                    {% with full_url=topic.getIconURL|media_url:MEDIA_PREFIX %}
                         {% thumbnail full_url "20" crop="center" format="PNG" as im %}
                             <img src="{{ im.url }}" />
                         {% empty %}
