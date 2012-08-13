@@ -21,7 +21,7 @@ header
     cursor: pointer;
     @include transition(0.15s);
     &:hover {
-      @include filter(blur(1px));
+    //  @include filter(blur(1px));
     }
   }
   ul {
