@@ -94,10 +94,10 @@ urlpatterns += patterns('',
     (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
 
     # legislation
-    (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
+    (r'^legislation/$', viewWrapper(views.legislation, requires_login=False)),
+    (r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=False)),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=False)),
+    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=False)),
 
     # ajax pages
     (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),

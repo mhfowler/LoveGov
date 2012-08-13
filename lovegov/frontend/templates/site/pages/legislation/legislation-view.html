@@ -1,0 +1,11 @@
+{% extends 'site/frame/frame.html' %}
+
+{% block content %}
+    {% for leg in legs %}
+    <html>
+    <body>
+        <title>{{leg.name}}</title>
+    </body>
+    </html>
+    {% endfor %}
+{% endblock %}
