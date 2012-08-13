@@ -3118,6 +3118,36 @@ class ViewComparison(LGModel):
             vals['user_url'] = viewB_url
             return vals
 
+    def toBreakdown(self):
+        from lovegov.modernpolitics.helpers import LGException
+        from lovegov.modernpolitics.helpers import getMainTopics
+        fast_comparison = self.loadOptimized()
+        if not fast_comparison:
+            raise LGException("no fast comparison whaaa")
+        else:
+            topics = getMainTopics()
+            topics_comparisons = []
+            to_return ={'topics':topics_comparisons}
+            for topic in topics:
+                topic_text = topic.topic_text
+                t = {'topic':topic,
+                     'order':MAIN_TOPICS_CLOCKWISE_ORDER[topic_text],
+                     'light_color':MAIN_TOPICS_COLORS[topic_text]['default'],
+                     'dark_color':MAIN_TOPICS_COLORS[topic_text]['light']}
+                topic_bucket = fast_comparison.getTopicBucket(topic)
+                t['result'] = topic_bucket.getSimilarityPercent()
+                t['empty'] = 100 - t['result']
+                t['num_q'] = topic_bucket.num_questions
+                topics_comparisons.append(t)
+            topics_comparisons.sort(key=lambda x: x['order'])
+            total_bucket = fast_comparison.getTotalBucket()
+            to_return['main'] = {'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}
+            to_return['main']['empty'] = 100 - to_return['main']['result']
+            return to_return
+
+
+
+
     def toJSON(self, viewB_url=''):
         return json.dumps(self.toDict(viewB_url))
 

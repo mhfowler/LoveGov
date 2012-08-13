@@ -607,8 +607,20 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
 });
 
 
+/***********************************************************************************************************************
+ *
+ *      ~Profile
+ *
+ **********************************************************************************************************************/
 
-
+bind(".follow_button.following", 'mouseenter', null, function(event) {
+    $(this).find('.is_following').hide();
+    $(this).find(".stop_following").show();
+});
+bind(".follow_button.following", 'mouseout', null, function(event) {
+    $(this).find(".stop_following").show();
+    $(this).find('.is_following').hide();
+});
 
 
 

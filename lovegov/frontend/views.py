@@ -460,8 +460,14 @@ def electionPage(request, e_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def profile(request, alias, vals={}):
 
+    viewer = vals['viewer']
     profile = UserProfile.objects.get(alias=alias)
     vals['profile'] = profile
+
+    vals['followsyou'] = True
+
+    comparison = profile.getComparison(viewer)
+    vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = profile.get_url()
