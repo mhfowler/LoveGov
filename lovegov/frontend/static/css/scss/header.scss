@@ -103,5 +103,11 @@ header
     margin: 10px;
   }
 
+  span.name {
+    width: 15px;
+    float: right;
+    text-overflow: ellipsis;
+  }
+
 }
 

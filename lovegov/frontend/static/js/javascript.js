@@ -577,6 +577,116 @@ function teamSection()
     });
 }
 
+/***********************************************************************************************************************
+  *
+  *      ~Left sidebar
+  *
+  **********************************************************************************************************************/
+
+
+bind('.left-side-img', 'click', function()
+{
+    var parent = $(this).parent();
+    leftSideToggle(parent);
+});
+
+bind('#feedback-submit', 'click', function(event)
+{
+    event.preventDefault();
+    var text = $('#feedback-text').val();
+    var name = $('#feedback-name').val();
+    action({
+
+
+        data: {'action':'feedback','text':text,'path':path,'name':name},
+        success: function(data)
+        {
+            $('#feedback-name').val("");
+            $('#feedback-text').val("");
+            $('#feedback-response').css('display','block');
+            $('#feedback-response').fadeOut(3000);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            //alert("failure");
+        }
+    });
+});
+
+function sendInvitation(event)
+{
+    event.preventDefault();
+    var email = $("#email-input").val();
+    $("#invite-return-message").text("");
+    $("#invite-return-loading-img").show();
+    action({
+        data: {'action':'invite','email':email},
+        success: function(data)
+        {
+            $("#invite-return-loading-img").hide();
+            $("#invite-return-message").text("Invitation Sent!");
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $("#invite-return-loading-img").hide();
+            $("#invite-return-message").text("Server Error, Did Not Send.");
+        }
+    });
+}
+
+
+bind('#email-input','keydown', function(event)
+{
+    if (event.keyCode == 13)
+    {
+        sendInvitation(event);
+    }
+});
+
+bind("#invite-button",'click',function(event)
+{
+    sendInvitation(event);
+});
+
+
+
+function closeLeftSideWrapper(wrapper)
+{
+
+    if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
+    else { wrapper.animate({left:'-493px'},500); }
+    setTimeout(function()
+    {
+        wrapper.css({'z-index':'100'});
+        wrapper.children('.create' +
+            'e-img').css({'z-index':'101'});
+    },500);
+
+    wrapper.removeClass('clicked');
+}
+
+function leftSideToggle(wrapper)
+{
+    if (wrapper.hasClass('clicked'))
+    {
+        closeLeftSideWrapper(wrapper);
+    }
+    else
+    {
+        wrapper.addClass('clicked');
+        wrapper.css({'z-index':'101'});
+        wrapper.children('.create-img').css({'z-index':'102'});
+        wrapper.animate({left:'-1px'},500);
+
+        wrapper.bindOnce('clickoutside',function(event)
+        {
+            if (event.target.className != "footer_button") {
+                closeLeftSideWrapper(wrapper);
+            }
+        });
+    }
+
+}
 
 // /***********************************************************************************************************************
 //  *
@@ -1636,131 +1746,8 @@ function teamSection()
 
 // }
 
-// /***********************************************************************************************************************
-//  *
-//  *     ~LeftSidebar
-//  *
-//  **********************************************************************************************************************/
-// var regUrl = /^(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-
-// function convert(str)
-// {
-//     str = str.replace(/&amp;/g, "&");
-//     str = str.replace(/&gt;/g,">");
-//     str = str.replace(/&lt;/g,"<");
-//     str = str.replace(/&quot;/g,'"');
-//     str = str.replace(/&#039;/g,"'");
-//     return str;
-// }
-
-// function closeLeftSideWrapper(wrapper)
-// {
-
-//     if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
-//     else { wrapper.animate({left:'-493px'},500); }
-//     setTimeout(function()
-//     {
-//         wrapper.css({'z-index':'100'});
-//         wrapper.children('.create' +
-//             'e-img').css({'z-index':'101'});
-//     },500);
-
-//     wrapper.removeClass('clicked');
-// }
-
-// function leftSideToggle(wrapper)
-// {
-//     if (wrapper.hasClass('clicked'))
-//     {
-//         closeLeftSideWrapper(wrapper);
-//     }
-//     else
-//     {
-//         wrapper.addClass('clicked');
-//         wrapper.css({'z-index':'101'});
-//         wrapper.children('.create-img').css({'z-index':'102'});
-//         wrapper.animate({left:'-1px'},500);
-
-//         wrapper.bindOnce('clickoutside',function(event)
-//         {
-//             if (event.target.className != "footer_button") {
-//                 closeLeftSideWrapper(wrapper);
-//             }
-//         });
-//     }
-
-// }
 
 
-// function loadLeftSidebar()
-// {
-
-//     $('.left-side-img').click(function()
-//     {
-//         var parent = $(this).parent();
-//         leftSideToggle(parent);
-//     });
-
-
-
-//     $('#feedback-submit').click(function(event)
-//     {
-//         event.preventDefault();
-//         var text = $('#feedback-text').val();
-//         var name = $('#feedback-name').val();
-//         ajaxPost({
-
-
-//             data: {'action':'feedback','text':text,'path':path,'name':name},
-//             success: function(data)
-//             {
-//                 $('#feedback-name').val("");
-//                 $('#feedback-text').val("");
-//                 $('#feedback-response').css('display','block');
-//                 $('#feedback-response').fadeOut(3000);
-//             },
-//             error: function(jqXHR, textStatus, errorThrown)
-//             {
-//                 //alert("failure");
-//             }
-//         });
-//     });
-
-//     function sendInvitation(event)
-//     {
-//         event.preventDefault();
-//         var email = $("#email-input").val();
-//         $("#invite-return-message").text("");
-//         $("#invite-return-loading-img").show();
-//         ajaxPost({
-//             data: {'action':'invite','email':email},
-//             success: function(data)
-//             {
-//                 $("#invite-return-loading-img").hide();
-//                 $("#invite-return-message").text("Invitation Sent!");
-//             },
-//             error: function(jqXHR, textStatus, errorThrown)
-//             {
-//                 $("#invite-return-loading-img").hide();
-//                 $("#invite-return-message").text("Server Error, Did Not Send.");
-//             }
-//         });
-//     }
-
-
-//     $('#email-input').keydown(function(event)
-//     {
-//         if (event.keyCode == 13)
-//         {
-//             sendInvitation(event);
-//         }
-//     });
-
-//     $("#invite-button").click(function(event)
-//     {
-//         sendInvitation(event);
-//     });
-// }
 
 // /***********************************************************************************************************************
 //  *
