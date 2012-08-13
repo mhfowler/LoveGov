@@ -1,51 +1,106 @@
-{
-
-@charset "UTF-8";
 @import 'master-variables';
 @import 'master-mixins';
 
 @import "compass";
 
 div.main {
-  columns:100px 3;
-  margin-left: 50px;
-  width: 300px;
+  margin-left: 0px;
+  height: 450px;
+  width: 1000px;
 
   div.leg-title {
     margin-left: 0px;
-    margin-top: 100px;
-    height: 100px;
+    margin-top: 20px;
+    height: 25px;
     width: 200px;
   }
 
-  div.level1-header {
+  div.level1-title {
     margin-left: 0px;
     margin-top: 5px;
-    height: 30px;
-    width: 200px;
+    height: 25px;
+    width: 250px;
 
     div.bill-title {
-      height: 0px;
-      width: 200px;
-      color: blue;
+      height: 25px;
+      width: 250px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+
+      }
     }
   }
 
-  div.level1-div {
+  div.level1-title-div {
     margin-left: 0px;
     margin-top: 5px;
-    height: 30px;
-    width: 200px;
+    height: 200px;
+    width: 400px;
 
-    div.title-text {
-      height: 60px;
-      width: 200px;
+    div.title {
+      margin-top: 0px;
+      height: 200px;
+      width: 400px;
+      padding-left: 5px;
+      text-align: justify;
     }
   }
 
+
+
+
+  div.level1-sponsor {
+    margin-left: 410px;
+    margin-top: -230px;
+    height: 25px;
+    width: 120px;
+
+    div.bill-sponsor {
+      height: 25px;
+      width: 120px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+
+      }
+    }
   }
+
+  div.level1-sponsor-div {
+    margin-left: 410px;
+    margin-top: 8px;
+    height: 120px;
+    width: 120px;
+    background-color: #E0E0E0;
+
+    div.sponsor {
+      height: 120px;
+      width: 120px;
+      padding-left: 5px;
+    }
+  }
+
+  div.sponsor-caption {
+  }
+
 }
 
-div.secondary {
 
+
+div.secondary {
+  margin-top: 10px;
+  margin-left: 0px;
+  height: 400px;
+  width: 1000px;
 }

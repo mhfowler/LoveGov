@@ -1,24 +1,22 @@
 
-{% include 'site/frame/html-header.html' %}
+{% extends 'site/frame/frame.html' %}
 
-{% include 'site/frame/header.html' %}
-
-
+{% block content %}
 
 <div class="main">
     <div class="leg-title">
-        <h3><span>Legislation</span></h3>
+        <h3><span>US Senate</span></h3>
     </div>
-    <div class="level1-header">
+    <div class="level1-title">
         <div class="bill-title">
             <h4>
-            <span>Bill Title:</span>
+            <span>Title</span>
             </h4>
         </div>
     </div>
-    <div class="level1-div">
-        <div class="title-text"><span>
-            Title: Providing for consideration of the bill (H.R. 3463) to
+    <div class="level1-title-div">
+        <div class="title"><span>
+            Providing for consideration of the bill (H.R. 3463) to
             reduce Federal spending and the deficit by terminating taxpay-
             er financing of presidential election campaigns and party con-
             ventions and by terminating the Election Assistance Commis-
@@ -31,9 +29,24 @@
             mulate new regulations and guidance documents</span>
         </div>
     </div>
+    <div class="level1-sponsor">
+        <div class="bill-sponsor">
+            <h4>
+                <span>Sponsor</span>
+            </h4>
+        </div>
+    </div>
+    <div class="level1-sponsor-div">
+        <div class="sponsor"><span></span>
+        </div>
+    </div>
+    <div class="sponsor-caption">
+        <span>Sen. Tom Smith</span>
+    </div>
+
 </div>
 <div class="secondary">
-    <div class="leg-title">
+    <div class="leg-sponsor">
         <h3><span>Legislation</span></h3>
     </div>
     <div class="level1-header">
@@ -176,7 +189,7 @@ cupidatat non proident, sunt in culpa qui officia deserunt
 mollit anim id est laborum."
 -->
 
-
+{% endblock %}
 
 
 
