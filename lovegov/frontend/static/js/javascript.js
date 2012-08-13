@@ -1,7 +1,7 @@
 
 /***********************************************************************************************************************
  *
- *     ~Delegated binding function, very similar to jquery's deprecated ".live()"
+ *     ~Delegated binding function, similar to jquery's deprecated ".live()"
  *
  ***********************************************************************************************************************/
 
@@ -520,6 +520,63 @@ function getFeed() {
 bind(".load_more" , "click" , null , function(event) {
     getFeed();
 });
+
+
+/***********************************************************************************************************************
+  *
+  *      ~About page
+  *
+  **********************************************************************************************************************/
+
+bind("div.about-div-button", "click", 
+    function(e) {
+        $('div.about-div-button').removeClass("active");
+        $("div.about-section").hide();
+        var section = ($(this).data('show'));
+        $('div#'+section).fadeIn(250);
+        $(this).toggleClass('active');
+        teamSection();
+    });
+
+function teamSection()
+{
+
+    var developerDivs = $('.who-are-we-circle-div');
+    var h3 = $('.who-are-we-circle-div-center h3');
+
+    var text = $('.mission p').text();
+
+    developerDivs.each(function()
+            {
+                var json = $(this).data('json');
+                $(this).animate({'left':json.x,'top':json.y});
+            });
+
+    developerDivs.each(function()
+    {
+        $(this).hover
+            (
+                function()
+                {
+                    var json = $(this).data('json');
+                    $(this).addClass($(this).attr("class") + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','white');
+                    $('.who-are-we-circle-div-center div').show();
+                    $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
+                    $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
+                    h3.hide();
+                },
+                function()
+                {
+                    $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
+                    $('.who-are-we-circle-div-center').css('background-color','');
+                    $('.who-are-we-circle-div-center div').hide();
+                    h3.show();
+                });
+
+    });
+}
+
 
 // /***********************************************************************************************************************
 //  *
@@ -2135,144 +2192,6 @@ bind(".load_more" , "click" , null , function(event) {
 //  *      ~About
 //  *
 //  ***********************************************************************************************************************/
-// function loadAbout()
-// {
-
-//     teamSection();
-
-//     var start = $(".data_start").data('start');
-
-//     if (start=='video') {
-//         $("#video-div").show();
-//     }
-//     else {
-//         var buttonid =  start + "-button";
-//         var divid = start + "-div";
-
-//         if (divid == 'whoarewe-div')
-//         {
-//             $('.who-are-we-circle-div').each(function()
-//             {
-//                 var json = $(this).data('json');
-//                 $(this).animate({'left':json.x,'top':json.y});
-//             });
-//         }
-
-//         $("#" + buttonid).addClass("clicked");
-//         $("#" + divid).show();
-//     }
-// }
-
-// (function( $ )
-// {
-//     $.fn.textFadeIn = function(options)
-//     {
-//         var settings = $.extend({
-//             'speed'         : 25
-//         }, options);
-
-//         var self = this;
-//         var full_text = self.data('full_text');
-//         var timeouts = self.data("timeouts");
-
-//         if (!full_text) { self.data('full_text', self.text()); }
-
-//         if (timeouts)
-//         {
-//             for (var j=0;j<self.data('timeouts').length;j++)
-//             {
-//                 clearTimeout(self.data('timeouts')[j]);
-//             }
-//         }
-//         else { self.data('timeouts',new Array()); }
-
-//         var textSplit = self.data('full_text').split('');
-//         var counter = 0;
-//         this.empty();
-
-//         function countdown()
-//         {
-//             if(counter < textSplit.length)
-//             {
-//                 self.append('<span style="display:none" id="fadespan' + counter + '">' + textSplit[counter] + '</span');
-//                 $('#fadespan' + counter).fadeIn('slow').replaceWith(function(){return this.innerHTML;});
-//                 self.text(self.text());
-//                 counter++;
-//                 var t = setTimeout(countdown, settings.speed);
-//                 self.data('timeouts').push(t);
-//             }
-//         }
-//         countdown();
-//     };
-// })( jQuery );
-
-// function teamSection()
-// {
-
-//     var developerDivs = $('.who-are-we-circle-div');
-//     var h3 = $('.who-are-we-circle-div-center h3');
-
-//     var text = $('.mission p').text();
-
-//     developerDivs.each(function()
-//     {
-//         $(this).hover
-//             (
-//                 function()
-//                 {
-//                     var json = $(this).data('json');
-//                     $(this).addClass($(this).attr("class") + '-hover');
-//                     $('.who-are-we-circle-div-center').css('background-color','white');
-//                     $('.who-are-we-circle-div-center div').show();
-//                     $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
-//                     $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
-//                     h3.hide();
-//                 },
-//                 function()
-//                 {
-//                     $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
-//                     $('.who-are-we-circle-div-center').css('background-color','');
-//                     $('.who-are-we-circle-div-center div').hide();
-//                     h3.show();
-//                 });
-
-//     });
-
-//     $('.div-button').click(function()
-//     {
-
-//         $(".div-button").removeClass("clicked");
-//         $(this).addClass("clicked");
-
-//         $('._fade').hide();
-//         var div = '#' + $(this).attr('id').replace('button','div');
-//         var url = $(this).attr('id').replace('-button', '');
-//         History.pushState( {k:1}, "LoveGov: Beta", '/about/' + url + '/');
-
-
-//         $(div).show();
-//         if (div=='#whoarewe-div')
-//         {
-
-//             developerDivs.each(function()
-//             {
-//                 var json = $(this).data('json');
-//                 $(this).animate({'left':json.x,'top':json.y});
-//             });
-
-//             //$('.mission p').textFadeIn({'speed':10});
-//             $('.mission p').show();
-
-//         }
-//         else
-//         {
-//             developerDivs.each(function()
-//             {
-//                 $(this).css({'left':about_center_x,'top':about_center_y});
-//             });
-//         }
-//     });
-// }
 
 
 // /***********************************************************************************************************************
