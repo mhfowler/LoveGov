@@ -279,6 +279,7 @@ function homeReload(theurl) {
                 path = returned.url;
                 $(".home_focus").html(returned.focus_html);
                 initFocus();
+                feed_start=0;
                 getFeed();
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -478,6 +479,12 @@ function removeType(type) {
     }
 }
 
+/* clicking any feed button, regets the feed */
+bind(".feed_button" , "click" , null , function(event) {
+    feed_start=0;
+    getFeed();
+});
+
 var feed_types = [];
 var feed_rank = 'H';
 var feed_start = 0;
@@ -489,7 +496,7 @@ function getFeed() {
         $(".feed_fetching").show();
     },time);
     action({
-            data: {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'start':feed_start, 'feed_types':feed_types_json},
+            data: {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json},
             success: function(data) {
                 var returned = eval('(' + data + ')');
                 if (replace) {
@@ -501,6 +508,9 @@ function getFeed() {
                 feed_start += returned.num_items;
                 clearTimeout(feed_timeout);
                 $(".feed_fetching").hide();
+                if (returned.num_items == 0) {
+                    $(".load_more").text('you loaded all that there is to load')
+                }
             }}
     );
 }

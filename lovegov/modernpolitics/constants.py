@@ -26,6 +26,10 @@ SUPER_HEROES = ['lovegov', 'anonymous']
 PROHIBITED_BROWSERS = ["MSIE"]
 ALLOWED_BROWSERS = ["Chrome","Mozilla"]
 
+########################################## SPECIAL ALIASES #############################################################
+
+SPECIAL_ALIASES = ['me', 'groups', 'elections', 'politicians', 'friends']
+
 ########################################## EMAIL LISTS #################################################################
 
 TEAM_EMAILS =  ['max_fowler@brown.edu','jonathanvkoh@gmail.com',

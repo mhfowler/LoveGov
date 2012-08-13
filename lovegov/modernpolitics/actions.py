@@ -75,4 +75,40 @@ def voteAction(vote,user,content,privacy):
 # Returns a queryset of feed items, given inputted parameters
 #-----------------------------------------------------------------------------------------------------------------------
 def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
-    return Petition.objects.all()
+
+    # get all content in the running
+    content = getContentFromAlias(alias)
+
+    # filter
+    if feed_types:
+        content = content.filter(type__in=feed_types)
+
+    # sort
+    if feed_ranking == 'N':
+        content.order_by("-created_when")
+    elif feed_ranking == 'H':
+        content.order_by("-status")
+    elif feed_ranking == 'B':
+        content.order_by("-status")
+
+    # paginate
+    content = content[feed_start:feed_start+num]
+    return content
+
+
+def getContentFromAlias(alias):
+    object = aliasToObject(alias)
+    content = []
+    if object:
+        content = object.getContent()
+    elif alias == 'me':
+        content = Petition.objects.all()
+    elif alias == 'groups':
+        content = Petition.objects.all()
+    elif alias == 'elections':
+        content = Petition.objects.all()
+    elif alias == 'politicians':
+        content = Petition.objects.all()
+    elif alias == 'friends':
+        content = Petition.objects.all()
+    return content

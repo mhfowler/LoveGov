@@ -46,6 +46,18 @@ class LGException(Exception):
         return self.client_message
 
 #-----------------------------------------------------------------------------------------------------------------------
+# returns an object from an alias
+#-----------------------------------------------------------------------------------------------------------------------
+def aliasToObject(alias):
+    if alias in SPECIAL_ALIASES:
+        return None
+    else:
+        to_return = Group.lg.get_or_none(alias=alias)
+    if not to_return:
+        to_return = Election.lg.get_or_none(alias=alias)
+    return to_return
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets query set of main topics, pseudo-caching
 #-----------------------------------------------------------------------------------------------------------------------
 def getMainTopics(vals=None):
