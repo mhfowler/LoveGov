@@ -1,0 +1,19 @@
+<div class="notifications-dropdown notifications_dropdown">
+
+    <div class="notifications-header">
+        Notifications
+    </div>
+
+    <div class="notifications-container">
+        {% for note in dropdown_notifications_text %}
+            {{ note|safe|escape }}
+        {% empty %}
+            <div class="no-notifications">You have no notifications.</div>
+        {% endfor %}
+    </div>
+
+    <div class="see-more-notifications">
+        <a href="{{ viewer.get_url }}">See more notifications</a>
+    </div>
+
+</div>

@@ -585,7 +585,7 @@ div.overdiv {
   top: 0px;
   left: 0px;
   width: 100%; height: 100%;
-  z-index: 102;
+  z-index: 2;
   display: none;
 }
 
@@ -755,12 +755,11 @@ div.edit-link
 }
 
 
-div.modal {
-  z-index: 103;
-  position: fixed;
-  left: 50%;
-  top: 50%;
+div.modal-general {
+  z-index: 3;
+  position: absolute;
   padding: 15px;
+  top: 100px;
   background-color: white;
   -moz-box-shadow: 10px 10px 5px $deep-gray;
   -webkit-box-shadow: 10px 10px 5px $deep-gray;
@@ -768,10 +767,15 @@ div.modal {
   @include rounded(5px);
   display: none;
   border:1px solid $red;
+
+  div.modal-content
+  {
+    float:left;
+  }
 }
 
 div.first-login-modal {
-  z-index: 103;
+  z-index: 3;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -855,11 +859,11 @@ div.modal-close
   float: right;
   height: 10px;
   width: 10px;
-  background-image: url('/static/icons/x.png');
+  @include staticImage('/images/icons/x.png');
   cursor: pointer;
   &:hover
   {
-    background-image: url('/static/icons/x_hover.png');
+    @include staticImage('/images/icons/x_hover.png');
   }
 }
 

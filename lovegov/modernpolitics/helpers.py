@@ -54,6 +54,8 @@ def aliasToObject(alias):
     else:
         to_return = Group.lg.get_or_none(alias=alias)
     if not to_return:
+        to_return = UserProfile.lg.get_or_none(alias=alias)
+    if not to_return:
         to_return = Election.lg.get_or_none(alias=alias)
     return to_return
 
