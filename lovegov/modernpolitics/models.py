@@ -681,6 +681,9 @@ class Content(Privacy, LocationLevel):
             self.upvotes += 1
             self.status += STATUS_VOTE
             self.save()
+            creator = self.getCreator()
+            creator.upvotes += 1
+            creator.save()
             # make the action and notify
             action = Action(relationship=my_vote,modifier='L')
             action.autoSave()
@@ -723,6 +726,9 @@ class Content(Privacy, LocationLevel):
             self.downvotes += 1
             self.status -= STATUS_VOTE
             self.save()
+            creator = self.getCreator()
+            creator.downvotes += 1
+            creator.save()
             action = Action(relationship=my_vote,modifier='D')
             action.autoSave()
             self.creator.notify(action)
@@ -1065,6 +1071,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     view = models.ForeignKey("WorldView", default=initView)
     networks = models.ManyToManyField("Network", related_name='networks')
     location = models.ForeignKey(PhysicalAddress, null=True)
+    # GAMIFICATION
+    upvotes = models.IntegerField(default=0)
+    downvotes = models.IntegerField(default=0)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS

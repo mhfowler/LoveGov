@@ -145,8 +145,8 @@ def viewWrapper(view, requires_login=False):
 #-----------------------------------------------------------------------------------------------------------------------
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
-def redirect(request):
-    return shortcuts.redirect('/home/')
+def redirect(request, vals={}):
+    return shortcuts.redirect('/me/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -456,113 +456,16 @@ def electionPage(request, e_alias, vals={}):
     return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Profile Link
+# profile page
 #-----------------------------------------------------------------------------------------------------------------------
-def profile(request, alias=None, vals={}):
-    viewer = vals['viewer']
-    if request.method == 'GET':
-        if alias:
-            frame(request, vals)
-            getUserResponses(request,vals)
-            # get comparison of person you are looking at
-            user_prof = UserProfile.lg.get_or_none(alias=alias)
-            ## TODO :: make a warning for multiple aliases!
+def profile(request, alias, vals={}):
 
-            comparison, json = user_prof.getComparisonJSON(viewer)
-            vals['user_prof'] = user_prof
-            vals['comparison'] = comparison
-            vals['json'] = json
+    profile = UserProfile.objects.get(alias=alias)
+    vals['profile'] = profile
 
-            # Get users followers
-            if user_prof.isNormal():
-                prof_follow_me = list(user_prof.getFollowMe())
-                for follow_me in prof_follow_me:
-                    comparison = getUserUserComparison(user_prof, follow_me)
-                    follow_me.compare = comparison.toJSON()
-                    follow_me.result = comparison.result
-                prof_follow_me.sort(key=lambda x:x.result,reverse=True)
-                vals['prof_follow_me'] = prof_follow_me[0:5]
-            else:       # get politician supporters
-                prof_support_me = user_prof.getSupporters()
-                vals['prof_support_me'] = prof_support_me[0:5]
-
-
-            num_groups = GROUP_INCREMENT
-            vals['prof_groups'] = user_prof.getUserGroups(num=num_groups)
-            vals['num_groups'] = num_groups
-
-            # Get user's random 5 groups
-            #vals['prof_groups'] = user_prof.getGroups(5)
-
-            # Get Follow Requests
-            vals['prof_requests'] = list(user_prof.getFollowRequests())
-            vals['prof_invites'] = list(user_prof.getGroupInvites())
-
-            # Get Schools and Locations:
-            networks = user_prof.networks.all()
-            vals['prof_locations'] = networks.filter(network_type='L')
-            vals['prof_schools'] = networks.filter(network_type='S')
-            vals['prof_parties'] = user_prof.parties.all()
-
-            vals['is_following_you'] = False
-            if viewer.id != user_prof.id:
-                following_you = UserFollow.lg.get_or_none( user=user_prof, to_user=viewer )
-                if following_you and following_you.confirmed:
-                    vals['is_following_you'] = True
-
-            # Is the current user already (requesting to) following this profile?
-            vals['is_user_requested'] = False
-            vals['is_user_confirmed'] = False
-            vals['is_user_rejected'] = False
-            user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_prof)
-            if user_follow:
-                if user_follow.requested:
-                    vals['is_user_requested'] = True
-                if user_follow.confirmed:
-                    vals['is_user_confirmed'] = True
-                if user_follow.rejected:
-                    vals['is_user_rejected'] = True
-
-            # Get Activity
-            num_actions = NOTIFICATION_INCREMENT
-            actions = user_prof.getActivity(num=num_actions)
-            actions_text = []
-            for action in actions:
-                actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
-            vals['actions_text'] = actions_text
-            vals['num_actions'] = num_actions
-
-            # Get Notifications
-            if viewer.id == user_prof.id:
-                notifications_text = []
-
-                num_notifications = NOTIFICATION_INCREMENT
-                notifications = viewer.getNotifications(num=num_notifications)
-                for notification in notifications:
-                    notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
-
-                vals['notifications_text'] = notifications_text
-                vals['num_notifications'] = num_notifications
-
-            # get politician page values
-            if not user_prof.isNormal():
-                supported = Supported.lg.get_or_none(user=viewer, to_user=user_prof)
-                if supported:
-                    vals['yousupport'] = supported.confirmed
-
-            # get responses
-            vals['responses'] = user_prof.getView().responses.count()
-            html = ajaxRender('site/pages/profile/profile.html', vals, request)
-            url = '/profile/' + alias
-            return framedResponse(request, html, url, vals)
-        else:
-            return shortcuts.redirect('/profile/' + viewer.alias)
-    else:
-        if request.POST['action']:
-            return answer(request, vals)
-        else:
-            to_alias = request.POST['alias']
-            return shortcuts.redirect('/alpha/' + to_alias)
+    html = ajaxRender('site/pages/profile/profile.html', vals, request)
+    url = profile.get_url()
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
