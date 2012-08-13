@@ -308,7 +308,7 @@ def profileOld(request, alias=None, vals={}):
 
             # get responses
             vals['responses'] = user_prof.getView().responses.count()
-            html = ajaxRender('site/pages/profile/profile.html', vals, request)
+            html = ajaxRender('site/pages/profile/profile_base.html', vals, request)
             url = '/profile/' + alias
             return framedResponse(request, html, url, vals)
         else:
