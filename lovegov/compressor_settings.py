@@ -16,4 +16,4 @@ COMPRESS_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
 COMPRESS_STORAGE = STATICFILES_STORAGE
 
-COMPRESS_ROOT = "LoveGov/frontend"
+COMPRESS_ROOT = "LoveGov/frontend/"

@@ -196,6 +196,12 @@ div.feed-main
           div.feed-item-title
           {
             margin-bottom: 2px;
+            h3.title-text {
+              color:blue;
+            }
+            h3.title-text:hover {
+              color:$black;
+            }
           }
 
           div.feed-item-group-name
