@@ -50,6 +50,27 @@ div.main {
       padding-left: 5px;
       text-align: justify;
     }
+
+    a {
+      color: #0254EB;
+
+      &:visited {
+        color: #0254EB
+      }
+
+      .morelink {
+        text-decoration:none;
+        outline: none;
+      }
+    }
+
+    .morecontent span {
+      display: none;
+    }
+
+    .morecontent span {
+      display: none;
+    }
   }
 
 
