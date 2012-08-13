@@ -5167,120 +5167,90 @@ function teamSection()
 //     });
 // }
 
+/***********************************************************************************************************************
+ *
+ *      ~Login
+ *
+ **********************************************************************************************************************/
+var login_state;
+function loadLogin() {
+    bind(".no_login_link", "click", null, function(e)
+    {
+        e.preventDefault();
+        var target = $(this).data('link');
 
-// /***********************************************************************************************************************
-//  *h
-//  *      ~Blog
-//  *
-//  **********************************************************************************************************************/
-// function loadBlog() {
-//     alert("blog!");
-// }
+        $('#modal_browse_anyways_login').bindOnce("click.browse_anyways_modal", function(e)
+        {
+            e.preventDefault();
+            window.location = target;
+        });
 
+        $('.no_login_modal').show();
+        $('.overdiv').show();
+    });
 
-// /***********************************************************************************************************************
-//  *
-//  *      -Legislation checkboxes
-//  *
-//  **********************************************************************************************************************/
+    bind(".no_login_modal_hide", "click", null, function(e)
+    {
+        $(this).hide();
+        $('.no_login_modal').hide();
+    });
 
-// function hiddenFilters() {
-//     $('#session_filter').hide(0);
-//     $('#type_filter').hide(0);
-//     $('#introduced_filter').hide(0);
-//     $('#sponsor_filter').hide(0);
-// }
+    bind(".no_login_modal_close", "click", null, function(e)
+    {
+        $('.overdiv').hide();
+        $('.no_login_modal').hide();
+    });
+}
+loadLogin();
 
-// function checkboxClick1() {
-//     $('.col1').click(function(){
-//         if($(this).hasClass("unchecked"))
-//         {
-//             $('#leg_session').attr('checked',true);
-//             $(this).removeClass("unchecked");
-//             $(this).addClass("checked");
-//             $('#type_filter').hide('fast');
-//             $('#introduced_filter').hide('fast');
-//             $('#sponsor_filter').hide('fast');
-//             $('#session_filter').show('fast');
-//         }
-//         else
-//         {
-//             $('#leg_session').attr('checked',false);
-//             $(this).addClass("unchecked");
-//             $(this).removeClass("checked");
-//             $('#session_filter').hide('');
-//         }
-//     });
-// }
+bind('.privacy_policy', 'click', null, function(e)
+{
+    $('._fade').fadeOut(300);
+    $('#privacy-div').fadeToggle(300);
+});
 
-// function checkboxClick2() {
-//     $('.col2').click(function(){
-//         if($(this).hasClass("unchecked"))
-//         {
-//             $('#leg_type').attr('checked',true);
-//             $(this).removeClass("unchecked");
-//             $(this).addClass("checked");
-//             $('#session_filter').hide('fast');
-//             $('#introduced_filter').hide('fast');
-//             $('#sponsor_filter').hide('fast');
-//             $('#type_filter').show('fast');
-//         }
-//         else
-//         {
-//             $('#leg_type').attr('checked',false);
-//             $(this).addClass("unchecked");
-//             $(this).removeClass("checked");
-//             $('#type_filter').hide('');
-//         }
-//     });
-// }
+bind('#why-facebook', 'click', null, function(e)
+{
+    $('#why-facebook-hover').fadeToggle(300);
+    return false;
+});
 
-// function checkboxClick3() {
-//     $('.col3').click(function(){
-//         if($(this).hasClass("unchecked"))
-//         {
-//             $('#leg_introduced').attr('checked',true);
-//             $(this).removeClass("unchecked");
-//             $(this).addClass("checked");
-//             $('#session_filter').hide('fast');
-//             $('#type_filter').hide('fast');
-//             $('#sponsor_filter').hide('fast');
-//             $('#introduced_filter').show('fast');
-//         }
-//         else
-//         {
-//             $('#leg_introduced').attr('checked',false);
-//             $(this).addClass("unchecked");
-//             $(this).removeClass("checked");
-//             $('#introduced_filter').hide('');
-//         }
-//     });
-// }
+bind('#why-facebook-hover', 'click', null, function(e)
+{
+    if (event.target.id != "why-facebook-hover") {
+        $(this).fadeOut(300);
+    }
+});
 
-// function checkboxClick4() {
-//     $('.col4').click(function(){
-//         if($(this).hasClass("unchecked"))
-//         {
-//             $('#leg_sponsor').attr('checked',true);
-//             $(this).removeClass("unchecked");
-//             $(this).addClass("checked");
-//             $('#session_filter').hide('fast');
-//             $('#type_filter').hide('fast');
-//             $('#introduced_filter').hide('fast');
-//             $('#sponsor_filter').show('fast');
-//         }
-//         else
-//         {
-//             $('#leg_sponsor').attr('checked',false);
-//             $(this).addClass("unchecked");
-//             $(this).removeClass("checked");
-//             $('#sponsor_filter').hide('');
-//         }
-//     });
-// }
+bind("#why-facebook-hover a", 'click', null, function()
+{
+    $('#why-facebook-hover').fadeOut(300);
+});
 
+bind('#create-account', 'click', null, function(event)
+{
+    event.preventDefault();
+    $('#login-div').hide();
+    $('#register-div').show();
+});
 
+bind('#no-facebook', 'click', null, function()
+{
+    $('#fb-div').hide();
+    $('#login-div').show();
+});
 
+bind(".create_account_button", 'click' ,null, function(event) {
+    event.preventDefault();
+    $("#create-account-div").hide();
+    $("#sign-up-div").show();
+});
+
+bind(".sign_up_with_email_button", 'click', null, function(event) {
+    event.preventDefault();
+    $("#sign-up-div").hide();
+    $("#register-div").show();
+});
 
 
 

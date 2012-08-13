@@ -1,0 +1,36 @@
+{% load thumbnail %}
+{% load customtags %}
+<div class="top">
+
+    <span class="name"> {{ profile.get_name }} </span>
+    <span class="state"> {% with state=profile.location.state %}
+        {% if state %}{{ profile.location.state }}{% else %} LoveGov {% endif %} {% endwith %}</span>
+    <span class="redheart">
+         {% with full_url='/static/images/icons/red_heart.png'|media_url:MEDIA_PREFIX %}
+             {% thumbnail full_url "20" crop="center" format="PNG" as im %}
+                 <img src="{{ im.url }}" />
+             {% empty %}
+                 ?
+             {% endthumbnail %}
+         {% endwith %}
+    </span>
+    <span class="upvotes"> {{ profile.upvotes }}</span>
+    <span class="redline"></span>
+
+</div>
+
+<div class="not-top">
+    <div class="left-bar">
+
+        <div class="profile-image">
+            {% include 'site/pieces/avatar.html' with width="190" height="200" user=profile hoveroff=1 %}
+        </div>
+
+    </div>
+
+    <div class="profile-main">
+        {% block profile_main %}
+            profile main
+        {% endblock %}
+    </div>
+</div>

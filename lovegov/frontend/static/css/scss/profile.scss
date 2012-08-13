@@ -1,0 +1,63 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+div.top {
+
+  width:100%;
+  overflow:hidden;
+
+  span.name {
+    float:left;
+    @include fontSize(22px);
+    @include inline-block;
+    color: $black;
+  }
+
+  span.state {
+    float:left;
+    margin-left:10px;
+    margin-top:6px;
+    @include fontSize(16px);
+    color:$gray;
+  }
+
+  span.redheart {
+    float:left;
+    margin-left:8px;
+    margin-top:6px;
+  }
+
+  span.upvotes {
+    float:left;
+    margin-left:8px;
+    margin-top:6px;
+    color:$red;
+    @include fontSize(16px);
+  }
+
+  span.redline {
+    float:left;
+    margin-left:8px;
+    margin-top:16px;
+    width:800px;
+    border-top: 1px solid $red;
+  }
+
+}
+
+div.not-top {
+  margin-top:10px;
+  div.left-bar {
+    @include inline-block;
+    width:150px;
+    margin-right:30px;
+    border-right:1px solid $gray;
+  }
+
+  div.profile-main {
+    @include inline-block;
+    border-left:1px solid $gray;
+  }
+}
