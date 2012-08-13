@@ -171,6 +171,7 @@ class Topic(LGModel):
     topic_text = models.CharField(max_length=50)
     parent_topic = models.ForeignKey("self", null=True)
     # fields for images
+    icon = models.ImageField(null=True, upload_to="defaults/")
     image = models.ImageField(null=True, upload_to="defaults/")
     hover = models.ImageField(null=True, upload_to="defaults/")
     selected = models.ImageField(null=True, upload_to="defaults/")
@@ -1202,6 +1203,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                     sessions += 1
                 last = x.when
         return sessions
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # returns all content this user has created in public mode
+    #-------------------------------------------------------------------------------------------------------------------
+    def getContent(self):
+        return Content.objects.filter(in_feed=True, creator=self, privacy="PUB")
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets string represetning parties of user

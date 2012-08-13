@@ -32,7 +32,7 @@ LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ROOT_URLCONF = base_settings.ROOT_URLCONF
 
-INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('south','djcelery','s3_folder_storage','storages'))
+INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('djcelery','s3_folder_storage','storages'))
 
 MIDDLEWARE_CLASSES = base_settings.MIDDLEWARE_CLASSES
 

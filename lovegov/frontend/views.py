@@ -501,16 +501,19 @@ def electionPage(request, e_alias, vals={}):
 def profile(request, alias, vals={}):
 
     viewer = vals['viewer']
-    profile = UserProfile.objects.get(alias=alias)
-    vals['profile'] = profile
+    user_profile = UserProfile.objects.get(alias=alias)
+    vals['profile'] = user_profile
 
     vals['followsyou'] = True
+    
+    vals['profile_groups'] = user_profile.getGroups()[:4]
+    vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
-    comparison = profile.getComparison(viewer)
+    comparison = user_profile.getComparison(viewer)
     vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
-    url = profile.get_url()
+    url = user_profile.get_url()
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

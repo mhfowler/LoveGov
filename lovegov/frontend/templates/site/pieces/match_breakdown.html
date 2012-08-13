@@ -1,0 +1,27 @@
+{% load thumbnail %}
+{% load customtags %}
+<!-- goes inside a wrapper, and receives its dimensions from there -->
+<div class="match_breakdown" data-result="{{ comparison.main.result }}" data-num_q="{{ comparison.main.num_q }}">
+    {% for t in comparison.topics %}
+        {% with topic=t.topic %}
+            <div class="topic-column" style="border-color:{{ t.dark_color }}"
+                 data-t_alias="{{ t.alias }}" data-result="{{ t.result }}" data-num_q="{{ t.num_q }}">
+                <div class="white_area" style="height:{{t.empty}}%"></div>
+                <div class="colored_area" style="background-color:{{ t.light_color }};height:{{t.result}}%">
+                    <p class="percent">
+                        {{ t.result }}%
+                    </p>
+                </div>
+                <div class="topic_icon">
+                    {% with full_url=topic.getImageURL|media_url:MEDIA_PREFIX %}
+                        {% thumbnail full_url "20" crop="center" format="PNG" as im %}
+                            <img src="{{ im.url }}" />
+                        {% empty %}
+                            {{ full_url }}
+                        {% endthumbnail %}
+                    {% endwith %}
+                </div>
+            </div>
+        {% endwith %}
+    {% endfor %}
+</div>

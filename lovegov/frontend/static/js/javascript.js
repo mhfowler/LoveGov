@@ -1,3 +1,15 @@
+/***********************************************************************************************************************
+ *
+ *     ~init js, does stuff that delegated cant!
+ *
+ ***********************************************************************************************************************/
+var rebind="home";
+function initJS() {
+    switch (rebind) {
+        case "home": initHomePage(); break;
+        case "profile": initFeed(); break;
+    }
+}
 
 /***********************************************************************************************************************
  *
@@ -64,8 +76,8 @@ $(document).ready(function()
         if (event.state != null) { window.location.reload(); }
     };
 
-    // init home page
-    initHomePage();
+    // init page with js
+    initJS();
 
 });
 
@@ -73,10 +85,13 @@ $(document).ready(function()
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
+    initFeed();
+}
+
+function initFeed() {
     selectRank("H");
     getFeed();
 }
-
 
 /***********************************************************************************************************************
  *
@@ -344,6 +359,7 @@ function ajaxReload(theurl, loadimg)
                 $('#main_content').css("top","0px");
                 $("#main_content").html(returned.html);
                 $('#main_content').show();
+                initJS();
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -676,6 +692,25 @@ bind(".follow_button.following", 'mouseenter', null, function(event) {
 bind(".follow_button.following", 'mouseout', null, function(event) {
     $(this).find(".stop_following").show();
     $(this).find('.is_following').hide();
+});
+
+bind(".profile_tab", 'click', null, function(event) {
+    $(".profile_tab").removeClass("clicked");
+    $(this).addClass("clicked");
+});
+
+bind(".questions_tab", 'click', null, function(event) {
+    $(".profile_focus").hide();
+    $(".questions_focus").show();
+});
+bind(".posts_tab", 'click', null, function(event) {
+    $(".profile_focus").hide();
+    $(".posts_focus").show();
+    getFeed();
+});
+bind(".activity_tab", 'click', null, function(event) {
+    $(".profile_focus").hide();
+    $(".activity_focus").show();
 });
 
 /***********************************************************************************************************************

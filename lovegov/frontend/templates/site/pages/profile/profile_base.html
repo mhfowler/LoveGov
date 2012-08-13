@@ -1,8 +1,9 @@
 {% load thumbnail %}
 {% load customtags %}
-<div class="top">
+<div class="profile-page">
+    <div class="top">
 
-    <span class="name"> {{ profile.get_name }} </span>
+        <span class="name"> {{ profile.get_name }} </span>
     <span class="state"> {% with state=profile.location.state %}
         {% if state %}{{ profile.location.state }}{% else %} LoveGov {% endif %} {% endwith %}</span>
     <span class="redheart">
@@ -14,116 +15,118 @@
              {% endthumbnail %}
          {% endwith %}
     </span>
-    <span class="upvotes"> {{ profile.upvotes }}</span>
-    <span class="redline"></span>
+        <span class="upvotes"> {{ profile.upvotes }}</span>
+        <span class="redline"></span>
 
-</div>
+    </div>
 
-<div class="not-top">
+    <div class="not-top">
 
-    <table class="profile-table">
-        <tr>
-            <td class="left-bar">
+        <table class="profile-table">
+            <tr>
+                <td class="left-bar">
 
-                <div class="profile-image">
-                    {% include 'site/pieces/avatar.html' with width="150" height="200" user=profile hoveroff=1 %}
-                </div>
-
-                {% if followsyou %}
-                    <div class="follows-you">
-                        <p> Follows You </p>
-                    </div>
-                {% endif %}
-
-                <div class="match-percent">
-                    {{ comparison.main.result }}%
-                </div>
-                <div class="match-from">
-                    match from
-                </div>
-                <div class="match-from how-many">
-                    {{ comparison.main.num_q }} answers
-                </div>
-
-                <div class="stats">
-
-                    <div class="stats-row-one">
-                        <div class="stats-box white-box left-box">
-                            <div class="num">
-                                44
-                            </div>
-                            <div class="label">
-                                followers
-                            </div>
-                        </div>
-                        <div class="stats-box gray-box center-box">
-                            <div class="num">
-                                3
-                            </div>
-                            <div class="label">
-                                following
-                            </div>
-                        </div>
-                        <div class="stats-box gray-box  right-box">
-                            <div class="num">
-                                6
-                            </div>
-                            <div class="label">
-                                groups
-                            </div>
-                        </div>
-                        <div style="clear:both;"></div>
-                    </div>
-                    <div class="stats-row-two">
-                        <div class="stats-box gray-box  left-box">
-                            <div class="num">
-                                3
-                            </div>
-                            <div class="label">
-                                posts
-                            </div>
-                        </div>
-                        <div class="stats-box gray-box center-box">
-                            <div class="num">
-                                60
-                            </div>
-                            <div class="label">
-                                answers
-                            </div>
-                        </div>
-                        <div class="stats-box gray-box right-box">
-                            <div class="num">
-                                5
-                            </div>
-                            <div class="label">
-                                signatures
-                            </div>
-                        </div>
-                        <div style="clear:both;"></div>
+                    <div class="profile-image">
+                        {% include 'site/pieces/avatar.html' with width="150" height="200" user=profile hoveroff=1 %}
                     </div>
 
-                    {% if not ifollow %}
-                        <div class="profile-bar-button follow-button user_follow">
-                            follow
-                        </div>
-                    {% else %}
-                        <div class="profile-bar-button follow-button user_follow">
-                            stop following
+                    {% if followsyou %}
+                        <div class="follows-you">
+                            <p> Follows You </p>
                         </div>
                     {% endif %}
 
-                </div>
+                    <div class="match-percent">
+                        {{ comparison.main.result }}%
+                    </div>
+                    <div class="match-from">
+                        match from
+                    </div>
+                    <div class="match-from how-many">
+                        {{ comparison.main.num_q }} answers
+                    </div>
 
-            </td>
+                    <div class="stats">
 
-            <td class="profile-main">
-                {% block profile_main %}
-                    profile main
-                {% endblock %}
-            </td>
-        </tr>
-    </table>
+                        <div class="stats-row-one">
+                            <div class="stats-box white-box left-box">
+                                <div class="num">
+                                    44
+                                </div>
+                                <div class="label">
+                                    followers
+                                </div>
+                            </div>
+                            <div class="stats-box gray-box center-box">
+                                <div class="num">
+                                    3
+                                </div>
+                                <div class="label">
+                                    following
+                                </div>
+                            </div>
+                            <div class="stats-box gray-box  right-box">
+                                <div class="num">
+                                    6
+                                </div>
+                                <div class="label">
+                                    groups
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="stats-row-two">
+                            <div class="stats-box gray-box  left-box">
+                                <div class="num">
+                                    3
+                                </div>
+                                <div class="label">
+                                    posts
+                                </div>
+                            </div>
+                            <div class="stats-box gray-box center-box">
+                                <div class="num">
+                                    60
+                                </div>
+                                <div class="label">
+                                    answers
+                                </div>
+                            </div>
+                            <div class="stats-box gray-box right-box">
+                                <div class="num">
+                                    5
+                                </div>
+                                <div class="label">
+                                    signatures
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+
+                        {% if not ifollow %}
+                            <div class="profile-bar-button follow-button user_follow">
+                                follow
+                            </div>
+                        {% else %}
+                            <div class="profile-bar-button follow-button user_follow">
+                                stop following
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </td>
+
+                <td class="profile-main">
+                    {% block profile_main %}
+                        profile main
+                    {% endblock %}
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
-    <script>
-        var ifollow={{ ifollow }};
-    </script>
+
+<script>
+    var ifollow={{ ifollow }};
+</script>
