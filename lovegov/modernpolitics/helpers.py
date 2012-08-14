@@ -278,6 +278,15 @@ def renderToResponseCSRF(template, vals, request):
 # returns and object from the url which uniquely identifies it
 #-----------------------------------------------------------------------------------------------------------------------
 def urlToObject(url):
+    alias = url.replace("/","")
+    to_return = UserProfile.lg.get_or_none(alias=alias)
+    if not to_return:
+        to_return = Group.lg.get_or_none(alias=alias)
+    if not to_return:
+        to_return = urlToObjectOld(url)
+    return to_return
+
+def urlToObjectOld(url):
     split = filter(None,url.split('/'))
     type = split[0]
     alias = split[1]

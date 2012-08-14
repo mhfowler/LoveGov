@@ -5,8 +5,7 @@
  ***********************************************************************************************************************/
 var rebind="home";
 function initJS() {
-    undelegated();
-    loadHoverComparison();
+    liveBind();
     switch (rebind) {
         case "home":
             initHomePage();
@@ -23,6 +22,11 @@ function undelegated() {
     undelegated.bindOnce('click.undelegate', function(event) {
         event.preventDefault();
     });
+}
+
+function liveBind() {
+    undelegated();
+    loadHoverComparison();
 }
 
 /***********************************************************************************************************************
@@ -324,6 +328,7 @@ function homeReload(theurl) {
                 if (info_expanded) {
                     expandInfoToggle(false);
                 }
+                liveBind();
                 initFeed();
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -590,6 +595,7 @@ function getFeed(container) {
                     container.find(".load_more").text('you loaded all that there is to load')
                 }
                 bindImportanceSliders();
+                liveBind();
             }}
     );
 }

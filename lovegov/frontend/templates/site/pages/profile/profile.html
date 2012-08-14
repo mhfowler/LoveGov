@@ -66,9 +66,9 @@
                     Match Breakdown
                 </div>
                 <div class="stuff">
-                    {% include 'site/pieces/match_breakdown.html' with comparison=comparison %}
+                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with comparison=comparison %}
                 </div>
-                <div class="view-all"> see comparison breakdown </div>
+                <a href="{{ profile.getQuestionsURL }}" class="view-all"> see comparison breakdown </a>
             </span>
             <span class="profile-groups breakdown-box">
                  <div class="profile-header">
@@ -79,7 +79,7 @@
                         <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
                     {% endfor %}
                 </div>
-                <div class="view-all"> view all </div>
+                <a class="view-all"> view all </a>
             </span>
             <span class="profile-politicians breakdown-box">
                  <div class="profile-header">
@@ -92,7 +92,7 @@
                         </a>
                     {% endfor %}
                 </div>
-                <div class="view-all"> view all </div>
+                <a class="view-all"> view all </a>
             </span>
 
             <div style="clear:both"></div>

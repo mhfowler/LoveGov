@@ -527,6 +527,22 @@ def profile(request, alias, vals={}):
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals)
 
+def worldview(request, alias, vals={}):
+
+    viewer = vals['viewer']
+    getMainTopics(vals)
+    user_profile = UserProfile.objects.get(alias=alias)
+    vals['profile'] = user_profile
+
+    vals['followsyou'] = True
+
+    comparison = user_profile.getComparison(viewer)
+    vals['comparison'] = comparison.toBreakdown()
+
+    html = ajaxRender('site/pages/profile/profile_questions.html', vals, request)
+    url = user_profile.get_url()
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------

@@ -1132,8 +1132,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return '/' + self.alias + '/'
         else:
             return '/profile/' + str(self.id) + '/'
-    def getBreakdownURL(self):
-        return self.get_url() + 'breakdown/'
+    def getQuestionsURL(self):
+        return self.get_url() + 'worldview/'
 
     def getWebUrl(self):
         return self.getWebURL()
