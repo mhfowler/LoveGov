@@ -5,10 +5,24 @@
  ***********************************************************************************************************************/
 var rebind="home";
 function initJS() {
+    undelegated();
+    loadHoverComparison();
     switch (rebind) {
-        case "home": initHomePage(); break;
-        case "profile": initFeed(); break;
+        case "home":
+            initHomePage();
+            initFeed();
+            break;
+        case "profile":
+            initFeed();
+            break;
     }
+}
+
+function undelegated() {
+    var undelegated = $('a[href="#"]');
+    undelegated.click(function(event) {
+        event.preventDefault();
+    });
 }
 
 /***********************************************************************************************************************
@@ -23,15 +37,21 @@ function bind(selector, events, data, handler) {
 
 function action(dict) {
      var data = dict['data'];
-     var success_fun = dict['success'];
+     var success_fun = function(data) {
+         var super_success = dict['success'];
+         if (super_success) {
+             super_success(data);
+         }
+         undelegated();
+     };
      var error_fun = function(jqXHR, textStatus, errorThrown) {
          if(jqXHR.status==403) {
              //launch403Modal(jqXHR.responseText);
              return;
          }
-         var superError = dict['error'];
-         if (superError) {
-             superError();
+         var super_error = dict['error'];
+         if (super_error) {
+             super_error();
          } else {
              $("body").html(jqXHR.responseText);
          }
@@ -85,12 +105,19 @@ $(document).ready(function()
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
-    initFeed();
 }
 
+/* does a get request for all feeds on page */
 function initFeed() {
-    selectRank("H");
-    getFeed();
+    selectRank(feed_rank);
+    selectQuestionRank(question_rank);
+    $.each(feed_types, function(i, e) {
+        selectType(e);
+    });
+    $.each($(".feed_main"), function(i,e) {
+        $(this).data('feed_start', 0);
+        getFeed($(this));
+    });
 }
 
 /***********************************************************************************************************************
@@ -294,28 +321,16 @@ function homeReload(theurl) {
                 History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 path = returned.url;
                 $(".home_focus").html(returned.focus_html);
-                initFocus();
-                feed_start=0;
-                getFeed();
+                if (info_expanded) {
+                    expandInfoToggle(false);
+                }
+                initFeed();
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
                 $('body').html(jqXHR.responseText);
             }
         });
-}
-
-/* does js necessary to make focus appear correctly after reload */
-function initFocus() {
-    // if group info was expanded, expand this as well
-    if (info_expanded) {
-        expandInfoToggle(false);
-    }
-    // if parameters were selected, select them
-    selectRank(feed_rank);
-    $.each(feed_types, function(i, e) {
-        selectType(e);
-    });
 }
 
 /* move asterisk, when section is selected */
@@ -462,11 +477,37 @@ bind(".rank_button" , "click" , null , function(event) {
     selectRank($(this).data('rank'));
 });
 
+/* filter buttons */
+bind(".topic_button" , "click" , null , function(event) {
+    event.preventDefault();
+    if (!$(this).hasClass("clicked")) {
+        $(".topic_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        feed_topic=$(this).data("t_alias");
+    }
+    else {
+        $(this).removeClass("clicked");
+        feed_topic=null;
+    }
+});
+
+/* filter buttons */
+bind(".question_button" , "click" , null , function(event) {
+    selectQuestionRank($(this).data('rank'));
+});
+
 function selectRank(rank) {
     var which = $('.rank_button[data-rank="' + rank + '"]');
     $(".rank_button").removeClass("clicked");
     which.addClass("clicked");
     feed_rank = rank;
+}
+
+function selectQuestionRank(rank) {
+    var which = $('.question_button[data-rank="' + rank + '"]');
+    $(".question_button").removeClass("clicked");
+    which.addClass("clicked");
+    question_rank = rank;
 }
 
 bind(".type_button" , "click" , null , function(event) {
@@ -498,43 +539,63 @@ function removeType(type) {
 
 /* clicking any feed button, regets the feed */
 bind(".feed_button" , "click" , null , function(event) {
-    feed_start=0;
-    getFeed();
+    event.preventDefault();
+    var container = $(this).parents(".feed_main");
+    container.data('feed_start', 0);
+    getFeed(container);
 });
 
 var feed_types = [];
 var feed_rank = 'H';
-var feed_start = 0;
-function getFeed() {
+var feed_topic = null;
+var question_rank = "R";
+var to_compare_id=null;
+function getFeed(container) {
+    var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
+    if (replace) {
+        container.find(".feed_content").empty();
+    }
     var feed_types_json = JSON.stringify(feed_types);
+    var feed = container.data('feed');
     var time = 10;
     var feed_timeout = setTimeout(function(){
-        $(".feed_fetching").show();
+        container.find(".feed_fetching").show();
     },time);
+    var data;
+    if (feed == 'getFeed') {
+        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
+    }
+    else {
+        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id};
+    }
     action({
-            data: {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json},
+            data: data,
             success: function(data) {
                 var returned = eval('(' + data + ')');
                 if (replace) {
-                    $(".feed_content").html(returned.html);
+                    container.find(".feed_content").html(returned.html);
                 }
                 else {
-                    $(".feed_content").append(returned.html);
+                    container.find(".feed_content").append(returned.html);
                 }
                 feed_start += returned.num_items;
+                container.data('feed_start', feed_start);
                 clearTimeout(feed_timeout);
-                $(".feed_fetching").hide();
+                container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    $(".load_more").text('you loaded all that there is to load')
+                    container.find(".load_more").text('you loaded all that there is to load')
                 }
+                bindImportanceSliders();
             }}
     );
 }
 
 /* load more feed items */
 bind(".load_more" , "click" , null , function(event) {
-    getFeed();
+    var container = $(this).parents(".feed_main");
+    getFeed(container);
 });
 
 
@@ -813,11 +874,14 @@ bind(".profile_tab", 'click', null, function(event) {
 bind(".questions_tab", 'click', null, function(event) {
     $(".profile_focus").hide();
     $(".questions_focus").show();
+    var container = $(".posts_focus").find(".feed_main");
+    getFeed(container);
 });
 bind(".posts_tab", 'click', null, function(event) {
     $(".profile_focus").hide();
     $(".posts_focus").show();
-    getFeed();
+    var container = $(".posts_focus").find(".feed_main");
+    getFeed(container);
 });
 bind(".activity_tab", 'click', null, function(event) {
     $(".profile_focus").hide();
@@ -1115,3 +1179,172 @@ bind( null , 'click' , null , function(event)
         $('div.notifications_dropdown').hide();
     }
 });
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Hover Comparison
+ *
+ **********************************************************************************************************************/
+function loadHoverComparison()
+{
+
+    var hoverTimer;
+    var hoverClearOK = true;
+
+    function clearHover()
+    {
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
+    }
+
+    $('#comparison-hover-div').hover
+        (
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
+            }
+        );
+
+    function findHoverPosition(selector)
+    {
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+        if (top <= $(document).scrollTop())
+        {
+            // show below
+            top = selector.offset().top + selector.height() + 30;
+            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+        }
+        else
+        {
+            // show above
+            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+        }
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+        return {top:top,left:left};
+    }
+
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
+        (
+            function(event)
+            {
+                var self = $(this);
+                var href = $(this).data('href');
+                var displayName = $(this).data("display_name");
+                if (href != "")
+                {
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    $('#comparison-hover-div p').text('You & ' + displayName);
+                    var offset = findHoverPosition(self);
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    action({
+                        'data': {'action':'hoverComparison','href':href},
+                        'success': function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            $('#comparison-hover').html(obj.html);
+                        },
+                        'error': null
+                    });
+                }
+            },
+            function(event)
+            {
+                hoverTimer = setTimeout
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
+            }
+        );
+}
+
+/***********************************************************************************************************************
+ *
+ *     ~QA
+ *
+ **********************************************************************************************************************/
+
+bind('.answer_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    stub.find(".answer_expanded").show();
+});
+
+
+bind('.answer_checkbox' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    stub.find(".answer_checkbox").removeClass("clicked");
+    $(this).addClass("clicked");
+});
+
+bind('.save_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    var box = stub.find(".answer_checkbox.clicked");
+    var a_id;
+    if (box.length!=0) {
+        a_id = box.data('a_id');
+    }
+    else {
+        a_id = -1;
+    }
+    var explanation = stub.find('.explanation').val();
+    var privacy_bool = stub.find(".privacy_checkbox").hasClass("clicked");
+    var privacy;
+    if (privacy_bool) {
+        privacy = 'PRI';
+    } else {
+        privacy = 'PUB';
+    }
+    var q_id = stub.data('q_id');
+    action({
+        data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
+            'explanation':explanation,'a_id':a_id, 'weight':5, 'to_compare_id':to_compare_id},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            stub.replaceWith(new_element);
+            var saved_message = new_element.find(".saved_message");
+            saved_message.show();
+            saved_message.fadeOut(5000);
+        }
+    });
+});
+
+bind('.privacy_checkbox' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+});
+
+bind('.cancel_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    stub.find(".answer_expanded").hide();
+});
+
+function bindImportanceSliders() {
+    var importance_bars = $(".importance_bar");
+    $.each(importance_bars, function(i, e) {
+        var weight = $(this).data('weight');
+        $(this).slider({'min':0, 'max':100, 'step':1, 'value':weight});
+    });
+}
+

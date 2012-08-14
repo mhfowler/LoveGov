@@ -284,6 +284,9 @@ class Content(Privacy, LocationLevel):
     def getUrl(self):
         return self.get_url()
 
+    def getBreakdownURL(self):
+        return self.get_url() + 'breakdown/'
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets name of content for display.
     #-------------------------------------------------------------------------------------------------------------------
@@ -862,6 +865,7 @@ class BasicInfo(models.Model):
     nick_name = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     dob = models.DateField(null=True)
+    age = models.IntegerField(null=True)
     address = custom_fields.ListField(default=[])
     state = models.CharField(max_length=2, blank=True, null=True)
     zipcode = models.CharField(max_length=15, blank=True, null=True)
@@ -1078,6 +1082,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # GAMIFICATION
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
+    num_petitions = models.IntegerField(default=0)
+    num_articles = models.IntegerField(default=0)
+    num_ifollow = models.IntegerField(default=0)
+    num_followme = models.IntegerField(default=0)
+    num_groups = models.IntegerField(default=0)
+    num_signatures = models.IntegerField(default=0)
+    num_answers = models.IntegerField(default=0)
+    num_posts = models.IntegerField(default=0)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
@@ -1090,8 +1102,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
-    num_petitions = models.IntegerField(default=0)
-    num_articles = models.IntegerField(default=0)
     parties = models.ManyToManyField("Party", related_name='parties')
     # feeds & ranking
     my_filters = models.ManyToManyField(SimpleFilter)
@@ -1122,6 +1132,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return '/profile/' + self.alias + '/'
         else:
             return '/' + self.alias + '/'
+    def getBreakdownURL(self):
+        return self.get_url() + 'breakdown/'
+
     def getWebUrl(self):
         return self.getWebURL()
     def getWebURL(self):
@@ -1490,10 +1503,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not self.i_follow:
             self.createIFollowGroup()
         self.i_follow.joinMember(to_user)
+        self.num_ifollow += 1
+        self.save()
 
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
         to_user.follow_me.joinMember(self)
+        to_user.num_followers += 1
+        to_user.save()
 
         #Check and Make Relationship A
         if not relationship:
@@ -1642,6 +1659,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not Group.lg.get_or_none(id=self.i_follow_id):
             title = "People who " + self.get_name() + " follows"
             group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_feed=False)
+            group.ghost = True
             group.autoSave()
             self.i_follow = group
             self.save()
@@ -1654,6 +1672,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not Group.lg.get_or_none(id=self.follow_me_id):
             title = "People who follow " + self.get_name()
             group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_feed=False)
+            group.ghost = True
             group.autoSave()
             self.follow_me = group
             self.save()
@@ -2128,6 +2147,9 @@ class Petition(Content):
                     self.p_level += 1
                     self.goal = PETITION_LEVELS[self.p_level]
                 self.save()
+
+                user.num_signatures += 1
+                user.save()
 
                 return True
         else:
@@ -3229,12 +3251,13 @@ class Group(Content):
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
     system = models.BooleanField(default=False)
+    ghost = models.BooleanField(default=False)
     # democratic groups
     democratic = models.BooleanField(default=False)       # if false, fields below have no importance
     government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
-    motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote closes
+    motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
@@ -3345,6 +3368,9 @@ class Group(Content):
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
+        if not group_joined.confirmed and not group_joined.group.ghost:
+            user.num_groups += 1
+            user.save()
         group_joined.confirm()
         group_joined.ever_member = True
         self.members.add(user)
@@ -3360,12 +3386,14 @@ class Group(Content):
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
+        if group_joined.confirmed and not group_joined.group.ghost:
+            user.num_groups -= 1
+            user.save()
         group_joined.clear()
         self.members.remove(user)
         self.admins.remove(user)
         self.num_members -= 1
         self.save()
-
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.

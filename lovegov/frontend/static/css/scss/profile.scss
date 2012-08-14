@@ -207,7 +207,7 @@ div.profile-page {
         span.breakdown-box {
           float:left;
           width:240px;
-          margin-right:80px;
+          margin-right:70px;
           height:200px;
 
           div.stuff {
@@ -293,6 +293,18 @@ div.profile-page {
       div.profile_focus.questions_focus {
         display:block;
       }
+
+      div.activity {
+        width:100%;
+        div.activity-header {
+          width:100%;
+          margin-top:50px;
+          span.filter-by {
+              float:left;
+          }
+        }
+      }
+
     }
   }
 }

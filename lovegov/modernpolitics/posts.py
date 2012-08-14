@@ -265,6 +265,7 @@ def create(request, vals={}):
         if request.is_ajax():
             if formtype == "N":
                 viewer.num_articles += 1
+                viewer.num_posts += 1
                 viewer.save()
                 from lovegov.frontend.views import newsDetail
                 return newsDetail(request=request,n_id=c.id,vals=vals)
@@ -288,6 +289,7 @@ def create(request, vals={}):
                 except IOError:
                     print "Image Upload Error"
                 viewer.num_petitions += 1
+                viewer.num_posts += 1
                 viewer.save()
             return shortcuts.redirect(c.get_url())
     else:
@@ -756,7 +758,43 @@ def answer(request, vals={}):
         if my_response:
             response = my_response[0]
             response.delete()
+            user.num_answers -= 1
+            user.save()
         return HttpResponse("+")
+
+
+def stubAnswer(request, vals={}):
+    user = vals['viewer']
+    to_compare_id = request.POST.get('to_compare_id')
+    if to_compare_id:
+        to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
+    else:
+        to_compare = None
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = request.POST['privacy']
+    a_id = request.POST['a_id']
+    weight = request.POST['weight']
+    explanation = request.POST['explanation']
+    my_response = user.view.responses.filter(question=question)
+    if a_id != -1:
+        response = answerAction(user=user, question=question, my_response=my_response,
+            privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
+    else:
+        if my_response:
+            response = my_response[0]
+            response.delete()
+            user.num_answers -= 1
+            user.save()
+        else:
+            response = None
+    vals['question'] = question
+    vals['your_response'] = response
+    their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
+    vals['their_response'] = their_response
+    vals['agree'] = (their_response and their_response.most_chosen_answer_id == response.most_chosen_answer_id)
+    vals['to_compare'] = to_compare
+    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
@@ -1239,8 +1277,12 @@ def updateGroupView(request,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def hoverComparison(request,vals={}):
     object = urlToObject(request.POST['href'])
-    comparison = object.getComparison(vals['viewer'])
-    return HttpResponse(comparison.toJSON())
+    comparison = object.getComparison(vals['viewer']).toBreakdown()
+    vals['comparison'] = comparison
+    vals['to_compare'] = object
+    html = ajaxRender('site/pieces/comparison_hover_body.html', vals, request)
+    to_return = {'html':html}
+    return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds e-mail to mailing list
@@ -1348,6 +1390,34 @@ def contentToFeedItems(content, user):
             my_vote=0
         list.append((c,my_vote))    # content, my_vote
     return list
+
+def getQuestions(request, vals):
+    viewer = vals['viewer']
+    feed_ranking = request.POST['feed_rank']
+    question_ranking = request.POST['question_rank']
+    feed_start = int(request.POST['feed_start'])
+    feed_topic_alias = request.POST.get('feed_topic')
+    to_compare_id = request.POST.get('to_compare_id')
+    if to_compare_id:
+        to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
+    else:
+        to_compare = None
+    if feed_topic_alias:
+        feed_topic = Topic.lg.get_or_none(alias=feed_topic_alias)
+    else:
+        feed_topic = None
+
+    if to_compare:
+        question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
+            question_ranking=question_ranking, feed_topic=feed_topic,
+            feed_start=feed_start, num=10)
+    else:
+        question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
+            feed_topic=feed_topic, feed_start=feed_start, num=10)
+    vals['question_items']= question_items
+    vals['to_compare'] = to_compare
+    html = ajaxRender('site/pages/qa/question_feed_helper.html', vals, request)
+    return HttpResponse(json.dumps({'html':html,'num_items':len(question_items)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
