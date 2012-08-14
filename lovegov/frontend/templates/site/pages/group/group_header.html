@@ -14,7 +14,7 @@
                 <span class="group-scale"> {{ group.getScaleVerbose }} </span>
                 <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
 
-                <div class="group-take-poll"> take poll </div>
+                <div class="group-minimize-button minimize_group"> minimize group </div>
 
             </div>
 
@@ -48,7 +48,7 @@
 
                     <div class="group-info-title">Moderators</div>
                     {% for admin in group_admins %}
-                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="38" width="38" %}
+                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="35" width="35" %}
                     {% endfor %}
 
                 </div>

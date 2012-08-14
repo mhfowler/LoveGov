@@ -11,27 +11,29 @@ div.group-info-title
   margin-bottom: 5px;
 }
 
-div.group-main
+.group-action
 {
+  padding:5px;
+  background-color:$light-gray;
+  width:160px;
+  text-align:center;
+  margin-bottom:7px;
+  display: block;
+  color: $black;
 
-  .group-action
+  &:hover
   {
-    padding:5px;
-    background-color:$light-gray;
-    width:160px;
-    text-align:center;
-    margin-bottom:7px;
-    display: block;
-    color: $black;
-
-    &:hover
-    {
-      background-color:$dark-gray;
-      cursor:pointer;
-    }
+    background-color:$dark-gray;
+    cursor:pointer;
   }
+}
 
-  div.group-take-poll
+div.group-top
+{
+  @include clearfix();
+  margin-bottom: 20px;
+
+  div.group-minimize-button
   {
     @extend .group-action;
     color: white;
@@ -39,98 +41,91 @@ div.group-main
     &:hover { background-color: $red-light; }
   }
 
-  div.group-top
+  span.group-title
   {
-    margin-bottom: 20px;
-
-    span.group-title
-    {
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 16px;
-      margin-right: 10px;
-      @include inline-block();
-    }
-
-    span.group-scale
-    {
-      color: $dark-gray;
-      font-size: 12px;
-      @include inline-block();
-      margin-right: 10px;
-    }
-
-    span.group-num-members
-    {
-      font-size: 12px;
-      @include inline-block();
-    }
-    div.group-action {
-      float:right;
-    }
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+    margin-right: 10px;
+    @include inline-block();
   }
 
-  div.group-info
+  span.group-scale
   {
+    color: $dark-gray;
+    font-size: 12px;
+    @include inline-block();
+    margin-right: 10px;
+  }
+
+  span.group-num-members
+  {
+    font-size: 12px;
+    @include inline-block();
+  }
+  div.group-action {
+    float:right;
+  }
+}
+
+div.group-info
+{
+  @include clearfix();
+
+  div.group-image
+  {
+    float: left;
+    height: 100px;
+    width: 140px;
+    background-color: $gray; //Temporary
+    margin-right: 20px;
+  }
+
+  div.group-match
+  {
+    float: left;
+    height: 100px;
+    color: $red;
+
+    div.match-number
+    {
+      font-size: 64px;
+      font-weight: bold;
+      height: 64px;
+      text-align: center;
+    }
+
+    div.match-title
+    {
+      width: 100%;
+      font-size: 20px;
+      height: 20px;
+      text-align: center;
+    }
+
+  }
+
+  div.group-summary
+  {
+    float: left;
+    margin-left: 30px;
+    width: 230px;
+    overflow:hidden;
+  }
+
+  div.group-moderators
+  {
+    float: left;
+    margin-left: 20px;
+  }
+
+  div.group-actions
+  {
+    float:right;
     @include clearfix();
-
-    div.group-image
-    {
-      float: left;
-      height: 100px;
-      width: 140px;
-      background-color: $gray; //Temporary
-      margin-right: 20px;
-    }
-
-    div.group-match
-    {
-      float: left;
-      height: 100px;
-      color: $red;
-
-      div.match-number
-      {
-        font-size: 64px;
-        font-weight: bold;
-        height: 64px;
-        text-align: center;
-      }
-
-      div.match-title
-      {
-        width: 100%;
-        font-size: 20px;
-        height: 20px;
-        text-align: center;
-      }
-
-    }
-
-    div.group-summary
-    {
-      float: left;
-      margin-left: 30px;
-      width: 230px;
-      overflow:hidden;
-    }
-
-    div.group-moderators
-    {
-      float: left;
-      margin-left: 20px;
-    }
-
-    div.group-actions
-    {
-      float:right;
-      @include clearfix();
-    }
-
   }
 
 }
-
 
 div.group-expanded-info
 {
