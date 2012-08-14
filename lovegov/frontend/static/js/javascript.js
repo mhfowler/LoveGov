@@ -1219,6 +1219,88 @@ bind( null , 'click' , null , function(event)
  *      ~GroupEdit
  *
  **********************************************************************************************************************/
+function bindRemoveAdmin()
+{
+    bind('.remove_admin' , 'click', null , function(e)
+    {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id , function(data)
+        {
+            $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
+        });
+    });
+
+    $('.remove_admin_self' , 'click' , null , function(e)
+    {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id , function(data)
+        {
+            window.location = '/group/' + g_id + '/';
+        });
+    });
+}
+
+function removeAdmin(admin_id,g_id,success)
+{
+    action({
+        data:
+        {
+            'action': 'removeAdmin',
+            'admin_id': admin_id,
+            'g_id': g_id
+        },
+        success: success
+    });
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function bindGroupPrivacyRadio()
+{
+    bind( "div.group_privacy_radio" , 'click' , null , function(event)
+    {
+        var prev = $("input:radio[name=group_privacy]:checked");
+        prev.attr('checked',false);
+        prev.parent('.group_privacy_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio[name=group_privacy]").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+}
+
+function bindScaleRadio()
+{
+    bind( "div.news_scale_radio" , 'click' , null , function(event)
+    {
+        var prev = $("input:radio.news_scale:checked");
+        prev.attr('checked',false);
+        prev.parent('.news_scale_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio.news_scale").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+}
+
 function loadGroupEdit()
 {
     bindGroupPrivacyRadio();
@@ -1313,88 +1395,6 @@ function loadGroupEdit()
 }
 
 loadGroupEdit();
-
-function bindRemoveAdmin()
-{
-    bind('.remove_admin' , 'click', null , function(e)
-    {
-        var admin_id = $(this).data('admin_id');
-        var admin_name = $(this).data('admin_name');
-        var g_id = $('#edit_admin_submit').data('g_id');
-        $(this).parents('table.admin_container').fadeOut(600);
-        removeAdmin( admin_id , g_id , function(data)
-        {
-            $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
-        });
-    });
-
-    $('.remove_admin_self' , 'click' , null , function(e)
-    {
-        var admin_id = $(this).data('admin_id');
-        var admin_name = $(this).data('admin_name');
-        var g_id = $('#edit_admin_submit').data('g_id');
-        $(this).parents('table.admin_container').fadeOut(600);
-        removeAdmin( admin_id , g_id , function(data)
-        {
-            window.location = '/group/' + g_id + '/';
-        });
-    });
-}
-
-function removeAdmin(admin_id,g_id,success)
-{
-    action({
-        data:
-        {
-            'action': 'removeAdmin',
-            'admin_id': admin_id,
-            'g_id': g_id
-        },
-        success: success
-    });
-}
-
-function selectPrivacyRadio()
-{
-    var privacy = $('#group_privacy_container').data('group_privacy');
-    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
-}
-
-function selectScaleRadio()
-{
-    var scale = $('#group_scale_container').data('group_scale');
-    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
-}
-
-function bindGroupPrivacyRadio()
-{
-    bind( "div.group_privacy_radio" , 'click' , null , function(event)
-    {
-        var prev = $("input:radio[name=group_privacy]:checked");
-        prev.attr('checked',false);
-        prev.parent('.group_privacy_radio').removeClass("create-radio-selected");
-
-        $(this).children("input:radio[name=group_privacy]").attr('checked',true);
-        $(this).addClass("create-radio-selected");
-    });
-}
-
-function bindScaleRadio()
-{
-    bind( "div.news_scale_radio" , 'click' , null , function(event)
-    {
-        var prev = $("input:radio.news_scale:checked");
-        prev.attr('checked',false);
-        prev.parent('.news_scale_radio').removeClass("create-radio-selected");
-
-        $(this).children("input:radio.news_scale").attr('checked',true);
-        $(this).addClass("create-radio-selected");
-    });
-}
 
 /***********************************************************************************************************************
  *

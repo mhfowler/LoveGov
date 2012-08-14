@@ -552,7 +552,7 @@ def editGroup(request, vals={}):
         return HttpResponseForbidden("You are not authroized to edit this group")
 
     if 'title' in request.POST: group.title = request.POST['title']
-    if 'summary' in request.POST: group.full_text = request.POST['summary']
+    if 'summary' in request.POST: group.summary = request.POST['summary']
     if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
     if 'scale' in request.POST: group.scale = request.POST['scale']
 
