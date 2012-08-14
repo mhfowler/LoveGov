@@ -495,6 +495,9 @@ def groupPage(request, g_alias, vals={}):
         if group_joined.rejected:
             vals['is_user_rejected'] = True
 
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
     url = group.get_url()

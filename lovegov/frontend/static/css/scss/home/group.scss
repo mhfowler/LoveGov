@@ -140,8 +140,7 @@ div.group-expanded-info
   {
     float:left;
     width:230px;
-    height:200px;
-    background-color:$gray;
+    height:180px;
   }
 
   div.group-members
@@ -162,7 +161,98 @@ div.group-expanded-info
   div.group-description
   {
     float:left;
-    margin-left: 10px;
-    width: 450px;
+    margin-left: 60px;
+    width: 400px;
+  }
+}
+
+
+div.group-histogram {
+
+  div.histogram {
+    height:100%;
+
+    .histogram-body {
+      height:100%;
+      width:100%;
+
+      .histogram-meta-box {
+        height:20%;
+        width:100%;
+
+        .total_count {
+          @include big();
+          @include fontSize(20px);
+          margin:0px;
+          display:none;
+        }
+
+        .identical_count {
+          float:left;
+          @include big();
+          @include fontSize(20px);
+          float:left;
+          margin: 10px 0 0 20px;
+        }
+
+
+      }
+
+      .histogram-bars {
+        float:left;
+        text-align:left;
+        position:relative;
+        left:-5px;
+        margin-top:30px;
+        height:80%;
+        margin: 0 0 0 5px;
+
+        .bar {
+          width:25px;
+          height:100%;
+          float:left;
+          margin-right:20px;
+        }
+
+        .white_bar {
+          height:97%;
+          width:100%;
+          background-color:white;
+        }
+
+        .red_bar {
+          width:100%;
+          background-color:$red;
+          border: 1px solid $red;
+        }
+        .red_bar:hover {
+          border-color:$black;
+        }
+
+        .label {
+          @include really-big();
+          @include fontSize(14px);
+          margin-top: 5px;
+        }
+      }
+    }
+
+  }
+
+  div.histogram-title
+  {
+    @include rounded-bottom(18px);
+    position:relative;
+    background-color: $gray;
+    height: 37px;
+    color: white;
+
+    p{
+      position:relative;
+      top:-13px;
+      display:block;
+      @include h5;
+      color:white;
+    }
   }
 }

@@ -146,6 +146,18 @@ def randomAnswers(user):
     user.last_answered = datetime.datetime.now()
     user.save()
 
+def randomWhales():
+    from lovegov.modernpolitics.compare import updateGroupViews
+    g = Group.lg.get_or_none(title="Save The Whales")
+    if g:
+        print "save the whales!"
+        for x in UserProfile.objects.all()[:4]:
+            print x.get_name()
+            g.joinMember(x)
+            randomAnswers(x)
+        print "group view!"
+        updateGroupViews()
+
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience method to get a user with inputted name or email
 #-----------------------------------------------------------------------------------------------------------------------
