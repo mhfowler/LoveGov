@@ -17,6 +17,9 @@ div.question_stub {
   div.question_comparison {
     display:none;
   }
+  div.question_comparison.displayed {
+    display:block;
+  }
 
 
   div.question-header {
@@ -55,7 +58,7 @@ div.question_stub {
       background-color:$blue;
       color:white;
       &:hover {
-        background-color:$purple;
+        background-color:$dark-green;
       }
     }
     a.button-answer {
@@ -99,15 +102,15 @@ div.question_stub {
     div.answers-wrapper {
       div.answer-wrapper {
         margin-top:15px;
-        }
-        span.answer-text {
-          margin-left:15px;
-          margin-top:2px;
-          @include fontSize(14px);
-        }
       }
+      span.answer-text {
+        margin-left:15px;
+        margin-top:2px;
+        @include fontSize(14px);
+      }
+    }
     div.answer-details {
-        margin-top:20px;
+      margin-top:20px;
 
       textarea.explanation {
         float:left;
@@ -130,6 +133,9 @@ div.question_stub {
         }
         div.importance-axis {
           margin-top:10px;
+          span.importance-percent {
+            margin-left:150px;
+          }
           span.high {
             float:right;
           }
@@ -178,6 +184,35 @@ div.question_stub {
         margin-right:10px;
         margin-top:10px;
       }
+    }
+  }
+
+  div.question-comparison {
+    padding:20px;
+    a.response-avatar {
+      @include inline-block;
+      margin-top:1px;
+      vertical-align:top;
+    }
+    div.response-wrapper {
+      vertical-align:top;
+      @include inline-block;
+      margin-left:20px;
+      span.response-text {
+        display:block;
+        padding-top:10px;
+      }
+      span.response-text.disagree {
+        color:$red;
+      }
+      div.response-explanation {
+        display:block;
+        margin-top:10px;
+        color:$gray;
+      }
+    }
+    div.your-response {
+      margin-top:10px;
     }
   }
 

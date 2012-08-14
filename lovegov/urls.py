@@ -92,6 +92,7 @@ urlpatterns += patterns('',
     (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
     (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+    (r'^(\S+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
 
     # legislation
     (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),

@@ -58,7 +58,7 @@ def getContentFromAlias(alias, viewer):
 def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking, feed_topic, feed_start=0, num=10):
 
     question_items = []
-    them_responses = to_compare.view.responses.all()
+    them_responses = to_compare.view.responses.filter(privacy="PUB")
     you_responses = viewer.view.responses.all()
 
     # filter
@@ -152,11 +152,12 @@ def compareQuestionItem(item):
     them = item['them']
     to_return = 0
     if you and them:
-        if you.most_chosen_answer == them.most_chosen_answer:
+        if you.most_chosen_answer_id == them.most_chosen_answer_id:
             to_return = 1
         else:
             to_return = -1
     item['agree'] = to_return
+    item['disagree'] = (to_return==-1)
     return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -20,6 +20,8 @@ from bs4 import BeautifulSoup
 #-----------------------------------------------------------------------------------------------------------------------
 def answerAction(user, question, my_response, privacy, answer_id, weight, explanation):
     chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    if not chosen_answer:
+        chosen_answer = None
     user.last_answered = datetime.datetime.now()
     user.save()
     if not my_response:
@@ -27,8 +29,9 @@ def answerAction(user, question, my_response, privacy, answer_id, weight, explan
             most_chosen_answer = chosen_answer,
             weight = weight,
             explanation = explanation)
-        response.most_chosen_num = 1
-        response.total_num = 1
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
         response.autoSave(creator=user, privacy=privacy)
         action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
         action.autoSave()
@@ -41,8 +44,9 @@ def answerAction(user, question, my_response, privacy, answer_id, weight, explan
         response.weight = weight
         response.explanation = explanation
         # update creation relationship
-        response.most_chosen_num = 1
-        response.total_num = 1
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
         response.saveEdited(privacy)
         action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
         action.autoSave()

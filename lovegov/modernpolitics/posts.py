@@ -776,22 +776,13 @@ def stubAnswer(request, vals={}):
     weight = request.POST['weight']
     explanation = request.POST['explanation']
     my_response = user.view.responses.filter(question=question)
-    if a_id != -1:
-        response = answerAction(user=user, question=question, my_response=my_response,
-            privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
-    else:
-        if my_response:
-            response = my_response[0]
-            response.delete()
-            user.num_answers -= 1
-            user.save()
-        else:
-            response = None
+    response = answerAction(user=user, question=question, my_response=my_response,
+        privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
     vals['your_response'] = response
     their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
     vals['their_response'] = their_response
-    vals['agree'] = (their_response and their_response.most_chosen_answer_id == response.most_chosen_answer_id)
+    vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
     vals['to_compare'] = to_compare
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
