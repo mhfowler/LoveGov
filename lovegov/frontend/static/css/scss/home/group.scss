@@ -72,7 +72,7 @@ div.group-main
 
   div.group-info
   {
-    height: 100px;
+    @include clearfix();
 
     div.group-image
     {
@@ -94,7 +94,6 @@ div.group-main
         font-size: 64px;
         font-weight: bold;
         height: 64px;
-        line-height: 64px;
         text-align: center;
       }
 
@@ -102,7 +101,6 @@ div.group-main
       {
         width: 100%;
         font-size: 20px;
-        line-height: 20px;
         height: 20px;
         text-align: center;
       }
@@ -113,24 +111,20 @@ div.group-main
     {
       float: left;
       margin-left: 30px;
-      width: 200px;
+      width: 230px;
       overflow:hidden;
-
-      p.group-description-text
-      {
-        display:none;
-      }
     }
 
     div.group-moderators
     {
-      float:right;
-      margin-right: 170px;
+      float: left;
+      margin-left: 20px;
     }
 
     div.group-actions
     {
       float:right;
+      @include clearfix();
     }
 
   }
@@ -168,7 +162,7 @@ div.group-expanded-info
   div.group-description
   {
     float:left;
-    margin-left: 40px;
-    width: 420px;
+    margin-left: 10px;
+    width: 450px;
   }
 }

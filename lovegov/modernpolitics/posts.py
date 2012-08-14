@@ -553,6 +553,7 @@ def editGroup(request, vals={}):
 
     if 'title' in request.POST: group.title = request.POST['title']
     if 'summary' in request.POST: group.summary = request.POST['summary']
+    if 'full_text' in request.POST: group.full_text = request.POST['full_text']
     if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
     if 'scale' in request.POST: group.scale = request.POST['scale']
 
@@ -1154,7 +1155,7 @@ def addAdmins(request, vals={}):
         addAdmin(admin_id,group,viewer,request)
 
     vals['group_admins'] = group.admins.all()
-    html = ajaxRender('site/snippets/admin_list.html',vals,request)
+    html = ajaxRender('site/pages/group/admin_list.html',vals,request)
 
     return HttpResponse(json.dumps({'html':html}))
 

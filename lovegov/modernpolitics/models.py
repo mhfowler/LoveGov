@@ -3498,6 +3498,9 @@ class Group(Content):
         else:
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
+    def getNumFollowRequests(self):
+        return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).count()
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
