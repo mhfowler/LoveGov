@@ -135,22 +135,14 @@ def ifConfirmedRedirect(request):
 # answers all questions randomly for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def randomAnswers(user):
+    from lovegov.modernpolitics.actions import answerAction
     questions = Question.objects.filter(official=True)
     for q in questions:
         answers = list(q.answers.all())
         my_answer = random.choice(answers)
         # print "answered: ", my_answer.answer_text
-        response = Response(
-            question = q,
-            answer_val = my_answer.value,
-            most_chosen_answer = my_answer,
-            most_chosen_num = 1,
-            total_num = 1,
-            weight = 5,
-            explanation = "")
-        response.autoSave(creator=user, privacy='PUB')
-        action = Action(privacy='PUB',relationship=response.getCreatedRelationship())
-        action.autoSave()
+        answerAction(user, question=q, my_response=user.view.responses.filter(question=q),
+            privacy='PUB', answer_id=my_answer.id, weight=5, explanation="")
     user.last_answered = datetime.datetime.now()
     user.save()
 

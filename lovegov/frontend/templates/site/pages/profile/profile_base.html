@@ -51,7 +51,7 @@
                         <div class="stats-row-one">
                             <div class="stats-box white-box left-box">
                                 <div class="num">
-                                    44
+                                    {{ profile.num_followme}}
                                 </div>
                                 <div class="label">
                                     followers
@@ -59,7 +59,7 @@
                             </div>
                             <div class="stats-box gray-box center-box">
                                 <div class="num">
-                                    3
+                                    {{ profile.num_ifollow }}
                                 </div>
                                 <div class="label">
                                     following
@@ -67,7 +67,7 @@
                             </div>
                             <div class="stats-box gray-box  right-box">
                                 <div class="num">
-                                    6
+                                    {{ profile.num_groups}}
                                 </div>
                                 <div class="label">
                                     groups
@@ -78,7 +78,7 @@
                         <div class="stats-row-two">
                             <div class="stats-box gray-box  left-box">
                                 <div class="num">
-                                    3
+                                    {{ profile.num_posts}}
                                 </div>
                                 <div class="label">
                                     posts
@@ -86,7 +86,7 @@
                             </div>
                             <div class="stats-box gray-box center-box">
                                 <div class="num">
-                                    60
+                                    {{ profile.num_answers }}
                                 </div>
                                 <div class="label">
                                     answers
@@ -94,7 +94,7 @@
                             </div>
                             <div class="stats-box gray-box right-box">
                                 <div class="num">
-                                    5
+                                    {{ profile.num_signatures }}
                                 </div>
                                 <div class="label">
                                     signatures
@@ -128,5 +128,10 @@
 </div>
 
 <script>
-    var ifollow={{ ifollow }};
+    {% if ifollow %}
+        var ifollow=true;
+    {% else %}
+        var ifollow=false;
+    {% endif %}
+    rebind="profile";
 </script>

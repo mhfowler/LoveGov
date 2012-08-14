@@ -1,0 +1,13 @@
+<div class="feed-buttons-container">
+
+    <div class='buttons-container-text'>Filter by:</div>
+
+    {% for t in main_topics %}
+
+        <a href="#" class="topic_button" data-t_alias="{{ t.alias }}">
+            {% include 'site/pieces/topic_icon.html' with topic=t width="20" height="20" %}
+        </a>
+
+    {% endfor %}
+
+</div>

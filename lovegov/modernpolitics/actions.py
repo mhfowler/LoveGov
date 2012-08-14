@@ -32,6 +32,8 @@ def answerAction(user, question, my_response, privacy, answer_id, weight, explan
         response.autoSave(creator=user, privacy=privacy)
         action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
         action.autoSave()
+        user.num_answers += 1
+        user.save()
     # else update old response
     else:
         response = my_response[0]

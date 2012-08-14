@@ -26,12 +26,7 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
         content = content.filter(type__in=feed_types)
 
     # sort
-    if feed_ranking == 'N':
-        content = content.order_by("-created_when")
-    elif feed_ranking == 'H':
-        content = content.order_by("-status")
-    elif feed_ranking == 'B':
-        content = content.order_by("-status")
+    content = sortHelper(content, feed_ranking)
 
     # paginate
     content = content[feed_start:feed_start+num]
@@ -58,6 +53,111 @@ def getContentFromAlias(alias, viewer):
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
         content = Content.objects.filter(in_feed=True, creator_id__in=friends_ids)
     return content
+
+
+def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking, feed_topic, feed_start=0, num=10):
+
+    question_items = []
+    them_responses = to_compare.view.responses.all()
+    you_responses = viewer.view.responses.all()
+
+    # filter
+    if feed_topic:
+        them_responses = them_responses.filter(main_topic=feed_topic)
+
+    # append
+    for r in them_responses:
+        q = r.question
+        q_item = {'question':q, 'you':getResponseHelper(you_responses, q), 'them':r}
+        compareQuestionItem(q_item)
+        question_items.append(q_item)
+
+    # sort
+    if question_ranking:
+        question_items = responsesSortHelper(question_items, question_ranking)
+    elif feed_ranking:
+        question_items = responsesSortHelper(question_items, feed_ranking)
+
+    return question_items[feed_start:feed_start+num]
+
+
+def getQuestionItems(viewer, feed_ranking, feed_topic, feed_start=0, num=10):
+
+    question_items=[]
+    questions = Question.objects.all()
+
+    you_responses = viewer.view.responses.all()
+
+    if feed_topic:
+        questions = questions.filter(main_topic=feed_topic)
+
+    questions = sortHelper(questions, feed_ranking)
+
+    for q in questions:
+        q_item = {'question':q, 'you':getResponseHelper(you_responses, q), 'them':None}
+        q_item['agree'] = 0
+        question_items.append(q_item)
+
+    return question_items[feed_start:feed_start+num]
+
+def getResponseHelper(responses, question):
+    r = responses.filter(question=question)
+    if r:
+        return r[0]
+    else:
+        return None
+
+def sortHelper(content, feed_ranking):
+    if feed_ranking == 'N':
+        content = content.order_by("-created_when")
+    elif feed_ranking == 'H':
+        content = content.order_by("-status")
+    elif feed_ranking == 'B':
+        content = content.order_by("-status")
+    return content
+
+def responsesSortHelper(question_items, ranking):
+    if ranking == 'B':
+        question_items.sort(key=lambda x:x['question'].status, reverse=True)
+    elif ranking == 'H':
+        question_items.sort(key=lambda x:x['question'].status, reverse=True)
+    elif ranking == 'N':
+        question_items.sort(key=lambda x:x['question'].created_when, reverse=True)
+    elif ranking == 'R':
+        def recentComparison(item):
+            you = item['you']
+            if not you:
+                to_return=datetime.datetime.min
+            else:
+                to_return=you.created_when
+            return to_return
+        question_items.sort(key=lambda x:recentComparison(x), reverse=True)
+    elif ranking == 'I':
+        def importanceComparison(item):
+            you = item['you']
+            if not you:
+                to_return=-1
+            else:
+                to_return=you.weight
+            return to_return
+        question_items.sort(key=lambda x:importanceComparison(x), reverse=True)
+    elif ranking == 'A':
+        question_items = filter(lambda x:x['agree']==1, question_items)
+    elif ranking == 'D':
+        question_items = filter(lambda x:x['agree']==-1, question_items)
+    return question_items
+
+def compareQuestionItem(item):
+    you = item['you']
+    them = item['them']
+    to_return = 0
+    if you and them:
+        if you.most_chosen_answer == them.most_chosen_answer:
+            to_return = 1
+        else:
+            to_return = -1
+    item['agree'] = to_return
+    return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a filter object, which has all feeds of SimpleFilter, except m2m as id lists

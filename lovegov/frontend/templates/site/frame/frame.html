@@ -10,25 +10,28 @@
 {% include 'site/frame/sidetabs/sidetabs.html' %}
 <!-- End Left Side Bar -->
 
-    <div class="global-wrapper">
+<div class="global-wrapper">
 
-        {% include 'site/frame/header.html' %}
+    {% include 'site/frame/header.html' %}
 
-        <div class="main-content main_content">
-            {% block content %}
-                {{ center }}
-            {% endblock %}
-        </div>
-
+    <div class="main-content main_content">
+        {% block content %}
+            {{ center }}
+        {% endblock %}
     </div>
 
-    <div class="modal_wrapper modal-general">
-        <div class="modal_close modal-close"></div>
-        <div class="modal_content"></div>
-        <div style="clear:both"></div>
-    </div>
+</div>
 
-    <div class="modal_overdiv overdiv"></div>
+<div class="modal_wrapper modal-general">
+    <div class="modal_close modal-close"></div>
+    <div class="modal_content"></div>
+    <div style="clear:both"></div>
+</div>
+
+<div class="modal_overdiv overdiv"></div>
+
+<!-- comparison hover -->
+{% include 'site/pieces/comparison_hover.html' %}
 
 </body>
 

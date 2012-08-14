@@ -511,6 +511,7 @@ def electionPage(request, e_alias, vals={}):
 def profile(request, alias, vals={}):
 
     viewer = vals['viewer']
+    getMainTopics(vals)
     user_profile = UserProfile.objects.get(alias=alias)
     vals['profile'] = user_profile
 

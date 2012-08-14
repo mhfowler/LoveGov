@@ -1,0 +1,25 @@
+{% extends 'site/pages/feed/feed.html' %}
+
+
+{% block sort_buttons %}
+    <div class='buttons-container-text'>Sort by:</div>
+    <div class="sort-button feed_button question_button" data-rank="I" >Important</div>
+    <div class="sort-button feed_button question_button" data-rank="R">Recently Answered</div>
+    <div class="sort-button feed_button question_button" data-rank="A">Agreed</div>
+    <div class="sort-button feed_button question_button last-button" data-rank="D">Disagreed</div>
+    <script> var to_compare_id={{ to_compare.id }};</script>
+{% endblock %}
+
+
+{% block filter_buttons %}
+    {% for t in main_topics %}
+        <a href="#" class="topic-button feed_button topic_button tooltip-top" data-t_alias="{{ t.alias }}" title="{{ t.topic_text }}">
+            {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
+        </a>
+    {% endfor %}
+{% endblock %}
+
+
+{% block right_button %}
+    <a href="#" class="view-all"> view all questions </a>
+{% endblock %}
