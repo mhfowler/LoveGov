@@ -537,6 +537,7 @@ def worldview(request, alias, vals={}):
     vals['followsyou'] = True
 
     comparison = user_profile.getComparison(viewer)
+    vals['comparison_object'] = comparison
     vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile_questions.html', vals, request)

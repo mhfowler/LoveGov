@@ -3,7 +3,7 @@
 <div class="profile-page">
     <div class="top">
 
-        <span class="name"> {{ profile.get_name }} </span>
+        <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
     <span class="state"> {% with state=profile.location.state %}
         {% if state %}{{ profile.location.state }}{% else %} LoveGov {% endif %} {% endwith %}</span>
     <span class="redheart">
