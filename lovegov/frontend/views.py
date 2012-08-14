@@ -521,6 +521,7 @@ def profile(request, alias, vals={}):
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
     comparison = user_profile.getComparison(viewer)
+    vals['to_compare'] = profile
     vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)

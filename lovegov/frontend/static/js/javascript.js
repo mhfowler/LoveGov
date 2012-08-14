@@ -1558,6 +1558,7 @@ bind('.save_button' , 'click' , null , function(event)
             saved_message.show();
             saved_message.fadeOut(5000);
             bindImportanceSlider(new_element.find(".importance_bar"));
+            updateMatches();
         }
     });
 });
@@ -1590,6 +1591,25 @@ function bindImportanceSlider(div) {
         slide: function(event, ui) {
             var text = ui.value + "%";
             $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        }
+    });
+}
+
+function updateMatches() {
+    $.each($(".match_object"), function(i, e) {
+        updateMatch($(this));
+    });
+}
+
+function updateMatch(match) {
+    var display = match.data('display');
+    var to_compare_alias = match.data('to_compare_alias');
+    action({
+        data: {'action':'updateMatch', 'to_compare_alias':to_compare_alias, 'display':display},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            match.replaceWith(new_element);
         }
     });
 }

@@ -279,9 +279,7 @@ def renderToResponseCSRF(template, vals, request):
 #-----------------------------------------------------------------------------------------------------------------------
 def urlToObject(url):
     alias = url.replace("/","")
-    to_return = UserProfile.lg.get_or_none(alias=alias)
-    if not to_return:
-        to_return = Group.lg.get_or_none(alias=alias)
+    to_return = aliasToObject(alias)
     if not to_return:
         to_return = urlToObjectOld(url)
     return to_return
