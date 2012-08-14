@@ -1250,6 +1250,22 @@ function loadGroupEdit()
     });
 }
 
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
 // Group Privacy Radio
 bind( "div.group_privacy_radio" , 'click' , null , function(event)
 {
@@ -1382,22 +1398,6 @@ function removeAdmin(admin_id,g_id,success)
         },
         success: success
     });
-}
-
-function selectPrivacyRadio()
-{
-    var privacy = $('#group_privacy_container').data('group_privacy');
-    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
-}
-
-function selectScaleRadio()
-{
-    var scale = $('#group_scale_container').data('group_scale');
-    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
 }
 
 

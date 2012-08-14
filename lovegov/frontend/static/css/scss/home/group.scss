@@ -4,41 +4,21 @@
 
 @import "compass";
 
-div.group-info-title
-{
-  @include grayText();
-  @include fontSize(18px);
-  margin-bottom: 5px;
-}
-
-.group-action
-{
-  padding:5px;
-  background-color:$light-gray;
-  width:160px;
-  text-align:center;
-  margin-bottom:7px;
-  display: block;
-  color: $black;
-
-  &:hover
-  {
-    background-color:$dark-gray;
-    cursor:pointer;
-  }
-}
 
 div.group-top
 {
+  margin-bottom: 10px;
   @include clearfix();
-  margin-bottom: 20px;
 
   div.group-minimize-button
   {
-    @extend .group-action;
-    color: white;
-    background-color:$red;
-    &:hover { background-color: $red-light; }
+    float: right;
+    cursor: pointer;
+    color: $text-blue-light;
+    font-size: 10px;
+    margin-top: 2px;
+
+    &:hover { color: $text-blue; }
   }
 
   span.group-title
@@ -63,101 +43,122 @@ div.group-top
     font-size: 12px;
     @include inline-block();
   }
-  div.group-action {
-    float:right;
-  }
 }
 
-div.group-info
+div.group-expanded
 {
   @include clearfix();
+  overflow: hidden;
 
-  div.group-image
+  div.group-info
   {
-    float: left;
-    height: 100px;
-    width: 140px;
-    background-color: $gray; //Temporary
-    margin-right: 20px;
-  }
-
-  div.group-match
-  {
-    float: left;
-    height: 100px;
-    color: $red;
-
-    div.match-number
-    {
-      font-size: 64px;
-      font-weight: bold;
-      height: 64px;
-      text-align: center;
-    }
-
-    div.match-title
-    {
-      width: 100%;
-      font-size: 20px;
-      height: 20px;
-      text-align: center;
-    }
-
-  }
-
-  div.group-summary
-  {
-    float: left;
-    margin-left: 30px;
-    width: 230px;
-    overflow:hidden;
-  }
-
-  div.group-moderators
-  {
-    float: left;
-    margin-left: 20px;
-  }
-
-  div.group-actions
-  {
-    float:right;
     @include clearfix();
-  }
 
-}
-
-div.group-expanded-info
-{
-  margin: 15px 0 20px 0;
-
-  div.group-histogram
-  {
-    float:left;
-    width:230px;
-    height:180px;
-  }
-
-  div.group-members
-  {
-    float:left;
-    margin-left:30px;
-    width:200px;
-    height:200px;
-
-    div.group-member-avatar
+    div.group-info-title
     {
-      margin-right:10px;
-      margin-bottom:10px;
-      float: left;
+      @include grayText();
+      @include fontSize(18px);
+      margin-bottom: 5px;
     }
-  }
 
-  div.group-description
-  {
-    float:left;
-    margin-left: 60px;
-    width: 400px;
+    div.group-actions
+    {
+      float:right;
+      @include clearfix();
+
+      .group-action
+      {
+        padding:5px;
+        background-color:$light-gray;
+        width:160px;
+        text-align:center;
+        margin-bottom:7px;
+        display: block;
+        color: $black;
+
+        &:hover
+        {
+          background-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+    }
+
+    div.group-column
+    {
+      @include clearfix();
+      float:left;
+      margin-right: 20px;
+    }
+
+    div.group-image
+    {
+      float: left;
+      height: 100px;
+      width: 140px;
+      background-color: $gray; //Temporary
+      margin-right: 20px;
+    }
+
+    div.group-match
+    {
+      float: left;
+      height: 100px;
+      color: $red;
+
+      div.match-number
+      {
+        font-size: 64px;
+        font-weight: bold;
+        height: 64px;
+        text-align: center;
+      }
+
+      div.match-title
+      {
+        width: 100%;
+        font-size: 20px;
+        height: 20px;
+        text-align: center;
+      }
+
+    }
+
+    div.group-histogram
+    {
+      width:230px;
+      height:180px;
+    }
+
+    div.group-text
+    {
+      width: 300px;
+      min-height: 100px;
+      overflow:hidden;
+    }
+
+    div.group-people
+    {
+      div.group-moderators
+      {
+        margin-bottom: 10px;
+        width: 160px;
+        height: 100px;
+      }
+
+      div.group-members
+      {
+        width: 160px;
+        height: 160px;
+
+        div.group-member-avatar
+        {
+          margin-right:10px;
+          margin-bottom:10px;
+          float: left;
+        }
+      }
+    }
   }
 }
 
