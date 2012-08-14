@@ -10,7 +10,9 @@
 
 div.notifications-dropdown
 {
-  border: solid 1px $gray;
+  border-top: solid 1px $gray;
+  border-right: solid 1px $gray;
+  border-left: solid 1px $gray;
   position: absolute;
   left: -135px;
   top: 40px;
