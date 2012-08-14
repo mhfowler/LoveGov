@@ -37,7 +37,6 @@
 
         <div class="edit_info_tab group_edit_tab" id="account-basic-information">
             <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
-                <span class="edit-link-large group_edit_icon"></span>
                 <table>
                     <tr>
                         <td></td>
@@ -59,7 +58,7 @@
                     <tr>
                         <td class="left"><h3>title</h3></td>
                         <td><input class="group_edit_input" type="text" value="{{ group.title }}" name="title"/></td>
-                        <td></td>
+                        <td><span class="edit-link-large group_edit_icon"></span></td>
                     </tr>
                     <tr class="break"></tr>
                     <tr>
@@ -67,7 +66,7 @@
                             <h3>description</h3>
                         </td>
                         <td><textarea class="bio-field group_edit_input" name="summary">{{ group.summary }}</textarea></td>
-                        <td></td>
+                        <td><span class="edit-link-large group_edit_icon"></span></td>
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>
