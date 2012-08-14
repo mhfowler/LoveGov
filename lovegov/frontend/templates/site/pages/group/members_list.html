@@ -1,3 +1,5 @@
 {% for member in group_members %}
-    {% include 'site/pieces/avatar-with-name.html' with user=member height="38" width="38" %}
+    <div class="group-edit-user-container">
+        {% include 'site/pieces/avatar-with-name.html' with user=member height="38" width="38" %}
+    </div>
 {% endfor %}

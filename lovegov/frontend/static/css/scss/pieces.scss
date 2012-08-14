@@ -10,19 +10,18 @@ div.avatar-with-name
 {
   padding-right: 5px;
   padding-bottom: 5px;
+  vertical-align: middle;
 
-  div.avatar-name
+  span.avatar-name
   {
-    float: left;
-    margin-top: 5px;
-    text-size: 10px;
+    display:inline-block;
+    text-size: 12px;
   }
 
-  div.avatar-image
+  span.avatar-image
   {
-    float: left;
+    display:inline-block;
     margin-right: 10px;
-
   }
 }
 

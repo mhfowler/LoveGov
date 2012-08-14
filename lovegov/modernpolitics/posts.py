@@ -1130,7 +1130,7 @@ def addAdmins(request, vals={}):
         addAdmin(admin_id,group,viewer,request)
 
     vals['group_admins'] = group.admins.all()
-    html = ajaxRender('site/snippets/admin_list.html',vals,request)
+    html = ajaxRender('site/pages/group/admin_list.html',vals,request)
 
     return HttpResponse(json.dumps({'html':html}))
 

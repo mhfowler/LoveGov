@@ -58,7 +58,7 @@
                     <tr>
                         <td class="left"><h3>title</h3></td>
                         <td><input class="group_edit_input" type="text" value="{{ group.title }}" name="title"/></td>
-                        <td><span class="edit-link-large group_edit_icon"></span></td>
+                        <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break"></tr>
                     <tr>
@@ -66,7 +66,7 @@
                             <h3>description</h3>
                         </td>
                         <td><textarea class="bio-field group_edit_input" name="summary">{{ group.summary }}</textarea></td>
-                        <td><span class="edit-link-large group_edit_icon"></span></td>
+                        <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>
@@ -138,7 +138,7 @@
                 </div>
 
                 <div class="admin-submit-container">
-                    <a href='' id='edit_admin_submit' class="admin-button" data-g_id="{{ group.id }}">Add Administrator</a>
+                    <a href='' id='edit_admin_submit' class="admin-button" data-g_id="{{ group.id }}" data-g_alias="{{ group.alias }}">Add Administrator</a>
                 </div>
 
             </form>
@@ -150,12 +150,11 @@
 
 
 
-
-        <div class="members_edit_tab members-edit-tab group_edit_tab" style="display:none">
+        <div class="members_edit_tab admin-edit-tab group_edit_tab" style="display:none">
 
             <div class="group-edit-header"> Current Members for {{ group.title }} </div>
 
-            <div class="group-members-container group_members_container">
+            <div class="admin-remove-container group_members_container">
                 {% include 'site/pages/group/members_list.html' %}
             </div>
 
@@ -171,7 +170,7 @@
                     </select>
                 </div>
 
-                <div class="members-remove-container">
+                <div class="admin-submit-container">
                     <a href='' id='members_remove_submit' class="admin-button" data-g_id="{{ group.id }}">Remove Members</a>
                 </div>
 

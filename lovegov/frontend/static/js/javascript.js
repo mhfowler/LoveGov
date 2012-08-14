@@ -14,6 +14,9 @@ function initJS() {
         case "profile":
             initFeed();
             break;
+        case "groupedit":
+            loadGroupEdit();
+            break;
     }
 }
 
@@ -1225,11 +1228,19 @@ bind( null , 'click' , null , function(event)
  *      ~GroupEdit
  *
  **********************************************************************************************************************/
-bindGroupPrivacyRadio();
-bindScaleRadio();
-bindRemoveAdmin();
-selectPrivacyRadio();
-selectScaleRadio();
+function loadGroupEdit()
+{
+    selectPrivacyRadio();
+    selectScaleRadio();
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.member_select').select2({
+        placeholder: "Enter a member,"
+    });
+}
 
 // Group Privacy Radio
 bind( "div.group_privacy_radio" , 'click' , null , function(event)
@@ -1327,41 +1338,30 @@ bind('#members_remove_submit' , 'click' , null , function(e)
     }
 });
 
-$('select.admin_select').select2({
-    placeholder: "Enter a member,"
-});
-
-$('select.member_select').select2({
-    placeholder: "Enter a member,"
-});
-
-
-function bindRemoveAdmin()
+bind('.remove_admin' , 'click', null , function(e)
 {
-    bind('.remove_admin' , 'click', null , function(e)
+    var admin_id = $(this).data('admin_id');
+    var admin_name = $(this).data('admin_name');
+    var g_id = $('#edit_admin_submit').data('g_id');
+    $(this).parents('div.admin_container').fadeOut(600);
+    removeAdmin( admin_id , g_id , function(data)
     {
-        var admin_id = $(this).data('admin_id');
-        var admin_name = $(this).data('admin_name');
-        var g_id = $('#edit_admin_submit').data('g_id');
-        $(this).parents('table.admin_container').fadeOut(600);
-        removeAdmin( admin_id , g_id , function(data)
-        {
-            $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
-        });
+        $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
     });
+});
 
-    $('.remove_admin_self' , 'click' , null , function(e)
+bind('.remove_admin_self' , 'click' , null , function(e)
+{
+    var admin_id = $(this).data('admin_id');
+    var admin_name = $(this).data('admin_name');
+    var g_id = $('#edit_admin_submit').data('g_id');
+    var g_alias = $('#edit_admin_submit').data('g_alias');
+    $(this).parents('div.admin_container').fadeOut(600);
+    removeAdmin( admin_id , g_id , function(data)
     {
-        var admin_id = $(this).data('admin_id');
-        var admin_name = $(this).data('admin_name');
-        var g_id = $('#edit_admin_submit').data('g_id');
-        $(this).parents('table.admin_container').fadeOut(600);
-        removeAdmin( admin_id , g_id , function(data)
-        {
-            window.location = '/group/' + g_id + '/';
-        });
+        window.location = '/' + g_alias + '/';
     });
-}
+});
 
 function removeAdmin(admin_id,g_id,success)
 {
@@ -1391,6 +1391,7 @@ function selectScaleRadio()
     selected.prop('checked',true);
     selected.parent().addClass('create-radio-selected');
 }
+
 
 /***********************************************************************************************************************
  *
