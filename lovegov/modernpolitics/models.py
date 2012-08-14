@@ -1129,9 +1129,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.first_name
     def get_url(self):
         if self.alias!='' and self.alias!='default':
-            return '/profile/' + self.alias + '/'
-        else:
             return '/' + self.alias + '/'
+        else:
+            return '/profile/' + str(self.id) + '/'
     def getBreakdownURL(self):
         return self.get_url() + 'breakdown/'
 
@@ -2808,7 +2808,7 @@ class Response(Content):
     most_chosen_answer = models.ForeignKey(Answer,related_name="responses",null=True)
     most_chosen_num = models.IntegerField(default=0)
     total_num = models.IntegerField(default=0)
-    weight = models.IntegerField(default=5)
+    weight = models.IntegerField(default=50)
     explanation = models.TextField(max_length=1000, blank=True)
     answer_tallies = models.ManyToManyField('AnswerTally')
 

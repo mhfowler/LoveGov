@@ -292,6 +292,7 @@ def initializeGeneralTopicImage(topic):
     image_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/icons/topic_icons/for_default.png')
     hover_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_hover.png')
     selected_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/topic_icons/for_selected.png')
+    icon_ref = os.path.join(PROJECT_PATH,'frontend/static/images/icons/colored_topic_icons/general.png')
 
     file = open(image_ref)
     topic.image.save(photoKey(".png"), File(file))
@@ -299,6 +300,8 @@ def initializeGeneralTopicImage(topic):
     topic.hover.save(photoKey(".png"), File(file))
     file = open(selected_ref)
     topic.selected.save(photoKey(".png"), File(file))
+    file = open(icon_ref)
+    topic.icon.save(photoKey(".png"), File(file))
     topic.save()
 
     print "initialized: General Topic Image"
