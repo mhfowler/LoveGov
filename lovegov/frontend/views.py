@@ -495,6 +495,9 @@ def groupPage(request, g_alias, vals={}):
         if group_joined.rejected:
             vals['is_user_rejected'] = True
 
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()
@@ -524,6 +527,7 @@ def profile(request, alias, vals={}):
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
     comparison = user_profile.getComparison(viewer)
+    vals['to_compare'] = profile
     vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)

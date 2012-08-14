@@ -788,6 +788,30 @@ def stubAnswer(request, vals={}):
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# recalculates comparison between viewer and to_compare, and returns match html in the desired display form
+#-----------------------------------------------------------------------------------------------------------------------
+def updateMatch(request, vals={}):
+    viewer = vals['viewer']
+    to_compare_alias = request.POST['to_compare_alias']
+    to_compare = aliasToObject(to_compare_alias)
+    comparison = to_compare.getComparison(viewer)
+    vals['comparison_object'] = comparison
+    vals['to_compare'] = to_compare
+    vals['comparison'] = comparison.toBreakdown()
+    display = request.POST['display']
+    if display == 'vertical_breakdown':
+        html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
+    elif display == 'horizontal_breakdown':
+        vals['horizontal'] = True
+        html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
+    elif display == 'sidebar_match':
+        html = ajaxRender('site/pages/profile/sidebar_match.html', vals, request)
+    elif display == 'has_answered':
+        html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
 #
