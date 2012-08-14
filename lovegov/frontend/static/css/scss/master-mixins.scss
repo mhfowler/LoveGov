@@ -209,15 +209,15 @@
   box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
 }
 
-@mixin trianglePointer($test)
-{
-  div.#{$test}
-  {
-    height:50px;
-    width:50px;
-    background-color:$red;
-  }
-}
+//@mixin trianglePointer($test)
+//{
+//  div.#{$test}
+//  {
+//    height:50px;
+//    width:50px;
+//    background-color:$red;
+//  }
+//}
 
 @mixin trianglePointer($direction,$width,$color-inner,$color-border,$offset)
 {

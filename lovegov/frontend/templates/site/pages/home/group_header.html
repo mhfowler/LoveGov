@@ -45,9 +45,10 @@
 
                 <!-- float right -->
                 <div class="group-actions">
-{#                    {% if is_user_admin %}#}
+                    {% if is_user_admin %}
                         <div class="group-action group_invite_members"> invite/add members </div>
-{#                    {% endif %}#}
+                        <a href="edit/" class="group-action"> edit group settings </a>
+                    {% endif %}
 
                     <div class="group-action"> create motion </div>
 
@@ -65,7 +66,7 @@
                 <div class="group-moderators">
                     <div class="group-info-title">Moderators</div>
                     {% for admin in group_admins %}
-                        {% include 'site/pieces/avatar-with-name.html' with user=admin %}
+                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="38" width="38" %}
                     {% endfor %}
 
                 </div>

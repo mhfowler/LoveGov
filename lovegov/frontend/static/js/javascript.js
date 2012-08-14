@@ -798,7 +798,6 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
     }
 });
 
-
 /***********************************************************************************************************************
  *
  *      ~Login
@@ -1217,6 +1216,188 @@ bind( null , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
+ *      ~GroupEdit
+ *
+ **********************************************************************************************************************/
+function loadGroupEdit()
+{
+    bindGroupPrivacyRadio();
+    bindScaleRadio();
+    bindRemoveAdmin();
+    selectPrivacyRadio();
+    selectScaleRadio();
+
+    var pencil = $('.group_edit_icon').detach();
+
+    bind( '.group_edit_input' , 'mouseenter' , null , function(event)
+    {
+        $(this).parent().next().append(pencil);
+    });
+
+    bind( '.group_edit_input' , 'mouseout' , null , function(event)
+    {
+        pencil = pencil.detach();
+    });
+
+    bind( '.append_pointer' , "click" , null , function(event)
+    {
+        var pointer = $('.group_edit_pointer');
+        $('.append_pointer').removeClass("account-button-selected");
+        $(this).addClass("account-button-selected");
+        $(this).prepend(pointer);
+    });
+
+    bind('.group_edit_button' , "click" , null , function(event)
+    {
+        $(".group_edit_tab").hide();
+        var div_class = $(this).data('div');
+        $("." + div_class).show();
+    });
+
+    bind('#edit_admin_submit' , 'click' , null , function(e)
+    {
+        e.preventDefault();
+        var g_id = $("#edit_admin_submit").data('g_id');
+        var new_admins = $('.admin_select').select2("val");
+
+        if (new_admins!='') {
+            action({
+                data: {'action': 'addAdmins', 'admins': JSON.stringify(new_admins), 'g_id':g_id},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    $('#edit_admin_submit_message').html('Administrator Added');
+                    $('#edit_admin_submit_message').show();
+                    $('#edit_admin_submit_message').fadeOut(3000);
+                    $('#admin_remove_container').hide();
+                    $('#admin_remove_container').html(returned.html);
+                    $('#admin_remove_container').fadeIn(600);
+                    bindRemoveAdmin();
+                }
+            });
+        }
+    });
+
+    bind('#members_remove_submit' , 'click' , null , function(e)
+    {
+        e.preventDefault();
+        var g_id = $(this).data('g_id');
+        var members = $('.member_select').select2("val");
+
+        if (members!='') {
+            action({
+                data: {'action': 'removeMembers', 'members': JSON.stringify(members), 'g_id':g_id},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    var return_message = $('#members_remove_submit_message');
+                    return_message.html('Members Removed');
+                    return_message.show();
+                    return_message.fadeOut(3000);
+                    var members_container = $(".group_members_container");
+                    members_container.hide();
+                    members_container.html(returned.html);
+                    members_container.fadeIn(600);
+                }
+            });
+        }
+    });
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.member_select').select2({
+        placeholder: "Enter a member,"
+    });
+}
+
+loadGroupEdit();
+
+function bindRemoveAdmin()
+{
+    bind('.remove_admin' , 'click', null , function(e)
+    {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id , function(data)
+        {
+            $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
+        });
+    });
+
+    $('.remove_admin_self' , 'click' , null , function(e)
+    {
+        var admin_id = $(this).data('admin_id');
+        var admin_name = $(this).data('admin_name');
+        var g_id = $('#edit_admin_submit').data('g_id');
+        $(this).parents('table.admin_container').fadeOut(600);
+        removeAdmin( admin_id , g_id , function(data)
+        {
+            window.location = '/group/' + g_id + '/';
+        });
+    });
+}
+
+function removeAdmin(admin_id,g_id,success)
+{
+    action({
+        data:
+        {
+            'action': 'removeAdmin',
+            'admin_id': admin_id,
+            'g_id': g_id
+        },
+        success: success
+    });
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function bindGroupPrivacyRadio()
+{
+    bind( "div.group_privacy_radio" , 'click' , null , function(event)
+    {
+        var prev = $("input:radio[name=group_privacy]:checked");
+        prev.attr('checked',false);
+        prev.parent('.group_privacy_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio[name=group_privacy]").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+}
+
+function bindScaleRadio()
+{
+    bind( "div.news_scale_radio" , 'click' , null , function(event)
+    {
+        var prev = $("input:radio.news_scale:checked");
+        prev.attr('checked',false);
+        prev.parent('.news_scale_radio').removeClass("create-radio-selected");
+
+        $(this).children("input:radio.news_scale").attr('checked',true);
+        $(this).addClass("create-radio-selected");
+    });
+}
+
+/***********************************************************************************************************************
+ *
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
@@ -1406,4 +1587,3 @@ function bindImportanceSlider(div) {
         }
     });
 }
-

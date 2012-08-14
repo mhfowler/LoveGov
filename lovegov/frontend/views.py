@@ -214,6 +214,18 @@ def aliasDowncast(request, alias=None, vals={}):
     return redirect(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# points alias urls to correct pages
+#-----------------------------------------------------------------------------------------------------------------------
+def aliasDowncastEdit(request, alias=None, vals={}):
+    if UserProfile.lg.get_or_none(alias=alias):
+        return viewWrapper(account, requires_login=True)(request, alias)
+    matched_group = Group.lg.get_or_none(alias=alias)
+    if matched_group:
+        the_view = viewWrapper(groupEdit, requires_login=True)
+        return the_view(request=request, g_alias=matched_group.alias)
+    return redirect(request)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
@@ -692,13 +704,13 @@ def account(request, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # group edit
 #-----------------------------------------------------------------------------------------------------------------------
-def groupEdit(request, g_id=None, section="", vals={}):
+def groupEdit(request, g_alias=None, section="", vals={}):
     viewer = vals['viewer']
 
-    if not g_id:
+    if not g_alias:
         return basicMessage(request,'Requested group does not exist',vals)
 
-    group = Group.lg.get_or_none(id=g_id)
+    group = Group.lg.get_or_none(alias=g_alias)
     if not group:
         return basicMessage(request,'Requested group does not exist',vals)
     vals['group'] = group
@@ -720,33 +732,10 @@ def groupEdit(request, g_id=None, section="", vals={}):
 
     if section == "profile": vals['profile_message'] = " "
 
-    if request.method == 'GET':
-        html = ajaxRender('site/pages/group/group_edit.html', vals, request)
-        url = '/account/'
-        return framedResponse(request, html, url, vals)
+    html = ajaxRender('site/pages/group/group_edit.html', vals, request)
+    url = '/' + str(group.alias) + '/edit/'
+    return framedResponse(request, html, url, vals)
 
-    elif request.method == 'POST':
-        if request.POST['box'] == 'profile':
-            if 'image' in request.FILES:
-                try:
-                    file_content = ContentFile(request.FILES['image'].read())
-                    Image.open(file_content)
-                    viewer.setProfileImage(file_content)
-                    vals['profile_message'] = "You look great!"
-                except IOError:
-                    vals['profile_message'] = "The image upload didn't work. Try again?"
-                    vals['uploadform'] = UploadFileForm(request.POST)
-
-
-            vals['profile_message'] = " "
-        elif request.POST['box'] == 'basic_info':
-            pass
-        else:
-            pass
-
-        html = ajaxRender('site/pages/group/group_edit.html', vals, request)
-        url = '/account/'
-        return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages

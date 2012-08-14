@@ -2,13 +2,13 @@
     <table class="admin_container">
         <tr>
             <td>
-                {% include "site/pieces/misc/user_name.html" with user=admin %}
+                {% include "site/pieces/avatar-with-name.html" with user=admin width="38" height="38" %}
             </td>
             <td>
                 {% if admin.id == viewer.id %}
                     <div class="modal-close remove_admin_self" data-admin_id="{{ admin.id }}" data-admin_name="{{ admin.get_name }}"></div>
                 {% else %}
-                <div class="modal-close remove_admin" data-admin_id="{{ admin.id }}" data-admin_name="{{ admin.get_name }}"></div>
+                    <div class="modal-close remove_admin" data-admin_id="{{ admin.id }}" data-admin_name="{{ admin.get_name }}"></div>
                 {% endif %}
             </td>
         </tr>

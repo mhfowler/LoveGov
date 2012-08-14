@@ -92,6 +92,7 @@ urlpatterns += patterns('',
     (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
     (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+    (r'^(\S+)/breakdown/$', viewWrapper(views.breakdown, requires_login=True)),                 # view breakdown of person
 
     # legislation
     (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),
@@ -128,7 +129,8 @@ urlpatterns += patterns('',
     (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
     # REDIRECT
-    (r'(?P<alias>\S+)/$', views.aliasDowncast),
+    (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
+    (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
 )
