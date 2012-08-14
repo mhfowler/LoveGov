@@ -122,8 +122,17 @@ div.question_stub {
         border-left:1px solid $light-gray;
         padding-left:30px;
         width:400px;
-        span.high {
-          float:right;
+        div.importance-bar {
+          margin-top:10px;
+          width:100%;
+          height:10px;
+          border:1px solid $black;
+        }
+        div.importance-axis {
+          margin-top:10px;
+          span.high {
+            float:right;
+          }
         }
       }
     }

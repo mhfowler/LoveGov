@@ -554,6 +554,8 @@ function getFeed(container) {
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
     if (replace) {
+        var old_height = container.height();
+        container.css('height', old_height);
         container.find(".feed_content").empty();
     }
     var feed_types_json = JSON.stringify(feed_types);
@@ -574,6 +576,7 @@ function getFeed(container) {
             data: data,
             success: function(data) {
                 var returned = eval('(' + data + ')');
+                container.css("height", 'auto');
                 if (replace) {
                     container.find(".feed_content").html(returned.html);
                 }
