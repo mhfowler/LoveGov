@@ -186,7 +186,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                              'depth':depth})
 
                 context = RequestContext(request,vals)
-                template = loader.get_template('site/pieces/snippets/cath_comment.html')
+                template = loader.get_template('site/pieces/comment.html')
                 comment_string = template.render(context)  # render comment html
                 to_return += comment_string
                 to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children

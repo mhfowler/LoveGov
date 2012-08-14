@@ -1,6 +1,6 @@
 /***********************************************************************************************************************
  *
- *     ~init js, does stuff that delegated cant!
+ *     ~init js, does stuff that delegated can't!
  *
  ***********************************************************************************************************************/
 var rebind="home";
@@ -775,7 +775,7 @@ function leftSideToggle(wrapper)
  *
  ***********************************************************************************************************************/
 
-bind("img.gear", "click", function(e) { 
+bind("header div.triangle-wrapper", "click", function(e) { 
     $('div.user-menu').fadeToggle(50);
 });
 
@@ -798,6 +798,158 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
         $('#user-menu-dropdown').hide();
     }
 });
+
+bind(".submit-comment", "click",function(event)
+     {
+         event.preventDefault();
+         $(this).parent().submit();
+     });
+
+function incNumComments() {
+     var ncspan = $('span.num_comments');
+     var num_comments = parseInt(ncspan.text());
+     ncspan.text(num_comments + 1);
+ }
+
+bind("#commentform","submit",function(event)
+     {
+         event.preventDefault();
+         var comment_text = $(this).children(".comment-textarea").val();
+         var comment_text_length = comment_text.length;
+         if (comment_text_length <= 10000)
+         {
+             $(this).children(".comment-textarea").val("");
+             var content_id = $("#content_id").val();
+             action({
+                 'data': {'action':'comment','c_id': content_id,'comment':comment_text},
+                 'success': function(data) {
+                     ajaxThread();
+                     incNumComments();
+                 },
+                 'error': null
+             });
+         }
+         else
+         {
+             alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
+         }
+     });
+
+bind(".reply", "click",function()
+     {
+         $(this).parent().siblings('.replyform').toggle();
+     });
+
+bind("input.tab-button.alt","click",function()
+     {
+         $(this).parent().hide();
+     });
+
+
+bind(".commentlike","click",function(event)
+     {
+         event.preventDefault();
+         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
+         $.post('/action/', {'action':'vote','c_id':content_id,'vote':'L'},
+             function(data)
+             {
+                 ajaxThread();
+             });
+     });
+
+bind('commentdislike', 'click', function(event)
+     {
+         event.preventDefault();
+         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
+         $.post('/action/', {'action':'vote','c_id':content_id,'vote':'D'},
+             function(data)
+             {
+                 ajaxThread();
+             });
+     });
+
+bind(".commentdelete", "click",function()
+     {
+         var content_id = $(this).children(".delete_id").val();
+         $.post('/action/', {'action':'delete','c_id':content_id},
+             function(data)
+             {
+                 ajaxThread();
+             });
+     });
+
+bind(".replyform","click",function(event)
+     {
+         event.preventDefault();
+         var comment_text = $(this).children(".comment-textarea").val();
+         var comment_text_length = comment_text.length;
+         if (comment_text_length <= 10000)
+         {
+             var content_id = $(this).children(".hidden_id").val();
+             action({
+                 data: {'action':'comment','c_id': content_id,'comment':comment_text},
+                 success: function(data)
+                 {
+                     ajaxThread();
+                     incNumComments();
+                 },
+                 error: null
+             });
+         }
+         else
+         {
+             alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
+         }
+     });
+
+// Collapse a thread (a comment and all its children)
+bind('span.collapse','click',function(e) {
+         var close = '[-]';
+         var open = '[+]';
+         if($(this).text()==close) {
+             $(this).text(open);
+             $(this).next('div.threaddiv').children().hide();
+         } else if($(this).text()==open) {
+             $(this).text(close);
+             $(this).next('div.threaddiv').children().show();
+         }
+     });
+
+// Flag a comment
+bind('span.flag',"click", function(e) {
+         var commentid = $(this).data('commentid');
+         var comment = $(this).parent().children('div.comment-text').text();
+         var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
+         if(conf) {
+             action({
+                 data: {'action': 'flag', 'c_id': commentid},
+                 success: function(data) {
+                     alert(data);
+                     $(this).css("color", "red");
+                 },
+                 error: function(data) {
+                     alert("Flagging comment failed.");
+                 }
+             });
+         }
+     });
+
+
+// ajax gets thread and replaces old thread
+function ajaxThread()
+{
+     action({
+         data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
+         success: function(data)
+         {
+             var returned = eval('(' + data + ')');
+             $("#thread").html(returned.html);
+             loadThread();
+             return false;
+         },
+         error: null
+     });
+}
 
 
 

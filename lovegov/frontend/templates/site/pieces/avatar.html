@@ -22,7 +22,7 @@
 
         {% if private %}
 
-            {% thumbnail defaultProfileImage geometry crop="center" as im %}
+            {% thumbnail defaultProfileImage geometry crop="center" format="PNG" as im %}
                 <img class="avatar-image" src="{{ im.url }}" />
             {% empty %}
                 {{ defaultProfileImage }}
@@ -30,7 +30,7 @@
 
         {% else %}
             {% with full_url=user.getImageURL|media_url:MEDIA_PREFIX %}
-                {% thumbnail full_url geometry crop="center" as im %}
+                {% thumbnail full_url geometry crop="center" format="PNG" as im %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"
                          data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
                          src="{{ im.url }}" />

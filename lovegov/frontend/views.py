@@ -556,7 +556,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
 
-    html = ajaxRender('site/pages/content/news_detail.html', vals, request)
+    html = ajaxRender('site/pages/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -655,7 +655,7 @@ def account(request, section="", vals={}):
     if section == "profile": vals['profile_message'] = " "
 
     if request.method == 'GET':
-        html = ajaxRender('site/pages/account/account.html', vals, request)
+        html = ajaxRender('site/pages/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
@@ -685,7 +685,7 @@ def account(request, section="", vals={}):
         else:
             pass
 
-        html = ajaxRender('site/pages/account/account.html', vals, request)
+        html = ajaxRender('site/pages/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 

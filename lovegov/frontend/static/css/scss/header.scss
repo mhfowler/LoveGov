@@ -89,25 +89,50 @@ header
     position: relative;
     color: white;
     text-align: center;
-    font-size: 22px;
+    font-size: 18px;
+    vertical-align: middle;
     cursor: pointer;
-    img {
+    span.triangle {
+      @include triangle('down', $red, 10px);
       position: absolute;
-      bottom: -5px;
-      left: 4px;
+      top: 20px;
+      left: 3px;
     }
   }
 
-  div.avatar-box {
+  span.head-avatar div.avatar-box {
     float: right;
     margin: 10px;
   }
 
   span.name {
-    width: 15px;
+    width: 100px;
     float: right;
     text-overflow: ellipsis;
+    @include inline-block;
+    #white-space: nowrap;
+    overflow: hidden;
+    margin-top: 10px;
+    height: 30px;
+    text-align: center;
   }
+
+
+
+  div.triangle-area {
+    display: inline;
+    float: right;
+
+  }
+  div.triangle-wrapper {
+    cursor: pointer;
+    padding: 25px 3px 20px 3px;
+    @include inline-block
+  }
+  span.head-triangle {
+    @include triangle('down', $red, 6px);
+  }
+
 
 
 }
