@@ -48,7 +48,7 @@
                         <td>
                             <div>
                                 {% thumbnail group.getImage "75x75" crop="center" as im %}
-                                    <img src="{{ im.url }}" style="margin-right:20px"/>
+                                    <img src="{{ im.url }}" class="account-picture"/>
                                 {% endthumbnail %}
                             </div>
                             <div>{{ uploadform.image }}</div>

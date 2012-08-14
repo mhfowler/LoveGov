@@ -424,7 +424,7 @@
 
 @mixin edit-link($side-length:16px)
 {
-    @include staticImage($rel-path:'/images/edit-pencil.png');
+    @include staticImage($rel-path:'/images/icons/edit-pencil.png');
     background-size: $side-length $side-length;
     width: $side-length;
     height: $side-length;
@@ -433,7 +433,7 @@
 
     &:hover
     {
-      @include staticImage($rel-path:'/images/edit-pencil-blue.png');
+      @include staticImage($rel-path:'/images/icons/edit-pencil-blue.png');
     }
 
 }
