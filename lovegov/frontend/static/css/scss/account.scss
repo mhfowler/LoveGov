@@ -216,7 +216,16 @@ div.account-right
     font-family:$title-font;
     height:90px;
     margin-top:5px;
+  }
 
+  textarea.full-text-field
+  {
+    @extend textarea;
+    @include h5;
+    color:$deep-gray;
+    font-family:$title-font;
+    height:200px;
+    margin-top:5px;
   }
 
   textarea.address-field

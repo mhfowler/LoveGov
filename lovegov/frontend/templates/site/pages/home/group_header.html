@@ -49,6 +49,9 @@
                     {% if is_user_admin %}
                         <div class="group-action group_invite_members"> invite/add members </div>
                         <a href="edit/" class="group-action"> edit group settings </a>
+                        {% if num_group_requests > 0 %}
+                            <div class="group-action view_group_requests">join requests ({{ num_group_requests }})</div>
+                        {% endif %}
                     {% endif %}
 
                     {% if is_user_confirmed %}
@@ -101,12 +104,6 @@
         <div class="group-description">
             <div class="group-info-title">About Us</div>
             {{ group.full_text }}
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam blandit porttitor blandit. Proin feugiat mattis leo, non semper massa eleifend vel. Nunc tincidunt vehicula mauris, quis aliquam ante convallis vitae. Maecenas velit arcu, porttitor a facilisis non, euismod ultrices elit. Donec non mi sem, et congue ante. Vestibulum mollis interdum dapibus. Maecenas at risus metus, quis ullamcorper urna. Pellentesque et felis in dolor scelerisque cursus.
-
-            Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque euismod nibh sit amet justo iaculis ut egestas lectus sagittis. In tincidunt imperdiet sem, et iaculis ante aliquam vel. Proin eleifend tortor sed magna tristique pharetra. Curabitur ligula diam, sollicitudin eu euismod non, lobortis a enim. Vivamus dapibus urna non lorem scelerisque at malesuada enim volutpat. Morbi imperdiet sollicitudin tortor eget consequat. Sed aliquam posuere nisi ac faucibus.
-
-            Proin consectetur congue massa, eget volutpat eros ornare eget. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque egestas, orci nec eleifend rutrum, tortor diam malesuada neque, at tincidunt quam ligula vitae enim. Vestibulum at arcu eget tortor rutrum consequat. Sed ipsum lorem, accumsan in lacinia vitae, rhoncus sit amet odio. Vivamus sit amet felis diam. Mauris accumsan metus leo, ac posuere risus.
-
         </div>
 
         <div style="clear:both;"></div>

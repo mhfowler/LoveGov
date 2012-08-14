@@ -63,7 +63,7 @@
                     <tr class="break"></tr>
                     <tr>
                         <td class="left">
-                            <h3>description</h3>
+                            <h3>about us</h3>
                         </td>
                         <td><textarea class="bio-field group_edit_input" name="summary">{{ group.summary }}</textarea></td>
                         <td><div class="edit-link-large group_edit_icon"></div></td>
@@ -97,6 +97,14 @@
                         <td id="group_scale_container" data-group_scale="{{ group.scale }}">
                             {% include 'site/pages/group/select_scale.html' %}
                         </td>
+                    </tr>
+                    <tr class="break-large"></tr>
+                    <tr>
+                        <td class="left">
+                            <h3>detailed description</h3>
+                        </td>
+                        <td><textarea class="full-text-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
+                        <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>

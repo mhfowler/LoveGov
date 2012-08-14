@@ -88,7 +88,6 @@ div.group-main
       float: left;
       height: 100px;
       color: $red;
-      padding-top: 5px;
 
       div.match-number
       {
@@ -112,19 +111,14 @@ div.group-main
     {
       float: left;
       margin-left: 30px;
-      width: 200px;
+      width: 230px;
       overflow:hidden;
-
-      p.group-description-text
-      {
-        display:none;
-      }
     }
 
     div.group-moderators
     {
-      float:right;
-      margin-right: 170px;
+      float: left;
+      margin-left: 20px;
     }
 
     div.group-actions
@@ -168,7 +162,7 @@ div.group-expanded-info
   div.group-description
   {
     float:left;
-    margin-left: 40px;
-    width: 420px;
+    margin-left: 10px;
+    width: 450px;
   }
 }

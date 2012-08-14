@@ -476,6 +476,9 @@ def groupPage(request, g_alias, vals={}):
     # Get the list of all members and truncate it to be the number of members showing
     vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
 
+    # Get the number of group Follow Requests
+    vals['num_group_requests'] = group.getNumFollowRequests()
+
     # Get the total number of members
     vals['num_members'] = group.num_members
 
