@@ -1,0 +1,17 @@
+{% for admin in group_admins %}
+
+    <div class="group-edit-user-container admin_container">
+
+        <span class="admin-edit">{% include "site/pieces/avatar-with-name.html" with user=admin width="38" height="38" %}</span>
+
+        <span class="admin-edit">
+            {% if admin.id == viewer.id %}
+                <div class="modal-close remove_admin_self" data-admin_id="{{ admin.id }}" data-admin_name="{{ admin.get_name }}"></div>
+            {% else %}
+                <div class="modal-close remove_admin" data-admin_id="{{ admin.id }}" data-admin_name="{{ admin.get_name }}"></div>
+            {% endif %}
+        </span>
+
+    </div>
+
+{% endfor %}

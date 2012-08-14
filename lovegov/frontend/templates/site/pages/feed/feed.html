@@ -1,4 +1,5 @@
-<div class="feed-main">
+<div class="feed-main feed_main" data-feed_start="0" {% if not special_feed %}
+     data-feed="getFeed" {% else %} data-feed="{{ special_feed }}" {% endif %}>
 
     <table class="feed-top-bar">
         <tr>
@@ -7,10 +8,12 @@
 
                 <div class="feed-buttons-container">
 
-                    <div class='buttons-container-text'>Sort by:</div>
-                    <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
-                    <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
-                    <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
+                    {% block sort_buttons %}
+                        <div class='buttons-container-text'>Sort by:</div>
+                        <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
+                        <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
+                        <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
+                    {% endblock %}
 
                 </div>
 
@@ -18,32 +21,21 @@
 
                     <div class='buttons-container-text'>Filter by:</div>
 
-                    <div class="sort-button feed_button type_button" data-type="N" >News</div>
-                    <div class="sort-button feed_button type_button" data-type="O">Poll</div>
-                    <div class="sort-button feed_button type_button" data-type="P">Petition</div>
-                    <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
+                    {% block filter_buttons %}
+                        <div class="sort-button feed_button type_button" data-type="N" >News</div>
+                        <div class="sort-button feed_button type_button" data-type="O">Poll</div>
+                        <div class="sort-button feed_button type_button" data-type="P">Petition</div>
+                        <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
+                    {% endblock %}
 
                 </div>
-
-                {% comment %}
-                <div class="feed-buttons-container">
-
-                    <div class="feed-type-button">
-
-                    </div>
-
-                    <div class="feed-type-button">
-
-                    </div>
-
-                </div>
-                {% endcomment %}
 
                 <div style="clear:both"></div>
 
             </td>
 
             <td>
+                {% block right_button %}
                 <table class='create-button'>
                     <tr>
                         <td class="create-button">
@@ -51,6 +43,7 @@
                         </td>
                     </tr>
                 </table>
+                {% endblock %}
             </td>
 
         </tr>

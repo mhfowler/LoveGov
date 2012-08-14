@@ -1,5 +1,8 @@
 {% extends 'site/pages/profile/profile_base.html' %}
 
+{% load thumbnail %}
+{% load customtags %}
+
 {% block profile_main %}
 
     <div class='profile'>
@@ -24,16 +27,32 @@
                 </div>
 
                 <div class="about-item">
-                    <span class="label"> age: </span> <span class="value"> 20 </span>
+                    <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
                 </div>
+                {% if profile.age %}
+                    <div class="about-item">
+                        <span class="label"> age: </span> <span class="value"> {{ profile.age }} </span>
+                    </div>
+                {% endif %}
+                {% if profile.state %}
                 <div class="about-item">
-                    <span class="label"> position: </span> <span class="value"> Citizen </span>
+                    <span class="label"> location: </span> <span class="value"> {{ profile.city }}, {{ profile.state }} </span>
                 </div>
+                {% endif  %}
                 <div class="about-item">
-                    <span class="label"> location: </span> <span class="value"> Rhode Island </span>
-                </div>
-                <div class="about-item">
-                    <span class="label"> parties: </span> <span class="value"> 20 </span>
+                    <span class="label"> parties: </span> <span class="value">
+                        {% for p in profile.parties.all %}
+                            {% with full_url=p.party_label|media_url:MEDIA_PREFIX %}
+                                {% thumbnail full_url "20" crop="center" format="PNG" as im %}
+                                    <img src="{{ im.url }}" />
+                                {% empty %}
+                                    ?
+                                {% endthumbnail %}
+                            {% endwith %}
+                            {% empty %}
+                            None
+                        {% endfor %}
+                    </span>
                 </div>
 
             </div>
@@ -47,9 +66,9 @@
                     Match Breakdown
                 </div>
                 <div class="stuff">
-                    {% include 'site/pieces/match_breakdown.html' with comparison=comparison %}
+                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with comparison=comparison %}
                 </div>
-                <div class="view-all"> see comparison breakdown </div>
+                <a href="{{ profile.getQuestionsURL }}" class="view-all"> see comparison breakdown </a>
             </span>
             <span class="profile-groups breakdown-box">
                  <div class="profile-header">
@@ -60,7 +79,7 @@
                         <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
                     {% endfor %}
                 </div>
-                <div class="view-all"> view all </div>
+                <a class="view-all"> view all </a>
             </span>
             <span class="profile-politicians breakdown-box">
                  <div class="profile-header">
@@ -73,7 +92,7 @@
                         </a>
                     {% endfor %}
                 </div>
-                <div class="view-all"> view all </div>
+                <a class="view-all"> view all </a>
             </span>
 
             <div style="clear:both"></div>
@@ -82,30 +101,25 @@
         <div class="profile-bottom">
 
             <div class="profile-tabs">
-                <a href="#" class="profile-tab profile_tab questions_tab clicked"> Questions </a>
+                <a href="#" class="profile-tab profile_tab questions_tab clicked dummy_link"> Questions </a>
                 <div class="separator-line"></div>
-                <a href="#" class="profile-tab profile_tab posts_tab"> Posts </a>
+                <a href="#" class="profile-tab profile_tab posts_tab dummy_link"> Posts </a>
                 <div class="separator-line"></div>
-                <a href="#" class="profile-tab profile_tab activity_tab"> Activity </a>
+                <a href="#" class="profile-tab profile_tab activity_tab dummy_link"> Activity </a>
                 <div class="separator-line end"></div>
             </div>
 
             <div class="profile-focus">
-
                     <div class="questions_focus profile_focus">
-                        {% include 'site/pages/profile/profile_questions.html' %}
+                        {% include 'site/pages/feed/question_compare.html' with to_compare=profile special_feed="getQuestions" %}
                     </div>
-
                     <div class="posts_focus profile_focus">
                         {% include 'site/pages/feed/feed.html' %}
                     </div>
-
                     <div class="activity_focus profile_focus">
                         {% include 'site/pages/profile/profile_activity.html' %}
                     </div>
-
             </div>
-
         </div>
     </div>
 

@@ -135,22 +135,14 @@ def ifConfirmedRedirect(request):
 # answers all questions randomly for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def randomAnswers(user):
+    from lovegov.modernpolitics.actions import answerAction
     questions = Question.objects.filter(official=True)
     for q in questions:
         answers = list(q.answers.all())
         my_answer = random.choice(answers)
         # print "answered: ", my_answer.answer_text
-        response = Response(
-            question = q,
-            answer_val = my_answer.value,
-            most_chosen_answer = my_answer,
-            most_chosen_num = 1,
-            total_num = 1,
-            weight = 5,
-            explanation = "")
-        response.autoSave(creator=user, privacy='PUB')
-        action = Action(privacy='PUB',relationship=response.getCreatedRelationship())
-        action.autoSave()
+        answerAction(user, question=q, my_response=user.view.responses.filter(question=q),
+            privacy='PUB', answer_id=my_answer.id, weight=5, explanation="")
     user.last_answered = datetime.datetime.now()
     user.save()
 
@@ -286,6 +278,15 @@ def renderToResponseCSRF(template, vals, request):
 # returns and object from the url which uniquely identifies it
 #-----------------------------------------------------------------------------------------------------------------------
 def urlToObject(url):
+    alias = url.replace("/","")
+    to_return = UserProfile.lg.get_or_none(alias=alias)
+    if not to_return:
+        to_return = Group.lg.get_or_none(alias=alias)
+    if not to_return:
+        to_return = urlToObjectOld(url)
+    return to_return
+
+def urlToObjectOld(url):
     split = filter(None,url.split('/'))
     type = split[0]
     alias = split[1]

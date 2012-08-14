@@ -37,7 +37,6 @@
 
         <div class="edit_info_tab group_edit_tab" id="account-basic-information">
             <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
-                <span class="edit-link-large group_edit_icon"></span>
                 <table>
                     <tr>
                         <td></td>
@@ -48,7 +47,7 @@
                         <td>
                             <div>
                                 {% thumbnail group.getImage "75x75" crop="center" as im %}
-                                    <img src="{{ im.url }}" style="margin-right:20px"/>
+                                    <img src="{{ im.url }}" class="account-picture"/>
                                 {% endthumbnail %}
                             </div>
                             <div>{{ uploadform.image }}</div>
@@ -59,15 +58,15 @@
                     <tr>
                         <td class="left"><h3>title</h3></td>
                         <td><input class="group_edit_input" type="text" value="{{ group.title }}" name="title"/></td>
-                        <td></td>
+                        <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break"></tr>
                     <tr>
                         <td class="left">
                             <h3>description</h3>
                         </td>
-                        <td><textarea class="bio-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
-                        <td></td>
+                        <td><textarea class="bio-field group_edit_input" name="summary">{{ group.summary }}</textarea></td>
+                        <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>
@@ -96,7 +95,7 @@
                             <h3>scale</h3>
                         </td>
                         <td id="group_scale_container" data-group_scale="{{ group.scale }}">
-                            {% include 'site/pieces/create_modal/select_scale.html' %}
+                            {% include 'site/pages/group/select_scale.html' %}
                         </td>
                     </tr>
                     <tr class="break-large"></tr>
@@ -139,7 +138,7 @@
                 </div>
 
                 <div class="admin-submit-container">
-                    <a href='' id='edit_admin_submit' class="admin-button" data-g_id="{{ group.id }}">Add Administrator</a>
+                    <a href='' id='edit_admin_submit' class="admin-button" data-g_id="{{ group.id }}" data-g_alias="{{ group.alias }}">Add Administrator</a>
                 </div>
 
             </form>
@@ -151,12 +150,11 @@
 
 
 
-
-        <div class="members_edit_tab members-edit-tab group_edit_tab" style="display:none">
+        <div class="members_edit_tab admin-edit-tab group_edit_tab" style="display:none">
 
             <div class="group-edit-header"> Current Members for {{ group.title }} </div>
 
-            <div class="group-members-container group_members_container">
+            <div class="admin-remove-container group_members_container">
                 {% include 'site/pages/group/members_list.html' %}
             </div>
 
@@ -172,7 +170,7 @@
                     </select>
                 </div>
 
-                <div class="members-remove-container">
+                <div class="admin-submit-container">
                     <a href='' id='members_remove_submit' class="admin-button" data-g_id="{{ group.id }}">Remove Members</a>
                 </div>
 

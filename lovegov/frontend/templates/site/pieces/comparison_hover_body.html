@@ -1,0 +1,17 @@
+<div class="match-title">
+    You & <a href="href="{{ to_compare.getBreakdownURL }}"> {{ to_compare.get_name }} </a>
+</div>
+<div class="match-text">
+    <div class="match-percent">
+        {{ comparison.main.result }}%
+    </div>
+    <div class="match-from">
+        match from
+    </div>
+    <div class="match-from how-many">
+        {{ comparison.main.num_q }} answers
+    </div>
+</div>
+<div class="breakdown-wrapper">
+    {% include 'site/pieces/match_breakdown/match_breakdown.html' with comparison=comparison %}
+</div>

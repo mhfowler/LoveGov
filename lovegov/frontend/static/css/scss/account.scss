@@ -1,0 +1,408 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import 'compass';
+
+$account-header-margin-bottom:25px;
+
+div.account-left
+{
+  $width:300px;
+  width:$width;
+  margin-right:60px;
+  float:left;
+
+  h2
+  {
+    margin-bottom:$account-header-margin-bottom;
+  }
+
+  div.account-button-options
+  {
+    position:relative;
+    border: 1px $gray solid;
+    width:$width;
+
+    div.account-button
+    {
+      position:relative;
+      background-color:white;
+      padding:20px;
+      padding-top:15px;
+      padding-bottom:15px;
+
+      span
+      {
+        color:$deep-gray;
+        font-size:15px;
+      }
+
+      &:hover
+      {
+        cursor:pointer;
+        background-color:$red;
+
+        span
+        {
+          color:white;
+        }
+
+      }
+    }
+
+    div.account-button-selected
+    {
+      background-color:$red;
+      span{ color:white };
+    }
+
+    div.account-button-separator
+    {
+      @include horizontalSeparator($width:$width,$color:$gray,$margin-left:0,$margin-top:0,$margin-bottom:0)
+    }
+
+  }
+
+  div.account-button-pointer
+  {
+    @include trianglePointer($direction:'right',$width:10px,$color-inner:$red,$color-border:$gray,$offset:15px);
+  }
+
+}
+
+div.account-right
+{
+  float:left;
+  width:625px;
+  $input-width:360px;
+
+  div.edit-link-large
+  {
+    @include edit-link(20px);
+    vertical-align:middle;
+    position:relative;
+    margin-left:15px;
+    display: none;
+  }
+
+  img.party-choice-deselected
+  {
+    filter: url(/static/images/party_labels/filter.svg#grayscale) !important; /* Firefox 3.5+ */
+    filter: gray !important; /* IE6-9 */
+    -webkit-filter: grayscale(1) !important; /* Google Chrome & Webkit Nightlies */
+    opacity:0.6 !important;
+  }
+
+  img.party-choice
+  {
+    padding:5px;
+    filter: url(/static/images/party_labels/filter.svg#grayscale); /* Firefox 3.5+ */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(1); /* Google Chrome & Webkit Nightlies */
+    opacity:0.6;
+
+    &:hover
+    {
+      opacity:1.0;
+      cursor:pointer;
+      filter: none;
+      -webkit-filter: grayscale(0);
+    }
+  }
+
+  img.party-choice-selected
+  {
+    opacity:1.0;
+    cursor:pointer;
+    filter: none;
+    -webkit-filter: grayscale(0);
+  }
+
+
+
+
+  input.party-choice
+  {
+    display: none;
+  }
+
+  p.account-message
+  {
+    width:250px;
+  }
+
+  h2
+  {
+    margin-bottom:$account-header-margin-bottom;
+  }
+
+  td
+  {
+    vertical-align:middle;
+  }
+
+  input[type="text"]
+  {
+    border:0;
+    @include h3;
+    color:$deep-gray;
+    font-family:$title-font;
+    width:$input-width;
+
+    &:focus
+    {
+      color:$black;
+    }
+  }
+
+  input[type="password"]
+  {
+    @include h2;
+    color:$deep-gray;
+    font-family:$title-font;
+    width:$input-width+-75;
+    padding:5px;
+
+    &:focus
+    {
+      color:$black;
+    }
+  }
+
+  input[type="file"]
+  {
+    display:inline-block;
+    width:230px;
+  }
+
+
+  input[type="checkbox"]
+  {
+
+  }
+
+
+  div.lockprofile-td
+  {
+    position:relative;
+    bottom:24px;
+
+    span
+    {
+      color:$deep-gray;
+      margin-left:10px;
+    }
+
+  }
+
+  textarea
+  {
+    border:0;
+    width:$input-width;
+    resize:none;
+
+    &:focus
+    {
+      color:$black;
+    }
+  }
+
+  textarea.bio-field
+  {
+    @extend textarea;
+    @include h5;
+    color:$deep-gray;
+    font-family:$title-font;
+    height:90px;
+    margin-top:5px;
+
+  }
+
+  textarea.address-field
+  {
+    @extend textarea;
+    @include h3;
+    color:$deep-gray;
+    font-family:$title-font;
+    height:110px;
+
+    &:focus
+    {
+      color:$black;
+    }
+  }
+
+
+  td.left
+  {
+    vertical-align:top;
+    min-width:200px;
+    padding-right:50px;
+    text-align:right;
+
+    h3
+    {
+      font-family:$title-font;
+      color:$text-blue
+    }
+
+    p
+    {
+      text-align:right;
+      width:140px;
+      color:$dark-gray;
+      font-style:italic;
+      line-height:125%;
+      display:inline-block;
+
+      a, a:link, a:active, a:visited
+      {
+        text-decoration:underline;
+      }
+
+    }
+  }
+
+  tr.break
+  {
+    height:8px;
+  }
+
+
+  tr.break-small
+  {
+    height:20px;
+  }
+
+  tr.break-large
+  {
+    height:30px;
+  }
+
+  h3.gray
+  {
+    color:$dark-gray;
+    font-family:$title-font;
+  }
+
+
+  div.group-edit-header
+  {
+    @include h3;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  div.member-select-container
+  {
+    margin-bottom:15px;
+  }
+
+  div.admin-submit-container
+  {
+    margin-bottom:15px;
+  }
+
+  div.admin-submit-message
+  {
+    color: $dark-gray;
+    @include fontSize(14px);
+    display: none;
+  }
+
+  div.admin-explanation
+  {
+    color: $dark-gray;
+    @include fontSize(14px);
+  }
+
+  a.admin-button
+  {
+    @include fontSize(18px);
+    @include rounded(10px);
+    padding: 10px 15px 10px 15px;
+  }
+
+  a.admin-button-modal:hover
+  {
+    background-color: $light-gray;
+  }
+
+  select.member-select {
+    width: 550px;
+  }
+
+  div.group-members-container {
+    margin-bottom: 20px;
+    display:block;
+
+    div.user-avatar-link {
+      float:left;
+      margin-right:10px;
+    }
+  }
+
+  div.admin-edit-tab
+  {
+    text-align: center;
+    width: 100%;
+  }
+
+  div.admin-remove-container
+  {
+    @include clearfix();;
+    margin-left: 40px;
+    margin-bottom: 20px;
+
+    div.group-edit-user-container
+    {
+      float: left;
+      margin-right: 25px;
+      margin-bottom: 5px;
+
+      span.admin-edit
+      {
+        display: inline-block
+      }
+    }
+  }
+}
+
+.custom-radio
+{
+  display: none;
+}
+
+div.create-radio
+{
+  @include rounded(9px);
+  @include float-left;
+  padding: 10px 10px 0px 10px;
+  font-size: 18px;
+  color: white;
+  background-color: $gray;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+div.create-radio:hover
+{
+  background-color: $light-gray;
+}
+
+div.create-radio-selected
+{
+  background-color: $red;
+}
+
+div.create-radio-selected:hover
+{
+  background-color: $red-light;
+}
+
+img.account-picture
+{
+  margin-right: 10px;
+  margin-bottom: 10px;
+}

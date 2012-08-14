@@ -604,7 +604,9 @@ ACTIONS = [
     'createMotion',
     'logCompatability',
     'getFeed',
-    'getModal'
+    'getModal',
+    'getQuestions',
+    'stubAnswer'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

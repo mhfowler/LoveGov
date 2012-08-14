@@ -1,1 +1,44 @@
-<h4> questions! </h4>
+{% extends 'site/pages/profile/profile_base.html' %}
+
+{% load thumbnail %}
+{% load customtags %}
+
+{% block profile_main %}
+
+    <div class="profile-questions">
+
+        <div class="profile-questions-top">
+            <div class="profile-header"> Questions </div>
+
+            <div class="breakdown-wrapper">
+                {% include 'site/pieces/match_breakdown/match_breakdown.html' with horizontal=1 %}
+            </div>
+
+            <div class="has-answered-text">
+                <div class="has-answered">
+                    <div class="unbold">
+                        {{ profile.first_name }} has answered
+                    </div>
+                    <div class="bold">
+                        {{ profile.num_answers }} questions
+                    </div>
+                </div>
+                <div class="has-answered">
+                    <div class="unbold">
+                        You and {{ profile.first_name }} share
+                    </div>
+                    <div class="bold">
+                        {{ comparison_object.num_q }} questions
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+
+        <div class="questions-feed-wrapper">
+            {% include 'site/pages/feed/question_compare.html' with to_compare=profile special_feed="getQuestions" worldview_detail=1 %}
+        </div>
+
+    </div>
+
+{% endblock %}

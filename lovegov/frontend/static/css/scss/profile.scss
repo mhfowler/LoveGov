@@ -15,6 +15,9 @@ div.profile-page {
       @include fontSize(22px);
       @include inline-block;
       color: $black;
+      &:hover {
+        color:black;
+      }
     }
 
     span.state {
@@ -157,13 +160,13 @@ div.profile-page {
       }
     }
 
+    div.profile-header {
+      @include fontSize(18px);
+      font-weight:bold;
+    }
+
     div.profile {
       width:100%;
-
-      div.profile-header {
-        @include fontSize(18px);
-        font-weight:bold;
-      }
 
       a.box-link {
         width:100%;
@@ -207,7 +210,7 @@ div.profile-page {
         span.breakdown-box {
           float:left;
           width:240px;
-          margin-right:80px;
+          margin-right:70px;
           height:200px;
 
           div.stuff {
@@ -217,7 +220,7 @@ div.profile-page {
             margin-top:10px;
           }
 
-          div.view-all {
+          a.view-all {
             width:100%;
             margin-top:10px;
             background-color:$light-gray;
@@ -293,6 +296,40 @@ div.profile-page {
       div.profile_focus.questions_focus {
         display:block;
       }
+
+      div.activity {
+        width:100%;
+        div.activity-header {
+          width:100%;
+          margin-top:50px;
+          span.filter-by {
+              float:left;
+          }
+        }
+      }
     }
+
+
+    div.profile-questions {
+
+
+      div.breakdown-wrapper {
+        float:left;
+        width:800px;
+      }
+
+      div.has-answered-text {
+        margin-top: 20px;
+        @include fontSize(16px);
+        float:left;
+      }
+
+      div.questions-feed-wrapper {
+        margin-top:15px;
+      }
+
+
+    }
+
   }
 }
