@@ -187,6 +187,16 @@ div.group-histogram {
           display:none;
         }
 
+        a.see-all {
+          position:relative;
+          top:55px;
+          left:15px;
+          z-index:1;
+          &:hover {
+            color:$black;
+          }
+        }
+
         .identical_count {
           float:left;
           @include big();
@@ -224,9 +234,6 @@ div.group-histogram {
           width:100%;
           background-color:$red;
           border: 1px solid $red;
-        }
-        .red_bar:hover {
-          border-color:$black;
         }
 
         .label {

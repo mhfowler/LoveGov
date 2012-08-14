@@ -450,6 +450,11 @@ def friends(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+def questions(request, vals={}):
+    html =  ajaxRender('site/pages/qa/questions.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
 #-----------------------------------------------------------------------------------------------------------------------
@@ -628,10 +633,9 @@ def discussionDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # closeup of histogram
 #-----------------------------------------------------------------------------------------------------------------------
-def histogramDetail(request, g_id, vals={}):
+def histogramDetail(request, alias, vals={}):
 
-    viewer = vals['viewer']
-    group = Group.objects.get(id=g_id)
+    group = Group.objects.get(alias=alias)
 
     vals['group'] = group
     getMainTopics(vals)

@@ -60,7 +60,7 @@ div.left-navbar {
     position:absolute;
     @include titleFont();
     @include fontSize(22px);
-    display:none;
+    //display:none;
   }
 
   div.navbar-section {
