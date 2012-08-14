@@ -91,8 +91,7 @@ urlpatterns += patterns('',
     (r'^group/(\d+)/edit/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/edit/(?P<section>\S+)/$', viewWrapper(views.groupEdit, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
-    (r'^histogram/(\d+)/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
-    (r'^(\S+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
+
 
     # legislation
     (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),
@@ -128,8 +127,12 @@ urlpatterns += patterns('',
     # api
     (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
-    # REDIRECT
+    # urls based on alias
     (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
+    (r'^(?P<alias>\w+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
+    (r'^(?P<alias>\w+)/histogram/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+
+    # REDIRECT
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
