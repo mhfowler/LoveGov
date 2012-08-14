@@ -1,0 +1,14 @@
+<!-- goes inside a wrapper, and receives its dimensions from there -->
+<div class="match_breakdown match_object" data-to_compare_alias="{{ to_compare.alias }}"
+        {% if not horizontal %} data-display="vertical_breakdown" {% else %} data-display="horizontal_breakdown" {% endif %}
+     data-result="{{ comparison.main.result }}" data-num_q="{{ comparison.main.num_q }}">
+    {% for t in comparison.topics %}
+        {% with topic=t.topic %}
+            {% if not horizontal %}
+                {% include 'site/pieces/match_breakdown/topic_column.html' %}
+            {% else %}
+                {% include 'site/pieces/match_breakdown/topic_row.html' %}
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+</div>
