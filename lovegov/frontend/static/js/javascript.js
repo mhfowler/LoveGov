@@ -768,6 +768,469 @@ function leftSideToggle(wrapper)
 
 }
 
+
+/***********************************************************************************************************************
+ *
+ *      ~User menu
+ *
+ ***********************************************************************************************************************/
+
+bind("img.gear", "click", function(e) { 
+    $('div.user-menu').fadeToggle(50);
+});
+
+
+function toggleUserMenu()
+{
+    $('.user-menu').toggleClass("user-menu-unselected");
+    $('.user-menu').toggleClass("user-menu-selected");
+    $("#user-menu-dropdown").toggle('slide',{direction:'up'},10);
+    var left = $('#user-menu-dropdown').width()-$('.user-menu').width()+$('.user-img').width()+$('#user-name').width()/2-$('.user-menu-pointer').width()/2;
+    $('.user-menu-pointer').css('left',left);
+}
+
+$('#user-menu-dropdown').bind("clickoutside",function(event)
+{
+    if ($('#user-menu-dropdown').css('display') != 'none')
+    {
+        $('#user-menu').removeClass("user-menu-selected");
+        $('#user-menu').addClass("user-menu-unselected");
+        $('#user-menu-dropdown').hide();
+    }
+});
+
+
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~Header links
+//  *
+//  ***********************************************************************************************************************/
+// function selectHeaderLink(div) {
+//     $(".header_link").removeClass("clicked");
+//     div.addClass("clicked");
+// }
+
+// bind('reactivate-first-login', 'click', function() {
+//         setFirstLoginStage(0, function() {
+//             window.location = '/match';
+//         });
+//     });
+
+// function bindTutorialLink() {
+//     $('.reactivate-first-login').bindOnce('click', function() {
+//         setFirstLoginStage(0, function() {
+//             window.location = '/match';
+//         });
+//     });
+// }
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~Menu and Icon Display
+//  *
+//  ***********************************************************************************************************************/
+// function loadMenuToggles() {
+
+//     function menuClickoff(menu) {
+//         menu.bindOnce("clickoutside.menuoff", function(event) {
+//             if (menu.hasClass("hack_workaround")) {
+//                 menu.removeClass("hack_workaround");
+//             }
+//             else {
+//                 menu.hide();
+//                 menu.parents(".menu_toggle").removeClass("clicked");
+//             }
+//         });
+//     }
+
+
+//     $(".menu").hide();
+//     $(".menu_toggle").click(function(event) {
+//         if (!$(this).hasClass("clicked")) {
+//             var other_menu_toggles = $(".menu_toggle").not($(this));
+//             other_menu_toggles.removeClass("clicked");
+//             other_menu_toggles.children(".menu").hide();
+//             var menu=$(this).children(".menu");
+//             menu.addClass("hack_workaround");
+//             menuClickoff(menu);
+//         }
+//         $(this).children(".menu").toggle();
+//     });
+
+//     $(".menu_toggle").hover(
+//         function(event) {
+//             $(this).children(".triangle-selector").addClass("highlighted");
+//         },
+//         function(event) {
+//             if (!$(this).hasClass("clicked")) {
+//                 $(this).children(".triangle-selector").removeClass("highlighted");
+//             }
+//         }
+//     );
+//     defaultHoverClick($(".menu_toggle"));
+// }
+
+// function defaultHoverClick(div) {
+//     div.click(function(event) {
+//         defaultClick($(this));
+//     });
+//     defaultHover(div);
+// }
+
+// function defaultHoverClickSingle(div) {
+//     div.click(function(event) {
+//         defaultClickSingle($(this), div);
+//     });
+//     defaultHover(div);
+// }
+
+// function defaultClickSingle(this_div, all_div) {
+//     var already = $(this).hasClass("clicked");
+//     all_div.removeClass("clicked");
+//     if (!already) {
+//         this_div.addClass("clicked");
+//     }
+// }
+
+// function defaultClick(this_div) {
+//     this_div.toggleClass("clicked");
+// }
+
+// function defaultHover(all_div) {
+//     all_div.hover(
+//         function(event) {
+//             $(this).addClass("hovered");
+//         },
+//         function(event) {
+//             $(this).removeClass("hovered");
+//         }
+//     );
+// }
+
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~Following
+//  *
+//  ***********************************************************************************************************************/
+// /* user follower */
+// function userFollow(event,div,follow)
+// {
+//     event.preventDefault();
+//     div.unbind();
+//     var action = 'userFollowRequest';
+//     if( !follow )
+//     {
+//         action = 'userFollowStop';
+//     }
+//     ajaxPost({
+//             data: {
+//                 'action': action,
+//                 'p_id': p_id
+//             },
+//             success: function(data)
+//             {
+//                 if( data == "follow success")
+//                 {
+//                     div.html("unfollow");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             userFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow request")
+//                 {
+//                     div.html("un-request");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             userFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow removed")
+//                 {
+//                     div.html("follow");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             userFollow(event,div,true);
+//                         }
+//                     );
+//                 }
+//                 else
+//                 {
+//                     //alert(data);
+//                 }
+//             },
+//             error: function(jqXHR, textStatus, errorThrown)
+//             {
+//                 $('body').html(jqXHR.responseText);
+//             }
+//         }
+//     );
+// }
+
+// function groupFollow(event,div,follow)
+// {
+//     event.preventDefault();
+//     div.unbind();
+//     var action = 'joinGroupRequest';
+//     if( !follow )
+//     {
+//         action = 'leaveGroup';
+//     }
+//     ajaxPost({
+//             data: {
+//                 'action': action,
+//                 'g_id': g_id
+//             },
+//             success: function(data)
+//             {
+//                 if( data == "follow success")
+//                 {
+//                     div.html("leave");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             groupFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow request")
+//                 {
+//                     div.html("un-request");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             groupFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow removed")
+//                 {
+//                     div.html("join");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             groupFollow(event,div,true);
+//                         }
+//                     );
+//                 }
+//                 else
+//                 {
+//                     //alert(data);
+//                 }
+//             },
+//             error: function(jqXHR, textStatus, errorThrown)
+//             {
+//                 $('body').html(jqXHR.responseText);
+//             }
+//         }
+//     );
+// }
+
+// function userFollowResponse(event,response,div)
+// {
+//     event.preventDefault();
+//     var follow_id = div.siblings(".user_follow_id").val();
+//     ajaxPost({
+//             data: {
+//                 'action':'followResponseResponse',
+//                 'p_id': follow_id,
+//                 'response': response
+//             },
+//             success: function(data)
+//             {
+//                 return true;
+//             },
+//             error: function(error, textStatus, errorThrown)
+//             {
+//                 $('body').html(error.responseText);
+//             }
+//         }
+//     );
+//     return false;
+// }
+
+// function setFollowPrivacy(event,private_follow,div)
+// {
+//     event.preventDefault();
+//     div.unbind();
+//     ajaxPost({
+//         data: {
+//             'action':'followprivacy',
+//             'p_id': p_id,
+//             'private_follow': private_follow
+//         },
+//         success: function(data)
+//         {
+//             if( data == "follow privacy set")
+//             {
+//                 if( private_follow )
+//                 {
+//                     div.html("private");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             setFollowPrivacy(event,0,$(this));
+//                         }
+//                     );
+//                 }
+//                 else
+//                 {
+//                     div.html("public");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             setFollowPrivacy(event,1,$(this));
+//                         }
+//                     );
+//                 }
+//             }
+//             else
+//             {
+//                 //alert(data);
+//             }
+
+//         },
+//         error: function(jqXHR, textStatus, errorThrown)
+//         {
+//             $('body').html(jqXHR.responseText);
+//         }
+
+//     });
+// }
+
+// function groupInviteResponse(event,response,div)
+// {
+//     event.preventDefault();
+//     var g_id = div.data("g_id");
+//     ajaxPost({
+//             data: {
+//                 'action':'groupInviteResponse',
+//                 'g_id': g_id,
+//                 'response': response
+//             },
+//             success: function(data)
+//             {
+//                 //alert(data);
+//             },
+//             error: function(error, textStatus, errorThrown)
+//             {
+//                 $('body').html(error.responseText);
+//             }
+//         }
+//     );
+// }
+
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~InlineEdits
+//  *
+//  ***********************************************************************************************************************/
+// function editUserProfile(info,edit_div)
+// {
+//     var prof_data = info;
+//     prof_data.action = 'editProfile';
+
+//     ajaxPost({
+//         'data': prof_data,
+//         success: function(data)
+//         {
+//             var obj = eval('(' + data + ')');
+//             if( obj.success )
+//             {
+//                 edit_div.text(obj.value);
+//                 edit_div.show();
+//             }
+//         },
+//         error: function(jqXHR, textStatus, errorThrown)
+//         {
+//             $('body').html(jqXHR.responseText);
+//         }
+//     });
+// }
+
+
+// function editContent(c_id,info,edit_div)
+// {
+//     var content_data = info;
+//     content_data.action = 'editContent';
+//     content_data.c_id = c_id;
+
+//     ajaxPost({
+//         'data': content_data,
+
+//         success: function(data)
+//         {
+//             var obj = eval('(' + data + ')');
+//             if( obj.success )
+//             {
+//                 edit_div.html(obj.value);
+//                 edit_div.show();
+//             }
+//         },
+//         error: function(jqXHR, textStatus, errorThrown)
+//         {
+//             $('body').html(jqXHR.responseText);
+//         }
+//     });
+// }
+
+// function unbindInlineEdits()
+// {
+//     $(".edit_button").unbind();
+//     $(".submit_inline_edit").unbind();
+//     $(".cancel_inline_edit").unbind();
+// }
+
+// function bindInlineEdits()
+// {
+//     $(".edit_button").bindOnce('click.edit',
+//         function(event)
+//         {
+//             event.preventDefault();
+//             $(this).siblings('.inline_hide').hide();
+//             $(this).hide();
+
+//             $(this).siblings('.inline_edit').show();
+//         }
+//     );
+
+//     $(".submit_inline_edit").bindOnce('click.edit',
+//         function(event)
+//         {
+//             event.preventDefault();
+//             var input = $(this).siblings('.edit_input');
+//             var wrapper = $(this).parent();
+//             var name = input.attr('name');
+//             var value = input.val();
+//             var model = wrapper.data('model');
+//             var info = {
+//                 'key':name,
+//                 'val':value
+//             };
+//             var edit_div = $(this).parent().siblings('.inline_hide');
+
+//             if( model == "Content" )
+//             {
+//                 var c_id = wrapper.data('id');
+//                 editContent(c_id,info,edit_div);
+//             }
+//             else if( model == "UserProfile")
+//             {
+//                 editUserProfile(info,edit_div);
+//             }
+
+//             $(this).parent().siblings('.edit_button').show();
+//             $(this).parent().hide();
+//         }
+//     );
 /***********************************************************************************************************************
  *
  *      ~Login

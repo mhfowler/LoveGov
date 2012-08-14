@@ -13,16 +13,17 @@
     </ul>
 
     <span class="name">{{user.get_name}}</span>
-    
+
     {% include 'site/pieces/avatar.html' with user=user height='30' width='30' %}
     
     <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
+
     <div class="notices setting-icon">
         <div class='notifications_dropdown_button'>{{ notifications_num }}</div>
         <img src="{{STATIC_URL}}/images/icons/arrow_red.png">
         {% include 'site/frame/notifications/notification_dropdown.html' %}
     </div>
-    <img src="{{ STATIC_URL }}/images/setting_red.png" class="spin setting-icon">
+    <img src="{{ STATIC_URL }}/images/setting_red.png" class="setting-icon gear">
 
     <div class="search">
         <input type="text" placeholder="Search">
@@ -30,3 +31,5 @@
     </div>
 
 </header>
+
+{% include 'site/frame/user_menu.html' %}

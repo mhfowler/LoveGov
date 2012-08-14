@@ -1,5 +1,15 @@
 {% load thumbnail %}
 
+<div class="user-menu">
+    {% include 'site/pieces/avatar.html' with user=user height='100' width='100' %}
+    <div class="name">{{user.get_name}}</div>
+    <div class="email">{{user.email}}</div>
+
+    <div class="options-row"><span>View Profile</span><span>Privacy</span></div>
+    <div class="bottom-options"><span>Settings <img src="{{ STATIC_URL }}/images/setting_red.png" style="float: left"></span><span>Logout <img src="{{ STATIC_URL }}/images/logout.png"></span></div>
+
+</div>
+<!--
 <div id="user-menu-container">
     <div id=user-menu class="user-menu-unselected">
         {% thumbnail viewer.getProfileImage.image "40x40" crop="center" as img %}
@@ -38,10 +48,5 @@
         </div>
 
     </div>
-    <div class="preloadImages">
-        <img src="{{ STATIC_URL }}/images/user-menu/geargray.png"/>
-        <img src="{{ STATIC_URL }}/images/user-menu/gearwhite.png"/>
-        <img src="{{ STATIC_URL }}/images/user-menu/lockgray.png"/>
-        <img src="{{ STATIC_URL }}/images/user-menu/lockwhite.png"/>
-    </div>
 </div>
+-->
