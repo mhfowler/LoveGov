@@ -66,7 +66,7 @@
                         <td class="left">
                             <h3>description</h3>
                         </td>
-                        <td><textarea class="bio-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
+                        <td><textarea class="bio-field group_edit_input" name="summary">{{ group.summary }}</textarea></td>
                         <td></td>
                     </tr>
                     <tr class="break-large"></tr>
@@ -96,7 +96,7 @@
                             <h3>scale</h3>
                         </td>
                         <td id="group_scale_container" data-group_scale="{{ group.scale }}">
-                            {% include 'site/pieces/create_modal/select_scale.html' %}
+                            {% include 'site/pages/group/select_scale.html' %}
                         </td>
                     </tr>
                     <tr class="break-large"></tr>

@@ -569,7 +569,7 @@ def editGroup(request, vals={}):
 
     group.save()
 
-    return shortcuts.redirect('/group/' + str(group.id) + '/edit/')
+    return shortcuts.redirect('/' + str(group.alias) + '/edit/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information

@@ -128,7 +128,8 @@ urlpatterns += patterns('',
     (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
     # REDIRECT
-    (r'(?P<alias>\S+)/$', views.aliasDowncast),
+    (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
+    (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
 )
