@@ -3,6 +3,25 @@
 
 @import "compass";
 
+
+a {
+  color: #0254EB;
+
+  &:visited {
+    color: #0254EB
+  }
+
+  .morelink {
+    text-decoration:none;
+    outline: none;
+  }
+}
+
+.morecontent span {
+  display: none;
+}
+
+
 div.main {
   margin-left: 0px;
   height: 450px;
@@ -41,35 +60,14 @@ div.main {
     margin-left: 0px;
     margin-top: 5px;
     height: 200px;
-    width: 400px;
+    width: 250px;
 
-    div.title {
+    div.title.long_text.more {
+      text-align: justify;
       margin-top: 0px;
       height: 200px;
-      width: 400px;
+      width: 250px;
       padding-left: 5px;
-      text-align: justify;
-    }
-
-    a {
-      color: #0254EB;
-
-      &:visited {
-        color: #0254EB
-      }
-
-      .morelink {
-        text-decoration:none;
-        outline: none;
-      }
-    }
-
-    .morecontent span {
-      display: none;
-    }
-
-    .morecontent span {
-      display: none;
     }
   }
 
@@ -130,3 +128,5 @@ div.secondary {
   height: 400px;
   width: 1000px;
 }
+
+

@@ -8,6 +8,7 @@ function initJS() {
     switch (rebind) {
         case "home": initHomePage(); break;
         case "profile": initFeed(); break;
+        case "legislation-view": shortenLongText(); break;
     }
 }
 
@@ -1025,47 +1026,6 @@ bind( 'div.group_invite_members' , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
-
-/***********************************************************************************************************************
- *
- *      ~Legislation
- *
- **********************************************************************************************************************/
-
-
-$(document).ready(function () {
-    var showChar = 100;
-    var ellipsestext = "...";
-    var moretext = "read more";
-    var lesstext = "less";
-    $('.long_text').each(function() {
-        var content = $(this).html();
-
-        if(content.length > showChar) {
-
-            var c = content.substr(0, showChar);
-            var h = content.substr(showChar-1, content.length - showChar);
-
-            var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
-
-            $(this).html(html);
-        }
-
-    });
-
-    $(".morelink").click(function(){
-        if($(this).hasClass("less")) {
-            $(this).removeClass("less");
-            $(this).html(moretext);
-        } else {
-            $(this).addClass("less");
-            $(this).html(lesstext);
-        }
-        $(this).parent().prev().toggle();
-        $(this).prev().toggle();
-        return false;
-    });
-
 bind( 'div.notifications_dropdown_button' , 'click' , null , function(event)
 {
     $('div.notifications_dropdown').toggle();
@@ -1080,3 +1040,44 @@ bind( null , 'click' , null , function(event)
     }
 
 });
+
+/***********************************************************************************************************************
+ *
+ *      ~Legislation
+ *
+ **********************************************************************************************************************/
+
+
+function shortenLongText () {
+    var showChar = 200;
+    var ellipsestext = "...";
+    var moretext = "read more";
+    var lesstext = "less";
+    $('.long_text').each(function() {
+        var content = $(this).html();
+
+        if(content.length > showChar) {
+
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+
+            var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+
+            $(this).html(html);
+        }
+
+    });
+
+    $('.morelink').click(function(){
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html(moretext);
+        } else {
+            $(this).addClass("less");
+            $(this).html(lesstext);
+        }
+        $('.morecontent_span').toggle();
+        $('.moreellipses').toggle();
+        return false;
+    });
+}
