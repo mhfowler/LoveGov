@@ -3350,7 +3350,7 @@ class Group(Content):
     # Get url of histogram detail.
     #-------------------------------------------------------------------------------------------------------------------
     def getHistogramURL(self):
-        return '/histogram/' + str(self.id) + "/"
+        return self.get_url() + 'histogram/'
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.

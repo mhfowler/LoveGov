@@ -1790,6 +1790,10 @@ function renderHistogram() {
 
 function loadHistogram() {
 
+    var histogram_div = $(".histogram");
+    if (histogram_div.length==0) {
+        return false;
+    }
     histogram = $(".histogram").data('metadata');
     histogram.members_displayed = 0;
     histogram.identical_displayed = 0;
@@ -2026,4 +2030,84 @@ function getAllGroupMembers(start, num, g_id) {
             $('body').html(error.responseText);
         }
     });
+}
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Topics
+ *
+ **********************************************************************************************************************/
+function loadTopicSelect()
+{
+    // hide all selected
+    $(".selected").hide();
+
+    // hover
+    $(".topic-img").hover
+        (
+            function(event)
+            {
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                wrapper.children(".normal").hide();
+                wrapper.children(".selected").show();
+            },
+            function(event)
+            {
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                if (!(wrapper.hasClass("chosen")))
+                {
+                    wrapper.children(".selected").hide();
+                    wrapper.children(".normal").show();
+                }
+            }
+        );
+}
+
+// selects a particular topic icon and deselects all others
+function selectTopicSingle(wrapper)
+{
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    showTopicIcon(wrapper);
+}
+
+function toggleTopicSingle(wrapper) {
+    var deselect = wrapper.hasClass("chosen");
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    if (!deselect) {
+        showTopicIcon(wrapper);
+    }
+}
+
+// clears all topic icons within an overall topic-icons-wrapper
+function clearTopicIcons(icons_wrapper) {
+    var icons = icons_wrapper.find(".topic-icon-wrapper");
+    icons.each(function(index) {
+        hideTopicIcon($(this));
+    });
+}
+
+// toggles topic icon between being selected and unselected
+function toggleTopicIcon(wrapper)
+{
+    if (wrapper.hasClass("chosen")) {
+        hideTopicIcon(wrapper);
+    }
+    else {
+        showTopicIcon(wrapper);
+    }
+}
+
+function hideTopicIcon(wrapper) {
+    wrapper.removeClass("chosen");
+    wrapper.children(".selected").hide();
+    wrapper.children(".normal").show();
+}
+
+function showTopicIcon(wrapper) {
+    wrapper.addClass("chosen");
+    wrapper.children(".selected").show();
+    wrapper.children(".normal").hide();
 }

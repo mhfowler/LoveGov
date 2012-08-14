@@ -326,6 +326,20 @@ div.profile-page {
 
       div.questions-feed-wrapper {
         margin-top:15px;
+
+        a.browse-all {
+          padding:5px;
+          padding-left:10px;
+          padding-right:10px;
+          background-color:$gray;
+          color:white;
+          margin-top:2px;
+          float:right;
+          &:hover {
+            background-color:$dark-gray;
+            color:white;
+          }
+        }
       }
 
 
