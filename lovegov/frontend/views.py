@@ -496,7 +496,7 @@ def groupPage(request, g_alias, vals={}):
             vals['is_user_rejected'] = True
 
     # Render and return HTML
-    focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 

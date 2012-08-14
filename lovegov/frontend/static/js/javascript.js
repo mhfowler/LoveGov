@@ -1192,13 +1192,20 @@ function getModal(modal_name,data)
 
 /***********************************************************************************************************************
  *
- *     ~Group Invite Modal
+ *     ~Group Header
  *
  **********************************************************************************************************************/
 
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
-    getModal('group_invite_modal');
+    var g_id = $(this).data('g_id');
+    getModal( 'group_invite_modal' , { 'g_id': g_id } );
+});
+
+bind( 'div.view_group_requests' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal( 'group_requests_modal' , { 'g_id': g_id } );
 });
 
 

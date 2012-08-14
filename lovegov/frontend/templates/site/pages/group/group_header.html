@@ -1,11 +1,12 @@
 {% extends 'site/pages/home/header_expandable.html' %}
+<!-- CSS for this file is in group.scss -->
+
 {% load humanize %}
 {% load thumbnail %}
 
 {% block header_summary %}
 
     <div class="group-main">
-
 
             <div class="group-top">
 
@@ -43,14 +44,23 @@
                     </p>
                 </div>
 
+                <div class="group-moderators">
+
+                    <div class="group-info-title">Moderators</div>
+                    {% for admin in group_admins %}
+                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="38" width="38" %}
+                    {% endfor %}
+
+                </div>
+
                 <!-- float right -->
                 <div class="group-actions">
 
                     {% if is_user_admin %}
-                        <div class="group-action group_invite_members"> invite/add members </div>
+                        <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
                         <a href="edit/" class="group-action"> edit group settings </a>
                         {% if num_group_requests > 0 %}
-                            <div class="group-action view_group_requests">join requests ({{ num_group_requests }})</div>
+                            <div class="group-action view_group_requests" data-g_id="{{ group.id }}">join requests ({{ num_group_requests }})</div>
                         {% endif %}
                     {% endif %}
 
@@ -65,14 +75,6 @@
                     {% elif is_user_requested %}
                         <div class="group-action group_leave" data-g_id="{{ group.id }}"> un-request group </div>
                     {% endif %}
-
-                </div>
-
-                <div class="group-moderators">
-                    <div class="group-info-title">Moderators</div>
-                    {% for admin in group_admins %}
-                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="38" width="38" %}
-                    {% endfor %}
 
                 </div>
 
