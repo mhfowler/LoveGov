@@ -300,3 +300,37 @@ def groupInviteAction(from_user,group,inviter,privacy):
     action.autoSave()
     from_user.notify(action)
     return True
+
+
+
+## Action for responding to a follow request ##
+## Returns a boolean of whether or not the from_user is following the to_user when the function is finished ##
+def userFollowResponseAction(from_user,to_user,response,privacy):
+    user_follow = UserFollow.lg.get_or_none(user=from_user, to_user=to_user)
+
+    if not user_follow:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a follow request with a non-existant UserFollow from " + str(from_user.id) )
+        return False
+
+    if user_follow.requested:
+        if response == 'Y':
+            # Create follow relationship!
+            from_user.follow(to_user)
+            action = Action(privacy=privacy,relationship=user_follow,modifier='A')
+            action.autoSave()
+            from_user.notify(action)
+            return True
+        elif response == 'N':
+            user_follow.reject()
+            action = Action(privacy=privacy,relationship=user_follow,modifier='X')
+            action.autoSave()
+            from_user.notify(action)
+            return False
+
+    elif user_follow.confirmed:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was already confirmed from " + str(from_user.id) )
+        return True
+
+    else:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was not requested from " + str(from_user.id) )
+        return False

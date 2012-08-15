@@ -525,9 +525,9 @@ def editAccount(request, vals={}):
 
         viewer.bio = request.POST['bio']
         viewer.save()
-        return shortcuts.redirect('/account/profile/')
+        return shortcuts.redirect('/settings/profile/')
 
-    return shortcuts.redirect('/account/')
+    return shortcuts.redirect('/settings/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # FORM Edits group profile info
@@ -989,31 +989,26 @@ def userFollowRequest(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def userFollowResponse(request, vals={}):
     to_user = vals['viewer']
-    response = request.POST['response']
+
+    response = request.POST.get('response')
+    if not response:
+        LGException( "User ID #" + str(to_user.id) + " submitted a user follow response with response" )
+        return HttpResponseBadRequest("No response in user follow response.")
+
     from_id = request.POST.get('p_id')
     if not from_id:
-        return HttpResponse("Invalid user id given")
-    from_user = UserProfile.objects.get(id=request.POST['p_id'])
-    already = UserFollow.objects.filter(user=from_user, to_user=to_user)
-    if already:
-        user_follow = already[0]
-        if user_follow.requested:
-            if response == 'Y':
-                # Create follow relationship!
-                from_user.follow(to_user)
-                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='A')
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("they're now following you")
-            elif response == 'N':
-                user_follow.reject()
-                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='X')
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("you have rejected their follow request")
-        if user_follow.confirmed:
-            return HttpResponse("This person is already following you")
-    return HttpResponse("this person has not requested to follow you")
+        LGException( "User ID #" + str(to_user.id) + " submitted a user follow response with no user ID" )
+        return HttpResponseBadRequest("No user id in user follow response.")
+
+    from_user = UserProfile.lg.get_or_none(id=from_id)
+    if not from_user:
+        LGException( "User ID #" + str(to_user.id) + " submitted a user follow response with invalid user ID #" + str(from_id)  )
+        return HttpResponseBadRequest("Invalid user id in user follow response.")
+
+    response = userFollowResponseAction(from_user,to_user,response,getPrivacy(request))
+
+    return HttpResponse( json.dumps({'response':response}) ) # RETURN NOT CURRENTLY BEING USED
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Clears userfollow relationship between users.

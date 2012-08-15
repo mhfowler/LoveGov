@@ -1427,7 +1427,7 @@ function userFollow(event,div,follow,p_id)
 
                 if( response == "followed")
                 {
-                    div.html("unfollow");
+                    div.html("following");
                     div.removeClass('user_follow');
                     div.addClass('user_unfollow');
                     div.removeClass('user-follow');
@@ -1435,9 +1435,9 @@ function userFollow(event,div,follow,p_id)
                 }
                 else if( response == "requested")
                 {
-                    div.html("un-request");
+                    div.html("requested");
                     div.removeClass('user_follow');
-                    div.addClass('user_request');
+                    div.addClass('user_unrequest');
                     div.removeClass('user-follow');
                     div.addClass('user-unfollow');
                 }
@@ -1445,6 +1445,7 @@ function userFollow(event,div,follow,p_id)
                 {
                     div.html("follow");
                     div.removeClass('user_unfollow');
+                    div.removeClass('user_unrequest');
                     div.addClass('user_follow');
                     div.removeClass('user-unfollow');
                     div.addClass('user-follow');
@@ -1510,13 +1511,29 @@ function groupFollow(event,div,follow,g_id)
         });
 }
 
+bind(".follow_response_y" , 'click' , function(event)
+{
+    var wrapper = $(this).parent(".follow_response_buttons");
+    wrapper.fadeOut(600);
+    userFollowResponse(event,"Y",wrapper);
+    wrapper.siblings(".follow_response_text").children('.follow_response_append_y').fadeIn(600);
+});
+
+bind(".follow_response_n" , 'click' , function(event)
+{
+    var wrapper = $(this).parent(".follow_response_buttons");
+    wrapper.fadeOut(600);
+    userFollowResponse(event,"N",wrapper);
+    wrapper.siblings(".follow_response_text").children('.follow_response_append_n').fadeIn(600);
+});
+
 function userFollowResponse(event,response,div)
 {
     event.preventDefault();
-    var follow_id = div.siblings(".user_follow_id").val();
-    ajaxPost({
+    var follow_id = div.data("follow_id");
+    action({
             data: {
-                'action':'followResponseResponse',
+                'action':'userFollowResponse',
                 'p_id': follow_id,
                 'response': response
             },
