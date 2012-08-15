@@ -4,9 +4,8 @@
  *
  ***********************************************************************************************************************/
 var rebind="home";
-function initJS() {
-    undelegated();
-    loadHoverComparison();
+function bindOnReload() {
+    bindOnNewElements();
     switch (rebind) {
         case "home":
             initHomePage();
@@ -15,14 +14,23 @@ function initJS() {
         case "profile":
             initFeed();
             break;
+        case "groupedit":
+            loadGroupEdit();
+            break;
     }
 }
 
 function undelegated() {
-    var undelegated = $('a[href="#"]');
-    undelegated.click(function(event) {
+    var undelegated = $('.dummy_link');
+    undelegated.bindOnce('click.undelegate', function(event) {
         event.preventDefault();
     });
+}
+
+function bindOnNewElements() {
+    undelegated();
+    loadHoverComparison();
+    loadHistogram();
 }
 
 /***********************************************************************************************************************
@@ -36,27 +44,27 @@ function bind(selector, events, data, handler) {
 }
 
 function action(dict) {
-     var data = dict['data'];
-     var success_fun = function(data) {
-         var super_success = dict['success'];
-         if (super_success) {
-             super_success(data);
-         }
-         undelegated();
-     };
-     var error_fun = function(jqXHR, textStatus, errorThrown) {
-         if(jqXHR.status==403) {
-             //launch403Modal(jqXHR.responseText);
-             return;
-         }
-         var super_error = dict['error'];
-         if (super_error) {
-             super_error();
-         } else {
-             $("body").html(jqXHR.responseText);
-         }
-     };
-     data['url'] = window.location.href;
+    var data = dict['data'];
+    var success_fun = function(data) {
+        var super_success = dict['success'];
+        if (super_success) {
+            super_success(data);
+        }
+        undelegated();
+    };
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if(jqXHR.status==403) {
+            //launch403Modal(jqXHR.responseText);
+            return;
+        }
+        var super_error = dict['error'];
+        if (super_error) {
+            super_error();
+        } else {
+            $("body").html(jqXHR.responseText);
+        }
+    };
+    data['url'] = window.location.href;
     $.ajax({
         url: '/action/',
         type: 'POST',
@@ -97,7 +105,7 @@ $(document).ready(function()
     };
 
     // init page with js
-    initJS();
+    bindOnReload();
 
 });
 
@@ -137,10 +145,10 @@ function checkCompatability() {
         });
         var incompatible_json = JSON.stringify(incompatible);
         action({
-            data: {'action': 'logCompatability', 'incompatible': incompatible_json},
-            success: function(data) {
-                $.cookie('compatability', incompatible_json);
-            }}
+                data: {'action': 'logCompatability', 'incompatible': incompatible_json},
+                success: function(data) {
+                    $.cookie('compatability', incompatible_json);
+                }}
         );
     }
 }
@@ -324,6 +332,7 @@ function homeReload(theurl) {
                 if (info_expanded) {
                     expandInfoToggle(false);
                 }
+                bindOnNewElements();
                 initFeed();
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -374,7 +383,7 @@ function ajaxReload(theurl, loadimg)
                 $('#main_content').css("top","0px");
                 $("#main_content").html(returned.html);
                 $('#main_content').show();
-                initJS();
+                bindOnReload();
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -414,17 +423,17 @@ bind(".sign_in_button", 'click', null, function(event) {
 });
 
 /***********************************************************************************************************************
-  *
-  *      ~Feed
-  *
-  **********************************************************************************************************************/
+ *
+ *      ~Feed
+ *
+ **********************************************************************************************************************/
 
 // Votes on the feed Binding
 bind( "div.heart_plus" , "click" , null , function(event)
 {
-   var wrapper = $(this).parent();
-   var c_id = wrapper.data('c_id');
-   vote( wrapper , c_id , 1 );
+    var wrapper = $(this).parent();
+    var c_id = wrapper.data('c_id');
+    vote( wrapper , c_id , 1 );
 });
 
 bind( "div.heart_minus" , "click" , null , function(event)
@@ -437,38 +446,38 @@ bind( "div.heart_minus" , "click" , null , function(event)
 // Vote for the feed AJAX request
 function vote(wrapper, content_id, v)
 {
-     action({
-         data: {'action':'vote','c_id':content_id, 'vote':v },
-         success: function(data)
-         {
-             var returned = eval('(' + data + ')');
-             var my_vote = parseInt( returned.my_vote );
-             var status = returned.status;
+    action({
+        data: {'action':'vote','c_id':content_id, 'vote':v },
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            var my_vote = parseInt( returned.my_vote );
+            var status = returned.status;
 
-             if ( my_vote==1 ) { like(wrapper); }
-             if ( my_vote==0 ) { neutral(wrapper); }
-             if ( my_vote==-1 ) { dislike(wrapper); }
+            if ( my_vote==1 ) { like(wrapper); }
+            if ( my_vote==0 ) { neutral(wrapper); }
+            if ( my_vote==-1 ) { dislike(wrapper); }
 
-             wrapper.find(".heart_number").text(status);
-         }
-     });
+            wrapper.find(".heart_number").text(status);
+        }
+    });
 }
 
 // Vote for the feed GUI update functions
 function like(div)
 {
-     div.find(".heart_plus").addClass("clicked");
-     div.find(".heart_minus").removeClass("clicked");
+    div.find(".heart_plus").addClass("clicked");
+    div.find(".heart_minus").removeClass("clicked");
 }
 function dislike(div)
 {
-     div.find(".heart_plus").removeClass("clicked");
-     div.find(".heart_minus").addClass("clicked");
+    div.find(".heart_plus").removeClass("clicked");
+    div.find(".heart_minus").addClass("clicked");
 }
 function neutral(div)
 {
-     div.find(".heart_plus").removeClass("clicked");
-     div.find(".heart_minus").removeClass("clicked");
+    div.find(".heart_plus").removeClass("clicked");
+    div.find(".heart_minus").removeClass("clicked");
 }
 
 
@@ -554,8 +563,8 @@ function getFeed(container) {
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
     if (replace) {
-        var old_height = container.height();
-        container.css('height', old_height);
+        var old_height = $("body").height();
+        $("body").css('min-height', old_height);
         container.find(".feed_content").empty();
     }
     var feed_types_json = JSON.stringify(feed_types);
@@ -576,7 +585,6 @@ function getFeed(container) {
             data: data,
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                container.css("height", 'auto');
                 if (replace) {
                     container.find(".feed_content").html(returned.html);
                 }
@@ -591,6 +599,7 @@ function getFeed(container) {
                     container.find(".load_more").text('you loaded all that there is to load')
                 }
                 bindImportanceSliders();
+                bindOnNewElements();
             }}
     );
 }
@@ -603,10 +612,10 @@ bind(".load_more" , "click" , null , function(event) {
 
 
 /***********************************************************************************************************************
-  *
-  *      ~About page
-  *
-  **********************************************************************************************************************/
+ *
+ *      ~About page
+ *
+ **********************************************************************************************************************/
 
 bind("div.about-div-button", "click",
     function(e) {
@@ -627,10 +636,10 @@ function teamSection()
     var text = $('.mission p').text();
 
     developerDivs.each(function()
-            {
-                var json = $(this).data('json');
-                $(this).animate({'left':json.x,'top':json.y});
-            });
+    {
+        var json = $(this).data('json');
+        $(this).animate({'left':json.x,'top':json.y});
+    });
 
     developerDivs.each(function()
     {
@@ -658,10 +667,10 @@ function teamSection()
 }
 
 /***********************************************************************************************************************
-  *
-  *      ~Left sidebar
-  *
-  **********************************************************************************************************************/
+ *
+ *      ~Left sidebar
+ *
+ **********************************************************************************************************************/
 
 
 bind('.left-side-img', 'click', function()
@@ -1383,6 +1392,7 @@ function ajaxThread()
 //             $(this).parent().hide();
 //         }
 //     );
+
 /***********************************************************************************************************************
  *
  *      ~Login
@@ -1590,37 +1600,37 @@ function groupFollow(event,div,follow,g_id)
         follow_action = 'leaveGroup';
     }
     action(
-    {
-        data:
         {
-            'action': follow_action,
-            'g_id': g_id
-        },
-        success: function(data)
-        {
-            var returned = eval('(' + data + ')');
-            var response = returned.response;
+            data:
+            {
+                'action': follow_action,
+                'g_id': g_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var response = returned.response;
 
-            if( response == "joined")
-            {
-                div.html("leave group");
-                div.removeClass("group_join");
-                div.addClass("group_leave");
+                if( response == "joined")
+                {
+                    div.html("leave group");
+                    div.removeClass("group_join");
+                    div.addClass("group_leave");
+                }
+                else if( response == "requested")
+                {
+                    div.html("un-request group");
+                    div.removeClass("group_join");
+                    div.addClass("group_leave")
+                }
+                else if( response == "removed")
+                {
+                    div.html("join group");
+                    div.removeClass("group_leave");
+                    div.addClass("group_join")
+                }
             }
-            else if( response == "requested")
-            {
-                div.html("un-request group");
-                div.removeClass("group_join");
-                div.addClass("group_leave")
-            }
-            else if( response == "removed")
-            {
-                div.html("join group");
-                div.removeClass("group_leave");
-                div.addClass("group_join")
-            }
-        }
-    });
+        });
 }
 
 function userFollowResponse(event,response,div)
@@ -1801,6 +1811,176 @@ bind( null , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
+ *      ~GroupEdit
+ *
+ **********************************************************************************************************************/
+function loadGroupEdit()
+{
+    selectPrivacyRadio();
+    selectScaleRadio();
+
+    $('select.admin_select').select2({
+        placeholder: "Enter a member,"
+    });
+
+    $('select.member_select').select2({
+        placeholder: "Enter a member,"
+    });
+}
+
+// Group Privacy Radio
+bind( "div.group_privacy_radio" , 'click' , null , function(event)
+{
+    var prev = $("input:radio[name=group_privacy]:checked");
+    prev.attr('checked',false);
+    prev.parent('.group_privacy_radio').removeClass("create-radio-selected");
+
+    $(this).children("input:radio[name=group_privacy]").attr('checked',true);
+    $(this).addClass("create-radio-selected");
+});
+
+// Group Scale Radio
+bind( "div.news_scale_radio" , 'click' , null , function(event)
+{
+    var prev = $("input:radio.news_scale:checked");
+    prev.attr('checked',false);
+    prev.parent('.news_scale_radio').removeClass("create-radio-selected");
+
+    $(this).children("input:radio.news_scale").attr('checked',true);
+    $(this).addClass("create-radio-selected");
+});
+
+// Mouseover Pencil for group edit
+bind( '.group_edit_input' , 'mouseenter' , null , function(event)
+{
+    $(this).parent().next().children('.group_edit_icon').show();
+});
+bind( '.group_edit_input' , 'mouseout' , null , function(event)
+{
+    $(this).parent().next().children('.group_edit_icon').hide();
+});
+
+bind( '.append_pointer' , "click" , null , function(event)
+{
+    var pointer = $('.group_edit_pointer');
+    $('.append_pointer').removeClass("account-button-selected");
+    $(this).addClass("account-button-selected");
+    $(this).prepend(pointer);
+});
+
+bind('.group_edit_button' , "click" , null , function(event)
+{
+    $(".group_edit_tab").hide();
+    var div_class = $(this).data('div');
+    $("." + div_class).show();
+});
+
+bind('#edit_admin_submit' , 'click' , null , function(e)
+{
+    e.preventDefault();
+    var g_id = $("#edit_admin_submit").data('g_id');
+    var new_admins = $('.admin_select').select2("val");
+
+    if (new_admins!='') {
+        action({
+            data: {'action': 'addAdmins', 'admins': JSON.stringify(new_admins), 'g_id':g_id},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                $('#edit_admin_submit_message').html('Administrator Added');
+                $('#edit_admin_submit_message').show();
+                $('#edit_admin_submit_message').fadeOut(3000);
+                $('#admin_remove_container').hide();
+                $('#admin_remove_container').html(returned.html);
+                $('#admin_remove_container').fadeIn(600);
+                bindRemoveAdmin();
+            }
+        });
+    }
+});
+
+bind('#members_remove_submit' , 'click' , null , function(e)
+{
+    e.preventDefault();
+    var g_id = $(this).data('g_id');
+    var members = $('.member_select').select2("val");
+
+    if (members!='') {
+        action({
+            data: {'action': 'removeMembers', 'members': JSON.stringify(members), 'g_id':g_id},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                var return_message = $('#members_remove_submit_message');
+                return_message.html('Members Removed');
+                return_message.show();
+                return_message.fadeOut(3000);
+                var members_container = $(".group_members_container");
+                members_container.hide();
+                members_container.html(returned.html);
+                members_container.fadeIn(600);
+            }
+        });
+    }
+});
+
+bind('.remove_admin' , 'click', null , function(e)
+{
+    var admin_id = $(this).data('admin_id');
+    var admin_name = $(this).data('admin_name');
+    var g_id = $('#edit_admin_submit').data('g_id');
+    $(this).parents('div.admin_container').fadeOut(600);
+    removeAdmin( admin_id , g_id , function(data)
+    {
+        $('optgroup#add_members_input').append('<option value="' + admin_id + '">' + admin_name + '</option>');
+    });
+});
+
+bind('.remove_admin_self' , 'click' , null , function(e)
+{
+    var admin_id = $(this).data('admin_id');
+    var admin_name = $(this).data('admin_name');
+    var g_id = $('#edit_admin_submit').data('g_id');
+    var g_alias = $('#edit_admin_submit').data('g_alias');
+    $(this).parents('div.admin_container').fadeOut(600);
+    removeAdmin( admin_id , g_id , function(data)
+    {
+        window.location = '/' + g_alias + '/';
+    });
+});
+
+function removeAdmin(admin_id,g_id,success)
+{
+    action({
+        data:
+        {
+            'action': 'removeAdmin',
+            'admin_id': admin_id,
+            'g_id': g_id
+        },
+        success: success
+    });
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+
+/***********************************************************************************************************************
+ *
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
@@ -1902,15 +2082,22 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
+    stub.find(".question_comparison").hide();
     stub.find(".answer_expanded").show();
+    $(this).hide();
 });
 
 
 bind('.answer_checkbox' , 'click' , null , function(event)
 {
-    var stub = $(this).parents(".question_stub");
-    stub.find(".answer_checkbox").removeClass("clicked");
-    $(this).addClass("clicked");
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+    }
+    else {
+        var stub = $(this).parents(".question_stub");
+        stub.find(".answer_checkbox").removeClass("clicked");
+        $(this).addClass("clicked");
+    }
 });
 
 bind('.save_button' , 'click' , null , function(event)
@@ -1925,6 +2112,9 @@ bind('.save_button' , 'click' , null , function(event)
         a_id = -1;
     }
     var explanation = stub.find('.explanation').val();
+    if (explanation=="explain your answer") {
+        explanation == "";
+    }
     var privacy_bool = stub.find(".privacy_checkbox").hasClass("clicked");
     var privacy;
     if (privacy_bool) {
@@ -1933,9 +2123,10 @@ bind('.save_button' , 'click' , null , function(event)
         privacy = 'PUB';
     }
     var q_id = stub.data('q_id');
+    var weight = stub.find(".importance_bar").slider("value");
     action({
         data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
-            'explanation':explanation,'a_id':a_id, 'weight':5, 'to_compare_id':to_compare_id},
+            'explanation':explanation,'a_id':a_id, 'weight':weight, 'to_compare_id':to_compare_id},
         success: function(data) {
             var returned = eval('(' + data + ')');
             var new_element = $(returned.html);
@@ -1943,6 +2134,8 @@ bind('.save_button' , 'click' , null , function(event)
             var saved_message = new_element.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
+            bindImportanceSlider(new_element.find(".importance_bar"));
+            updateMatches();
         }
     });
 });
@@ -1956,13 +2149,543 @@ bind('.cancel_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     stub.find(".answer_expanded").hide();
+    stub.find(".answer_button").show();
 });
 
 function bindImportanceSliders() {
     var importance_bars = $(".importance_bar");
     $.each(importance_bars, function(i, e) {
-        var weight = $(this).data('weight');
-        $(this).slider({'min':0, 'max':100, 'step':1, 'value':weight});
+        bindImportanceSlider($(this));
     });
 }
 
+function bindImportanceSlider(div) {
+    var weight = div.data('weight');
+    div.slider({'min':0,
+        'max':100,
+        'step':1,
+        'value':weight,
+        slide: function(event, ui) {
+            var text = ui.value + "%";
+            $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        }
+    });
+}
+
+function updateMatches() {
+    $.each($(".match_object"), function(i, e) {
+        updateMatch($(this));
+    });
+}
+
+function updateMatch(match) {
+    var display = match.data('display');
+    var to_compare_alias = match.data('to_compare_alias');
+    action({
+        data: {'action':'updateMatch', 'to_compare_alias':to_compare_alias, 'display':display},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            match.replaceWith(new_element);
+        }
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Histogram
+ *
+ **********************************************************************************************************************/
+
+var loadUsersLockout=false;
+function loadMoreUsers(event, replace)
+{
+    if (replace == true) {
+        $("#histogram-displayed-num").val(0);
+    }
+    event.preventDefault();
+    var histogram_displayed_num = $('#histogram-displayed-num').val();
+    var histogram_topic = $('#histogram-topic').val();
+    var histogram_block = $('#histogram-block').val();
+    var group_id = $('#group-id').val();
+    if (!loadUsersLockout)
+    {
+        loadUsersLockout = true;
+        action({
+            data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
+                'histogram_topic':histogram_topic,'histogram_block':histogram_block },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (replace==true) {
+                    $('#members-list').html(returned.html);
+                }
+                else {
+                    $('#members-list').append(returned.html);
+                }
+                $('#histogram-displayed-num').val(returned.num);
+                loadHoverComparison();
+                loadAjaxifyAnchors();
+                bindNewDivs();
+                loadUsersLockout = false;
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+// select histogram block
+bind(".histogram-select-block", 'click', null, function(event) {
+    event.preventDefault();
+    var block = $(this).siblings(".block-val").val();
+    var was = $("#histogram-block").val();
+    if (block == was) {
+        $("#histogram-block").val(-1);
+    }
+    else {
+        $("#histogram-block").val(block);
+    }
+    loadMoreUsers(event, true);
+});
+
+// change histogram topic
+bind(".h-topic-img", 'click', null, function(event) {
+    var wrapper = $(this).parents(".topic-icon-wrapper");
+    selectTopicSingle(wrapper);
+    var topic = $(this).siblings(".t-alias").val();
+    var was = $("#histogram-topic").val();
+    if (topic == was) {
+        $("#histogram-topic").val('general');
+    }
+    else {
+        $("#histogram-topic").val(topic);
+    }
+    loadMoreUsers(event, true);
+    refreshHistogram();
+});
+
+var histogram = new Object();
+
+function refreshHistogramData(data) {
+
+    histogram.total += data.total;
+    histogram.identical += data.identical;
+    histogram.identical_uids.push.apply(histogram.identical_uids, data.identical_uids);
+
+    $.map(data.buckets, function(item, key) {
+
+        var bar = $(".bar[data-bucket=" + key + "]");
+
+        bar.children('.red_bar').css("background-color",data.color);
+        $('.histogram-footer').css("background-color",data.color);
+        $('.histogram-wrapper').css("border-color",data.color);
+
+        var num = bar.data('num') + item.num;
+        bar.data('num', num);
+        if (num == 1) {
+            var mouseover = String(num) + " person.";
+        }
+        else {
+            var mouseover = String(num) + " people.";
+        }
+        bar.find(".red_bar").attr("data-original-title", mouseover);
+
+        if (histogram.total != 0) {
+            var percent = (num / histogram.total)*100;
+        }
+        else {
+            var percent = 0;
+        }
+        bar.data("percent", percent);
+
+        var bucket_uids = histogram.bucket_uids[parseInt(key)];
+        bucket_uids.push.apply(bucket_uids, item.u_ids);
+    });
+}
+
+function normalizeHistogram() {
+    var histogram_max_percent=0;
+    // calculate max
+    $(".bar").each(function(index, element) {
+        var percent = $(this).data("percent");
+        if (percent > histogram_max_percent) {
+            histogram_max_percent = percent;
+        }
+    });
+    // normalize percents
+    if (histogram_max_percent > 0) {
+        $(".bar").each(function(index, element) {
+            var percent = $(this).data("percent");
+            var normalized = percent * (100/histogram_max_percent);
+            $(this).data('percent', normalized);
+        });
+    }
+}
+
+function renderHistogram() {
+    normalizeHistogram();
+    if (histogram.which == 'mini') {
+        $(".bar").each(function(index, element) {
+            var percent = $(this).data("percent");
+            var zero_height_percent = 3;
+            var height_percent = Math.floor(zero_height_percent + ((100 - zero_height_percent)*(percent/100)));
+            var empty_percent = 100 - height_percent;
+            $(this).find(".white_bar").css("height", empty_percent + "%");
+            $(this).find(".red_bar").css("height", height_percent + "%");
+        });
+    }
+
+    else {
+        $(".bar").each(function(index, element) {
+            // width and position
+            var total_width = 850;
+            var margin_left = 15;
+            var margin_space = margin_left * histogram.resolution;
+            var width = (total_width-margin_space) / histogram.resolution;
+            $(this).css("width", width);
+            $(this).css("margin-left", margin_left);
+            $(this).find(".red_bar").css("width", width);
+
+            // height
+            var percent = $(this).data("percent");
+            var total_height = 300;
+            var zero_height = 5;
+            var height = zero_height+((total_height-zero_height)*(percent/100));
+            $(this).find(".white_bar").css("height", total_height-height);
+            $(this).find(".red_bar").css("height", height);
+        });
+    }
+
+    $(".histogram_count").text(histogram.total);
+    $(".histogram_identical").text(histogram.identical);
+    $(".histogram").show();
+
+}
+
+function loadHistogram() {
+
+    var histogram_div = $(".histogram");
+    if (histogram_div.length==0) {
+        return false;
+    }
+    histogram = $(".histogram").data('metadata');
+    histogram.members_displayed = 0;
+    histogram.identical_displayed = 0;
+    updateHistogram(true);
+
+    $('.update_histogram').bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        updateHistogram();
+    });
+
+    $(".histogram-topic-img").bindOnce("click.histogram", function(event) {
+        var wrapper = $(this).parents(".topic-icon-wrapper");
+        if (wrapper.hasClass("chosen")) {
+            var alias = 'all';
+            var topic_text = "All Topics"
+        }
+        else {
+            var alias = wrapper.data('t_alias');
+            var topic_text = wrapper.data('t_text');
+        }
+        $(".histogram-topic").text(topic_text);
+        histogram.topic_alias = alias;
+        toggleTopicSingle(wrapper);
+        refreshHistogram();
+    });
+
+    $(".bar_label").bindOnce("click.histogram", function(event) {
+        if ($(this).hasClass("clicked")) {
+            histogram.current_bucket = -1;
+            $(this).removeClass("clicked");
+        }
+        else {
+            $(".bar_label").removeClass("clicked");
+            var bar = $(this).parents(".bar");
+            histogram.current_bucket = bar.data('bucket');
+            $(this).addClass("clicked");
+        }
+        histogram.members_displayed = 0;
+        getHistogramMembers();
+    });
+
+    $(".get_more_members").bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        getHistogramMembers();
+    });
+}
+
+function refreshHistogram() {
+
+    histogram.total = 0;
+
+    $(".bar").data('num', 0);
+    $.map(histogram.bucket_uids, function(item, key) {
+        histogram.bucket_uids[key] = [];
+    });
+    histogram.members_displayed = 0;
+
+    histogram.identical = 0;
+    histogram.identical_uids = [];
+    histogram.identical_displayed = 0;
+
+    updateHistogram(true);
+}
+
+function updateHistogram(recursive) {
+    action({
+            data: {
+                'action':'updateHistogram',
+                'start': histogram.total,
+                'num': histogram.increment,
+                'topic_alias':histogram.topic_alias,
+                'g_id': histogram.g_id,
+                'resolution': histogram.resolution,
+                'log-ignore': true
+            },
+            success: function(data)
+            {
+                var returned =  eval('(' + data + ')');
+
+                refreshHistogramData(returned);
+                renderHistogram();
+                getHistogramMembers();
+                getIdenticalMembers();
+
+                if (returned.total != 0 && recursive) {
+                    updateHistogram(true);
+                }
+            }
+        }
+    );
+}
+
+var getHistogramMembersLockout = false;
+function getHistogramMembers() {
+    if (!getHistogramMembersLockout) {
+        getHistogramMembersHelper(false);
+    }
+}
+
+var getIdenticalMembersLockout = false;
+function getIdenticalMembers() {
+    if (!getIdenticalMembersLockout) {
+        getHistogramMembersHelper(true);
+    }
+}
+
+function getHistogramMembersHelper(identical) {
+
+    if (identical) {
+        var start = histogram.identical_displayed;
+        var u_ids = histogram.identical_uids;
+    }
+    else {
+        var start = histogram.members_displayed;
+        if (histogram.current_bucket != -1) {
+            var u_ids = histogram.bucket_uids[histogram.current_bucket];
+        }
+        else {
+            setHistogramExplanation();
+            return getAllGroupMembers(start, 10, histogram.g_id);
+        }
+    }
+
+    var replace = (start== 0);
+
+    if (replace && u_ids.length==0) {
+        if (identical) {
+            $(".identical-avatars").html("");
+        }
+        else {
+            setHistogramExplanation();
+            $(".members-avatars").html("");
+        }
+    }
+
+    if (start <= (u_ids.length-1)) {
+
+        if (identical) {
+            getIdenticalMembersLockout = true;
+        }
+        else {
+            getHistogramMembersLockout = true;
+        }
+
+        var end = Math.min(u_ids.length, start+10);
+        u_ids = u_ids.slice(start, end);
+
+        u_ids = JSON.stringify(u_ids);
+
+        action({
+                data: {
+                    'action':'getHistogramMembers',
+                    'u_ids': u_ids,
+                    'log-ignore': true
+                },
+                success: function(data)
+                {
+                    var returned =  eval('(' + data + ')');
+
+                    if (identical) {
+                        var $wrapper = $(".identical-avatars");
+                        histogram.identical_displayed += returned.num;
+                        getIdenticalMembersLockout = false;
+                    }
+                    else {
+                        var $wrapper = $(".members-avatars");
+                        histogram.members_displayed += returned.num;
+                        getHistogramMembersLockout = false;
+                        setHistogramExplanation();
+                    }
+
+                    if (replace) {
+                        $wrapper.html(returned.html);
+                    }
+                    else {
+                        $wrapper.append(returned.html);
+                    }
+                    loadHoverComparison();
+                },
+                error: function(error, textStatus, errorThrown)
+                {
+                    $('body').html(error.responseText);
+                }
+            }
+        );
+    }
+}
+
+function setHistogramExplanation() {
+    var lower = histogram.current_bucket;
+    if (lower != -1) {
+
+        var inc = 100 / histogram.resolution;
+        var higher = lower + inc;
+        var message = String(lower) + '-' + String(higher) + "% similar to you";
+    }
+    else {
+        var message = "";
+    }
+    $(".in_percentile").html(message);
+}
+
+function getAllGroupMembers(start, num, g_id) {
+
+    var replace = (start== 0);
+    getHistogramMembersLockout = true;
+
+    action({
+        data: {
+            'action':'getAllGroupMembers',
+            'start':start,
+            'num':num,
+            'g_id':g_id,
+            'log-ignore': true
+        },
+        success: function(data)
+        {
+            var returned =  eval('(' + data + ')');
+
+            var $wrapper = $(".members-avatars");
+            histogram.members_displayed += returned.num;
+            getHistogramMembersLockout = false;
+
+            if (replace) {
+                $wrapper.html(returned.html);
+            }
+            else {
+                $wrapper.append(returned.html);
+            }
+            loadHoverComparison();
+        },
+        error: function(error, textStatus, errorThrown)
+        {
+            $('body').html(error.responseText);
+        }
+    });
+}
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Topics
+ *
+ **********************************************************************************************************************/
+function loadTopicSelect()
+{
+    // hide all selected
+    $(".selected").hide();
+
+    // hover
+    $(".topic-img").hover
+        (
+            function(event)
+            {
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                wrapper.children(".normal").hide();
+                wrapper.children(".selected").show();
+            },
+            function(event)
+            {
+                var wrapper = $(this).parents(".topic-icon-wrapper");
+                if (!(wrapper.hasClass("chosen")))
+                {
+                    wrapper.children(".selected").hide();
+                    wrapper.children(".normal").show();
+                }
+            }
+        );
+}
+
+// selects a particular topic icon and deselects all others
+function selectTopicSingle(wrapper)
+{
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    showTopicIcon(wrapper);
+}
+
+function toggleTopicSingle(wrapper) {
+    var deselect = wrapper.hasClass("chosen");
+    var icons_wrapper = wrapper.closest(".topic-icons-wrapper");
+    clearTopicIcons(icons_wrapper);
+    if (!deselect) {
+        showTopicIcon(wrapper);
+    }
+}
+
+// clears all topic icons within an overall topic-icons-wrapper
+function clearTopicIcons(icons_wrapper) {
+    var icons = icons_wrapper.find(".topic-icon-wrapper");
+    icons.each(function(index) {
+        hideTopicIcon($(this));
+    });
+}
+
+// toggles topic icon between being selected and unselected
+function toggleTopicIcon(wrapper)
+{
+    if (wrapper.hasClass("chosen")) {
+        hideTopicIcon(wrapper);
+    }
+    else {
+        showTopicIcon(wrapper);
+    }
+}
+
+function hideTopicIcon(wrapper) {
+    wrapper.removeClass("chosen");
+    wrapper.children(".selected").hide();
+    wrapper.children(".normal").show();
+}
+
+function showTopicIcon(wrapper) {
+    wrapper.addClass("chosen");
+    wrapper.children(".selected").show();
+    wrapper.children(".normal").hide();
+}

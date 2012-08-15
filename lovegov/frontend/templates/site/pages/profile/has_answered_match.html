@@ -1,0 +1,18 @@
+<div class="has-answered-text match_object" data-to_compare_alias="{{ to_compare.alias }}" data-display="has_answered">
+    <div class="has-answered">
+        <div class="unbold">
+            {{ to_compare.first_name }} has answered
+        </div>
+        <div class="bold">
+            {{ to_compare.num_answers }} questions
+        </div>
+    </div>
+    <div class="has-answered">
+        <div class="unbold">
+            You and {{ to_compare.first_name }} share
+        </div>
+        <div class="bold">
+            {{ comparison_object.num_q }} questions
+        </div>
+    </div>
+</div>

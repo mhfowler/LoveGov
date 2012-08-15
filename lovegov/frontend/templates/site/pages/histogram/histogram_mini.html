@@ -1,0 +1,30 @@
+<div class="mini-histogram histogram" data-metadata="{{ histogram_metadata }}">
+
+    <div class="histogram-body">
+
+        <div class="histogram-meta-box">
+            <div class="total_count">
+                 <span class="histogram_count">  </span>
+            </div>
+
+            <a class="see-all" href="{{ group.getHistogramURL }}">
+                see details
+            </a>
+        </div>
+
+        <div class="histogram-bars">
+            {% for bucket in buckets %}
+                <div class="bar" data-bucket="{{ bucket }}" data-num="0">
+
+                    <div class="white_bar"></div>
+                    <div class="red_bar"></div>
+                    <div class="label"> {{ bucket }}% </div>
+
+                </div>
+            {% endfor %}
+            <div style="clear:both"></div>
+        </div>
+
+    </div>
+
+</div>

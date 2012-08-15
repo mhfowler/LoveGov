@@ -606,6 +606,7 @@ ACTIONS = [
     'getFeed',
     'getModal',
     'getQuestions',
+    'updateMatch',
     'stubAnswer'
 ]
 

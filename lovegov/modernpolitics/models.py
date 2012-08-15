@@ -1129,11 +1129,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.first_name
     def get_url(self):
         if self.alias!='' and self.alias!='default':
-            return '/profile/' + self.alias + '/'
-        else:
             return '/' + self.alias + '/'
-    def getBreakdownURL(self):
-        return self.get_url() + 'breakdown/'
+        else:
+            return '/profile/' + str(self.id) + '/'
+    def getQuestionsURL(self):
+        return self.get_url() + 'worldview/'
 
     def getWebUrl(self):
         return self.getWebURL()
@@ -2808,7 +2808,7 @@ class Response(Content):
     most_chosen_answer = models.ForeignKey(Answer,related_name="responses",null=True)
     most_chosen_num = models.IntegerField(default=0)
     total_num = models.IntegerField(default=0)
-    weight = models.IntegerField(default=5)
+    weight = models.IntegerField(default=50)
     explanation = models.TextField(max_length=1000, blank=True)
     answer_tallies = models.ManyToManyField('AnswerTally')
 
@@ -3350,7 +3350,7 @@ class Group(Content):
     # Get url of histogram detail.
     #-------------------------------------------------------------------------------------------------------------------
     def getHistogramURL(self):
-        return '/histogram/' + str(self.id) + "/"
+        return self.get_url() + 'histogram/'
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
@@ -3497,6 +3497,9 @@ class Group(Content):
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')
         else:
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
+
+    def getNumFollowRequests(self):
+        return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).count()
 
 
     #-------------------------------------------------------------------------------------------------------------------

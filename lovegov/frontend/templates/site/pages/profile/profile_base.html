@@ -3,7 +3,7 @@
 <div class="profile-page">
     <div class="top">
 
-        <span class="name"> {{ profile.get_name }} </span>
+        <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
     <span class="state"> {% with state=profile.location.state %}
         {% if state %}{{ profile.location.state }}{% else %} LoveGov {% endif %} {% endwith %}</span>
     <span class="redheart">
@@ -36,15 +36,8 @@
                         </div>
                     {% endif %}
 
-                    <div class="match-percent">
-                        {{ comparison.main.result }}%
-                    </div>
-                    <div class="match-from">
-                        match from
-                    </div>
-                    <div class="match-from how-many">
-                        {{ comparison.main.num_q }} answers
-                    </div>
+                    <!-- text match -->
+                    {% include 'site/pages/profile/sidebar_match.html' with to_compare=profile %}
 
                     <div class="stats">
 

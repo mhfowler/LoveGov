@@ -66,9 +66,9 @@
                     Match Breakdown
                 </div>
                 <div class="stuff">
-                    {% include 'site/pieces/match_breakdown.html' with comparison=comparison %}
+                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with to_compare=profile comparison=comparison %}
                 </div>
-                <div class="view-all"> see comparison breakdown </div>
+                <a href="{{ profile.getQuestionsURL }}" class="view-all"> see comparison breakdown </a>
             </span>
             <span class="profile-groups breakdown-box">
                  <div class="profile-header">
@@ -79,7 +79,7 @@
                         <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
                     {% endfor %}
                 </div>
-                <div class="view-all"> view all </div>
+                <a class="view-all"> view all </a>
             </span>
             <span class="profile-politicians breakdown-box">
                  <div class="profile-header">
@@ -92,7 +92,7 @@
                         </a>
                     {% endfor %}
                 </div>
-                <div class="view-all"> view all </div>
+                <a class="view-all"> view all </a>
             </span>
 
             <div style="clear:both"></div>
@@ -101,11 +101,11 @@
         <div class="profile-bottom">
 
             <div class="profile-tabs">
-                <a href="#" class="profile-tab profile_tab questions_tab clicked"> Questions </a>
+                <a href="#" class="profile-tab profile_tab questions_tab clicked dummy_link"> Questions </a>
                 <div class="separator-line"></div>
-                <a href="#" class="profile-tab profile_tab posts_tab"> Posts </a>
+                <a href="#" class="profile-tab profile_tab posts_tab dummy_link"> Posts </a>
                 <div class="separator-line"></div>
-                <a href="#" class="profile-tab profile_tab activity_tab"> Activity </a>
+                <a href="#" class="profile-tab profile_tab activity_tab dummy_link"> Activity </a>
                 <div class="separator-line end"></div>
             </div>
 

@@ -214,6 +214,18 @@ def aliasDowncast(request, alias=None, vals={}):
     return redirect(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# points alias urls to correct pages
+#-----------------------------------------------------------------------------------------------------------------------
+def aliasDowncastEdit(request, alias=None, vals={}):
+    if UserProfile.lg.get_or_none(alias=alias):
+        return viewWrapper(account, requires_login=True)(request, alias)
+    matched_group = Group.lg.get_or_none(alias=alias)
+    if matched_group:
+        the_view = viewWrapper(groupEdit, requires_login=True)
+        return the_view(request=request, g_alias=matched_group.alias)
+    return redirect(request)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
@@ -438,6 +450,11 @@ def friends(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+def questions(request, vals={}):
+    html =  ajaxRender('site/pages/qa/questions.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
 #-----------------------------------------------------------------------------------------------------------------------
@@ -464,6 +481,9 @@ def groupPage(request, g_alias, vals={}):
     # Get the list of all members and truncate it to be the number of members showing
     vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
 
+    # Get the number of group Follow Requests
+    vals['num_group_requests'] = group.getNumFollowRequests()
+
     # Get the total number of members
     vals['num_members'] = group.num_members
 
@@ -479,6 +499,9 @@ def groupPage(request, g_alias, vals={}):
             vals['is_user_requested'] = True
         if group_joined.rejected:
             vals['is_user_rejected'] = True
+
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
 
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
@@ -509,9 +532,27 @@ def profile(request, alias, vals={}):
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
     comparison = user_profile.getComparison(viewer)
+    vals['to_compare'] = profile
     vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
+    url = user_profile.get_url()
+    return framedResponse(request, html, url, vals)
+
+def worldview(request, alias, vals={}):
+
+    viewer = vals['viewer']
+    getMainTopics(vals)
+    user_profile = UserProfile.objects.get(alias=alias)
+    vals['profile'] = user_profile
+
+    vals['followsyou'] = True
+
+    comparison = user_profile.getComparison(viewer)
+    vals['comparison_object'] = comparison
+    vals['comparison'] = comparison.toBreakdown()
+
+    html = ajaxRender('site/pages/profile/profile_questions.html', vals, request)
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -592,10 +633,9 @@ def discussionDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # closeup of histogram
 #-----------------------------------------------------------------------------------------------------------------------
-def histogramDetail(request, g_id, vals={}):
+def histogramDetail(request, alias, vals={}):
 
-    viewer = vals['viewer']
-    group = Group.objects.get(id=g_id)
+    group = Group.objects.get(alias=alias)
 
     vals['group'] = group
     getMainTopics(vals)
@@ -692,13 +732,13 @@ def account(request, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # group edit
 #-----------------------------------------------------------------------------------------------------------------------
-def groupEdit(request, g_id=None, section="", vals={}):
+def groupEdit(request, g_alias=None, section="", vals={}):
     viewer = vals['viewer']
 
-    if not g_id:
+    if not g_alias:
         return basicMessage(request,'Requested group does not exist',vals)
 
-    group = Group.lg.get_or_none(id=g_id)
+    group = Group.lg.get_or_none(alias=g_alias)
     if not group:
         return basicMessage(request,'Requested group does not exist',vals)
     vals['group'] = group
@@ -720,33 +760,10 @@ def groupEdit(request, g_id=None, section="", vals={}):
 
     if section == "profile": vals['profile_message'] = " "
 
-    if request.method == 'GET':
-        html = ajaxRender('site/pages/group/group_edit.html', vals, request)
-        url = '/account/'
-        return framedResponse(request, html, url, vals)
+    html = ajaxRender('site/pages/group/group_edit.html', vals, request)
+    url = '/' + str(group.alias) + '/edit/'
+    return framedResponse(request, html, url, vals)
 
-    elif request.method == 'POST':
-        if request.POST['box'] == 'profile':
-            if 'image' in request.FILES:
-                try:
-                    file_content = ContentFile(request.FILES['image'].read())
-                    Image.open(file_content)
-                    viewer.setProfileImage(file_content)
-                    vals['profile_message'] = "You look great!"
-                except IOError:
-                    vals['profile_message'] = "The image upload didn't work. Try again?"
-                    vals['uploadform'] = UploadFileForm(request.POST)
-
-
-            vals['profile_message'] = " "
-        elif request.POST['box'] == 'basic_info':
-            pass
-        else:
-            pass
-
-        html = ajaxRender('site/pages/group/group_edit.html', vals, request)
-        url = '/account/'
-        return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages

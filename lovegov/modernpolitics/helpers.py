@@ -146,6 +146,18 @@ def randomAnswers(user):
     user.last_answered = datetime.datetime.now()
     user.save()
 
+def randomWhales():
+    from lovegov.modernpolitics.compare import updateGroupViews
+    g = Group.lg.get_or_none(title="Save The Whales")
+    if g:
+        print "save the whales!"
+        for x in UserProfile.objects.all()[:4]:
+            print x.get_name()
+            g.joinMember(x)
+            randomAnswers(x)
+        print "group view!"
+        updateGroupViews()
+
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience method to get a user with inputted name or email
 #-----------------------------------------------------------------------------------------------------------------------
@@ -278,6 +290,13 @@ def renderToResponseCSRF(template, vals, request):
 # returns and object from the url which uniquely identifies it
 #-----------------------------------------------------------------------------------------------------------------------
 def urlToObject(url):
+    alias = url.replace("/","")
+    to_return = aliasToObject(alias)
+    if not to_return:
+        to_return = urlToObjectOld(url)
+    return to_return
+
+def urlToObjectOld(url):
     split = filter(None,url.split('/'))
     type = split[0]
     alias = split[1]

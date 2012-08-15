@@ -2,6 +2,8 @@
 @import 'master-variables';
 @import 'master-mixins';
 
+@import 'compass';
+
 $account-header-margin-bottom:25px;
 
 div.account-left
@@ -75,12 +77,13 @@ div.account-right
   width:625px;
   $input-width:360px;
 
-  span.edit-link-large
+  div.edit-link-large
   {
     @include edit-link(20px);
     vertical-align:middle;
     position:relative;
     margin-left:15px;
+    display: none;
   }
 
   img.party-choice-deselected
@@ -213,7 +216,16 @@ div.account-right
     font-family:$title-font;
     height:90px;
     margin-top:5px;
+  }
 
+  textarea.full-text-field
+  {
+    @extend textarea;
+    @include h5;
+    color:$deep-gray;
+    font-family:$title-font;
+    height:200px;
+    margin-top:5px;
   }
 
   textarea.address-field
@@ -288,6 +300,7 @@ div.account-right
   {
     @include h3;
     margin-bottom: 10px;
+    text-align: center;
   }
 
   div.member-select-container
@@ -326,7 +339,7 @@ div.account-right
   }
 
   select.member-select {
-    width: 500px;
+    width: 550px;
   }
 
   div.group-members-container {
@@ -347,7 +360,21 @@ div.account-right
 
   div.admin-remove-container
   {
-    padding-left: 65px;
+    @include clearfix();;
+    margin-left: 40px;
+    margin-bottom: 20px;
+
+    div.group-edit-user-container
+    {
+      float: left;
+      margin-right: 25px;
+      margin-bottom: 5px;
+
+      span.admin-edit
+      {
+        display: inline-block
+      }
+    }
   }
 }
 
@@ -362,7 +389,6 @@ div.create-radio
   @include float-left;
   padding: 10px 10px 0px 10px;
   font-size: 18px;
-  font-family: $gill-std;
   color: white;
   background-color: $gray;
   margin-right: 10px;
@@ -384,3 +410,8 @@ div.create-radio-selected:hover
   background-color: $red-light;
 }
 
+img.account-picture
+{
+  margin-right: 10px;
+  margin-bottom: 10px;
+}

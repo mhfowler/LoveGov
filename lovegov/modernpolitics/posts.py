@@ -552,6 +552,7 @@ def editGroup(request, vals={}):
         return HttpResponseForbidden("You are not authroized to edit this group")
 
     if 'title' in request.POST: group.title = request.POST['title']
+    if 'summary' in request.POST: group.summary = request.POST['summary']
     if 'full_text' in request.POST: group.full_text = request.POST['full_text']
     if 'group_privacy' in request.POST: group.group_privacy = request.POST['group_privacy']
     if 'scale' in request.POST: group.scale = request.POST['scale']
@@ -571,7 +572,7 @@ def editGroup(request, vals={}):
 
     group.save()
 
-    return shortcuts.redirect('/group/' + str(group.id) + '/edit/')
+    return shortcuts.redirect('/' + str(group.alias) + '/edit/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information
@@ -776,25 +777,40 @@ def stubAnswer(request, vals={}):
     weight = request.POST['weight']
     explanation = request.POST['explanation']
     my_response = user.view.responses.filter(question=question)
-    if a_id != -1:
-        response = answerAction(user=user, question=question, my_response=my_response,
-            privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
-    else:
-        if my_response:
-            response = my_response[0]
-            response.delete()
-            user.num_answers -= 1
-            user.save()
-        else:
-            response = None
+    response = answerAction(user=user, question=question, my_response=my_response,
+        privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
     vals['your_response'] = response
     their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
     vals['their_response'] = their_response
-    vals['agree'] = (their_response and their_response.most_chosen_answer_id == response.most_chosen_answer_id)
+    vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
     vals['to_compare'] = to_compare
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# recalculates comparison between viewer and to_compare, and returns match html in the desired display form
+#-----------------------------------------------------------------------------------------------------------------------
+def updateMatch(request, vals={}):
+    viewer = vals['viewer']
+    to_compare_alias = request.POST['to_compare_alias']
+    to_compare = aliasToObject(to_compare_alias)
+    comparison = to_compare.getComparison(viewer)
+    vals['comparison_object'] = comparison
+    vals['to_compare'] = to_compare
+    vals['comparison'] = comparison.toBreakdown()
+    display = request.POST['display']
+    if display == 'vertical_breakdown':
+        html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
+    elif display == 'horizontal_breakdown':
+        vals['horizontal'] = True
+        html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
+    elif display == 'sidebar_match':
+        html = ajaxRender('site/pages/profile/sidebar_match.html', vals, request)
+    elif display == 'has_answered':
+        html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
@@ -1139,7 +1155,7 @@ def addAdmins(request, vals={}):
         addAdmin(admin_id,group,viewer,request)
 
     vals['group_admins'] = group.admins.all()
-    html = ajaxRender('site/snippets/admin_list.html',vals,request)
+    html = ajaxRender('site/pages/group/admin_list.html',vals,request)
 
     return HttpResponse(json.dumps({'html':html}))
 
