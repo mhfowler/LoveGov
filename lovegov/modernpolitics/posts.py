@@ -783,7 +783,6 @@ def stubAnswer(request, vals={}):
         privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
     vals['your_response'] = response
-    vals['show_answer'] = False
     if to_compare:
         their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
         vals['their_response'] = their_response
@@ -822,18 +821,23 @@ def updateMatch(request, vals={}):
 def updateStats(request, vals={}):
     viewer = vals['viewer']
     object = request.POST['object']
-    if object == 'question_stats':
+    if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
-        html = ajaxRender('site/pages/qa/question_stats.html', vals, request)
-    if object == 'agrees_box':
+        html = ajaxRender('site/pages/qa/poll_stats.html', vals, request)
+    if object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
         question = Question.objects.get(id=request.POST['q_id'])
         response = viewer.view.responses.filter(question=question)
+        if response:
+            response = response[0]
         vals['response'] = response
         vals['question'] = question
-        vals['group_tuples'] = getGroupTuples(viewer, question, response)
-        html = ajaxRender('site/pages/qa/agrees_box.html', vals, request)
+        if response:
+            vals['group_tuples'] = getGroupTuples(viewer, question, response)
+            html = ajaxRender('site/pages/qa/you_agree_with.html', vals, request)
+        else:
+            html = "<p> answer to see how many people agree with you. </p>"
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------

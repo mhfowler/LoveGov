@@ -2818,15 +2818,18 @@ class Response(Content):
     answer_tallies = models.ManyToManyField('AnswerTally')
 
     def getPercent(self, a_id):
-        if a_id == self.most_chosen_answer_id:
-            percent = self.most_chosen_num / float(self.total_num)
-        else:
-            tally = self.answer_tallies.filter(answer_id=a_id)
-            if tally:
-                percent = tally.tally / float(self.total_num)
+        if self.total_num:
+            if a_id == self.most_chosen_answer_id:
+                percent = self.most_chosen_num / float(self.total_num)
             else:
-                percent = 0
-        return int(percent*100)
+                tally = self.answer_tallies.filter(answer_id=a_id)
+                if tally:
+                    percent = tally[0].tally / float(self.total_num)
+                else:
+                    percent = 0
+            return int(percent*100)
+        else:
+            return 0
 
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.

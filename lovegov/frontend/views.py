@@ -27,9 +27,9 @@ def errorMessage(request,message,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
-def framedResponse(request, html, url, vals):
+def framedResponse(request, html, url, vals={}, rebind="home"):
     if request.is_ajax():
-        to_return = {'html':html, 'url':url, 'title':vals['page_title']}
+        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['page_title']}
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
@@ -147,7 +147,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/me/')
+    return shortcuts.redirect('/home/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -526,9 +526,12 @@ def electionPage(request, e_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page
 #-----------------------------------------------------------------------------------------------------------------------
-def profile(request, alias, vals={}):
+def profile(request, alias=None, vals={}):
 
     viewer = vals['viewer']
+    if not alias:
+        return shortcuts.redirect(viewer.get_url())
+
     getMainTopics(vals)
     user_profile = UserProfile.objects.get(alias=alias)
     vals['profile'] = user_profile
@@ -717,7 +720,7 @@ def account(request, section="", vals={}):
 
     if request.method == 'GET':
         html = ajaxRender('site/pages/account.html', vals, request)
-        url = '/account/'
+        url = '/settings/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
         if request.POST['box'] == 'password':
@@ -747,7 +750,7 @@ def account(request, section="", vals={}):
             pass
 
         html = ajaxRender('site/pages/account.html', vals, request)
-        url = '/account/'
+        url = '/settings/'
         return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

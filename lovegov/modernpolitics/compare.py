@@ -257,6 +257,9 @@ def aggregateHelper(question, users, aggregate=None):
                 if tuple.tally >= most_chosen_num:
                     most_chosen_num = tuple.tally
                     most_chosen_answer_id = index
+    # save tuples
+    for a_id,answer_tally in answers.items():
+        answer_tally.save()
     # set aggregate response values
     aggregate.most_chosen_answer_id = most_chosen_answer_id
     aggregate.most_chosen_num = most_chosen_num
