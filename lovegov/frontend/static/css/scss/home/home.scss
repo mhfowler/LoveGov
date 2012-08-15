@@ -5,48 +5,49 @@
 @import "compass";
 
 
-table.home {
+table.home
+{
   width:100%;
-td.home-sidebar {
-  width:200px;
-  overflow:hidden;
-}
 
-td.home-main {
-  padding-left:20px;
-  div.home-header {
-    width:100%;
+  td.home-sidebar
+  {
+    width:200px;
+    overflow:hidden;
+  }
 
-    div.home_header_summary {
-      overflow:hidden;
-    }
+  td.home-main
+  {
+    padding-left:20px;
 
-    div.home_header_expanded
+    div.home-header
     {
-      height:0px;
-      overflow:hidden;
-    }
-
-    div.expand-info {
-      @include titleFont();
-      color:$deep-gray;
       width:100%;
-      background-color:$light-gray;
-      text-align:center;
-      margin-top:5px;
-      height: 18px;
-      line-height: 12px;
-      padding-top: 5px;
+
+      div.expand-info
+      {
+        @include titleFont();
+        color:$deep-gray;
+        width:100%;
+        background-color:$light-gray;
+        text-align:center;
+        height: 18px;
+        line-height: 12px;
+        padding-top: 5px;
+        margin-top: 5px;
+      }
+
+      div.expand-info:hover
+      {
+        cursor:pointer;
+        background-color:$gray;
+      }
 
     }
-    div.expand-info:hover {
-      cursor:pointer;
-      background-color:$gray;
+
+    div.feed-wrapper
+    {
+      width:100%;
     }
-  }
-  div.feed-wrapper {
-    width:100%;
-  }
   }
 }
 

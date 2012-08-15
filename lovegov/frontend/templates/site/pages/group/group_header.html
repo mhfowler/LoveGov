@@ -4,7 +4,7 @@
 {% load humanize %}
 {% load thumbnail %}
 
-{% block header_summary %}
+{% block header_top %}
 
     <div class="group-top">
 
@@ -12,14 +12,14 @@
         <span class="group-scale"> {{ group.getScaleVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
 
-        <div class="group-minimize-button minimize_group"> - minimize group </div>
+        <div class="group-minimize-button hide_info"> - minimize info </div>
 
     </div>
 
 {% endblock %}
 
 
-{% block header_expanded %}
+{% block header_info %}
 
     <div class="group-expanded">
 
