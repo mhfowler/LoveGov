@@ -17,10 +17,19 @@ div.question-detail {
 }
 
 div.question-detail-sidebar {
-  div.agree-with {
-    margin-top:25px;
-    @include fontSize(18px);
-    font-weight:bold;
+  div.agree-wrapper {
+
+    div.agree-with {
+      margin-top:25px;
+      @include fontSize(18px);
+      font-weight:bold;
+
+      div.agrees-box {
+        div.tuple-item {
+          margin-top:7px;
+        }
+      }
+    }
   }
   div.friends {
     margin-top:25px;

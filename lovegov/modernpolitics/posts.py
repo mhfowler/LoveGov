@@ -820,11 +820,20 @@ def updateMatch(request, vals={}):
 # rerenders an html piece and returns it (with new db stuff from some other venue)
 #-----------------------------------------------------------------------------------------------------------------------
 def updateStats(request, vals={}):
+    viewer = vals['viewer']
     object = request.POST['object']
     if object == 'question_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
         html = ajaxRender('site/pages/qa/question_stats.html', vals, request)
+    if object == 'agrees_box':
+        from lovegov.frontend.views_helpers import getGroupTuples
+        question = Question.objects.get(id=request.POST['q_id'])
+        response = viewer.view.responses.filter(question=question)
+        vals['response'] = response
+        vals['question'] = question
+        vals['group_tuples'] = getGroupTuples(viewer, question, response)
+        html = ajaxRender('site/pages/qa/agrees_box.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------

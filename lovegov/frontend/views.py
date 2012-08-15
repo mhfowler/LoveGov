@@ -626,21 +626,18 @@ def questionDetail(request, q_id=None, vals={}):
     vals['question'] = question
 
     if response:
-        my_groups = viewer.getGroups().order_by("-num_members")[:3]
-        group_tuples = []
-        for g in my_groups:
-            g_response = g.group_view.responses.filter(question=question)
-            if g_response:
-                g_response = g_response[0]
-                percent = g_response.getPercent(response.most_chosen_answer_id)
-                g_tuple = {'percent':percent, 'group':g}
-                group_tuples.append(g_tuple)
-        vals['group_tuples'] = group_tuples
+        vals['group_tuples'] = getGroupTuples(viewer, question, response)
+
+    friends = viewer.getIFollow()
+    friends_answered = []
+    for f in friends:
+        if f.view.responses.filter(question=question):
+            friends_answered.append(f)
+    vals['friends_answered'] = friends_answered
 
     html = ajaxRender('site/pages/qa/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a poll

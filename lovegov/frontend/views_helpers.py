@@ -216,3 +216,19 @@ def getQuestionStats(vals):
         stat['empty'] = 100-percent
         topic_stats.append(stat)
     vals['topic_stats'] = topic_stats
+
+#-----------------------------------------------------------------------------------------------------------------------
+# returns a list of group tuples for rendering the agrees_box
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroupTuples(viewer, question, response):
+    my_groups = viewer.getGroups().order_by("-num_members")[:3]
+    group_tuples = []
+    for g in my_groups:
+        g_response = g.group_view.responses.filter(question=question)
+        if g_response:
+            g_response = g_response[0]
+            percent = g_response.getPercent(response.most_chosen_answer_id)
+            g_tuple = {'percent':percent, 'group':g}
+            group_tuples.append(g_tuple)
+    return group_tuples
+
