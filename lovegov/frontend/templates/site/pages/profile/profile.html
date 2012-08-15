@@ -117,7 +117,7 @@
                         {% include 'site/pages/feed/feed.html' %}
                     </div>
                     <div class="activity_focus profile_focus">
-                        {% include 'site/pages/profile/profile_activity.html' %}
+                        {% include 'site/pages/profile/profile_activity.html' with p_id=profile.id %}
                     </div>
             </div>
         </div>

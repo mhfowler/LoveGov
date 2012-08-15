@@ -536,7 +536,18 @@ def profile(request, alias=None, vals={}):
     user_profile = UserProfile.objects.get(alias=alias)
     vals['profile'] = user_profile
 
-    vals['followsyou'] = True
+    # Is the current user already (requesting to) following this profile?
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_profile)
+    if user_follow:
+        if user_follow.requested:
+            vals['is_user_requested'] = True
+        if user_follow.confirmed:
+            vals['is_user_confirmed'] = True
+        if user_follow.rejected:
+            vals['is_user_rejected'] = True
     
     vals['profile_groups'] = user_profile.getGroups()[:4]
     vals['profile_politicians'] = UserProfile.objects.all()[:6]

@@ -36,10 +36,15 @@ div.notifications-dropdown
   div.notification
   {
     @include notification-box;
-    padding-top: 10px;
+    padding-top: 15px;
     padding-left: 10px;
 
     &:hover{ background-color: $light-gray; }
+  }
+
+  div.notification-highlighted
+  {
+    background-color: $white-gray;
   }
 
   div.no-notifications
@@ -60,3 +65,4 @@ div.notifications-dropdown
     &:hover{ background-color: $light-gray; }
   }
 }
+
