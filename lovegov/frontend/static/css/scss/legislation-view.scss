@@ -29,7 +29,7 @@ a {
 div.main {
   margin-left: 0px;
   height: 310px;
-  width: 1150px;
+  width: 1200px;
 
   div.leg-title {
     margin-left: 0px;
@@ -219,7 +219,6 @@ div.main {
             margin-left: -20px;
             list-style-type: none;
             font-size: 14px;
-
           }
         }
       }
@@ -265,66 +264,183 @@ div.main {
     }
   }
 
-  div.right-sidebar {
+  div.bill-stats {
     margin-top: -265px;
     margin-left: 820px;
     height: 260px;
-    width: 180px;
+    width: 150px;
     border: 1px;
 
-    div.bill-actions {
+    div.bill-stats-div {
       height: 260px;
-      width: 180px;
-      @include rounded(8px);
-      background-color:#CCCCCC;
-      padding-top: 7px;
+      width: 150px;
+      background-color: $light-gray;
+
+      div.support-stats {
+        text-align: center;
+        padding-top: 7px;
+
+        h3.number {
+          color: $text-blue;
+          font-size: 40px;
+          margin-top: 8px;
+        }
+
+        h3 {
+          color: $text-blue;
+          margin-top: -15px;
+        }
+      }
 
       div.button {
         margin-top: 3px;
-        margin-left: 15px;
+        margin-left: 0px;
         height: 40px;
-        width: 150px;
+        width: 100px;
         text-align: center;
         border-style: solid;
         border-width: 2px;
         border-color: $gray;
 
         &.support {
-          background-color: $text-blue-light;
+          background-color: $text-blue;
+          margin-left: 25px;
+
+          span {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+          }
+        }
+      }
+
+      div.oppose-stats {
+        text-align: center;
+
+        h4.number {
+          color: $red;
+          font-size: 40px;
+          margin-top: 5px;
         }
 
-        &.oppose {
-          background-color: $teal;
+        h4 {
+          color: $red;
+          margin-top: -15px;
         }
+      }
+
+      div.button {
+        margin-top: 3px;
+        margin-left: 0px;
+        height: 40px;
+        width: 100px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
+
+        &.oppose {
+          background-color: $red;
+          margin-left: 25px;
+
+          span {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+
+  div.bill-other-actions {
+    margin-top: -260px;
+    margin-left: 990px;
+    height: 260px;
+    width: 160px;
+    border: 1px;
+
+    div.bill-other-actions-div {
+      height: 260px;
+      width: 160px;
+      background-color: $light-gray;
+      padding-top: 7px;
+
+      div.button {
+        margin-top: 3px;
+        margin-left: 0px;
+        height: 40px;
+        width: 130px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
+
+        &.share {
+          background-color: $green;
+          margin-left: 15px;
+          margin-top: 8px;
+
+          span {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+          }
+        }
+      }
+
+      div.button {
+        margin-top: 3px;
+        margin-left: 0px;
+        height: 40px;
+        width: 130px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
 
         &.follow {
           background-color: $green;
-        }
+          margin-left: 15px;
 
-        &.share {
-          background-color: $yellow;
+          span {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+          }
         }
+      }
+
+      div.button {
+        margin-top: 3px;
+        margin-left: 0px;
+        height: 40px;
+        width: 130px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
 
         &.contact {
-          background-color: $orange;
-          height: 70px;
-        }
+          background-color: $green;
+          margin-left: 15px;
+          height: 80px;
 
-        span {
-          color: white;
-          font-size: 14px;
-          font-weight: bold;
+          span {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+          }
         }
       }
     }
   }
 }
-
 div.secondary {
   margin-left: 0px;
   margin-top: 0px;
   height: 330px;
-  width: 1150px;
+  width: 1200px;
 
   div.level2-actions {
     margin-left: 0px;
