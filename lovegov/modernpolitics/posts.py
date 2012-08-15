@@ -579,37 +579,69 @@ def editGroup(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def editProfile(request, vals={}):
     viewer = vals['viewer']
+
     if not 'val' in request.POST or not 'key' in request.POST:
-        return HttpResponse( json.dumps({'success':False,'value':''}) )
+        LGException( "Edit profile request sent without either value, key, or content ID.  Sent by ID #" + str(viewer.id) )
+        return HttpResponseBadRequest( 'Edit profile request missing vital information.' )
+
     value = request.POST['val']
     key = request.POST['key']
+
     if key not in USERPROFILE_EDITABLE_FIELDS:
-        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
+        LGException( "Edit profile request sent for not editable field.  Sent by ID #" + str(viewer.id) + " on content ID #" + str(content.id) )
+        return HttpResponseBadRequest( 'Invalid profile edit request.  Stop trying to break out site' )
+
     setattr( viewer , key , value )
     viewer.save()
-    return HttpResponse( json.dumps({'success':True,'value':value}) )
+
+    value = defaultfilters.urlize(value)
+    value = defaultfilters.linebreaksbr(value)
+
+    return HttpResponse( json.dumps({'value':value}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editContent(request, vals={}):
-    viewer = vals['viewer']
-    if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
-        return HttpResponse( json.dumps({'success':False,'value':''}) )
-    value = request.POST['val']
     from django.template import defaultfilters
+    viewer = vals['viewer']
+
+    if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
+        LGException( "Edit content request sent without either value, key, or content ID.  Sent by ID #" + str(viewer.id) )
+        return HttpResponseBadRequest( 'Edit content request missing vital information.' )
+
+    value = request.POST['val']
     key = request.POST['key']
-    if key not in CONTENT_EDITABLE_FIELDS:
-        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
+
     content = Content.lg.get_or_none(id=request.POST['c_id'])
-    if content and viewer.id == content.getCreator().id:
-        save_content = content.downcast()
-        setattr( save_content , key , value )
-        save_content.save()
-        value = defaultfilters.urlize(value)
-        value = defaultfilters.linebreaks_filter(value)
-        return HttpResponse( json.dumps({'success':True,'value':value}) )
-    return HttpResponse( json.dumps({'success':False,'value':''}) )
+    if not content:
+        LGException( "Edit content request sent with invalid content ID #" + str(request.POST['c_id']) )
+        return HttpResponseBadRequest( 'Edit content request sent with invalid content ID' )
+
+    if key not in CONTENT_EDITABLE_FIELDS:
+        LGException( "Edit content request sent for not editable field.  Sent by ID #" + str(viewer.id) + " on content ID #" + str(content.id) )
+        return HttpResponseBadRequest( 'Invalid content edit request.  Stop trying to break out site' )
+
+    downcast_content = content.downcast()
+
+    authorized = False
+    ## Check if this user is authorized ##
+    if downcast_content.type == "G" and viewer in downcast_content.admins.all():
+        authorized = True
+    elif viewer.id == downcast_content.getCreator().id:
+        authorized = True
+
+    if not authorized:
+        LGException( "Edit content request sent by unauthorized user ID #" + str(viewer.id) + " on content ID #" + str(content.id) )
+        return HttpResponseForbidden( 'You are not authorized to edit this field.' )
+
+    setattr( downcast_content , key , value )
+    downcast_content.save()
+
+    value = defaultfilters.urlize(value)
+    value = defaultfilters.linebreaksbr(value)
+
+    return HttpResponse( json.dumps({'value':value}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Edit content based on editform.

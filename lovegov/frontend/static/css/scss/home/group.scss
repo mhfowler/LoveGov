@@ -125,6 +125,12 @@ div.group-expanded
       min-height: 100px;
       overflow:hidden;
       margin-right: 30px;
+
+      textarea.group-description-edit
+      {
+        width:300px;
+        height:210px;
+      }
     }
 
     div.group-people

@@ -8,7 +8,21 @@
 
     <div class="group-top">
 
-        <span class="group-title"> {{ group.title }} </span>
+        <span class="group-title">
+            <div class="inline-div inline_hide">
+                {{ group.title }}
+            </div>
+            {% if is_user_admin %}
+                <div class="edit-link edit_button"></div>
+                <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                    <input type="text" maxlength="200" value="{{ group.title }}" class="edit_input" name="title"/>
+                    <a href="" class="edit-link submit_inline_edit">submit</a>
+                    <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                </div>
+            {% endif %}
+        </span>
+
+
         <span class="group-scale"> {{ group.getScaleVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
 
@@ -77,10 +91,19 @@
             <div class="group-column group-text">
 
                 <div class="group-info-title">Description</div>
-                <p class="group-full-text">
-                    {{ group.full_text|linebreaksbr }}
-                </p>
-
+                <div class="group-full-text">
+                    <div class="inline-div inline_hide">
+                        {{ group.full_text|linebreaksbr }}
+                    </div>
+                    {% if is_user_admin %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                            <textarea type="text" maxlength="1000" class="edit_input group-description-edit" name="full_text">{{ group.full_text }}</textarea>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
 

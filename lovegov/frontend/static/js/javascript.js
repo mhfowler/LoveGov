@@ -662,10 +662,12 @@ function getFeed(container) {
         container.find(".feed_fetching").show();
     },time);
     var data;
-    if (feed == 'getFeed') {
+    if (feed == 'getFeed')
+    {
         data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
     }
-    else {
+    else if (feed == 'getQuestions')
+    {
         var only_unanswered = container.data('only_unanswered');
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
@@ -673,6 +675,14 @@ function getFeed(container) {
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
             'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
             'only_unanswered':only_unanswered };
+    }
+    else if (feed == 'getActivity')
+    {
+        var only_unanswered = container.data('only_unanswered');
+        if (typeof(only_unanswered) == 'undefined') {
+            only_unanswered = false;
+        }
+        data = { 'action': 'getActivity', 'feed_start':feed_start, 'p_id':p_id };
     }
     action({
             data: data,
@@ -1163,328 +1173,84 @@ function ajaxThread()
 // }
 
 
-// /***********************************************************************************************************************
-//  *
-//  *      ~Following
-//  *
-//  ***********************************************************************************************************************/
-// /* user follower */
-// function userFollow(event,div,follow)
-// {
-//     event.preventDefault();
-//     div.unbind();
-//     var action = 'userFollowRequest';
-//     if( !follow )
-//     {
-//         action = 'userFollowStop';
-//     }
-//     ajaxPost({
-//             data: {
-//                 'action': action,
-//                 'p_id': p_id
-//             },
-//             success: function(data)
-//             {
-//                 if( data == "follow success")
-//                 {
-//                     div.html("unfollow");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             userFollow(event,div,false);
-//                         }
-//                     );
-//                 }
-//                 else if( data == "follow request")
-//                 {
-//                     div.html("un-request");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             userFollow(event,div,false);
-//                         }
-//                     );
-//                 }
-//                 else if( data == "follow removed")
-//                 {
-//                     div.html("follow");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             userFollow(event,div,true);
-//                         }
-//                     );
-//                 }
-//                 else
-//                 {
-//                     //alert(data);
-//                 }
-//             },
-//             error: function(jqXHR, textStatus, errorThrown)
-//             {
-//                 $('body').html(jqXHR.responseText);
-//             }
-//         }
-//     );
-// }
 
-// function groupFollow(event,div,follow)
-// {
-//     event.preventDefault();
-//     div.unbind();
-//     var action = 'joinGroupRequest';
-//     if( !follow )
-//     {
-//         action = 'leaveGroup';
-//     }
-//     ajaxPost({
-//             data: {
-//                 'action': action,
-//                 'g_id': g_id
-//             },
-//             success: function(data)
-//             {
-//                 if( data == "follow success")
-//                 {
-//                     div.html("leave");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             groupFollow(event,div,false);
-//                         }
-//                     );
-//                 }
-//                 else if( data == "follow request")
-//                 {
-//                     div.html("un-request");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             groupFollow(event,div,false);
-//                         }
-//                     );
-//                 }
-//                 else if( data == "follow removed")
-//                 {
-//                     div.html("join");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             groupFollow(event,div,true);
-//                         }
-//                     );
-//                 }
-//                 else
-//                 {
-//                     //alert(data);
-//                 }
-//             },
-//             error: function(jqXHR, textStatus, errorThrown)
-//             {
-//                 $('body').html(jqXHR.responseText);
-//             }
-//         }
-//     );
-// }
+/***********************************************************************************************************************
+  *
+  *      ~InlineEdits
+  *
+  ***********************************************************************************************************************/
+function editUserProfile(info,edit_div)
+{
+     var prof_data = info;
+     prof_data.action = 'editProfile';
 
-// function userFollowResponse(event,response,div)
-// {
-//     event.preventDefault();
-//     var follow_id = div.siblings(".user_follow_id").val();
-//     ajaxPost({
-//             data: {
-//                 'action':'followResponseResponse',
-//                 'p_id': follow_id,
-//                 'response': response
-//             },
-//             success: function(data)
-//             {
-//                 return true;
-//             },
-//             error: function(error, textStatus, errorThrown)
-//             {
-//                 $('body').html(error.responseText);
-//             }
-//         }
-//     );
-//     return false;
-// }
-
-// function setFollowPrivacy(event,private_follow,div)
-// {
-//     event.preventDefault();
-//     div.unbind();
-//     ajaxPost({
-//         data: {
-//             'action':'followprivacy',
-//             'p_id': p_id,
-//             'private_follow': private_follow
-//         },
-//         success: function(data)
-//         {
-//             if( data == "follow privacy set")
-//             {
-//                 if( private_follow )
-//                 {
-//                     div.html("private");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             setFollowPrivacy(event,0,$(this));
-//                         }
-//                     );
-//                 }
-//                 else
-//                 {
-//                     div.html("public");
-//                     div.click(
-//                         function(event)
-//                         {
-//                             setFollowPrivacy(event,1,$(this));
-//                         }
-//                     );
-//                 }
-//             }
-//             else
-//             {
-//                 //alert(data);
-//             }
-
-//         },
-//         error: function(jqXHR, textStatus, errorThrown)
-//         {
-//             $('body').html(jqXHR.responseText);
-//         }
-
-//     });
-// }
-
-// function groupInviteResponse(event,response,div)
-// {
-//     event.preventDefault();
-//     var g_id = div.data("g_id");
-//     ajaxPost({
-//             data: {
-//                 'action':'groupInviteResponse',
-//                 'g_id': g_id,
-//                 'response': response
-//             },
-//             success: function(data)
-//             {
-//                 //alert(data);
-//             },
-//             error: function(error, textStatus, errorThrown)
-//             {
-//                 $('body').html(error.responseText);
-//             }
-//         }
-//     );
-// }
+     action({
+         'data': prof_data,
+         success: function(data)
+         {
+             var obj = eval('(' + data + ')');
+             edit_div.text(obj.value);
+             edit_div.show();
+         }
+     });
+}
 
 
-// /***********************************************************************************************************************
-//  *
-//  *      ~InlineEdits
-//  *
-//  ***********************************************************************************************************************/
-// function editUserProfile(info,edit_div)
-// {
-//     var prof_data = info;
-//     prof_data.action = 'editProfile';
+function editContent( c_id , info , edit_div )
+{
+     var content_data = info;
+     content_data.action = 'editContent';
+     content_data.c_id = c_id;
 
-//     ajaxPost({
-//         'data': prof_data,
-//         success: function(data)
-//         {
-//             var obj = eval('(' + data + ')');
-//             if( obj.success )
-//             {
-//                 edit_div.text(obj.value);
-//                 edit_div.show();
-//             }
-//         },
-//         error: function(jqXHR, textStatus, errorThrown)
-//         {
-//             $('body').html(jqXHR.responseText);
-//         }
-//     });
-// }
+     action({
+         'data': content_data,
+
+         success: function(data)
+         {
+             var obj = eval('(' + data + ')');
+             edit_div.html(obj.value);
+             edit_div.show();
+         }
+     });
+}
 
 
-// function editContent(c_id,info,edit_div)
-// {
-//     var content_data = info;
-//     content_data.action = 'editContent';
-//     content_data.c_id = c_id;
+bind( ".edit_button" , 'click', null , function(event)
+{
+    event.preventDefault();
+    $(this).siblings('.inline_hide').hide();
+    $(this).hide();
 
-//     ajaxPost({
-//         'data': content_data,
+    $(this).siblings('.inline_edit').show();
+});
 
-//         success: function(data)
-//         {
-//             var obj = eval('(' + data + ')');
-//             if( obj.success )
-//             {
-//                 edit_div.html(obj.value);
-//                 edit_div.show();
-//             }
-//         },
-//         error: function(jqXHR, textStatus, errorThrown)
-//         {
-//             $('body').html(jqXHR.responseText);
-//         }
-//     });
-// }
+bind( ".submit_inline_edit" , 'click' , null , function(event)
+{
+    event.preventDefault();
+    var input = $(this).siblings('.edit_input');
+    var wrapper = $(this).parent();
+    var name = input.attr('name');
+    var value = input.val();
+    var model = wrapper.data('model');
+    var info = {
+        'key':name,
+        'val':value
+    };
+    var edit_div = $(this).parent().siblings('.inline_hide');
 
-// function unbindInlineEdits()
-// {
-//     $(".edit_button").unbind();
-//     $(".submit_inline_edit").unbind();
-//     $(".cancel_inline_edit").unbind();
-// }
+    if( model == "Content" )
+    {
+        var c_id = wrapper.data('id');
+        editContent(c_id,info,edit_div);
+    }
+    else if( model == "UserProfile")
+    {
+        editUserProfile(info,edit_div);
+    }
 
-// function bindInlineEdits()
-// {
-//     $(".edit_button").bindOnce('click.edit',
-//         function(event)
-//         {
-//             event.preventDefault();
-//             $(this).siblings('.inline_hide').hide();
-//             $(this).hide();
-
-//             $(this).siblings('.inline_edit').show();
-//         }
-//     );
-
-//     $(".submit_inline_edit").bindOnce('click.edit',
-//         function(event)
-//         {
-//             event.preventDefault();
-//             var input = $(this).siblings('.edit_input');
-//             var wrapper = $(this).parent();
-//             var name = input.attr('name');
-//             var value = input.val();
-//             var model = wrapper.data('model');
-//             var info = {
-//                 'key':name,
-//                 'val':value
-//             };
-//             var edit_div = $(this).parent().siblings('.inline_hide');
-
-//             if( model == "Content" )
-//             {
-//                 var c_id = wrapper.data('id');
-//                 editContent(c_id,info,edit_div);
-//             }
-//             else if( model == "UserProfile")
-//             {
-//                 editUserProfile(info,edit_div);
-//             }
-
-//             $(this).parent().siblings('.edit_button').show();
-//             $(this).parent().hide();
-//         }
-//     );
+    $(this).parent().siblings('.edit_button').show();
+    $(this).parent().hide();
+});
 
 /***********************************************************************************************************************
  *

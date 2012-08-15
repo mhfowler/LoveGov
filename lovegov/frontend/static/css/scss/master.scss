@@ -735,7 +735,7 @@ span#email-label
 
 div.edit-link
 {
-  background-image: url('/static/images/edit-pencil.png');
+  @include staticImage('/images/icons/edit-pencil.png');
   background-size: 16px 16px;
   width: 16px;
   height: 16px;
@@ -744,10 +744,16 @@ div.edit-link
 
   &:hover
   {
-    background-image: url('/static/images/edit-pencil-blue.png');
+    @include staticImage('/images/icons/edit-pencil-blue.png');
   }
 }
 
+a.edit-link
+{
+  text-transform: none;
+  font-size: 12px;
+  margin-right: 2px;
+}
 
 .inline-div
 {
