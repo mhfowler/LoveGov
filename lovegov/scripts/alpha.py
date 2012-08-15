@@ -278,39 +278,89 @@ def scriptCreateCongressAnswers(args=None):
 
 
 def scriptCreateResponses(args=None):
-    path = os.path.join(settings.PROJECT_PATH, 'frontend/excel/' + args[0])
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
+
+    print "Tags:"
+    print "======================"
+    print "+EE+ = Error"
+    print "+WW+ = Warning"
+    print "+DD+ = Duplicate"
+    print "======================"
+
+    # For all cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
+            # Get politician Name
             politician_name = sheet.cell(0,column).value.split(" ")
             print politician_name
+
+            # Look for politician
             politician = ElectedOfficial.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1])
+            # If they don't exist
             if not politician:
-                politician = Politician.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1])
-                if not politician:
-                    name = politician_name[0] + " " + politician_name[1]
-                    print "Creating " + name
-                    email = politician_name[0] + '_' + politician_name[1] + "@lovegov.com"
-                    password = 'politician'
-                    politician = createUser(name,email,password,type="politician")
-                    politician.user_profile.confirmed = True
-                    politician.user_profile.save()
-                    #image_path = os.path.join(settings.PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
-                    #politician.user_profile.setProfileImage(file(image_path))
-                    print "Successfully created and confirmed " + name
-                    politician = Politician.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1])
-            answer_text = sheet.cell(row,column).value
-            answer_text = answer_text.encode('utf-8','ignore')
-            print answer_text
-            if answer_text and Answer.objects.filter(answer_text=answer_text).exists():
-                answer = Answer.objects.get(answer_text=answer_text)
-                answer_val = answer.value
-                if Question.objects.filter(answers__answer_text=answer_text).exists():
-                    question = Question.objects.get(answers__answer_text=answer_text)
-                    response = UserResponse(responder=politician,question=question,answer_val=answer_val,explanation="")
+                # Create and print their name and email
+                print '+EE+ shit'
+                continue
+#                name = politician_name[0] + " " + politician_name[1]
+#                print "Creating " + name
+#                email = politician_name[0] + '_' + politician_name[1] + "@lovegov.com"
+#                password = 'politician'
+#
+#                # Create usermost_chosen_answer
+#                politician = createUser(name,email,password)
+#
+#                # Set some user facts
+#                politician.user_profile.confirmed = True
+#                politician.user_profile.politician = True
+#                politician.user_profile.save()
+#
+#                #image_path = os.path.join(PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
+#                #politician.user_profile.setProfileImage(file(image_path))
+#
+#                print "Successfully created and confirmed " + name
+#                politician = politician.user_profile
+
+            answer_id = sheet.cell(row,column).value
+            print answer_id
+
+            # Check for answer text
+            if not answer_id:
+                print "+WW+ No answer id"
+                continue
+
+            # Find answer
+            answer = Answer.lg.get_or_none(id=answer_id)
+            if not answer:
+                print "+WW+ Answer not found for ID #" + str(answer_id)
+                continue
+
+            questions = answer.question_set.all()
+            if questions:
+                question = questions[0]
+
+                responses = politician.view.responses.filter(question=question)
+                if not responses:
+                    response = Response(question=question,answer_val=answer.value,explanation="")
+#                    response.most_chosen_num = 1
+#                    response.total_num = 1
                     response.autoSave(creator=politician)
-                    print "Successfully answered question for " + politician_name[0]
+
+                    politician.view.responses.add(response)
+
+                else:
+                    if len(responses) > 1:
+                        print "+DD+ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
+                    response = responses[0]
+                    response.answer_val = answer.value
+                    response.explanation = ''
+#                    response.total_num = 1
+#                    response.most_chosen_num = 1
+                    response.save()
+
+                print "Successfully answered question for " + politician_name[0]
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 #   add alpha user script
