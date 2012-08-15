@@ -292,11 +292,11 @@ def groupInviteAction(from_user,group,inviter,privacy):
             from_user.notify(action)
             return True
     else:
-        group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
+        group_joined = GroupJoined(user=from_user, group=group, privacy=privacy)
         group_joined.autoSave()
 
     group_joined.invite(inviter)
-    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="I")
+    action = Action(privacy=privacy,relationship=group_joined,modifier="I")
     action.autoSave()
     from_user.notify(action)
     return True

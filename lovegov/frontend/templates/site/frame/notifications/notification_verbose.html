@@ -145,19 +145,19 @@
             <td class="notification-thumbnail">
                 {% include "site/pieces/avatar.html" with user=to_user width="25" height="25" hoveroff=hover_off %}
             </td>
-            <td class="notification-text notification_text">
+            <td class="notification-text invite_response_text">
                 {% include "site/frame/notifications/action_name_snippet.html" with user=inviter capital=true %}
                 invited
                 {% include "site/frame/notifications/action_name_snippet.html" with user=from_user you=from_you %}
                 to join
                 {% include "site/frame/notifications/action_name_snippet.html" with user=to_user you=to_you %}
-                <div class='notification-append notification_append_y'>Invite accepted</div>
-                <div class='notification-append notification_append_n'>Invite declined</div>
+                <div class='notification-append invite_response_append_y'>Invite accepted</div>
+                <div class='notification-append invite_response_append_n'>Invite declined</div>
             </td>
             {% if not group_join.declined and not group_join.confirmed and group_join.invited %}
-                <td class="notification-buttons notification_buttons" data-g_id="{{ to_user.id }}">
-                    <div class="notification-follow-response notification_invite_response_y">accept</div>
-                    <div class="notification-follow-response bottom notification_invite_response_n">decline</div>
+                <td class="notification-buttons invite_response_buttons" data-g_id="{{ to_user.id }}">
+                    <div class="notification-follow-response invite_response_y">accept</div>
+                    <div class="notification-follow-response bottom invite_response_n">decline</div>
                 </td>
             {% endif %}
         {% elif modifier == 'R' %}

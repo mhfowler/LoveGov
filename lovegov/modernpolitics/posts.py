@@ -968,7 +968,7 @@ def groupInvite(request, vals={}):
             LGException("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user ID #" + str(inviter.id))
             continue
 
-        groupInviteAction(from_user,group,inviter,privacy)
+        groupInviteAction(from_user,group,inviter,getPrivacy(request))
 
     return HttpResponse("invite success")
 

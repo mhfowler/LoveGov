@@ -1612,7 +1612,7 @@ function groupFollowResponse(event,response,div)
 bind( '#group_invite_submit' , 'click' , null , function(e)
 {
     e.preventDefault();
-    var g_id = $("#group_invite_button").data('g_id');
+    var g_id = $(this).data('g_id');
     var invitees = $('.invite_select').select2("val");
     if (invitees!='') {
         action({
@@ -1621,12 +1621,25 @@ bind( '#group_invite_submit' , 'click' , null , function(e)
             {
                 $('#invite_submit_message').html('Invite Sent!');
                 $('#invite_submit_message').fadeIn(200);
-                window.setTimeout("$('div.overdiv').fadeOut(600); $('div.invite_modal').fadeOut(600);",1000);
+                window.setTimeout("$('div.overdiv').fadeOut(600); $('div.modal-general').fadeOut(600);",1000);
             }
         });
     }
 });
 
+bind(".invite_response_y" , 'click' , null , function(event) {
+    var wrapper = $(this).parent(".invite_response_buttons");
+    wrapper.fadeOut(600);
+    groupInviteResponse(event,"Y",wrapper);
+    wrapper.siblings(".invite_response_text").children('.invite_response_append_y').fadeIn(600);
+});
+
+bind(".invite_response_n" , 'click' , null , function(event) {
+    var wrapper = $(this).parent(".invite_response_buttons");
+    wrapper.fadeOut(600);
+    groupInviteResponse(event,"N",wrapper);
+    wrapper.siblings(".invite_response_text").children('.invite_response_append_y').fadeIn(600);
+});
 
 function groupInviteResponse(event,response,div)
 {
