@@ -4,8 +4,8 @@ from django.core.mail import send_mail
 
 print "*** SENDING SPECIAL EMAIL ***"
 
-#users = UserProfile.objects.filter(user_type="U")
-users = UserProfile.objects.filter(developer=True, first_name="Max")
+users = UserProfile.objects.filter(user_type="U")
+#users = UserProfile.objects.filter(developer=True, first_name="Max")
 
 temp_logger.error("why no work!")
 count = 0
