@@ -678,10 +678,6 @@ function getFeed(container) {
     }
     else if (feed == 'getActivity')
     {
-        var only_unanswered = container.data('only_unanswered');
-        if (typeof(only_unanswered) == 'undefined') {
-            only_unanswered = false;
-        }
         data = { 'action': 'getActivity', 'feed_start':feed_start, 'p_id':p_id };
     }
     action({
