@@ -20,6 +20,9 @@ function bindOnReload() {
         case 'questions':
             initFeed();
             break;
+        case 'question_detail':
+            bindImportanceSliders();
+            break;
     }
 }
 
@@ -495,7 +498,7 @@ bind(".sign-in-input", 'focusout', null, function(event) {
 bind(null, "click", null, function(event) {
     var outside = $(this).parents(".sign_in_dialogue").length == 0;
     if ((event.target.id != "sign_in_button") && outside) {
-        $(".sign_in_dialogue").hide();
+        //$(".sign_in_dialogue").hide();
     }
 });
 

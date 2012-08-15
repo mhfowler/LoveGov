@@ -70,6 +70,7 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
         q = r.question
         q_item = {'question':q, 'you':getResponseHelper(you_responses, q), 'them':r}
         compareQuestionItem(q_item)
+        q_item['show_answer'] = q_item['you'] and q_item['them']
         question_items.append(q_item)
 
     # sort
@@ -98,6 +99,7 @@ def getQuestionItems(viewer, feed_ranking, feed_topic, only_unanswered, feed_sta
 
     for q in questions:
         q_item = {'question':q, 'you':getResponseHelper(you_responses, q), 'them':None}
+        q_item['show_answer'] = False
         q_item['agree'] = 0
         question_items.append(q_item)
 

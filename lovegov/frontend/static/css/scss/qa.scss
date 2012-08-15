@@ -4,6 +4,32 @@
 @import "compass";
 
 /**********************************************************************************************************************/
+/*  ~ question-detail
+/**********************************************************************************************************************/
+div.question-detail {
+
+  div.comment-thread {
+    margin-top:30px;
+    height:500px;
+    width:100%;
+    background-color:$gray;
+  }
+}
+
+div.question-detail-sidebar {
+  div.agree-with {
+    margin-top:25px;
+    @include fontSize(18px);
+    font-weight:bold;
+  }
+  div.friends {
+    margin-top:25px;
+    @include fontSize(18px);
+    font-weight:bold;
+  }
+}
+
+/**********************************************************************************************************************/
 /*  ~ browse questions                                                                                                */
 /**********************************************************************************************************************/
 div.questions-sidebar {

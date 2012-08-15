@@ -286,7 +286,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
-            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email'), 'zip':registerform.cleaned_data.get('zip')})
+            vals.update({"fullname":registerform.cleaned_data.get('fullname'),
+                         "email":registerform.cleaned_data.get('email'),
+                         'zip':registerform.cleaned_data.get('zip'),
+                         'age':registerform.cleaned_data.get('age')})
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
@@ -608,19 +611,36 @@ def newsDetail(request, n_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def questionDetail(request, q_id=-1, vals={}):
-    if q_id==-1:
-        question = getNextQuestion(request, vals)
-        if question:
-            q_id=question.id
-        else:
-            return HttpResponse("Congratulations, you have answered every question!")
-    valsQuestion(request, q_id, vals)
-    user = vals['user']
+def questionDetail(request, q_id=None, vals={}):
 
-    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
+    viewer = vals['viewer']
+    if not q_id:
+        question = random.choice(Question.objects.all())
+    else:
+        question = Question.objects.get(id=q_id)
+
+    response = viewer.view.responses.filter(question=question)
+    if response:
+        response = response[0]
+    vals['response'] = response
+    vals['question'] = question
+
+    if response:
+        my_groups = viewer.getGroups().order_by("-num_members")[:3]
+        group_tuples = []
+        for g in my_groups:
+            g_response = g.group_view.responses.filter(question=question)
+            if g_response:
+                g_response = g_response[0]
+                percent = g_response.getPercent(response.most_chosen_answer_id)
+                g_tuple = {'percent':percent, 'group':g}
+                group_tuples.append(g_tuple)
+        vals['group_tuples'] = group_tuples
+
+    html = ajaxRender('site/pages/qa/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a poll
