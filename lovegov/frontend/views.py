@@ -558,7 +558,7 @@ def profile(request, alias=None, vals={}):
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = user_profile.get_url()
-    return framedResponse(request, html, url, vals)
+    return framedResponse(request, html, url, vals, rebind="profile")
 
 def worldview(request, alias, vals={}):
 

@@ -295,7 +295,7 @@ class Content(Privacy, LocationLevel):
         elif self.type=='G':
             return self.getAliasURL() or '/group/' + str(self.id) + '/'
         else:
-            return self.downcast().get_url()
+            return self.type
 
     def getUrl(self):
         return self.get_url()
