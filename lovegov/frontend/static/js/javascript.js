@@ -4571,7 +4571,7 @@ function swapFeatured(direction) {
 }
 
 function nextSection() {
-    if (match_current_section==3) {
+    if (match_current_section==4) {
         var next_num = 0;
     }
     else {
@@ -4581,7 +4581,7 @@ function nextSection() {
 }
 function previousSection() {
     if (match_current_section==0) {
-        var next_num = 3;
+        var next_num = 4;
     }
     else {
         var next_num = match_current_section - 1;

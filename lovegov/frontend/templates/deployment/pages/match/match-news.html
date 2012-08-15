@@ -1,0 +1,13 @@
+<div class="match-title">
+    <h3>{{ match_title }}</h3>
+</div>
+
+<div class="match-content">
+    {% if prof1 %}
+        {% include 'deployment/pages/match/match-new-box.html' with item=prof1 %}
+    {% endif %}
+
+    <div class="news">
+        <h4 class="big-title"> Mitt Romney names Paul Ryan as his running mate. </h4>
+    </div>
+</div>

@@ -874,7 +874,8 @@ def newMatch(request,start='presidential', vals={}):
     sections = {'presidential':0,
                 'senate':1,
                 'social':2,
-                'representatives':3}
+                'representatives':3,
+                'news':4}
     vals['start_sequence'] = sections[start]
 
     viewer = vals['viewer']
@@ -886,6 +887,7 @@ def newMatch(request,start='presidential', vals={}):
     matchPresidential(request, vals)
     matchSenate(request, vals)
     matchRepresentatives(request, vals)
+    matchNews(request, vals)
 
     html = ajaxRender('deployment/pages/match/match-new.html', vals, request)
     url = "/match/"
@@ -960,6 +962,14 @@ def matchRepresentatives(request, vals={}):
     if not congressmen:
         vals['invalid_address'] = True
 
+def matchNews(request, vals):
+    viewer = vals['viewer']
+    if not LOCAL:
+        paul = ElectedOfficial.objects.get(first_name="Paul", last_name="Ryan")
+    else:
+        paul = viewer
+    paul.prepComparison(viewer)
+    vals['paul'] = paul
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail
