@@ -570,7 +570,7 @@ ACTIONS = [
     'updateGroupView',
     'ajaxThread',
     'getNotifications',
-    'getUserActions',
+    'getUserActivity',
     'getUserGroups',
     'getGroupActions',
     'getGroupMembers',
