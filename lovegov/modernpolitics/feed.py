@@ -55,8 +55,8 @@ def getContentFromAlias(alias, viewer):
     return content
 
 
-def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking, feed_topic, feed_start=0, num=10):
-
+def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
+                           feed_topic, feed_start=0, num=10):
     question_items = []
     them_responses = to_compare.view.responses.filter(privacy="PUB")
     you_responses = viewer.view.responses.all()
@@ -81,7 +81,7 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking, f
     return question_items[feed_start:feed_start+num]
 
 
-def getQuestionItems(viewer, feed_ranking, feed_topic, feed_start=0, num=10):
+def getQuestionItems(viewer, feed_ranking, feed_topic, only_unanswered, feed_start=0, num=10):
 
     question_items=[]
     questions = Question.objects.all()
@@ -90,6 +90,9 @@ def getQuestionItems(viewer, feed_ranking, feed_topic, feed_start=0, num=10):
 
     if feed_topic:
         questions = questions.filter(main_topic=feed_topic)
+    if only_unanswered:
+        q_ids = you_responses.values_list("question_id", flat=True)
+        questions = questions.exclude(id__in=q_ids)
 
     questions = sortHelper(questions, feed_ranking)
 

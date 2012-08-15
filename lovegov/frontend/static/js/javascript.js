@@ -3,7 +3,7 @@
  *     ~init js, does stuff that delegated cant!
  *
  ***********************************************************************************************************************/
-var rebind="home";
+var rebind;
 function bindOnReload() {
     bindOnNewElements();
     switch (rebind) {
@@ -16,6 +16,9 @@ function bindOnReload() {
             break;
         case "groupedit":
             loadGroupEdit();
+            break;
+        case 'questions':
+            initFeed();
             break;
     }
 }
@@ -38,7 +41,6 @@ function bindOnNewElements() {
  *     ~Delegated binding function, similar to jquery's deprecated ".live()"
  *
  ***********************************************************************************************************************/
-
 function bind(selector, events, data, handler) {
     $(document).on(events, selector, data, handler);
 }
@@ -123,8 +125,7 @@ function initFeed() {
         selectType(e);
     });
     $.each($(".feed_main"), function(i,e) {
-        $(this).data('feed_start', 0);
-        getFeed($(this));
+        refreshFeed($(this));
     });
 }
 
@@ -550,9 +551,14 @@ function removeType(type) {
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
     var container = $(this).parents(".feed_main");
+    refreshFeed(container);
+});
+
+/* replaces feed, rather than appendin */
+function refreshFeed(container) {
     container.data('feed_start', 0);
     getFeed(container);
-});
+}
 
 var feed_types = [];
 var feed_rank = 'H';
@@ -578,8 +584,13 @@ function getFeed(container) {
         data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
     }
     else {
+        var only_unanswered = container.data('only_unanswered');
+        if (typeof(only_unanswered) == 'undefined') {
+            only_unanswered = false;
+        }
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id};
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
+            'only_unanswered':only_unanswered };
     }
     action({
             data: data,
@@ -1497,10 +1508,14 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
+    expandAnswer(stub);
+});
+
+function expandAnswer(stub) {
     stub.find(".question_comparison").hide();
     stub.find(".answer_expanded").show();
-    $(this).hide();
-});
+    stub.find(".answer_button").hide();
+}
 
 
 bind('.answer_checkbox' , 'click' , null , function(event)
@@ -1544,13 +1559,23 @@ bind('.save_button' , 'click' , null , function(event)
             'explanation':explanation,'a_id':a_id, 'weight':weight, 'to_compare_id':to_compare_id},
         success: function(data) {
             var returned = eval('(' + data + ')');
-            var new_element = $(returned.html);
-            stub.replaceWith(new_element);
-            var saved_message = new_element.find(".saved_message");
-            saved_message.show();
-            saved_message.fadeOut(5000);
-            bindImportanceSlider(new_element.find(".importance_bar"));
+
+            var container = stub.parents(".feed_main");
+            var only_unanswered = container.data('only_unanswered');
+            if (only_unanswered) {
+                stub.hide();
+                expandAnswer(stub.next('.question_stub'));
+            }
+            else {
+                var new_element = $(returned.html);
+                stub.replaceWith(new_element);
+                var saved_message = new_element.find(".saved_message");
+                saved_message.show();
+                saved_message.fadeOut(5000);
+                bindImportanceSlider(new_element.find(".importance_bar"));
+            }
             updateMatches();
+            updateStats();
         }
     });
 });
@@ -1606,6 +1631,31 @@ function updateMatch(match) {
     });
 }
 
+function updateStats() {
+    $.each($(".stats_object"), function(i,e) {
+       updateStatsObject($(this));
+    });
+}
+
+function updateStatsObject(stats) {
+    var object = stats.data('object');
+    action({
+        data: {'action':'updateStats', 'object':object},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            stats.replaceWith(new_element);
+        }
+    });
+}
+
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
 
 /***********************************************************************************************************************
  *

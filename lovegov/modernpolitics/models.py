@@ -179,6 +179,11 @@ class Topic(LGModel):
     def __unicode__(self):
         return self.topic_text
 
+    def getColor(self):
+        return MAIN_TOPICS_COLORS_ALIAS[self.alias]['default']
+    def getLightColor(self):
+        return MAIN_TOPICS_COLORS_ALIAS[self.alias]['light']
+
     def getColors(self):
         return {'color':self.color,'color_light':self.color_light}
 

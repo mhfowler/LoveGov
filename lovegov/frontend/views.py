@@ -451,6 +451,10 @@ def friends(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def questions(request, vals={}):
+
+    getMainTopics(vals)
+    getQuestionStats(vals)
+
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals)
