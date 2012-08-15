@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 print "*** SENDING SPECIAL EMAIL ***"
 
 #users = UserProfile.objects.filter(user_type="U")
-users = UserProfile.objects.filter(developer=True)
+users = UserProfile.objects.filter(developer=True, first_name="Max")
 
 count = 0
 for u in users:
