@@ -342,7 +342,7 @@ def scriptCreateResponses(args=None):
 
                 responses = politician.view.responses.filter(question=question)
                 if not responses:
-                    response = Response(question=question,answer_val=answer.value,explanation="")
+                    response = Response(question=question,answer_val=answer.value)
 #                    response.most_chosen_num = 1
 #                    response.total_num = 1
                     response.autoSave(creator=politician)
@@ -354,7 +354,7 @@ def scriptCreateResponses(args=None):
                         print "+DD+ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
                     response = responses[0]
                     response.answer_val = answer.value
-                    response.explanation = ''
+#                    response.explanation = ''
 #                    response.total_num = 1
 #                    response.most_chosen_num = 1
                     response.save()
