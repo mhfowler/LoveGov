@@ -23,6 +23,17 @@ table.home
     {
       width:100%;
 
+      div.minimize-button
+      {
+        float: right;
+        cursor: pointer;
+        color: $text-blue-light;
+        font-size: 10px;
+        margin-top: 2px;
+
+        &:hover { color: $text-blue; }
+      }
+
       div.expand-info
       {
         @include titleFont();
@@ -34,6 +45,7 @@ table.home
         line-height: 12px;
         padding-top: 5px;
         margin-top: 5px;
+        overflow: hidden;
       }
 
       div.expand-info:hover

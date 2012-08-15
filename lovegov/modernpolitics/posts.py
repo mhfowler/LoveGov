@@ -831,33 +831,24 @@ def joinGroupRequest(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, vals={}):
     viewer = vals['viewer']
-    response = request.POST['response']
+
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast() # Parties have a slightly different joinMember
 
     if viewer not in group.admins.all():
+        LGException( "User ID #" + str(viewer.id) + " attempted to respond to a join request for group ID #" + str(group.id) )
         return HttpResponseForbidden("You are not authorized to respond to this group request")
 
-    already = GroupJoined.objects.filter(user=from_user, group=group)
-    if already:
-        group_joined = already[0]
-        if group_joined.confirmed:
-            return HttpResponse("This person is already in your group")
-        elif group_joined.requested:
-            if response == 'Y':
-                group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="A")
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("they're now in your group")
-            elif response == 'N':
-                group_joined.reject()
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="X")
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("you have rejected their join request")
-    return HttpResponse("this person has not requested to join you")
+    if not 'response' in request.POST:
+        LGException("No response supplied to joinGroupResponse for group ID #" + str(group.id) )
+        return HttpResponseBadRequest("Group request response sent without response text.")
+
+    response = request.POST['response']
+
+    result = joinGroupResponseAction(group,from_user,response,getPrivacy(request))
+
+    return HttpResponse( json.dumps({ 'success':result }) )
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or declines a group GroupJoined, if GroupJoined was invited.
@@ -867,45 +858,23 @@ def groupInviteResponse(request, vals={}):
     from_user = vals['viewer'] # Viewer is always recieving/responding to the invite
 
     if not 'g_id' in request.POST:
-        errors_logger.error("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
-        return HttpResponse("Group invite response sent without a group ID")
+        LGException("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
+        return HttpResponseBadRequest("Group invite response sent without a group ID")
 
     group = Group.lg.get_or_none(id=request.POST['g_id'])
     if not group:
-        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
-        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+        LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
+        return HttpResponseBadRequest("Group invite response sent with invalid group ID.")
 
     if not 'response' in request.POST:
-        errors_logger.error("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
+        LGException("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
+        return HttpResponseBadRequest("Group invite response sent without response text.")
+
     response = request.POST['response']
 
-    # Find any groupJoined objects that exist
-    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
-    if group_joined: # If there are any
+    result = groupInviteResponseAction(group,from_user,response,getPrivacy(request))
 
-        if group_joined.confirmed:
-            errors_logger.error("User #" + str(from_user.id) + " responded to an invite to group #" + str(group.id) + " of which they are already a member")
-            return HttpResponse("You have already joined that group")
-
-        if group_joined.invited:
-            if response == 'Y':
-                group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
-                action.autoSave()
-                for admin in group.admins.all():
-                    admin.notify(action)
-                return HttpResponse("you have joined this group!")
-
-            elif response == 'N':
-                group_joined.decline()
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
-                action.autoSave()
-                for admin in group.admins.all():
-                    admin.notify(action)
-                return HttpResponse("you have rejected this group invitation")
-
-    errors_logger.error("User #" + str(viewer.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
-    return HttpResponse("you were not invitied to join this group")
+    return HttpResponse( json.dumps({ 'success':result }) )
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites a set of users to a given group
@@ -915,66 +884,33 @@ def groupInvite(request, vals={}):
     inviter = vals['viewer'] # Viewer is always sending the invite
 
     if not 'g_id' in request.POST:
-        errors_logger.error("Group invite sent without a group ID by user " + str(inviter.id) + ".")
-        return HttpResponse("Group invite sent without a group ID")
+        LGException("Group invite sent without a group ID by user " + str(inviter.id) + ".")
+        return HttpResponseBadRequest("Group invite sent without a group ID")
 
     group = Group.lg.get_or_none(id=request.POST['g_id'])
     if not group:
-        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
-        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+        LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return HttpResponseBadRequest("Group invite sent with invalid group ID.")
 
     if inviter not in group.admins.all():
         return HttpResponseForbidden("You are not authorized to send group invites for this group")
 
     if not 'invitees' in request.POST:
-        errors_logger.error("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
-        return HttpResponse("Group invite sent without recieving user IDs")
+        LGException("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
+        return HttpResponseBadRequest("Group invite sent without recieving user ID(s)")
 
     invitees = json.loads(request.POST['invitees'])
 
     for follow_id in invitees:
-        individualGroupInvite(follow_id,group,inviter,request)
+        from_user = UserProfile.lg.get_or_none(id=follow_id)
+
+        if not from_user:
+            LGException("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user ID #" + str(inviter.id))
+            continue
+
+        groupInviteAction(from_user,group,inviter,privacy)
 
     return HttpResponse("invite success")
-
-#----------------------------------------------------------------------------------------------------------------------
-# Invites a single user to a given group
-# HELPER FUNCTION TO groupInvite().
-#-----------------------------------------------------------------------------------------------------------------------
-def individualGroupInvite(follow_id, group, inviter, request):
-    from_user = UserProfile.lg.get_or_none(id=follow_id)
-
-    if not from_user:
-        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
-        return False
-
-    # Find any groupJoined objects that exist
-    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
-    if group_joined: # If there are any
-
-        if group_joined.confirmed:
-            errors_logger.error("User #" + str(from_user.id) + " was invited to group #" + str(group.id) + " of which they are already a member")
-            return False
-
-        elif group_joined.invited:
-            normal_logger.debug("User #" + str(from_user.id) + " was reinvited to join group #" + str(group.id) )
-            return False
-
-        elif group_joined.requested:
-            group.joinMember(from_user, privacy=getPrivacy(request))
-            action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
-            action.autoSave()
-            from_user.notify(action)
-            return True
-    else:
-        group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
-        group_joined.autoSave()
-
-    group_joined.invite(inviter)
-    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="I")
-    action.autoSave()
-    from_user.notify(action)
-    return True
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.

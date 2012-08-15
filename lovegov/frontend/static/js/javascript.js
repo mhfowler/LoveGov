@@ -18,6 +18,7 @@ function bindOnReload() {
             loadGroupEdit();
             break;
     }
+
 }
 
 function undelegated() {
@@ -31,7 +32,7 @@ function bindOnNewElements() {
     undelegated();
     loadHoverComparison();
     loadHistogram();
-    //setInfoHeight();
+    setInfoHeight();
 }
 
 /***********************************************************************************************************************
@@ -298,7 +299,7 @@ bind(".hide_info", 'click', null, function(event) {
 });
 
 var info_hidden = false;
-var info_expanded = true;
+var info_expanded = false;
 /* toggles the info's expanded state */
 function expandInfoToggle(animate)
 {
@@ -375,14 +376,17 @@ function setInfoHeight()
     if( info_hidden )
     {
         info_div.css("height",'0px');
+        info_div.css("overflow",'hidden');
     }
     else if( info_expanded )
     {
         info_div.css("height",'auto');
+        info_div.css("overflow",'hidden');
     }
     else
     {
         info_div.css("height","100px");
+        info_div.css("overflow",'hidden');
     }
 }
 
@@ -410,9 +414,6 @@ function homeReload(theurl) {
                 History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 path = returned.url;
                 $(".home_focus").html(returned.focus_html);
-                if (info_expanded) {
-                    expandInfoToggle(false);
-                }
                 bindOnNewElements();
                 initFeed();
             },
@@ -1141,15 +1142,10 @@ function userFollowResponse(event,response,div)
             },
             success: function(data)
             {
-                return true;
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
+
             }
         }
     );
-    return false;
 }
 
 function setFollowPrivacy(event,private_follow,div)
@@ -1187,25 +1183,75 @@ function setFollowPrivacy(event,private_follow,div)
                     );
                 }
             }
-            else
-            {
-                //alert(data);
-            }
-
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
         }
-
     });
 }
+
+bind( ".group_response_y" , 'click' , null , function(event)
+{
+    var wrapper = $(this).parent(".group_request_buttons");
+    wrapper.fadeOut(600);
+    groupFollowResponse(event,"Y",wrapper);
+    wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
+});
+
+bind( ".group_response_n" , 'click' , null , function(event)
+{
+    var wrapper = $(this).parent(".group_request_buttons");
+    wrapper.fadeOut(600);
+    groupFollowResponse(event,"N",wrapper);
+    wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
+});
+
+function groupFollowResponse(event,response,div)
+{
+    event.preventDefault();
+    var follow_id = div.data("follow_id");
+    var g_id = div.data("g_id");
+    action({
+            data: {
+                'action':'joinGroupResponse',
+                'follow_id': follow_id,
+                'g_id': g_id,
+                'response': response
+            },
+            success: function(data)
+            {
+
+            }
+        }
+    );
+}
+
+/***********************************************************************************************************************
+ *
+ *     ~Group Invites
+ *
+ **********************************************************************************************************************/
+bind( '#group_invite_submit' , 'click' , null , function(e)
+{
+    e.preventDefault();
+    var g_id = $("#group_invite_button").data('g_id');
+    var invitees = $('.invite_select').select2("val");
+    if (invitees!='') {
+        action({
+            data: {'action': 'groupInvite', 'invitees': JSON.stringify(invitees), 'g_id':g_id},
+            success: function(data)
+            {
+                $('#invite_submit_message').html('Invite Sent!');
+                $('#invite_submit_message').fadeIn(200);
+                window.setTimeout("$('div.overdiv').fadeOut(600); $('div.invite_modal').fadeOut(600);",1000);
+            }
+        });
+    }
+});
+
 
 function groupInviteResponse(event,response,div)
 {
     event.preventDefault();
     var g_id = div.data("g_id");
-    ajaxPost({
+    action({
             data: {
                 'action':'groupInviteResponse',
                 'g_id': g_id,
@@ -1213,16 +1259,11 @@ function groupInviteResponse(event,response,div)
             },
             success: function(data)
             {
-                //alert(data);
-            },
-            error: function(error, textStatus, errorThrown)
-            {
-                $('body').html(error.responseText);
+
             }
         }
     );
 }
-
 
 /***********************************************************************************************************************
  *

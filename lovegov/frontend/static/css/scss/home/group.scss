@@ -7,18 +7,7 @@
 
 div.group-top
 {
-  @include clearfix();
-
-  div.group-minimize-button
-  {
-    float: right;
-    cursor: pointer;
-    color: $text-blue-light;
-    font-size: 10px;
-    margin-top: 2px;
-
-    &:hover { color: $text-blue; }
-  }
+  @include inline-block();
 
   span.group-title
   {
