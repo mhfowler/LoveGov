@@ -966,10 +966,14 @@ def matchNews(request, vals):
     viewer = vals['viewer']
     if not LOCAL:
         paul = ElectedOfficial.objects.get(first_name="Paul", last_name="Ryan")
+        joe = ElectedOfficial.objects.get(first_name="Joseph", last_name="Biden")
     else:
         paul = viewer
+        joe = viewer
     paul.prepComparison(viewer)
+    joe.prepComparison(viewer)
     vals['paul'] = paul
+    vals['joe'] = joe
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper for content-detail

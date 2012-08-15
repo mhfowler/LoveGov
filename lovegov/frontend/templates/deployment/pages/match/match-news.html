@@ -1,5 +1,5 @@
 <div class="match-title">
-    <h3>{{ match_title }}</h3>
+    <h3 style="position:relative;top:200px;">{{ match_title }}</h3>
 </div>
 
 <div class="match-content">
@@ -7,7 +7,9 @@
         {% include 'deployment/pages/match/match-new-box.html' with item=prof1 %}
     {% endif %}
 
-    <div class="news">
-        <h4 class="big-title"> Mitt Romney names Paul Ryan as his running mate. </h4>
+    <div class="special-wrapper" style="margin-left:310px;float:left;">
+        {% if prof2 %}
+            {% include 'deployment/pages/match/match-new-box.html' with item=prof2 %}
+        {% endif %}
     </div>
 </div>
