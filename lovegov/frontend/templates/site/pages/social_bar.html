@@ -1,0 +1,36 @@
+<div class="social-bar">
+    <div class="hearts">
+        {% include 'site/pieces/hearts.html' with content=item %}
+    </div>
+    <div class="comments">
+        <a href="{{ item.get_url }}" class="comments-wrapper">
+
+            <div class="text-wrapper">
+                <div class="comments-text">
+                    {% if item.type != "G" %}
+                        comments
+                    {% else %}
+                        members
+                    {% endif %}
+                </div>
+                <div class="comments-num">
+                    {% if item.type != "G" %}
+                        {{ item.num_comments }}
+                    {% else %}
+                        {{ item.num_members }}
+                    {% endif %}
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div class="comments-bubble">
+                <div class="comments-num"> {{ item.num_comments }} </div>
+            </div>
+
+            <div style="clear:both;"></div>
+        </a>
+    </div>
+    <div class="share share_button" data-share_id={{item.id}}>
+        <p class="share-text"> share </p>
+    </div>
+</div>

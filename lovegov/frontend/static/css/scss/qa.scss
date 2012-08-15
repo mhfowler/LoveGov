@@ -3,9 +3,96 @@
 @import 'master-mixins';
 @import "compass";
 
+/**********************************************************************************************************************/
+/*  ~ browse questions                                                                                                */
+/**********************************************************************************************************************/
+div.questions-sidebar {
+  margin-top: 10px;
+
+  div.sidebar-header {
+    @include fontSize(14px);
+    font-weight:bold;
+  }
+
+  div.question-stats {
+    margin-left:8px;
+    div.topic-stat-box {
+      margin-top: 15px;
+      float:left;
+      margin-right:15px;
+
+      div.box {
+        position:relative;
+        width:50px;
+        height:50px;
+        border:1px solid;
+        div.colored-area {
+          width:100%;
+          @include opacity(0.4);
+          position:relative;
+        }
+        div.topic-image {
+          position:absolute;
+          top:9px;
+          left:7px;
+        }
+      }
+      div.writing {
+        margin-top:3px;
+        div.numbers {
+          width:100%;
+          text-align:center;
+          font-weight:bold;
+        }
+        div.questions {
+          margin-top:-3px;
+        }
+      }
+    }
+  }
+}
+
+
+div.questions-main {
+  margin-top: 10px;
+
+  div.main-top {
+    div.header-title {
+      @include fontSize(24px);
+      float:left;
+    }
+    div.red-line {
+      margin-left:5px;
+      margin-top:15px;
+      float:left;
+      border-bottom:1px solid $red;
+      width:840px;
+    }
+  }
+
+  div.questions-wrapper {
+    margin-top:10px;
+
+    span.answered-filter {
+      border: 1px solid $light-gray;
+      padding:8px;
+      margin-left:55px;
+      &.clicked {
+        background-color:$dark-green;
+        color:white;
+      }
+      &:hover {
+        background-color:$dark-green;
+        color:white;
+        cursor:pointer;
+      }
+    }
+  }
+
+}
 
 /**********************************************************************************************************************/
-/*  ~Comparison Hover                                                                                                 */
+/*  ~Questions Stub                                                                                                   */
 /**********************************************************************************************************************/
 div.question_stub {
   border:1px solid $light-gray;

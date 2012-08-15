@@ -7,23 +7,31 @@
     <div class="header-logo"></div>
     <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
     <ul>
-        <li>home</li>
-        <li>match</li>
-        <li>about</li>
+        <a href="/home"><li>home</li></a>
+        <a href="/match"><li>match</li></a>
+        <a href="/about"><li>about</li></a>
     </ul>
+
+    <div class="triangle-area">
+        {% include 'site/frame/user_menu.html' %}
+        <div class="triangle-wrapper">
+            <span class="head-triangle"></span>
+        </div>
+    </div>
 
     <span class="name">{{user.get_name}}</span>
 
-    {% include 'site/pieces/avatar.html' with user=user height='30' width='30' %}
-    
+    <span class="head-avatar">
+        {% include 'site/pieces/avatar.html' with user=user height='30' width='30' %}
+    </span>
+
     <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
 
     <div class="notices setting-icon">
         <div class='notifications_dropdown_button'>{{ notifications_num }}</div>
-        <img src="{{STATIC_URL}}/images/icons/arrow_red.png">
+        <span class="triangle"></span>
         {% include 'site/frame/notifications/notification_dropdown.html' %}
     </div>
-    <img src="{{ STATIC_URL }}/images/setting_red.png" class="setting-icon gear">
 
     <div class="search">
         <input type="text" placeholder="Search">
@@ -31,5 +39,3 @@
     </div>
 
 </header>
-
-{% include 'site/frame/user_menu.html' %}

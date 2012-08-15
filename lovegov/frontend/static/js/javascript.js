@@ -1,9 +1,9 @@
 /***********************************************************************************************************************
  *
- *     ~init js, does stuff that delegated cant!
+ *     ~init js, does stuff that delegated can't!
  *
  ***********************************************************************************************************************/
-var rebind="home";
+var rebind;
 function bindOnReload() {
     bindOnNewElements();
     switch (rebind) {
@@ -16,6 +16,9 @@ function bindOnReload() {
             break;
         case "groupedit":
             loadGroupEdit();
+            break;
+        case 'questions':
+            initFeed();
             break;
     }
 
@@ -40,7 +43,6 @@ function bindOnNewElements() {
  *     ~Delegated binding function, similar to jquery's deprecated ".live()"
  *
  ***********************************************************************************************************************/
-
 function bind(selector, events, data, handler) {
     $(document).on(events, selector, data, handler);
 }
@@ -125,8 +127,7 @@ function initFeed() {
         selectType(e);
     });
     $.each($(".feed_main"), function(i,e) {
-        $(this).data('feed_start', 0);
-        getFeed($(this));
+        refreshFeed($(this));
     });
 }
 
@@ -632,9 +633,14 @@ function removeType(type) {
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
     var container = $(this).parents(".feed_main");
+    refreshFeed(container);
+});
+
+/* replaces feed, rather than appendin */
+function refreshFeed(container) {
     container.data('feed_start', 0);
     getFeed(container);
-});
+}
 
 var feed_types = [];
 var feed_rank = 'H';
@@ -660,8 +666,13 @@ function getFeed(container) {
         data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
     }
     else {
+        var only_unanswered = container.data('only_unanswered');
+        if (typeof(only_unanswered) == 'undefined') {
+            only_unanswered = false;
+        }
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id};
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
+            'only_unanswered':only_unanswered };
     }
     action({
             data: data,
@@ -866,7 +877,7 @@ function leftSideToggle(wrapper)
  *
  ***********************************************************************************************************************/
 
-bind("img.gear", "click", function(e) {
+bind("header div.triangle-wrapper", "click", function(e) { 
     $('div.user-menu').fadeToggle(50);
 });
 
@@ -889,6 +900,591 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
         $('#user-menu-dropdown').hide();
     }
 });
+
+bind(".submit-comment", "click",function(event)
+     {
+         event.preventDefault();
+         $(this).parent().submit();
+     });
+
+function incNumComments() {
+     var ncspan = $('span.num_comments');
+     var num_comments = parseInt(ncspan.text());
+     ncspan.text(num_comments + 1);
+ }
+
+bind("#commentform","submit",function(event)
+     {
+         event.preventDefault();
+         var comment_text = $(this).children(".comment-textarea").val();
+         var comment_text_length = comment_text.length;
+         if (comment_text_length <= 10000)
+         {
+             $(this).children(".comment-textarea").val("");
+             var content_id = $("#content_id").val();
+             action({
+                 'data': {'action':'comment','c_id': content_id,'comment':comment_text},
+                 'success': function(data) {
+                     ajaxThread();
+                     incNumComments();
+                 },
+                 'error': null
+             });
+         }
+         else
+         {
+             alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
+         }
+     });
+
+bind(".reply", "click",function()
+     {
+         $(this).parent().siblings('.replyform').toggle();
+     });
+
+bind("input.tab-button.alt","click",function()
+     {
+         $(this).parent().hide();
+     });
+
+
+bind(".commentlike","click",function(event)
+     {
+         event.preventDefault();
+         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
+         $.post('/action/', {'action':'vote','c_id':content_id,'vote':'L'},
+             function(data)
+             {
+                 ajaxThread();
+             });
+     });
+
+bind('commentdislike', 'click', function(event)
+     {
+         event.preventDefault();
+         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
+         $.post('/action/', {'action':'vote','c_id':content_id,'vote':'D'},
+             function(data)
+             {
+                 ajaxThread();
+             });
+     });
+
+bind(".commentdelete", "click",function()
+     {
+         var content_id = $(this).children(".delete_id").val();
+         $.post('/action/', {'action':'delete','c_id':content_id},
+             function(data)
+             {
+                 ajaxThread();
+             });
+     });
+
+bind(".replyform","click",function(event)
+     {
+         event.preventDefault();
+         var comment_text = $(this).children(".comment-textarea").val();
+         var comment_text_length = comment_text.length;
+         if (comment_text_length <= 10000)
+         {
+             var content_id = $(this).children(".hidden_id").val();
+             action({
+                 data: {'action':'comment','c_id': content_id,'comment':comment_text},
+                 success: function(data)
+                 {
+                     ajaxThread();
+                     incNumComments();
+                 },
+                 error: null
+             });
+         }
+         else
+         {
+             alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
+         }
+     });
+
+// Collapse a thread (a comment and all its children)
+bind('span.collapse','click',function(e) {
+         var close = '[-]';
+         var open = '[+]';
+         if($(this).text()==close) {
+             $(this).text(open);
+             $(this).next('div.threaddiv').children().hide();
+         } else if($(this).text()==open) {
+             $(this).text(close);
+             $(this).next('div.threaddiv').children().show();
+         }
+     });
+
+// Flag a comment
+bind('span.flag',"click", function(e) {
+         var commentid = $(this).data('commentid');
+         var comment = $(this).parent().children('div.comment-text').text();
+         var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
+         if(conf) {
+             action({
+                 data: {'action': 'flag', 'c_id': commentid},
+                 success: function(data) {
+                     alert(data);
+                     $(this).css("color", "red");
+                 },
+                 error: function(data) {
+                     alert("Flagging comment failed.");
+                 }
+             });
+         }
+     });
+
+
+// ajax gets thread and replaces old thread
+function ajaxThread()
+{
+     action({
+         data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
+         success: function(data)
+         {
+             var returned = eval('(' + data + ')');
+             $("#thread").html(returned.html);
+             loadThread();
+             return false;
+         },
+         error: null
+     });
+}
+
+
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~Header links
+//  *
+//  ***********************************************************************************************************************/
+// function selectHeaderLink(div) {
+//     $(".header_link").removeClass("clicked");
+//     div.addClass("clicked");
+// }
+
+// bind('reactivate-first-login', 'click', function() {
+//         setFirstLoginStage(0, function() {
+//             window.location = '/match';
+//         });
+//     });
+
+// function bindTutorialLink() {
+//     $('.reactivate-first-login').bindOnce('click', function() {
+//         setFirstLoginStage(0, function() {
+//             window.location = '/match';
+//         });
+//     });
+// }
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~Menu and Icon Display
+//  *
+//  ***********************************************************************************************************************/
+// function loadMenuToggles() {
+
+//     function menuClickoff(menu) {
+//         menu.bindOnce("clickoutside.menuoff", function(event) {
+//             if (menu.hasClass("hack_workaround")) {
+//                 menu.removeClass("hack_workaround");
+//             }
+//             else {
+//                 menu.hide();
+//                 menu.parents(".menu_toggle").removeClass("clicked");
+//             }
+//         });
+//     }
+
+
+//     $(".menu").hide();
+//     $(".menu_toggle").click(function(event) {
+//         if (!$(this).hasClass("clicked")) {
+//             var other_menu_toggles = $(".menu_toggle").not($(this));
+//             other_menu_toggles.removeClass("clicked");
+//             other_menu_toggles.children(".menu").hide();
+//             var menu=$(this).children(".menu");
+//             menu.addClass("hack_workaround");
+//             menuClickoff(menu);
+//         }
+//         $(this).children(".menu").toggle();
+//     });
+
+//     $(".menu_toggle").hover(
+//         function(event) {
+//             $(this).children(".triangle-selector").addClass("highlighted");
+//         },
+//         function(event) {
+//             if (!$(this).hasClass("clicked")) {
+//                 $(this).children(".triangle-selector").removeClass("highlighted");
+//             }
+//         }
+//     );
+//     defaultHoverClick($(".menu_toggle"));
+// }
+
+// function defaultHoverClick(div) {
+//     div.click(function(event) {
+//         defaultClick($(this));
+//     });
+//     defaultHover(div);
+// }
+
+// function defaultHoverClickSingle(div) {
+//     div.click(function(event) {
+//         defaultClickSingle($(this), div);
+//     });
+//     defaultHover(div);
+// }
+
+// function defaultClickSingle(this_div, all_div) {
+//     var already = $(this).hasClass("clicked");
+//     all_div.removeClass("clicked");
+//     if (!already) {
+//         this_div.addClass("clicked");
+//     }
+// }
+
+// function defaultClick(this_div) {
+//     this_div.toggleClass("clicked");
+// }
+
+// function defaultHover(all_div) {
+//     all_div.hover(
+//         function(event) {
+//             $(this).addClass("hovered");
+//         },
+//         function(event) {
+//             $(this).removeClass("hovered");
+//         }
+//     );
+// }
+
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~Following
+//  *
+//  ***********************************************************************************************************************/
+// /* user follower */
+// function userFollow(event,div,follow)
+// {
+//     event.preventDefault();
+//     div.unbind();
+//     var action = 'userFollowRequest';
+//     if( !follow )
+//     {
+//         action = 'userFollowStop';
+//     }
+//     ajaxPost({
+//             data: {
+//                 'action': action,
+//                 'p_id': p_id
+//             },
+//             success: function(data)
+//             {
+//                 if( data == "follow success")
+//                 {
+//                     div.html("unfollow");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             userFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow request")
+//                 {
+//                     div.html("un-request");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             userFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow removed")
+//                 {
+//                     div.html("follow");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             userFollow(event,div,true);
+//                         }
+//                     );
+//                 }
+//                 else
+//                 {
+//                     //alert(data);
+//                 }
+//             },
+//             error: function(jqXHR, textStatus, errorThrown)
+//             {
+//                 $('body').html(jqXHR.responseText);
+//             }
+//         }
+//     );
+// }
+
+// function groupFollow(event,div,follow)
+// {
+//     event.preventDefault();
+//     div.unbind();
+//     var action = 'joinGroupRequest';
+//     if( !follow )
+//     {
+//         action = 'leaveGroup';
+//     }
+//     ajaxPost({
+//             data: {
+//                 'action': action,
+//                 'g_id': g_id
+//             },
+//             success: function(data)
+//             {
+//                 if( data == "follow success")
+//                 {
+//                     div.html("leave");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             groupFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow request")
+//                 {
+//                     div.html("un-request");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             groupFollow(event,div,false);
+//                         }
+//                     );
+//                 }
+//                 else if( data == "follow removed")
+//                 {
+//                     div.html("join");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             groupFollow(event,div,true);
+//                         }
+//                     );
+//                 }
+//                 else
+//                 {
+//                     //alert(data);
+//                 }
+//             },
+//             error: function(jqXHR, textStatus, errorThrown)
+//             {
+//                 $('body').html(jqXHR.responseText);
+//             }
+//         }
+//     );
+// }
+
+// function userFollowResponse(event,response,div)
+// {
+//     event.preventDefault();
+//     var follow_id = div.siblings(".user_follow_id").val();
+//     ajaxPost({
+//             data: {
+//                 'action':'followResponseResponse',
+//                 'p_id': follow_id,
+//                 'response': response
+//             },
+//             success: function(data)
+//             {
+//                 return true;
+//             },
+//             error: function(error, textStatus, errorThrown)
+//             {
+//                 $('body').html(error.responseText);
+//             }
+//         }
+//     );
+//     return false;
+// }
+
+// function setFollowPrivacy(event,private_follow,div)
+// {
+//     event.preventDefault();
+//     div.unbind();
+//     ajaxPost({
+//         data: {
+//             'action':'followprivacy',
+//             'p_id': p_id,
+//             'private_follow': private_follow
+//         },
+//         success: function(data)
+//         {
+//             if( data == "follow privacy set")
+//             {
+//                 if( private_follow )
+//                 {
+//                     div.html("private");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             setFollowPrivacy(event,0,$(this));
+//                         }
+//                     );
+//                 }
+//                 else
+//                 {
+//                     div.html("public");
+//                     div.click(
+//                         function(event)
+//                         {
+//                             setFollowPrivacy(event,1,$(this));
+//                         }
+//                     );
+//                 }
+//             }
+//             else
+//             {
+//                 //alert(data);
+//             }
+
+//         },
+//         error: function(jqXHR, textStatus, errorThrown)
+//         {
+//             $('body').html(jqXHR.responseText);
+//         }
+
+//     });
+// }
+
+// function groupInviteResponse(event,response,div)
+// {
+//     event.preventDefault();
+//     var g_id = div.data("g_id");
+//     ajaxPost({
+//             data: {
+//                 'action':'groupInviteResponse',
+//                 'g_id': g_id,
+//                 'response': response
+//             },
+//             success: function(data)
+//             {
+//                 //alert(data);
+//             },
+//             error: function(error, textStatus, errorThrown)
+//             {
+//                 $('body').html(error.responseText);
+//             }
+//         }
+//     );
+// }
+
+
+// /***********************************************************************************************************************
+//  *
+//  *      ~InlineEdits
+//  *
+//  ***********************************************************************************************************************/
+// function editUserProfile(info,edit_div)
+// {
+//     var prof_data = info;
+//     prof_data.action = 'editProfile';
+
+//     ajaxPost({
+//         'data': prof_data,
+//         success: function(data)
+//         {
+//             var obj = eval('(' + data + ')');
+//             if( obj.success )
+//             {
+//                 edit_div.text(obj.value);
+//                 edit_div.show();
+//             }
+//         },
+//         error: function(jqXHR, textStatus, errorThrown)
+//         {
+//             $('body').html(jqXHR.responseText);
+//         }
+//     });
+// }
+
+
+// function editContent(c_id,info,edit_div)
+// {
+//     var content_data = info;
+//     content_data.action = 'editContent';
+//     content_data.c_id = c_id;
+
+//     ajaxPost({
+//         'data': content_data,
+
+//         success: function(data)
+//         {
+//             var obj = eval('(' + data + ')');
+//             if( obj.success )
+//             {
+//                 edit_div.html(obj.value);
+//                 edit_div.show();
+//             }
+//         },
+//         error: function(jqXHR, textStatus, errorThrown)
+//         {
+//             $('body').html(jqXHR.responseText);
+//         }
+//     });
+// }
+
+// function unbindInlineEdits()
+// {
+//     $(".edit_button").unbind();
+//     $(".submit_inline_edit").unbind();
+//     $(".cancel_inline_edit").unbind();
+// }
+
+// function bindInlineEdits()
+// {
+//     $(".edit_button").bindOnce('click.edit',
+//         function(event)
+//         {
+//             event.preventDefault();
+//             $(this).siblings('.inline_hide').hide();
+//             $(this).hide();
+
+//             $(this).siblings('.inline_edit').show();
+//         }
+//     );
+
+//     $(".submit_inline_edit").bindOnce('click.edit',
+//         function(event)
+//         {
+//             event.preventDefault();
+//             var input = $(this).siblings('.edit_input');
+//             var wrapper = $(this).parent();
+//             var name = input.attr('name');
+//             var value = input.val();
+//             var model = wrapper.data('model');
+//             var info = {
+//                 'key':name,
+//                 'val':value
+//             };
+//             var edit_div = $(this).parent().siblings('.inline_hide');
+
+//             if( model == "Content" )
+//             {
+//                 var c_id = wrapper.data('id');
+//                 editContent(c_id,info,edit_div);
+//             }
+//             else if( model == "UserProfile")
+//             {
+//                 editUserProfile(info,edit_div);
+//             }
+
+//             $(this).parent().siblings('.edit_button').show();
+//             $(this).parent().hide();
+//         }
+//     );
 
 /***********************************************************************************************************************
  *
@@ -1626,10 +2222,14 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
+    expandAnswer(stub);
+});
+
+function expandAnswer(stub) {
     stub.find(".question_comparison").hide();
     stub.find(".answer_expanded").show();
-    $(this).hide();
-});
+    stub.find(".answer_button").hide();
+}
 
 
 bind('.answer_checkbox' , 'click' , null , function(event)
@@ -1673,13 +2273,23 @@ bind('.save_button' , 'click' , null , function(event)
             'explanation':explanation,'a_id':a_id, 'weight':weight, 'to_compare_id':to_compare_id},
         success: function(data) {
             var returned = eval('(' + data + ')');
-            var new_element = $(returned.html);
-            stub.replaceWith(new_element);
-            var saved_message = new_element.find(".saved_message");
-            saved_message.show();
-            saved_message.fadeOut(5000);
-            bindImportanceSlider(new_element.find(".importance_bar"));
+
+            var container = stub.parents(".feed_main");
+            var only_unanswered = container.data('only_unanswered');
+            if (only_unanswered) {
+                stub.hide();
+                expandAnswer(stub.next('.question_stub'));
+            }
+            else {
+                var new_element = $(returned.html);
+                stub.replaceWith(new_element);
+                var saved_message = new_element.find(".saved_message");
+                saved_message.show();
+                saved_message.fadeOut(5000);
+                bindImportanceSlider(new_element.find(".importance_bar"));
+            }
             updateMatches();
+            updateStats();
         }
     });
 });
@@ -1735,6 +2345,31 @@ function updateMatch(match) {
     });
 }
 
+function updateStats() {
+    $.each($(".stats_object"), function(i,e) {
+       updateStatsObject($(this));
+    });
+}
+
+function updateStatsObject(stats) {
+    var object = stats.data('object');
+    action({
+        data: {'action':'updateStats', 'object':object},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            stats.replaceWith(new_element);
+        }
+    });
+}
+
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
 
 /***********************************************************************************************************************
  *
