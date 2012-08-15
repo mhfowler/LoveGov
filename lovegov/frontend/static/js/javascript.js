@@ -1238,7 +1238,7 @@ bind( null , 'click' , null , function(event)
 
 
 function shortenLongText() {
-    var showChar = 200;
+    var showChar = 300;
     var ellipsestext = "...";
     var moretext = "read more";
     var lesstext = "less";

@@ -28,8 +28,8 @@ a {
 
 div.main {
   margin-left: 0px;
-  height: 330px;
-  width: 850px;
+  height: 310px;
+  width: 1150px;
 
   div.leg-title {
     margin-left: 0px;
@@ -38,15 +38,15 @@ div.main {
     width: 200px;
   }
 
-  div.level1-title {
+  div.level1-summary {
     margin-left: 0px;
     margin-top: 5px;
     height: 25px;
-    width: 300px;
+    width: 350px;
 
-    div.bill-title {
+    div.bill-summary {
       height: 25px;
-      width: 300px;
+      width: 350px;
 
       h4 {
         font-size:18px;
@@ -60,28 +60,24 @@ div.main {
     }
   }
 
-  div.level1-title-div {
+  div.level1-summary-div {
     margin-left: 0px;
     margin-top: 10px;
-    height: 300px;
-    width: 300px;
+    height: 220px;
+    width: 350px;
 
-    div.title.long_text.more {
+    div.summary.long_text.more {
       margin-top: 0px;
-      height: 250px;
-      width: 300px;
+      height: 220px;
+      width: 350px;
       padding-left: 5px;
       text-align: justify;
-    }
-
-    a.view-bill-text {
-      font-size: 24px;
     }
   }
 
   div.level1-sponsor {
-    margin-left: 315px;
-    margin-top: -335px;
+    margin-left: 365px;
+    margin-top: -255px;
     height: 25px;
     width: 100px;
 
@@ -102,16 +98,16 @@ div.main {
   }
 
   div.level1-sponsor-div {
-    margin-left: 315px;
+    margin-left: 365px;
     margin-top: 10px;
-    height: 100px;
+    height: 120px;
     width: 100px;
     padding-top: 1px;
     background-color: #E0E0E0;
 
     div.sponsor {
       display: center;
-      height: 90px;
+      height: 110px;
       width: 90px;
       background-color: #ef503b;
       margin: 5px 5px 5px 5px;
@@ -119,7 +115,7 @@ div.main {
   }
 
   div.sponsor-caption {
-    margin-left: 315px;
+    margin-left: 365px;
     margin-top: 5px;
     height: 50px;
     width: 100px;
@@ -129,8 +125,8 @@ div.main {
 
 
   div.level1-subjects {
-    margin-left: 430px;
-    margin-top: -190px;
+    margin-left: 480px;
+    margin-top: -210px;
     height: 25px;
     width: 150px;
 
@@ -151,23 +147,21 @@ div.main {
   }
 
   div.level1-subjects-div {
-    margin-left: 430px;
+    margin-left: 480px;
     margin-top: 0px;
-    height: 200px;
+    height: 150px;
     width: 150px;
 
     div.subjects {
       margin-top: 0px;
-      height: 200px;
+      height: 150px;
       width: 150px;
       padding-left: -10px;
       text-align: justify;
 
       span{
-        padding-left: -10px;
 
         ul {
-          padding-left: -10px;
 
           li {
             margin-left: -20px;
@@ -181,8 +175,8 @@ div.main {
   }
 
   div.level1-committees {
-    margin-left: 430px;
-    margin-top: -100px;
+    margin-left: 480px;
+    margin-top: -70px;
     height: 25px;
     width: 150px;
 
@@ -203,14 +197,14 @@ div.main {
   }
 
   div.level1-committees-div {
-    margin-left: 430px;
+    margin-left: 480px;
     margin-top: 0px;
-    height: 200px;
+    height: 100px;
     width: 150px;
 
     div.committees {
       margin-top: 0px;
-      height: 200px;
+      height: 100px;
       width: 150px;
       padding-left: -10px;
       text-align: justify;
@@ -232,26 +226,237 @@ div.main {
     }
   }
 
-  aside {
-    margin-top: 0px;
-    height: 600px
+  div.level1-progress {
+    margin-left: 650px;
+    margin-top: -255px;
+    height: 25px;
+    width: 150px;
+
+    div.bill-progress-title {
+      height: 25px;
+      width: 150px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+
+      }
+    }
+  }
+
+  div.level1-progress-div {
+    padding-top: 1px;
+    margin-left: 650px;
+    margin-top: 10px;
+    height: 230px;
+    width: 150px;
+    background-color: #E0E0E0;
+
+    div.progress {
+      display: center;
+      height: 220px;
+      width: 140px;
+      background-color: $blue;
+      margin: 5px 5px 5px 5px;
+    }
+  }
+
+  div.right-sidebar {
+    margin-top: -265px;
+    margin-left: 820px;
+    height: 260px;
+    width: 180px;
+    border: 1px;
 
     div.bill-actions {
-
+      height: 260px;
+      width: 180px;
+      @include rounded(8px);
+      background-color:#CCCCCC;
+      padding-top: 7px;
 
       div.button {
-        height: 30px;
-        width: 50px;
+        margin-top: 3px;
+        margin-left: 15px;
+        height: 40px;
+        width: 150px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
+
+        &.support {
+          background-color: $text-blue-light;
+        }
+
+        &.oppose {
+          background-color: $teal;
+        }
+
+        &.follow {
+          background-color: $green;
+        }
+
+        &.share {
+          background-color: $yellow;
+        }
+
+        &.contact {
+          background-color: $orange;
+          height: 70px;
+        }
+
+        span {
+          color: white;
+          font-size: 14px;
+          font-weight: bold;
+        }
       }
     }
   }
 }
 
 div.secondary {
-  margin-top: 10px;
   margin-left: 0px;
-  height: 400px;
-  width: 1000px;
-}
+  margin-top: 0px;
+  height: 330px;
+  width: 1150px;
 
+  div.level2-actions {
+    margin-left: 0px;
+    margin-top: -140px;
+    height: 25px;
+    width: 350px;
+
+    div.bill-recent-actions {
+      height: 25px;
+      width: 350px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+
+      }
+    }
+  }
+
+  div.level2-actions-div {
+    margin-left: 0px;
+    margin-top: 0px;
+    height: 150px;
+    width: 350px;
+
+    div.actions {
+      margin-top: 0px;
+      height: 150px;
+      width: 150px;
+      padding-left: -10px;
+      text-align: justify;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+          }
+        }
+      }
+    }
+
+    div.action-dates {
+      margin-top: -163px;
+      margin-left: 170px;
+      height: 150px;
+      width: 180px;
+      padding-left: -5px;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+            a {
+              text-decoration: none;
+              font-color: black;
+            }
+          }
+        }
+      }
+    }
+    div.action-results {
+      margin-top: -163px;
+      margin-left: 280px;
+      height: 150px;
+      width: 180px;
+      padding-left: -5px;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+            a {
+              text-decoration: none;
+              font-color: black;
+            }
+          }
+        }
+      }
+    }
+  }
+  div.level2-bill-text {
+    margin-left: 0px;
+    margin-top: -40px;
+    height: 25px;
+    width: 800px;
+
+    div.bill-text {
+      height: 25px;
+      width: 800px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+      }
+    }
+  }
+  div.level2-bill-text-div {
+    margin-left: 0px;
+    margin-top: 10px;
+    height: auto;
+    width: 800px;
+
+    div.bill-text.long_text.more {
+      margin-top: 0px;
+      height: auto;
+      width: 800px;
+      padding-left: 5px;
+      text-align: justify;
+    }
+  }
+}
 
