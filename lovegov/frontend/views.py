@@ -45,7 +45,7 @@ def homeResponse(request, focus_html, url, vals):
         vals['focus_html'] = focus_html
         homeSidebar(request, vals)
         html = ajaxRender('site/pages/home/home.html', vals, request)
-        return framedResponse(request, html, url, vals)
+        return framedResponse(request, html, url, vals, rebind="home")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all views. Requires_login=True if requires login.
@@ -460,7 +460,7 @@ def questions(request, vals={}):
 
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals)
+    return framedResponse(request, html, url, vals, rebind="questions")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
