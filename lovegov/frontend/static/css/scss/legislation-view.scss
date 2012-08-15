@@ -63,21 +63,50 @@ div.main {
   div.level1-summary-div {
     margin-left: 0px;
     margin-top: 10px;
-    height: 220px;
+    height: 120px;
     width: 350px;
 
     div.summary.long_text.more {
       margin-top: 0px;
-      height: 220px;
+      height: 120px;
       width: 350px;
       padding-left: 5px;
       text-align: justify;
     }
   }
 
+  div.level1-bill-hotness {
+    margin-left: 0px;
+    margin-top: 0px;
+    height: 25px;
+    width: 350px;
+
+    div.bill-hotness-label {
+      height: 25px;
+      width: 350px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+
+      }
+    }
+  }
+
+  div.level1-bill-hotness-div {
+    margin-left: 0px;
+    margin-top: 0px;
+    height: 150px;
+    width: 350px;
+  }
+
   div.level1-sponsor {
     margin-left: 365px;
-    margin-top: -255px;
+    margin-top: -330px;
     height: 25px;
     width: 100px;
 
@@ -100,23 +129,22 @@ div.main {
   div.level1-sponsor-div {
     margin-left: 365px;
     margin-top: 10px;
-    height: 120px;
+    height: 135px;
     width: 100px;
     padding-top: 1px;
     background-color: #E0E0E0;
 
     div.sponsor {
       display: center;
-      height: 110px;
+      height: 125px;
       width: 90px;
-      background-color: #ef503b;
       margin: 5px 5px 5px 5px;
     }
   }
 
   div.sponsor-caption {
     margin-left: 365px;
-    margin-top: 5px;
+    margin-top: 10px;
     height: 50px;
     width: 100px;
     text-align: center;
@@ -126,7 +154,7 @@ div.main {
 
   div.level1-subjects {
     margin-left: 480px;
-    margin-top: -210px;
+    margin-top: -230px;
     height: 25px;
     width: 150px;
 
@@ -267,7 +295,7 @@ div.main {
   div.bill-stats {
     margin-top: -265px;
     margin-left: 820px;
-    height: 260px;
+    height: 265px;
     width: 150px;
     border: 1px;
 
@@ -308,7 +336,7 @@ div.main {
 
           span {
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             font-weight: bold;
           }
         }
@@ -345,7 +373,7 @@ div.main {
 
           span {
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             font-weight: bold;
           }
         }
@@ -353,15 +381,15 @@ div.main {
     }
   }
 
-  div.bill-other-actions {
-    margin-top: -260px;
+  div.bill-share {
+    margin-top: -265px;
     margin-left: 990px;
-    height: 260px;
+    height: 100px;
     width: 160px;
     border: 1px;
 
-    div.bill-other-actions-div {
-      height: 260px;
+    div.bill-share-div {
+      height: 100px;
       width: 160px;
       background-color: $light-gray;
       padding-top: 7px;
@@ -379,15 +407,36 @@ div.main {
         &.share {
           background-color: $green;
           margin-left: 15px;
-          margin-top: 8px;
+          margin-top: 5px;
 
           span {
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             font-weight: bold;
           }
         }
       }
+
+      div.share-icons {
+        margin-left: 15px;
+        margin-top: 5px;
+      }
+    }
+  }
+
+  div.bill-other-actions {
+    margin-top: 10px;
+    margin-left: 990px;
+    height: 150px;
+    width: 160px;
+    border: 1px;
+
+    div.bill-other-actions-div {
+      height: 150px;
+      width: 160px;
+      background-color: $light-gray;
+      padding-top: 7px;
+
 
       div.button {
         margin-top: 3px;
@@ -402,10 +451,11 @@ div.main {
         &.follow {
           background-color: $green;
           margin-left: 15px;
+          margin-top: 5px;
 
           span {
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             font-weight: bold;
           }
         }
@@ -424,11 +474,13 @@ div.main {
         &.contact {
           background-color: $green;
           margin-left: 15px;
+          margin-top: 5px;
           height: 80px;
 
           span {
             color: white;
-            font-size: 14px;
+            padding-right: 2px;
+            font-size: 15px;
             font-weight: bold;
           }
         }
@@ -442,15 +494,15 @@ div.secondary {
   height: 330px;
   width: 1200px;
 
-  div.level2-actions {
-    margin-left: 0px;
-    margin-top: -140px;
+  div.level2-recent-actions {
+    margin-left: 820px;
+    margin-top: 0px;
     height: 25px;
-    width: 350px;
+    width: 330px;
 
     div.bill-recent-actions {
       height: 25px;
-      width: 350px;
+      width: 330px;
 
       h4 {
         font-size:18px;
@@ -464,16 +516,16 @@ div.secondary {
     }
   }
 
-  div.level2-actions-div {
-    margin-left: 0px;
+  div.level2-recent-actions-div {
+    margin-left: 820px;
     margin-top: 0px;
     height: 150px;
-    width: 350px;
+    width: 330px;
 
-    div.actions {
+    div.recent-actions {
       margin-top: 0px;
       height: 150px;
-      width: 150px;
+      width: 140px;
       padding-left: -10px;
       text-align: justify;
 
@@ -491,11 +543,11 @@ div.secondary {
       }
     }
 
-    div.action-dates {
+    div.recent-action-dates {
       margin-top: -163px;
       margin-left: 170px;
       height: 150px;
-      width: 180px;
+      width: 120px;
       padding-left: -5px;
 
       span{
@@ -515,11 +567,11 @@ div.secondary {
         }
       }
     }
-    div.action-results {
+    div.recent-action-results {
       margin-top: -163px;
-      margin-left: 280px;
+      margin-left: 260px;
       height: 150px;
-      width: 180px;
+      width: 140px;
       padding-left: -5px;
 
       span{
@@ -540,9 +592,10 @@ div.secondary {
       }
     }
   }
+
   div.level2-bill-text {
     margin-left: 0px;
-    margin-top: -40px;
+    margin-top: -187px;
     height: 25px;
     width: 800px;
 
