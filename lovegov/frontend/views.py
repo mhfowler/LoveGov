@@ -286,7 +286,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
-            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email'), 'zip':registerform.cleaned_data.get('zip')})
+            vals.update({"fullname":registerform.cleaned_data.get('fullname'),
+                         "email":registerform.cleaned_data.get('email'),
+                         'zip':registerform.cleaned_data.get('zip'),
+                         'age':registerform.cleaned_data.get('age')})
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
@@ -619,17 +622,31 @@ def newsDetail(request, n_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def questionDetail(request, q_id=-1, vals={}):
-    if q_id==-1:
-        question = getNextQuestion(request, vals)
-        if question:
-            q_id=question.id
-        else:
-            return HttpResponse("Congratulations, you have answered every question!")
-    valsQuestion(request, q_id, vals)
-    user = vals['user']
+def questionDetail(request, q_id=None, vals={}):
 
-    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
+    viewer = vals['viewer']
+    if not q_id:
+        question = random.choice(Question.objects.all())
+    else:
+        question = Question.objects.get(id=q_id)
+
+    response = viewer.view.responses.filter(question=question)
+    if response:
+        response = response[0]
+    vals['response'] = response
+    vals['question'] = question
+
+    if response:
+        vals['group_tuples'] = getGroupTuples(viewer, question, response)
+
+    friends = viewer.getIFollow()
+    friends_answered = []
+    for f in friends:
+        if f.view.responses.filter(question=question):
+            friends_answered.append(f)
+    vals['friends_answered'] = friends_answered
+
+    html = ajaxRender('site/pages/qa/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
 
