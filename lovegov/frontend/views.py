@@ -638,7 +638,7 @@ def questionDetail(request, q_id=None, vals={}):
             friends_answered.append(f)
     vals['friends_answered'] = friends_answered
 
-    html = ajaxRender('site/pages/qa/question_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
 
@@ -646,7 +646,15 @@ def questionDetail(request, q_id=None, vals={}):
 # detail for a poll
 #-----------------------------------------------------------------------------------------------------------------------
 def pollDetail(request, p_id=-1, vals={}):
-    return HttpResponse("Poll!")
+
+    poll = Poll.objects.get(id=p_id)
+    vals['poll'] = poll
+
+    contentDetail(request, poll, vals)
+
+    html = ajaxRender('site/pages/content_detail/poll_detail.html', vals, request)
+    url = poll.get_url()
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion

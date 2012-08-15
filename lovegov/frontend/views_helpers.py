@@ -88,15 +88,10 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
 # helper for content-detail
 #-----------------------------------------------------------------------------------------------------------------------
 def contentDetail(request, content, vals):
-    rightSideBar(request, vals)
-    shareButton(request, vals)
-    vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
-    vals['topic'] = content.getMainTopic()
     vals['content'] = content
     viewer = vals['viewer']
     creator_display = content.getCreatorDisplay(viewer)
     vals['creator'] = creator_display
-    vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
     my_vote = user_votes.filter(content=content)
     if my_vote:
@@ -196,16 +191,19 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         return ''
 
 #-----------------------------------------------------------------------------------------------------------------------
-# fills in vals with topic_stats for poll_stats.html
+# fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
 def getQuestionStats(vals):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
+    lgpoll = getLoveGovPoll()
+    vals['lgpoll'] = lgpoll
+    questions = lgpoll.questions.all()
     for t in getMainTopics():
         stat = {'topic':t}
-        q_ids = Question.objects.filter(main_topic=t, official=True).values_list('id', flat=True)
+        q_ids = questions.filter(main_topic=t).values_list('id', flat=True)
         total = q_ids.count()
         r = responses.filter(question_id__in=q_ids).exclude(most_chosen_answer=None)
         num = r.count()

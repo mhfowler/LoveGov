@@ -1,4 +1,4 @@
-{% extends 'site/pages/top_sidebar_main.html' %}
+{% extends 'site/pages/content_detail/top_sidebar_main.html' %}
 
 
 {% block top %}
@@ -6,7 +6,11 @@
 
 
 {% block sidebar %}
-   {% include 'site/pages/qa/lovegov_official_poll_stats.html' %}
+    <div class="questions-sidebar">
+        <div class="sidebar-header"> Your LoveGov <a href="{{ lgpoll.get_url }}"> Official Poll </a> Progress </div>
+        <!-- topic stat box -->
+        {% include 'site/pages/qa/poll_progress_by_topic.html' %}
+    </div>
 {% endblock %}
 
 {% block main %}
