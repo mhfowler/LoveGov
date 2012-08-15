@@ -27,9 +27,9 @@ def errorMessage(request,message,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
-def framedResponse(request, html, url, vals):
+def framedResponse(request, html, url, vals={}, rebind="home"):
     if request.is_ajax():
-        to_return = {'html':html, 'url':url, 'title':vals['page_title']}
+        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['page_title']}
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
@@ -45,7 +45,7 @@ def homeResponse(request, focus_html, url, vals):
         vals['focus_html'] = focus_html
         homeSidebar(request, vals)
         html = ajaxRender('site/pages/home/home.html', vals, request)
-        return framedResponse(request, html, url, vals)
+        return framedResponse(request, html, url, vals, rebind="home")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all views. Requires_login=True if requires login.
@@ -147,7 +147,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/me/')
+    return shortcuts.redirect('/home/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -286,7 +286,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
-            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email'), 'zip':registerform.cleaned_data.get('zip')})
+            vals.update({"fullname":registerform.cleaned_data.get('fullname'),
+                         "email":registerform.cleaned_data.get('email'),
+                         'zip':registerform.cleaned_data.get('zip'),
+                         'age':registerform.cleaned_data.get('age')})
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
@@ -457,7 +460,7 @@ def questions(request, vals={}):
 
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals)
+    return framedResponse(request, html, url, vals, rebind="questions")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -523,9 +526,12 @@ def electionPage(request, e_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page
 #-----------------------------------------------------------------------------------------------------------------------
-def profile(request, alias, vals={}):
+def profile(request, alias=None, vals={}):
 
     viewer = vals['viewer']
+    if not alias:
+        return shortcuts.redirect(viewer.get_url())
+
     getMainTopics(vals)
     user_profile = UserProfile.objects.get(alias=alias)
     vals['profile'] = user_profile
@@ -619,17 +625,31 @@ def newsDetail(request, n_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def questionDetail(request, q_id=-1, vals={}):
-    if q_id==-1:
-        question = getNextQuestion(request, vals)
-        if question:
-            q_id=question.id
-        else:
-            return HttpResponse("Congratulations, you have answered every question!")
-    valsQuestion(request, q_id, vals)
-    user = vals['user']
+def questionDetail(request, q_id=None, vals={}):
 
-    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
+    viewer = vals['viewer']
+    if not q_id:
+        question = random.choice(Question.objects.all())
+    else:
+        question = Question.objects.get(id=q_id)
+
+    response = viewer.view.responses.filter(question=question)
+    if response:
+        response = response[0]
+    vals['response'] = response
+    vals['question'] = question
+
+    if response:
+        vals['group_tuples'] = getGroupTuples(viewer, question, response)
+
+    friends = viewer.getIFollow()
+    friends_answered = []
+    for f in friends:
+        if f.view.responses.filter(question=question):
+            friends_answered.append(f)
+    vals['friends_answered'] = friends_answered
+
+    html = ajaxRender('site/pages/qa/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
 
@@ -711,7 +731,7 @@ def account(request, section="", vals={}):
 
     if request.method == 'GET':
         html = ajaxRender('site/pages/account.html', vals, request)
-        url = '/account/'
+        url = '/settings/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
         if request.POST['box'] == 'password':
@@ -741,7 +761,7 @@ def account(request, section="", vals={}):
             pass
 
         html = ajaxRender('site/pages/account.html', vals, request)
-        url = '/account/'
+        url = '/settings/'
         return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

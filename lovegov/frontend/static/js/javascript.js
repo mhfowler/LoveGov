@@ -20,6 +20,9 @@ function bindOnReload() {
         case 'questions':
             initFeed();
             break;
+        case 'question_detail':
+            bindImportanceSliders();
+            break;
     }
 
 }
@@ -451,8 +454,8 @@ bind(".do_ajax_link", 'click', null, function(event) {
 function ajaxReload(theurl, loadimg)
 {
     $('#search-dropdown').hide();
-    $('#main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},1000); }
+    $('.main_content').hide();
+    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
     $.ajax
         ({
             url:theurl,
@@ -464,9 +467,10 @@ function ajaxReload(theurl, loadimg)
                 History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
                 $('body').css("overflow","scroll");
-                $('#main_content').css("top","0px");
-                $("#main_content").html(returned.html);
-                $('#main_content').show();
+                $('.main_content').css("top","0px");
+                $(".main_content").html(returned.html);
+                $('.main_content').show();
+                rebind = returned.rebind;
                 bindOnReload();
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -497,7 +501,7 @@ bind(".sign-in-input", 'focusout', null, function(event) {
 bind(null, "click", null, function(event) {
     var outside = $(this).parents(".sign_in_dialogue").length == 0;
     if ((event.target.id != "sign_in_button") && outside) {
-        $(".sign_in_dialogue").hide();
+        //$(".sign_in_dialogue").hide();
     }
 });
 
@@ -2056,13 +2060,18 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
-    expandAnswer(stub);
+    expandAnswerInterface(stub);
 });
 
-function expandAnswer(stub) {
+function expandAnswerInterface(stub) {
     stub.find(".question_comparison").hide();
     stub.find(".answer_expanded").show();
     stub.find(".answer_button").hide();
+}
+
+function expandResponse(stub) {
+    stub.find(".answer_expanded").hide();
+    stub.find(".question_comparison").show();
 }
 
 
@@ -2104,7 +2113,8 @@ bind('.save_button' , 'click' , null , function(event)
     var weight = stub.find(".importance_bar").slider("value");
     action({
         data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
-            'explanation':explanation,'a_id':a_id, 'weight':weight, 'to_compare_id':to_compare_id},
+            'explanation':explanation,'a_id':a_id, 'weight':weight,
+            'to_compare_id':to_compare_id},
         success: function(data) {
             var returned = eval('(' + data + ')');
 
@@ -2112,7 +2122,7 @@ bind('.save_button' , 'click' , null , function(event)
             var only_unanswered = container.data('only_unanswered');
             if (only_unanswered) {
                 stub.hide();
-                expandAnswer(stub.next('.question_stub'));
+                expandAnswerInterface(stub.next('.question_stub'));
             }
             else {
                 var new_element = $(returned.html);
@@ -2121,6 +2131,9 @@ bind('.save_button' , 'click' , null , function(event)
                 saved_message.show();
                 saved_message.fadeOut(5000);
                 bindImportanceSlider(new_element.find(".importance_bar"));
+            }
+            if (rebind=="question_detail") {
+                expandResponse(new_element);
             }
             updateMatches();
             updateStats();
@@ -2187,8 +2200,12 @@ function updateStats() {
 
 function updateStatsObject(stats) {
     var object = stats.data('object');
+    var data = {'action':'updateStats', 'object':object};
+    if (object == 'you_agree_with') {
+        data['q_id'] = stats.data('q_id');
+    }
     action({
-        data: {'action':'updateStats', 'object':object},
+        data: data,
         success: function(data) {
             var returned = eval('(' + data + ')');
             var new_element = $(returned.html);

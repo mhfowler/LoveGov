@@ -1,0 +1,17 @@
+<div class="topic-stat-box">
+    {% with color=topic.getColor %}
+        <div class="box" style="border-color:{{ color }};">
+            <div class="colored-area" style="height:{{ percent }}%;
+                    background-color:{{ color }};top:{{ empty }}%;"></div>
+            <div class="topic-image">
+                {% include 'site/pieces/topic_icon.html' with topic=topic width="30" height="30" %}
+            </div>
+        </div>
+        <div class="writing" style="color:{{ color }};">
+            <div class="numbers"> {{ num }}/{{ total }}</div>
+            <div class="questions">
+                questions
+            </div>
+        </div>
+    {% endwith %}
+</div>

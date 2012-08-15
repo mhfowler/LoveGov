@@ -107,6 +107,7 @@ class RegisterForm(forms.Form):
     email2 = forms.EmailField(required=True)
     passwordregister = forms.CharField(widget=forms.PasswordInput,required=True)
     zip = forms.CharField(required=False)
+    age = forms.IntegerField(required=True)
     privacy = forms.BooleanField(error_messages={'required': '< click'})
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -158,6 +159,11 @@ class RegisterForm(forms.Form):
         zip = self.cleaned_data.get('zip')
         if zip:
             user.user_prof.setZipCode(zip)
+
+        age = self.cleaned_data.get('age')
+        if age:
+            user.user_prof.age = age
+            user.user_prof.save()
 
         vals = {'firstname':firstname,'link':user.user_profile.confirmation_link}
         sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user.username)

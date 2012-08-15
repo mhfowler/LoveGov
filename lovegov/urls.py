@@ -62,7 +62,7 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # home pages
-    (r'^me/$', viewWrapper(views.me, requires_login=True)),
+    (r'^home/$', viewWrapper(views.me, requires_login=True)),
     (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
@@ -74,11 +74,12 @@ urlpatterns += patterns('',
     (r'^web/$', viewWrapper(views.web, requires_login=True)),
     (r'^about/$', viewWrapper(views.about, requires_login=True)),
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),
-    (r'^account/$', viewWrapper(views.account,requires_login=True)),
-    (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),
+    (r'^settings/$', viewWrapper(views.account,requires_login=True)),
+    (r'^settings/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
 
     # detail pages
+    (r'^profile/$', viewWrapper(views.profile, requires_login=True)),
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),
     (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),

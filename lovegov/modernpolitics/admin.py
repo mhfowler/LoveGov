@@ -8,7 +8,7 @@
 ########################################################################################################################
 
 # lovegov
-from lovegov.modernpolitics.models import Question, Answer, Topic, NextQuestion
+from lovegov.modernpolitics.models import Question, Answer, Topic
 
 # django
 from django.contrib import admin
@@ -50,11 +50,7 @@ class AnswerAdmin(MultiDBModelAdmin):
 class TopicAdmin(MultiDBModelAdmin):
     model = Topic
 
-class NextQuestionAdmin(MultiDBModelAdmin):
-    model = NextQuestion
-
 # admin editable
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(Topic, TopicAdmin)
-admin.site.register(NextQuestion, NextQuestionAdmin)

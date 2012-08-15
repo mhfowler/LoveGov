@@ -23,7 +23,7 @@ LOCAL = settings.LOCAL
 
 SUPER_HEROES = ['lovegov', 'anonymous']
 
-HOME_URLS = ['me', 'groups', 'elections', 'politicians', 'friends']
+HOME_URLS = ['home', 'groups', 'elections', 'politicians', 'friends']
 
 # Users and groups are prevented from generating aliases which match these strings
 # Be liberal about this list - it should include potential app URLs in addition to those actually being used
@@ -251,12 +251,6 @@ SCALE_CHOICES = (
     ('A', 'All')
 )
 
-# feed display types
-FEED_DISPLAY_CHOICES = (
-    ('P', 'pinterest'),
-    ('L', 'linear')
-)
-
 # privacy setting types
 PRIVACY_CHOICES = (
     ('PUB','Public'),
@@ -277,13 +271,6 @@ TYPE_CHOICES = (
     ('A','amendment'),
     ('D','discussion'),
     ('M', 'motion'),
-    )
-
-# persitent debate types
-DEBATE_CHOICES = (
-    ('C','casual'),
-    ('F','formal'),
-    ('M', 'moderated')
     )
 
 # types of notifications
@@ -338,7 +325,6 @@ ACTION_MODIFIERS = (
     ('U', 'unvoted')
 )
 
-# types of action which user should be notified about
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 NOTIFY_MODIFIERS = {
@@ -404,7 +390,6 @@ PARTY_TYPE = (
     ('T', 'tea')
 )
 
-# types of motions
 MOTION_CHOICES = (
     ('other', 'Other'),
     ('charity', 'Charity'),
@@ -413,7 +398,6 @@ MOTION_CHOICES = (
     ('coup', 'Coup')
 )
 
-# types of user permissions
 PERMISSION_CHOICES = (
     ('N', 'normal'),
     ('P', 'politician'),
@@ -430,13 +414,11 @@ COMMITTEE_CHOICES = (
     ("O","other")
 )
 
-# type vals
 TYPE_DICT = {'event':'E', 'petition':'P', 'news':'N', 'legislation':'L',
              'question':'Q','response':'R','group':'G','comment':'C',
              'image':'I','amendment':'A','content-response':'Z','debate':'D',
              'motion':'M', 'forum':'F'}
 
-# bill types
 BILL_TYPES = {
     's': 'Senate Bill',
     'h': 'House of Representatives Bill',

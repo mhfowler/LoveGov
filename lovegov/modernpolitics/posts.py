@@ -808,6 +808,8 @@ def stubAnswer(request, vals={}):
     a_id = request.POST['a_id']
     weight = request.POST['weight']
     explanation = request.POST['explanation']
+    if explanation == 'explain your answer':
+        explanation = ""
     my_response = user.view.responses.filter(question=question)
     response = answerAction(user=user, question=question, my_response=my_response,
         privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
@@ -818,6 +820,7 @@ def stubAnswer(request, vals={}):
         vals['their_response'] = their_response
         vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
         vals['to_compare'] = to_compare
+        vals['show_answer'] = response and their_response
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -848,11 +851,25 @@ def updateMatch(request, vals={}):
 # rerenders an html piece and returns it (with new db stuff from some other venue)
 #-----------------------------------------------------------------------------------------------------------------------
 def updateStats(request, vals={}):
+    viewer = vals['viewer']
     object = request.POST['object']
-    if object == 'question_stats':
+    if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
-        html = ajaxRender('site/pages/qa/question_stats.html', vals, request)
+        html = ajaxRender('site/pages/qa/poll_stats.html', vals, request)
+    if object == 'you_agree_with':
+        from lovegov.frontend.views_helpers import getGroupTuples
+        question = Question.objects.get(id=request.POST['q_id'])
+        response = viewer.view.responses.filter(question=question)
+        if response:
+            response = response[0]
+        vals['response'] = response
+        vals['question'] = question
+        if response:
+            vals['group_tuples'] = getGroupTuples(viewer, question, response)
+            html = ajaxRender('site/pages/qa/you_agree_with.html', vals, request)
+        else:
+            html = "<p> answer to see how many people agree with you. </p>"
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
