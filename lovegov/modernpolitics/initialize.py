@@ -70,7 +70,6 @@ def getOtherNetwork():
 def getCongressNetwork():
     return Network.lg.get_or_none(alias="congress") or initializeCongressNetwork()
 
-
 def getToRegisterNumber():
     num = LGNumber.lg.get_or_none(alias="to_register")
     if not num:
@@ -78,6 +77,8 @@ def getToRegisterNumber():
         num.save()
     return num
 
+def getLoveGovPoll():
+    return Poll.lg.get_or_none(alias="lovegov_worldview_poll") or initializeLoveGovPoll()
 
 ########################################################################################################################
 ########################################################################################################################
@@ -96,6 +97,7 @@ def initializeLoveGov():
     initializeLoveGovUser()
     initializeTopicImages()
     initializeParties()
+    initializeLoveGovPoll()
     # filters
     initializeBestFilter()
     initializeNewFilter()
@@ -104,12 +106,15 @@ def initializeLoveGov():
     initializeFeeds()
     # init pass codes
     initializePassCodes()
+    resetTopics()
+
+def resetTopics():
+    for q in Question.objects.all(): q.setMainTopic()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes the user lovegov..... this user represents the site as a whole. Any content created by "us" will be attributed
 # to user lovegov.
 # lovegov's views will be an aggregate of the views of all memebers of the site.
-# we control lovegov.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLoveGovUser():
     if UserProfile.objects.filter(alias="lovegov"):
@@ -124,6 +129,20 @@ def initializeLoveGovUser():
         print "initialized: lovegov user"
         return user_profile
 
+#-----------------------------------------------------------------------------------------------------------------------
+# A poll housing all official lovegov questions
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeLoveGovPoll():
+    if Poll.objects.filter(alias="lovegov_worldview_poll"):
+        print("...lovegov poll already initialized")
+    else:
+        lgpoll = Poll(title="LoveGov Match", alias="lovegov_worldview_poll")
+        lgpoll.autoSave()
+        questions = Question.objects.filter(official=True)
+        for q in questions:
+            lgpoll.addQuestion(q)
+        print "initialized: lovegov poll"
+        return lgpoll
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Currently, just makes lovegov worldview equal to aggregate of all users on site. But could also do more later.

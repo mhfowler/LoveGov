@@ -658,13 +658,13 @@ function getFeed(container) {
     if (replace) {
         var old_height = $("body").height();
         $("body").css('min-height', old_height);
-        container.children(".feed_content").empty();
+        container.find(".feed_content").empty();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
     var time = 10;
     var feed_timeout = setTimeout(function(){
-        container.children(".feed_fetching").show();
+        container.find(".feed_fetching").show();
     },time);
     var data;
     if (feed == 'getFeed')
@@ -691,17 +691,16 @@ function getFeed(container) {
             success: function(data) {
                 var returned = eval('(' + data + ')');
                 if (replace) {
-                    container.children(".feed_content").html(returned.html);
+                    container.find(".feed_content").html(returned.html);
                 }
                 else {
-                    container.children(".feed_content").append(returned.html);
+                    container.find(".feed_content").append(returned.html);
                 }
-
                 container.data( 'feed_start' , returned.feed_start );
                 clearTimeout(feed_timeout);
-                container.children(".feed_fetching").hide();
+                container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    container.children(".load_more").text('you loaded all that there is to load')
+                    container.find(".load_more").text('you loaded all that there is to load')
                 }
                 bindImportanceSliders();
                 bindOnNewElements();

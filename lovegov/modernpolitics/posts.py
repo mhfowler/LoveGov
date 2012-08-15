@@ -856,7 +856,7 @@ def updateStats(request, vals={}):
     if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
-        html = ajaxRender('site/pages/qa/poll_stats.html', vals, request)
+        html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
     if object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
         question = Question.objects.get(id=request.POST['q_id'])
@@ -867,7 +867,7 @@ def updateStats(request, vals={}):
         vals['question'] = question
         if response:
             vals['group_tuples'] = getGroupTuples(viewer, question, response)
-            html = ajaxRender('site/pages/qa/you_agree_with.html', vals, request)
+            html = ajaxRender('site/pages/qa/you_agree_with_stats.html', vals, request)
         else:
             html = "<p> answer to see how many people agree with you. </p>"
     return HttpResponse(json.dumps({'html':html}))

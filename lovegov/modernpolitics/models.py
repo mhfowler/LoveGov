@@ -268,23 +268,34 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
     #-------------------------------------------------------------------------------------------------------------------
+    def getAliasURL(self):
+        alias = self.alias
+        if alias != "" and alias !="default":
+            return '/' + alias + "/"
+        else:
+            return None
+
     def get_url(self):
-        if self.type=='P':
+        if self.type=='C':
+            return self.downcast().root_content.get_url()
+        elif self.type=='R':
+            return self.downcast().question.get_url()
+        elif self.type=='P':
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
-        elif self.type =='M':
-            return '/motion/' + str(self.id) + '/'
+        elif self.type=='O':
+            return '/poll/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
+        elif self.type=='D':
+            return '/discussion/' + str(self.id) + '/'
+        elif self.type=='E':
+            return '/event/' + str(self.id) + '/'
         elif self.type=='G':
-            return '/group/' + str(self.id) + '/'
-        elif self.type=='C':
-            return self.downcast().root_content.getUrl()
-        elif self.type=='R':
-            return self.downcast().question.getUrl()
+            return self.getAliasURL() or '/group/' + str(self.id) + '/'
         else:
-            return '/display/' + str(self.id) + '/'
+            return self.type
 
     def getUrl(self):
         return self.get_url()
@@ -299,10 +310,20 @@ class Content(Privacy, LocationLevel):
         return self.title
     def get_name(self):
         return self.getName()
-
     def getTitle(self):
         return self.title
+    def getTitleDisplay(self):
+        return self.downcast().getTitleDisplay()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # returns group that this content was orginally posted to
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPostedTo(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup
+        posted = self.posted_to
+        if not posted:
+            posted = getLoveGovGroup()
+        return posted
 
     #-------------------------------------------------------------------------------------------------------------------
     # Recalculate status for this content.
@@ -521,6 +542,8 @@ class Content(Privacy, LocationLevel):
             object = self.response
         elif type == 'I':
             object = self.userimage
+        elif type == 'O':
+            object = self.poll
         elif type == 'G':
             object = self.group
         elif type == 'Z':
@@ -2062,6 +2085,10 @@ class Petition(Content):
     current = models.IntegerField(default=0)
     goal = models.IntegerField(default=10)
     p_level = models.IntegerField(default=1)
+
+    def getTitleDisplay(self):
+        return "Petition: " + self.title
+
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -2172,6 +2199,10 @@ class News(Content):
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
+
+    def getTitleDisplay(self):
+        return "News: " + self.title
+
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
         self.in_feed = True
@@ -2684,11 +2715,23 @@ class Poll(Content):
     num_questions = models.IntegerField(default=0)
     description = models.TextField(blank=True)
 
+    def getTitleDisplay(self):
+        return "Poll: " + self.title
+
+    def get_url(self):
+        return '/poll/' + str(self.id) + '/'
+
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = "O"
         self.in_feed = True
         self.save()
         super(Poll, self).autoSave(creator=creator, privacy=privacy)
+
+    def addQuestion(self, q):
+        if q not in self.questions.all():
+            self.questions.add(q)
+            self.num_questions += 1
+            self.save()
 
 #=======================================================================================================================
 # Answer
@@ -2720,6 +2763,9 @@ class Question(Content):
         return self.title
     def toJSON(self):
         pass
+
+    def getTitleDisplay(self):
+        return "Question: " + self.title
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = "Q"
@@ -3009,6 +3055,9 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
+
+    def getTitleDisplay(self):
+        return "Group: " + self.title
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
