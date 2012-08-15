@@ -1,0 +1,120 @@
+{% extends 'site/pages/home/header_expandable.html' %}
+<!-- CSS for this file is in group.scss -->
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block header_top %}
+
+    <div class="group-top">
+
+        <span class="group-title"> {{ group.title }} </span>
+        <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+        <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+
+        <div class="group-minimize-button hide_info"> - minimize info </div>
+
+    </div>
+
+{% endblock %}
+
+
+{% block header_info %}
+
+    <div class="group-expanded">
+
+        <div class="group-info">
+
+            <!-- float right -->
+            <div class="group-actions">
+
+                {% if is_user_admin %}
+                    <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
+                    <a href="edit/" class="group-action"> edit group settings </a>
+                    {% if num_group_requests > 0 %}
+                        <div class="group-action view_group_requests" data-g_id="{{ group.id }}">join requests ({{ num_group_requests }})</div>
+                    {% endif %}
+                {% endif %}
+
+                {% if is_user_confirmed %}
+                    <div class="group-action"> create motion </div>
+                {% endif %}
+
+                {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                    <div class="group-action group_join" data-g_id="{{ group.id }}"> join group </div>
+                {% elif is_user_confirmed %}
+                    <div class="group-action group_leave" data-g_id="{{ group.id }}"> leave group </div>
+                {% elif is_user_requested %}
+                    <div class="group-action group_leave" data-g_id="{{ group.id }}"> un-request group </div>
+                {% endif %}
+
+            </div>
+
+            <!-- float left -->
+            <div class="group-column">
+
+                <div class="group-image">
+                    {% thumbnail group.getImageURL "140x100" crop="center" as im %}
+                        <img src="{{ im.url }}" />
+                    {% endthumbnail %}
+                </div>
+
+                <div class="group-match">
+
+                    <div class="match-number">
+                        {{ group_comparison.result }}
+                    </div>
+
+                    <div class="match-title">match</div>
+
+                </div>
+
+                <div class="group-histogram">
+                    {% include 'site/pages/histogram/histogram_mini.html' %}
+                </div>
+
+            </div>
+
+
+            <div class="group-column group-text">
+
+                <div class="group-info-title">Description</div>
+                <p class="group-full-text">
+                    {{ group.full_text|linebreaksbr }}
+                </p>
+
+            </div>
+
+
+            <div class="group-column group-people">
+
+                <div class="group-moderators">
+
+                    <div class="group-info-title">Moderators</div>
+                    {% for admin in group_admins %}
+                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}
+                    {% endfor %}
+
+                </div>
+
+                <div class="group-members">
+                    <div class="group-info-title">Members</div>
+                    {% for member in group_members %}
+                        <div class="group-member-avatar">
+                            {% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}
+                        </div>
+                    {% endfor %}
+                    <div style="clear:both"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="group-pinned-content">
+
+        </div>
+
+    </div>
+
+{% endblock %}

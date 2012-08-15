@@ -7,7 +7,7 @@
 ########################################################################################################################
 ########################################################################################################################
 
-from lovegov.modernpolitics.actions import *
+from lovegov.modernpolitics.modals import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
@@ -2048,15 +2048,49 @@ def actionPOST(request, vals={}):
 # Splitter between all modals
 #-----------------------------------------------------------------------------------------------------------------------
 def getModal(request,vals={}):
+    ## Get the basics ##
+    viewer = vals['viewer']
     modal_name = request.POST.get('modal_name')
     modal_html = ''
 
-    if modal_name == "invite_modal":
-        pass
-    elif modal_name == "group_invite_modal":
-        modal_html = "Yay! It works."
+    ## Modal Switch ##
+    ##################
 
+    ## Invite Modal ##
+    if modal_name == "group_requests_modal":
+        # Get group ID
+        if 'g_id' in request.POST:
+            g_id = request.POST['g_id']
+        else: # If there's no group ID, exception
+            raise LGException( "Group requests modal requested without group ID by user ID #" + str(viewer.id) )
+            # and Group
+        group = Group.lg.get_or_none(id=g_id)
+        # If there's no group matching that ID, raise an exception
+        if not group:
+            raise LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+
+        modal_html = getGroupRequestsModal(group,viewer)
+
+
+    ## Group Invite Modal ##
+    elif modal_name == "group_invite_modal":
+        # Get group ID
+        if 'g_id' in request.POST:
+            g_id = request.POST['g_id']
+        else: # If there's no group ID, exception
+            raise LGException( "group invite modal requested without group ID by user ID #" + str(viewer.id) )
+        # and Group
+        group = Group.lg.get_or_none(id=g_id)
+        # If there's no group matching that ID, raise an exception
+        if not group:
+            raise LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+
+        modal_html = getGroupInviteModal(group,viewer)
+
+
+    ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )
+    ## Otherwise raise an exception with an invalid modal name ##
     else:
         raise LGException( "invalid modal name requested: " + str(modal_name) )

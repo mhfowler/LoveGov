@@ -34,6 +34,7 @@ function bindOnNewElements() {
     undelegated();
     loadHoverComparison();
     loadHistogram();
+    //setInfoHeight();
 }
 
 /***********************************************************************************************************************
@@ -293,28 +294,108 @@ bind(".expand_info", 'click', null, function(event) {
     expandInfoToggle(true);
 });
 
-var info_expanded = false;
-function expandInfoToggle(animate) {
+bind(".hide_info", 'click', null, function(event) {
+    hideInfoToggle(true);
+});
+
+var info_hidden = false;
+var info_expanded = true;
+/* toggles the info's expanded state */
+function expandInfoToggle(animate)
+{
     if (animate) {
         var animation_time = 100;
     } else {
         animation_time = 0;
     }
-    var expanded =  $(".home_header_expanded");
-    if (expanded.hasClass("expanded")) {
-        expanded.animate({"height":'10px'}, animation_time);
-        expanded.removeClass("expanded");
+
+    var info_div = $(".home_header_info");
+
+    // If info is hidden, expand the info to it's previous expanded state
+    if( info_hidden )
+    {   // Set info hidden to false
+        info_hidden = false;
+        $(".hide_info").text('- minimize info');
+        // If the info was un-expanded, show it at un-expanded form
+        if( !info_expanded )
+        {
+            info_div.animate({"height":'100px'}, animation_time);
+            $(".expand_info").text('+ expand info');
+        } // If the info was expanded, show the full expanded form
+        else
+        {
+            expandAnimation(info_div,animation_time);
+            $(".expand_info").text('- reduce info');
+        }
+    }
+    // Otherwise, toggle the info expanded property
+    else if( info_expanded )
+    {   // Set expanded to false and un-expand the info
         info_expanded = false;
+        info_div.animate({"height":'100px'}, animation_time);
         $(".expand_info").text('+ expand info');
-    } else {
-        expanded.css('height', 'auto');
-        var autoHeight = expanded.height();
-        expanded.css('height', '0px');
-        expanded.animate({"height":autoHeight}, animation_time);
-        expanded.addClass("expanded");
+    }
+    else
+    {   // Otherwise set expanded to true and expand the info
         info_expanded = true;
+        expandAnimation(info_div,animation_time);
         $(".expand_info").text('- reduce info');
     }
+}
+
+/* toggles the info's hidden state */
+function hideInfoToggle(animate)
+{
+    if (animate) {
+        var animation_time = 100;
+    } else {
+        animation_time = 0;
+    }
+
+    var info_div = $(".home_header_info");
+
+    if( info_hidden )
+    {
+        expandInfoToggle(animate);
+    }
+    else
+    {
+        info_hidden = true;
+        info_div.animate({"height":'0px'}, animation_time);
+        $(".expand_info").text('+ show info');
+        $(".hide_info").text('+ show info');
+    }
+
+}
+
+/* checks and sets the proper info state based on the two info booleans */
+function setInfoHeight()
+{
+    var info_div = $(".home_header_info");
+
+    if( info_hidden )
+    {
+        info_div.css("height",'0px');
+    }
+    else if( info_expanded )
+    {
+        info_div.css("height",'auto');
+    }
+    else
+    {
+        info_div.css("height","100px");
+    }
+}
+
+
+/* expands a div from it's current height to the "auto" height */
+function expandAnimation( div , animation_time)
+{
+    var beforeHeight = div.height();
+    div.css('height', 'auto');
+    var autoHeight = div.height();
+    div.css('height', beforeHeight + 'px');
+    div.animate( { "height" : autoHeight } , animation_time);
 }
 
 function homeReload(theurl) {
@@ -1204,13 +1285,20 @@ function getModal(modal_name,data)
 
 /***********************************************************************************************************************
  *
- *     ~Group Invite Modal
+ *     ~Group Header
  *
  **********************************************************************************************************************/
 
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
-    getModal('group_invite_modal');
+    var g_id = $(this).data('g_id');
+    getModal( 'group_invite_modal' , { 'g_id': g_id } );
+});
+
+bind( 'div.view_group_requests' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal( 'group_requests_modal' , { 'g_id': g_id } );
 });
 
 
@@ -1252,6 +1340,22 @@ function loadGroupEdit()
     $('select.member_select').select2({
         placeholder: "Enter a member,"
     });
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
 }
 
 // Group Privacy Radio
@@ -1386,22 +1490,6 @@ function removeAdmin(admin_id,g_id,success)
         },
         success: success
     });
-}
-
-function selectPrivacyRadio()
-{
-    var privacy = $('#group_privacy_container').data('group_privacy');
-    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
-}
-
-function selectScaleRadio()
-{
-    var scale = $('#group_scale_container').data('group_scale');
-    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
 }
 
 
