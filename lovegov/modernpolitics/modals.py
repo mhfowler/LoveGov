@@ -9,7 +9,7 @@
 
 from lovegov.modernpolitics.actions import *
 
-def getGroupInviteModal(group,user):
+def getGroupInviteModal(group,user,vals={}):
     # Check if the user is an admin
     admins = group.admins.all()
     if user not in admins:
@@ -26,17 +26,20 @@ def getGroupInviteModal(group,user):
             non_member_followers.append(follower)
 
     # Generate a context for the modal
-    context = { 'group': group , 'non_member_followers': non_member_followers }
+    vals['group'] = group
+    vals['non_member_followers'] = non_member_followers
 
-    return render_to_string('site/pages/group/group_invite_modal.html',context)
+    return render_to_string('site/pages/group/group_invite_modal.html',vals)
 
 
-def getGroupRequestsModal(group,user):
+def getGroupRequestsModal(group,user,vals={}):
     # Check if the user is an admin
     admins = group.admins.all()
     if user not in admins:
         return render_to_string( 'site/pages/basic_message.html' , { 'basic_message' : 'You are not a moderator for the group: ' + group.title } )
 
-    context = { 'group': group , 'group_requests': group.getFollowRequests() }
+    # Generate a context for the modal
+    vals['group'] = group
+    vals['group_requests'] = group.getFollowRequests()
 
-    return render_to_string('site/pages/group/group_requests_modal.html',context)
+    return render_to_string('site/pages/group/group_requests_modal.html',vals)

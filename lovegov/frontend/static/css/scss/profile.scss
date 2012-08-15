@@ -62,18 +62,34 @@ div.profile-page {
         width:150px;
         margin-right:30px;
 
-        div.follows-you {
+        div.user-follow {
+          width:100%;
+          height:30px;
+          margin-top:5px;
+          text-align:center;
+          background-color:$light-gray;
+          color: $black;
+          cursor: pointer;
+          text-transform:uppercase;
+          @include fontSize(16px);
+          padding:7px;
+
+          &:hover { background-color: $gray; }
+        }
+
+        div.user-unfollow {
           width:100%;
           height:30px;
           margin-top:5px;
           text-align:center;
           background-color:$green;
           color:white;
-          p {
-            text-transform:uppercase;
-            @include fontSize(13px);
-            padding:7px;
-          }
+          cursor: pointer;
+          text-transform:uppercase;
+          @include fontSize(16px);
+          padding:7px;
+
+          &:hover { background-color: $red; }
         }
 
         div.match-percent {

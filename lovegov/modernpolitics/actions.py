@@ -201,9 +201,11 @@ def userFollowAction(from_user,to_user,privacy):
 
 def userFollowStopAction(from_user,to_user,privacy):
     from_user.unfollow(to_user)
-    action = Action(privacy=privacy,relationship=user_follow,modifier='S')
-    action.autoSave()
-    to_user.notify(action)
+    user_follow = UserFollow.lg.get_or_none(user=from_user,to_user=to_user)
+    if user_follow:
+        action = Action(privacy=privacy,relationship=user_follow,modifier='S')
+        action.autoSave()
+        to_user.notify(action)
 
 
 ## Action for joinGroup Responses ##

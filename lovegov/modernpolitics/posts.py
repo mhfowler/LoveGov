@@ -1370,8 +1370,11 @@ def getFeed(request, vals):
         feed_types=feed_types, feed_start=feed_start, num=10)
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
+
+    feed_start += len(feed_items)
+
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    to_return = {'html':html, 'num_items':len(feed_items)}
+    to_return = {'html':html,'feed_start':feed_start,'num_items':len(feed_items)}
     return HttpResponse(json.dumps(to_return))
 
 def contentToFeedItems(content, user):
@@ -1412,8 +1415,11 @@ def getQuestions(request, vals):
             feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
+
+    feed_start += len(question_items)
+
     html = ajaxRender('site/pages/qa/question_feed_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_items':len(question_items)}))
+    return HttpResponse(json.dumps({'html':html,'feed_start':feed_start , 'num_items':len(question_items)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
@@ -1541,9 +1547,9 @@ def getNotifications(request, vals={}):
 
     vals['dropdown_notifications_text'] = notifications_text
     vals['num_notifications'] = num_notifications
-    html = ajaxRender('site/pieces/notifications/notification_snippet.html', vals, request)
+    html = ajaxRender('site/frame/notifications/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('site/pieces/notifications/notification_dropdown.html', vals, request)
+        html = ajaxRender('site/frame/notifications/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1568,16 +1574,16 @@ def getUserActivity(request, vals={}):
 
     actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
 
+    num_actions += len(actions)
+
     actions_text = []
     for action in actions:
         actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
 
     vals['actions_text'] = actions_text
-    
-    num_actions += NOTIFICATION_INCREMENT
-    vals['num_actions'] = num_actions
-    html = ajaxRender('site/pieces/notifications/action_snippet.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
+
+    html = ajaxRender('site/frame/notifications/action_snippet.html', vals, request)
+    return HttpResponse( json.dumps({'html':html,'feed_start':num_actions,'num_items':len(actions)}) )
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2038,14 +2044,15 @@ def getModal(request,vals={}):
         if 'g_id' in request.POST:
             g_id = request.POST['g_id']
         else: # If there's no group ID, exception
-            raise LGException( "Group requests modal requested without group ID by user ID #" + str(viewer.id) )
+            LGException( "Group requests modal requested without group ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group requests requested without a group ID" )
             # and Group
         group = Group.lg.get_or_none(id=g_id)
         # If there's no group matching that ID, raise an exception
         if not group:
-            raise LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
-
-        modal_html = getGroupRequestsModal(group,viewer)
+            LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group requests requested with an invalid group ID" )
+        modal_html = getGroupRequestsModal(group,viewer,vals)
 
 
     ## Group Invite Modal ##
@@ -2054,14 +2061,16 @@ def getModal(request,vals={}):
         if 'g_id' in request.POST:
             g_id = request.POST['g_id']
         else: # If there's no group ID, exception
-            raise LGException( "group invite modal requested without group ID by user ID #" + str(viewer.id) )
+            LGException( "group invite modal requested without group ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group invite modal requested without a group ID" )
         # and Group
         group = Group.lg.get_or_none(id=g_id)
         # If there's no group matching that ID, raise an exception
         if not group:
-            raise LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group invite modal requested with an invalid group ID" )
 
-        modal_html = getGroupInviteModal(group,viewer)
+        modal_html = getGroupInviteModal(group,viewer,vals)
 
 
     ## If a modal was successfully made, return it ##
@@ -2069,4 +2078,5 @@ def getModal(request,vals={}):
         return HttpResponse( json.dumps({'modal_html':modal_html}) )
     ## Otherwise raise an exception with an invalid modal name ##
     else:
-        raise LGException( "invalid modal name requested: " + str(modal_name) )
+        LGException( "invalid modal name requested: " + str(modal_name) )
+        return HttpResponseBadRequest( "Invalid modal requested" )

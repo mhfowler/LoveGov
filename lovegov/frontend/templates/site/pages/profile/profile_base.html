@@ -30,11 +30,14 @@
                         {% include 'site/pieces/avatar.html' with width="150" height="200" user=profile hoveroff=1 %}
                     </div>
 
-                    {% if followsyou %}
-                        <div class="follows-you">
-                            <p> Follows You </p>
-                        </div>
+                    {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                        <div class="user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
+                    {% elif is_user_confirmed %}
+                        <div class="user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
+                    {% elif is_user_requested %}
+                        <div class="user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
                     {% endif %}
+
 
                     <!-- text match -->
                     {% include 'site/pages/profile/sidebar_match.html' with to_compare=profile %}

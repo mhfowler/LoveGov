@@ -1514,7 +1514,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
         to_user.follow_me.joinMember(self)
-        to_user.num_followers += 1
+        to_user.num_followme += 1
         to_user.save()
 
         #Check and Make Relationship A
@@ -1532,6 +1532,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def unfollow( self , to_user ):
         relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+
         if self.i_follow:
             self.i_follow.members.remove(to_user)
         if to_user.follow_me:
@@ -1967,7 +1968,7 @@ class Action(Privacy):
                             'true':True,
                             'timestamp':self.when})
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
+        action_verbose = render_to_string('site/frame/notifications/action_verbose.html',vals)
         return action_verbose
 
 
@@ -2064,7 +2065,7 @@ class Notification(Privacy):
         vals.update(notification_context)
         vals['hover_off'] = True
 
-        notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
+        notification_verbose = render_to_string('site/frame/notifications/notification_verbose.html',vals)
         return notification_verbose
 
     def addAggUser(self,agg_user,privacy="PUB"):

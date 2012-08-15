@@ -113,7 +113,7 @@
 
                     <div class="group-info-title">Moderators</div>
                     {% for admin in group_admins %}
-                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}
+                        <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
                     {% endfor %}
 
                 </div>
@@ -122,7 +122,7 @@
                     <div class="group-info-title">Members</div>
                     {% for member in group_members %}
                         <div class="group-member-avatar">
-                            {% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}
+                            <a href="{{ member.get_url }}">{% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}</a>
                         </div>
                     {% endfor %}
                     <div style="clear:both"></div>

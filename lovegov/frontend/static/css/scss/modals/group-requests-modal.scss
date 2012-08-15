@@ -10,14 +10,25 @@ div.modal-section-title
   margin-bottom: 10px;
 }
 
-div.group-request-container
+table.group-request-container
 {
   margin-right: 20px;
-  vertical-align: middle;
+  margin-bottom: 20px;
+  @include box-sizing(content-box);
 
-  span.group-request-span
+  td
   {
-    display: inline-block;
+    vertical-align: middle;
+
+    &.group-request-image
+    {
+      padding-right: 10px;
+    }
+
+    &.group-request-text
+    {
+      padding-right: 20px;
+    }
 
     div.group-request-append
     {

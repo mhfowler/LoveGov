@@ -36,6 +36,7 @@ function bindOnNewElements() {
     loadHoverComparison();
     loadHistogram();
     setInfoHeight();
+    bindNotificationsDropdownClickOutside();
 }
 
 /***********************************************************************************************************************
@@ -653,13 +654,13 @@ function getFeed(container) {
     if (replace) {
         var old_height = $("body").height();
         $("body").css('min-height', old_height);
-        container.find(".feed_content").empty();
+        container.children(".feed_content").empty();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
     var time = 10;
     var feed_timeout = setTimeout(function(){
-        container.find(".feed_fetching").show();
+        container.children(".feed_fetching").show();
     },time);
     var data;
     if (feed == 'getFeed')
@@ -686,17 +687,17 @@ function getFeed(container) {
             success: function(data) {
                 var returned = eval('(' + data + ')');
                 if (replace) {
-                    container.find(".feed_content").html(returned.html);
+                    container.children(".feed_content").html(returned.html);
                 }
                 else {
-                    container.find(".feed_content").append(returned.html);
+                    container.children(".feed_content").append(returned.html);
                 }
-                feed_start += returned.num_items;
-                container.data('feed_start', feed_start);
+
+                container.data( 'feed_start' , returned.feed_start );
                 clearTimeout(feed_timeout);
-                container.find(".feed_fetching").hide();
+                container.children(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    container.find(".load_more").text('you loaded all that there is to load')
+                    container.children(".load_more").text('you loaded all that there is to load')
                 }
                 bindImportanceSliders();
                 bindOnNewElements();
@@ -1341,13 +1342,18 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
  *
  **********************************************************************************************************************/
 
-bind(".follow_button.following", 'mouseenter', null, function(event) {
-    $(this).find('.is_following').hide();
-    $(this).find(".stop_following").show();
+bind(".user_unfollow", 'mouseenter', null, function(event) {
+    $(this).text('stop following');
 });
-bind(".follow_button.following", 'mouseout', null, function(event) {
-    $(this).find(".stop_following").show();
-    $(this).find('.is_following').hide();
+bind(".user_unfollow", 'mouseout', null, function(event) {
+    $(this).text('following');
+});
+
+bind(".user_unrequest", 'mouseenter', null, function(event) {
+    $(this).text('un-request');
+});
+bind(".user_unrequest", 'mouseout', null, function(event) {
+    $(this).text('requested');
 });
 
 bind(".profile_tab", 'click', null, function(event) {
@@ -1389,6 +1395,12 @@ bind('div.user_unfollow' , 'click' , null , function(event)
     userFollow(event,$(this),false,p_id);
 });
 
+bind('div.user_unrequest' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    userFollow(event,$(this),false,p_id);
+});
+
 /* user follower */
 function userFollow(event,div,follow,p_id)
 {
@@ -1415,18 +1427,24 @@ function userFollow(event,div,follow,p_id)
                     div.html("unfollow");
                     div.removeClass('user_follow');
                     div.addClass('user_unfollow');
+                    div.removeClass('user-follow');
+                    div.addClass('user-unfollow');
                 }
                 else if( response == "requested")
                 {
                     div.html("un-request");
                     div.removeClass('user_follow');
-                    div.addClass('user_unfollow');
+                    div.addClass('user_request');
+                    div.removeClass('user-follow');
+                    div.addClass('user-unfollow');
                 }
                 else if( response == "removed")
                 {
                     div.html("follow");
                     div.removeClass('user_unfollow');
                     div.addClass('user_follow');
+                    div.removeClass('user-unfollow');
+                    div.addClass('user-follow');
                 }
             }
         }
@@ -1699,17 +1717,70 @@ bind( 'div.view_group_requests' , 'click' , null , function(event)
 
 bind( 'div.notifications_dropdown_button' , 'click' , null , function(event)
 {
-    $('div.notifications_dropdown').toggle();
-});
-
-bind( null , 'click' , null , function(event)
-{
-    if( !$(event.target).hasClass('notifications_dropdown') &&
-        !$(event.target).hasClass('notifications_dropdown_button'))
+    var dropdown = $('div.notifications_dropdown');
+    dropdown.toggle();
+    if( dropdown.is(":visible") )
     {
-        $('div.notifications_dropdown').hide();
+        dropdown.empty();
+        var loading = $('div.notifications_dropdown_loading');
+        dropdown.hide();
+        loading.show();
+
+        action({
+            'data': {'action':'getNotifications',
+                'dropdown':'true'},
+            success: function(data)
+            {
+                var obj = eval('(' + data + ')');
+                dropdown.html(obj.html);
+                $(".notifications_dropdown_button").text(obj.num_still_new);
+                loading.hide();
+                dropdown.show();
+            }
+        });
     }
 });
+
+function bindNotificationsDropdownClickOutside()
+{
+    $('.notifications_dropdown').bindOnce( 'clickoutside.notifications_dropdown' , function(event)
+    {
+        if( !$(this).hasClass('notifications_dropdown_button') )
+        {
+            $('div.notifications_dropdown').hide();
+        }
+    });
+}
+
+bind( ".notification_user_follow" , 'click' , null , function(event)
+{
+    event.preventDefault();
+    var follow_id = $(this).data('follow_id');
+    var wrapper = $(this).parent(".notification_buttons");
+    wrapper.fadeOut(600);
+    action({
+        data: {
+            'action': 'userFollowRequest',
+            'p_id': follow_id
+        },
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            var response = returned.response;
+
+            if( response == "followed")
+            {
+                wrapper.siblings(".notification_text").children('.notification_append').text('You have followed them back');
+            }
+            else if( response == "requested")
+            {
+                wrapper.siblings(".notification_text").children('.notification_append').text('You have requested to follow them');
+            }
+            wrapper.siblings(".notification_text").children('.notification_append').fadeIn(600);
+        }
+    });
+});
+
 
 
 /***********************************************************************************************************************
