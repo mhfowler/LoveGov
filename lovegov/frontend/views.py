@@ -875,7 +875,7 @@ def newMatch(request,start='presidential', vals={}):
                 'senate':1,
                 'social':2,
                 'representatives':3,
-                'news':4}
+                'vicepresidential':4}
     vals['start_sequence'] = sections[start]
 
     viewer = vals['viewer']
