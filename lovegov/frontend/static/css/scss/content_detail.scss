@@ -195,250 +195,7 @@ div#content-topic-img
     }
 }
 
-div.comment-username img {
-	float: left;
-	margin-right: 10px;
-}
 
-div.hearts_wrapper span.status {
-	color: $black;
-}
-
-// Deprecated
-/*
-div.social_bar {
-	width: 100%;
-	text-align: center;
-	padding: 10px 0 10px 0;
-    div.bar_elem {
-	    width: 32%; 
-	    text-align: center;
-	    display: inline-block;
-	    height: 30px;
-	    vertical-align: middle;
-	    padding: 0;
-	    margin: 0;
-	    border-color: $light-gray;
-	    border: 1px solid $light-gray;
-	    border-right: none;
-	    color: $deep-gray;
-	    
-	    &:last-child {
-		    border-right: 1px solid $light-gray;
-		}
-		
-		&.social_bar_comments {
-			position: relative;
-			text-align: center;
-			> span {
-                text-align: center;
-				position: absolute;
-				font-size: 12px;
-                @include gillLight;
-				top: 5px;
-				left: 5px;
-			}
-		}
-		
-		&.social_bar_links div {
-			border: none;
-			display: inline-block;
-			height: 25px;
-			width: 25px;
-			background-size: 100%;
-			&.twitter_link {
-				color: red;
-				@include staticImage($rel-path:'/images/icons/twitter.png');
-				&:hover {
-					@include staticImage($rel-path:'/images/icons/twitter_hover.png');
-				}
-			}
-			&.facebook_link {
-				color: blue;
-				@include staticImage($rel-path:'/images/icons/facebook.png');
-				&:hover {
-					@include staticImage($rel-path:'/images/icons/facebook_hover.png');
-				}
-			}
-		}
-	}
-	span.num_comments {
-		color: red;
-	}
-}
-*/
-
-
-div.comment-username div.avatar-box {
-    float: left;
-}
-
-div#thread
-{
-    position:relative;
-    padding-top:20px;
-    left:-20px;
-}
-
-span.discuss
-{
-    font-size: 18px;
-    color: $red;
-    @include titleFont;
-    margin: 15px 0 10px 0;
-    display: block;
-}
-
-/* comment threads */
-
-div.comment
-{
-    position:relative;
-    margin-left:30px;
-    padding: 30px;
-    padding-bottom:20+30px;
-    &.level1 {
-	    background-color: $white-gray;
-	    border-bottom: 1px solid $gray;
-    }
-    &.level2 {
-	    border:1px dashed $gray;
-	    border-right: none;
-	    border-top: none;
-    }
-    &.toplevel {
-	    margin-top: 10px;
-    }
-    div.change-privacy {
-        float:left;
-    }
-}
-
-div#content-div p {
-    color: $deep-gray;
-    @include titleFont;
-    font-size: 18px;
-    clear: right;
-}
-
-div#content-div {
-    width: 720px;
-    height: auto;
-    float: left;
-}
-
-div.petition_bar {
-
-    margin-top: 25px;
-  div.bar-wrapper {
-    width:100%;
-    height:14px;
-    border: 1px solid $red;
-    overflow:hidden;
-    div.red_bar {
-      height:14px;
-      background-color:$red;
-    }
-  }
-  div.goal-statement {
-    margin: 5px 0 0 0;
-  }
-}
-
-.comment-username
-{
-    padding-bottom:2px;
-    font-size:14pt;
-    color:$text-blue;
-    margin-bottom:10px;
-    float:left;
-    cursor:pointer;
-    @include titleFont;
-}
-
-.comment-username a, .comment-username a:hover, .comment-username a:link, .comment-username a:visited, .comment-username a:active
-{
-    color:#0f5569;
-    float:left;
-    margin-top:15px;
-    margin-left:5px;
-}
-
-.comment-reply
-{
-    position:relative;
-    margin-top:10px;
-    @include titleFont;
-    color: #f0503b;
-    font-size:13pt;
-    cursor:pointer;
-    margin-top:10px;
-    margin-bottom:10px;
-    div.reply {
-	    float: right;
-    }
-    div.commentdelete {
-	    float: right;
-	    margin-right: 12px;
-    }
-    div.share {
-	    float: right;
-	    margin-right: 12px;
-    }
-    div:hover {
-        color: $red-light;
-    }
-}
-
-
-.comment-metadata
-{
-    position:relative;
-    float:right;
-    @include titleFont;
-    color: #ccc;
-    font-size:10pt;
-    padding-left:10px;
-    cursor:pointer;
-}
-
-.comment-textarea
-{
-    @include titleFont;
-    font-size:11pt;
-    border: 1px solid #ccc;
-    height:100px;
-    padding: 10px;
-}
-
-.comment-text
-{
-    clear:both;
-    margin-top: 10px;
-}
-
-#comment-text:focus
-{
-    outline:none;
-}
-
-#comment-thread
-{
-    margin-top:0px;
-    position:relative;
-    float:left;
-    width:700px;
-}
-
-.replyform
-{
-    display:none
-}
-
-.commentdelete
-{
-    margin-left:20px;
-}
 
 div.content-submitted-by-wrapper {
     margin-top: 40px;
@@ -482,45 +239,6 @@ div.change-privacy {
     &:hover {
         background-color: $light-gray;
     }
-}
-
-div.comment span.timestamp {
-    float: left;
-    font-size: 12px;
-    color: $deep-gray;
-    margin-left: 10px;
-    margin-top: 18px;
-    display: block;
-    float: left;
-    font-family: $body-fonts;
-}
-
-
-span.collapse {
-    cursor: pointer;
-    position: relative;
-    float: left;
-    z-index: 1;
-    color: $deep-gray;
-    top: 85px;
-    left: 10px;
-}
-
-span.flag {
-    color: $gray;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 15px;
-    margin-left: 10px;
-    display: block;
-    float: left;
-    &:hover {
-        color: $deep-gray;
-    }
-}
-
-div.threaddiv {
-    min-height: 50px;
 }
 
 /* -- for question -- */
@@ -978,3 +696,20 @@ div.petition-signers-modal {
 
 }
 
+div.load-more-comments {
+    border: 1px solid $gray;
+    padding: 2px;
+    text-align: center;
+    margin: 20px 0;
+    width: 100%;
+    color: $black;
+    background-color: $white-gray;
+    cursor: pointer;
+    &:hover {
+        background-color: $gray;
+    }
+    &:active {
+        background-color: $red;
+        color: white;
+    }
+}

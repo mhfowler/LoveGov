@@ -1,16 +1,19 @@
-<div id="comment-thread">
+<!-- Wrapper for thread page -->
+<div style="width:960px">
+
+{% block thread %}
 
     <span class="discuss">Discuss</span>
-
-    <form id="commentform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
-        <textarea style="width:700px;" class="comment-textarea" rows="7" cols="80" name="comment" placeholder="what's your opinion?"></textarea>
-        <input id="content_id" type="hidden" name="c_id" value="{{ content.id }}">
-        <br>
-        <input class="tab-button" type="submit" value="Save" style="float: right;" /><div class="clearfix"></div>
-    </form>
-
+    <div class="reply">
+        <textarea class="reply" placeholder="What's your opinion?"></textarea>
+        <input class="tab-button" type="submit" value="Save">
+    </div>
     <!-- comment thread -->
-    <div id="thread">
+    <div class="thread" data-cid="{{ content.id }}">
         {{ thread_html|safe }}
     </div>
+    <div class="load-more-comments">load more comments</div>
+
+{% endblock %}
+
 </div>

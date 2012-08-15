@@ -1,4 +1,4 @@
-<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:{{ width }}px">
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:100%">
     <div class="comment-username feed-username">
         {% load thumbnail %}
         {% if comment.active %}

@@ -900,6 +900,12 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
     }
 });
 
+/***********************************************************************************************************************
+ *
+ *      ~Comment threads
+ *
+ ***********************************************************************************************************************/
+
 bind(".submit-comment", "click",function(event)
      {
          event.preventDefault();
@@ -1034,6 +1040,10 @@ bind('span.flag',"click", function(e) {
              });
          }
      });
+
+bind('div.load-more-comments', 'click', function(e) {
+    action("")
+});
 
 
 // ajax gets thread and replaces old thread
