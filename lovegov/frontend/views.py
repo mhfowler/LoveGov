@@ -451,6 +451,10 @@ def friends(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def questions(request, vals={}):
+
+    getMainTopics(vals)
+    getQuestionStats(vals)
+
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals)
@@ -504,7 +508,7 @@ def groupPage(request, g_alias, vals={}):
     loadHistogram(5, group.id, 'mini', vals=vals)
 
     # Render and return HTML
-    focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 

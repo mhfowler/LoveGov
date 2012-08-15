@@ -63,9 +63,9 @@
                     <tr class="break"></tr>
                     <tr>
                         <td class="left">
-                            <h3>about us</h3>
+                            <h3>description</h3>
                         </td>
-                        <td><textarea class="bio-field group_edit_input" name="summary">{{ group.summary }}</textarea></td>
+                        <td><textarea class="full-text-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
                         <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break-large"></tr>
@@ -100,20 +100,15 @@
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>
-                        <td class="left">
-                            <h3>detailed description</h3>
-                        </td>
-                        <td><textarea class="full-text-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
-                        <td><div class="edit-link-large group_edit_icon"></div></td>
-                    </tr>
-                    <tr class="break-large"></tr>
-                    <tr>
                         <td>
                             <p class="account-message">
                                 {{ group_info_message }}
                             </p>
                         </td>
-                        <td style="text-align:right"><input type="submit" action="/action/" class="button-red" value="save changes"/></td>
+                        <td style="text-align:right">
+                            <input type="submit" action="/action/" class="button-red" value="save changes"/>
+                            <div class="space-filler"></div>
+                        </td>
                         <td width=20></td>
                     </tr>
                 </table>

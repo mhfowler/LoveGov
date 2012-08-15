@@ -3,7 +3,7 @@
  *     ~init js, does stuff that delegated can't!
  *
  ***********************************************************************************************************************/
-var rebind="home";
+var rebind;
 function bindOnReload() {
     bindOnNewElements();
     switch (rebind) {
@@ -16,6 +16,9 @@ function bindOnReload() {
             break;
         case "groupedit":
             loadGroupEdit();
+            break;
+        case 'questions':
+            initFeed();
             break;
     }
 }
@@ -31,6 +34,7 @@ function bindOnNewElements() {
     undelegated();
     loadHoverComparison();
     loadHistogram();
+    //setInfoHeight();
 }
 
 /***********************************************************************************************************************
@@ -38,7 +42,6 @@ function bindOnNewElements() {
  *     ~Delegated binding function, similar to jquery's deprecated ".live()"
  *
  ***********************************************************************************************************************/
-
 function bind(selector, events, data, handler) {
     $(document).on(events, selector, data, handler);
 }
@@ -123,8 +126,7 @@ function initFeed() {
         selectType(e);
     });
     $.each($(".feed_main"), function(i,e) {
-        $(this).data('feed_start', 0);
-        getFeed($(this));
+        refreshFeed($(this));
     });
 }
 
@@ -292,28 +294,108 @@ bind(".expand_info", 'click', null, function(event) {
     expandInfoToggle(true);
 });
 
-var info_expanded = false;
-function expandInfoToggle(animate) {
+bind(".hide_info", 'click', null, function(event) {
+    hideInfoToggle(true);
+});
+
+var info_hidden = false;
+var info_expanded = true;
+/* toggles the info's expanded state */
+function expandInfoToggle(animate)
+{
     if (animate) {
         var animation_time = 100;
     } else {
         animation_time = 0;
     }
-    var expanded =  $(".home_header_expanded");
-    if (expanded.hasClass("expanded")) {
-        expanded.animate({"height":'10px'}, animation_time);
-        expanded.removeClass("expanded");
+
+    var info_div = $(".home_header_info");
+
+    // If info is hidden, expand the info to it's previous expanded state
+    if( info_hidden )
+    {   // Set info hidden to false
+        info_hidden = false;
+        $(".hide_info").text('- minimize info');
+        // If the info was un-expanded, show it at un-expanded form
+        if( !info_expanded )
+        {
+            info_div.animate({"height":'100px'}, animation_time);
+            $(".expand_info").text('+ expand info');
+        } // If the info was expanded, show the full expanded form
+        else
+        {
+            expandAnimation(info_div,animation_time);
+            $(".expand_info").text('- reduce info');
+        }
+    }
+    // Otherwise, toggle the info expanded property
+    else if( info_expanded )
+    {   // Set expanded to false and un-expand the info
         info_expanded = false;
+        info_div.animate({"height":'100px'}, animation_time);
         $(".expand_info").text('+ expand info');
-    } else {
-        expanded.css('height', 'auto');
-        var autoHeight = expanded.height();
-        expanded.css('height', '0px');
-        expanded.animate({"height":autoHeight}, animation_time);
-        expanded.addClass("expanded");
+    }
+    else
+    {   // Otherwise set expanded to true and expand the info
         info_expanded = true;
+        expandAnimation(info_div,animation_time);
         $(".expand_info").text('- reduce info');
     }
+}
+
+/* toggles the info's hidden state */
+function hideInfoToggle(animate)
+{
+    if (animate) {
+        var animation_time = 100;
+    } else {
+        animation_time = 0;
+    }
+
+    var info_div = $(".home_header_info");
+
+    if( info_hidden )
+    {
+        expandInfoToggle(animate);
+    }
+    else
+    {
+        info_hidden = true;
+        info_div.animate({"height":'0px'}, animation_time);
+        $(".expand_info").text('+ show info');
+        $(".hide_info").text('+ show info');
+    }
+
+}
+
+/* checks and sets the proper info state based on the two info booleans */
+function setInfoHeight()
+{
+    var info_div = $(".home_header_info");
+
+    if( info_hidden )
+    {
+        info_div.css("height",'0px');
+    }
+    else if( info_expanded )
+    {
+        info_div.css("height",'auto');
+    }
+    else
+    {
+        info_div.css("height","100px");
+    }
+}
+
+
+/* expands a div from it's current height to the "auto" height */
+function expandAnimation( div , animation_time)
+{
+    var beforeHeight = div.height();
+    div.css('height', 'auto');
+    var autoHeight = div.height();
+    div.css('height', beforeHeight + 'px');
+    div.animate( { "height" : autoHeight } , animation_time);
 }
 
 function homeReload(theurl) {
@@ -550,9 +632,14 @@ function removeType(type) {
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
     var container = $(this).parents(".feed_main");
+    refreshFeed(container);
+});
+
+/* replaces feed, rather than appendin */
+function refreshFeed(container) {
     container.data('feed_start', 0);
     getFeed(container);
-});
+}
 
 var feed_types = [];
 var feed_rank = 'H';
@@ -578,8 +665,13 @@ function getFeed(container) {
         data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
     }
     else {
+        var only_unanswered = container.data('only_unanswered');
+        if (typeof(only_unanswered) == 'undefined') {
+            only_unanswered = false;
+        }
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id};
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
+            'only_unanswered':only_unanswered };
     }
     action({
             data: data,
@@ -1778,13 +1870,20 @@ function getModal(modal_name,data)
 
 /***********************************************************************************************************************
  *
- *     ~Group Invite Modal
+ *     ~Group Header
  *
  **********************************************************************************************************************/
 
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
-    getModal('group_invite_modal');
+    var g_id = $(this).data('g_id');
+    getModal( 'group_invite_modal' , { 'g_id': g_id } );
+});
+
+bind( 'div.view_group_requests' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal( 'group_requests_modal' , { 'g_id': g_id } );
 });
 
 
@@ -1826,6 +1925,22 @@ function loadGroupEdit()
     $('select.member_select').select2({
         placeholder: "Enter a member,"
     });
+}
+
+function selectPrivacyRadio()
+{
+    var privacy = $('#group_privacy_container').data('group_privacy');
+    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
+}
+
+function selectScaleRadio()
+{
+    var scale = $('#group_scale_container').data('group_scale');
+    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
+    selected.prop('checked',true);
+    selected.parent().addClass('create-radio-selected');
 }
 
 // Group Privacy Radio
@@ -1962,22 +2077,6 @@ function removeAdmin(admin_id,g_id,success)
     });
 }
 
-function selectPrivacyRadio()
-{
-    var privacy = $('#group_privacy_container').data('group_privacy');
-    var selected = $('input:radio[value="'+privacy+'"][name="group_privacy"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
-}
-
-function selectScaleRadio()
-{
-    var scale = $('#group_scale_container').data('group_scale');
-    var selected = $('input:radio[value="'+scale+'"][name="scale"]');
-    selected.prop('checked',true);
-    selected.parent().addClass('create-radio-selected');
-}
-
 
 /***********************************************************************************************************************
  *
@@ -2082,10 +2181,14 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
+    expandAnswer(stub);
+});
+
+function expandAnswer(stub) {
     stub.find(".question_comparison").hide();
     stub.find(".answer_expanded").show();
-    $(this).hide();
-});
+    stub.find(".answer_button").hide();
+}
 
 
 bind('.answer_checkbox' , 'click' , null , function(event)
@@ -2129,13 +2232,23 @@ bind('.save_button' , 'click' , null , function(event)
             'explanation':explanation,'a_id':a_id, 'weight':weight, 'to_compare_id':to_compare_id},
         success: function(data) {
             var returned = eval('(' + data + ')');
-            var new_element = $(returned.html);
-            stub.replaceWith(new_element);
-            var saved_message = new_element.find(".saved_message");
-            saved_message.show();
-            saved_message.fadeOut(5000);
-            bindImportanceSlider(new_element.find(".importance_bar"));
+
+            var container = stub.parents(".feed_main");
+            var only_unanswered = container.data('only_unanswered');
+            if (only_unanswered) {
+                stub.hide();
+                expandAnswer(stub.next('.question_stub'));
+            }
+            else {
+                var new_element = $(returned.html);
+                stub.replaceWith(new_element);
+                var saved_message = new_element.find(".saved_message");
+                saved_message.show();
+                saved_message.fadeOut(5000);
+                bindImportanceSlider(new_element.find(".importance_bar"));
+            }
             updateMatches();
+            updateStats();
         }
     });
 });
@@ -2191,6 +2304,31 @@ function updateMatch(match) {
     });
 }
 
+function updateStats() {
+    $.each($(".stats_object"), function(i,e) {
+       updateStatsObject($(this));
+    });
+}
+
+function updateStatsObject(stats) {
+    var object = stats.data('object');
+    action({
+        data: {'action':'updateStats', 'object':object},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            stats.replaceWith(new_element);
+        }
+    });
+}
+
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
 
 /***********************************************************************************************************************
  *

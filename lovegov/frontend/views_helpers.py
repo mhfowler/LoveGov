@@ -194,3 +194,25 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         return to_return
     else:
         return ''
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fills in vals with topic_stats for question_stats.html
+#-----------------------------------------------------------------------------------------------------------------------
+def getQuestionStats(vals):
+
+    viewer = vals['viewer']
+    responses = viewer.view.responses.all()
+    topic_stats = []
+    for t in getMainTopics():
+        stat = {'topic':t}
+        q_ids = Question.objects.filter(main_topic=t, official=True).values_list('id', flat=True)
+        total = q_ids.count()
+        r = responses.filter(question_id__in=q_ids).exclude(most_chosen_answer=None)
+        num = r.count()
+        stat['total'] = total
+        stat['num'] = num
+        percent = num/float(total)*100
+        stat['percent'] = percent
+        stat['empty'] = 100-percent
+        topic_stats.append(stat)
+    vals['topic_stats'] = topic_stats

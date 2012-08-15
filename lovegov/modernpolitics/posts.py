@@ -7,7 +7,7 @@
 ########################################################################################################################
 ########################################################################################################################
 
-from lovegov.modernpolitics.actions import *
+from lovegov.modernpolitics.modals import *
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
@@ -767,7 +767,7 @@ def answer(request, vals={}):
 def stubAnswer(request, vals={}):
     user = vals['viewer']
     to_compare_id = request.POST.get('to_compare_id')
-    if to_compare_id:
+    if to_compare_id and to_compare_id != 'null':
         to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
     else:
         to_compare = None
@@ -781,10 +781,11 @@ def stubAnswer(request, vals={}):
         privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
     vals['your_response'] = response
-    their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
-    vals['their_response'] = their_response
-    vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
-    vals['to_compare'] = to_compare
+    if to_compare:
+        their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
+        vals['their_response'] = their_response
+        vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
+        vals['to_compare'] = to_compare
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -811,6 +812,16 @@ def updateMatch(request, vals={}):
         html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# rerenders an html piece and returns it (with new db stuff from some other venue)
+#-----------------------------------------------------------------------------------------------------------------------
+def updateStats(request, vals={}):
+    object = request.POST['object']
+    if object == 'question_stats':
+        from lovegov.frontend.views_helpers import getQuestionStats
+        getQuestionStats(vals)
+        html = ajaxRender('site/pages/qa/question_stats.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Joins group if user is not already a part.
@@ -1414,7 +1425,9 @@ def getQuestions(request, vals):
     feed_start = int(request.POST['feed_start'])
     feed_topic_alias = request.POST.get('feed_topic')
     to_compare_id = request.POST.get('to_compare_id')
-    if to_compare_id:
+    only_unanswered_string = request.POST['only_unanswered']
+    only_unanswered = only_unanswered_string == 'true'
+    if to_compare_id and to_compare_id != 'null':
         to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
     else:
         to_compare = None
@@ -1425,11 +1438,10 @@ def getQuestions(request, vals):
 
     if to_compare:
         question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
-            question_ranking=question_ranking, feed_topic=feed_topic,
-            feed_start=feed_start, num=10)
+            question_ranking=question_ranking, feed_topic=feed_topic, feed_start=feed_start, num=10)
     else:
         question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
-            feed_topic=feed_topic, feed_start=feed_start, num=10)
+            feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     html = ajaxRender('site/pages/qa/question_feed_helper.html', vals, request)
@@ -2036,15 +2048,49 @@ def actionPOST(request, vals={}):
 # Splitter between all modals
 #-----------------------------------------------------------------------------------------------------------------------
 def getModal(request,vals={}):
+    ## Get the basics ##
+    viewer = vals['viewer']
     modal_name = request.POST.get('modal_name')
     modal_html = ''
 
-    if modal_name == "invite_modal":
-        pass
-    elif modal_name == "group_invite_modal":
-        modal_html = "Yay! It works."
+    ## Modal Switch ##
+    ##################
 
+    ## Invite Modal ##
+    if modal_name == "group_requests_modal":
+        # Get group ID
+        if 'g_id' in request.POST:
+            g_id = request.POST['g_id']
+        else: # If there's no group ID, exception
+            raise LGException( "Group requests modal requested without group ID by user ID #" + str(viewer.id) )
+            # and Group
+        group = Group.lg.get_or_none(id=g_id)
+        # If there's no group matching that ID, raise an exception
+        if not group:
+            raise LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+
+        modal_html = getGroupRequestsModal(group,viewer)
+
+
+    ## Group Invite Modal ##
+    elif modal_name == "group_invite_modal":
+        # Get group ID
+        if 'g_id' in request.POST:
+            g_id = request.POST['g_id']
+        else: # If there's no group ID, exception
+            raise LGException( "group invite modal requested without group ID by user ID #" + str(viewer.id) )
+        # and Group
+        group = Group.lg.get_or_none(id=g_id)
+        # If there's no group matching that ID, raise an exception
+        if not group:
+            raise LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+
+        modal_html = getGroupInviteModal(group,viewer)
+
+
+    ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )
+    ## Otherwise raise an exception with an invalid modal name ##
     else:
         raise LGException( "invalid modal name requested: " + str(modal_name) )

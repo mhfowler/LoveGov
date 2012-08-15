@@ -607,7 +607,8 @@ ACTIONS = [
     'getModal',
     'getQuestions',
     'updateMatch',
-    'stubAnswer'
+    'stubAnswer',
+    'updateStats'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
