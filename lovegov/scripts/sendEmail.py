@@ -21,3 +21,4 @@ for u in users:
     email_recipient = [u.email]
     sendHTMLEmail(subject="LoveGov VicePresidential Match", email_html=email_html,
     email_sender="team@lovegov.com", email_recipients=email_recipients)
+    print "sent: " + u.get_name()
