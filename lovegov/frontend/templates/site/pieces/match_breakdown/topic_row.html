@@ -1,0 +1,25 @@
+{% load thumbnail %}
+{% load customtags %}
+
+<div class="topic-row" data-t_alias="{{ t.alias }}" data-result="{{ t.result }}" data-num_q="{{ t.num_q }}">
+    <div class="row-text">
+        <span class="text-percent">{{ t.result }}%</span> <span class="text"> on {{ topic.topic_text }}</span>
+    </div>
+    <div class="topic-bar" style="border-color:{{ t.dark_color }}">
+        <div class="white_area" style="width:{{t.empty}}%"></div>
+        <div class="colored_area" style="background-color:{{ t.light_color }}; width:{{t.result}}%">
+            <p class="percent">
+                {{ t.result }}%
+            </p>
+        </div>
+        <div class="topic_icon">
+            {% with full_url=topic.getIconURL|media_url:MEDIA_PREFIX %}
+                {% thumbnail full_url "20" crop="center" format="PNG" as im %}
+                    <img src="{{ im.url }}" />
+                {% empty %}
+                    {{ full_url }}
+                {% endthumbnail %}
+            {% endwith %}
+        </div>
+    </div>
+</div>

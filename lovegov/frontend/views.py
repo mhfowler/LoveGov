@@ -450,6 +450,15 @@ def friends(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+def questions(request, vals={}):
+
+    getMainTopics(vals)
+    getQuestionStats(vals)
+
+    html =  ajaxRender('site/pages/qa/questions.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
 #-----------------------------------------------------------------------------------------------------------------------
@@ -476,6 +485,9 @@ def groupPage(request, g_alias, vals={}):
     # Get the list of all members and truncate it to be the number of members showing
     vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
 
+    # Get the number of group Follow Requests
+    vals['num_group_requests'] = group.getNumFollowRequests()
+
     # Get the total number of members
     vals['num_members'] = group.num_members
 
@@ -492,8 +504,11 @@ def groupPage(request, g_alias, vals={}):
         if group_joined.rejected:
             vals['is_user_rejected'] = True
 
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
     # Render and return HTML
-    focus_html =  ajaxRender('site/pages/home/group_focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
@@ -521,6 +536,7 @@ def profile(request, alias, vals={}):
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
     comparison = user_profile.getComparison(viewer)
+    vals['to_compare'] = profile
     vals['comparison'] = comparison.toBreakdown()
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
@@ -585,7 +601,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
 
-    html = ajaxRender('site/pages/content/news_detail.html', vals, request)
+    html = ajaxRender('site/pages/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -621,10 +637,9 @@ def discussionDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # closeup of histogram
 #-----------------------------------------------------------------------------------------------------------------------
-def histogramDetail(request, g_id, vals={}):
+def histogramDetail(request, alias, vals={}):
 
-    viewer = vals['viewer']
-    group = Group.objects.get(id=g_id)
+    group = Group.objects.get(alias=alias)
 
     vals['group'] = group
     getMainTopics(vals)
@@ -684,7 +699,7 @@ def account(request, section="", vals={}):
     if section == "profile": vals['profile_message'] = " "
 
     if request.method == 'GET':
-        html = ajaxRender('site/pages/account/account.html', vals, request)
+        html = ajaxRender('site/pages/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
@@ -714,7 +729,7 @@ def account(request, section="", vals={}):
         else:
             pass
 
-        html = ajaxRender('site/pages/account/account.html', vals, request)
+        html = ajaxRender('site/pages/account.html', vals, request)
         url = '/account/'
         return framedResponse(request, html, url, vals)
 

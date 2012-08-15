@@ -179,6 +179,11 @@ class Topic(LGModel):
     def __unicode__(self):
         return self.topic_text
 
+    def getColor(self):
+        return MAIN_TOPICS_COLORS_ALIAS[self.alias]['default']
+    def getLightColor(self):
+        return MAIN_TOPICS_COLORS_ALIAS[self.alias]['light']
+
     def getColors(self):
         return {'color':self.color,'color_light':self.color_light}
 
@@ -3350,7 +3355,7 @@ class Group(Content):
     # Get url of histogram detail.
     #-------------------------------------------------------------------------------------------------------------------
     def getHistogramURL(self):
-        return '/histogram/' + str(self.id) + "/"
+        return self.get_url() + 'histogram/'
 
     #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
@@ -3497,6 +3502,9 @@ class Group(Content):
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')
         else:
             return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
+
+    def getNumFollowRequests(self):
+        return GroupJoined.objects.filter( group=self, confirmed=False, requested=True, rejected=False ).count()
 
 
     #-------------------------------------------------------------------------------------------------------------------

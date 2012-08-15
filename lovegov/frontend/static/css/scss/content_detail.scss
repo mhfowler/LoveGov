@@ -1,0 +1,980 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+
+div#content-div h3, div.content-left-side h3 {
+    color: $red;
+    @include titleFont;
+    margin-bottom: 20px;
+}
+
+div.content-left-side h3 {
+    font-size: 20px;
+    margin-top: 30px;
+}
+
+div#content
+{
+    width:100%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:40px;
+}
+
+div.content-left-side {
+    width:300px;
+    float:left;
+    padding: 0 30px 30px 0;
+}
+
+div.content-left {
+    width: 700px;
+}
+
+div#content-wrapper {
+    width:100%;
+    float: left;
+    div.social-bar{
+      height:50px;
+      border: 1px solid $light-gray;
+      margin: 15px 0px 0px 0px;
+
+      div.hearts {
+        float:left;
+        width:90px;
+        height:50px;
+        border-right: 1px solid $light-gray;
+
+        div.hearts-wrapper {
+          position:relative;
+          margin-top: 12px;
+          width:100%;
+          text-align: center;
+
+          div.heart {
+            width:20px;
+            height:18px;
+            background:contain;
+          }
+
+          div.heart_minus {
+            float:left;
+            margin: 3px 0 0 8px;
+          }
+
+          div.heart_plus {
+            float:right;
+            margin: 3px 8px 0 0;
+          }
+
+          span.status {
+            @include really-big();
+            @include fontSize(20px);
+            color:#4c4c4c;
+            text-align:center;
+          }
+
+        }
+
+      }
+
+      div.comments {
+        float:left;
+        width:86px;
+        height:50px;
+
+        a.comments-wrapper {
+          display:block;
+
+          div.text-wrapper {
+            foat:left;
+            position: relative;
+
+            div.comments-text {
+              @include really-big();
+              @include fontSize(12px);
+              position: absolute;
+              top: 25px;
+              left:50%;
+              margin-left:-25px;
+            }
+
+            div.comments-num {
+              margin: 6px 0 0 5px;
+              color:$red;
+              position: absolute;
+              left: 50%;
+              margin-left:-10px;
+              font-size: 20px;
+            }
+          }
+        }
+
+        a.comments-wrapper:hover {
+          border-color:$dark-gray;
+        }
+
+
+
+      }
+
+      div.share {
+        float:left;
+        width:70px;
+        height:50px;
+        border-left: 1px solid $light-gray;
+        text-align:center;
+        color:$red;
+
+        p.share-text {
+            @include titleFont();
+            @include fontSize(18px);
+            margin: 14px 0 0 0;
+        }
+        &:hover {
+            background-color:$red;
+            cursor:pointer;
+            p.share-text {
+              color:white;
+            }
+        }
+      }
+    }
+  div.news_link_summary p {
+    font-size: 14px;
+    border: 1px dashed $gray;
+    border-left: none;
+    font-style: italic;
+    padding: 10px;
+    @include rounded-right(10px);
+    &:hover {
+      background-color: $white-gray;
+    }
+  }
+}
+
+div.comments-bubble {
+    display: none;
+}
+
+div.see-all-signers {
+    text-align: center;
+    margin: 10px 0 10px 0;
+    color: $black;
+    @include titleFont;
+    @include rounded(5px);
+    background-color: $white-gray;
+    cursor: pointer;
+    padding: 5px;
+    &:hover {
+        background-color: $gray;
+    }
+}
+
+div.content-left-side div.content-image-area {
+    background-size: auto;
+    height: 150px;
+    width: 100%;
+    position: relative;
+    background-repeat: no-repeat;
+}
+
+div.content_separator {
+	@include horizontalSeparator(100%);
+	clear: both;
+}
+
+div#content-topic-img
+{
+    position:absolute;
+    top: 5px;
+    left: 5px;
+    img {
+        height: 35px;
+        width: 35px;
+    }
+}
+
+div.comment-username img {
+	float: left;
+	margin-right: 10px;
+}
+
+div.hearts_wrapper span.status {
+	color: $black;
+}
+
+// Deprecated
+/*
+div.social_bar {
+	width: 100%;
+	text-align: center;
+	padding: 10px 0 10px 0;
+    div.bar_elem {
+	    width: 32%; 
+	    text-align: center;
+	    display: inline-block;
+	    height: 30px;
+	    vertical-align: middle;
+	    padding: 0;
+	    margin: 0;
+	    border-color: $light-gray;
+	    border: 1px solid $light-gray;
+	    border-right: none;
+	    color: $deep-gray;
+	    
+	    &:last-child {
+		    border-right: 1px solid $light-gray;
+		}
+		
+		&.social_bar_comments {
+			position: relative;
+			text-align: center;
+			> span {
+                text-align: center;
+				position: absolute;
+				font-size: 12px;
+                @include gillLight;
+				top: 5px;
+				left: 5px;
+			}
+		}
+		
+		&.social_bar_links div {
+			border: none;
+			display: inline-block;
+			height: 25px;
+			width: 25px;
+			background-size: 100%;
+			&.twitter_link {
+				color: red;
+				@include staticImage($rel-path:'/images/icons/twitter.png');
+				&:hover {
+					@include staticImage($rel-path:'/images/icons/twitter_hover.png');
+				}
+			}
+			&.facebook_link {
+				color: blue;
+				@include staticImage($rel-path:'/images/icons/facebook.png');
+				&:hover {
+					@include staticImage($rel-path:'/images/icons/facebook_hover.png');
+				}
+			}
+		}
+	}
+	span.num_comments {
+		color: red;
+	}
+}
+*/
+
+
+div.comment-username div.avatar-box {
+    float: left;
+}
+
+div#thread
+{
+    position:relative;
+    padding-top:20px;
+    left:-20px;
+}
+
+span.discuss
+{
+    font-size: 18px;
+    color: $red;
+    @include titleFont;
+    margin: 15px 0 10px 0;
+    display: block;
+}
+
+/* comment threads */
+
+div.comment
+{
+    position:relative;
+    margin-left:30px;
+    padding: 30px;
+    padding-bottom:20+30px;
+    &.level1 {
+	    background-color: $white-gray;
+	    border-bottom: 1px solid $gray;
+    }
+    &.level2 {
+	    border:1px dashed $gray;
+	    border-right: none;
+	    border-top: none;
+    }
+    &.toplevel {
+	    margin-top: 10px;
+    }
+    div.change-privacy {
+        float:left;
+    }
+}
+
+div#content-div p {
+    color: $deep-gray;
+    @include titleFont;
+    font-size: 18px;
+    clear: right;
+}
+
+div#content-div {
+    width: 720px;
+    height: auto;
+    float: left;
+}
+
+div.petition_bar {
+
+    margin-top: 25px;
+  div.bar-wrapper {
+    width:100%;
+    height:14px;
+    border: 1px solid $red;
+    overflow:hidden;
+    div.red_bar {
+      height:14px;
+      background-color:$red;
+    }
+  }
+  div.goal-statement {
+    margin: 5px 0 0 0;
+  }
+}
+
+.comment-username
+{
+    padding-bottom:2px;
+    font-size:14pt;
+    color:$text-blue;
+    margin-bottom:10px;
+    float:left;
+    cursor:pointer;
+    @include titleFont;
+}
+
+.comment-username a, .comment-username a:hover, .comment-username a:link, .comment-username a:visited, .comment-username a:active
+{
+    color:#0f5569;
+    float:left;
+    margin-top:15px;
+    margin-left:5px;
+}
+
+.comment-reply
+{
+    position:relative;
+    margin-top:10px;
+    @include titleFont;
+    color: #f0503b;
+    font-size:13pt;
+    cursor:pointer;
+    margin-top:10px;
+    margin-bottom:10px;
+    div.reply {
+	    float: right;
+    }
+    div.commentdelete {
+	    float: right;
+	    margin-right: 12px;
+    }
+    div.share {
+	    float: right;
+	    margin-right: 12px;
+    }
+    div:hover {
+        color: $red-light;
+    }
+}
+
+
+.comment-metadata
+{
+    position:relative;
+    float:right;
+    @include titleFont;
+    color: #ccc;
+    font-size:10pt;
+    padding-left:10px;
+    cursor:pointer;
+}
+
+.comment-textarea
+{
+    @include titleFont;
+    font-size:11pt;
+    border: 1px solid #ccc;
+    height:100px;
+    padding: 10px;
+}
+
+.comment-text
+{
+    clear:both;
+    margin-top: 10px;
+}
+
+#comment-text:focus
+{
+    outline:none;
+}
+
+#comment-thread
+{
+    margin-top:0px;
+    position:relative;
+    float:left;
+    width:700px;
+}
+
+.replyform
+{
+    display:none
+}
+
+.commentdelete
+{
+    margin-left:20px;
+}
+
+div.content-submitted-by-wrapper {
+    margin-top: 40px;
+    padding: 6px;
+    position: relative;
+    @include rounded(5px);
+    &:hover {
+        background-color: $white-gray;
+    };
+    div.avatar-box {
+        float: left;
+        margin-right: 15px;
+    }
+    span.submitter {
+      float:left;
+      width:130px;
+      a {
+        @include titleFont;
+        font-size: 20px;
+        color: $black;
+      }
+    }
+    div.change-privacy {
+        float:left;
+        position: relative;
+        top: 0;
+        right: 0;
+    }
+    span.submit-time {
+      float:left;
+      color: $deep-gray;
+      font-size: 12px;
+    }
+}
+
+div.change-privacy {
+    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+    @include rounded(5px);
+    &:hover {
+        background-color: $light-gray;
+    }
+}
+
+div.comment span.timestamp {
+    float: left;
+    font-size: 12px;
+    color: $deep-gray;
+    margin-left: 10px;
+    margin-top: 18px;
+    display: block;
+    float: left;
+    font-family: $body-fonts;
+}
+
+
+span.collapse {
+    cursor: pointer;
+    position: relative;
+    float: left;
+    z-index: 1;
+    color: $deep-gray;
+    top: 85px;
+    left: 10px;
+}
+
+span.flag {
+    color: $gray;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-left: 10px;
+    display: block;
+    float: left;
+    &:hover {
+        color: $deep-gray;
+    }
+}
+
+div.threaddiv {
+    min-height: 50px;
+}
+
+/* -- for question -- */
+#question-detail
+{
+    margin-bottom:10px;
+}
+
+#question-text
+{
+    float:left;
+    position:relative;
+    width:400px;
+}
+
+#question h3
+{
+    margin-top:0;
+    color:#0F5569
+}
+
+#explanation
+{
+    display:none
+}
+
+.submit:visited, .submit:active, .submit:link
+{
+    background-color:#f0503b;
+    color:#fff;
+    text-decoration:none;
+}
+
+.submit:hover
+{
+    background-color:#fff;
+    color:#f0503b;
+    text-decoration:none;
+}
+
+.percent
+{
+    position:relative;
+    float:left;
+    width:530px;
+    margin-left:50px;
+    font-size:12px;
+    color:#f0503b;
+
+}
+
+#submitquestion
+{
+    position:relative;
+}
+
+#questionform
+{
+    position:relative;
+}
+
+#questionform input
+{
+    float:left
+}
+
+#top-h3
+{
+    margin-top:0px;
+}
+
+.answer-text
+{
+    float: left;
+    position: relative;
+    margin-left: 10px;
+    cursor:pointer;
+    width: 400px;
+}
+
+
+
+
+/* -- FEED ITEMS --*/
+.feed-item
+{
+    position:relative;
+    border-bottom:1px solid #ccc;
+    padding-bottom:20px;
+    margin-bottom:45px;
+    margin-left:30px;
+}
+
+#profile
+{
+    position:relative;
+    margin-top:15px;
+    margin-bottom:5px;
+    margin-left:30px;
+    height:235px;
+}
+
+.profile-username
+{
+    position:relative;
+    padding-bottom:5px;
+    font-size:20pt;
+    @include titleFont;
+    color:#0f5569;;
+}
+
+#profile-img
+{
+    float:left;
+    margin-right:20px;
+    padding: 6px;
+    border: 1px solid #F0503B;
+    height:175px;
+}
+
+#profile-summary
+{
+    position:relative;
+    width:380px;
+    margin-left:220px;
+    margin-bottom:12px;
+}
+
+#profile-info-stats
+{
+    position:relative;
+    left:10px;
+}
+
+#profile-info
+{
+    position:relative;
+    float:left;
+    width:200px;
+    margin-bottom:15px;
+}
+
+.profile-header
+{
+    @include titleFont;
+    color:#959595;
+    font-size:14pt;
+    margin-bottom:3px;
+}
+
+#profile-stats
+{
+    position:relative;
+    left:65px;
+    margin-bottom:15px;
+    float:left;
+    width:150px;
+}
+
+#profile-stats ul
+{
+    margin-top:0;
+    list-style-type:circle;
+    margin-left:-15px;
+}
+
+.profile-stats-numbers
+{
+    color:#f0503b;
+}
+
+.feed-item-text
+{
+    margin-left:100px;
+    width:510px;
+}
+
+.feed-item-text-expanded
+{
+    width:510px;
+    margin-left:100px;
+}
+
+.feed-avatar
+{
+    float:left;
+    padding-right:20px;
+}
+
+.feed-item-username
+{
+    padding-bottom:5px;
+    font-size:14pt;
+    @include titleFont;
+    color:#0f5569;
+}
+
+.feed-item-expanded img
+{
+    width:500px;
+}
+
+
+.feed-item
+{
+    position:relative;
+    border-bottom:1px solid #ccc;
+    padding-bottom:20px;
+    margin-bottom:45px;
+    margin-left:30px;
+    width:500px;
+}
+
+.feed-item-text
+{
+    margin-left:120px;
+    width:490px;
+}
+
+.feed-item-text-expanded
+{
+    width:490px;
+    margin-left: 120px;
+
+}
+
+.feed-avatar
+{
+    float:left;
+    padding-right:20px;
+}
+
+.comment-footer
+{
+	position: absolute;
+	top: 30px;
+	right: 30px;
+}
+
+.seemore
+{
+    position:relative;
+    top:10px;
+    @include titleFont;
+    color: #f0503b;
+    font-size:13pt;
+    cursor:pointer;
+}
+
+.metadata
+{
+    position:relative;
+    float:right;
+    @include titleFont;
+    color: #0F5569;
+    font-size:10pt;
+    padding-left:10px;
+    cursor:pointer;
+}
+
+.voted
+{
+    font-size:120%;
+    color:#0f5569;
+}
+
+
+/* for petition */
+#signers
+{
+    float:right;
+}
+
+#signers h4
+{
+    color:#0F5569;
+    margin-top:0px;
+    margin-bottom:15px;
+    font-size:17px;
+    float:left;
+}
+
+#petition-text
+{
+    width:500px;
+}
+
+.signed:hover
+{
+    color: #f0503b;
+}
+
+.red-button
+{
+    -moz-border-radius: 10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+    border-radius:10px;
+    padding:10px;
+    padding-bottom:7px;
+    font-size:14pt;
+    @include titleFont;
+}
+.red-button:link
+{
+    color:#fff;
+    background-color:#f0503b;
+    position:relative;
+    margin-bottom:10px;
+
+    &:link, &:visited, &:active {
+        text-decoration:none;
+        color:white;
+    }
+
+    &:hover {
+        color:#f0503b;
+        background-color:#fff;
+    }
+}
+
+#finalize
+{
+    color:#F0503B;
+    float:right;
+}
+
+#signers
+{
+    float:left;
+    margin-bottom:40px;
+    width: 100%;
+}
+
+#signer-names
+{
+    clear:both;
+}
+
+.signer-wrapper
+{
+    float:left;
+    margin-bottom:15px;
+    height:40px;
+}
+
+.signer-wrapper img
+{
+    float:left;
+}
+
+.signer-wrapper div.signer-name
+{
+    float: left;
+    margin-left: 10px;
+    height: 40px;
+    position: relative;
+    top: 10px;
+}
+
+.signer-wrapper a, .signer-wrapper a:link, .signer-wrapper a:hover, .signer-wrapper a:active
+{
+    color:#0F5569;
+    font-size: 18px;
+}
+
+#finalize {
+  margin: 20px 0 0 0;
+  padding: 0 0 0 0;
+  float:left;
+  width:100%;
+  #finalize-button
+  {
+    float:left;
+    color: white;
+    width:100%;
+    display:block;
+    text-align: center;
+    margin-top:25px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    &:hover {
+      background-color: $red-light;
+    }
+  }
+}
+
+#signers-button
+{
+    margin-top:20px;
+}
+
+.sign .red-button
+{
+    color: white;
+    width:100%;
+    display:block;
+    text-align: center;
+    margin-top:25px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    &:hover {
+        background-color: $red-light;
+    }
+}
+
+#num-signers
+{
+    float:left;
+    font-size:80%;
+    margin-left:20px;
+}
+
+#nextquestion
+{
+    margin-left:20px;
+}
+
+#next-wrapper
+{
+    float:right;
+}
+
+.answer-container
+{
+    width:400px;
+    margin-bottom:15px;
+    float:left;
+    border-radius:15px;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    cursor:pointer;
+}
+
+
+.answer-container-input-div
+{
+
+}
+
+
+div.petition-signers-modal {
+    @include modal;
+    top: 50%;
+    left: 50%;
+    margin-left: -550px;
+    margin-top: -300px;
+    min-height: 300px;
+    position: fixed;
+    width: 60%;
+    padding: 50px;
+
+}
+

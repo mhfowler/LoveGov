@@ -758,7 +758,7 @@ div.edit-link
 div.modal-general {
   z-index: 3;
   position: absolute;
-  padding: 15px;
+  padding: 30px;
   top: 100px;
   background-color: white;
   -moz-box-shadow: 10px 10px 5px $deep-gray;
@@ -771,6 +771,7 @@ div.modal-general {
   div.modal-content
   {
     float:left;
+    padding: 20px;
   }
 }
 

@@ -4,75 +4,92 @@
 
 @import "compass";
 
-div.group-info-title
+
+div.group-top
 {
-  @include grayText();
-  @include fontSize(18px);
-  margin-bottom: 5px;
+  @include clearfix();
+
+  div.group-minimize-button
+  {
+    float: right;
+    cursor: pointer;
+    color: $text-blue-light;
+    font-size: 10px;
+    margin-top: 2px;
+
+    &:hover { color: $text-blue; }
+  }
+
+  span.group-title
+  {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+    margin-right: 10px;
+    @include inline-block();
+  }
+
+  span.group-scale
+  {
+    color: $dark-gray;
+    font-size: 12px;
+    @include inline-block();
+    margin-right: 10px;
+  }
+
+  span.group-num-members
+  {
+    font-size: 12px;
+    @include inline-block();
+  }
 }
 
-div.group-main
+div.group-expanded
 {
-
-  .group-action
-  {
-    padding:5px;
-    background-color:$light-gray;
-    width:160px;
-    text-align:center;
-    margin-bottom:7px;
-    display: block;
-    color: $black;
-
-    &:hover
-    {
-      background-color:$dark-gray;
-      cursor:pointer;
-    }
-  }
-
-  div.group-take-poll
-  {
-    @extend .group-action;
-    color: white;
-    background-color:$red;
-    &:hover { background-color: $red-light; }
-  }
-
-  div.group-top
-  {
-    margin-bottom: 20px;
-
-    span.group-title
-    {
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 16px;
-      margin-right: 10px;
-      @include inline-block();
-    }
-
-    span.group-scale
-    {
-      color: $dark-gray;
-      font-size: 12px;
-      @include inline-block();
-      margin-right: 10px;
-    }
-
-    span.group-num-members
-    {
-      font-size: 12px;
-      @include inline-block();
-    }
-    div.group-action {
-      float:right;
-    }
-  }
+  @include clearfix();
+  overflow: hidden;
+  min-width: 910px;
 
   div.group-info
   {
     @include clearfix();
+
+    div.group-info-title
+    {
+      @include grayText();
+      @include fontSize(18px);
+      margin-bottom: 2px;
+    }
+
+    div.group-actions
+    {
+      float:right;
+      @include clearfix();
+
+      .group-action
+      {
+        padding:5px;
+        background-color:$light-gray;
+        width:160px;
+        text-align:center;
+        margin-bottom:7px;
+        display: block;
+        color: $black;
+
+        &:hover
+        {
+          background-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+    }
+
+    div.group-column
+    {
+      @include clearfix();
+      float:left;
+      margin-right: 20px;
+    }
 
     div.group-image
     {
@@ -88,7 +105,6 @@ div.group-main
       float: left;
       height: 100px;
       color: $red;
-      padding-top: 5px;
 
       div.match-number
       {
@@ -108,67 +124,139 @@ div.group-main
 
     }
 
-    div.group-summary
+    div.group-histogram
     {
-      float: left;
-      margin-left: 30px;
-      width: 200px;
-      overflow:hidden;
+      width:230px;
+      height:180px;
+    }
 
-      p.group-description-text
+    div.group-text
+    {
+      width: 300px;
+      min-height: 100px;
+      overflow:hidden;
+      margin-right: 30px;
+    }
+
+    div.group-people
+    {
+      div.group-moderators
       {
-        display:none;
+        margin-bottom: 10px;
+        width: 160px;
+        height: 100px;
+      }
+
+      div.group-members
+      {
+        width: 160px;
+        height: 160px;
+
+        div.group-member-avatar
+        {
+          margin-right:10px;
+          margin-bottom:10px;
+          float: left;
+        }
       }
     }
-
-    div.group-moderators
-    {
-      float:right;
-      margin-right: 170px;
-    }
-
-    div.group-actions
-    {
-      float:right;
-      @include clearfix();
-    }
-
   }
-
 }
 
 
-div.group-expanded-info
-{
-  margin: 15px 0 20px 0;
+div.group-histogram {
 
-  div.group-histogram
-  {
-    float:left;
-    width:230px;
-    height:200px;
-    background-color:$gray;
-  }
+  div.histogram {
+    height:100%;
 
-  div.group-members
-  {
-    float:left;
-    margin-left:30px;
-    width:200px;
-    height:200px;
+    .histogram-body {
+      height:100%;
+      width:100%;
 
-    div.group-member-avatar
-    {
-      margin-right:10px;
-      margin-bottom:10px;
-      float: left;
+      .histogram-meta-box {
+        height:20%;
+        width:100%;
+
+        .total_count {
+          @include big();
+          @include fontSize(20px);
+          margin:0px;
+          display:none;
+        }
+
+        a.see-all {
+          position:relative;
+          top:55px;
+          left:15px;
+          z-index:1;
+          &:hover {
+            color:$black;
+          }
+        }
+
+        .identical_count {
+          float:left;
+          @include big();
+          @include fontSize(20px);
+          float:left;
+          margin: 10px 0 0 20px;
+        }
+
+
+      }
+
+      .histogram-bars {
+        float:left;
+        text-align:left;
+        position:relative;
+        left:-5px;
+        margin-top:30px;
+        height:80%;
+        margin: 0 0 0 5px;
+
+        .bar {
+          width:25px;
+          height:100%;
+          float:left;
+          margin-right:20px;
+        }
+
+        .white_bar {
+          height:97%;
+          width:100%;
+          background-color:white;
+        }
+
+        .red_bar {
+          width:100%;
+          background-color:$red;
+          border: 1px solid $red;
+        }
+
+        .label {
+          @include really-big();
+          @include fontSize(14px);
+          margin-top: 5px;
+        }
+      }
     }
+
   }
 
-  div.group-description
+  div.histogram-title
   {
-    float:left;
-    margin-left: 40px;
-    width: 420px;
+    @include rounded-bottom(18px);
+    position:relative;
+    background-color: $gray;
+    height: 37px;
+    color: white;
+
+    p{
+      position:relative;
+      top:-13px;
+      display:block;
+      @include h5;
+      color:white;
+    }
   }
 }

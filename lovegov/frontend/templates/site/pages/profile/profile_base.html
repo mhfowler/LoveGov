@@ -36,15 +36,8 @@
                         </div>
                     {% endif %}
 
-                    <div class="match-percent">
-                        {{ comparison.main.result }}%
-                    </div>
-                    <div class="match-from">
-                        match from
-                    </div>
-                    <div class="match-from how-many">
-                        {{ comparison.main.num_q }} answers
-                    </div>
+                    <!-- text match -->
+                    {% include 'site/pages/profile/sidebar_match.html' with to_compare=profile %}
 
                     <div class="stats">
 

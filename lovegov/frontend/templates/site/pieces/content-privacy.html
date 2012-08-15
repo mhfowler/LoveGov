@@ -1,0 +1,5 @@
+{% if content.privacy == "PUB" %}
+<div class="change-privacy tooltip-top" title="This content you submitted is public, which means you are identified as the submitter. Click to set it to private." data-content_id="{{content.id}}"><img src="{{ STATIC_URL }}/images/public.png" height="20px" width="20px"></div>
+{% elif content.privacy == "PRI" %}
+<div class="change-privacy tooltip-top" title="This content you submitted is private, which means you will not be identified as the submitter. Click to set it to public." data-content_id="{{content.id}}"><img src="{{ STATIC_URL }}/images/user-menu/lockgray.png" height="20px" width="20px"></div>
+{% endif %}

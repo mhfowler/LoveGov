@@ -24,7 +24,8 @@
     {% if not worldview_detail %}
         <a href="{{ to_compare.getQuestionsURL }}" class="view-all"> view all questions </a>
     {% else %}
-        <!-- this is where a search bar would go -->
-
+        <!-- this is where a search bar could go -->
+        <a href="/questions/" class="browse-all"> browse all questions </a>
     {% endif %}
 {% endblock %}
+

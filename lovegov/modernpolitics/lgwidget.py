@@ -48,7 +48,7 @@ def questions(request, vals={}):
     if ids:
         selected_questions = Question.objects.filter(id__in=ids)
         vals['selected_questions'] = selected_questions
-    html = ajaxRender('widget/questions.html', request=request, vals=vals)
+    html = ajaxRender('widget/top_sidebar_main.html', request=request, vals=vals)
     to_return = {'html': html}
     callback = request.GET.get('callback', '')
     response = json.dumps(to_return)
