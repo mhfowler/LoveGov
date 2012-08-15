@@ -1722,10 +1722,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
         actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
-        print len( actions )
         if num != -1:
             actions = actions[start:start+num]
-        print len( actions )
         return actions
 
     #-------------------------------------------------------------------------------------------------------------------

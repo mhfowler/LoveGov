@@ -676,9 +676,10 @@ function getFeed(container) {
             'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
             'only_unanswered':only_unanswered };
     }
-    else if (feed == 'getActivity')
+    else if (feed == 'getUserActivity')
     {
-        data = { 'action': 'getActivity', 'feed_start':feed_start, 'p_id':p_id };
+        var p_id = container.data('p_id');
+        data = { 'action': 'getUserActivity', 'feed_start':feed_start, 'p_id':p_id };
     }
     action({
             data: data,
