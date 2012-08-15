@@ -1,0 +1,29 @@
+{% extends 'site/pages/top_sidebar_main.html' %}
+
+
+{% block top %}
+{% endblock %}
+
+
+{% block sidebar %}
+   {% include 'site/pages/qa/lovegov_official_poll_stats.html' %}
+{% endblock %}
+
+{% block main %}
+
+    <div class="questions-main">
+
+        <div class="main-top">
+            <div class="header-title"> Questions </div>
+            <div class="red-line"></div>
+        </div>
+
+        <div class="questions-wrapper">
+            {% include 'site/pages/feed/question_browse.html' with special_feed="getQuestions" %}
+        </div>
+
+    </div>
+
+    <script> rebind="questions"; </script>
+
+{% endblock %}
