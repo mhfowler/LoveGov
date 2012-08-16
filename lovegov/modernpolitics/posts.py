@@ -1395,10 +1395,8 @@ def getFeed(request, vals):
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 
-    feed_start += len(feed_items)
-
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    to_return = {'html':html,'feed_start':feed_start,'num_items':len(feed_items)}
+    to_return = {'html':html, 'num_items':len(feed_items)}
     return HttpResponse(json.dumps(to_return))
 
 def contentToFeedItems(content, user):
@@ -1440,10 +1438,21 @@ def getQuestions(request, vals):
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
 
-    feed_start += len(question_items)
+    html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
 
-    html = ajaxRender('site/pages/qa/question_feed_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'feed_start':feed_start , 'num_items':len(question_items)}))
+#-----------------------------------------------------------------------------------------------------------------------
+# get groups
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroups(request, vals={}):
+
+    groups = Group.objects.filter(ghost=False).order_by("-num_members")
+    feed_start = int(request.POST['feed_start'])
+    groups = groups[feed_start:feed_start+5]
+
+    vals['groups'] = groups
+    html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting

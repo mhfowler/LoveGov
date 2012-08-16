@@ -62,7 +62,7 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # home pages
-    (r'^home/$', viewWrapper(views.me, requires_login=True)),
+    (r'^home/$', viewWrapper(views.home, requires_login=True)),
     (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
     (r'^presidential/$', viewWrapper(views.presidential, requires_login=True)),
@@ -70,6 +70,12 @@ urlpatterns += patterns('',
     (r'^congress/$', viewWrapper(views.congress, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
+
+    # browse-all
+    (r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
+    #(r'^browse_people/$', viewWrapper(views.browsePeople, requires_login=True)),
+    #(r'^browse_friends/$', viewWrapper(views.browseFriends, requires_login=True)),
+    #(r'^browse_politicians/$', viewWrapper(views.browsePoliticians, requires_login=True)),
 
     # other main pages
     (r'^home/$', viewWrapper(views.redirect, requires_login=True)),

@@ -44,7 +44,7 @@ def homeResponse(request, focus_html, url, vals):
     else:
         vals['focus_html'] = focus_html
         homeSidebar(request, vals)
-        html = ajaxRender('site/pages/home/home.html', vals, request)
+        html = ajaxRender('site/pages/home/home_frame.html', vals, request)
         return framedResponse(request, html, url, vals, rebind="home")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -428,13 +428,13 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN HOME PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def me(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def home(request, vals):
+    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def groups(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -471,6 +471,15 @@ def questions(request, vals={}):
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals, rebind="questions")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# browse all
+#-----------------------------------------------------------------------------------------------------------------------
+def browseGroups(request, vals={}):
+
+    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals, rebind="browse")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -678,7 +687,7 @@ def pollDetail(request, p_id=-1, vals={}):
     vals['poll'] = poll
     contentDetail(request, poll, vals)
 
-    q_items = getQuestionItems(viewer, 'B', questions=poll.questions.all(), num=None)
+    q_items = getQuestionItems(viewer, 'B', p_id=poll.id, num=None)
     vals['q_items'] = q_items
 
     poll_progress = getPollProgress(viewer, poll)

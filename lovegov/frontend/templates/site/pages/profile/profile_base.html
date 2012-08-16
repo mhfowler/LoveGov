@@ -4,9 +4,11 @@
     <div class="top">
 
         <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
-    <span class="state"> {% with state=profile.location.state %}
-        {% if state %}{{ profile.location.state }}{% else %} LoveGov {% endif %} {% endwith %}</span>
-    <span class="redheart">
+        {% with state=profile.location.state %}
+            <span class="state"> {{ profile.political_title }}{% if state %},{% endif %} </span>
+            <span class="state"> {% if state %}{{ profile.location.state }}{% endif %}</span>
+        {% endwith %}
+        <span class="redheart">
          {% with full_url='/static/images/icons/red_heart.png'|media_url:MEDIA_PREFIX %}
              {% thumbnail full_url "20" crop="center" format="PNG" as im %}
                  <img src="{{ im.url }}" />

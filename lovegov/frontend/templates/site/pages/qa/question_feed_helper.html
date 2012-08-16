@@ -1,5 +1,0 @@
-{% for x in question_items %}
-    {% with question=x.question your_response=x.you their_response=x.them disagree=x.disagree show_answer=x.show_answer %}
-        {% include 'site/pages/qa/question_stub.html' %}
-    {% endwith %}
-{% endfor %}

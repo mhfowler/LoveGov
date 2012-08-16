@@ -592,7 +592,8 @@ ACTIONS = [
     'getQuestions',
     'updateMatch',
     'stubAnswer',
-    'updateStats'
+    'updateStats',
+    'getGroups'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

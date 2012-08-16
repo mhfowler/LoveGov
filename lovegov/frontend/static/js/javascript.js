@@ -26,6 +26,9 @@ function bindOnReload() {
         case 'poll_detail':
             bindImportanceSliders();
             break;
+        case 'browse':
+            initFeed();
+            break;
     }
 
 }
@@ -41,7 +44,9 @@ function bindOnNewElements() {
     undelegated();
     loadHoverComparison();
     loadHistogram();
-    setInfoHeight();
+    $.each($(".expandable_wrapper"), function(i,e) {
+        setInfoHeight($(this));
+    });
     bindNotificationsDropdownClickOutside();
 }
 
@@ -199,16 +204,26 @@ bind(".red_triangle", 'click', null, function(event) {
 
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
+    var navbar_section = $(this).parents(".navbar_section");
     event.preventDefault();
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
+        //closeAllNavBarSections();
+        navSectionToggle(navbar_section, true, true);
         homeReload($(this).attr("href"));
+    } else {
+        if (navbar_section.hasClass("section_shown")) {
+            navSectionToggle(navbar_section, false, true);
+        } else {
+            navSectionToggle(navbar_section, true, true);
+        }
     }
 });
 
 function closeAllNavBarSections() {
-    $.each(".navbar_section", function(i,e) {
-        navSectionToggle($(this), false, false);
+    $.each($(".navbar_section"), function(i,e) {
+        var navbar_section = $(this);
+        navSectionToggle(navbar_section, false, false);
     });
 }
 
@@ -265,25 +280,32 @@ function getNavLink(url) {
 }
 
 function navSectionHide(navbar_section, animation_time) {
+    // red triangle
     var redtriangle = navbar_section.find(".red_triangle");
-    var navbarlinks = redtriangle.siblings(".navbar_links_wrapper");
-    redtriangle.removeClass("red-triangle-down");
-    navbarlinks.animate({"height":'0px'}, animation_time);
-    redtriangle.removeClass("clicked");
-    // check if currently selected link is in section being hidden
-    var current_link = getNavLink(path);
-    if (current_link) {
-        var current_wrapper = current_link.parents(".navbar_links_wrapper");
-        if (current_wrapper.attr("class") == navbarlinks.attr("class")) {
-            var to_where = current_link.parents(".navbar_section").find(".section_title");
-            moveAsterisk(to_where);
-        }
+    if (redtriangle.length!=0) {
+        redtriangle.removeClass("red-triangle-down");
+        redtriangle.removeClass("clicked");
     }
-    navbar_section.removeClass("shown");
+    // nav bar links
+    var navbarlinks = navbar_section.find(".navbar_links_wrapper");
+    if (navbarlinks.length!=0) {
+        navbarlinks.animate({"height":'0px'}, animation_time);
+    }
+    navbar_section.removeClass("section_shown");
+    // check if currently selected link is in section being hidden, in which case asterisk moves
+    /*
+     var current_link = getNavLink(path);
+     if (current_link) {
+     var current_wrapper = current_link.parents(".navbar_links_wrapper");
+     if (current_wrapper.attr("class") == navbarlinks.attr("class")) {
+     var to_where = current_link.parents(".navbar_section").find(".section_title");
+     moveAsterisk(to_where);
+     }
+     } */
 }
 function navSectionShow(navbar_section, animation_time) {
-    if (!navbar_section.hasClass("shown")) {
-        navbar_section.addClass("shown");
+    if (!navbar_section.hasClass("section_shown")) {
+        navbar_section.addClass("section_shown");
         var redtriangle = navbar_section.find(".red_triangle");
         var navbarlinks = redtriangle.siblings(".navbar_links_wrapper");
         redtriangle.addClass("red-triangle-down");
@@ -305,17 +327,17 @@ function navSectionShow(navbar_section, animation_time) {
 
 /* expands home header to show expanded info */
 bind(".expand_info", 'click', null, function(event) {
-    expandInfoToggle(true);
+    var wrapper = $(this).parents(".expandable_wrapper");
+    expandInfoToggle(wrapper, true);
 });
 
 bind(".hide_info", 'click', null, function(event) {
-    hideInfoToggle(true);
+    var wrapper = $(this).parents(".expandable_wrapper");
+    hideInfoToggle(wrapper, true);
 });
 
-var info_hidden = false;
-var info_expanded = false;
 /* toggles the info's expanded state */
-function expandInfoToggle(animate)
+function expandInfoToggle(wrapper, animate)
 {
     if (animate) {
         var animation_time = 100;
@@ -323,42 +345,44 @@ function expandInfoToggle(animate)
         animation_time = 0;
     }
 
-    var info_div = $(".home_header_info");
+    var info_div = wrapper.find(".home_header_info");
+    var info_hidden = wrapper.data('info_hidden');
+    var info_expanded = wrapper.data('info_expanded');
 
     // If info is hidden, expand the info to it's previous expanded state
     if( info_hidden )
     {   // Set info hidden to false
-        info_hidden = false;
-        $(".hide_info").text('- minimize info');
+        wrapper.data('info_hidden', false);
+        wrapper.find(".hide_info").text('- minimize info');
         // If the info was un-expanded, show it at un-expanded form
         if( !info_expanded )
         {
             info_div.animate({"height":'100px'}, animation_time);
-            $(".expand_info").text('+ expand info');
+            wrapper.find(".expand_info").text('+ expand info');
         } // If the info was expanded, show the full expanded form
         else
         {
             expandAnimation(info_div,animation_time);
-            $(".expand_info").text('- reduce info');
+            wrapper.find(".expand_info").text('- reduce info');
         }
     }
     // Otherwise, toggle the info expanded property
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
-        info_expanded = false;
+        wrapper.data('info_expanded', false);
         info_div.animate({"height":'100px'}, animation_time);
-        $(".expand_info").text('+ expand info');
+        wrapper.find(".expand_info").text('+ expand info');
     }
     else
     {   // Otherwise set expanded to true and expand the info
-        info_expanded = true;
+        wrapper.data('info_expanded', true);
         expandAnimation(info_div,animation_time);
-        $(".expand_info").text('- reduce info');
+        wrapper.find(".expand_info").text('- reduce info');
     }
 }
 
 /* toggles the info's hidden state */
-function hideInfoToggle(animate)
+function hideInfoToggle(wrapper, animate)
 {
     if (animate) {
         var animation_time = 100;
@@ -366,26 +390,30 @@ function hideInfoToggle(animate)
         animation_time = 0;
     }
 
-    var info_div = $(".home_header_info");
+    var info_div = wrapper.find(".home_header_info");
+    var info_hidden = wrapper.data('info_hidden');
+    var info_expanded = wrapper.data('info_expanded');
 
     if( info_hidden )
     {
-        expandInfoToggle(animate);
+        expandInfoToggle(wrapper, animate);
     }
     else
     {
-        info_hidden = true;
+        wrapper.data('info_hidden', true);
         info_div.animate({"height":'0px'}, animation_time);
-        $(".expand_info").text('+ show info');
-        $(".hide_info").text('+ show info');
+        wrapper.find(".expand_info").text('+ show info');
+        wrapper.find(".hide_info").text('+ show info');
     }
 
 }
 
 /* checks and sets the proper info state based on the two info booleans */
-function setInfoHeight()
+function setInfoHeight(wrapper)
 {
-    var info_div = $(".home_header_info");
+    var info_div = wrapper.find(".home_header_info");
+    var info_hidden = wrapper.data('info_hidden');
+    var info_expanded = wrapper.data('info_expanded');
 
     if( info_hidden )
     {
@@ -440,15 +468,17 @@ function homeReload(theurl) {
 
 /* move asterisk, when section is selected */
 function moveAsterisk(to_where) {
-    if (to_where.hasClass("navbar_link")) {
-        var offset = -4;
-    } else {
-        offset = to_where.height()/2;
+    if (to_where.length!=0) {
+        if (to_where.hasClass("navbar_link")) {
+            var offset = -4;
+        } else {
+            offset = to_where.height()/2;
+        }
+        var position = to_where.offset();
+        var top = position.top - offset;
+        var left = position.left - 40;
+        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
     }
-    var position = to_where.offset();
-    var top = position.top - offset;
-    var left = position.left - 40;
-    $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
 }
 
 /***********************************************************************************************************************
@@ -695,6 +725,9 @@ function getFeed(container) {
         var p_id = container.data('p_id');
         data = { 'action': 'getUserActivity', 'feed_start':feed_start, 'p_id':p_id };
     }
+    else if (feed == 'getGroups') {
+        data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
+    }
     action({
             data: data,
             success: function(data) {
@@ -705,7 +738,7 @@ function getFeed(container) {
                 else {
                     container.find(".feed_content").append(returned.html);
                 }
-                container.data( 'feed_start' , returned.feed_start );
+                container.data( 'feed_start' , feed_start + returned.num_items );
                 clearTimeout(feed_timeout);
                 container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
@@ -897,7 +930,7 @@ function leftSideToggle(wrapper)
  *
  ***********************************************************************************************************************/
 
-bind("header div.triangle-wrapper", "click", function(e) { 
+bind("header div.triangle-wrapper", "click", function(e) {
     $('div.user-menu').fadeToggle(50);
 });
 
@@ -922,155 +955,155 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
 });
 
 bind(".submit-comment", "click",function(event)
-     {
-         event.preventDefault();
-         $(this).parent().submit();
-     });
+{
+    event.preventDefault();
+    $(this).parent().submit();
+});
 
 function incNumComments() {
-     var ncspan = $('span.num_comments');
-     var num_comments = parseInt(ncspan.text());
-     ncspan.text(num_comments + 1);
- }
+    var ncspan = $('span.num_comments');
+    var num_comments = parseInt(ncspan.text());
+    ncspan.text(num_comments + 1);
+}
 
 bind("#commentform","submit",function(event)
-     {
-         event.preventDefault();
-         var comment_text = $(this).children(".comment-textarea").val();
-         var comment_text_length = comment_text.length;
-         if (comment_text_length <= 10000)
-         {
-             $(this).children(".comment-textarea").val("");
-             var content_id = $("#content_id").val();
-             action({
-                 'data': {'action':'comment','c_id': content_id,'comment':comment_text},
-                 'success': function(data) {
-                     ajaxThread();
-                     incNumComments();
-                 },
-                 'error': null
-             });
-         }
-         else
-         {
-             alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
-         }
-     });
+{
+    event.preventDefault();
+    var comment_text = $(this).children(".comment-textarea").val();
+    var comment_text_length = comment_text.length;
+    if (comment_text_length <= 10000)
+    {
+        $(this).children(".comment-textarea").val("");
+        var content_id = $("#content_id").val();
+        action({
+            'data': {'action':'comment','c_id': content_id,'comment':comment_text},
+            'success': function(data) {
+                ajaxThread();
+                incNumComments();
+            },
+            'error': null
+        });
+    }
+    else
+    {
+        alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
+    }
+});
 
 bind(".reply", "click",function()
-     {
-         $(this).parent().siblings('.replyform').toggle();
-     });
+{
+    $(this).parent().siblings('.replyform').toggle();
+});
 
 bind("input.tab-button.alt","click",function()
-     {
-         $(this).parent().hide();
-     });
+{
+    $(this).parent().hide();
+});
 
 
 bind(".commentlike","click",function(event)
-     {
-         event.preventDefault();
-         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
-         $.post('/action/', {'action':'vote','c_id':content_id,'vote':'L'},
-             function(data)
-             {
-                 ajaxThread();
-             });
-     });
+{
+    event.preventDefault();
+    var content_id = $(this).parent().parent().next().children(".hidden_id").val();
+    $.post('/action/', {'action':'vote','c_id':content_id,'vote':'L'},
+        function(data)
+        {
+            ajaxThread();
+        });
+});
 
 bind('commentdislike', 'click', function(event)
-     {
-         event.preventDefault();
-         var content_id = $(this).parent().parent().next().children(".hidden_id").val();
-         $.post('/action/', {'action':'vote','c_id':content_id,'vote':'D'},
-             function(data)
-             {
-                 ajaxThread();
-             });
-     });
+{
+    event.preventDefault();
+    var content_id = $(this).parent().parent().next().children(".hidden_id").val();
+    $.post('/action/', {'action':'vote','c_id':content_id,'vote':'D'},
+        function(data)
+        {
+            ajaxThread();
+        });
+});
 
 bind(".commentdelete", "click",function()
-     {
-         var content_id = $(this).children(".delete_id").val();
-         $.post('/action/', {'action':'delete','c_id':content_id},
-             function(data)
-             {
-                 ajaxThread();
-             });
-     });
+{
+    var content_id = $(this).children(".delete_id").val();
+    $.post('/action/', {'action':'delete','c_id':content_id},
+        function(data)
+        {
+            ajaxThread();
+        });
+});
 
 bind(".replyform","click",function(event)
-     {
-         event.preventDefault();
-         var comment_text = $(this).children(".comment-textarea").val();
-         var comment_text_length = comment_text.length;
-         if (comment_text_length <= 10000)
-         {
-             var content_id = $(this).children(".hidden_id").val();
-             action({
-                 data: {'action':'comment','c_id': content_id,'comment':comment_text},
-                 success: function(data)
-                 {
-                     ajaxThread();
-                     incNumComments();
-                 },
-                 error: null
-             });
-         }
-         else
-         {
-             alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
-         }
-     });
+{
+    event.preventDefault();
+    var comment_text = $(this).children(".comment-textarea").val();
+    var comment_text_length = comment_text.length;
+    if (comment_text_length <= 10000)
+    {
+        var content_id = $(this).children(".hidden_id").val();
+        action({
+            data: {'action':'comment','c_id': content_id,'comment':comment_text},
+            success: function(data)
+            {
+                ajaxThread();
+                incNumComments();
+            },
+            error: null
+        });
+    }
+    else
+    {
+        alert("Please limit your response to 10000 characters.  You have currently typed " + comment_text_length + " characters.");
+    }
+});
 
 // Collapse a thread (a comment and all its children)
 bind('span.collapse','click',function(e) {
-         var close = '[-]';
-         var open = '[+]';
-         if($(this).text()==close) {
-             $(this).text(open);
-             $(this).next('div.threaddiv').children().hide();
-         } else if($(this).text()==open) {
-             $(this).text(close);
-             $(this).next('div.threaddiv').children().show();
-         }
-     });
+    var close = '[-]';
+    var open = '[+]';
+    if($(this).text()==close) {
+        $(this).text(open);
+        $(this).next('div.threaddiv').children().hide();
+    } else if($(this).text()==open) {
+        $(this).text(close);
+        $(this).next('div.threaddiv').children().show();
+    }
+});
 
 // Flag a comment
 bind('span.flag',"click", function(e) {
-         var commentid = $(this).data('commentid');
-         var comment = $(this).parent().children('div.comment-text').text();
-         var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
-         if(conf) {
-             action({
-                 data: {'action': 'flag', 'c_id': commentid},
-                 success: function(data) {
-                     alert(data);
-                     $(this).css("color", "red");
-                 },
-                 error: function(data) {
-                     alert("Flagging comment failed.");
-                 }
-             });
-         }
-     });
+    var commentid = $(this).data('commentid');
+    var comment = $(this).parent().children('div.comment-text').text();
+    var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
+    if(conf) {
+        action({
+            data: {'action': 'flag', 'c_id': commentid},
+            success: function(data) {
+                alert(data);
+                $(this).css("color", "red");
+            },
+            error: function(data) {
+                alert("Flagging comment failed.");
+            }
+        });
+    }
+});
 
 
 // ajax gets thread and replaces old thread
 function ajaxThread()
 {
-     action({
-         data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
-         success: function(data)
-         {
-             var returned = eval('(' + data + ')');
-             $("#thread").html(returned.html);
-             loadThread();
-             return false;
-         },
-         error: null
-     });
+    action({
+        data: {'action':'ajaxThread','type':'thread', 'c_id':c_id},
+        success: function(data)
+        {
+            var returned = eval('(' + data + ')');
+            $("#thread").html(returned.html);
+            loadThread();
+            return false;
+        },
+        error: null
+    });
 }
 
 
@@ -1185,43 +1218,43 @@ function ajaxThread()
 
 
 /***********************************************************************************************************************
-  *
-  *      ~InlineEdits
-  *
-  ***********************************************************************************************************************/
+ *
+ *      ~InlineEdits
+ *
+ ***********************************************************************************************************************/
 function editUserProfile(info,edit_div)
 {
-     var prof_data = info;
-     prof_data.action = 'editProfile';
+    var prof_data = info;
+    prof_data.action = 'editProfile';
 
-     action({
-         'data': prof_data,
-         success: function(data)
-         {
-             var obj = eval('(' + data + ')');
-             edit_div.text(obj.value);
-             edit_div.show();
-         }
-     });
+    action({
+        'data': prof_data,
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            edit_div.text(obj.value);
+            edit_div.show();
+        }
+    });
 }
 
 
 function editContent( c_id , info , edit_div )
 {
-     var content_data = info;
-     content_data.action = 'editContent';
-     content_data.c_id = c_id;
+    var content_data = info;
+    content_data.action = 'editContent';
+    content_data.c_id = c_id;
 
-     action({
-         'data': content_data,
+    action({
+        'data': content_data,
 
-         success: function(data)
-         {
-             var obj = eval('(' + data + ')');
-             edit_div.html(obj.value);
-             edit_div.show();
-         }
-     });
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            edit_div.html(obj.value);
+            edit_div.show();
+        }
+    });
 }
 
 
@@ -2246,7 +2279,7 @@ function updateMatch(match) {
 
 function updateStats() {
     $.each($(".stats_object"), function(i,e) {
-       updateStatsObject($(this));
+        updateStatsObject($(this));
     });
 }
 
