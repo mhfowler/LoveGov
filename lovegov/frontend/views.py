@@ -556,6 +556,11 @@ def profile(request, alias=None, vals={}):
     vals['to_compare'] = profile
     vals['comparison'] = comparison.toBreakdown()
 
+    # Num Follow requests and group invites
+    if viewer.id == user_profile.id:
+        vals['num_follow_requests'] = user_profile.getNumFollowRequests()
+        vals['num_group_invites'] = user_profile.getNumGroupInvites()
+
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals, rebind="profile")

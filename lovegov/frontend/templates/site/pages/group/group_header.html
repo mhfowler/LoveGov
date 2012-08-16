@@ -48,10 +48,6 @@
                     {% endif %}
                 {% endif %}
 
-                {% if is_user_confirmed %}
-                    <div class="group-action"> create motion </div>
-                {% endif %}
-
                 {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
                     <div class="group-action group_join" data-g_id="{{ group.id }}"> join group </div>
                 {% elif is_user_confirmed %}

@@ -283,6 +283,7 @@ def groupInviteAction(from_user,group,inviter,privacy):
             return True
 
         elif group_joined.invited:
+            group_joined.invite(inviter)
             return True
 
         elif group_joined.requested:
@@ -291,6 +292,7 @@ def groupInviteAction(from_user,group,inviter,privacy):
             action.autoSave()
             from_user.notify(action)
             return True
+
     else:
         group_joined = GroupJoined(user=from_user, group=group, privacy=privacy)
         group_joined.autoSave()

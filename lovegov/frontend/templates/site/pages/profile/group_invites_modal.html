@@ -1,0 +1,32 @@
+<!--  CSS in group-invites-modal.scss  -->
+
+<div class="group-invites-modal">
+
+    <div class="modal-section-title">Group Invites</div>
+
+    {% for invite in group_invites %}
+
+        <table class="group-invite-container">
+            <tr>
+
+                <td class="group-invite-image">
+                    {% include 'site/pieces/avatar.html' with user=invite.getFrom height="38" width="38" %}
+                </td>
+
+                <td class="group-invite-text invite_response_text">
+                    <a href="{{ invite.getInviter.get_url }}">{{ invite.getInviter.get_name }}</a> has invited you to join {{ invite.group.get_name }}:
+                    <div class='group-invite-append invite_response_append_y'>You have joined {{ invite.group.get_name }}</div>
+                    <div class='group-invite-append invite_response_append_n'>invite declined</div>
+                </td>
+
+                <td class="group-invite-button invite_response_buttons" data-g_id="{{ invite.group.id }}">
+                    <a href="" class="invite_response_y button-red group-button">accept</a>
+                    <a href="" class="invite_response_n button-red group-button">decline</a>
+                </td>
+
+            </tr>
+        </table>
+
+    {% endfor %}
+
+</div>

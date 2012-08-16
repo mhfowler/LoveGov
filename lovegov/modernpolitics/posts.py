@@ -2067,7 +2067,7 @@ def getModal(request,vals={}):
         modal_html = getGroupRequestsModal(group,viewer,vals)
 
 
-    ## Group Invite Modal ##
+    ## Group Invite Modal ## Where a user invites someone to their group
     elif modal_name == "group_invite_modal":
         # Get group ID
         if 'g_id' in request.POST:
@@ -2083,6 +2083,16 @@ def getModal(request,vals={}):
             return HttpResponseBadRequest( "Group invite modal requested with an invalid group ID" )
 
         modal_html = getGroupInviteModal(group,viewer,vals)
+
+
+        ## Group Invited Modal ## Where a user see's his or her gropu invites
+    elif modal_name == "group_invited_modal":
+        modal_html = getGroupInvitedModal(viewer,vals)
+
+
+        ## Group Invite Modal ##
+    elif modal_name == "follow_requests_modal":
+        modal_html = getFollowRequestsModal(viewer,vals)
 
 
     ## If a modal was successfully made, return it ##

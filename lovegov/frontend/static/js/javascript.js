@@ -1381,6 +1381,17 @@ bind(".activity_tab", 'click', null, function(event) {
     $(".activity_focus").show();
 });
 
+bind(".follow_requests_modal" , 'click' , null , function(event)
+{
+    getModal('follow_requests_modal');
+});
+
+bind(".group_invited_modal" , 'click' , null , function(event)
+{
+    getModal('group_invited_modal');
+});
+
+
 /***********************************************************************************************************************
  *
  *      ~Following
@@ -1654,7 +1665,7 @@ bind(".invite_response_n" , 'click' , null , function(event) {
     var wrapper = $(this).parent(".invite_response_buttons");
     wrapper.fadeOut(600);
     groupInviteResponse(event,"N",wrapper);
-    wrapper.siblings(".invite_response_text").children('.invite_response_append_y').fadeIn(600);
+    wrapper.siblings(".invite_response_text").children('.invite_response_append_n').fadeIn(600);
 });
 
 function groupInviteResponse(event,response,div)

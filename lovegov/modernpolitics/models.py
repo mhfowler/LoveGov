@@ -1699,6 +1699,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
+
+    def getNumFollowRequests(self):
+        return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).count()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1707,6 +1711,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')
         else:
             return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')[:num]
+
+    def getNumGroupInvites(self):
+        return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # return a query set of groups and networks user is in
@@ -3814,6 +3821,7 @@ class Invite(LGModel):
         else:
             self.save()
     def invite(self, inviter):
+        self.declined = False
         self.invited = True
         self.inviter = inviter.id
         self.save()

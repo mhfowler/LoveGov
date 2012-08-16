@@ -40,6 +40,20 @@ def getGroupRequestsModal(group,user,vals={}):
 
     # Generate a context for the modal
     vals['group'] = group
-    vals['group_requests'] = group.getFollowRequests()
+    vals['group_requests'] = group.getGroupFollowRequests()
 
     return render_to_string('site/pages/group/group_requests_modal.html',vals)
+
+
+def getGroupInvitedModal(user,vals={}):
+    # Generate a context for the modal
+    vals['group_invites'] = user.getGroupInvites()
+
+    return render_to_string('site/pages/profile/group_invites_modal.html',vals)
+
+
+def getFollowRequestsModal(user,vals={}):
+    # Generate a context for the modal
+    vals['follow_requests'] = user.getFollowRequests()
+
+    return render_to_string('site/pages/profile/follow_requests_modal.html',vals)
