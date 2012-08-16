@@ -6,7 +6,7 @@
 div.feed-item-thin
 {
   width: 100%;
-  height: 50px;
+  height: 52px;
   border: 1px solid $light-gray;
   @include clearfix();
 
@@ -15,7 +15,7 @@ div.feed-item-thin
   div.feed-item-thin-right-info
   {
     float: right;
-    width: 120px;
+    width: 160px;
     height: 100%;
     background-color: $light-gray;
 
@@ -24,17 +24,54 @@ div.feed-item-thin
   div.feed-item-thin-icon
   {
     float: left;
-    width: 50px;
+    width: 51px;
     border-right: solid 1px $light-gray;
     height: 100%;
+
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+    display:block;
+
+    &.news-image { @include staticImage('/images/icons/content-type/news.png'); }
+    &.poll-image { @include staticImage('/images/icons/content-type/poll.png'); }
+    &.petition-image { @include staticImage('/images/icons/content-type/petition.png'); }
+    &.discussion-image { @include staticImage('/images/icons/content-type/discussion.png'); }
   }
 
-  div.feed-item-thin-votes
+  div.feed-item-thin-ranking
   {
     float: left;
     width: 100px;
     border-right: solid 1px $light-gray;
     height: 100%;
+
+    text-align: center;
+
+    div.heart-plus
+    {
+      @include staticImage('/images/icons/hearts/plusheart-gray.png');
+      background-repeat: no-repeat;
+      height: 18px;
+      width: 18px;
+      margin: 8px auto 4px auto;
+      cursor: pointer;
+
+      &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+      &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+    }
+
+    div.heart-minus
+    {
+      @include staticImage('/images/icons/hearts/minusheart-gray.png');
+      background-repeat: no-repeat;
+      height: 18px;
+      width: 18px;
+      margin: 4px auto 0px auto;
+      cursor: pointer;
+
+      &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+      &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+    }
   }
 
 
