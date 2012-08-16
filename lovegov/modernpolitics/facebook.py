@@ -15,9 +15,8 @@ from django.contrib import auth
 
 # python
 from urllib import urlopen
+from images import downloadImage
 import pprint
-import urlparse
-import oauth2 as oauth
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Save a users facebook friends as lg relationships.
@@ -113,6 +112,7 @@ def fbLogin(request, vals={}, refresh=False):
         if refresh:                     # if not register and user.first_login=True
             user_prof.refreshFB(me)
 
+
         # login
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -126,11 +126,13 @@ def fbLogin(request, vals={}, refresh=False):
 def fbGet(request, path):
     access_token = request.COOKIES.get('fb_token')
     if access_token:
-        url = "https://graph.facebook.com/" + path + "?access_token=" + access_token
-        print url
+        url = "https://graph.facebook.com/" + path
+        if '?' in path: url += '&'
+        else: url += '?'
+        url += "access_token=" + access_token
+
         returned = urlopen(url).read()
         response = json.loads(returned)
-        #pprint.pprint(response)
         return response
     else:
         return None
@@ -175,12 +177,12 @@ def fbWallShare(request, vals={}):
     fb_link = request.GET.get('fb_link')
     #Set Post Variables
     facebook_id = me['id']
-    link = "www.lovegov.com"
+    link = DEFAULT_FACEBOOK_LINK
     share_id = me['id']
     #Look for Custom Post Variables
     if fb_share_to: # If there's a custom share id, use it
         share_id = fb_share_to
-    message = "Compare your political views to mine on LoveGov!"
+    message = DEFAULT_FACEBOOK_MESSAGE
     if fb_share_message: #If there's a custom message, use it
         message = fb_share_message
     if fb_link: #If there's a custom link, us it

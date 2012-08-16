@@ -437,6 +437,8 @@ FEED_CONTENT_TYPES = ['P','N','L']
 
 # Facebook Stuff
 FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
+DEFAULT_FACEBOOK_MESSAGE = "Compare your political views to mine on LoveGov!"
+DEFAULT_FACEBOOK_LINK = "www.lovegov.com"
 
 ###################################### STATIC FILE URLS ################################################################
 

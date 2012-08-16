@@ -2119,14 +2119,25 @@ def getModal(request,vals={}):
         modal_html = getGroupInviteModal(group,viewer,vals)
 
 
-        ## Group Invited Modal ## Where a user see's his or her gropu invites
+    ## Group Invited Modal ## Where a user see's his or her gropu invites
     elif modal_name == "group_invited_modal":
         modal_html = getGroupInvitedModal(viewer,vals)
 
 
-        ## Group Invite Modal ##
+    ## Group Invite Modal ##
     elif modal_name == "follow_requests_modal":
         modal_html = getFollowRequestsModal(viewer,vals)
+
+
+    ## Facebook Share Modal ##
+    elif modal_name == "facebook_share_modal":
+        fb_name = request.POST.get('fb_name')
+        fb_share_id = request.POST.get('fb_share_id')
+
+        if not fb_share_id:
+            LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
+
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
 
 
     ## If a modal was successfully made, return it ##

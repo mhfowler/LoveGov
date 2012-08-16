@@ -57,3 +57,13 @@ def getFollowRequestsModal(user,vals={}):
     vals['follow_requests'] = user.getFollowRequests()
 
     return render_to_string('site/pages/profile/follow_requests_modal.html',vals)
+
+
+def getFacebookShareModal(fb_share_id,fb_name,vals):
+
+    vals['fb_name'] = fb_name
+    vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"
+    vals['fb_share_id'] = fb_share_id
+    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+
+    return render_to_string('site/pages/friends/facebook_share_modal.html',vals)
