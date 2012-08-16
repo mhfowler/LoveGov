@@ -9,16 +9,64 @@ div.feed-item-thin
   height: 52px;
   border: 1px solid $light-gray;
   @include clearfix();
-
+  background-color: $yellow-highlight;
   margin-bottom: 10px;
 
   div.feed-item-thin-right-info
   {
     float: right;
-    width: 160px;
+    width: 200px;
     height: 100%;
-    background-color: $light-gray;
+    padding-top: 8px;
 
+    div.feed-thin-user-name
+    {
+      height: 40px;
+
+      div.feed-thin-avatar-image
+      {
+        float: left;
+        margin-right: 5px;
+      }
+
+      div.feed-thin-avatar-text
+      {
+        float: left;
+
+        div.feed-thin-avatar-name
+        {
+          margin-top: 2px;
+          font-size: 14px;
+        }
+
+        div.feed-thin-avatar-timestamp
+        {
+          color: $dark-gray;
+          @include fontSize(11px);
+          font-style: italic;
+        }
+      }
+    }
+
+    div.feed-item-thin-comments
+    {
+      @include staticImage('/images/icons/red_comment.png');
+      background-repeat: no-repeat;
+      background-size: 40px;
+      height: 50px;
+      width: 50px;
+      margin-left: 15px;
+      float: left;
+
+      div.feed-thin-num-comments
+      {
+        font-size: 16px;
+        color: white;
+        text-align: center;
+        width: 40px;
+        margin-top: 7px;
+      }
+    }
   }
 
   div.feed-item-thin-icon
@@ -41,11 +89,12 @@ div.feed-item-thin
   div.feed-item-thin-ranking
   {
     float: left;
-    width: 100px;
     border-right: solid 1px $light-gray;
     height: 100%;
-
+    vertical-align: middle;
     text-align: center;
+    padding-top: 12px;
+    margin-right: 10px;
 
     div.heart-plus
     {
@@ -53,11 +102,21 @@ div.feed-item-thin
       background-repeat: no-repeat;
       height: 18px;
       width: 18px;
-      margin: 8px auto 4px auto;
+      margin-right: 10px;
+      margin-left: 5px;
+      @include inline-block();
       cursor: pointer;
 
       &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
       &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+    }
+
+    div.heart-number
+    {
+      @include inline-block();
+      @include fontSize(16px);
+      font-weight: bold;
+      padding-top: 6px;
     }
 
     div.heart-minus
@@ -66,7 +125,9 @@ div.feed-item-thin
       background-repeat: no-repeat;
       height: 18px;
       width: 18px;
-      margin: 4px auto 0px auto;
+      margin-right: 5px;
+      margin-left: 10px;
+      @include inline-block();
       cursor: pointer;
 
       &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
@@ -74,5 +135,15 @@ div.feed-item-thin
     }
   }
 
+  div.feed-item-thin-text
+  {
+    margin-top: 5px;
 
+    div.feed-item-thin-top-text
+    {
+      color: $red;
+      font-style: italic;
+      @include fontSize(12px);
+    }
+  }
 }
