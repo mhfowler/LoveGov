@@ -733,14 +733,18 @@ span#email-label
   display: none;
 }
 
+
+
+$edit-link-size: 16px;
 div.edit-link
 {
   @include staticImage('/images/icons/edit-pencil.png');
-  background-size: 16px 16px;
-  width: 16px;
-  height: 16px;
+  background-size: $edit-link-size $edit-link-size;
+  width: $edit-link-size;
+  height: $edit-link-size;
   cursor: pointer;
   display: inline-block;
+  margin-left: 5px;
 
   &:hover
   {

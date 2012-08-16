@@ -1225,6 +1225,7 @@ function editContent( c_id , info , edit_div )
 }
 
 
+
 bind( ".edit_button" , 'click', null , function(event)
 {
     event.preventDefault();
@@ -1355,7 +1356,7 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
  **********************************************************************************************************************/
 
 bind(".user_unfollow", 'mouseenter', null, function(event) {
-    $(this).text('stop following');
+    $(this).text('stop');
 });
 bind(".user_unfollow", 'mouseout', null, function(event) {
     $(this).text('following');

@@ -8,49 +8,72 @@
     <div class='profile'>
 
         <div class="profile-top">
-            <div class="political-statement">
+            <div class="bio-statement">
 
                 <div class="profile-header">
-                    Political Statement
+                    About Me
                 </div>
 
-                <p class="political-statement-text">
-                    {{ profile.bio }}
-                </p>
+                <div class="bio-text inline-editable">
+                    <div class="inline-div inline_hide">
+                        {{ profile.bio }}
+                    </div>
+                    {% if viewer.id == profile.id %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="UserProfile" data-id="{{ profile.id }}">
+                            <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
+                </div>
 
             </div>
 
             <div class="profile-about">
 
                 <div class="profile-header">
-                    About
+                    Info
                 </div>
 
                 <div class="about-item">
                     <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
                 </div>
-                {% if profile.age %}
-                    <div class="about-item">
-                        <span class="label"> age: </span> <span class="value"> {{ profile.age }} </span>
-                    </div>
-                {% endif %}
-                {% if profile.state %}
+
                 <div class="about-item">
-                    <span class="label"> location: </span> <span class="value"> {{ profile.city }}, {{ profile.state }} </span>
+                    <span class="label"> age: </span>
+
+                    <div class="value">
+                        {% if profile.age %}{{ profile.age }}{% endif %}
+                    </div>
                 </div>
-                {% endif  %}
+
+                <div class="about-item">
+                    <span class="label"> location: </span>
+                    <span class="value">
+                        {% with loc=profile.location %}
+                            {% if loc.address_string %}
+                                {{ loc.address_string }}
+                            {% else %}
+                                {% if loc.city %}
+                                    {{ loc.city }},
+                                {% endif %}
+                                {% if loc.state %}
+                                    {{ loc.state }}
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
+                    </span>
+                </div>
+
                 <div class="about-item">
                     <span class="label"> parties: </span> <span class="value">
                         {% for p in profile.parties.all %}
-                            {% with full_url=p.party_label|media_url:MEDIA_PREFIX %}
-                                {% thumbnail full_url "20" crop="center" format="PNG" as im %}
-                                    <img src="{{ im.url }}" />
-                                {% empty %}
-                                    ?
+                            {% with full_url=p.party_label %}
+                                {% thumbnail full_url "x20" format="PNG" as im %}
+                                    <img src="{{ im.url }}" class="party-label"/>
                                 {% endthumbnail %}
                             {% endwith %}
-                            {% empty %}
-                            None
                         {% endfor %}
                     </span>
                 </div>

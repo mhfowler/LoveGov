@@ -869,7 +869,7 @@ class BasicInfo(models.Model):
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
     invite_message = models.CharField(max_length=10000, blank=True, default="default")
     invite_subject = models.CharField(max_length=1000, blank=True, default="default")
-    bio = models.CharField(max_length=150, blank=True, null=True)
+    bio = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         abstract = True

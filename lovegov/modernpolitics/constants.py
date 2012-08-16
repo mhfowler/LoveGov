@@ -233,6 +233,8 @@ PHANTOMJS_RASTERIZE = os.path.join(PROJECT_PATH, 'frontend/process/phantomjs/exa
 # editable fields
 USERPROFILE_EDITABLE_FIELDS = [
     'bio',
+    'political_statement',
+    'age'
 ]
 
 CONTENT_EDITABLE_FIELDS = [
