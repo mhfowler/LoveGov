@@ -23,6 +23,9 @@ function bindOnReload() {
         case 'question_detail':
             bindImportanceSliders();
             break;
+        case 'poll_detail':
+            bindImportanceSliders();
+            break;
     }
 
 }
@@ -2130,6 +2133,11 @@ bind('.answer_checkbox' , 'click' , null , function(event)
 bind('.save_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
+    saveQuestion(stub);
+});
+
+
+function saveQuestion(stub) {
     var box = stub.find(".answer_checkbox.clicked");
     var a_id;
     if (box.length!=0) {
@@ -2139,9 +2147,6 @@ bind('.save_button' , 'click' , null , function(event)
         a_id = -1;
     }
     var explanation = stub.find('.explanation').val();
-    if (explanation=="explain your answer") {
-        explanation == "";
-    }
     var privacy_bool = stub.find(".privacy_checkbox").hasClass("clicked");
     var privacy;
     if (privacy_bool) {
@@ -2172,14 +2177,14 @@ bind('.save_button' , 'click' , null , function(event)
                 saved_message.fadeOut(5000);
                 bindImportanceSlider(new_element.find(".importance_bar"));
             }
-            if (rebind=="question_detail") {
+            if (rebind=="question_detail" || rebind=='poll_detail') {
                 expandResponse(new_element);
             }
             updateMatches();
             updateStats();
         }
     });
-});
+}
 
 bind('.privacy_checkbox' , 'click' , null , function(event)
 {
@@ -2243,6 +2248,9 @@ function updateStatsObject(stats) {
     var data = {'action':'updateStats', 'object':object};
     if (object == 'you_agree_with') {
         data['q_id'] = stats.data('q_id');
+    }
+    if (object == 'poll_progress') {
+        data['p_id'] = stats.data('p_id');
     }
     action({
         data: data,

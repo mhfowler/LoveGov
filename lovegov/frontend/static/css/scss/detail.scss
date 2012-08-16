@@ -1,0 +1,145 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+/* basic structure */
+div.top {
+  width:100%;
+}
+
+div.left-sidebar {
+  float:left;
+  width:150px;
+  min-height:1px;
+  margin-right:30px;
+
+  div.sidebar-fixed {
+    position:fixed;
+  }
+}
+
+div.main-focus {
+  float:left;
+  width:950px;
+}
+
+/* content detail */
+div.content-detail {
+
+  div.content-detail-top {
+    @include inline-block;
+    width:100%;
+    @include clearfix;
+
+    span.content-title {
+      @include fontSize(24px);
+    }
+    span.posted-in {
+      color:$light-gray;
+      @include fontSize(16px);
+      margin-left:10px;
+    }
+    span.posted-group {
+      margin-left:10px;
+      @include fontSize(16px);
+    }
+  }
+
+  div.content-info-header {
+    color:$gray;
+    @include fontSize(18px);
+  }
+
+  div.content-info {
+    margin-top:10px;
+    @include inline-block;
+    height:220px;
+    width:100%;
+    @include clearfix;
+
+    div.info-left {
+      float:left;
+      width:200px;
+      div.content-image {
+        display:block;
+        background-color:$light-gray;
+        height:200px;
+        width:100%;
+      }
+    }
+
+    div.info-middle-left {
+      margin-left:40px;
+      height:100%;
+      width:300px;
+      float:left;
+    }
+
+    div.info-middle-right {
+      div.created-by {
+        margin-top:20px;
+
+        div.avatar {
+          float:left;
+        }
+        div.name-and-submitted {
+          float:left;
+          margin-top:10px;
+          padding-left:15px;
+          width:150px;
+        }
+      }
+    }
+
+    div.info-right {
+      float:right;
+      width:200px;
+      height:200px;
+      text-align:center;
+      a.comments-wrapper {
+        width:100%;
+        display:block;
+        &:hover {
+          background-color:$light-gray;
+        }
+        div.comments-bubble{
+          margin:auto;
+          display:block;
+          @include staticImage('/images/icons/red_comment.png');
+          background-repeat: no-repeat;
+          background-size: 60px 50px;
+          background-position: 70px 13px;
+          padding-left: 77px;
+          padding-top: 23px;
+          height: 70px;
+          div.num-comments
+          {
+            font-size: 20px;
+            color: white;
+            text-align: center;
+            width: 50px;
+          }
+        }
+        div.comments-text {
+          margin-top:10px;
+          color:$red;
+          @include fontSize(26px);
+          margin:auto;
+        }
+      }
+    }
+  }
+
+  div.content-body {
+
+  }
+
+  div.content-discussion {
+    margin-top:30px;
+    width:100%;
+    height:500px;
+    background-color:$purple;
+    @include opacity(0.4);
+  }
+}

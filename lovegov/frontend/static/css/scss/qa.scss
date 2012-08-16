@@ -4,6 +4,34 @@
 @import "compass";
 
 /**********************************************************************************************************************/
+/*  ~ poll-detail
+/**********************************************************************************************************************/
+div.poll-detail-sidebar {
+  margin-top:50px;
+  width:150px;
+  //border: 1px solid $gray;
+  //@include border-radius(9px);
+
+  div.sidebar-header {
+    @include fontSize(18px);
+  }
+
+  div.poll-progress {
+    margin-top:5px;
+    color:$red;
+    div.numbers {
+      @include fontSize(36px);
+    }
+    div.text {
+      line-height:20px;
+      @include fontSize(30px);
+    }
+  }
+}
+
+
+
+/**********************************************************************************************************************/
 /*  ~ question-detail
 /**********************************************************************************************************************/
 div.question-detail {
@@ -43,6 +71,7 @@ div.question-detail-sidebar {
 /**********************************************************************************************************************/
 div.questions-sidebar {
   margin-top: 10px;
+  width:150px;
 
   div.sidebar-header {
     @include fontSize(14px);
@@ -207,6 +236,7 @@ div.question_stub {
     padding-right:20px;
 
     span.question-checkbox {
+      float:left;
       @include inline-block;
       width:20px;
       height:20px;
