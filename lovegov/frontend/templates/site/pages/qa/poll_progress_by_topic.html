@@ -1,0 +1,5 @@
+<div class="question-stats stats_object" data-object="poll_stats">
+    {% for t in topic_stats %}
+        {% include  'site/pages/qa/by_topic_box.html' with topic=t.topic percent=t.percent empty=t.empty num=t.num total=t.total %}
+    {% endfor %}
+</div>

@@ -1,0 +1,110 @@
+{% extends 'site/pages/content_detail/top_sidebar_main.html' %}
+
+{% load humanize %}
+
+{% block top %}
+{% endblock %}
+
+{% block sidebar %}
+    <div class="content-detail-sidebar">
+        {% block content_detail_sidebar %}
+            content_detail_sidebar
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block sidebar_fixed %}
+{% endblock %}
+
+{% block main %}
+    <div class="content-detail">
+
+        <div class="content-detail-top">
+            <span class="content-title">
+                {{ content.getTitleDisplay }}
+            </span>
+
+            <span class="posted-in">
+                Posted in
+            </span>
+
+            <span class="posted-group">
+                {% with group=content.getPostedTo %}
+                    <a href="{{ group.get_url }}"> {{ group.title }}</a>
+                {% endwith %}
+            </span>
+        </div>
+
+        <div class="content-info">
+
+            <div class="info-right">
+
+                <div class="content-info-header">
+                    Metrics
+                </div>
+
+                <a class="comments-wrapper" href="#">
+                    <div class="comments-bubble">
+                            <div class="num-comments">
+                                {{ content.num_comments }}
+                            </div>
+                    </div>
+                    <div class="comments-text">
+                        comments
+                    </div>
+                    <div class="hearts">
+                        <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
+                        <div class="heart-number heart_number">{{ item.status }}</div>
+                        <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="info-left">
+                <div class="content-image">
+
+                </div>
+            </div>
+
+            <div class="info-middle-left">
+                {% block content_description %}
+                    <div class="content-info-header">
+                        Description
+                    </div>
+                    <div class="description">
+                        {{ content.summary}}
+                    </div>
+                {% endblock %}
+            </div>
+
+            <div class="info-middle-right">
+                <div class="content-info-header">
+                    Created By
+                </div>
+                <div class="created-by">
+                    <div class="avatar">
+                        {% include 'site/pieces/avatar.html' with user=creator width="50" height="50" %}
+                    </div>
+                    <div class="name-and-submitted">
+                        <div class="name">
+                            {{ creator.get_name }}
+                        </div>
+                        <div class="submitted">
+                            posted {{ content.created_when|naturaltime }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="content-body">
+            {% block content_body %}
+            {% endblock %}
+        </div>
+
+        <div class="content-discussion">
+        </div>
+
+    </div>
+{% endblock %}
