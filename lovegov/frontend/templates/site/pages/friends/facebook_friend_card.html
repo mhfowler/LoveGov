@@ -1,0 +1,15 @@
+{% load thumbnail %}
+
+<div class='facebook-friend-card'>
+    <div class='facebook-friend-name'>
+        <h5>{{ friend.name }}</h5>
+    </div>
+
+    {% thumbnail friend.picture_url "100x100" crop="center" as im %}
+        <img src="{{ im.url }}" />
+    {% endthumbnail %}
+
+    <div class="facebook-invite-button">
+        <h5>invite</h5>
+    </div>
+</div>

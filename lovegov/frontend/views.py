@@ -9,6 +9,8 @@
 
 from lovegov.frontend.views_helpers import *
 
+from pprint import pprint
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
 #-----------------------------------------------------------------------------------------------------------------------
@@ -458,7 +460,29 @@ def congress(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# friends focus (home page)
+#-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
+    class FBFriend:
+        pass
+
+    viewer = vals['viewer']
+
+    if viewer.facebook_id:
+        friends_list = fbGet(request,'me/friends/')['data']
+        fb_friends = []
+
+        for friend in friends_list[:10]:
+            fb_friend = FBFriend()
+            fb_friend.name = friend['name']
+            fb_friend.id = friend['id']
+            fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=normal"
+            fb_friends.append(fb_friend)
+
+            vals['facebook_friends'] = fb_friends
+
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)

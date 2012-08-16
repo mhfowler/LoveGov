@@ -126,8 +126,11 @@ def fbLogin(request, vals={}, refresh=False):
 def fbGet(request, path):
     access_token = request.COOKIES.get('fb_token')
     if access_token:
-        url = "https://graph.facebook.com/" + path + "?access_token=" + access_token
-        print url
+        url = "https://graph.facebook.com/" + path
+        if '?' in path: url += '&'
+        else: url += '?'
+        url += "access_token=" + access_token
+
         returned = urlopen(url).read()
         response = json.loads(returned)
         #pprint.pprint(response)

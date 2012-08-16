@@ -1103,6 +1103,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
+    political_statement = models.TextField(null=True)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     # deprecated
