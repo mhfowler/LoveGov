@@ -80,7 +80,7 @@ def group(request, g_id=None, vals={}):
 
     vals['non_member_followers'] = followers
 
-    html = ajaxRender('site/pages/home/home.html', vals, request)
+    html = ajaxRender('site/pages/home/home_frame.html', vals, request)
     url = group.get_url()
     return framedResponse(request, html, url, vals)
 

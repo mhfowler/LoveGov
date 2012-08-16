@@ -5,6 +5,20 @@
 @import "compass";
 
 
+.gray-hover {
+  //@include border-radius(5px);
+  &:hover {
+    background-color:$light-gray;
+    color:white;
+  }
+  &.clicked {
+    background-color:$light-gray;
+    color:white;
+  }
+}
+
+
+
 table.home
 {
   width:100%;
@@ -86,32 +100,20 @@ div.left-navbar {
       display:block;
       margin: 0px 0 0 10px;
       color:$black;
-      width:180px;
-    }
-    a.navbar-link:hover {
-      color:white;
-      background-color:$light-gray;
-    }
-    a.navbar-link.clicked {
-      color:white;
-      background-color:$light-gray;
+      width:139px;
+      @extend .gray-hover;
     }
   }
 
   div.navbar-title {
+    @extend .gray-hover;
     @include inline-block;
     @include grayText();
     @include fontSize(24px);
     padding: 5px;
   }
-  div.navbar-title:hover {
-    //text-decoration:underline;
-    background-color:$light-gray;
-    color:white;
-  }
   a.section_title.clicked {
     div.navbar-title {
-      //text-decoration:underline;
       background-color:$light-gray;
       color:white;
     }
@@ -142,7 +144,7 @@ div.left-navbar {
     a.create-link {
       float:right;
       @include fontSize(12px);
-      margin-right:10px;
+      margin-right:50px;
       padding-right:5px;
     }
   }

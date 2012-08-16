@@ -55,6 +55,9 @@ body {
   font-size: 10px;
 }
 
+/***********************************************************************************************************************
+/   new stuff
+/**********************************************************************************************************************/
 div.global-wrapper
 {
   max-width: 1140px;
@@ -64,9 +67,27 @@ div.global-wrapper
 }
 
 div.main-content {
-  margin-top:2px;
+  margin-top:px;
 }
 
+div.main-top {
+  margin-top:5px;
+  div.header-title {
+    float:left;
+    @include fontSize(22px);
+  }
+  div.red-line {
+    float:left;
+    padding-top:15px;
+    border-bottom:1px solid $red;
+    width:710px;
+    margin-left:20px;
+  }
+}
+
+/***********************************************************************************************************************
+/   old stuff
+/**********************************************************************************************************************/
 * {
   /* Prevent padding from altering defined sizes */
   @include box-sizing(border-box);
@@ -733,18 +754,14 @@ span#email-label
   display: none;
 }
 
-
-
-$edit-link-size: 16px;
 div.edit-link
 {
   @include staticImage('/images/icons/edit-pencil.png');
-  background-size: $edit-link-size $edit-link-size;
-  width: $edit-link-size;
-  height: $edit-link-size;
+  background-size: 16px 16px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
   display: inline-block;
-  margin-left: 5px;
 
   &:hover
   {

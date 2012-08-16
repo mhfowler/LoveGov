@@ -20,6 +20,8 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
 
     # get all content in the running
     content = getContentFromAlias(alias, viewer)
+    if not content:
+        return []
 
     # filter
     if feed_types:
@@ -38,10 +40,8 @@ def getContentFromAlias(alias, viewer):
     content = None
     if object:
         content = object.getContent()
-    elif alias == 'me':
-        groups_ids = viewer.getGroups().values_list("id", flat=True)
-        friends_ids = viewer.getIFollow().values_list("id", flat=True)
-        content = Content.objects.filter(Q(posted_to_id__in=groups_ids) | Q(creator_id__in=friends_ids))
+    elif alias == 'home':
+        content = Content.objects.filter(in_feed=True)
     elif alias == 'groups':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         content = Content.objects.filter(in_feed=True, posted_to_id__in=groups_ids)
@@ -52,6 +52,10 @@ def getContentFromAlias(alias, viewer):
     elif alias == 'friends':
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
         content = Content.objects.filter(in_feed=True, creator_id__in=friends_ids)
+    elif alias == 'me':
+        groups_ids = viewer.getGroups().values_list("id", flat=True)
+        friends_ids = viewer.getIFollow().values_list("id", flat=True)
+        content = Content.objects.filter(Q(posted_to_id__in=groups_ids) | Q(creator_id__in=friends_ids))
     return content
 
 
@@ -81,12 +85,15 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     return question_items[feed_start:feed_start+num]
 
 
-def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, questions=None, feed_start=0, num=10):
+def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, p_id=None, feed_start=0, num=10):
 
-    # questions
-    question_items=[]
-    if not questions:
+    # questions & check for p_id (filter by poll)
+    if not p_id:
         questions = Question.objects.all()
+    else:
+        poll = Poll.objects.get(id=p_id)
+        questions = poll.questions.all()
+    question_items=[]
 
     # viewer responses
     you_responses = viewer.view.responses.all()

@@ -46,7 +46,7 @@ def homeResponse(request, focus_html, url, vals):
     else:
         vals['focus_html'] = focus_html
         homeSidebar(request, vals)
-        html = ajaxRender('site/pages/home/home.html', vals, request)
+        html = ajaxRender('site/pages/home/home_frame.html', vals, request)
         return framedResponse(request, html, url, vals, rebind="home")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -430,13 +430,18 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN HOME PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def me(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def home(request, vals):
+    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def groups(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def elections(request, vals):
+    focus_html =  ajaxRender('site/pages/elections/elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -501,52 +506,25 @@ def questions(request, vals={}):
     return framedResponse(request, html, url, vals, rebind="questions")
 
 #-----------------------------------------------------------------------------------------------------------------------
+# browse all
+#-----------------------------------------------------------------------------------------------------------------------
+def browseGroups(request, vals={}):
+
+    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals, rebind="browse")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # group detail
 #-----------------------------------------------------------------------------------------------------------------------
 def groupPage(request, g_alias, vals={}):
     # Get the group and current viewer
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
-
-    # Set group and group comparison
     vals['group'] = group
-    vals['group_comparison'] = group.getComparison(viewer)
 
-    # Figure out if this user is an admin
-    vals['is_user_admin'] = False
-    admins = list( group.admins.all() )
-    for admin in admins:
-        if admin.id == viewer.id:
-            vals['is_user_admin'] = True
-            break
-
-    # Get list of all Admins
-    vals['group_admins'] = group.admins.all()
-
-    # Get the list of all members and truncate it to be the number of members showing
-    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
-
-    # Get the number of group Follow Requests
-    vals['num_group_requests'] = group.getNumFollowRequests()
-
-    # Get the total number of members
-    vals['num_members'] = group.num_members
-
-    # Is the current viewer already (requesting to) following this group?
-    vals['is_user_requested'] = False
-    vals['is_user_confirmed'] = False
-    vals['is_user_rejected'] = False
-    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
-    if group_joined:
-        if group_joined.confirmed:
-            vals['is_user_confirmed'] = True
-        if group_joined.requested:
-            vals['is_user_requested'] = True
-        if group_joined.rejected:
-            vals['is_user_rejected'] = True
-
-    # histogram
-    loadHistogram(5, group.id, 'mini', vals=vals)
+    # fill dictionary with group stuff
+    vals['info'] = valsGroup(viewer, group, {})
 
     ## TEST ##
     items = Content.objects.filter(type='N')
@@ -711,7 +689,7 @@ def pollDetail(request, p_id=-1, vals={}):
     vals['poll'] = poll
     contentDetail(request, poll, vals)
 
-    q_items = getQuestionItems(viewer, 'B', questions=poll.questions.all(), num=None)
+    q_items = getQuestionItems(viewer, 'B', p_id=poll.id, num=None)
     vals['q_items'] = q_items
 
     poll_progress = getPollProgress(viewer, poll)

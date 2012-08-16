@@ -120,23 +120,8 @@ div.questions-sidebar {
   }
 }
 
-
 div.questions-main {
   margin-top: 0px;
-
-  div.main-top {
-    div.header-title {
-      @include fontSize(24px);
-      float:left;
-    }
-    div.red-line {
-      margin-left:5px;
-      margin-top:15px;
-      float:left;
-      border-bottom:1px solid $red;
-      width:840px;
-    }
-  }
 
   div.questions-wrapper {
     margin-top:0px;
@@ -156,7 +141,6 @@ div.questions-main {
       }
     }
   }
-
 }
 
 /**********************************************************************************************************************/

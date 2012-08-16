@@ -1395,10 +1395,8 @@ def getFeed(request, vals):
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 
-    feed_start += len(feed_items)
-
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    to_return = {'html':html,'feed_start':feed_start,'num_items':len(feed_items)}
+    to_return = {'html':html, 'num_items':len(feed_items)}
     return HttpResponse(json.dumps(to_return))
 
 def contentToFeedItems(content, user):
@@ -1440,10 +1438,29 @@ def getQuestions(request, vals):
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
 
-    feed_start += len(question_items)
+    html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
 
-    html = ajaxRender('site/pages/qa/question_feed_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'feed_start':feed_start , 'num_items':len(question_items)}))
+#-----------------------------------------------------------------------------------------------------------------------
+# get groups
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroups(request, vals={}):
+    from lovegov.frontend.views_helpers import valsGroup
+    viewer = vals['viewer']
+    groups = Group.objects.filter(ghost=False).order_by("-num_members")
+    feed_start = int(request.POST['feed_start'])
+    groups = groups[feed_start:feed_start+5]
+
+    vals['groups'] = groups
+    groups_info = []
+    for g in groups:
+        group_vals = {}
+        valsGroup(viewer, g, group_vals)
+        groups_info.append({'group':g, 'info':group_vals})
+    vals['groups_info'] = groups_info
+
+    html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
@@ -1890,32 +1907,37 @@ def updateHistogram(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # returns html to render avatars of histogram percentile
 #-----------------------------------------------------------------------------------------------------------------------
-def getHistogramMembers(request, vals={}):
+def getUsersByUID(request, vals={}):
 
     u_ids = json.loads(request.POST['u_ids'])
     members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
+    vals['display']= request.POST['display']
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('site/pages/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
 
-def getAllGroupMembers(request, vals={}):
+
+def getGroupMembers(request, vals={}):
 
     group = Group.objects.get(id=request.POST['g_id'])
     start = int(request.POST['start'])
     num = int(request.POST['num'])
+    vals['display'] = request.POST['display']
     members = group.getMembers(start=start, num=num)
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('site/pages/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
-
     return HttpResponse(json.dumps(to_return))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# misc
+#-----------------------------------------------------------------------------------------------------------------------
 def likeThis(request, vals={}):
 
     html = ajaxRender('site/pages/feed/like_this.html', vals, request)

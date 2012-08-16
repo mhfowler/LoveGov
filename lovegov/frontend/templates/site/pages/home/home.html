@@ -1,18 +1,7 @@
-<!-- left sidebar -->
-<table class="home">
-    <tr>
+<div class="home-header"> home header </div>
 
-        <td class="home-sidebar">
-            {% include 'site/pages/home/navbar.html' %}
-        </td>
+<div class="home-dismissible"> home dismissible </div>
 
-        <!-- main area, which gets reloaded as you switch between tabs-->
-        <td class="home-main home_focus">
-            {{ focus_html }}
-        </td>
-
-        <script> rebind="home"; </script>
-
-    </tr>
-</table>
-
+<div class="home-body">
+    {% include 'site/pages/feed/feed.html' %}
+</div>
