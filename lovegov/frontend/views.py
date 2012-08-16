@@ -474,7 +474,7 @@ def friends(request, vals):
         friends_list = fbGet(request,'me/friends/')['data']
         fb_friends = []
 
-        for friend in friends_list[:10]:
+        for friend in friends_list[:4]:
             fb_friend = FBFriend()
             fb_friend.name = friend['name']
             fb_friend.id = friend['id']
