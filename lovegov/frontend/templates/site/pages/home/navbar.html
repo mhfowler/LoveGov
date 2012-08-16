@@ -2,10 +2,31 @@
 <div class="left-navbar">
 
     <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/home/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Me </div> </a>
+        <a class="home_link section_title" href="/home/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Home </div> </a>
     </div>
 
     <p class="asterisk_pointer asterisk-pointer">*</p>
+
+    <div class="navbar-section navbar_section">
+        <a class="home_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
+        <div class="navbar_links_wrapper friends_wrapper">
+            {% for x in friends %}
+                {% include 'site/pages/home/navbar_snippet.html' %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="navbar-section navbar_section">
+        <a class="home_link section_title" href="/politicians/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Politicians </div> </a> <span class="red_triangle red-triangle"></span>
+        <div class="navbar_links_wrapper politicians_wrapper">
+
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/presidential/" section_title="presidential" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="representatives" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/congress/" section_title="congress" %}
+        </div>
+    </div>
+
 
     <div class="navbar-section navbar_section">
         <a class="home_link section_title" href="/groups/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Groups </div> </a>  <span class="red_triangle red-triangle"></span>
@@ -14,33 +35,6 @@
             {% include 'site/pages/home/navbar_snippet.html' %}
         {% endfor %}
         <a href="#" class="create-link"> + Create a Group </a>
-        </div>
-    </div>
-
-    <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/elections/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Elections </div> </a> <span class="red_triangle red-triangle"></span>
-        <div class="navbar_links_wrapper elections_wrapper">
-        {% for x in elections %}
-            {% include 'site/pages/home/navbar_snippet.html' %}
-        {% endfor %}
-        </div>
-    </div>
-
-    <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/politicians/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Politicians </div> </a> <span class="red_triangle red-triangle"></span>
-        <div class="navbar_links_wrapper politicians_wrapper">
-        {% for x in politicians %}
-            {% include 'site/pages/home/navbar_snippet.html' %}
-        {% endfor %}
-        </div>
-    </div>
-
-    <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a> <span class="red_triangle red-triangle"></span>
-        <div class="navbar_links_wrapper friends_wrapper">
-        {% for x in friends %}
-            {% include 'site/pages/home/navbar_snippet.html' %}
-        {% endfor %}
         </div>
     </div>
 

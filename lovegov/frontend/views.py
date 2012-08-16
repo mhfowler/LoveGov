@@ -438,18 +438,28 @@ def groups(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def politicians(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def politicians(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def presidential(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/presidential.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def representatives(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def congress(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/congress.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def friends(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 

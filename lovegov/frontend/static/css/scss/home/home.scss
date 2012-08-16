@@ -11,13 +11,13 @@ table.home
 
   td.home-sidebar
   {
-    width:200px;
+    width:150px;
     overflow:hidden;
   }
 
   td.home-main
   {
-    padding-left:20px;
+    padding-left:30px;
 
     div.home-header
     {
@@ -66,6 +66,7 @@ table.home
 div.left-navbar {
 
   @include titleFont();
+  width:150px;
   overflow:hidden;
 
   p.asterisk-pointer {
@@ -124,6 +125,7 @@ div.left-navbar {
     @include transition(.25s);
     margin-left:15px;
     margin-bottom:3px;
+    display:none;
   }
   span.red-triangle-down {
     @include transform(rotate(90deg));

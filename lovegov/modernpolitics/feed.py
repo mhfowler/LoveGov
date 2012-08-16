@@ -35,7 +35,7 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
 
 def getContentFromAlias(alias, viewer):
     object = aliasToObject(alias)
-    content = []
+    content = None
     if object:
         content = object.getContent()
     elif alias == 'me':

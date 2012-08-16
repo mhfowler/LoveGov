@@ -19,10 +19,15 @@
         </div>
     </div>
 
-    <span class="name">{{user.get_name}}</span>
+    <span class="name">
+        <div class="first-name"> {{ user.first_name }}</div>
+        <div class="last-name"> {{ user.last_name }}</div>
+    </span>
 
     <span class="head-avatar">
-        {% include 'site/pieces/avatar.html' with user=user height='30' width='30' %}
+        <a href="{{ user.get_url }}">
+            {% include 'site/pieces/avatar.html' with user=user height='30' width='30' hoveroff=1 %}
+        </a>
     </span>
 
     <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
