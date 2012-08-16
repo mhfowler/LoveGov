@@ -1,0 +1,8 @@
+{% for x in groups_info %}
+    {% with info=x.info group=x.group  %}
+            {% include 'site/pages/browse/group_stub.html' %}
+    {% endwith %}
+{% endfor %}
+
+
+{% comment %} {% include 'site/pages/group/group_header.html' %} {% endcomment %}
