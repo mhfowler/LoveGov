@@ -29,7 +29,7 @@ a {
 div.main {
   margin-left: 0px;
   height: 310px;
-  width: 1200px;
+  width: 1250px;
 
   div.leg-title {
     margin-left: 0px;
@@ -75,13 +75,13 @@ div.main {
     }
   }
 
-  div.level1-bill-hotness {
+  div.level1-bill-views {
     margin-left: 0px;
     margin-top: 0px;
     height: 25px;
     width: 350px;
 
-    div.bill-hotness-label {
+    div.bill-views-label {
       height: 25px;
       width: 350px;
 
@@ -97,16 +97,34 @@ div.main {
     }
   }
 
-  div.level1-bill-hotness-div {
+  div.level1-bill-view-stats {
     margin-left: 0px;
     margin-top: 0px;
-    height: 150px;
+    height: 100px;
     width: 350px;
+
+    div.bill-views {
+      margin-top: 30px;
+      height: 100px;
+      width: 60px;
+      text-align: center;
+
+      h4.views {
+        color: $text-blue;
+        font-size: 28px;
+      }
+
+      h4 {
+        color: $text-blue;
+        font-size: 20px;
+        margin-top: -10px;
+      }
+    }
   }
 
   div.level1-sponsor {
     margin-left: 365px;
-    margin-top: -330px;
+    margin-top: -300px;
     height: 25px;
     width: 100px;
 
@@ -219,7 +237,6 @@ div.main {
         color: black;
         padding-top: 5px;
         padding-left: 5px;
-
       }
     }
   }
@@ -281,14 +298,24 @@ div.main {
     margin-top: 10px;
     height: 230px;
     width: 150px;
-    background-color: #E0E0E0;
 
     div.progress {
       display: center;
       height: 220px;
       width: 140px;
-      background-color: $blue;
       margin: 5px 5px 5px 5px;
+      text-align: center;
+
+      h3.progress {
+        color: black;
+        font-size: 14px;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      img {
+        margin-top: 0px;
+      }
     }
   }
 
@@ -488,15 +515,52 @@ div.main {
     }
   }
 }
+
 div.secondary {
   margin-left: 0px;
   margin-top: 0px;
-  height: 330px;
-  width: 1200px;
+  height: 130px;
+  width: 1250px;
+
+  div.level2-bill-text {
+    margin-left: 0px;
+    margin-top: 0px;
+    height: 25px;
+    width: 800px;
+
+    div.bill-text {
+      height: 25px;
+      width: 800px;
+
+      h4 {
+        font-size:18px;
+        text-align: left;
+        background-color: #E0E0E0;
+        color: black;
+        padding-top: 5px;
+        padding-left: 5px;
+      }
+    }
+  }
+
+  div.level2-bill-text-div {
+    margin-left: 0px;
+    margin-top: 10px;
+    height: auto;
+    width: 800px;
+
+    div.bill-text.long_text.more {
+      margin-top: 0px;
+      height: auto;
+      width: 800px;
+      padding-left: 5px;
+      text-align: justify;
+    }
+  }
 
   div.level2-recent-actions {
     margin-left: 820px;
-    margin-top: 0px;
+    margin-top: -70px;
     height: 25px;
     width: 330px;
 
@@ -519,12 +583,12 @@ div.secondary {
   div.level2-recent-actions-div {
     margin-left: 820px;
     margin-top: 0px;
-    height: 150px;
+    height: 90px;
     width: 330px;
 
     div.recent-actions {
       margin-top: 0px;
-      height: 150px;
+      height: 90px;
       width: 140px;
       padding-left: -10px;
       text-align: justify;
@@ -544,9 +608,9 @@ div.secondary {
     }
 
     div.recent-action-dates {
-      margin-top: -163px;
+      margin-top: -103px;
       margin-left: 170px;
-      height: 150px;
+      height: 90px;
       width: 120px;
       padding-left: -5px;
 
@@ -567,10 +631,11 @@ div.secondary {
         }
       }
     }
+
     div.recent-action-results {
-      margin-top: -163px;
+      margin-top: -103px;
       margin-left: 260px;
-      height: 150px;
+      height: 190px;
       width: 140px;
       padding-left: -5px;
 
@@ -593,13 +658,13 @@ div.secondary {
     }
   }
 
-  div.level2-bill-text {
+  div.level2-bill-amendments {
     margin-left: 0px;
-    margin-top: -187px;
+    margin-top: 0px;
     height: 25px;
     width: 800px;
 
-    div.bill-text {
+    div.bill-amendments {
       height: 25px;
       width: 800px;
 
@@ -613,18 +678,82 @@ div.secondary {
       }
     }
   }
-  div.level2-bill-text-div {
+
+  div.level2-bill-amendments-div {
     margin-left: 0px;
     margin-top: 10px;
     height: auto;
     width: 800px;
 
-    div.bill-text.long_text.more {
+    div.amendment-name {
       margin-top: 0px;
-      height: auto;
-      width: 800px;
-      padding-left: 5px;
+      height: 90px;
+      width: 140px;
+      padding-left: -10px;
       text-align: justify;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+          }
+        }
+      }
+    }
+
+    div.amendment-type {
+      margin-top: -103px;
+      margin-left: 120px;
+      height: 90px;
+      width: 200px;
+      padding-left: -5px;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+            a {
+              text-decoration: none;
+              font-color: black;
+            }
+          }
+        }
+      }
+    }
+
+    div.amendment-result {
+      margin-top: -103px;
+      margin-left: 340px;
+      height: 190px;
+      width: 60px;
+      padding-left: -5px;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+            a {
+              text-decoration: none;
+              font-color: black;
+            }
+          }
+        }
+      }
     }
   }
 }
