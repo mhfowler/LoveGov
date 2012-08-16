@@ -30,12 +30,16 @@
                         {% include 'site/pieces/avatar.html' with width="150" height="200" user=profile hoveroff=1 %}
                     </div>
 
-                    {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
-                        <div class="user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
-                    {% elif is_user_confirmed %}
-                        <div class="user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
-                    {% elif is_user_requested %}
-                        <div class="user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
+                    {% if viewer.id != profile.id %}
+
+                        {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                            <div class="user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
+                        {% elif is_user_confirmed %}
+                            <div class="user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
+                        {% elif is_user_requested %}
+                            <div class="user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
+                        {% endif %}
+
                     {% endif %}
 
 
@@ -98,16 +102,6 @@
                             </div>
                             <div style="clear:both;"></div>
                         </div>
-
-                        {% if not ifollow %}
-                            <div class="profile-bar-button follow-button user_follow">
-                                follow
-                            </div>
-                        {% else %}
-                            <div class="profile-bar-button follow-button user_follow">
-                                stop following
-                            </div>
-                        {% endif %}
 
                     </div>
 
