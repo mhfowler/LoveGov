@@ -548,6 +548,11 @@ def groupPage(request, g_alias, vals={}):
     # histogram
     loadHistogram(5, group.id, 'mini', vals=vals)
 
+    ## TEST ##
+    items = Content.objects.filter(type='N')
+    vals['item1'] = items[0]
+    vals['item2'] = items[1]
+
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()

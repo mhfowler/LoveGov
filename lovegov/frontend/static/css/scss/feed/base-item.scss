@@ -13,7 +13,6 @@ div.feed-item-content
   @include single-box-shadow($white-gray,0px,0px,10px);
   overflow: hidden;
 
-
   div.feed-item-left-buttons
   {
     border-right: 1px solid $light-gray;
@@ -81,7 +80,7 @@ div.feed-item-content
     {
       margin-bottom: 2px;
       h3.title-text {
-        color:blue;
+        color:$text-blue;
       }
       h3.title-text:hover {
         color:$black;
@@ -147,7 +146,8 @@ div.feed-item-content
         div.feed-avatar-timestamp
         {
           color: $dark-gray;
-          font-size: 10px;
+          @include fontSize(11px);
+          font-style: italic;
         }
       }
 
