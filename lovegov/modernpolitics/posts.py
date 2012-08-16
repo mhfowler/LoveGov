@@ -870,6 +870,13 @@ def updateStats(request, vals={}):
             html = ajaxRender('site/pages/qa/you_agree_with_stats.html', vals, request)
         else:
             html = "<p> answer to see how many people agree with you. </p>"
+    if object == 'poll_progress':
+        from lovegov.frontend.views_helpers import getPollProgress
+        poll = Poll.objects.get(id=request.POST['p_id'])
+        poll_progress = getPollProgress(viewer, poll)
+        vals['poll'] = poll
+        vals['poll_progress'] = poll_progress
+        html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------

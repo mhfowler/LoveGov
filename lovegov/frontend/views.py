@@ -658,14 +658,20 @@ def questionDetail(request, q_id=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def pollDetail(request, p_id=-1, vals={}):
 
+    viewer = vals['viewer']
     poll = Poll.objects.get(id=p_id)
     vals['poll'] = poll
-
     contentDetail(request, poll, vals)
+
+    q_items = getQuestionItems(viewer, 'B', questions=poll.questions.all(), num=None)
+    vals['q_items'] = q_items
+
+    poll_progress = getPollProgress(viewer, poll)
+    vals['poll_progress'] = poll_progress
 
     html = ajaxRender('site/pages/content_detail/poll_detail.html', vals, request)
     url = poll.get_url()
-    return framedResponse(request, html, url, vals)
+    return framedResponse(request, html, url, vals, rebind="poll_detail")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion
