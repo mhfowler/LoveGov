@@ -45,11 +45,11 @@
                     {% if viewer.id == profile.id %}
 
                         {% if num_follow_requests > 0 %}
-                            <div class="user-follow follow_requests_modal" data-p_id="{{ profile.id }}">follow requests ({{ num_follow_requests }})</div>
+                            <div class="user-follow follow_requests_modal">requests ({{ num_follow_requests }})</div>
                         {% endif %}
 
                         {% if num_group_invites > 0 %}
-                            <div class="user-follow group_invited_modal" data-p_id="{{ profile.id }}">group invites ({{ num_group_invites }})</div>
+                            <div class="user-follow group_invited_modal">invites ({{ num_group_invites }})</div>
                         {% endif %}
 
                     {% endif %}

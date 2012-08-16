@@ -487,6 +487,10 @@ def editAccount(request, vals={}):
     if box == 'basic_info':
         if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
         if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
+        try:
+            if 'age' in request.POST: viewer.age = int(request.POST['age'])
+        except:
+            pass
 
         if 'address' in request.POST:
             address = request.POST['address']
@@ -515,7 +519,7 @@ def editAccount(request, vals={}):
         all_parties = list( Party.objects.all() )
 
         for party_type in PARTY_TYPE:
-            if party_type[1] in request.POST:
+            if str(party_type[1])+"_party" in request.POST:
                 party = Party.lg.get_or_none( party_type=party_type[0] )
                 party.joinMember(viewer)
                 all_parties.remove(party)
@@ -578,6 +582,7 @@ def editGroup(request, vals={}):
 # INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editProfile(request, vals={}):
+    from django.template import defaultfilters
     viewer = vals['viewer']
 
     if not 'val' in request.POST or not 'key' in request.POST:

@@ -196,13 +196,21 @@ div.profile-page {
         }
       }
 
-      div.political-statement {
+      div.bio-statement {
         float:left;
         width:400px;
-        p.political-statement-text {
+
+        div.bio-text {
           padding-left:10px;
           margin-top:6px;
+
+          textarea.bio-inline
+          {
+            height: 60px;
+            width: 360px;
+          }
         }
+
       }
       div.profile-about {
         margin-left:30px;
@@ -214,8 +222,15 @@ div.profile-page {
         div.about-item {
           margin-top:10px;
         }
-        span.value {
+        .value {
           margin-left:15px;
+          display:inline;
+
+          img.party-label
+          {
+            margin-right: 5px;
+            margin-bttom: 10px;
+          }
         }
       }
 
