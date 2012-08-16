@@ -98,18 +98,23 @@ div.main {
   }
 
   div.level1-bill-view-stats {
-    margin-left: 0px;
+    margin-left: 5px;
     margin-top: 0px;
-    height: 100px;
-    width: 350px;
+    height: 70px;
+    width: 345px;
 
     div.bill-views {
-      margin-top: 30px;
-      height: 100px;
-      width: 60px;
+      margin-top: 15px;
+      margin-left: 0px;
+      height: 50px;
+      width: 80px;
       text-align: center;
+      border-right-width: 2px;
+      border-right-style: solid;
+      border-right-color: $blue;
 
       h4.views {
+        margin-top: 10px;
         color: $text-blue;
         font-size: 28px;
       }
@@ -120,11 +125,75 @@ div.main {
         margin-top: -10px;
       }
     }
+
+    div.bill-outlook {
+      margin-left: 60px;
+      margin-top: 15px;
+
+      div.spectrum {
+        margin-left: 100px;
+        margin-top: -50px;
+        width:90px;
+        height:20px;
+        border: 1px;
+        border-color: black;
+        background-color:blue;
+        background-image: -webkit-gradient(linear, left top, right top, color-stop(0.01, $red), color-stop(0.5, white), color-stop(0.99, $text-blue));
+        background-image: -moz-linear-gradient(left center, $red 1%, white 50%, $text-blue 99%);
+      }
+
+      div.spectrum-select {
+        margin-top: -20px;
+        margin-left: 100px;
+        height:20px;
+        width: 20px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        border-style: solid;
+        border-width: 2px;
+        border-color: black;
+        z-index:1;
+      }
+    }
+
+    div.spectrum-labels {
+      z-index:2;
+      margin-left: 30px;
+      margin-top: -20px;
+      height: 40px;
+      width: 300px;
+
+      div.gridlock {
+        height: 40px;
+        width: 100px;
+        margin-left: 65px;
+        margin-top: 0px;
+
+        h4.gridlock {
+          font-size: 18px;
+          color: $red;
+        }
+      }
+
+      div.consensus {
+        height: 40px;
+        width: 100px;
+        margin-left: 225px;
+        margin-top: -40px;
+
+        h4.consensus {
+           font-size: 18px;
+           color: $text-blue;
+        }
+      }
+    }
   }
+
 
   div.level1-sponsor {
     margin-left: 365px;
-    margin-top: -300px;
+    margin-top: -240px;
     height: 25px;
     width: 100px;
 
@@ -310,7 +379,7 @@ div.main {
         color: black;
         font-size: 14px;
         margin-top: 0px;
-        margin-bottom: 0px;
+        margin-bottom: 4px;
       }
 
       img {
