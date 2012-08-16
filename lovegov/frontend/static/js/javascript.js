@@ -43,7 +43,7 @@ function undelegated() {
 function bindOnNewElements() {
     undelegated();
     loadHoverComparison();
-    loadHistogram();
+    loadHistograms();
     $.each($(".expandable_wrapper"), function(i,e) {
         setInfoHeight($(this));
     });
@@ -1105,116 +1105,6 @@ function ajaxThread()
         error: null
     });
 }
-
-
-
-// /***********************************************************************************************************************
-//  *
-//  *      ~Header links
-//  *
-//  ***********************************************************************************************************************/
-// function selectHeaderLink(div) {
-//     $(".header_link").removeClass("clicked");
-//     div.addClass("clicked");
-// }
-
-// bind('reactivate-first-login', 'click', function() {
-//         setFirstLoginStage(0, function() {
-//             window.location = '/match';
-//         });
-//     });
-
-// function bindTutorialLink() {
-//     $('.reactivate-first-login').bindOnce('click', function() {
-//         setFirstLoginStage(0, function() {
-//             window.location = '/match';
-//         });
-//     });
-// }
-
-// /***********************************************************************************************************************
-//  *
-//  *      ~Menu and Icon Display
-//  *
-//  ***********************************************************************************************************************/
-// function loadMenuToggles() {
-
-//     function menuClickoff(menu) {
-//         menu.bindOnce("clickoutside.menuoff", function(event) {
-//             if (menu.hasClass("hack_workaround")) {
-//                 menu.removeClass("hack_workaround");
-//             }
-//             else {
-//                 menu.hide();
-//                 menu.parents(".menu_toggle").removeClass("clicked");
-//             }
-//         });
-//     }
-
-
-//     $(".menu").hide();
-//     $(".menu_toggle").click(function(event) {
-//         if (!$(this).hasClass("clicked")) {
-//             var other_menu_toggles = $(".menu_toggle").not($(this));
-//             other_menu_toggles.removeClass("clicked");
-//             other_menu_toggles.children(".menu").hide();
-//             var menu=$(this).children(".menu");
-//             menu.addClass("hack_workaround");
-//             menuClickoff(menu);
-//         }
-//         $(this).children(".menu").toggle();
-//     });
-
-//     $(".menu_toggle").hover(
-//         function(event) {
-//             $(this).children(".triangle-selector").addClass("highlighted");
-//         },
-//         function(event) {
-//             if (!$(this).hasClass("clicked")) {
-//                 $(this).children(".triangle-selector").removeClass("highlighted");
-//             }
-//         }
-//     );
-//     defaultHoverClick($(".menu_toggle"));
-// }
-
-// function defaultHoverClick(div) {
-//     div.click(function(event) {
-//         defaultClick($(this));
-//     });
-//     defaultHover(div);
-// }
-
-// function defaultHoverClickSingle(div) {
-//     div.click(function(event) {
-//         defaultClickSingle($(this), div);
-//     });
-//     defaultHover(div);
-// }
-
-// function defaultClickSingle(this_div, all_div) {
-//     var already = $(this).hasClass("clicked");
-//     all_div.removeClass("clicked");
-//     if (!already) {
-//         this_div.addClass("clicked");
-//     }
-// }
-
-// function defaultClick(this_div) {
-//     this_div.toggleClass("clicked");
-// }
-
-// function defaultHover(all_div) {
-//     all_div.hover(
-//         function(event) {
-//             $(this).addClass("hovered");
-//         },
-//         function(event) {
-//             $(this).removeClass("hovered");
-//         }
-//     );
-// }
-
 
 
 /***********************************************************************************************************************
@@ -2316,49 +2206,17 @@ bind('.only_unanswered' , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
-var loadUsersLockout=false;
-function loadMoreUsers(event, replace)
-{
-    if (replace == true) {
-        $("#histogram-displayed-num").val(0);
-    }
-    event.preventDefault();
-    var histogram_displayed_num = $('#histogram-displayed-num').val();
-    var histogram_topic = $('#histogram-topic').val();
-    var histogram_block = $('#histogram-block').val();
-    var group_id = $('#group-id').val();
-    if (!loadUsersLockout)
-    {
-        loadUsersLockout = true;
-        action({
-            data: {'action':'loadGroupUsers','histogram_displayed_num':histogram_displayed_num,'group_id':group_id,
-                'histogram_topic':histogram_topic,'histogram_block':histogram_block },
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                if (replace==true) {
-                    $('#members-list').html(returned.html);
-                }
-                else {
-                    $('#members-list').append(returned.html);
-                }
-                $('#histogram-displayed-num').val(returned.num);
-                loadHoverComparison();
-                loadAjaxifyAnchors();
-                bindNewDivs();
-                loadUsersLockout = false;
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
-    }
+/* helpers for keeping state of histogram */
+function saveHistogramMetadata(histogram_wrapper, histogram_metadata) {
+    histogram_wrapper.data('metadata', histogram_metadata);
+}
+function loadHistogramMetadata(histogram_wrapper) {
+    return histogram_wrapper.data('metadata');
 }
 
-// select histogram block
+/* bind click functions */
 bind(".histogram-select-block", 'click', null, function(event) {
-    event.preventDefault();
+    var histogram_wrapper = $(this).parents(".histogram_wrapper");
     var block = $(this).siblings(".block-val").val();
     var was = $("#histogram-block").val();
     if (block == was) {
@@ -2367,40 +2225,117 @@ bind(".histogram-select-block", 'click', null, function(event) {
     else {
         $("#histogram-block").val(block);
     }
-    loadMoreUsers(event, true);
+    loadMoreHistogramUsers(event, true);
 });
 
-// change histogram topic
 bind(".h-topic-img", 'click', null, function(event) {
+    var histogram_wrapper = $(this).parents(".histogram_wrapper");
     var wrapper = $(this).parents(".topic-icon-wrapper");
     selectTopicSingle(wrapper);
     var topic = $(this).siblings(".t-alias").val();
-    var was = $("#histogram-topic").val();
+    var was = histogram_wrapper.find(".histogram-topic").val();
     if (topic == was) {
-        $("#histogram-topic").val('general');
+        was.val('general');
     }
     else {
-        $("#histogram-topic").val(topic);
+        was.val(topic);
     }
-    loadMoreUsers(event, true);
-    refreshHistogram();
+    refreshHistogram(histogram_wrapper);
 });
 
-var histogram = new Object();
 
-function refreshHistogramData(data) {
+/* get histograms going */
+function loadHistograms() {
+    $.each($(".histogram_wrapper"), function(i,e) {
+        loadHistogram($(this));
+    });
+}
 
-    histogram.total += data.total;
-    histogram.identical += data.identical;
-    histogram.identical_uids.push.apply(histogram.identical_uids, data.identical_uids);
+function loadHistogram(histogram_wrapper) {
+
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    histogram_metadata.members_displayed = 0;
+    histogram_metadata.identical_displayed = 0;
+    saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+    updateHistogram(histogram_wrapper, true);
+
+    histogram_wrapper.find('.update_histogram').bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        updateHistogram(histogram_wrapper, false);
+    });
+
+    histogram_wrapper.find(".histogram_topic_img").bindOnce("click.histogram", function(event) {
+        var wrapper = $(this).parents(".topic_icon_wrapper");
+        var alias;
+        var topic_text;
+        if (wrapper.hasClass("chosen")) {
+            alias = 'all';
+            topic_text = "All Topics"
+        }
+        else {
+            alias = wrapper.data('t_alias');
+            topic_text = wrapper.data('t_text');
+        }
+        histogram_wrapper.find(".histogram-topic").text(topic_text);
+        histogram_metadata.topic_alias = alias;
+        saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+        toggleTopicSingle(wrapper);
+        refreshHistogram(histogram_wrapper);
+    });
+
+    histogram_wrapper.find(".bar_label").bindOnce("click.histogram", function(event) {
+        var bar = $(this).parents(".bar");
+        selectHistogramBar(histogram_wrapper, bar);
+    });
+    histogram_wrapper.find(".red_bar").bindOnce("click.histogram", function(event) {
+        var bar = $(this).parents(".bar");
+        selectHistogramBar(histogram_wrapper, bar);
+    });
+
+    histogram_wrapper.find(".get_more_members").bindOnce("click.histogram", function(event) {
+        event.preventDefault();
+        getHistogramMembers(histogram_wrapper);
+    });
+}
+
+function selectHistogramBar(histogram_wrapper, bar) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    if (bar.hasClass("clicked")) {
+        histogram_metadata.current_bucket = -1;
+        saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+        bar.removeClass("clicked");
+    }
+    else {
+        histogram_wrapper.find(".bar").removeClass("clicked");
+        histogram_metadata.current_bucket = bar.data('bucket');
+        saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+        bar.addClass("clicked");
+    }
+    refreshHistogramMembers(histogram_wrapper);
+}
+
+function refreshHistogramMembers(histogram_wrapper) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    histogram_metadata.members_displayed = 0;
+    saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+    getHistogramMembers(histogram_wrapper);
+}
+
+function refreshHistogramData(histogram_wrapper, data) {
+
+    var histogram_metadata = histogram_wrapper.data('metadata');
+
+    histogram_metadata.total += data.total;
+    histogram_metadata.identical += data.identical;
+    histogram_metadata.identical_uids.push.apply(histogram_metadata.identical_uids, data.identical_uids);
 
     $.map(data.buckets, function(item, key) {
 
-        var bar = $(".bar[data-bucket=" + key + "]");
+        var bar = histogram_wrapper.find(".bar[data-bucket=" + key + "]");
 
         bar.children('.red_bar').css("background-color",data.color);
-        $('.histogram-footer').css("background-color",data.color);
-        $('.histogram-wrapper').css("border-color",data.color);
+        histogram_wrapper.find('.histogram-footer').css("background-color",data.color);
+        histogram_wrapper.find(".histogram-wrapper").css("border-color",data.color);
 
         var num = bar.data('num') + item.num;
         bar.data('num', num);
@@ -2412,23 +2347,23 @@ function refreshHistogramData(data) {
         }
         bar.find(".red_bar").attr("data-original-title", mouseover);
 
-        if (histogram.total != 0) {
-            var percent = (num / histogram.total)*100;
+        if (histogram_metadata.total != 0) {
+            var percent = (num / histogram_metadata.total)*100;
         }
         else {
             var percent = 0;
         }
         bar.data("percent", percent);
 
-        var bucket_uids = histogram.bucket_uids[parseInt(key)];
+        var bucket_uids = histogram_metadata.bucket_uids[parseInt(key)];
         bucket_uids.push.apply(bucket_uids, item.u_ids);
     });
 }
 
-function normalizeHistogram() {
+function normalizeHistogram(histogram_wrapper) {
     var histogram_max_percent=0;
     // calculate max
-    $(".bar").each(function(index, element) {
+    histogram_wrapper.find(".bar").each(function(index, element) {
         var percent = $(this).data("percent");
         if (percent > histogram_max_percent) {
             histogram_max_percent = percent;
@@ -2436,7 +2371,7 @@ function normalizeHistogram() {
     });
     // normalize percents
     if (histogram_max_percent > 0) {
-        $(".bar").each(function(index, element) {
+        histogram_wrapper.find(".bar").each(function(index, element) {
             var percent = $(this).data("percent");
             var normalized = percent * (100/histogram_max_percent);
             $(this).data('percent', normalized);
@@ -2444,10 +2379,11 @@ function normalizeHistogram() {
     }
 }
 
-function renderHistogram() {
-    normalizeHistogram();
-    if (histogram.which == 'mini') {
-        $(".bar").each(function(index, element) {
+function renderHistogram(histogram_wrapper) {
+    normalizeHistogram(histogram_wrapper);
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    if (histogram_metadata.which == 'mini') {
+        histogram_wrapper.find(".bar").each(function(index, element) {
             var percent = $(this).data("percent");
             var zero_height_percent = 3;
             var height_percent = Math.floor(zero_height_percent + ((100 - zero_height_percent)*(percent/100)));
@@ -2458,12 +2394,12 @@ function renderHistogram() {
     }
 
     else {
-        $(".bar").each(function(index, element) {
+        histogram_wrapper.find(".bar").each(function(index, element) {
             // width and position
             var total_width = 850;
             var margin_left = 15;
-            var margin_space = margin_left * histogram.resolution;
-            var width = (total_width-margin_space) / histogram.resolution;
+            var margin_space = margin_left * histogram_metadata.resolution;
+            var width = (total_width-margin_space) / histogram_metadata.resolution;
             $(this).css("width", width);
             $(this).css("margin-left", margin_left);
             $(this).find(".red_bar").css("width", width);
@@ -2478,231 +2414,211 @@ function renderHistogram() {
         });
     }
 
-    $(".histogram_count").text(histogram.total);
-    $(".histogram_identical").text(histogram.identical);
-    $(".histogram").show();
+    histogram_wrapper.find(".histogram_count").text(histogram_metadata.total);
+    histogram_wrapper.find(".histogram_identical").text(histogram_metadata.identical);
+    histogram_wrapper.show();
 
 }
 
-function loadHistogram() {
+function refreshHistogram(histogram_wrapper) {
 
-    var histogram_div = $(".histogram");
-    if (histogram_div.length==0) {
-        return false;
-    }
-    histogram = $(".histogram").data('metadata');
-    histogram.members_displayed = 0;
-    histogram.identical_displayed = 0;
-    updateHistogram(true);
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
 
-    $('.update_histogram').bindOnce("click.histogram", function(event) {
-        event.preventDefault();
-        updateHistogram();
+    histogram_metadata.total = 0;
+    saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+
+    histogram_wrapper.find(".bar").data('num', 0);
+    $.map(histogram_metadata.bucket_uids, function(item, key) {
+        histogram_metadata.bucket_uids[key] = [];
     });
+    histogram_metadata.members_displayed = 0;
+    histogram_metadata.identical = 0;
+    histogram_metadata.identical_uids = [];
+    histogram_metadata.identical_displayed = 0;
+    saveHistogramMetadata(histogram_wrapper, histogram_metadata);
 
-    $(".histogram-topic-img").bindOnce("click.histogram", function(event) {
-        var wrapper = $(this).parents(".topic-icon-wrapper");
-        if (wrapper.hasClass("chosen")) {
-            var alias = 'all';
-            var topic_text = "All Topics"
-        }
-        else {
-            var alias = wrapper.data('t_alias');
-            var topic_text = wrapper.data('t_text');
-        }
-        $(".histogram-topic").text(topic_text);
-        histogram.topic_alias = alias;
-        toggleTopicSingle(wrapper);
-        refreshHistogram();
-    });
-
-    $(".bar_label").bindOnce("click.histogram", function(event) {
-        if ($(this).hasClass("clicked")) {
-            histogram.current_bucket = -1;
-            $(this).removeClass("clicked");
-        }
-        else {
-            $(".bar_label").removeClass("clicked");
-            var bar = $(this).parents(".bar");
-            histogram.current_bucket = bar.data('bucket');
-            $(this).addClass("clicked");
-        }
-        histogram.members_displayed = 0;
-        getHistogramMembers();
-    });
-
-    $(".get_more_members").bindOnce("click.histogram", function(event) {
-        event.preventDefault();
-        getHistogramMembers();
-    });
+    updateHistogram(histogram_wrapper, true);
 }
 
-function refreshHistogram() {
-
-    histogram.total = 0;
-
-    $(".bar").data('num', 0);
-    $.map(histogram.bucket_uids, function(item, key) {
-        histogram.bucket_uids[key] = [];
-    });
-    histogram.members_displayed = 0;
-
-    histogram.identical = 0;
-    histogram.identical_uids = [];
-    histogram.identical_displayed = 0;
-
-    updateHistogram(true);
-}
-
-function updateHistogram(recursive) {
+function updateHistogram(histogram_wrapper, recursive) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
     action({
             data: {
                 'action':'updateHistogram',
-                'start': histogram.total,
-                'num': histogram.increment,
-                'topic_alias':histogram.topic_alias,
-                'g_id': histogram.g_id,
-                'resolution': histogram.resolution,
+                'start': histogram_metadata.total,
+                'num': histogram_metadata.increment,
+                'topic_alias':histogram_metadata.topic_alias,
+                'g_id': histogram_metadata.g_id,
+                'resolution': histogram_metadata.resolution,
                 'log-ignore': true
             },
             success: function(data)
             {
                 var returned =  eval('(' + data + ')');
-
-                refreshHistogramData(returned);
-                renderHistogram();
-                getHistogramMembers();
-                getIdenticalMembers();
+                refreshHistogramData(histogram_wrapper, returned);
+                renderHistogram(histogram_wrapper);
+                getHistogramMembers(histogram_wrapper);
+                getIdenticalMembers(histogram_wrapper);
 
                 if (returned.total != 0 && recursive) {
-                    updateHistogram(true);
+                    updateHistogram(histogram_wrapper, true);
                 }
             }
         }
     );
 }
 
-var getHistogramMembersLockout = false;
-function getHistogramMembers() {
-    if (!getHistogramMembersLockout) {
-        getHistogramMembersHelper(false);
+function getHistogramMembers(histogram_wrapper) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    if (!histogram_metadata.members_lockout) {
+        getHistogramMembersHelper(histogram_wrapper, false);
     }
 }
 
-var getIdenticalMembersLockout = false;
-function getIdenticalMembers() {
-    if (!getIdenticalMembersLockout) {
-        getHistogramMembersHelper(true);
+function getIdenticalMembers(histogram_wrapper) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    if (!histogram_metadata.identical_lockout) {
+        getHistogramMembersHelper(histogram_wrapper, true);
     }
 }
 
-function getHistogramMembersHelper(identical) {
+/* gets members for display in either identical or histogram place */
+function getHistogramMembersHelper(histogram_wrapper, identical) {
 
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    var start;
+    var u_ids;
+    var display;
     if (identical) {
-        var start = histogram.identical_displayed;
-        var u_ids = histogram.identical_uids;
+        start = histogram_metadata.identical_displayed;
+        display = 'avatar';
+        u_ids = histogram_metadata.identical_uids;
     }
     else {
-        var start = histogram.members_displayed;
-        if (histogram.current_bucket != -1) {
-            var u_ids = histogram.bucket_uids[histogram.current_bucket];
+        start = histogram_metadata.members_displayed;
+        display = 'strip';
+        if (histogram_metadata.current_bucket != -1) {
+            u_ids = histogram_metadata.bucket_uids[histogram_metadata.current_bucket];
         }
         else {
-            setHistogramExplanation();
-            return getAllGroupMembers(start, 10, histogram.g_id);
+            u_ids = null;
         }
     }
 
-    var replace = (start== 0);
-
-    if (replace && u_ids.length==0) {
-        if (identical) {
-            $(".identical-avatars").html("");
-        }
-        else {
-            setHistogramExplanation();
-            $(".members-avatars").html("");
-        }
-    }
-
-    if (start <= (u_ids.length-1)) {
-
-        if (identical) {
-            getIdenticalMembersLockout = true;
-        }
-        else {
-            getHistogramMembersLockout = true;
-        }
-
-        var end = Math.min(u_ids.length, start+10);
-        u_ids = u_ids.slice(start, end);
-
-        u_ids = JSON.stringify(u_ids);
-
-        action({
-                data: {
-                    'action':'getHistogramMembers',
+    var num = 10;
+    var replace = (start==0);
+    var post_data;
+    // if u_ids then get members by requesting ids
+    if (u_ids) {
+        if (u_ids.length!=0) {
+            if (start <= (u_ids.length-1)) {
+                if (identical) {
+                    histogram_metadata.identical_lockout = true;
+                }
+                else {
+                    histogram_metadata.members_lockout = true;
+                }
+                var end = Math.min(u_ids.length, start+num);
+                u_ids = u_ids.slice(start, end);
+                u_ids = JSON.stringify(u_ids);
+                post_data = {'action':'getUsersByUID',
                     'u_ids': u_ids,
-                    'log-ignore': true
-                },
+                    'display':display,
+                    'log-ignore': true};
+            }
+        }
+        else {
+            if (replace) {
+                if (identical) {
+                    histogram_wrapper.find(".identical_wrapper").empty();
+                }
+                else {
+                    histogram_wrapper.find(".members_wrapper").empty();
+                }
+            }
+        }
+    }
+    // else get members by posting start, end and group_id
+    else {
+        post_data = {'action':'getGroupMembers',
+            'g_id':histogram_metadata.g_id,
+            'start': start,
+            'num': num,
+            'display':display,
+            'log-ignore': true};
+    }
+    if (post_data) {
+        action({
+                data: post_data,
                 success: function(data)
                 {
                     var returned =  eval('(' + data + ')');
-
-                    if (identical) {
-                        var $wrapper = $(".identical-avatars");
-                        histogram.identical_displayed += returned.num;
-                        getIdenticalMembersLockout = false;
-                    }
-                    else {
-                        var $wrapper = $(".members-avatars");
-                        histogram.members_displayed += returned.num;
-                        getHistogramMembersLockout = false;
-                        setHistogramExplanation();
-                    }
-
-                    if (replace) {
-                        $wrapper.html(returned.html);
-                    }
-                    else {
-                        $wrapper.append(returned.html);
-                    }
-                    loadHoverComparison();
-                },
-                error: function(error, textStatus, errorThrown)
-                {
-                    $('body').html(error.responseText);
+                    appendHistogramMembersHTML(histogram_wrapper, returned.html, returned.num, identical, replace);
                 }
             }
         );
     }
 }
 
-function setHistogramExplanation() {
-    var lower = histogram.current_bucket;
+/* appends html to members wrapper or identical wrapper appropriately, depending on identical=True */
+function appendHistogramMembersHTML(histogram_wrapper, html, num, identical, replace) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    if (identical) {
+        var $wrapper = histogram_wrapper.find(".identical_wrapper");
+        histogram_metadata.identical_displayed += num;
+        histogram_metadata.identical_lockout = false;
+    }
+    else {
+        var $wrapper = histogram_wrapper.find(".members_wrapper");
+        histogram_metadata.members_displayed += num;
+        histogram_metadata.members_lockout = false;
+    }
+    saveHistogramMetadata(histogram_wrapper, histogram_metadata);
+    setHistogramExplanation(histogram_wrapper);
+    if (replace) {
+        $wrapper.html(html);
+    }
+    else {
+        $wrapper.append(html);
+    }
+    loadHoverComparison();
+}
+
+/* sets histogram explanation text above members wrapper */
+function setHistogramExplanation(histogram_wrapper) {
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    var lower = histogram_metadata.current_bucket;
     if (lower != -1) {
 
-        var inc = 100 / histogram.resolution;
+        var inc = 100 / histogram_metadata.resolution;
         var higher = lower + inc;
         var message = String(lower) + '-' + String(higher) + "% similar to you";
     }
     else {
         var message = "";
     }
-    $(".in_percentile").html(message);
+    histogram_wrapper.find(".in_percentile").html(message);
 }
 
-function getAllGroupMembers(start, num, g_id) {
+
+function getHistogramGroupMembers(histogram_wrapper) {
+
+    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    var start = histogram_metadata.members_displayed;
+    var num = 10;
 
     var replace = (start== 0);
-    getHistogramMembersLockout = true;
+    histogram_metadata.members_lockout = true;
+    saveHistogramMetadata(histogram_wrapper);
 
     action({
         data: {
-            'action':'getAllGroupMembers',
+            'action':'getHistogramGroupMembers',
             'start':start,
             'num':num,
-            'g_id':g_id,
+            'g_id':histogram_metadata.g_id,
+            'histogram_topic':histogram_metadata.topic_alias,
+            'histogram_block':histogram_metadata.current_bucket,
             'log-ignore': true
         },
         success: function(data)
@@ -2710,8 +2626,9 @@ function getAllGroupMembers(start, num, g_id) {
             var returned =  eval('(' + data + ')');
 
             var $wrapper = $(".members-avatars");
-            histogram.members_displayed += returned.num;
-            getHistogramMembersLockout = false;
+            histogram_metadata.members_displayed += returned.num;
+            histogram_metadata.members_lockout = false;
+            saveHistogramMetadata(histogram_wrapper, histogram_metadata);
 
             if (replace) {
                 $wrapper.html(returned.html);
@@ -2734,31 +2651,19 @@ function getAllGroupMembers(start, num, g_id) {
  *     ~Topics
  *
  **********************************************************************************************************************/
-function loadTopicSelect()
-{
-    // hide all selected
-    $(".selected").hide();
-
-    // hover
-    $(".topic-img").hover
-        (
-            function(event)
-            {
-                var wrapper = $(this).parents(".topic-icon-wrapper");
-                wrapper.children(".normal").hide();
-                wrapper.children(".selected").show();
-            },
-            function(event)
-            {
-                var wrapper = $(this).parents(".topic-icon-wrapper");
-                if (!(wrapper.hasClass("chosen")))
-                {
-                    wrapper.children(".selected").hide();
-                    wrapper.children(".normal").show();
-                }
-            }
-        );
-}
+bind(".topic-img", 'mouseenter', null, function(event) {
+    var wrapper = $(this).parents(".topic-icon-wrapper");
+    wrapper.children(".normal").hide();
+    wrapper.children(".selected").show();
+});
+bind(".topic-img", 'mouseout', null, function(event) {
+    var wrapper = $(this).parents(".topic-icon-wrapper");
+    if (!(wrapper.hasClass("chosen")))
+    {
+        wrapper.children(".selected").hide();
+        wrapper.children(".normal").show(); 
+    }
+});
 
 // selects a particular topic icon and deselects all others
 function selectTopicSingle(wrapper)

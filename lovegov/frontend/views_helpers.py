@@ -241,4 +241,49 @@ def getPollProgress(viewer, poll):
     poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
     return poll_progress
 
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for a particular group
+#-----------------------------------------------------------------------------------------------------------------------
+def valsGroup(viewer, group, vals):
+    # Set group and group comparison
+    vals['group'] = group
+    vals['group_comparison'] = group.getComparison(viewer)
+
+    # Figure out if this user is an admin
+    vals['is_user_admin'] = False
+    admins = list( group.admins.all() )
+    for admin in admins:
+        if admin.id == viewer.id:
+            vals['is_user_admin'] = True
+            break
+
+    # Get list of all Admins
+    vals['group_admins'] = group.admins.all()
+
+    # Get the list of all members and truncate it to be the number of members showing
+    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
+
+    # Get the number of group Follow Requests
+    vals['num_group_requests'] = group.getNumFollowRequests()
+
+    # Get the total number of members
+    vals['num_members'] = group.num_members
+
+    # Is the current viewer already (requesting to) following this group?
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
+    if group_joined:
+        if group_joined.confirmed:
+            vals['is_user_confirmed'] = True
+        if group_joined.requested:
+            vals['is_user_requested'] = True
+        if group_joined.rejected:
+            vals['is_user_rejected'] = True
+
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
+    return vals
 

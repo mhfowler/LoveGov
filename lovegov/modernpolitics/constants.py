@@ -593,7 +593,9 @@ ACTIONS = [
     'updateMatch',
     'stubAnswer',
     'updateStats',
-    'getGroups'
+    'getGroups',
+    'getUsersByUID',
+    'getGroupMembers'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
