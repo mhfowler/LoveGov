@@ -59,7 +59,7 @@ def getFollowRequestsModal(user,vals={}):
     return render_to_string('site/pages/profile/follow_requests_modal.html',vals)
 
 
-def getFacebookShareModal(fb_share_id,fb_name,fb_image,vals):
+def getFacebookShareModal(fb_share_id,fb_name,vals):
 
     vals['fb_name'] = fb_name
     vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"

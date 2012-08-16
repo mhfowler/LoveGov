@@ -1556,6 +1556,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.profile_image = img
             self.save()
 
+
+
     #-------------------------------------------------------------------------------------------------------------------
     # Creates involvement tuple and adds it to myinvolvement if user is not already involved with inputted content
     # otherwise just increases amount of invovlement in tupble.

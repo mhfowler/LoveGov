@@ -2115,7 +2115,7 @@ def getModal(request,vals={}):
         if not fb_share_id:
             LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
 
-        modal_html = getFacebookShareModal(fb_share_id,fb_name,vals)
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
 
 
     ## If a modal was successfully made, return it ##

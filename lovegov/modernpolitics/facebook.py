@@ -15,9 +15,8 @@ from django.contrib import auth
 
 # python
 from urllib import urlopen
+from images import downloadImage
 import pprint
-import urlparse
-import oauth2 as oauth
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Save a users facebook friends as lg relationships.
@@ -112,6 +111,7 @@ def fbLogin(request, vals={}, refresh=False):
 
         if refresh:                     # if not register and user.first_login=True
             user_prof.refreshFB(me)
+
 
         # login
         user = user_prof.user
