@@ -2774,3 +2774,47 @@ function showTopicIcon(wrapper) {
     wrapper.children(".selected").show();
     wrapper.children(".normal").hide();
 }
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Friends
+ *
+ ***********************************************************************************************************************/
+
+bind( '.facebook_share_button' , 'click' , null , function(e)
+{
+    var data = {
+        'fb_name' : $(this).data('fb_name'),
+        'fb_share_id' : $(this).data('fb_share_id')
+    };
+
+    getModal('facebook_share_modal' , data);
+});
+
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Facebook Share Modal
+ *
+ ***********************************************************************************************************************/
+
+bind( '.facebook_share_submit' , 'click' , null , function(e)
+{
+    e.preventDefault();
+
+    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
+    var fb_share_id = $(this).data('fb_share_id');
+    var link = $(this).data('fb_link');
+
+    var url = "/fb/action/?fb_action=share&fb_share_to=" + fb_share_id;
+    url += "&message=" + share_message;
+
+    if( link != null ) { url += "&fb_link=" + link; }
+
+    url += "&action_to_page=" + window.location.pathname;
+
+    window.location.href = url
+
+});

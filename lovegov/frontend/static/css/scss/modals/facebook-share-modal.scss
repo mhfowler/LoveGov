@@ -1,0 +1,60 @@
+@import 'master-mixins';
+@import 'master-variables';
+
+@import 'compass';
+
+
+div.facebook-share-modal-container
+{
+  text-align: center;
+
+  div.facebook-share-modal-header
+  {
+    @include h3;
+    margin-bottom: 10px;
+  }
+
+  div.facebook-share-lower
+  {
+    vertical-align: middle;
+
+    img.facebook-share-image
+    {
+      margin-right:20px;
+      @include inline-block();
+    }
+
+    div.facebook-share-form
+    {
+      margin-bottom:15px;
+      @include inline-block();
+
+      textarea.facebook-share-message
+      {
+        height: 120px;
+        width: 300px;
+      }
+    }
+  }
+
+  div.facebook-share-bottom
+  {
+    width: 100%;
+    @include clearfix();
+    margin-top: 20px;
+
+    input.facebook-share-button-modal
+    {
+      @include fontSize(18px);
+      @include rounded(10px);
+      padding: 10px 15px 10px 15px;
+      color: white;
+      background-color: $red;
+      border: none;
+      float: right;
+
+      &:hover { backgroun-color: $red-light }
+    }
+  }
+}
+

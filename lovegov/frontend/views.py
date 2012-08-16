@@ -472,16 +472,20 @@ def friends(request, vals):
 
     if viewer.facebook_id:
         friends_list = fbGet(request,'me/friends/')['data']
-        fb_friends = []
+        vals['facebook_authorized'] = False
 
-        for friend in friends_list[:4]:
-            fb_friend = FBFriend()
-            fb_friend.name = friend['name']
-            fb_friend.id = friend['id']
-            fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=normal"
-            fb_friends.append(fb_friend)
+        if friends_list:
+            vals['facebook_authorized'] = True
+            fb_friends = []
+            for friend in friends_list[:4]:
+                fb_friend = FBFriend()
+                fb_friend.name = friend['name']
+                fb_friend.id = friend['id']
+                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                fb_friends.append(fb_friend)
 
-            vals['facebook_friends'] = fb_friends
+                vals['facebook_friends'] = fb_friends
+
 
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
@@ -927,7 +931,7 @@ def facebookAuthorize(request, vals={}, scope=""):
     return response
 
 
-def facebookAction(request, to_page="/web/", vals={}):
+def facebookAction(request, to_page="/home/", vals={}):
     fb_action = request.GET.get('fb_action')
     action_path = request.path #Path for this action
     action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
@@ -965,15 +969,22 @@ def facebookAction(request, to_page="/web/", vals={}):
         return ajax_response
 
     else: #Return regular response
-        if vals['success']:
-            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
-            if action_to_page: #If there is one
-                to_page = action_to_page #Set the to_page as the action to_page
-            return shortcuts.redirect(to_page)
-        else:
+        ## If the action wasn't successful and the authorization of this action wasn't already attempted
+        if not vals['success'] and not request.COOKIES.get('attempted_fb_auth_action') == fb_action:
+            ## Attempt FB Authorization for this action ##
             to_page = vals['fb_auth_path']
             response = shortcuts.redirect(to_page)
             response.set_cookie('auth_to_page',vals['auth_to_page'])
+            response.set_cookie('attempted_fb_auth_action',fb_action)
+            return response
+
+        else: ## Otherwise it was successful or unsuccessfully authorized
+            ## Return the post-action to_page and delete any attempt action cookies
+            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
+            if action_to_page: #If there is one
+                to_page = action_to_page #Set the to_page as the action to_page
+            response = shortcuts.redirect(to_page)
+            response.delete_cookie('attempted_fb_auth_action')
             return response
 
 #-----------------------------------------------------------------------------------------------------------------------
