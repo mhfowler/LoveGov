@@ -29,6 +29,10 @@ div.poll-detail-sidebar {
   }
 }
 
+div.view-scorecards {
+  margin-top:10px;
+}
+
 
 
 /**********************************************************************************************************************/
@@ -118,7 +122,7 @@ div.questions-sidebar {
 
 
 div.questions-main {
-  margin-top: 10px;
+  margin-top: 0px;
 
   div.main-top {
     div.header-title {
@@ -135,7 +139,7 @@ div.questions-main {
   }
 
   div.questions-wrapper {
-    margin-top:10px;
+    margin-top:0px;
 
     span.answered-filter {
       border: 1px solid $light-gray;

@@ -6,9 +6,9 @@
 var rebind;
 function bindOnReload() {
     bindOnNewElements();
+    initHomePage();
     switch (rebind) {
         case "home":
-            initHomePage();
             initFeed();
             break;
         case "profile":
@@ -206,6 +206,12 @@ bind(".home_link", 'click', null, function(event) {
     }
 });
 
+function closeAllNavBarSections() {
+    $.each(".navbar_section", function(i,e) {
+        navSectionToggle($(this), false, false);
+    });
+}
+
 /* reload home page, by just replacing focus */
 bind(null, 'keydown', null, function(event) {
     var change = 0;
@@ -242,7 +248,7 @@ function navSectionToggle(navbar_section, show, animate) {
 }
 
 function selectNavLink(navlink) {
-    if (navlink) {
+    if (navlink.length!=0) {
         $(".home_link").removeClass("clicked");
         navlink.addClass("clicked");
         if (navlink.hasClass("navbar_link")) {
