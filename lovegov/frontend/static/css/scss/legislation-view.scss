@@ -25,253 +25,261 @@ a {
   display: none;
 }
 
+div.leg-title {
+  height: 25px;
+  width: 200px;
+  clear:both;
+}
 
 div.main {
   margin-left: 0px;
-  height: 310px;
+  margin-top: 0px;
+  height: 280px;
   width: 1250px;
 
-  div.leg-title {
-    margin-left: 0px;
-    margin-top: 20px;
-    height: 25px;
-    width: 200px;
-  }
-
-  div.level1-summary {
-    margin-left: 0px;
-    margin-top: 5px;
-    height: 25px;
+  div.summary-outlook {
+    float: left;
+    height: 100%;
     width: 350px;
-
-    div.bill-summary {
-      height: 25px;
-      width: 350px;
-
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
-
-      }
-    }
-  }
-
-  div.level1-summary-div {
-    margin-left: 0px;
-    margin-top: 10px;
-    height: 120px;
-    width: 350px;
-
-    div.summary.long_text.more {
-      margin-top: 0px;
-      height: 120px;
-      width: 350px;
-      padding-left: 5px;
-      text-align: justify;
-    }
-  }
-
-  div.level1-bill-views {
-    margin-left: 0px;
     margin-top: 0px;
-    height: 25px;
-    width: 350px;
 
-    div.bill-views-label {
-      height: 25px;
-      width: 350px;
-
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
-
-      }
-    }
-  }
-
-  div.level1-bill-view-stats {
-    margin-left: 5px;
-    margin-top: 0px;
-    height: 70px;
-    width: 345px;
-
-    div.bill-views {
-      margin-top: 15px;
+    div.level1-summary {
       margin-left: 0px;
-      height: 50px;
-      width: 80px;
-      text-align: center;
-      border-right-width: 2px;
-      border-right-style: solid;
-      border-right-color: $blue;
+      margin-top: 0px;
+      height: 25px;
+      width: 350px;
 
-      h4.views {
-        margin-top: 10px;
-        color: $text-blue;
-        font-size: 28px;
-      }
+      div.bill-summary {
+        height: 100%;
+        width: 350px;
 
-      h4 {
-        color: $text-blue;
-        font-size: 20px;
-        margin-top: -10px;
-      }
-    }
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
 
-    div.bill-outlook {
-      margin-left: 60px;
-      margin-top: 15px;
-
-      div.spectrum {
-        margin-left: 100px;
-        margin-top: -50px;
-        width:90px;
-        height:20px;
-        border: 1px;
-        border-color: black;
-        background-color:blue;
-        background-image: -webkit-gradient(linear, left top, right top, color-stop(0.01, $red), color-stop(0.5, white), color-stop(0.99, $text-blue));
-        background-image: -moz-linear-gradient(left center, $red 1%, white 50%, $text-blue 99%);
-      }
-
-      div.spectrum-select {
-        margin-top: -20px;
-        margin-left: 100px;
-        height:20px;
-        width: 20px;
-        -webkit-border-radius: 10px;
-        -moz-border-radius: 10px;
-        border-radius: 10px;
-        border-style: solid;
-        border-width: 2px;
-        border-color: black;
-        z-index:1;
+        }
       }
     }
 
-    div.spectrum-labels {
-      z-index:2;
-      margin-left: 30px;
-      margin-top: -20px;
-      height: 40px;
-      width: 300px;
+    div.level1-summary-div {
+      margin-left: 0px;
+      margin-top: 10px;
+      height: 60px;
+      width: 350px;
 
-      div.gridlock {
-        height: 40px;
-        width: 100px;
-        margin-left: 65px;
+      div.summary.long_text.more {
         margin-top: 0px;
+        height: 100%;
+        width: 350px;
+        padding-left: 5px;
+        text-align: justify;
+      }
+    }
 
-        h4.gridlock {
-          font-size: 18px;
-          color: $red;
+    div.level1-bill-views {
+      margin-left: 0px;
+      margin-top: 40px;
+      height: 25px;
+      width: 350px;
+
+      div.bill-views-label {
+        height: 100%;
+        width: 350px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
+      }
+    }
+
+    div.level1-bill-view-stats {
+      margin-left: 5px;
+      margin-top: 50px;
+      height: 70px;
+      width: 90px;
+
+      div.bill-views {
+        margin-top: 0px;
+        margin-left: 0px;
+        height: 50px;
+        width: 80px;
+        text-align: center;
+        border-right-width: 2px;
+        border-right-style: solid;
+        border-right-color: $blue;
+
+        h4.views {
+          margin-top: 10px;
+          color: $text-blue;
+          font-size: 28px;
+        }
+
+        h4 {
+          color: $text-blue;
+          font-size: 20px;
+          margin-top: -10px;
         }
       }
 
-      div.consensus {
-        height: 40px;
-        width: 100px;
-        margin-left: 225px;
-        margin-top: -40px;
+      div.bill-outlook {
+        margin-left: 90px;
+        margin-top: -35px;
+        height:70px;
+        width: 200px;
 
-        h4.consensus {
-           font-size: 18px;
-           color: $text-blue;
+        div.spectrum {
+          margin-left: 75px;
+          margin-top: 0px;
+          margin-bottom: 5px;
+          width:80px;
+          height:20px;
+          border: 1px;
+          border-color: black;
+          background-color:blue;
+          background-image: -webkit-gradient(linear, left top, right top, color-stop(0.01, $red), color-stop(0.5, white), color-stop(0.99, $text-blue));
+          background-image: -moz-linear-gradient(left center, $red 1%, white 50%, $text-blue 99%);
+          z-index: 1;
+        }
+
+        div.spectrum-select {
+          margin-top: -25px;
+          margin-left: 85px;
+          height:20px;
+          width: 20px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
+          border-radius: 10px;
+          border-style: solid;
+          border-width: 2px;
+          border-color: black;
+          z-index:2;
+        }
+
+        div.spectrum-labels {
+          margin-left: 5px;
+          margin-top: -20px;
+          height: 30px;
+          width: 300px;
+          z-index:3;
+
+          div.gridlock {
+            height: 40px;
+            width: 100px;
+            margin-left: 0px;
+            margin-top: 0px;
+
+            h4.gridlock {
+              font-size: 18px;
+              color: $red;
+            }
+          }
+
+          div.consensus {
+            height: 40px;
+            width: 100px;
+            margin-left: 155px;
+            margin-top: -40px;
+
+            h4.consensus {
+               font-size: 18px;
+               color: $text-blue;
+            }
+          }
         }
       }
     }
   }
 
-
-  div.level1-sponsor {
-    margin-left: 365px;
-    margin-top: -240px;
-    height: 25px;
+  div.sponsor {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
     width: 100px;
 
-    div.bill-sponsor {
+    div.level1-sponsor {
+      margin-top: 0px;
       height: 25px;
       width: 100px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.bill-sponsor {
+        height: 100%;
+        width: 100px;
 
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
       }
     }
-  }
 
-  div.level1-sponsor-div {
-    margin-left: 365px;
-    margin-top: 10px;
-    height: 135px;
-    width: 100px;
-    padding-top: 1px;
-    background-color: #E0E0E0;
-
-    div.sponsor {
+    div.sponsor-pic {
       display: center;
-      height: 125px;
-      width: 90px;
-      margin: 5px 5px 5px 5px;
+      height: 135px;
+      width: 100px;
+      margin-top: 10px;
+      padding: 5px 5px 5px 5px;
+      background-color: $gray;
+    }
+
+    div.sponsor-caption {
+      margin-left: 0px;
+      margin-top: 5px;
+      height: 50px;
+      width: 100px;
+      text-align: center;
+      background-color: #E0E0E0;
     }
   }
 
-  div.sponsor-caption {
-    margin-left: 365px;
-    margin-top: 10px;
-    height: 50px;
-    width: 100px;
-    text-align: center;
-    background-color: #E0E0E0;
-  }
-
-
-  div.level1-subjects {
-    margin-left: 480px;
-    margin-top: -230px;
-    height: 25px;
+  div.subjects-committees {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
     width: 150px;
 
-    div.bill-subjects-title {
+    div.level1-subjects {
+      margin-left: 0px;
+      margin-top: 0px;
       height: 25px;
       width: 150px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.bill-subjects-title {
+        height: 25px;
+        width: 150px;
 
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
       }
     }
-  }
-
-  div.level1-subjects-div {
-    margin-left: 480px;
-    margin-top: 0px;
-    height: 150px;
-    width: 150px;
 
     div.subjects {
       margin-top: 0px;
-      height: 150px;
+      height: 90px;
       width: 150px;
-      padding-left: -10px;
       text-align: justify;
 
       span{
@@ -287,111 +295,120 @@ div.main {
         }
       }
     }
-  }
 
-  div.level1-committees {
-    margin-left: 480px;
-    margin-top: -70px;
-    height: 25px;
-    width: 150px;
-
-    div.bill-committees-title {
+    div.level1-committees {
+      margin-left: 0px;
+      margin-top: 0px;
       height: 25px;
       width: 150px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.bill-committees-title {
+        height: 100%;
+        width: 150px;
+
+        h4 {
+          font-size: 18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+        }
       }
     }
-  }
 
-  div.level1-committees-div {
-    margin-left: 480px;
-    margin-top: 0px;
-    height: 100px;
-    width: 150px;
-
-    div.committees {
+    div.level1-committees-div {
+      margin-left: 0px;
       margin-top: 0px;
       height: 100px;
       width: 150px;
-      padding-left: -10px;
-      text-align: justify;
 
-      span {
+      div.committees {
+        margin-top: 0px;
+        height: 100%;
+        width: 150px;
         padding-left: -10px;
+        text-align: justify;
 
-        ul {
+        span {
           padding-left: -10px;
 
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
+          ul {
+            padding-left: -10px;
+
+            li {
+              margin-left: -20px;
+              list-style-type: none;
+              font-size: 14px;
+            }
           }
         }
       }
     }
   }
 
-  div.level1-progress {
-    margin-left: 650px;
-    margin-top: -255px;
-    height: 25px;
+  div.progress {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
     width: 150px;
 
-    div.bill-progress-title {
+    div.level1-progress {
+      margin-left: 0px;
+      margin-top: 0px;
       height: 25px;
       width: 150px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.bill-progress-title {
+        height: 25px;
+        width: 150px;
 
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
       }
     }
-  }
 
-  div.level1-progress-div {
-    padding-top: 1px;
-    margin-left: 650px;
-    margin-top: 10px;
-    height: 230px;
-    width: 150px;
+    div.level1-progress-div {
+      margin-left: 0px;
+      margin-top: 5px;
+      height: 230px;
+      width: 150px;
 
-    div.progress {
-      display: center;
-      height: 220px;
-      width: 140px;
-      margin: 5px 5px 5px 5px;
-      text-align: center;
+      div.progress-graphic {
+        display: center;
+        height: 100%;
+        width: 140px;
+        margin: 5px 5px 5px 5px;
+        text-align: center;
 
-      h3.progress {
-        color: black;
-        font-size: 14px;
-        margin-top: 0px;
-        margin-bottom: 4px;
-      }
+        h3.progress-label {
+          color: black;
+          font-size: 14px;
+          margin-top: 0px;
+          margin-bottom: 4px;
+        }
 
-      img {
-        margin-top: 0px;
+        img {
+          margin-top: 0px;
+        }
       }
     }
   }
 
   div.bill-stats {
-    margin-top: -265px;
-    margin-left: 820px;
-    height: 265px;
+    display: inline-block;
+    margin-top: 0px;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
     width: 150px;
     border: 1px;
 
@@ -477,107 +494,114 @@ div.main {
     }
   }
 
-  div.bill-share {
-    margin-top: -265px;
-    margin-left: 990px;
-    height: 100px;
+  div.bill-share-and-actions {
+    display: inline-block;
+    margin-left: 10px;
+    height: 100%;
     width: 160px;
-    border: 1px;
 
-    div.bill-share-div {
+    div.bill-share {
+      margin-top: 0px;
+      margin-left: 0px;
       height: 100px;
       width: 160px;
-      background-color: $light-gray;
-      padding-top: 7px;
+      border: 1px;
 
-      div.button {
-        margin-top: 3px;
-        margin-left: 0px;
-        height: 40px;
-        width: 130px;
-        text-align: center;
-        border-style: solid;
-        border-width: 2px;
-        border-color: $gray;
+      div.bill-share-div {
+        height: 100%;
+        width: 160px;
+        background-color: $light-gray;
+        padding-top: 7px;
 
-        &.share {
-          background-color: $green;
-          margin-left: 15px;
-          margin-top: 5px;
+        div.button {
+          margin-top: 3px;
+          margin-left: 0px;
+          height: 40px;
+          width: 130px;
+          text-align: center;
+          border-style: solid;
+          border-width: 2px;
+          border-color: $gray;
 
-          span {
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
+          &.share {
+            background-color: $green;
+            margin-left: 15px;
+            margin-top: 5px;
+
+            span {
+              color: white;
+              font-size: 18px;
+              font-weight: bold;
+            }
           }
         }
-      }
 
-      div.share-icons {
-        margin-left: 15px;
-        margin-top: 5px;
+        div.share-icons {
+          margin-left: 15px;
+          margin-top: 5px;
+        }
       }
     }
-  }
 
-  div.bill-other-actions {
-    margin-top: 10px;
-    margin-left: 990px;
-    height: 150px;
-    width: 160px;
-    border: 1px;
-
-    div.bill-other-actions-div {
+    div.bill-other-actions {
+      margin-top: 10px;
+      margin-left: 0px;
       height: 150px;
       width: 160px;
-      background-color: $light-gray;
-      padding-top: 7px;
+      border: 1px;
+
+      div.bill-other-actions-div {
+        height: 100%;
+        width: 160px;
+        background-color: $light-gray;
+        padding-top: 7px;
 
 
-      div.button {
-        margin-top: 3px;
-        margin-left: 0px;
-        height: 40px;
-        width: 130px;
-        text-align: center;
-        border-style: solid;
-        border-width: 2px;
-        border-color: $gray;
+        div.button {
+          margin-top: 3px;
+          margin-left: 0px;
+          height: 40px;
+          width: 130px;
+          text-align: center;
+          border-style: solid;
+          border-width: 2px;
+          border-color: $gray;
 
-        &.follow {
-          background-color: $green;
-          margin-left: 15px;
-          margin-top: 5px;
+          &.follow {
+            background-color: $green;
+            margin-left: 15px;
+            margin-top: 5px;
 
-          span {
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
+            span {
+              color: white;
+              font-size: 18px;
+              font-weight: bold;
+            }
           }
         }
-      }
 
-      div.button {
-        margin-top: 3px;
-        margin-left: 0px;
-        height: 40px;
-        width: 130px;
-        text-align: center;
-        border-style: solid;
-        border-width: 2px;
-        border-color: $gray;
+        div.button {
+          margin-top: 3px;
+          margin-left: 0px;
+          height: 40px;
+          width: 130px;
+          text-align: center;
+          border-style: solid;
+          border-width: 2px;
+          border-color: $gray;
 
-        &.contact {
-          background-color: $green;
-          margin-left: 15px;
-          margin-top: 5px;
-          height: 80px;
+          &.contact {
+            background-color: $green;
+            margin-left: 15px;
+            margin-top: 5px;
+            height: 80px;
 
-          span {
-            color: white;
-            padding-right: 2px;
-            font-size: 15px;
-            font-weight: bold;
+            span {
+              color: white;
+              padding-right: 2px;
+              font-size: 15px;
+              font-weight: bold;
+            }
           }
         }
       }
@@ -588,42 +612,47 @@ div.main {
 div.secondary {
   margin-left: 0px;
   margin-top: 0px;
-  height: 130px;
+  height: 350px;
   width: 1250px;
 
-  div.level2-bill-text {
-    margin-left: 0px;
-    margin-top: 0px;
-    height: 25px;
-    width: 800px;
+  div,bill-text {
+    float: left;
+    width: 780px;
 
-    div.bill-text {
+    div.level2-bill-text {
+      margin-left: 0px;
+      margin-top: 0px;
       height: 25px;
-      width: 800px;
+      width: 780px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.bill-text-title {
+        height: 25px;
+        width: 780px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+        }
       }
     }
-  }
 
-  div.level2-bill-text-div {
-    margin-left: 0px;
-    margin-top: 10px;
-    height: auto;
-    width: 800px;
-
-    div.bill-text.long_text.more {
-      margin-top: 0px;
+    div.level2-bill-text-div {
+      margin-left: 0px;
+      margin-top: 10px;
       height: auto;
-      width: 800px;
-      padding-left: 5px;
-      text-align: justify;
+      width: 780px;
+
+      div.bill-text.long_text.more {
+        margin-top: 0px;
+        height: auto;
+        width: 780px;
+        padding-left: 5px;
+        text-align: justify;
+      }
     }
   }
 
@@ -727,54 +756,58 @@ div.secondary {
     }
   }
 
-  div.level2-bill-amendments {
+  div.bill-amendments {
     margin-left: 0px;
     margin-top: 0px;
-    height: 25px;
-    width: 800px;
+    height: 160px;
+    width: 780px;
 
-    div.bill-amendments {
+    div.level2-bill-amendments {
       height: 25px;
-      width: 800px;
+      width: 780px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.bill-amendments-title {
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+        }
       }
-    }
-  }
 
-  div.level2-bill-amendments-div {
-    margin-left: 0px;
-    margin-top: 10px;
-    height: auto;
-    width: 800px;
 
-    div.amendment-name {
-      margin-top: 0px;
-      height: 90px;
-      width: 140px;
-      padding-left: -10px;
-      text-align: justify;
 
-      span{
+    div.level2-bill-amendments-div {
+      margin-left: 0px;
+      margin-top: 10px;
+      height: auto;
+      width: 780px;
 
-        ul {
+      div.amendment-name {
+        margin-top: 0px;
+        height: 90px;
+        width: 140px;
+        padding-left: -10px;
+        text-align: justify;
 
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
+        span{
 
+          ul {
+
+            li {
+              margin-left: -20px;
+              list-style-type: none;
+              font-size: 14px;
+
+            }
           }
         }
       }
     }
-
+      
     div.amendment-type {
       margin-top: -103px;
       margin-left: 120px;
@@ -826,4 +859,4 @@ div.secondary {
     }
   }
 }
-
+}
