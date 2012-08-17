@@ -27,14 +27,19 @@ class Session:
     def getPA(self):
         return self.pa
 
-def dailySummaryEmail(days=0):
+def dailySummaryEmail(days_ago=1, days_for=0):
     vals = {}
 
-    now = datetime.datetime.now() - datetime.timedelta(days=days)
-    delta = datetime.timedelta(hours=24)
-    today = now - delta
+    now = datetime.datetime.now()
+    time_start = now - datetime.timedelta(days=days_ago)
+    if not days_for:
+        time_end = now
+    else:
+        time_end = now + datetime.timedelta(days=days_for)
+    vals['time_start'] = time_start
+    vals['time_end'] = time_end
 
-    pa = PageAccess.objects.filter(when__gt=today)
+    pa = PageAccess.objects.filter(when__gt=time_start, when__lt=time_end)
 
     accessed = {}
     for x in pa:
@@ -54,7 +59,7 @@ def dailySummaryEmail(days=0):
 
     vals['accessed'] = accessed_list
 
-    registered = UserProfile.objects.filter(created_when__gt=today).order_by("created_when")
+    registered = UserProfile.objects.filter(created_when__gt=time_start).order_by("created_when")
     vals['registered'] = registered
 
     context = Context(vals)
@@ -66,9 +71,10 @@ def dailySummaryEmail(days=0):
 ################################################# ACTUAL SCRIPT ########################################################
 
 print "*** SENDING DAILY SUMMARY EMAIL ***"
-print "args: [email] [days-prior]"
+print "args: [email] [days-ago-start] [how-many-days]"
 
-days=0
+days_ago=0
+days_for=0
 if len(sys.argv) > 1:
     email = sys.argv[1]
     print "sending to: " + email
@@ -76,8 +82,10 @@ if len(sys.argv) > 1:
 else:
     email_recipients = DAILY_SUMMARY_EMAILS
 if len(sys.argv) == 3:
-    days = int(sys.argv[2])
+    days_ago = int(sys.argv[2])
+if len(sys.argv) == 4:
+    days_for= int(sys.argv[3])
 
-sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(days=days),
+sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(days_ago, days_for),
             email_sender="info@lovegov.com", email_recipients=email_recipients)
 
