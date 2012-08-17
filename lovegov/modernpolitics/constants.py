@@ -330,8 +330,8 @@ AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
-    'JO': ['A','D','R','I'],
-    'FO': ['A','D','R']
+    'JO': ['A','F','R','I'],
+    'FO': ['A','F','R']
 }
 
 NOTIFY_CREATOR_TYPES = ['VO','CO','SI']

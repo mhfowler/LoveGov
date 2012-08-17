@@ -458,27 +458,19 @@ class Content(Privacy, LocationLevel):
         self.creator = creator
         self.privacy = privacy
         self.save()
-        # deprecate
-        relationship = Created(user=creator,content=self,privacy=privacy)
-        relationship.autoSave()
-        # follow what you create by default
-        follow = Followed(user=creator, content=self, privacy=privacy)
-        follow.autoSave()
+        action = CreatedAction(user=creator,content=self,privacy=privacy)
+        action.autoSave()
+
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveEdited(self, privacy):
-        created = Created.lg.get_or_none(content=self)
-        if not created:
-            errors_logger.error( "Edited Content does not exist.  Content ID = #" + str(self.id) )
-            return None
-        created.privacy = privacy
-        created.save()
         self.privacy = privacy
         self.save()
-        edited = Edited(user=created.user, content=self, privacy=privacy)
+
+        edited = EditedAction(user=self.creator, content=self, privacy=privacy)
         edited.autoSave()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1615,7 +1607,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         #Otherwise do normal notifications
         elif type in NOTIFY_TYPES:
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
                 notification = Notification(action=action, notify_user=self)
                 notification.save()
                 return True
@@ -1686,7 +1678,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
+        actions = self.actions.all().order_by('-when')
         if num != -1:
             actions = actions[start:start+num]
         return actions
@@ -1891,7 +1883,7 @@ class ControllingUser(User, LGModel):
 # Keeps track of user activity.
 #=======================================================================================================================
 class Action(Privacy):
-    user = models.ForeignKey(UserProfile)
+    user = models.ForeignKey(UserProfile,related_name="actions")
     action_type = models.CharField(max_length=2, choices=ACTION_CHOICES)
     when = models.DateTimeField(auto_now_add=True)
     #must_notify = models.BooleanField(default=False)        # to override check for permission to notify
@@ -1908,6 +1900,7 @@ class Action(Privacy):
 
     def downcast(self):
         action_type = self.action_type
+
         if action_type == 'VO':
             object = self.votedaction
         elif action_type== 'JO':
@@ -2025,7 +2018,7 @@ class EditedAction(Action):
 class SharedAction(Action):
     content = models.ForeignKey(Content)
     to_user = models.ForeignKey(UserProfile,null=True)
-    to_group = models.ForeignKey('Group',null=True)
+    to_group = models.ForeignKey('Group',null=True,related_name="shared_to_actions")
 
     def getTo(self):
         return self.content
@@ -2093,7 +2086,7 @@ class DeletedAction(Action):
 # Some action that changes a UserFollow relationship
 #=======================================================================================================================
 class UserFollowAction(Action):
-    user_follow = models.ForeignKey(UserFollow, related_name="follow_actions")
+    user_follow = models.ForeignKey('UserFollow', related_name="follow_actions")
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
 
     def getTo(self):
@@ -2112,7 +2105,7 @@ class UserFollowAction(Action):
         from_you = False
         to_you = False
 
-        from_user = user_follow.from_user
+        from_user = user_follow.user
         to_user = user_follow.to_user
 
         if from_user.id == viewer.id:
@@ -2139,7 +2132,7 @@ class UserFollowAction(Action):
 # Some action that changes a GroupJoined relationship
 #=======================================================================================================================
 class GroupJoinedAction(Action):
-    group_joined = models.ForeignKey(GroupJoined, related_name="joined_actions" )
+    group_joined = models.ForeignKey('GroupJoined', related_name="joined_actions" )
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
 
     def getTo(self):
@@ -2216,10 +2209,11 @@ class VotedAction(Action):
 #=======================================================================================================================
 class Notification(Privacy):
     notify_user = models.ForeignKey(UserProfile, related_name="notifications")
-    action = models.ForeignKey(Action) ## For Aggregate Notifications :: most recent action
+    action = models.ForeignKey(Action , related_name="notifications") ## For Aggregate Notifications :: most recent action
     viewed = models.BooleanField(default=False)
+    when = models.DateTimeField(auto_now_add=True)
     # for aggregating notifications like facebook
-    agg_actions = models.ManyToManyField(Action)
+    agg_actions = models.ManyToManyField(Action , related_name="agg_notifications")
 
     def addAggAction(self,action):
         self.agg_actions.add(action)
@@ -2227,22 +2221,25 @@ class Notification(Privacy):
             self.action = action
         self.viewed = False
         self.save()
-        
+
 
     ## Notificaitons Verbose Switch ##
     def getVerbose(self,viewer,vals={}):
+        self.viewed = True
+        self.save()
+
         type = self.action.action_type
 
         if type == 'VO':
-            return getVotedVerbose(viewer,vals)
+            return self.getVotedVerbose(viewer,vals)
         elif type== 'JO':
-            return getGroupJoinedVerbose(viewer,vals)
+            return self.getGroupJoinedVerbose(viewer,vals)
         elif type == 'FO':
-            return getUserFollowVerbose(viewer,vals)
+            return self.getUserFollowVerbose(viewer,vals)
         elif type == 'SI':
-            return getSignedVerbose(viewer,vals)
+            return self.getSignedVerbose(viewer,vals)
         elif type == 'SH':
-            return getSharedVerbose(viewer,vals)
+            return self.getSharedVerbose(viewer,vals)
         else:
             return ''
 
@@ -2403,7 +2400,7 @@ class Notification(Privacy):
             'from_you' : from_you,
             'to_you' : to_you,
             'to_user' : to_user,
-            'from_user' : group_joined.user,
+            'from_user' : from_user,
             'modifier' : action.modifier,
             'follow' : user_follow,
             'reverse_follow' : reverse_follow
@@ -3183,6 +3180,7 @@ class Response(Content):
         self.main_image_id = self.question.main_image_id
         self.in_feed = False
         self.save()
+        self.type = 'R'
         if creator:
             view = creator.getView()
             view.responses.add(self)
