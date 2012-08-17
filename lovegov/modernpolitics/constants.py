@@ -287,6 +287,7 @@ NOTIFICATION_CHOICES = (
 
 # types of user action (for display)
 RELATIONSHIP_CHOICES = (
+    ('PI','pinned'),
     ('CO','commented'),
     ('SH','shared'),
     ('CR', 'created'),

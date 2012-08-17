@@ -33,6 +33,12 @@
                     <a href="{{ group.get_url }}"> {{ group.title }}</a>
                 {% endwith %}
             </span>
+
+            <span class="hearts">
+                <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
+                <div class="heart-number heart_number">{{ content.status }}</div>
+                <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
+            </span>
         </div>
 
         <div class="content-info">
@@ -43,7 +49,7 @@
                     Metrics
                 </div>
 
-                <a class="comments-wrapper" href="#">
+                <a class="comments-wrapper" href="#comments-wrapper">
                     <div class="comments-bubble">
                             <div class="num-comments">
                                 {{ content.num_comments }}
@@ -52,12 +58,9 @@
                     <div class="comments-text">
                         comments
                     </div>
-                    <div class="hearts">
-                        <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
-                        <div class="heart-number heart_number">{{ item.status }}</div>
-                        <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
-                    </div>
                 </a>
+
+                <div class="content-pin-button pin_content" data-c_id="{{ content.id }}">pin content</div>
             </div>
 
             <div class="info-left">
@@ -103,7 +106,7 @@
             {% endblock %}
         </div>
 
-        <div class="content-discussion">
+        <div id="comments-wrapper" class="content-discussion">
         </div>
 
     </div>

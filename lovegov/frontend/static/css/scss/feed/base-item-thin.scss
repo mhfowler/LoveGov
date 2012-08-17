@@ -18,10 +18,13 @@ div.feed-item-thin
     width: 200px;
     height: 100%;
     padding-top: 8px;
+    @include clearfix();
 
     div.feed-thin-user-name
     {
       height: 40px;
+      float:left;
+      @include clearfix();
 
       div.feed-thin-avatar-image
       {

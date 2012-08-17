@@ -2136,8 +2136,26 @@ def getModal(request,vals={}):
 
         if not fb_share_id:
             LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
+
+
+    ## Pin Content Modal ##
+#    elif modal_name == "pin_content_modal":
+#        c_id = request.POST.get('c_id')
+#
+#        if not c_id:
+#            LGException( "Pin content modal requested without content ID by user ID #" + str(viewer.id) )
+#            return HttpResponseBadRequest( "Pin content modal requested without content ID" )
+#
+#        content = Content.lg.get_or_none( id=c_id )
+#
+#        if not content:
+#            LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+#            return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
+#
+#        modal_html = getPinContentModal(content,viewer,vals)
 
 
     ## If a modal was successfully made, return it ##

@@ -2756,3 +2756,37 @@ bind( '.facebook_share_submit' , 'click' , null , function(e)
     window.location.href = url
 
 });
+
+
+/***********************************************************************************************************************
+ *
+ *      ~Check browser compatibility using Modernizr
+ *
+ ***********************************************************************************************************************/
+
+bind( '.pin_content' , 'click' , null , function(e)
+{
+    var data = { 'c_id' : $(this).data("c_id") };
+    getModal('pin_content_modal',data);
+});
+
+bind( '.pin_to_group' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(this).data("g_id");
+
+
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id
+        },
+        success: function(data)
+        {
+            var returned =  eval('(' + data + ')');
+
+        }
+    });
+});
+

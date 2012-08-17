@@ -18,20 +18,16 @@
                     {{ item.creator.get_name }}
                 </div>
                 <div class="feed-thin-avatar-timestamp">
-                    posted {{ item.created_when|naturaltime }}
-                </div>
-            </div>
-
-            <div class="feed-item-thin-comments">
-                <div class="feed-thin-num-comments">
-                    {{ item.num_comments }}
+                    {{ item.created_when|naturaltime }}
                 </div>
             </div>
 
         </div>
 
         <div class="feed-item-thin-comments">
-
+            <div class="feed-thin-num-comments">
+                {{ item.num_comments }}
+            </div>
         </div>
 
     </div>
