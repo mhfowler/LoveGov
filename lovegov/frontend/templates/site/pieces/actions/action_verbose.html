@@ -1,0 +1,16 @@
+{% load humanize %}
+
+<div class="action">
+    <table class="action-container">
+        <tr>
+            {% block action_content %}
+
+            {% endblock %}
+        </tr>
+        <tr>
+            <td colspan="3" class="action-timestamp">
+                {{ timestamp|naturaltime }}
+            </td>
+        </tr>
+    </table>
+</div>

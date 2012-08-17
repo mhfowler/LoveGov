@@ -259,7 +259,7 @@ def create(request, vals={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        action = Action(privacy=getPrivacy(request),relationship=c.getCreatedRelationship())
+        action = CreatedAction(privacy=getPrivacy(request),content=c)
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
@@ -716,7 +716,7 @@ def comment(request, vals={}):
         # save relationship, action and send notification
         rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
         rel.autoSave()
-        action = Action(privacy=getPrivacy(request),relationship=rel)
+        action = CreatedAction(privacy=getPrivacy(request),content=comment)
         action.autoSave()
         comment.on_content.getCreator().notify(action)
         if not comment.on_content == comment.root_content:

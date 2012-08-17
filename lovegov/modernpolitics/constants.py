@@ -287,54 +287,54 @@ NOTIFICATION_CHOICES = (
 
 # types of user action (for display)
 RELATIONSHIP_CHOICES = (
-    ('PI','pinned'),
-    ('CO','commented'),
-    ('SH','shared'),
-    ('CR', 'created'),
-    ('ED', 'edited'),
     ('SI', 'signed'),
-    ('SU', 'supported'),
-    ('ME', 'messaged'),
-    ('FC', 'followed content'),
-    ('XX', 'deleted'),
+#    ('SU', 'supported'),
+#    ('ME', 'messaged'),
+    ('FO', 'user_follow'),
     ('VO', 'voted'),                        # divided into like and dislike
-    ('FO', 'followed'),                     # divided into request, invited, denied and following.
-    ('JO', 'joined'),                       # divided into request, invited, denied and joined.
-    ('AE', 'attended_event'),              # divided into request, invited, denied and attending.
-    ('JD', 'joined_debate'),                # divided into request, invited, denied and joined.
-    ('AC', 'admin_content'),                # divided into request, invited, denied and joined.
-    ('OT', 'other'),
-    ('MV','motion_voted'),
-    ('DV','debate_voted'),
-    ('DM', 'debate_messaged'),
+    ('JO', 'group_joined'),                       # divided into request, invited, denied and joined.
     ('OH', 'office_held'),
     ('CJ', 'committee_joined')
-    )
+)
 
 RELATIONSHIP_DICT = {}
 for x in RELATIONSHIP_CHOICES:
     RELATIONSHIP_DICT[x[1]]=x[0]
 
+
+ACTION_CHOICES = (
+    ('VO', 'voted'),
+    ('JO', 'group_joined'),
+    ('FO', 'user_follow'),
+    ('SI', 'signed'),
+    ('CR', 'created'),
+    ('ED', 'edited'),
+    ('SH', 'shared'),
+    ('XX', 'deleted'),
+)
+
 # default, request, invite, deny, reject
 ACTION_MODIFIERS = (
-    ('D','default'), #Can also be dislike
-    ('R','request'),
+    ('F','followed'),
+    ('R','requested'),
     ('I','invited'),
     ('X', 'rejected'),
     ('N', 'declined'),
     ('A', 'accepted'),
-    ('S', 'stop'),
-    ('L', 'like'),
-    ('U', 'unvoted')
+    ('S', 'stopped_following'),
 )
 
 NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
+
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
+
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
     'JO': ['A','D','R','I'],
     'FO': ['A','D','R']
 }
+
+NOTIFY_CREATOR_TYPES = ['VO','CO','SI']
 
 
 GOVTRACK_VOTES = (
