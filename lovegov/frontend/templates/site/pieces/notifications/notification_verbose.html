@@ -1,0 +1,25 @@
+{% load humanize %}
+
+{% if not viewed %}
+    <div class="notification notification-highlighted">
+{% else %}
+    <div class="notification">
+{% endif %}
+
+        <table class="notification-container">
+            <tr>
+                {% block notification_content %}
+
+                {% endblock %}
+            </tr>
+            <tr>
+                <td colspan="3" class="notification-timestamp">
+                    {{ timestamp|naturaltime }}
+                </td>
+            </tr>
+        </table>
+{% if not viewed %}
+    </div>
+{% else %}
+    </div>
+{% endif %}

@@ -458,27 +458,19 @@ class Content(Privacy, LocationLevel):
         self.creator = creator
         self.privacy = privacy
         self.save()
-        # deprecate
-        relationship = Created(user=creator,content=self,privacy=privacy)
-        relationship.autoSave()
-        # follow what you create by default
-        follow = Followed(user=creator, content=self, privacy=privacy)
-        follow.autoSave()
+        action = CreatedAction(user=creator,content=self,privacy=privacy)
+        action.autoSave()
+
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveEdited(self, privacy):
-        created = Created.lg.get_or_none(content=self)
-        if not created:
-            errors_logger.error( "Edited Content does not exist.  Content ID = #" + str(self.id) )
-            return None
-        created.privacy = privacy
-        created.save()
         self.privacy = privacy
         self.save()
-        edited = Edited(user=created.user, content=self, privacy=privacy)
+
+        edited = EditedAction(user=self.creator, content=self, privacy=privacy)
         edited.autoSave()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -662,16 +654,11 @@ class Content(Privacy, LocationLevel):
                 # adjust content values about status and vote
                 if my_vote.value == 1:
                     self.upvotes += 1
-                    mod = 'L'
                 else:
                     self.downvotes -= 1
-                    mod = 'U'
+
                 self.status += STATUS_VOTE
                 self.save()
-                # make the action and notify
-                action = Action(relationship=my_vote,modifier=mod)
-                action.autoSave()
-                self.creator.notify(action)
 
         else:
             # create new vote
@@ -684,10 +671,11 @@ class Content(Privacy, LocationLevel):
             creator = self.getCreator()
             creator.upvotes += 1
             creator.save()
-            # make the action and notify
-            action = Action(relationship=my_vote,modifier='L')
-            action.autoSave()
-            self.creator.notify(action)
+
+        # make the action and notify
+        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action.autoSave()
+        self.creator.notify(action)
 
         if self.type == 'M':
             self.downcast().motionVote(my_vote)
@@ -709,15 +697,11 @@ class Content(Privacy, LocationLevel):
                 # adjust content values about status and vote
                 if my_vote.value == -1:
                     self.downvotes += 1
-                    mod = 'D'
                 else:
                     self.upvotes -= 1
-                    mod = 'U'
                 self.status -= STATUS_VOTE
                 self.save()
-                action = Action(relationship=my_vote,modifier=mod)
-                action.autoSave()
-                self.creator.notify(action)
+
         else:
             # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -729,9 +713,11 @@ class Content(Privacy, LocationLevel):
             creator = self.getCreator()
             creator.downvotes += 1
             creator.save()
-            action = Action(relationship=my_vote,modifier='D')
-            action.autoSave()
-            self.creator.notify(action)
+
+        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action.autoSave()
+        self.creator.notify(action)
+
         if self.type == 'M':
             self.downcast().motionVote(my_vote)
         return my_vote.value
@@ -1587,39 +1573,43 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
-    def notify(self, action, content=None, user=None):
-        relationship = action.relationship
+    def notify(self, action):
+        type = action.action_type
 
         #If you are the one doing the action, do not notify yourself
-        if action.type != 'FO' and action.type != 'JO':
-            if relationship.getFrom().id == self.id:
-                return False
+        if action.user.id == self.id:
+            return False
 
         #Do aggregate notifications if necessary
-        if action.type in AGGREGATE_NOTIFY_TYPES:
-            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+        if type in AGGREGATE_NOTIFY_TYPES:
+            # IF the action does not have modifiers or this modifier is notifiable
+            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
+
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+                # Find all recent notifications with this action type/modifier directed towards this user
                 already = Notification.objects.filter(notify_user=self,
                                                         when__gte=stale_date,
                                                         action__modifier=action.modifier,
-                                                        action__type=action.type ).order_by('-when')
-                for notification in already:
-                    if notification.action.relationship.getTo().id == relationship.getTo().id:
+                                                        action__action_type=type ).order_by('-when')
+
+                for notification in already: # For all recent notifications matching this one
+                    if notification.action.getTo().id == action.getTo().id: # If these actions target the same content
+                        # Update Notification with this action
                         notification.when = datetime.datetime.today()
-                        if notification.tally == 0:
-                            notification.addAggUser( notification.action.relationship.user )
-                        notification.addAggUser( relationship.user , action.privacy )
+                        notification.addAggAction( action )
                         return True
+
                 notification = Notification(action=action, notify_user=self)
-                notification.autoSave()
-                notification.addAggUser( relationship.user , action.privacy )
+                notification.save()
+                notification.addAggAction( action )
                 return True
 
         #Otherwise do normal notifications
-        elif action.type in NOTIFY_TYPES:
-            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+        elif type in NOTIFY_TYPES:
+            # IF the action does not have modifiers or this modifier is notifiable
+            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
                 notification = Notification(action=action, notify_user=self)
-                notification.autoSave()
+                notification.save()
                 return True
 
         return False
@@ -1688,7 +1678,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
+        actions = self.actions.all().order_by('-when')
         if num != -1:
             actions = actions[start:start+num]
         return actions
@@ -1893,176 +1883,532 @@ class ControllingUser(User, LGModel):
 # Keeps track of user activity.
 #=======================================================================================================================
 class Action(Privacy):
-    type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
-    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+    user = models.ForeignKey(UserProfile,related_name="actions")
+    action_type = models.CharField(max_length=2, choices=ACTION_CHOICES)
     when = models.DateTimeField(auto_now_add=True)
-    relationship = models.ForeignKey("Relationship", null=True)
-    must_notify = models.BooleanField(default=False)        # to override check for permission to notify
-    # optimization
-    verbose = models.TextField()  # Don't use me!  I'm deprecated
-
-    def getRelationship(self):
-        if self.relationship_id == -1:
-            return None
-        else:
-            return Relationship.objects.get(id=self.relationship_id)
+    #must_notify = models.BooleanField(default=False)        # to override check for permission to notify
 
     def autoSave(self):
-        relationship = self.relationship
-        self.type = relationship.relationship_type
-        self.creator = relationship.creator
+        self.creator = self.user
         self.save()
 
-    def getVerbose(self,view_user=None,vals={}):
-        #Check for relationship
-        relationship = Relationship.lg.get_or_none(id=self.relationship_id)
-        if not relationship:
-            errors_logger.error('Action has no relationship: Action ID # = ' + str(self.id))
-            return ''
+    def getTo(self):
+        action = self.downcast()
+        if action:
+            return action.getTo()
+        return None
 
-        #Set default local variables
+    def downcast(self):
+        action_type = self.action_type
+
+        if action_type == 'VO':
+            object = self.votedaction
+        elif action_type== 'JO':
+            object = self.groupjoinedaction
+        elif action_type == 'FO':
+            object = self.userfollowaction
+        elif action_type == 'SI':
+            object = self.signedaction
+        elif action_type == 'CR':
+            object = self.createdaction
+        elif action_type == 'ED':
+            object = self.editedaction
+        elif action_type == 'SH':
+            object = self.sharedaction
+        elif action_type == 'XX':
+            object = self.deletedaction
+        else:
+            object = None
+        return object
+
+    def getVerbose(self,viewer=None,vals={}):
+        action = self.downcast()
+        if action:
+            return action.getVerbose(viewer,vals)
+        return ''
+
+
+
+#=======================================================================================================================
+# Signing a petition action
+#=======================================================================================================================
+class SignedAction(Action):
+    petition = models.ForeignKey('Petition')
+
+    def autoSave(self):
+        self.action_type = 'SI'
+        super(SignedAction,self).autoSave()
+
+    def getTo(self):
+        return self.petition
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.petition
+        })
+
+        return render_to_string('site/pieces/actions/signed_verbose.html',vals)
+
+#=======================================================================================================================
+# Creating some content action
+#=======================================================================================================================
+class CreatedAction(Action):
+    content = models.ForeignKey(Content)
+
+    def autoSave(self):
+        self.action_type = 'CR'
+        super(CreatedAction,self).autoSave()
+
+    def getTo(self):
+        return self.content
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content
+        })
+
+        return render_to_string('site/pieces/actions/created_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Editing some content action
+#=======================================================================================================================
+class EditedAction(Action):
+    content = models.ForeignKey(Content)
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'ED'
+        super(EditedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content
+        })
+
+        return render_to_string('site/pieces/actions/edited_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Sharing some content with a user or group action
+#=======================================================================================================================
+class SharedAction(Action):
+    content = models.ForeignKey(Content)
+    to_user = models.ForeignKey(UserProfile,null=True)
+    to_group = models.ForeignKey('Group',null=True,related_name="shared_to_actions")
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'SH'
+        super(SharedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = None
+        to_you = False
+
+        if to_user:
+            to_object = to_user
+            if to_user.id == viewer.id:
+                to_you = True
+
+        elif to_group:
+            to_object = to_group
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'shared_object' : self.content,
+            'to_object' : to_object,
+            'to_you' : to_you
+        })
+
+        return render_to_string('site/pieces/actions/shared_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Deleting some content action
+#=======================================================================================================================
+class DeletedAction(Action):
+    content = models.ForeignKey(Content)
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'XX'
+        super(DeletedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content
+        })
+
+        return render_to_string('site/pieces/actions/deleted_verbose.html',vals)
+
+#=======================================================================================================================
+# Some action that changes a UserFollow relationship
+#=======================================================================================================================
+class UserFollowAction(Action):
+    user_follow = models.ForeignKey('UserFollow', related_name="follow_actions")
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getTo(self):
+        return self.user_follow
+
+    def autoSave(self):
+        self.action_type = 'FO'
+        super(UserFollowAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        user_follow = self.user_follow
         from_you = False
         to_you = False
-        #Set to and from users
-        to_user = relationship.getTo()
-        from_user = relationship.getFrom()
-        #check to see if the viewing user is the to or from user
-        if view_user and from_user.id == view_user.id:
+
+        from_user = user_follow.user
+        to_user = user_follow.to_user
+
+        if from_user.id == viewer.id:
             from_you = True
-        elif view_user and to_user.id == view_user.id:
+        elif to_user.id == viewer.id:
             to_you = True
 
-        vals.update({'to_user':to_user,
-                            'to_you':to_you,
-                            'from_user':from_user,
-                            'from_you':from_you,
-                            'type':self.type,
-                            'modifier':self.modifier,
-                            'true':True,
-                            'timestamp':self.when})
+        vals.update({
+            'user' : self.user,
+            'timestamp' : self.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'to_you' : to_you,
+            'to_user' : to_user,
+            'from_user' : from_user,
+            'modifier' : self.modifier
+        })
 
-        action_verbose = render_to_string('site/frame/notifications/action_verbose.html',vals)
-        return action_verbose
+        return render_to_string('site/pieces/actions/user_follow_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Some action that changes a GroupJoined relationship
+#=======================================================================================================================
+class GroupJoinedAction(Action):
+    group_joined = models.ForeignKey('GroupJoined', related_name="joined_actions" )
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getTo(self):
+        return self.group_joined
+
+    def autoSave(self):
+        self.action_type = 'JO'
+        super(GroupJoinedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        group_joined = self.group_joined
+
+        from_you = False
+        if group_joined.user.id == viewer.id:
+            from_you = True
+
+        inviter = group_joined.getInviter()
+        you_invited = False
+        if inviter and inviter.id == viewer.id:
+            you_invited = True
+
+        vals.update({
+            'user' : self.user,
+            'timestamp' : self.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'you_invited' : you_invited,
+            'group' : group_joined.group,
+            'inviter' : inviter,
+            'from_user' : group_joined.user,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/group_joined_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Some action that changes a voted relationship
+#=======================================================================================================================
+class VotedAction(Action):
+    content = models.ForeignKey(Content)
+    value = models.IntegerField(default=0)
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'VO'
+        super(VotedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content,
+            'value' : self.value
+        })
+
+        return render_to_string('site/pieces/actions/voted_verbose.html',vals)
 
 
 #=======================================================================================================================
 # Notifying a user of something important to them. privacy is in case they ought not be able to see who
 #=======================================================================================================================
 class Notification(Privacy):
-    verbose = models.TextField()
-    notify_user = models.ForeignKey(UserProfile, related_name = "notifywho")
-    when = models.DateTimeField(auto_now_add=True)
+    notify_user = models.ForeignKey(UserProfile, related_name="notifications")
+    action = models.ForeignKey(Action , related_name="notifications") ## For Aggregate Notifications :: most recent action
     viewed = models.BooleanField(default=False)
-    ignored = models.BooleanField(default=False)
-    action = models.ForeignKey(Action, null=True)
+    when = models.DateTimeField(auto_now_add=True)
     # for aggregating notifications like facebook
-    tally = models.IntegerField(default=0)
-    users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
-    anon_users = models.ManyToManyField(UserProfile, related_name = "anonymous_notify_agg_users")
-    recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
-    # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
-    trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
-    trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
-    # deprecated
-    type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
-    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+    agg_actions = models.ManyToManyField(Action , related_name="agg_notifications")
 
-    def getVerbose(self,view_user,vals={}):
-
-        n_action = Action.lg.get_or_none(id=self.action_id)
-        if not n_action:
-            errors_logger.error('Notification has no action: Notification ID # =' + str(self.id))
-            return ''
-
-        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
-        if not relationship:
-            errors_logger.error('Notification action has no relationship: Notification ID # =' + str(self.id))
-            return ''
-
-        #Set to and from users
-        to_user = relationship.getTo()
-        from_user = n_action.getCreatorDisplay(view_user)
-
-        #Set default local variables
-        to_you = False
-        from_you = from_user.you
-
-        if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
-            if self.recent_user:
-                from_user = self.recent_user
-            if from_user.id == view_user.id:
-                from_you = True
-
-        #check to see if the viewing user is the to or from user
-        if to_user.id == view_user.id:
-            to_you = True
-
-        viewed = True
-        if not self.viewed:
-            viewed = False
-            self.viewed = True
-            self.save()
-
-        notification_context = {'to_user':to_user,
-                          'to_you':to_you,
-                          'from_user':from_user,
-                          'from_you':from_you,
-                          'type':n_action.type,
-                          'modifier':n_action.modifier,
-                          'tally':self.tally,
-                          'true':True,
-                          'viewed':viewed,
-                          'timestamp':self.when,
-                          'anon':n_action.getPrivate(),
-                          'n_id':self.id,
-                          'hover_off':1 }
-
-        if n_action.type == 'FO':
-            notification_context['from_user'] = relationship.getFrom()
-            notification_context['follow'] = relationship.downcast()
-            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
-            if reverse_follow:
-                notification_context['reverse_follow'] = reverse_follow
-
-        if n_action.type == 'JO':
-            notification_context['from_user'] = relationship.getFrom()
-            notification_context['group_join'] = relationship.downcast()
-            if n_action.modifier == 'I':
-                notification_context['inviter'] = relationship.downcast().getInviter()
-
-        if n_action.type == 'SH':
-            notification_context['from_user'] = relationship.getFrom()
-            notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
-            notification_context['content'] = relationship.getTo()
-
-        vals.update(notification_context)
-        vals['hover_off'] = True
-
-        notification_verbose = render_to_string('site/frame/notifications/notification_verbose.html',vals)
-        return notification_verbose
-
-    def addAggUser(self,agg_user,privacy="PUB"):
-        already = self.users.filter(id=agg_user.id)
-        already2 = self.anon_users.filter(id=agg_user.id)
-
-        if not already and not already2:
-            if privacy == "PUB":
-                self.users.add(agg_user)
-            else:
-                self.anon_users.add(agg_user)
-            self.tally += 1
-
-        if privacy == "PUB":
-            self.recent_user = agg_user
-
+    def addAggAction(self,action):
+        self.agg_actions.add(action)
+        if action.privacy == "PUB":
+            self.action = action
         self.viewed = False
         self.save()
 
-    def autoSave(self):
+
+    ## Notificaitons Verbose Switch ##
+    def getVerbose(self,viewer,vals={}):
+        self.viewed = True
         self.save()
 
-    def getEmail(self):
-        return "notification email message based on notification"
+        type = self.action.action_type
+
+        if type == 'VO':
+            return self.getVotedVerbose(viewer,vals)
+        elif type== 'JO':
+            return self.getGroupJoinedVerbose(viewer,vals)
+        elif type == 'FO':
+            return self.getUserFollowVerbose(viewer,vals)
+        elif type == 'SI':
+            return self.getSignedVerbose(viewer,vals)
+        elif type == 'SH':
+            return self.getSharedVerbose(viewer,vals)
+        else:
+            return ''
+
+    ## Voted Notification Verbose ##
+    def getVotedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'to_object' : action.content,
+            'value' : action.value,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/voted_verbose.html',vals)
+
+    ## Signed Notification Verbose ##
+    def getSignedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'to_object' : action.content,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/signed_verbose.html',vals)
+
+    ## Created Notification Verbose ## NOTE: This is primarily for comment notifications
+    def getCreatedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'to_object' : action.content,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/created_verbose.html',vals)
+
+    ## Shared Notification Verbose ##
+    def getSharedVerbose(self,viewer=None,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        to_object = None
+        to_you = False
+
+        if to_user:
+            to_object = to_user
+            if to_user.id == viewer.id:
+                to_you = True
+
+        elif to_group:
+            to_object = to_group
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'shared_object' : action.content,
+            'to_object' : to_object,
+            'to_you' : to_you,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/shared_verbose.html',vals)
+
+    ## Group Joined Notification Verbose ##
+    def getGroupJoinedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        group_joined = action.group_joined
+
+        from_you = False
+        if group_joined.user.id == viewer.id:
+            from_you = True
+
+        inviter = group_joined.getInviter()
+        you_invited = False
+        if inviter and inviter.id == viewer.id:
+            you_invited = True
+
+        vals.update({
+            'user' : action_user,
+            'timestamp' : action.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'you_invited' : you_invited,
+            'group' : group_joined.group,
+            'inviter' : inviter,
+            'from_user' : group_joined.user,
+            'modifier' : action.modifier,
+            'group_join' : group_joined
+        })
+
+        return render_to_string('site/pieces/notifications/group_joined_verbose.html',vals)
+
+    ## User Follow Notification Verbose ##
+    def getUserFollowVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        user_follow = action.user_follow
+
+        from_user = user_follow.user
+        to_user = user_follow.to_user
+        from_you = False
+        to_you = False
+
+        if from_user.id == viewer.id:
+            from_you = True
+        elif to_user.id == viewer.id:
+            to_you = True
+
+        reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+
+        vals.update({
+            'user' : action_user,
+            'timestamp' : action.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'to_you' : to_you,
+            'to_user' : to_user,
+            'from_user' : from_user,
+            'modifier' : action.modifier,
+            'follow' : user_follow,
+            'reverse_follow' : reverse_follow
+        })
+
+        return render_to_string('site/pieces/notifications/user_follow_verbose.html',vals)
+
+
 
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
@@ -2119,7 +2465,7 @@ class Petition(Content):
 
                 signed = Signed(user=user, content=self)
                 signed.autoSave()
-                action = Action(relationship=signed)
+                action = SignedAction(petition=self,user=user)
                 action.autoSave()
                 self.getCreator().notify(action)
 
@@ -2805,6 +3151,7 @@ class Response(Content):
         self.main_image_id = self.question.main_image_id
         self.in_feed = False
         self.save()
+        self.type = 'R'
         if creator:
             view = creator.getView()
             view.responses.add(self)
@@ -3726,7 +4073,7 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 class Relationship(Privacy):
     user = models.ForeignKey(UserProfile, related_name='relationships')
-    when = models.DateTimeField(auto_now_add=True)
+    created_when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts relationship to appropriate child model.
@@ -3735,23 +4082,7 @@ class Relationship(Privacy):
         type = self.relationship_type
         if type == 'VO':
             object = self.ucrelationship.voted
-        elif type == 'CR':
-            object = self.ucrelationship.created
-        elif type == 'CO':
-            object = self.ucrelationship.commented
-        elif type == 'ED':
-            object = self.ucrelationship.edited
-        elif type == 'SH':
-            object = self.ucrelationship.shared
-        elif type == 'FC':
-            object = self.ucrelationship.followed
-        elif type == 'MV':
-            object = self.ucrelationship.motionvoted
-        elif type == 'XX':
-            object = self.ucrelationship.deleted
         # relationships with invite/request/decline/reject. all inherit from Invite , below
-        elif type == 'AE':
-            object = self.ucrelationship.attending
         elif type== 'JO':
             object = self.ucrelationship.groupjoined
         elif type == 'FO':
@@ -3799,6 +4130,7 @@ class Invite(LGModel):
         self.invited = True
         self.inviter = inviter.id
         self.save()
+
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -3862,16 +4194,6 @@ class OfficeHeld(UCRelationship):
             return True
         return False
 
-#=======================================================================================================================
-# Exact same as vote, except for motions.
-# inherits from relationship
-#=======================================================================================================================
-class MotionVoted(UCRelationship):
-    value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
-    def autoSave(self):
-        self.relationship_type = 'MV'
-        self.creator = self.user
-        self.save()
 
 #=======================================================================================================================
 # Vote by a user on a piece of content. like or dislike.
@@ -3895,74 +4217,6 @@ class Voted(UCRelationship):
         else: value = 0
         return value
 
-#=======================================================================================================================
-# Stores what content a user has created.
-# inherits from relationship
-#=======================================================================================================================
-class Created(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'CR'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# User deletes content.
-#=======================================================================================================================
-class Deleted(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'XX'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Stores what content a user has created.
-# inherits from relationship
-#=======================================================================================================================
-class Commented(UCRelationship):
-    comment = models.ForeignKey(Comment)
-    def autoSave(self):
-        self.relationship_type = 'CO'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Stores when a user edits a piece of content.
-# inherits from relationship
-#=======================================================================================================================
-class Edited(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'ED'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Stores a user sharing a piece of content.
-# inherits from relationship
-#=======================================================================================================================
-class Shared(UCRelationship):
-    share_users = models.ManyToManyField(UserProfile)
-    share_groups = models.ManyToManyField(Group)
-    def autoSave(self):
-        self.relationship_type = 'SH'
-        self.creator = self.user
-        self.save()
-
-    def addUser(self, user):
-        if not user in self.share_users.all():
-            self.share_users.add(user)
-            action = Action.lg.get_or_none(relationship=self)
-            if not action:
-                action = Action(relationship=self)
-                action.autoSave()
-            user.notify(action)
-
-    def addGroup(self, group):
-        if not group in self.share_groups.all():
-            pass
-            # self.share_groups.add(group)
-            # action = Action(relationship=self, share_group=group)
-            # action.autoSave()
-
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
@@ -3974,31 +4228,6 @@ class Signed(UCRelationship):
         self.creator = self.user
         self.save()
 
-#=======================================================================================================================
-# Stores a user following a piece of content.
-# inherits from relationship
-#=======================================================================================================================
-class Followed(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'FC'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Relation between user and event, about whether or not they are attending.
-#
-#=======================================================================================================================
-class Attending(UCRelationship, Invite):
-    CONFIRMATION_CHOICE = (
-        ('Y','yes'),
-        ('N','no'),
-        ('M','maybe')
-        )
-    choice = models.CharField(max_length=1, choices=CONFIRMATION_CHOICE)
-    def autoSave(self):
-        self.relationship_type = 'AE'
-        self.creator = self.user
-        self.save()
 
 #=======================================================================================================================
 # Relation between user and event, about whether or not they are attending.
@@ -4006,12 +4235,12 @@ class Attending(UCRelationship, Invite):
 #=======================================================================================================================
 class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
-    ever_member = models.BooleanField(default=False)
     def autoSave(self):
         self.relationship_type = 'JO'
         self.content = self.group
         self.creator = self.user
         self.save()
+
 
 #=======================================================================================================================
 # relationship between two users
@@ -4020,6 +4249,7 @@ class UURelationship(Relationship):
     to_user = models.ForeignKey(UserProfile, related_name='tuser')
     def getTo(self):
         return self.to_user
+
 
 #=======================================================================================================================
 # Friends, (relationships between users)
@@ -4031,41 +4261,27 @@ class UserFollow(UURelationship, Invite):
         self.relationship_type = 'FO'
         self.save()
 
+
 #=======================================================================================================================
 # Support a politician.
 #=======================================================================================================================
-class Supported(UURelationship):
-    confirmed = models.BooleanField(default=False)
-    def autoSave(self):
-        self.relationship_type = 'SU'
-        self.creator = self.user
-        self.save()
-
-class Messaged(UURelationship):
-    message = models.TextField()
-    def autoSave(self):
-        self.relationship_type = 'ME'
-        self.creator = self.user
-        to_user = self.to_user.downcast()
-        to_user.num_messages += 1
-        to_user.save()
-        self.save()
-        return to_user.num_messages
-
-#=======================================================================================================================
-# Linked, (relationships between two pieces of content)
+#class Supported(UURelationship):
+#    confirmed = models.BooleanField(default=False)
+#    def autoSave(self):
+#        self.relationship_type = 'SU'
+#        self.creator = self.user
+#        self.save()
 #
-#=======================================================================================================================
-class Linked(LGModel):
-    from_content = models.ForeignKey(Content, related_name='fcontent')
-    to_content = models.ForeignKey(Content, related_name='tcontent')
-    link_strength = models.IntegerField()
-    link_bonus = models.IntegerField(default=0)      # made by users who link content
-    association_strength = models.IntegerField(default=0)
-    when = models.DateTimeField(auto_now_add=True)
-    def autoSave(self):
-        self.link_strength = self.association_strength + self.link_bonus
-        self.save()
+#class Messaged(UURelationship):
+#    message = models.TextField()
+#    def autoSave(self):
+#        self.relationship_type = 'ME'
+#        self.creator = self.user
+#        to_user = self.to_user.downcast()
+#        to_user.num_messages += 1
+#        to_user.save()
+#        self.save()
+#        return to_user.num_messages
 
 
 #=======================================================================================================================

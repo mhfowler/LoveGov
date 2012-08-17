@@ -1,0 +1,116 @@
+{% load humanize %}
+{% load thumbnail %}
+<div class="action">
+<table class="action-container">
+<tr>
+
+    <!-- Commented -->
+    {% if type == 'CO' %}
+        <td class="action-thumbnail">
+            {% thumbnail from_user.getImage "25x25" crop="center" as im %}
+                <img src="{{ im.url }}" class="icon-small"/>
+            {% endthumbnail %}
+        </td>
+        <td class="action-text">
+            {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+            commented on
+            {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+        </td>
+
+    <!-- Voted -->
+    {% elif type == 'VO' %}
+        {% if modifier == 'L' %}
+            <td class="action-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/heart-small.png"/></td>
+            <td class="action-text">
+                {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                liked
+                {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+        {% elif modifier == 'D' %}
+            <td class="action-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/heart-small.png"/></td>
+            <td class="action-text">
+                {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                disliked
+                {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+        {% else %}
+            <td class="action-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/heart-small.png"/></td>
+            <td class="action-text">
+                {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+                unvoted
+                {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+            </td>
+        {% endif %}
+
+
+
+    <!-- Events -->
+    {% elif type == 'AE' %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true%}
+        {% if modifier == 'I' %}
+            {% if from_you %}
+                 were invited to attend
+            {% else %}
+                was invited to attend
+            {% endif %}
+        {% elif modifier == 'R' %}
+            requested to attend
+        {% elif modifier == 'D' %}
+            {% if from_you %}
+                are attending
+            {% else %}
+                is attending
+            {% endif %}
+        {% elif modifier == 'N' %}
+            refused to attend
+        {% elif modifier == 'X' %}
+            {% if from_you %}
+                were rejected from attending
+            {% else %}
+                was rejected from attending
+            {% endif %}
+        {% endif %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+
+<!-- Debate Section -->
+    {% elif type == 'JD' %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true%}
+        {% if modifier == 'I' %}
+            was invited to debate
+        {% elif modifier == 'R' %}
+            requested to debate
+        {% elif modifier == 'D' %}
+            is debating
+        {% elif modifier == 'N' %}
+            declined to debate
+        {% elif modifier == 'X' %}
+            was rejected from debating
+        {% endif %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+
+    {% elif type == 'FC' %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true%}
+        followed
+        {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+
+    {% elif type == 'MV' %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+        voted on
+        {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+
+    {% elif type == 'DV' %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+        voted on
+        {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+
+    {% elif type == 'DM' %}
+        {% include "site/pieces/actions/action_name_snippet.html" with user=from_user you=from_you capital=true %}
+        responded in
+        {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+
+
+    {% elif type == 'XX' %}
+
+
+    {% endif %}
+</tr>
