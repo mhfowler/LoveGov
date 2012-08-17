@@ -1,0 +1,50 @@
+{% load thumbnail %}
+{% load customtags %}
+{% load humanize %}
+
+<div class="feed-item-thin">
+
+    <!-- FLOAT RIGHT -->
+    <div class="feed-item-thin-right-info">
+
+        <div class="feed-thin-user-name">
+
+            <div class="feed-thin-avatar-image">
+                {% include "site/pieces/avatar.html" with user=item.creator height='35' width='35' %}
+            </div>
+
+            <div class="feed-thin-avatar-text">
+                <div class="feed-thin-avatar-name">
+                    {{ item.creator.get_name }}
+                </div>
+                <div class="feed-thin-avatar-timestamp">
+                    {{ item.created_when|naturaltime }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="feed-item-thin-comments">
+            <div class="feed-thin-num-comments">
+                {{ item.num_comments }}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="feed-item-thin-icon news-image"></div>
+
+    <div class="feed-item-thin-ranking">
+
+        <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
+        <div class="heart-number heart_number">{{ item.status }}</div>
+        <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
+
+    </div>
+
+    <div class="feed-item-thin-text">
+        <div class="feed-item-thin-top-text">group name - category</div>
+        <a href="{{ item.get_url }}"><h3>{{ item.title }}</h3></a>
+    </div>
+
+</div>

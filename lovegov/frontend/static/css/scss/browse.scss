@@ -1,0 +1,24 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+div.browse-all {
+  div.browse-all-wrapper {
+    padding-top:0px;
+
+    div.group-item-wrapper {
+      border-bottom:1px solid $gray;
+      padding-top:25px;
+      position:relative;
+
+      div.num-label {
+        position:absolute;
+        top: 85px;
+        left: -95px;
+        @include fontSize(38px);
+      }
+    }
+
+  }
+}

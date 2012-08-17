@@ -4,12 +4,12 @@
 <header>
 
 
-    <div class="header-logo"></div>
+    <a href="/home/"><div class="header-logo"></div></a>
     <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
     <ul>
-        <a href="/home"><li>home</li></a>
-        <a href="/match"><li>match</li></a>
-        <a href="/about"><li>about</li></a>
+        <a href="/home/" class="do_ajax_link dummy_link"><li>home</li></a>
+        <a href="/questions/" class="do_ajax_link dummy_link"><li>questions</li></a>
+        <a href="/about/" class="do_ajax_link dummy_link"><li>about</li></a>
     </ul>
 
     <div class="triangle-area">
@@ -19,18 +19,28 @@
         </div>
     </div>
 
-    <span class="name">{{user.get_name}}</span>
+    <span class="name">
+        <div class="first-name"> {{ user.first_name }}</div>
+        <div class="last-name"> {{ user.last_name }}</div>
+    </span>
 
     <span class="head-avatar">
-        {% include 'site/pieces/avatar.html' with user=user height='30' width='30' %}
+        <a href="{{ user.get_url }}">
+            {% include 'site/pieces/avatar.html' with user=user height='30' width='30' hoveroff=1 %}
+        </a>
     </span>
 
     <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
 
     <div class="notices setting-icon">
-        <div class='notifications_dropdown_button'>{{ notifications_num }}</div>
+        <div class='notifications_dropdown_button notifications-dropdown-button'>{{ notifications_num }}</div>
         <span class="triangle"></span>
-        {% include 'site/frame/notifications/notification_dropdown.html' %}
+        <div class="notifications-dropdown notifications_dropdown">
+            {% include 'site/frame/notifications/notification_dropdown.html' %}
+        </div>
+        <div class="notifications-dropdown notifications_dropdown_loading">
+            {% include 'site/frame/notifications/notification_dropdown.html' with loading=1 %}
+        </div>
     </div>
 
     <div class="search">

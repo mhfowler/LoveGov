@@ -1,0 +1,48 @@
+{% extends 'site/pieces/notifications/notification_verbose.html' %}
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block notification_content %}
+
+    {% if value == 1 %}
+        <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/heart-small.png"/></td>
+        <td class="notification-text">
+            {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
+            {% if tally == 2 %}
+                and <a href="" class="agg_popup" data-n_id="{{ n_id }}">one other person</a>
+            {% elif tally > 2 %}
+                and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
+            {% endif %}
+            liked
+            {{ to_object.get_name }}
+        </td>
+
+    {% elif value == -1 %}
+        <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/heart-small.png"/></td>
+        <td class="notification-text">
+            {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
+            {% if tally == 2 %}
+                and <a href="" class="agg_popup" data-n_id="{{ n_id }}">one other person</a>
+            {% elif tally > 2 %}
+                and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
+            {% endif %}
+            disliked
+            {{ to_object.get_name }}
+        </td>
+        
+    {% else %}
+        <td class="notification-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/heart-small.png"/></td>
+        <td class="notification-text">
+            {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
+            {% if tally == 2 %}
+                and <a href="" class="agg_popup" data-n_id="{{ n_id }}">one other person</a>
+            {% elif tally > 2 %}
+                and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
+            {% endif %}
+            unvoted
+            {{ to_object.get_name }}
+        </td>
+    {% endif %}
+
+{% endblock %}

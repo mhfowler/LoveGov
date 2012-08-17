@@ -1,0 +1,5 @@
+{% for friend in facebook_friends %}
+
+    {% include 'site/pages/friends/facebook_friend_card.html' with friend=friend %}
+
+{% endfor %}

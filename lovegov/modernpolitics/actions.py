@@ -18,12 +18,15 @@ from bs4 import BeautifulSoup
 #----------------------------------------------------------------------------------------------------------------------
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def answerAction(user, question, my_response, privacy, answer_id, weight, explanation):
+def answerAction(user, question, privacy, answer_id, weight, explanation):
     chosen_answer = Answer.lg.get_or_none(id=answer_id)
     if not chosen_answer:
         chosen_answer = None
     user.last_answered = datetime.datetime.now()
     user.save()
+
+    my_response = user.view.responses.filter(question=question)
+
     if not my_response:
         response = Response( question = question,
             most_chosen_answer = chosen_answer,
@@ -33,8 +36,6 @@ def answerAction(user, question, my_response, privacy, answer_id, weight, explan
             response.most_chosen_num = 1
             response.total_num = 1
         response.autoSave(creator=user, privacy=privacy)
-        action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
-        action.autoSave()
         user.num_answers += 1
         user.save()
     # else update old response
@@ -48,8 +49,10 @@ def answerAction(user, question, my_response, privacy, answer_id, weight, explan
             response.most_chosen_num = 1
             response.total_num = 1
         response.saveEdited(privacy)
-        action = Action(privacy=privacy,relationship=response.getCreatedRelationship())
-        action.autoSave()
+
+    action = CreatedAction(user=user,privacy=privacy,content=response)
+    action.autoSave()
+
     return response
 
 
@@ -96,7 +99,7 @@ def leaveGroupAction(group,user,privacy):
                 group.admins.add(member)
 
         # Make an action object for this action
-        action = Action(privacy=privacy,relationship=group_joined,modifier='S')
+        action = GroupJoinedAction(user=user,privacy=privacy,group_joined=group_joined,modifier='S')
         action.autoSave()
         # And notify the admins of this action
         for admin in group.admins.all():
@@ -125,7 +128,7 @@ def joinGroupAction(group,user,privacy):
     #REGARDLESS OF GROUP PRIVACY: If the user is invited and requests to join, add them.
     if group_joined.invited:
         group.joinMember(user, privacy=privacy)
-        action = Action(privacy=privacy,relationship=group_joined,modifier="D")
+        action = GroupJoinedAction(user=user,privacy=privacy,group_joined=group_joined,modifier="F")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -139,7 +142,7 @@ def joinGroupAction(group,user,privacy):
     # You can automatically join open groups
     elif group.group_privacy == 'O':
         group.joinMember(user, privacy=privacy)
-        action = Action(privacy=privacy,relationship=group_joined,modifier="D")
+        action = GroupJoinedAction(user=user,privacy=privacy,group_joined=group_joined,modifier="F")
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -152,7 +155,7 @@ def joinGroupAction(group,user,privacy):
         # Otherwise reset the group joined relationship and request to join
         group_joined.clear()
         group_joined.request()
-        action = Action(privacy=privacy,relationship=group_joined,modifier='R')
+        action = GroupJoinedAction(user=user,privacy=privacy,group_joined=group_joined,modifier='R')
         action.autoSave()
         for admin in group.admins.all():
             admin.notify(action)
@@ -180,7 +183,7 @@ def userFollowAction(from_user,to_user,privacy):
     # If this user is public follow then follows are automatically confirmed
     if not to_user.private_follow:
         from_user.follow(to_user)
-        action = Action(privacy=privacy,relationship=user_follow,modifier='D')
+        action = UserFollowAction(user=from_user,privacy=privacy,user_follow=user_follow,modifier='F')
         action.autoSave()
         to_user.notify(action)
         return "followed"
@@ -193,7 +196,7 @@ def userFollowAction(from_user,to_user,privacy):
     else:
         user_follow.clear()
         user_follow.request()
-        action = Action(privacy=privacy,relationship=user_follow,modifier='R')
+        action = UserFollowAction(user=from_user,privacy=privacy,user_follow=user_follow,modifier='R')
         action.autoSave()
         to_user.notify(action)
         return "requested"
@@ -201,6 +204,138 @@ def userFollowAction(from_user,to_user,privacy):
 
 def userFollowStopAction(from_user,to_user,privacy):
     from_user.unfollow(to_user)
-    action = Action(privacy=privacy,relationship=user_follow,modifier='S')
+    user_follow = UserFollow.lg.get_or_none(user=from_user,to_user=to_user)
+    if user_follow:
+        action = UserFollowAction(user=from_user,privacy=privacy,user_follow=user_follow,modifier='S')
+        action.autoSave()
+        to_user.notify(action)
+
+
+## Action for joinGroup Responses ##
+## Returns a boolean of whether or not the user is in the group POST action completion ##
+def joinGroupResponseAction(group,from_user,response,responder,privacy):
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if not group_joined:
+        return False
+
+    if group_joined.confirmed:
+        return True
+
+    elif group_joined.requested:
+        if response == 'Y':
+            group.joinMember(from_user, privacy=privacy)
+            action = GroupJoinedAction(user=responder,privacy=privacy,group_joined=group_joined,modifier="A")
+            action.autoSave()
+            from_user.notify(action)
+            return True
+
+        elif response == 'N':
+            group_joined.reject()
+            action = GroupJoinedAction(user=responder,privacy=privacy,group_joined=group_joined,modifier="X")
+            action.autoSave()
+            from_user.notify(action)
+            return False
+
+    else:
+        return False
+
+
+## Action for group invite Responses ##
+## Returns a boolean of whether or not the user is in the group POST action completion ##
+def groupInviteResponseAction(group,from_user,response,privacy):
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if not group_joined: # If there are any
+        LGException("User #" + str(from_user.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
+        return False
+
+    if group_joined.confirmed:
+        return True
+
+    if group_joined.invited:
+        if response == 'Y':
+            group.joinMember(from_user, privacy=privacy)
+            action = GroupJoinedAction(user=from_user,privacy=privacy,group_joined=group_joined,modifier="F")
+            action.autoSave()
+            for admin in group.admins.all():
+                admin.notify(action)
+            return True
+
+        elif response == 'N':
+            group_joined.decline()
+            action = GroupJoinedAction(user=from_user,privacy=privacy,group_joined=group_joined,modifier="N")
+            action.autoSave()
+            for admin in group.admins.all():
+                admin.notify(action)
+            return False
+
+    else:
+        LGException("User #" + str(from_user.id) + " attempted to respond to a group invite to group #" + str(group.id) + " when they were never invited." )
+        return False
+
+
+
+## Action for sending a group invite ##
+## Returns a boolean of whether or not the user is invited or added to the group POST action completion ##
+def groupInviteAction(from_user,group,inviter,privacy):
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
+
+        if group_joined.confirmed:
+            return True
+
+        elif group_joined.invited:
+            group_joined.invite(inviter)
+            return True
+
+        elif group_joined.requested:
+            group.joinMember(from_user, privacy=privacy)
+            action = GroupJoinedAction(user=inviter,privacy=privacy,group_joined=group_joined,modifier="F")
+            action.autoSave()
+            from_user.notify(action)
+            return True
+
+    else:
+        group_joined = GroupJoined(user=from_user, group=group, privacy=privacy)
+        group_joined.autoSave()
+
+    group_joined.invite(inviter)
+    action = GroupJoinedAction(user=inviter,privacy=privacy,group_joined=group_joined,modifier="I")
     action.autoSave()
-    to_user.notify(action)
+    from_user.notify(action)
+    return True
+
+
+
+## Action for responding to a follow request ##
+## Returns a boolean of whether or not the from_user is following the to_user when the function is finished ##
+def userFollowResponseAction(from_user,to_user,response,privacy):
+    user_follow = UserFollow.lg.get_or_none(user=from_user, to_user=to_user)
+
+    if not user_follow:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a follow request with a non-existant UserFollow from " + str(from_user.id) )
+        return False
+
+    if user_follow.requested:
+        if response == 'Y':
+            # Create follow relationship!
+            from_user.follow(to_user)
+            action = UserFollowAction(user=to_user,privacy=privacy,user_follow=user_follow,modifier='A')
+            action.autoSave()
+            from_user.notify(action)
+            return True
+        elif response == 'N':
+            user_follow.reject()
+            action = UserFollowAction(user=to_user,privacy=privacy,user_follow=user_follow,modifier='X')
+            action.autoSave()
+            from_user.notify(action)
+            return False
+
+    elif user_follow.confirmed:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was already confirmed from " + str(from_user.id) )
+        return True
+
+    else:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was not requested from " + str(from_user.id) )
+        return False

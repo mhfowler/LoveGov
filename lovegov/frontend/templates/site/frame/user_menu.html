@@ -3,11 +3,11 @@
 <div class="user-menu">
     <span class="triangle-border"></span>
     <span class="triangle"></span>
-    {% include 'site/pieces/avatar.html' with user=user height='100' width='100' %}
+    {% include 'site/pieces/avatar.html' with user=user height='100' width='100' hoveroff=1 %}
     <div class="name">{{user.get_name}}</div>
     <div class="email">{{user.email}}</div>
 
-    <div class="options-row"><span>View Profile</span><span>Privacy</span></div>
-    <div class="bottom-options"><span>Settings <img src="{{ STATIC_URL }}/images/setting_red.png" style="float: left"></span><span>Logout <img src="{{ STATIC_URL }}/images/logout.png"></span></div>
+    <div class="options-row"><a href="/profile/"><span>View Profile</span></a><span>Privacy</span></div>
+    <div class="bottom-options"><a href="/settings/"><span>Settings <img src="{{ STATIC_URL }}/images/setting_red.png" style="float: left"></span></a><a href="/logout/"><span>Logout <img src="{{ STATIC_URL }}/images/logout.png"></span></a></div>
 
 </div>

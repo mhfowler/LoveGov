@@ -1,0 +1,4 @@
+{% for action in actions_text %}
+    {{ action|safe|escape }}
+    <div class="action-separator"></div>
+{% endfor %}

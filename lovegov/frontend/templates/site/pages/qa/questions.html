@@ -1,0 +1,32 @@
+{% extends 'site/pages/home/top_sidebar_main.html' %}
+
+
+{% block top %}
+{% endblock %}
+
+{% block sidebar_fixed %}
+    <div class="questions-sidebar">
+        <div class="sidebar-header"> Your LoveGov <a href="{{ lgpoll.get_url }}"> Official Poll </a> Progress </div>
+        <!-- topic stat box -->
+        {% include 'site/pages/qa/poll_progress_by_topic.html' %}
+    </div>
+{% endblock %}
+
+{% block main %}
+
+    <div class="questions-main">
+
+        <div class="main-top">
+            <div class="header-title"> Questions </div>
+            <div class="red-line"></div>
+        </div>
+
+        <div class="questions-wrapper">
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" %}
+        </div>
+
+    </div>
+
+    <script> rebind="questions"; </script>
+
+{% endblock %}

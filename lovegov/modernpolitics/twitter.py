@@ -6,6 +6,7 @@
 #          - if no registered user, then redirect to /twitter/register (twitterRegister)
 
 from lovegov.modernpolitics.facebook import *
+import oauth2 as oauth
 
 #-----------------------------------------------------------------------------------------------------------------------
 # try to login with twitter, if no acces token, redirec to twitter

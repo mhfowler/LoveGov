@@ -62,23 +62,33 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
 
     # home pages
-    (r'^me/$', viewWrapper(views.me, requires_login=True)),
+    (r'^home/$', viewWrapper(views.home, requires_login=True)),
     (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
+    (r'^presidential/$', viewWrapper(views.presidential, requires_login=True)),
+    (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
+    (r'^congress/$', viewWrapper(views.congress, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
+
+    # browse-all
+    (r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
+    #(r'^browse_people/$', viewWrapper(views.browsePeople, requires_login=True)),
+    #(r'^browse_friends/$', viewWrapper(views.browseFriends, requires_login=True)),
+    #(r'^browse_politicians/$', viewWrapper(views.browsePoliticians, requires_login=True)),
 
     # other main pages
     (r'^home/$', viewWrapper(views.redirect, requires_login=True)),
     (r'^web/$', viewWrapper(views.web, requires_login=True)),
     (r'^about/$', viewWrapper(views.about, requires_login=True)),
     (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),
-    (r'^account/$', viewWrapper(views.account,requires_login=True)),
-    (r'^account/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),
+    (r'^settings/$', viewWrapper(views.account,requires_login=True)),
+    (r'^settings/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
 
     # detail pages
+    (r'^profile/$', viewWrapper(views.profile, requires_login=True)),
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),
     (r'^news/(\d+)/$', viewWrapper(views.newsDetail, requires_login=True)),

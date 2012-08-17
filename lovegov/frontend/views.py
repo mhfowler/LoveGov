@@ -9,6 +9,8 @@
 
 from lovegov.frontend.views_helpers import *
 
+from pprint import pprint
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
 #-----------------------------------------------------------------------------------------------------------------------
@@ -27,9 +29,9 @@ def errorMessage(request,message,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
 #-----------------------------------------------------------------------------------------------------------------------
-def framedResponse(request, html, url, vals):
+def framedResponse(request, html, url, vals={}, rebind="home"):
     if request.is_ajax():
-        to_return = {'html':html, 'url':url, 'title':vals['page_title']}
+        to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['page_title']}
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
@@ -44,8 +46,8 @@ def homeResponse(request, focus_html, url, vals):
     else:
         vals['focus_html'] = focus_html
         homeSidebar(request, vals)
-        html = ajaxRender('site/pages/home/home.html', vals, request)
-        return framedResponse(request, html, url, vals)
+        html = ajaxRender('site/pages/home/home_frame.html', vals, request)
+        return framedResponse(request, html, url, vals, rebind="home")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for all views. Requires_login=True if requires login.
@@ -147,7 +149,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/me/')
+    return shortcuts.redirect('/home/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -286,7 +288,10 @@ def loginPOST(request, to_page='web',message="",vals={}):
         registerform = RegisterForm(request.POST)
         if registerform.is_valid():
             registerform.save()
-            vals.update({"fullname":registerform.cleaned_data.get('fullname'), "email":registerform.cleaned_data.get('email'), 'zip':registerform.cleaned_data.get('zip')})
+            vals.update({"fullname":registerform.cleaned_data.get('fullname'),
+                         "email":registerform.cleaned_data.get('email'),
+                         'zip':registerform.cleaned_data.get('zip'),
+                         'age':registerform.cleaned_data.get('age')})
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
@@ -425,28 +430,69 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN HOME PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def me(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def home(request, vals):
+    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def groups(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/elections/elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def politicians(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+def presidential(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/presidential.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def representatives(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def congress(request, vals):
+    focus_html =  ajaxRender('site/pages/politicians/congress.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# friends focus (home page)
+#-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+    class FBFriend:
+        pass
+
+    viewer = vals['viewer']
+
+    if viewer.facebook_id:
+        friends_list = fbGet(request,'me/friends/')['data']
+        vals['facebook_authorized'] = False
+
+        if friends_list:
+            vals['facebook_authorized'] = True
+            fb_friends = []
+            for friend in friends_list[:4]:
+                fb_friend = FBFriend()
+                fb_friend.name = friend['name']
+                fb_friend.id = friend['id']
+                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                fb_friends.append(fb_friend)
+
+                vals['facebook_friends'] = fb_friends
+
+
+    focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -457,7 +503,16 @@ def questions(request, vals={}):
 
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals)
+    return framedResponse(request, html, url, vals, rebind="questions")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# browse all
+#-----------------------------------------------------------------------------------------------------------------------
+def browseGroups(request, vals={}):
+
+    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals, rebind="browse")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -466,46 +521,10 @@ def groupPage(request, g_alias, vals={}):
     # Get the group and current viewer
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
-
-    # Set group and group comparison
     vals['group'] = group
-    vals['group_comparison'] = group.getComparison(viewer)
 
-    # Figure out if this user is an admin
-    vals['is_user_admin'] = False
-    admins = list( group.admins.all() )
-    for admin in admins:
-        if admin.id == viewer.id:
-            vals['is_user_admin'] = True
-            break
-
-    # Get list of all Admins
-    vals['group_admins'] = group.admins.all()
-
-    # Get the list of all members and truncate it to be the number of members showing
-    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
-
-    # Get the number of group Follow Requests
-    vals['num_group_requests'] = group.getNumFollowRequests()
-
-    # Get the total number of members
-    vals['num_members'] = group.num_members
-
-    # Is the current viewer already (requesting to) following this group?
-    vals['is_user_requested'] = False
-    vals['is_user_confirmed'] = False
-    vals['is_user_rejected'] = False
-    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
-    if group_joined:
-        if group_joined.confirmed:
-            vals['is_user_confirmed'] = True
-        if group_joined.requested:
-            vals['is_user_requested'] = True
-        if group_joined.rejected:
-            vals['is_user_rejected'] = True
-
-    # histogram
-    loadHistogram(5, group.id, 'mini', vals=vals)
+    # fill dictionary with group stuff
+    vals['info'] = valsGroup(viewer, group, {})
 
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
@@ -523,14 +542,28 @@ def electionPage(request, e_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page
 #-----------------------------------------------------------------------------------------------------------------------
-def profile(request, alias, vals={}):
+def profile(request, alias=None, vals={}):
 
     viewer = vals['viewer']
+    if not alias:
+        return shortcuts.redirect(viewer.get_url())
+
     getMainTopics(vals)
     user_profile = UserProfile.objects.get(alias=alias)
     vals['profile'] = user_profile
 
-    vals['followsyou'] = True
+    # Is the current user already (requesting to) following this profile?
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_profile)
+    if user_follow:
+        if user_follow.requested:
+            vals['is_user_requested'] = True
+        if user_follow.confirmed:
+            vals['is_user_confirmed'] = True
+        if user_follow.rejected:
+            vals['is_user_rejected'] = True
     
     vals['profile_groups'] = user_profile.getGroups()[:4]
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
@@ -539,9 +572,14 @@ def profile(request, alias, vals={}):
     vals['to_compare'] = profile
     vals['comparison'] = comparison.toBreakdown()
 
+    # Num Follow requests and group invites
+    if viewer.id == user_profile.id:
+        vals['num_follow_requests'] = user_profile.getNumFollowRequests()
+        vals['num_group_invites'] = user_profile.getNumGroupInvites()
+
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = user_profile.get_url()
-    return framedResponse(request, html, url, vals)
+    return framedResponse(request, html, url, vals, rebind="profile")
 
 def worldview(request, alias, vals={}):
 
@@ -608,17 +646,31 @@ def newsDetail(request, n_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def questionDetail(request, q_id=-1, vals={}):
-    if q_id==-1:
-        question = getNextQuestion(request, vals)
-        if question:
-            q_id=question.id
-        else:
-            return HttpResponse("Congratulations, you have answered every question!")
-    valsQuestion(request, q_id, vals)
-    user = vals['user']
+def questionDetail(request, q_id=None, vals={}):
 
-    html = ajaxRender('site/pages/content/question_detail.html', vals, request)
+    viewer = vals['viewer']
+    if not q_id:
+        question = random.choice(Question.objects.all())
+    else:
+        question = Question.objects.get(id=q_id)
+
+    response = viewer.view.responses.filter(question=question)
+    if response:
+        response = response[0]
+    vals['response'] = response
+    vals['question'] = question
+
+    if response:
+        vals['group_tuples'] = getGroupTuples(viewer, question, response)
+
+    friends = viewer.getIFollow()
+    friends_answered = []
+    for f in friends:
+        if f.view.responses.filter(question=question):
+            friends_answered.append(f)
+    vals['friends_answered'] = friends_answered
+
+    html = ajaxRender('site/pages/content_detail/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
 
@@ -626,7 +678,21 @@ def questionDetail(request, q_id=-1, vals={}):
 # detail for a poll
 #-----------------------------------------------------------------------------------------------------------------------
 def pollDetail(request, p_id=-1, vals={}):
-    return HttpResponse("Poll!")
+
+    viewer = vals['viewer']
+    poll = Poll.objects.get(id=p_id)
+    vals['poll'] = poll
+    contentDetail(request, poll, vals)
+
+    q_items = getQuestionItems(viewer, 'B', p_id=poll.id, num=None)
+    vals['q_items'] = q_items
+
+    poll_progress = getPollProgress(viewer, poll)
+    vals['poll_progress'] = poll_progress
+
+    html = ajaxRender('site/pages/content_detail/poll_detail.html', vals, request)
+    url = poll.get_url()
+    return framedResponse(request, html, url, vals, rebind="poll_detail")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion
@@ -700,7 +766,7 @@ def account(request, section="", vals={}):
 
     if request.method == 'GET':
         html = ajaxRender('site/pages/account.html', vals, request)
-        url = '/account/'
+        url = '/settings/'
         return framedResponse(request, html, url, vals)
     elif request.method == 'POST':
         if request.POST['box'] == 'password':
@@ -730,7 +796,7 @@ def account(request, section="", vals={}):
             pass
 
         html = ajaxRender('site/pages/account.html', vals, request)
-        url = '/account/'
+        url = '/settings/'
         return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -849,7 +915,7 @@ def facebookAuthorize(request, vals={}, scope=""):
     return response
 
 
-def facebookAction(request, to_page="/web/", vals={}):
+def facebookAction(request, to_page="/home/", vals={}):
     fb_action = request.GET.get('fb_action')
     action_path = request.path #Path for this action
     action_query = '?' + request.META.get('QUERY_STRING').replace("%2F","/") #Query String for this action
@@ -887,15 +953,22 @@ def facebookAction(request, to_page="/web/", vals={}):
         return ajax_response
 
     else: #Return regular response
-        if vals['success']:
-            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
-            if action_to_page: #If there is one
-                to_page = action_to_page #Set the to_page as the action to_page
-            return shortcuts.redirect(to_page)
-        else:
+        ## If the action wasn't successful and the authorization of this action wasn't already attempted
+        if not vals['success'] and not request.COOKIES.get('attempted_fb_auth_action') == fb_action:
+            ## Attempt FB Authorization for this action ##
             to_page = vals['fb_auth_path']
             response = shortcuts.redirect(to_page)
             response.set_cookie('auth_to_page',vals['auth_to_page'])
+            response.set_cookie('attempted_fb_auth_action',fb_action)
+            return response
+
+        else: ## Otherwise it was successful or unsuccessfully authorized
+            ## Return the post-action to_page and delete any attempt action cookies
+            action_to_page = request.GET.get('action_to_page') #Look for an action to_page
+            if action_to_page: #If there is one
+                to_page = action_to_page #Set the to_page as the action to_page
+            response = shortcuts.redirect(to_page)
+            response.delete_cookie('attempted_fb_auth_action')
             return response
 
 #-----------------------------------------------------------------------------------------------------------------------

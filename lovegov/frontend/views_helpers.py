@@ -88,15 +88,10 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
 # helper for content-detail
 #-----------------------------------------------------------------------------------------------------------------------
 def contentDetail(request, content, vals):
-    rightSideBar(request, vals)
-    shareButton(request, vals)
-    vals['thread_html'] = makeThread(request, content, vals['viewer'], vals=vals)
-    vals['topic'] = content.getMainTopic()
     vals['content'] = content
     viewer = vals['viewer']
     creator_display = content.getCreatorDisplay(viewer)
     vals['creator'] = creator_display
-    vals['recent_actions'] = Action.objects.filter(privacy="PUB").order_by('-when')[:5]
     user_votes = Voted.objects.filter(user=vals['viewer'])
     my_vote = user_votes.filter(content=content)
     if my_vote:
@@ -196,16 +191,19 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         return ''
 
 #-----------------------------------------------------------------------------------------------------------------------
-# fills in vals with topic_stats for question_stats.html
+# fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
 def getQuestionStats(vals):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
+    lgpoll = getLoveGovPoll()
+    vals['lgpoll'] = lgpoll
+    questions = lgpoll.questions.all()
     for t in getMainTopics():
         stat = {'topic':t}
-        q_ids = Question.objects.filter(main_topic=t, official=True).values_list('id', flat=True)
+        q_ids = questions.filter(main_topic=t).values_list('id', flat=True)
         total = q_ids.count()
         r = responses.filter(question_id__in=q_ids).exclude(most_chosen_answer=None)
         num = r.count()
@@ -216,3 +214,81 @@ def getQuestionStats(vals):
         stat['empty'] = 100-percent
         topic_stats.append(stat)
     vals['topic_stats'] = topic_stats
+
+#-----------------------------------------------------------------------------------------------------------------------
+# returns a list of group tuples for rendering the agrees_box
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroupTuples(viewer, question, response):
+    my_groups = viewer.getGroups().order_by("-num_members")[:10]
+    group_tuples = []
+    for g in my_groups:
+        g_response = g.group_view.responses.filter(question=question)
+        if g_response and response:
+            g_response = g_response[0]
+            percent = g_response.getPercent(response.most_chosen_answer_id)
+        else:
+            percent = 0
+        g_tuple = {'percent':percent, 'group':g}
+        group_tuples.append(g_tuple)
+    return group_tuples
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets poll progress
+#-----------------------------------------------------------------------------------------------------------------------
+def getPollProgress(viewer, poll):
+    q_ids = poll.questions.all().values_list('id', flat=True)
+    responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
+    poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
+    return poll_progress
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for a particular group
+#-----------------------------------------------------------------------------------------------------------------------
+def valsGroup(viewer, group, vals):
+    # Set group and group comparison
+    vals['group'] = group
+    vals['group_comparison'] = group.getComparison(viewer)
+
+    # Figure out if this user is an admin
+    vals['is_user_admin'] = False
+    admins = list( group.admins.all() )
+    for admin in admins:
+        if admin.id == viewer.id:
+            vals['is_user_admin'] = True
+            break
+
+    # Get list of all Admins
+    vals['group_admins'] = group.admins.all()
+
+    # Get the list of all members and truncate it to be the number of members showing
+    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
+
+    # Get the number of group Follow Requests
+    vals['num_group_requests'] = group.getNumFollowRequests()
+
+    # Get the total number of members
+    vals['num_members'] = group.num_members
+
+    # Is the current viewer already (requesting to) following this group?
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    group_joined = GroupJoined.lg.get_or_none(user=viewer,group=group)
+    if group_joined:
+        if group_joined.confirmed:
+            vals['is_user_confirmed'] = True
+        if group_joined.requested:
+            vals['is_user_requested'] = True
+        if group_joined.rejected:
+            vals['is_user_rejected'] = True
+
+    ## TEST ##
+    items = Content.objects.filter(type='N')
+    vals['item1'] = items[0]
+    vals['item2'] = items[1]
+
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
+    return vals
+

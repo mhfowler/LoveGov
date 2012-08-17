@@ -30,6 +30,7 @@
                     <span class="question-checkbox
                     answer_checkbox{% if your_response.most_chosen_answer.id == a.id %} clicked{% endif %}" data-a_id="{{ a.id }}"></span>
                     <span class="answer-text"> {{ a.answer_text }}</span>
+                    <div style="clear:both"></div>
                 </div>
             {% endfor %}
         </div>
@@ -59,35 +60,39 @@
     </div>
 
     <!-- displays your two responses to this question -->
-    {% if their_response %}
-        <div class="question-comparison question_comparison {% if their_response and your_response %} displayed {% endif %}">
+    {% if your_response or their_response %}
+        <div class="question-comparison question_comparison {% if show_answer %} displayed {% endif %}">
             <!-- their response -->
-            <div class="their-response a-response">
-                <a class="response-avatar" href="{{ to_compare.get_url }}">
-                    {% include 'site/pieces/avatar.html' with user=to_compare width="30" height="30" %}
-                </a>
-                <div class="response-wrapper">
-                    <span class="response-text {% if disagree %} disagree {% endif %}">{{ their_response.most_chosen_answer.answer_text }}</span>
-                    <div class="response-explanation">
-                        {% if their_response.explanation %}"{{ their_response.explanation }}"{% endif %}
+            {% if their_response %}
+                <div class="their-response a-response">
+                    <a class="response-avatar" href="{{ to_compare.get_url }}">
+                        {% include 'site/pieces/avatar.html' with user=to_compare width="30" height="30" %}
+                    </a>
+                    <div class="response-wrapper">
+                        <span class="response-text {% if disagree %} disagree {% endif %}">{{ their_response.most_chosen_answer.answer_text }}</span>
+                        <div class="response-explanation">
+                            {% if their_response.explanation %}"{{ their_response.explanation }}"{% endif %}
+                        </div>
                     </div>
+                    <div style="clear:both;"></div>
                 </div>
-                <div style="clear:both;"></div>
-            </div>
+            {% endif %}
             <!-- your response -->
-            <div class="your-response a-response">
-                <a class="response-avatar" href="{{ viewer.get_url }}">
-                    {% include 'site/pieces/avatar.html' with user=viewer width="30" height="30" %}
-                </a>
-                <div class="response-wrapper">
+            {% if your_response %}
+                <div class="your-response a-response">
+                    <a class="response-avatar" href="{{ viewer.get_url }}">
+                        {% include 'site/pieces/avatar.html' with user=viewer width="30" height="30" %}
+                    </a>
+                    <div class="response-wrapper">
                     <span class="response-text"> {% if your_response.most_chosen_answer %}
                         {{ your_response.most_chosen_answer.answer_text }} {% else %} <b> Chose not to answer. </b> {% endif %} </span>
-                    <div class="response-explanation">
-                        {% if your_response.explanation %}"{{ your_response.explanation}}"{% endif %}
+                        <div class="response-explanation">
+                            {% if your_response.explanation %}"{{ your_response.explanation}}"{% endif %}
+                        </div>
                     </div>
+                    <div style="clear:both;"></div>
                 </div>
-                <div style="clear:both;"></div>
-            </div>
+            {% endif %}
         </div>
     {% endif %}
 </div>

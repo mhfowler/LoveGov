@@ -8,11 +8,23 @@
 
     <div class="group-top">
 
-        <span class="group-title"> {{ group.title }} </span>
+        <span class="group-title">
+            <div class="inline-div inline_hide">
+                {{ group.title }}
+            </div>
+            {% if info.is_user_admin %}
+                <div class="edit-link edit_button"></div>
+                <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                    <input type="text" maxlength="200" value="{{ group.title }}" class="edit_input" name="title"/>
+                    <a href="" class="edit-link submit_inline_edit">submit</a>
+                    <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                </div>
+            {% endif %}
+        </span>
+
+
         <span class="group-scale"> {{ group.getScaleVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
-
-        <div class="group-minimize-button hide_info"> - minimize info </div>
 
     </div>
 
@@ -28,23 +40,19 @@
             <!-- float right -->
             <div class="group-actions">
 
-                {% if is_user_admin %}
+                {% if info.is_user_admin %}
                     <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
                     <a href="edit/" class="group-action"> edit group settings </a>
                     {% if num_group_requests > 0 %}
-                        <div class="group-action view_group_requests" data-g_id="{{ group.id }}">join requests ({{ num_group_requests }})</div>
+                        <div class="group-action view_group_requests" data-g_id="{{ group.id }}">join requests ({{ info.num_group_requests }})</div>
                     {% endif %}
                 {% endif %}
 
-                {% if is_user_confirmed %}
-                    <div class="group-action"> create motion </div>
-                {% endif %}
-
-                {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                {% if info.is_user_rejected or not info.is_user_confirmed and not info.is_user_requested %}
                     <div class="group-action group_join" data-g_id="{{ group.id }}"> join group </div>
-                {% elif is_user_confirmed %}
+                {% elif info.is_user_confirmed %}
                     <div class="group-action group_leave" data-g_id="{{ group.id }}"> leave group </div>
-                {% elif is_user_requested %}
+                {% elif info.is_user_requested %}
                     <div class="group-action group_leave" data-g_id="{{ group.id }}"> un-request group </div>
                 {% endif %}
 
@@ -62,7 +70,7 @@
                 <div class="group-match">
 
                     <div class="match-number">
-                        {{ group_comparison.result }}
+                        {{ info.group_comparison.result }}
                     </div>
 
                     <div class="match-title">match</div>
@@ -70,7 +78,7 @@
                 </div>
 
                 <div class="group-histogram">
-                    {% include 'site/pages/histogram/histogram_mini.html' %}
+                    {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
                 </div>
 
             </div>
@@ -79,10 +87,19 @@
             <div class="group-column group-text">
 
                 <div class="group-info-title">Description</div>
-                <p class="group-full-text">
-                    {{ group.full_text|linebreaksbr }}
-                </p>
-
+                <div class="group-full-text">
+                    <div class="inline-div inline_hide">
+                        {{ group.full_text|linebreaksbr }}
+                    </div>
+                    {% if info.is_user_admin %}
+                        <div class="edit-link edit_button"></div>
+                        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                            <textarea type="text" maxlength="1000" class="edit_input group-description-edit" name="full_text">{{ group.full_text }}</textarea>
+                            <a href="" class="edit-link submit_inline_edit">submit</a>
+                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
 
@@ -91,17 +108,17 @@
                 <div class="group-moderators">
 
                     <div class="group-info-title">Moderators</div>
-                    {% for admin in group_admins %}
-                        {% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}
+                    {% for admin in info.group_admins %}
+                        <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
                     {% endfor %}
 
                 </div>
 
                 <div class="group-members">
                     <div class="group-info-title">Members</div>
-                    {% for member in group_members %}
+                    {% for member in info.group_members %}
                         <div class="group-member-avatar">
-                            {% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}
+                            <a href="{{ member.get_url }}">{% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}</a>
                         </div>
                     {% endfor %}
                     <div style="clear:both"></div>
@@ -112,7 +129,8 @@
         </div>
 
         <div class="group-pinned-content">
-
+            {% include 'site/pages/feed/base-item-thin.html' with item=info.item1 %}
+            {% include 'site/pages/feed/base-item-thin.html' with item=info.item2%}
         </div>
 
     </div>

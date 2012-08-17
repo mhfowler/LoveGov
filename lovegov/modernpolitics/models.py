@@ -268,23 +268,34 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
     #-------------------------------------------------------------------------------------------------------------------
+    def getAliasURL(self):
+        alias = self.alias
+        if alias != "" and alias !="default":
+            return '/' + alias + "/"
+        else:
+            return None
+
     def get_url(self):
-        if self.type=='P':
+        if self.type=='C':
+            return self.downcast().root_content.get_url()
+        elif self.type=='R':
+            return self.downcast().question.get_url()
+        elif self.type=='P':
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
-        elif self.type =='M':
-            return '/motion/' + str(self.id) + '/'
+        elif self.type=='O':
+            return '/poll/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
+        elif self.type=='D':
+            return '/discussion/' + str(self.id) + '/'
+        elif self.type=='E':
+            return '/event/' + str(self.id) + '/'
         elif self.type=='G':
-            return '/group/' + str(self.id) + '/'
-        elif self.type=='C':
-            return self.downcast().root_content.getUrl()
-        elif self.type=='R':
-            return self.downcast().question.getUrl()
+            return self.getAliasURL() or '/group/' + str(self.id) + '/'
         else:
-            return '/display/' + str(self.id) + '/'
+            return self.type
 
     def getUrl(self):
         return self.get_url()
@@ -299,10 +310,20 @@ class Content(Privacy, LocationLevel):
         return self.title
     def get_name(self):
         return self.getName()
-
     def getTitle(self):
         return self.title
+    def getTitleDisplay(self):
+        return self.downcast().getTitleDisplay()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # returns group that this content was orginally posted to
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPostedTo(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup
+        posted = self.posted_to
+        if not posted:
+            posted = getLoveGovGroup()
+        return posted
 
     #-------------------------------------------------------------------------------------------------------------------
     # Recalculate status for this content.
@@ -437,27 +458,19 @@ class Content(Privacy, LocationLevel):
         self.creator = creator
         self.privacy = privacy
         self.save()
-        # deprecate
-        relationship = Created(user=creator,content=self,privacy=privacy)
-        relationship.autoSave()
-        # follow what you create by default
-        follow = Followed(user=creator, content=self, privacy=privacy)
-        follow.autoSave()
+        action = CreatedAction(user=creator,content=self,privacy=privacy)
+        action.autoSave()
+
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
     def saveEdited(self, privacy):
-        created = Created.lg.get_or_none(content=self)
-        if not created:
-            errors_logger.error( "Edited Content does not exist.  Content ID = #" + str(self.id) )
-            return None
-        created.privacy = privacy
-        created.save()
         self.privacy = privacy
         self.save()
-        edited = Edited(user=created.user, content=self, privacy=privacy)
+
+        edited = EditedAction(user=self.creator, content=self, privacy=privacy)
         edited.autoSave()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -519,51 +532,18 @@ class Content(Privacy, LocationLevel):
             object = self.question
         elif type == 'R':
             object = self.response
-
         elif type == 'I':
             object = self.userimage
+        elif type == 'O':
+            object = self.poll
         elif type == 'G':
             object = self.group
-        elif type == 'D':
-            object = self.debate
-        elif type == 'Y':
-            object = self.persistent
         elif type == 'Z':
             object = self.response
         elif type == 'M':
             object = self.motion
-        elif type == 'F':
-            object = self.forum
         else: object = self
         return object
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns correct template file based on type of content.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getTemplate(self):
-        type = self.type
-        if type == 'N':
-            template = 'usable/display_news.html'
-        elif type == 'P':
-            template = 'usable/display_petition.html'
-        elif type == 'E':
-            template = 'usable/display_event.html'
-        elif type == 'C':
-            template = 'usable/display_comment.html'
-        elif type == 'Q':
-            template = 'usable/display_question.html'
-        elif type == 'R':
-            template = 'usable/display_response.html'
-        elif type == 'I':
-            template = 'usable/display_image.html'
-        elif type == 'Y':
-            template = 'usable/display_persistent_debate.html'
-        elif type == 'Z':
-            template = 'usable/display_aggregate.html'
-        elif type == 'M':
-            template = 'usable/display_motion.html'
-        else: template = None
-        return template
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns correct edit form for content, and populates it with post data if request is inputted
@@ -674,16 +654,11 @@ class Content(Privacy, LocationLevel):
                 # adjust content values about status and vote
                 if my_vote.value == 1:
                     self.upvotes += 1
-                    mod = 'L'
                 else:
                     self.downvotes -= 1
-                    mod = 'U'
+
                 self.status += STATUS_VOTE
                 self.save()
-                # make the action and notify
-                action = Action(relationship=my_vote,modifier=mod)
-                action.autoSave()
-                self.creator.notify(action)
 
         else:
             # create new vote
@@ -696,10 +671,11 @@ class Content(Privacy, LocationLevel):
             creator = self.getCreator()
             creator.upvotes += 1
             creator.save()
-            # make the action and notify
-            action = Action(relationship=my_vote,modifier='L')
-            action.autoSave()
-            self.creator.notify(action)
+
+        # make the action and notify
+        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action.autoSave()
+        self.creator.notify(action)
 
         if self.type == 'M':
             self.downcast().motionVote(my_vote)
@@ -721,15 +697,11 @@ class Content(Privacy, LocationLevel):
                 # adjust content values about status and vote
                 if my_vote.value == -1:
                     self.downvotes += 1
-                    mod = 'D'
                 else:
                     self.upvotes -= 1
-                    mod = 'U'
                 self.status -= STATUS_VOTE
                 self.save()
-                action = Action(relationship=my_vote,modifier=mod)
-                action.autoSave()
-                self.creator.notify(action)
+
         else:
             # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -741,9 +713,11 @@ class Content(Privacy, LocationLevel):
             creator = self.getCreator()
             creator.downvotes += 1
             creator.save()
-            action = Action(relationship=my_vote,modifier='D')
-            action.autoSave()
-            self.creator.notify(action)
+
+        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action.autoSave()
+        self.creator.notify(action)
+
         if self.type == 'M':
             self.downcast().motionVote(my_vote)
         return my_vote.value
@@ -881,7 +855,7 @@ class BasicInfo(models.Model):
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
     invite_message = models.CharField(max_length=10000, blank=True, default="default")
     invite_subject = models.CharField(max_length=1000, blank=True, default="default")
-    bio = models.CharField(max_length=150, blank=True, null=True)
+    bio = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -906,13 +880,6 @@ class Feed(LGModel):
     items = models.ManyToManyField(FeedItem)
     def smartClear(self):
         self.items.all().delete()
-
-#=======================================================================================================================
-# Tuple for quick access to user's debate record.
-#=======================================================================================================================
-class DebateResult(LGModel):
-    debate = models.IntegerField()  # foreign key to debate
-    result = models.CharField(max_length=1)     # 'W', 'L', 'T'
 
 #=======================================================================================================================
 # For storing a user's settings for sending them email alerts about notifications for particular user or content..
@@ -982,7 +949,7 @@ class SimpleFilter(LGModel):
     levels = custom_fields.ListField(default=[])                 # list of char of included levels
     groups = models.ManyToManyField("Group")
     submissions_only = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
-    display = models.CharField(max_length=1, choices=FEED_DISPLAY_CHOICES, default="P")
+    display = models.CharField(max_length=1, default="P")
     # which location
     location = models.ForeignKey("PhysicalAddress", null=True)
 
@@ -1099,7 +1066,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
-    debate_record = models.ManyToManyField(DebateResult)
     i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
     follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
     private_follow = models.BooleanField(default=False)
@@ -1123,6 +1089,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
+    political_statement = models.TextField(null=True)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     # deprecated
@@ -1514,7 +1481,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
         to_user.follow_me.joinMember(self)
-        to_user.num_followers += 1
+        to_user.num_followme += 1
         to_user.save()
 
         #Check and Make Relationship A
@@ -1532,6 +1499,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def unfollow( self , to_user ):
         relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+
         if self.i_follow:
             self.i_follow.members.remove(to_user)
         if to_user.follow_me:
@@ -1574,6 +1542,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.profile_image = img
             self.save()
 
+
+
     #-------------------------------------------------------------------------------------------------------------------
     # Creates involvement tuple and adds it to myinvolvement if user is not already involved with inputted content
     # otherwise just increases amount of invovlement in tupble.
@@ -1603,59 +1573,46 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
     #-------------------------------------------------------------------------------------------------------------------
-    def notify(self, action, content=None, user=None):
-        relationship = action.relationship
+    def notify(self, action):
+        type = action.action_type
 
         #If you are the one doing the action, do not notify yourself
-        if action.type != 'FO' and action.type != 'JO':
-            if relationship.getFrom().id == self.id:
-                return False
+        if action.user.id == self.id:
+            return False
 
         #Do aggregate notifications if necessary
-        if action.type in AGGREGATE_NOTIFY_TYPES:
-            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+        if type in AGGREGATE_NOTIFY_TYPES:
+            # IF the action does not have modifiers or this modifier is notifiable
+            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
+
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+                # Find all recent notifications with this action type/modifier directed towards this user
                 already = Notification.objects.filter(notify_user=self,
                                                         when__gte=stale_date,
                                                         action__modifier=action.modifier,
-                                                        action__type=action.type ).order_by('-when')
-                for notification in already:
-                    if notification.action.relationship.getTo().id == relationship.getTo().id:
+                                                        action__action_type=type ).order_by('-when')
+
+                for notification in already: # For all recent notifications matching this one
+                    if notification.action.getTo().id == action.getTo().id: # If these actions target the same content
+                        # Update Notification with this action
                         notification.when = datetime.datetime.today()
-                        if notification.tally == 0:
-                            notification.addAggUser( notification.action.relationship.user )
-                        notification.addAggUser( relationship.user , action.privacy )
+                        notification.addAggAction( action )
                         return True
+
                 notification = Notification(action=action, notify_user=self)
-                notification.autoSave()
-                notification.addAggUser( relationship.user , action.privacy )
+                notification.save()
+                notification.addAggAction( action )
                 return True
 
         #Otherwise do normal notifications
-        elif action.type in NOTIFY_TYPES:
-            if action.type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[action.type]:
+        elif type in NOTIFY_TYPES:
+            # IF the action does not have modifiers or this modifier is notifiable
+            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
                 notification = Notification(action=action, notify_user=self)
-                notification.autoSave()
+                notification.save()
                 return True
 
         return False
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Add debate result, takes in debate and result (as integer)
-    #-------------------------------------------------------------------------------------------------------------------
-    def addDebateResult(self, debate, result):
-        debate_result = DebateResult(debate=debate.id, result=result)
-        debate_result.save()
-        self.debate_record.add(debate_result)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns triple tuple (wins, losses, ties)
-    #-------------------------------------------------------------------------------------------------------------------
-    def getDebateRecord(self):
-        wins = self.debate_record.filter(result=1).count()
-        losses = self.debate_record.filter(result=-1).count()
-        ties = self.debate_record.filter(result=0).count()
-        return wins, losses, ties
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
@@ -1721,11 +1678,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
-        print len( actions )
+        actions = self.actions.all().order_by('-when')
         if num != -1:
             actions = actions[start:start+num]
-        print len( actions )
         return actions
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1737,6 +1692,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
+
+    def getNumFollowRequests(self):
+        return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).count()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1745,6 +1704,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')
         else:
             return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')[:num]
+
+    def getNumGroupInvites(self):
+        return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # return a query set of groups and networks user is in
@@ -1921,176 +1883,532 @@ class ControllingUser(User, LGModel):
 # Keeps track of user activity.
 #=======================================================================================================================
 class Action(Privacy):
-    type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
-    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+    user = models.ForeignKey(UserProfile,related_name="actions")
+    action_type = models.CharField(max_length=2, choices=ACTION_CHOICES)
     when = models.DateTimeField(auto_now_add=True)
-    relationship = models.ForeignKey("Relationship", null=True)
-    must_notify = models.BooleanField(default=False)        # to override check for permission to notify
-    # optimization
-    verbose = models.TextField()  # Don't use me!  I'm deprecated
-
-    def getRelationship(self):
-        if self.relationship_id == -1:
-            return None
-        else:
-            return Relationship.objects.get(id=self.relationship_id)
+    #must_notify = models.BooleanField(default=False)        # to override check for permission to notify
 
     def autoSave(self):
-        relationship = self.relationship
-        self.type = relationship.relationship_type
-        self.creator = relationship.creator
+        self.creator = self.user
         self.save()
 
-    def getVerbose(self,view_user=None,vals={}):
-        #Check for relationship
-        relationship = Relationship.lg.get_or_none(id=self.relationship_id)
-        if not relationship:
-            errors_logger.error('Action has no relationship: Action ID # = ' + str(self.id))
-            return ''
+    def getTo(self):
+        action = self.downcast()
+        if action:
+            return action.getTo()
+        return None
 
-        #Set default local variables
+    def downcast(self):
+        action_type = self.action_type
+
+        if action_type == 'VO':
+            object = self.votedaction
+        elif action_type== 'JO':
+            object = self.groupjoinedaction
+        elif action_type == 'FO':
+            object = self.userfollowaction
+        elif action_type == 'SI':
+            object = self.signedaction
+        elif action_type == 'CR':
+            object = self.createdaction
+        elif action_type == 'ED':
+            object = self.editedaction
+        elif action_type == 'SH':
+            object = self.sharedaction
+        elif action_type == 'XX':
+            object = self.deletedaction
+        else:
+            object = None
+        return object
+
+    def getVerbose(self,viewer=None,vals={}):
+        action = self.downcast()
+        if action:
+            return action.getVerbose(viewer,vals)
+        return ''
+
+
+
+#=======================================================================================================================
+# Signing a petition action
+#=======================================================================================================================
+class SignedAction(Action):
+    petition = models.ForeignKey('Petition')
+
+    def autoSave(self):
+        self.action_type = 'SI'
+        super(SignedAction,self).autoSave()
+
+    def getTo(self):
+        return self.petition
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.petition
+        })
+
+        return render_to_string('site/pieces/actions/signed_verbose.html',vals)
+
+#=======================================================================================================================
+# Creating some content action
+#=======================================================================================================================
+class CreatedAction(Action):
+    content = models.ForeignKey(Content)
+
+    def autoSave(self):
+        self.action_type = 'CR'
+        super(CreatedAction,self).autoSave()
+
+    def getTo(self):
+        return self.content
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content
+        })
+
+        return render_to_string('site/pieces/actions/created_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Editing some content action
+#=======================================================================================================================
+class EditedAction(Action):
+    content = models.ForeignKey(Content)
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'ED'
+        super(EditedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content
+        })
+
+        return render_to_string('site/pieces/actions/edited_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Sharing some content with a user or group action
+#=======================================================================================================================
+class SharedAction(Action):
+    content = models.ForeignKey(Content)
+    to_user = models.ForeignKey(UserProfile,null=True)
+    to_group = models.ForeignKey('Group',null=True,related_name="shared_to_actions")
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'SH'
+        super(SharedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = None
+        to_you = False
+
+        if to_user:
+            to_object = to_user
+            if to_user.id == viewer.id:
+                to_you = True
+
+        elif to_group:
+            to_object = to_group
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'shared_object' : self.content,
+            'to_object' : to_object,
+            'to_you' : to_you
+        })
+
+        return render_to_string('site/pieces/actions/shared_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Deleting some content action
+#=======================================================================================================================
+class DeletedAction(Action):
+    content = models.ForeignKey(Content)
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'XX'
+        super(DeletedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content
+        })
+
+        return render_to_string('site/pieces/actions/deleted_verbose.html',vals)
+
+#=======================================================================================================================
+# Some action that changes a UserFollow relationship
+#=======================================================================================================================
+class UserFollowAction(Action):
+    user_follow = models.ForeignKey('UserFollow', related_name="follow_actions")
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getTo(self):
+        return self.user_follow
+
+    def autoSave(self):
+        self.action_type = 'FO'
+        super(UserFollowAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        user_follow = self.user_follow
         from_you = False
         to_you = False
-        #Set to and from users
-        to_user = relationship.getTo()
-        from_user = relationship.getFrom()
-        #check to see if the viewing user is the to or from user
-        if view_user and from_user.id == view_user.id:
+
+        from_user = user_follow.user
+        to_user = user_follow.to_user
+
+        if from_user.id == viewer.id:
             from_you = True
-        elif view_user and to_user.id == view_user.id:
+        elif to_user.id == viewer.id:
             to_you = True
 
-        vals.update({'to_user':to_user,
-                            'to_you':to_you,
-                            'from_user':from_user,
-                            'from_you':from_you,
-                            'type':self.type,
-                            'modifier':self.modifier,
-                            'true':True,
-                            'timestamp':self.when})
+        vals.update({
+            'user' : self.user,
+            'timestamp' : self.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'to_you' : to_you,
+            'to_user' : to_user,
+            'from_user' : from_user,
+            'modifier' : self.modifier
+        })
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
-        return action_verbose
+        return render_to_string('site/pieces/actions/user_follow_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Some action that changes a GroupJoined relationship
+#=======================================================================================================================
+class GroupJoinedAction(Action):
+    group_joined = models.ForeignKey('GroupJoined', related_name="joined_actions" )
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getTo(self):
+        return self.group_joined
+
+    def autoSave(self):
+        self.action_type = 'JO'
+        super(GroupJoinedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        group_joined = self.group_joined
+
+        from_you = False
+        if group_joined.user.id == viewer.id:
+            from_you = True
+
+        inviter = group_joined.getInviter()
+        you_invited = False
+        if inviter and inviter.id == viewer.id:
+            you_invited = True
+
+        vals.update({
+            'user' : self.user,
+            'timestamp' : self.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'you_invited' : you_invited,
+            'group' : group_joined.group,
+            'inviter' : inviter,
+            'from_user' : group_joined.user,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/group_joined_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Some action that changes a voted relationship
+#=======================================================================================================================
+class VotedAction(Action):
+    content = models.ForeignKey(Content)
+    value = models.IntegerField(default=0)
+
+    def getTo(self):
+        return self.content
+
+    def autoSave(self):
+        self.action_type = 'VO'
+        super(VotedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.content,
+            'value' : self.value
+        })
+
+        return render_to_string('site/pieces/actions/voted_verbose.html',vals)
 
 
 #=======================================================================================================================
 # Notifying a user of something important to them. privacy is in case they ought not be able to see who
 #=======================================================================================================================
 class Notification(Privacy):
-    verbose = models.TextField()
-    notify_user = models.ForeignKey(UserProfile, related_name = "notifywho")
-    when = models.DateTimeField(auto_now_add=True)
+    notify_user = models.ForeignKey(UserProfile, related_name="notifications")
+    action = models.ForeignKey(Action , related_name="notifications") ## For Aggregate Notifications :: most recent action
     viewed = models.BooleanField(default=False)
-    ignored = models.BooleanField(default=False)
-    action = models.ForeignKey(Action, null=True)
+    when = models.DateTimeField(auto_now_add=True)
     # for aggregating notifications like facebook
-    tally = models.IntegerField(default=0)
-    users = models.ManyToManyField(UserProfile, related_name = "notifyagg")
-    anon_users = models.ManyToManyField(UserProfile, related_name = "anonymous_notify_agg_users")
-    recent_user = models.ForeignKey(UserProfile, null=True, related_name = "mostrecentuser")
-    # for custom notification, who or what triggered this notification.. if both null it was not triggered via following
-    trig_content = models.ForeignKey(Content, null=True, related_name = "trigcontent")
-    trig_user = models.ForeignKey(UserProfile, null=True, related_name="griguser")
-    # deprecated
-    type = models.CharField(max_length=2, choices=RELATIONSHIP_CHOICES)
-    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS, default='D')
+    agg_actions = models.ManyToManyField(Action , related_name="agg_notifications")
 
-    def getVerbose(self,view_user,vals={}):
-
-        n_action = Action.lg.get_or_none(id=self.action_id)
-        if not n_action:
-            errors_logger.error('Notification has no action: Notification ID # =' + str(self.id))
-            return ''
-
-        relationship = Relationship.lg.get_or_none(id=n_action.relationship_id)
-        if not relationship:
-            errors_logger.error('Notification action has no relationship: Notification ID # =' + str(self.id))
-            return ''
-
-        #Set to and from users
-        to_user = relationship.getTo()
-        from_user = n_action.getCreatorDisplay(view_user)
-
-        #Set default local variables
-        to_you = False
-        from_you = from_user.you
-
-        if n_action.type in AGGREGATE_NOTIFY_TYPES and self.tally > 0:
-            if self.recent_user:
-                from_user = self.recent_user
-            if from_user.id == view_user.id:
-                from_you = True
-
-        #check to see if the viewing user is the to or from user
-        if to_user.id == view_user.id:
-            to_you = True
-
-        viewed = True
-        if not self.viewed:
-            viewed = False
-            self.viewed = True
-            self.save()
-
-        notification_context = {'to_user':to_user,
-                          'to_you':to_you,
-                          'from_user':from_user,
-                          'from_you':from_you,
-                          'type':n_action.type,
-                          'modifier':n_action.modifier,
-                          'tally':self.tally,
-                          'true':True,
-                          'viewed':viewed,
-                          'timestamp':self.when,
-                          'anon':n_action.getPrivate(),
-                          'n_id':self.id,
-                          'hover_off':1 }
-
-        if n_action.type == 'FO':
-            notification_context['from_user'] = relationship.getFrom()
-            notification_context['follow'] = relationship.downcast()
-            reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
-            if reverse_follow:
-                notification_context['reverse_follow'] = reverse_follow
-
-        if n_action.type == 'JO':
-            notification_context['from_user'] = relationship.getFrom()
-            notification_context['group_join'] = relationship.downcast()
-            if n_action.modifier == 'I':
-                notification_context['inviter'] = relationship.downcast().getInviter()
-
-        if n_action.type == 'SH':
-            notification_context['from_user'] = relationship.getFrom()
-            notification_context['to_user'] = view_user     # if you see notification for shared, it was shared with you
-            notification_context['content'] = relationship.getTo()
-
-        vals.update(notification_context)
-        vals['hover_off'] = True
-
-        notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
-        return notification_verbose
-
-    def addAggUser(self,agg_user,privacy="PUB"):
-        already = self.users.filter(id=agg_user.id)
-        already2 = self.anon_users.filter(id=agg_user.id)
-
-        if not already and not already2:
-            if privacy == "PUB":
-                self.users.add(agg_user)
-            else:
-                self.anon_users.add(agg_user)
-            self.tally += 1
-
-        if privacy == "PUB":
-            self.recent_user = agg_user
-
+    def addAggAction(self,action):
+        self.agg_actions.add(action)
+        if action.privacy == "PUB":
+            self.action = action
         self.viewed = False
         self.save()
 
-    def autoSave(self):
+
+    ## Notificaitons Verbose Switch ##
+    def getVerbose(self,viewer,vals={}):
+        self.viewed = True
         self.save()
 
-    def getEmail(self):
-        return "notification email message based on notification"
+        type = self.action.action_type
+
+        if type == 'VO':
+            return self.getVotedVerbose(viewer,vals)
+        elif type== 'JO':
+            return self.getGroupJoinedVerbose(viewer,vals)
+        elif type == 'FO':
+            return self.getUserFollowVerbose(viewer,vals)
+        elif type == 'SI':
+            return self.getSignedVerbose(viewer,vals)
+        elif type == 'SH':
+            return self.getSharedVerbose(viewer,vals)
+        else:
+            return ''
+
+    ## Voted Notification Verbose ##
+    def getVotedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'to_object' : action.content,
+            'value' : action.value,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/voted_verbose.html',vals)
+
+    ## Signed Notification Verbose ##
+    def getSignedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'to_object' : action.content,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/signed_verbose.html',vals)
+
+    ## Created Notification Verbose ## NOTE: This is primarily for comment notifications
+    def getCreatedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'to_object' : action.content,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/created_verbose.html',vals)
+
+    ## Shared Notification Verbose ##
+    def getSharedVerbose(self,viewer=None,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        to_object = None
+        to_you = False
+
+        if to_user:
+            to_object = to_user
+            if to_user.id == viewer.id:
+                to_you = True
+
+        elif to_group:
+            to_object = to_group
+
+        vals.update({
+            'timestamp' : action.when,
+            'user' : action_user,
+            'you_acted' : you_acted,
+            'shared_object' : action.content,
+            'to_object' : to_object,
+            'to_you' : to_you,
+            'tally' : action.agg_actions.count()
+        })
+
+        return render_to_string('site/pieces/notifications/shared_verbose.html',vals)
+
+    ## Group Joined Notification Verbose ##
+    def getGroupJoinedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        group_joined = action.group_joined
+
+        from_you = False
+        if group_joined.user.id == viewer.id:
+            from_you = True
+
+        inviter = group_joined.getInviter()
+        you_invited = False
+        if inviter and inviter.id == viewer.id:
+            you_invited = True
+
+        vals.update({
+            'user' : action_user,
+            'timestamp' : action.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'you_invited' : you_invited,
+            'group' : group_joined.group,
+            'inviter' : inviter,
+            'from_user' : group_joined.user,
+            'modifier' : action.modifier,
+            'group_join' : group_joined
+        })
+
+        return render_to_string('site/pieces/notifications/group_joined_verbose.html',vals)
+
+    ## User Follow Notification Verbose ##
+    def getUserFollowVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        user_follow = action.user_follow
+
+        from_user = user_follow.user
+        to_user = user_follow.to_user
+        from_you = False
+        to_you = False
+
+        if from_user.id == viewer.id:
+            from_you = True
+        elif to_user.id == viewer.id:
+            to_you = True
+
+        reverse_follow = UserFollow.lg.get_or_none(user=to_user,to_user=from_user)
+
+        vals.update({
+            'user' : action_user,
+            'timestamp' : action.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'to_you' : to_you,
+            'to_user' : to_user,
+            'from_user' : from_user,
+            'modifier' : action.modifier,
+            'follow' : user_follow,
+            'reverse_follow' : reverse_follow
+        })
+
+        return render_to_string('site/pieces/notifications/user_follow_verbose.html',vals)
+
+
 
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
@@ -2123,6 +2441,10 @@ class Petition(Content):
     current = models.IntegerField(default=0)
     goal = models.IntegerField(default=10)
     p_level = models.IntegerField(default=1)
+
+    def getTitleDisplay(self):
+        return "Petition: " + self.title
+
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -2143,7 +2465,7 @@ class Petition(Content):
 
                 signed = Signed(user=user, content=self)
                 signed.autoSave()
-                action = Action(relationship=signed)
+                action = SignedAction(petition=self,user=user)
                 action.autoSave()
                 self.getCreator().notify(action)
 
@@ -2204,28 +2526,6 @@ class Petition(Content):
             return DEFAULT_PETITION_IMAGE_URL
 
 #=======================================================================================================================
-# Event
-#
-#=======================================================================================================================
-class Event(Content):
-    # we can get attendees by user relationship, yes_set, maybe_set, no_set
-    full_text = models.TextField(max_length=10000)
-    datetime_of_event = models.DateTimeField()
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.type = 'E'
-        self.save()
-        super(Event, self).autoSave(creator=creator, privacy=privacy)
-
-
-    def edit(self,field,value):
-        if field=="full_text":
-            self.full_text=value
-        else:
-            super(Event, self).edit(field,value)
-        self.save()
-
-
-#=======================================================================================================================
 # News
 #
 #=======================================================================================================================
@@ -2233,6 +2533,10 @@ class News(Content):
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
+
+    def getTitleDisplay(self):
+        return "News: " + self.title
+
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
         self.in_feed = True
@@ -2265,17 +2569,10 @@ class News(Content):
 #
 #=======================================================================================================================
 class Discussion(Content):
+    user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.type = "D"
-        super(self, Discussion).autoSave(creator=creator, privacy=privacy)
-
-#=======================================================================================================================
-# Photo album
-#
-#=======================================================================================================================
-class PhotoAlbum(Content):
-    photos = models.ManyToManyField(UserImage)
-
+        super(Discussion, self).autoSave(creator=creator, privacy=privacy)
 
 #=======================================================================================================================
 # Comment (the building block of forums)
@@ -2730,15 +3027,39 @@ class CongressVote(LGModel):
 
 ########################################################################################################################
 ########################################################################################################################
-#   QA Web
+#   QA
 #       Question is a piece of content (can be liked, disliked, too_complicated, commented on etc)
-#       Users can create questions... but we decide what is official.
-#       For any one question there can be as many or as few NextQuestion relations as desired, next_question associates
-#       other questions more or less strongly based on the particular answer that the user selected. answer
-#       should also have the possible value 'SKIP', which can be taken into account for next_question and for
-#       our data about the user and the question.
+#       Users can create questions.
+#
 ########################################################################################################################
 ########################################################################################################################
+#=======================================================================================================================
+# Poll, a bunch of questions
+#
+#=======================================================================================================================
+class Poll(Content):
+    questions = models.ManyToManyField("Question")
+    num_questions = models.IntegerField(default=0)
+    description = models.TextField(blank=True)
+
+    def getTitleDisplay(self):
+        return "Poll: " + self.title
+
+    def get_url(self):
+        return '/poll/' + str(self.id) + '/'
+
+    def autoSave(self, creator=None, privacy='PUB'):
+        self.type = "O"
+        self.in_feed = True
+        self.save()
+        super(Poll, self).autoSave(creator=creator, privacy=privacy)
+
+    def addQuestion(self, q):
+        if q not in self.questions.all():
+            self.questions.add(q)
+            self.num_questions += 1
+            self.save()
+
 #=======================================================================================================================
 # Answer
 #
@@ -2757,13 +3078,8 @@ class Answer(LGModel):
 #
 #=======================================================================================================================
 class Question(Content):
-    QUESTION_TYPE = (
-        ('MC', 'Multiple Choice'),
-        ('CB', 'Check Box'),
-        ('SS', 'Sliding Scale')
-        )
     question_text = models.TextField(max_length=500)
-    question_type = models.CharField(max_length=2, choices=QUESTION_TYPE)
+    question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
@@ -2775,9 +3091,15 @@ class Question(Content):
     def toJSON(self):
         pass
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Edit method, the question-specific version of the general content method.
-    #-------------------------------------------------------------------------------------------------------------------
+    def getTitleDisplay(self):
+        return "Question: " + self.title
+
+    def autoSave(self, creator=None, privacy='PUB'):
+        self.type = "Q"
+        self.in_feed = True
+        self.save()
+        super(Question, self).autoSave(creator=creator, privacy=privacy)
+
     def edit(self,field,value):
         if field=="question_text":
             self.question_text=value
@@ -2793,15 +3115,6 @@ class Question(Content):
         else:
             return DEFAULT_DISCUSSION_IMAGE_URL
 
-#=======================================================================================================================
-# NextQuestion is essentially a relation from one question to another, based on how you answered the first question.
-#
-#=======================================================================================================================
-class NextQuestion(LGModel):
-    from_question = models.ForeignKey(Question, related_name='fquestion')
-    to_question = models.ForeignKey(Question, related_name='tquestion')
-    answer_value = models.IntegerField(default=-1)
-    relevancy = models.IntegerField()
 
 #=======================================================================================================================
 # Response, abstract so that content users and groups can inherit from it
@@ -2817,6 +3130,20 @@ class Response(Content):
     explanation = models.TextField(max_length=1000, blank=True)
     answer_tallies = models.ManyToManyField('AnswerTally')
 
+    def getPercent(self, a_id):
+        if self.total_num:
+            if a_id == self.most_chosen_answer_id:
+                percent = self.most_chosen_num / float(self.total_num)
+            else:
+                tally = self.answer_tallies.filter(answer_id=a_id)
+                if tally:
+                    percent = tally[0].tally / float(self.total_num)
+                else:
+                    percent = 0
+            return int(percent*100)
+        else:
+            return 0
+
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
     #-------------------------------------------------------------------------------------------------------------------
@@ -2824,6 +3151,7 @@ class Response(Content):
         self.main_image_id = self.question.main_image_id
         self.in_feed = False
         self.save()
+        self.type = 'R'
         if creator:
             view = creator.getView()
             view.responses.add(self)
@@ -2835,214 +3163,6 @@ class Response(Content):
 
     def clearAnswerTallies(self):
         self.answer_tallies.delete()
-
-
-########################################################################################################################
-########################################################################################################################
-#   Debates
-#       another important, slightly more complicated piece of content. There will be both persistent and live debates,
-#       formal and casual, with group voting and moderator voting. IDEAL, anyone can do it, because its fun and
-#       game-like and you and others can see your record...but if you do really well, and are really involved, your
-#       your record can actually make your voice more heard, and online debates can become a forum for serious political
-#       discourse.
-########################################################################################################################
-########################################################################################################################
-#=======================================================================================================================
-# A debate message, from a debater at a certain time.
-#
-#=======================================================================================================================
-class Message(Content):
-    debater = models.ForeignKey(UserProfile)
-    text = models.TextField()
-    when = models.DateTimeField(auto_now_add=True)
-
-#=======================================================================================================================
-# A persistent debate. The parent from which other specific kinds of debates will inherit.
-#
-#=======================================================================================================================
-class Persistent(Content):
-    # DEBATERS
-    affirmative = models.ForeignKey(UserProfile, related_name = "negative", null=True)
-    negative = models.ForeignKey(UserProfile, related_name="affirmative", null=True)
-    moderator = models.ForeignKey(UserProfile,related_name = "themoderator", null=True)
-    # DEBATE RESOLUTION AND STATEMENTS
-    resolution = models.CharField(max_length=200)
-    statements = models.ManyToManyField(Message)
-    # INFO ON DEBATE SETTINGS
-    debate_type = models.CharField(max_length=1, choices=DEBATE_CHOICES)
-    possible_users = models.ManyToManyField(UserProfile, related_name="possible") # the creator of debate can say who is allowed to join debate
-    debate_start_time = models.DateTimeField(auto_now_add=True)
-    debate_finish_time = models.DateTimeField(null=True)
-    debate_expiration_time = models.DateTimeField(null=True)
-    turns_total = models.IntegerField(default=6)      # number of responses per user, default is 6
-    allotted_response_delta = models.IntegerField(default=-1)      # window to respond, in minutes, default is unlimited
-    allotted_debate_delta = models.IntegerField(default=-1)         # total time for debate, in minutes, default is unlimited
-    allotted_expiration_delta = models.IntegerField(default=10080) # time post debate finish, until winner is determined by votes. default=1week
-    # DETERMINATION OF WINNER
-    votes_affirmative = models.IntegerField(default=0)
-    votes_negative = models.IntegerField(default=0)
-    turns_elapsed = models.IntegerField(default=0)        # number of turns passed so far
-    turn_current = models.BooleanField(default=True)
-    turn_lasttime = models.DateTimeField(auto_now_add=True)
-    winner = models.ForeignKey(UserProfile, null=True, related_name ="thewinner")
-    debate_finished = models.BooleanField(default=False)
-    voting_finished = models.BooleanField(default=False)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # # sets debate to voting finished and determines winner
-    #-------------------------------------------------------------------------------------------------------------
-    def addMessage(self, text):
-        now = datetime.datetime.now()
-        message = Message(text=text)
-        if self.turn_current:
-            message.debater = self.affirmative
-            to_user = self.negative
-        else:
-            message.debater = self.negative
-            to_user = self.affirmative
-        message.save()
-        self.statements.add(message)
-        # switch current_turn
-        self.turn_current = not self.turn_current
-        self.turn_lasttime = now
-        self.turns_elapsed += 1
-        self.save()
-        # check if turns have expired
-        if self.turns_elapsed > self.turns_total:
-            self.debate_finish_time = now
-            self.debate_expiration_time = now + self.getDelta(self.allotted_expiration_delta)
-            # for testing !!
-            test_delta = timedelta(seconds=60)
-            self.debate_expiration_time = now + test_delta
-            # 3nd of test
-            self.debate_finished = True
-            self.save()
-            # alert other user that debate is finished.
-            alert_text = message.debater.get_name() + " responded and the debate is finished."
-        # else alert the other debater it is now their turn.
-        else:
-            alert_text = message.debater.get_name() + " responded and it is your turn."
-            # send notification
-        to_user.debateNotification(message=alert_text, debate=self, from_user = message.debater)
-        return HttpResponse("message added")
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # # sets debate to voting finished and determines winner
-    #-------------------------------------------------------------------------------------------------------------
-    def setOver(self):
-        self.voting_finished = True
-        # deterimine winner of debate by type
-        if self.debate_type == 'C':
-            winner_text = "The debate is finished."
-            loser_text = "The debate is finished."
-            winner = self.affirmative
-            loser = self.negative
-            tie = False
-        elif self.debate_type == 'F':
-            winner_text = "You won a debate!"
-            loser_text = "You lost a debate."
-            if self.votes_affirmative > self.votes_negative:
-                self.winner = self.affirmative
-                winner = self.winner
-                loser = self.negative
-                tie = False
-            elif self.votes_negative > self.votes_affirmative:
-                self.winner = self.negative
-                winner = self.winner
-                loser = self.affirmative
-                tie = False
-            else:
-                tie = True
-                winner = self.affirmative
-                loser = self.negative
-                winner_text = "You tied a debate."
-                loser_text = "You tied a debate."
-        else:
-            print "cmann"
-            return HttpResponse("moderator did not vote")
-            # save
-        self.save()
-        # alert winner that they won and loser that they lost
-        if tie:
-            # add tie to both debate records
-            winner.addDebateResult(self, 0)
-            loser.addDebateResult(self, 0)
-        else:
-            winner.addDebateResult(self, 1)
-            loser.addDebateResult(self, -1)
-        winner.debateNotification(debate=self, from_user=loser, message=winner_text)
-        loser.debateNotification(debate=self, from_user=winner, message=loser_text)
-        return HttpResponse("And it was decided..")
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Checks if debate is over, as well as checking if turn has expired.
-    #-------------------------------------------------------------------------------------------------------------
-    def update(self):
-        now = datetime.datetime.now()
-        # check if debate already finished
-        if self.debate_finished:
-            # check if voting already finished
-            if self.voting_finished:
-                return HttpResponse("debate closed")
-            else:
-                # check if now is greater than expiration time
-                if now > self.debate_expiration_time:
-                    # sets debate to voting finished and determines winner
-                    return self.setOver()
-        else:
-            if now > self.debate_finish_time:
-                self.finished = True
-                return HttpResponse("debate finished")
-            else:
-                # else check if current turn has expired
-                turn_delta = self.getDelta(self.allotted_response_delta)
-                turn_over = self.turn_lasttime + turn_delta
-                if now > turn_over:
-                    # send missed turn message
-                    return self.addMessage("[missed turn]")
-        return HttpResponse("already up to date")
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Takes in a duration value (in minutes), and returns a python timedelta of that value
-    #-------------------------------------------------------------------------------------------------------------------
-    def getDelta(self, x):
-        # if unlimited
-        if x == -1:
-            delta = timedelta(days=100)
-        else:
-            delta = timedelta(minutes=x)
-        return delta
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Invites user to debate, and adds to list of possible users.
-    #-------------------------------------------------------------------------------------------------------------------
-    def invite(self, user, inviter, privacy='PUB'):
-        already_invited = DebateJoin.objects.filter(user=user, group=self)
-        if already_invited:
-            already_invited[0].invite()
-        else:
-            invitation = DebateJoin(user=user, content=self, group=self, privacy=privacy)
-            invitation.autoSave()
-            invitation.invite(inviter=inviter)
-        self.possible_users.add(user)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Autocreates and saves a debate with appropriate settings based on its type.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoSave(self, creator=None, privacy='PUB'):
-        if self.debate_type == 'F':
-            now = datetime.datetime.now()
-            # this is default settings
-            self.title = "Debate: " + self.resolution
-            self.type = 'Y'
-            self.debate_finish_time = now + self.getDelta(self.allotted_debate_delta)
-            self.save()
-            super(Persistent, self).autoSave(creator=creator, privacy=privacy)
-        else:
-            print "not yet implemented"
-
-
-
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3245,12 +3365,12 @@ class AnswerTally(LGModel):
 #=======================================================================================================================
 class Group(Content):
     # people
-    admins = models.ManyToManyField(UserProfile, related_name='admin')
-    members = models.ManyToManyField(UserProfile, related_name='member')
+    admins = models.ManyToManyField(UserProfile, related_name='admin_of')
+    members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
-    group_content = models.ManyToManyField(Content, related_name='ongroup')
+    pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
@@ -3263,6 +3383,9 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
+
+    def getTitleDisplay(self):
+        return "Group: " + self.title
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
@@ -3950,7 +4073,7 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 class Relationship(Privacy):
     user = models.ForeignKey(UserProfile, related_name='relationships')
-    when = models.DateTimeField(auto_now_add=True)
+    created_when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts relationship to appropriate child model.
@@ -3959,29 +4082,9 @@ class Relationship(Privacy):
         type = self.relationship_type
         if type == 'VO':
             object = self.ucrelationship.voted
-        elif type == 'CR':
-            object = self.ucrelationship.created
-        elif type == 'CO':
-            object = self.ucrelationship.commented
-        elif type == 'ED':
-            object = self.ucrelationship.edited
-        elif type == 'SH':
-            object = self.ucrelationship.shared
-        elif type == 'FC':
-            object = self.ucrelationship.followed
-        elif type == 'DV':
-            object = self.ucrelationship.debatevoted
-        elif type == 'MV':
-            object = self.ucrelationship.motionvoted
-        elif type == 'XX':
-            object = self.ucrelationship.deleted
         # relationships with invite/request/decline/reject. all inherit from Invite , below
-        elif type == 'AE':
-            object = self.ucrelationship.attending
         elif type== 'JO':
             object = self.ucrelationship.groupjoined
-        elif type== 'JD':
-            object = self.ucrelationship.debatejoined
         elif type == 'FO':
             object = self.uurelationship.userfollow
         elif type == 'SI':
@@ -4023,9 +4126,11 @@ class Invite(LGModel):
         else:
             self.save()
     def invite(self, inviter):
+        self.declined = False
         self.invited = True
         self.inviter = inviter.id
         self.save()
+
     def getInviter(self):
         if self.inviter == -1:
             return None
@@ -4069,8 +4174,7 @@ class UCRelationship(Relationship):
         return self.content
 
 #=======================================================================================================================
-# Exact same as vote, except for debates.
-# inherits from relationship
+# office held
 #=======================================================================================================================
 class OfficeHeld(UCRelationship):
     office = models.ForeignKey('Office',related_name="office_terms")
@@ -4090,27 +4194,6 @@ class OfficeHeld(UCRelationship):
             return True
         return False
 
-#=======================================================================================================================
-# Exact same as vote, except for debates.
-# inherits from relationship
-#=======================================================================================================================
-class DebateVoted(UCRelationship):
-    value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
-    def autoSave(self):
-        self.relationship_type = 'DV'
-        self.creator=self.user_id
-        self.save()
-
-#=======================================================================================================================
-# Exact same as vote, except for motions.
-# inherits from relationship
-#=======================================================================================================================
-class MotionVoted(UCRelationship):
-    value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
-    def autoSave(self):
-        self.relationship_type = 'MV'
-        self.creator = self.user
-        self.save()
 
 #=======================================================================================================================
 # Vote by a user on a piece of content. like or dislike.
@@ -4134,73 +4217,6 @@ class Voted(UCRelationship):
         else: value = 0
         return value
 
-#=======================================================================================================================
-# Stores what content a user has created.
-# inherits from relationship
-#=======================================================================================================================
-class Created(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'CR'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# User deletes content.
-#=======================================================================================================================
-class Deleted(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'XX'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Stores what content a user has created.
-# inherits from relationship
-#=======================================================================================================================
-class Commented(UCRelationship):
-    comment = models.ForeignKey(Comment)
-    def autoSave(self):
-        self.relationship_type = 'CO'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Stores when a user edits a piece of content.
-# inherits from relationship
-#=======================================================================================================================
-class Edited(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'ED'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Stores a user sharing a piece of content.
-# inherits from relationship
-#=======================================================================================================================
-class Shared(UCRelationship):
-    share_users = models.ManyToManyField(UserProfile)
-    share_groups = models.ManyToManyField(Group)
-    def autoSave(self):
-        self.relationship_type = 'SH'
-        self.creator = self.user
-        self.save()
-
-    def addUser(self, user):
-        if not user in self.share_users.all():
-            self.share_users.add(user)
-            action = Action.lg.get_or_none(relationship=self)
-            if not action:
-                action = Action(relationship=self)
-                action.autoSave()
-            user.notify(action)
-
-    def addGroup(self, group):
-        if not group in self.share_groups.all():
-            pass
-            # self.share_groups.add(group)
-            # action = Action(relationship=self, share_group=group)
-            # action.autoSave()
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
@@ -4212,31 +4228,6 @@ class Signed(UCRelationship):
         self.creator = self.user
         self.save()
 
-#=======================================================================================================================
-# Stores a user following a piece of content.
-# inherits from relationship
-#=======================================================================================================================
-class Followed(UCRelationship):
-    def autoSave(self):
-        self.relationship_type = 'FC'
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Relation between user and event, about whether or not they are attending.
-#
-#=======================================================================================================================
-class Attending(UCRelationship, Invite):
-    CONFIRMATION_CHOICE = (
-        ('Y','yes'),
-        ('N','no'),
-        ('M','maybe')
-        )
-    choice = models.CharField(max_length=1, choices=CONFIRMATION_CHOICE)
-    def autoSave(self):
-        self.relationship_type = 'AE'
-        self.creator = self.user
-        self.save()
 
 #=======================================================================================================================
 # Relation between user and event, about whether or not they are attending.
@@ -4244,23 +4235,12 @@ class Attending(UCRelationship, Invite):
 #=======================================================================================================================
 class GroupJoined(UCRelationship, Invite):
     group = models.ForeignKey(Group)
-    ever_member = models.BooleanField(default=False)
     def autoSave(self):
         self.relationship_type = 'JO'
         self.content = self.group
         self.creator = self.user
         self.save()
 
-#=======================================================================================================================
-# Relation between user and event, about whether or not they are attending.
-#
-#=======================================================================================================================
-class DebateJoined(UCRelationship, Invite):
-    debate = models.ForeignKey(Persistent)
-    def autoSave(self):
-        self.relationship_type = 'JD'
-        self.creator = self.user
-        self.save()
 
 #=======================================================================================================================
 # relationship between two users
@@ -4269,6 +4249,7 @@ class UURelationship(Relationship):
     to_user = models.ForeignKey(UserProfile, related_name='tuser')
     def getTo(self):
         return self.to_user
+
 
 #=======================================================================================================================
 # Friends, (relationships between users)
@@ -4280,41 +4261,27 @@ class UserFollow(UURelationship, Invite):
         self.relationship_type = 'FO'
         self.save()
 
+
 #=======================================================================================================================
 # Support a politician.
 #=======================================================================================================================
-class Supported(UURelationship):
-    confirmed = models.BooleanField(default=False)
-    def autoSave(self):
-        self.relationship_type = 'SU'
-        self.creator = self.user
-        self.save()
-
-class Messaged(UURelationship):
-    message = models.TextField()
-    def autoSave(self):
-        self.relationship_type = 'ME'
-        self.creator = self.user
-        to_user = self.to_user.downcast()
-        to_user.num_messages += 1
-        to_user.save()
-        self.save()
-        return to_user.num_messages
-
-#=======================================================================================================================
-# Linked, (relationships between two pieces of content)
+#class Supported(UURelationship):
+#    confirmed = models.BooleanField(default=False)
+#    def autoSave(self):
+#        self.relationship_type = 'SU'
+#        self.creator = self.user
+#        self.save()
 #
-#=======================================================================================================================
-class Linked(LGModel):
-    from_content = models.ForeignKey(Content, related_name='fcontent')
-    to_content = models.ForeignKey(Content, related_name='tcontent')
-    link_strength = models.IntegerField()
-    link_bonus = models.IntegerField(default=0)      # made by users who link content
-    association_strength = models.IntegerField(default=0)
-    when = models.DateTimeField(auto_now_add=True)
-    def autoSave(self):
-        self.link_strength = self.association_strength + self.link_bonus
-        self.save()
+#class Messaged(UURelationship):
+#    message = models.TextField()
+#    def autoSave(self):
+#        self.relationship_type = 'ME'
+#        self.creator = self.user
+#        to_user = self.to_user.downcast()
+#        to_user.num_messages += 1
+#        to_user.save()
+#        self.save()
+#        return to_user.num_messages
 
 
 #=======================================================================================================================
@@ -4328,37 +4295,6 @@ class CommitteeJoined(GroupJoined):
     def autoSave(self):
         self.relationship_type = 'CJ'
         super(CommitteeJoined, self).autoSave()
-
-########################################################################################################################
-########################################################################################################################
-#   For storing what goes on your profile page.
-#
-#
-########################################################################################################################
-#####################################################################################################################
-#=======================================================================================================================
-# For storing some content on a users profile page.
-#
-#=======================================================================================================================
-class MyContent(LGModel):
-    content = models.ForeignKey(Content)
-    rank = models.IntegerField()
-
-#=======================================================================================================================
-# For storing some people on a users profile page.
-#
-#=======================================================================================================================
-class MyPeople(LGModel):
-    person = models.ForeignKey(UserProfile)
-    rank = models.IntegerField()
-
-#=======================================================================================================================
-# For storing activity on a users profile page.
-#
-#=======================================================================================================================
-class MyAction(LGModel):
-    action = models.ForeignKey(Action)
-    rank = models.IntegerField()
 
 #=======================================================================================================================
 # For a user to write about their views on a topic.

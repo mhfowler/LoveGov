@@ -7,6 +7,10 @@
 
 div.user-menu {
 
+  a {
+    color:$red;
+  }
+
   $triangle-size: 16px;
 
   display: none;

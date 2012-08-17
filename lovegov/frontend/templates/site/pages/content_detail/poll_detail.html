@@ -1,0 +1,55 @@
+{% extends 'site/pages/content_detail/content_detail.html' %}
+
+
+{% block content_detail_sidebar %}
+    <a href="/questions/" class="back-to"> Back To Questions </a>
+{% endblock %}
+
+{% block sidebar_fixed %}
+
+    <div class="poll-detail-sidebar">
+        <div class="sidebar-header">
+            Your Poll Progress
+        </div>
+
+        <div class="poll-progress-wrapper">
+            {% include 'site/pages/qa/poll_progress.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content_description %}
+    <div class="content-info-header">
+        Description
+    </div>
+
+    <div class="description">
+        {{ content.summary}}
+    </div>
+
+    <div class="content-info-header view-scorecards">
+        View Scorecards
+    </div>
+
+    <div class="scorecards-wrapper">
+
+    </div>
+
+{% endblock %}
+
+
+{% block content_body %}
+
+    <div class="questions-wrapper">
+        {% for x in q_items %}
+            {% with question=x.question your_response=x.you show_answer=x.you %}
+                {% include 'site/pages/qa/question_stub.html' %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+
+    <script> rebind="poll_detail"; </script>
+
+{% endblock %}
+
