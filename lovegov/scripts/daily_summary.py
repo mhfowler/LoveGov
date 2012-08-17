@@ -27,10 +27,10 @@ class Session:
     def getPA(self):
         return self.pa
 
-def dailySummaryEmail():
+def dailySummaryEmail(days=0):
     vals = {}
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now() - datetime.timedelta(days=days)
     delta = datetime.timedelta(hours=24)
     today = now - delta
 
@@ -66,14 +66,18 @@ def dailySummaryEmail():
 ################################################# ACTUAL SCRIPT ########################################################
 
 print "*** SENDING DAILY SUMMARY EMAIL ***"
+print "args: [email] [days-prior]"
 
+days=0
 if len(sys.argv) > 1:
     email = sys.argv[1]
     print "sending to: " + email
     email_recipients = [email]
 else:
     email_recipients = DAILY_SUMMARY_EMAILS
+if len(sys.argv) == 3:
+    days = int(sys.argv[2])
 
-sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(),
+sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(days=days),
             email_sender="info@lovegov.com", email_recipients=email_recipients)
 
