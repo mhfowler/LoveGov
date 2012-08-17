@@ -169,7 +169,7 @@ FIRST_LOGIN_LAST_STAGE = 7
 ########################################### MAIN TOPICS ################################################################
 MAIN_TOPICS = ['Economy', 'Education', 'Energy', 'Environment', 'Health Care', 'National Security', 'Social Issues']
 
-MAIN_TOPIC_IMG_FOLDER = settings.STATIC_URL + "/images/questionIcons/"
+MAIN_TOPIC_IMG_FOLDER = "/images/questionIcons/"
 
 MAIN_TOPICS_IMG = {'Economy':MAIN_TOPIC_IMG_FOLDER + 'economy/eco_default.png',
                    'Education':MAIN_TOPIC_IMG_FOLDER + 'education/edu_default.png',

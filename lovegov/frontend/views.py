@@ -526,11 +526,6 @@ def groupPage(request, g_alias, vals={}):
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})
 
-    ## TEST ##
-    items = Content.objects.filter(type='N')
-    vals['item1'] = items[0]
-    vals['item2'] = items[1]
-
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()

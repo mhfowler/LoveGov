@@ -47,33 +47,30 @@ table.home
 
         &:hover { color: $text-blue; }
       }
-
-      div.expand-info
-      {
-        @include titleFont();
-        color:$deep-gray;
-        width:100%;
-        background-color:$light-gray;
-        text-align:center;
-        height: 18px;
-        line-height: 12px;
-        padding-top: 5px;
-        margin-top: 5px;
-        overflow: hidden;
-      }
-
-      div.expand-info:hover
-      {
-        cursor:pointer;
-        background-color:$gray;
-      }
-
     }
 
     div.feed-wrapper
     {
       width:100%;
     }
+  }
+}
+
+div.expand-info
+{
+  @include titleFont();
+  color:$deep-gray;
+  width:100%;
+  background-color:$light-gray;
+  text-align:center;
+  height: 18px;
+  line-height: 12px;
+  padding-top: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+  &:hover {
+    cursor:pointer;
+    background-color:$gray;
   }
 }
 

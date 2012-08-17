@@ -70,7 +70,7 @@
                 <div class="group-match">
 
                     <div class="match-number">
-                        {{ group_comparison.result }}
+                        {{ info.group_comparison.result }}
                     </div>
 
                     <div class="match-title">match</div>
@@ -129,8 +129,8 @@
         </div>
 
         <div class="group-pinned-content">
-            {% include 'site/pages/feed/base-item-thin.html' with item=item1 %}
-            {% include 'site/pages/feed/base-item-thin.html' with item=item2%}
+            {% include 'site/pages/feed/base-item-thin.html' with item=info.item1 %}
+            {% include 'site/pages/feed/base-item-thin.html' with item=info.item2%}
         </div>
 
     </div>

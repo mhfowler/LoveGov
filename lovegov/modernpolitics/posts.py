@@ -1453,10 +1453,10 @@ def getGroups(request, vals={}):
 
     vals['groups'] = groups
     groups_info = []
-    for g in groups:
+    for count,g in enumerate(groups):
         group_vals = {}
         valsGroup(viewer, g, group_vals)
-        groups_info.append({'group':g, 'info':group_vals})
+        groups_info.append({'group':g, 'info':group_vals, 'num':feed_start+count+1})
     vals['groups_info'] = groups_info
 
     html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)

@@ -1,7 +1,12 @@
 {% for x in groups_info %}
-    {% with info=x.info group=x.group  %}
-            {% include 'site/pages/browse/group_stub.html' %}
-    {% endwith %}
+    <div class="group-item-wrapper">
+        <div class="num-label">
+            {{ x.num }}
+        </div>
+        {% with info=x.info group=x.group  %}
+            {% include 'site/pages/group/group_header.html' %}
+        {% endwith %}
+    </div>
 {% endfor %}
 
 

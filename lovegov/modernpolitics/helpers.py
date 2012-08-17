@@ -147,6 +147,7 @@ def randomAnswers(user):
     user.save()
 
 def randomWhales():
+    print "RANDOM WHALES"
     from lovegov.modernpolitics.compare import updateGroupViews
     g = Group.lg.get_or_none(title="Save The Whales")
     if g:

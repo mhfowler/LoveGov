@@ -2180,28 +2180,6 @@ class Petition(Content):
             return DEFAULT_PETITION_IMAGE_URL
 
 #=======================================================================================================================
-# Event
-#
-#=======================================================================================================================
-class Event(Content):
-    # we can get attendees by user relationship, yes_set, maybe_set, no_set
-    full_text = models.TextField(max_length=10000)
-    datetime_of_event = models.DateTimeField()
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.type = 'E'
-        self.save()
-        super(Event, self).autoSave(creator=creator, privacy=privacy)
-
-
-    def edit(self,field,value):
-        if field=="full_text":
-            self.full_text=value
-        else:
-            super(Event, self).edit(field,value)
-        self.save()
-
-
-#=======================================================================================================================
 # News
 #
 #=======================================================================================================================
@@ -2245,17 +2223,10 @@ class News(Content):
 #
 #=======================================================================================================================
 class Discussion(Content):
+    user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.type = "D"
-        super(self, Discussion).autoSave(creator=creator, privacy=privacy)
-
-#=======================================================================================================================
-# Photo album
-#
-#=======================================================================================================================
-class PhotoAlbum(Content):
-    photos = models.ManyToManyField(UserImage)
-
+        super(Discussion, self).autoSave(creator=creator, privacy=privacy)
 
 #=======================================================================================================================
 # Comment (the building block of forums)

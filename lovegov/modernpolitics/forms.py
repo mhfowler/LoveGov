@@ -326,58 +326,6 @@ class CommentForm(forms.Form):
         comment.autoSave(creator=creator, privacy=privacy)
         return comment
 
-
-#=======================================================================================================================
-# Edit
-#=======================================================================================================================
-class EditContentForm(forms.ModelForm):
-    class Meta:
-        model = Content
-        fields = ('title','topics', 'type')
-        # METHODS
-    def complete(self,request):
-        to_return = self.save()
-        # save edited relationship
-        to_return.saveEdited(privacy=getPrivacy(request))
-        return to_return
-    action = forms.CharField(widget=forms.HiddenInput(), initial='edit')
-
-class EditPetitionForm(EditContentForm):
-    class Meta:
-        model = Petition
-        fields = ('title', 'summary', 'full_text','topics', 'type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['petition'])
-    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['petition'])
-
-class EditEventForm(EditContentForm):
-    class Meta:
-        model = Event
-        fields = ('title', 'summary', 'full_text',  'datetime_of_event', 'topics', 'type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['event'])
-    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['event'])
-
-class EditNewsForm(EditContentForm):
-    class Meta:
-        model = News
-        fields = ('title', 'summary', 'link',  'topics', 'type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['news'])
-    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['news'])
-
-class EditMotionForm(EditContentForm):
-    class Meta:
-        model = Motion
-        fields = ('title', 'summary', 'full_text', 'topics', 'type')
-    topics = SelectTopicsField(content_type=TYPE_DICT['motion'])
-    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['motion'])
-
-class EditUserGroupForm(CreateContentForm):
-    class Meta:
-        model = UserGroup
-        fields = ('title', 'summary', 'group_type', 'full_text', 'topics', 'type', 'group_privacy')
-    topics = SelectTopicsField(content_type=TYPE_DICT['group'])
-    type = forms.CharField(widget=forms.HiddenInput(), initial=TYPE_DICT['group'])
-
-
 #=======================================================================================================================
 # Other forms
 #=======================================================================================================================
@@ -386,13 +334,9 @@ class UploadFileForm(forms.Form):
 class UploadImageForm(forms.Form):
     image = forms.ImageField()
 
-
 class EditProfileForm(forms.Form):
     bio = forms.CharField(required=False)
     avatar =  forms.FileField(required=False)
-
-
-
     fullname = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     email2 = forms.EmailField(required=True)

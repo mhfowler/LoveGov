@@ -282,6 +282,11 @@ def valsGroup(viewer, group, vals):
         if group_joined.rejected:
             vals['is_user_rejected'] = True
 
+    ## TEST ##
+    items = Content.objects.filter(type='N')
+    vals['item1'] = items[0]
+    vals['item2'] = items[1]
+
     # histogram
     loadHistogram(5, group.id, 'mini', vals=vals)
 
