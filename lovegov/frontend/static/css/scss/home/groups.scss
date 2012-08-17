@@ -1,0 +1,15 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+div.groups-header {
+  width:100%;
+
+  a.browse-all {
+    float:right;
+    margin-right:20px;
+  }
+
+}

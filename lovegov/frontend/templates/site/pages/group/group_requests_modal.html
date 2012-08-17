@@ -4,24 +4,26 @@
 
     {% for req in group_requests %}
 
-        <div class="group-request-container">
+        <table class="group-request-container">
+            <tr>
 
-            <span class="group-request-span">
-                {% include 'site/pieces/avatar-with-name.html' with user=req.getFrom height="38" width="38" %}
-            </span>
+                <td class="group-request-image">
+                    {% include 'site/pieces/avatar.html' with user=req.getFrom height="38" width="38" %}
+                </td>
 
-            <span class="group-request-span group_request_text">
-                <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to join {{ group.get_name }}:
-                <div class='group-request-append group_request_append_y'>They have joined your group</div>
-                <div class='group-request-append group_request_append_n'>Request declined</div>
-            </span>
+                <td class="group-request-text group_request_text">
+                    <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to join {{ group.get_name }}:
+                    <div class='group-request-append group_request_append_y'>They have joined your group</div>
+                    <div class='group-request-append group_request_append_n'>Request declined</div>
+                </td>
 
-            <span class="group-request-span group_request_buttons" data-follow_id="{{ from_user.id }}" data-g_id="{{ to_user.id }}">
-                <a href="" class="group_response_y button-red group-button">accept</a>
-                <a href="" class="group_response_n button-red group-button">decline</a>
-            </span>
+                <td class="group-request-button group_request_buttons" data-follow_id="{{ req.getFrom.id }}" data-g_id="{{ group.id }}">
+                    <a href="" class="group_response_y button-red group-button">accept</a>
+                    <a href="" class="group_response_n button-red group-button">decline</a>
+                </td>
 
-        </div>
+            </tr>
+        </table>
 
     {% endfor %}
 

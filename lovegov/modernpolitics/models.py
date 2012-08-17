@@ -268,23 +268,34 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
     #-------------------------------------------------------------------------------------------------------------------
+    def getAliasURL(self):
+        alias = self.alias
+        if alias != "" and alias !="default":
+            return '/' + alias + "/"
+        else:
+            return None
+
     def get_url(self):
-        if self.type=='P':
+        if self.type=='C':
+            return self.downcast().root_content.get_url()
+        elif self.type=='R':
+            return self.downcast().question.get_url()
+        elif self.type=='P':
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
-        elif self.type =='M':
-            return '/motion/' + str(self.id) + '/'
+        elif self.type=='O':
+            return '/poll/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
+        elif self.type=='D':
+            return '/discussion/' + str(self.id) + '/'
+        elif self.type=='E':
+            return '/event/' + str(self.id) + '/'
         elif self.type=='G':
-            return '/group/' + str(self.id) + '/'
-        elif self.type=='C':
-            return self.downcast().root_content.getUrl()
-        elif self.type=='R':
-            return self.downcast().question.getUrl()
+            return self.getAliasURL() or '/group/' + str(self.id) + '/'
         else:
-            return '/display/' + str(self.id) + '/'
+            return self.type
 
     def getUrl(self):
         return self.get_url()
@@ -299,10 +310,20 @@ class Content(Privacy, LocationLevel):
         return self.title
     def get_name(self):
         return self.getName()
-
     def getTitle(self):
         return self.title
+    def getTitleDisplay(self):
+        return self.downcast().getTitleDisplay()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # returns group that this content was orginally posted to
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPostedTo(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup
+        posted = self.posted_to
+        if not posted:
+            posted = getLoveGovGroup()
+        return posted
 
     #-------------------------------------------------------------------------------------------------------------------
     # Recalculate status for this content.
@@ -519,51 +540,18 @@ class Content(Privacy, LocationLevel):
             object = self.question
         elif type == 'R':
             object = self.response
-
         elif type == 'I':
             object = self.userimage
+        elif type == 'O':
+            object = self.poll
         elif type == 'G':
             object = self.group
-        elif type == 'D':
-            object = self.debate
-        elif type == 'Y':
-            object = self.persistent
         elif type == 'Z':
             object = self.response
         elif type == 'M':
             object = self.motion
-        elif type == 'F':
-            object = self.forum
         else: object = self
         return object
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns correct template file based on type of content.
-    #-------------------------------------------------------------------------------------------------------------------
-    def getTemplate(self):
-        type = self.type
-        if type == 'N':
-            template = 'usable/display_news.html'
-        elif type == 'P':
-            template = 'usable/display_petition.html'
-        elif type == 'E':
-            template = 'usable/display_event.html'
-        elif type == 'C':
-            template = 'usable/display_comment.html'
-        elif type == 'Q':
-            template = 'usable/display_question.html'
-        elif type == 'R':
-            template = 'usable/display_response.html'
-        elif type == 'I':
-            template = 'usable/display_image.html'
-        elif type == 'Y':
-            template = 'usable/display_persistent_debate.html'
-        elif type == 'Z':
-            template = 'usable/display_aggregate.html'
-        elif type == 'M':
-            template = 'usable/display_motion.html'
-        else: template = None
-        return template
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns correct edit form for content, and populates it with post data if request is inputted
@@ -881,7 +869,7 @@ class BasicInfo(models.Model):
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
     invite_message = models.CharField(max_length=10000, blank=True, default="default")
     invite_subject = models.CharField(max_length=1000, blank=True, default="default")
-    bio = models.CharField(max_length=150, blank=True, null=True)
+    bio = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -906,13 +894,6 @@ class Feed(LGModel):
     items = models.ManyToManyField(FeedItem)
     def smartClear(self):
         self.items.all().delete()
-
-#=======================================================================================================================
-# Tuple for quick access to user's debate record.
-#=======================================================================================================================
-class DebateResult(LGModel):
-    debate = models.IntegerField()  # foreign key to debate
-    result = models.CharField(max_length=1)     # 'W', 'L', 'T'
 
 #=======================================================================================================================
 # For storing a user's settings for sending them email alerts about notifications for particular user or content..
@@ -982,7 +963,7 @@ class SimpleFilter(LGModel):
     levels = custom_fields.ListField(default=[])                 # list of char of included levels
     groups = models.ManyToManyField("Group")
     submissions_only = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
-    display = models.CharField(max_length=1, choices=FEED_DISPLAY_CHOICES, default="P")
+    display = models.CharField(max_length=1, default="P")
     # which location
     location = models.ForeignKey("PhysicalAddress", null=True)
 
@@ -1099,7 +1080,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
     # CONTENT LISTS
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
-    debate_record = models.ManyToManyField(DebateResult)
     i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
     follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
     private_follow = models.BooleanField(default=False)
@@ -1123,6 +1103,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
+    political_statement = models.TextField(null=True)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     # deprecated
@@ -1514,7 +1495,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
         to_user.follow_me.joinMember(self)
-        to_user.num_followers += 1
+        to_user.num_followme += 1
         to_user.save()
 
         #Check and Make Relationship A
@@ -1532,6 +1513,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def unfollow( self , to_user ):
         relationship = UserFollow.lg.get_or_none( user=self, to_user=to_user )
+
         if self.i_follow:
             self.i_follow.members.remove(to_user)
         if to_user.follow_me:
@@ -1573,6 +1555,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             img.autoSave(creator=self, privacy='PUB')
             self.profile_image = img
             self.save()
+
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Creates involvement tuple and adds it to myinvolvement if user is not already involved with inputted content
@@ -1641,23 +1625,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return False
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Add debate result, takes in debate and result (as integer)
-    #-------------------------------------------------------------------------------------------------------------------
-    def addDebateResult(self, debate, result):
-        debate_result = DebateResult(debate=debate.id, result=result)
-        debate_result.save()
-        self.debate_record.add(debate_result)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns triple tuple (wins, losses, ties)
-    #-------------------------------------------------------------------------------------------------------------------
-    def getDebateRecord(self):
-        wins = self.debate_record.filter(result=1).count()
-        losses = self.debate_record.filter(result=-1).count()
-        ties = self.debate_record.filter(result=0).count()
-        return wins, losses, ties
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Creates system group for that persons connections.
     #-------------------------------------------------------------------------------------------------------------------
     def createIFollowGroup(self):
@@ -1722,10 +1689,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
         actions = Action.objects.filter(relationship__user=self, privacy='PUB').order_by('-when')
-        print len( actions )
         if num != -1:
             actions = actions[start:start+num]
-        print len( actions )
         return actions
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1737,6 +1702,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).order_by('-when')[:num]
 
+
+    def getNumFollowRequests(self):
+        return UserFollow.objects.filter( to_user=self, confirmed=False, requested=True, rejected=False ).count()
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all unconfirmed requests.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1745,6 +1714,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')
         else:
             return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).order_by('-when')[:num]
+
+    def getNumGroupInvites(self):
+        return GroupJoined.objects.filter( user=self, confirmed=False, invited=True, declined=False ).count()
 
     #-------------------------------------------------------------------------------------------------------------------
     # return a query set of groups and networks user is in
@@ -1969,7 +1941,7 @@ class Action(Privacy):
                             'true':True,
                             'timestamp':self.when})
 
-        action_verbose = render_to_string('site/pieces/notifications/action_verbose.html',vals)
+        action_verbose = render_to_string('site/frame/notifications/action_verbose.html',vals)
         return action_verbose
 
 
@@ -2066,7 +2038,7 @@ class Notification(Privacy):
         vals.update(notification_context)
         vals['hover_off'] = True
 
-        notification_verbose = render_to_string('site/pieces/notifications/notification_verbose.html',vals)
+        notification_verbose = render_to_string('site/frame/notifications/notification_verbose.html',vals)
         return notification_verbose
 
     def addAggUser(self,agg_user,privacy="PUB"):
@@ -2123,6 +2095,10 @@ class Petition(Content):
     current = models.IntegerField(default=0)
     goal = models.IntegerField(default=10)
     p_level = models.IntegerField(default=1)
+
+    def getTitleDisplay(self):
+        return "Petition: " + self.title
+
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
             self.summary = self.full_text[:400]
@@ -2204,28 +2180,6 @@ class Petition(Content):
             return DEFAULT_PETITION_IMAGE_URL
 
 #=======================================================================================================================
-# Event
-#
-#=======================================================================================================================
-class Event(Content):
-    # we can get attendees by user relationship, yes_set, maybe_set, no_set
-    full_text = models.TextField(max_length=10000)
-    datetime_of_event = models.DateTimeField()
-    def autoSave(self, creator=None, privacy='PUB'):
-        self.type = 'E'
-        self.save()
-        super(Event, self).autoSave(creator=creator, privacy=privacy)
-
-
-    def edit(self,field,value):
-        if field=="full_text":
-            self.full_text=value
-        else:
-            super(Event, self).edit(field,value)
-        self.save()
-
-
-#=======================================================================================================================
 # News
 #
 #=======================================================================================================================
@@ -2233,6 +2187,10 @@ class News(Content):
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
+
+    def getTitleDisplay(self):
+        return "News: " + self.title
+
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
         self.in_feed = True
@@ -2265,17 +2223,10 @@ class News(Content):
 #
 #=======================================================================================================================
 class Discussion(Content):
+    user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.type = "D"
-        super(self, Discussion).autoSave(creator=creator, privacy=privacy)
-
-#=======================================================================================================================
-# Photo album
-#
-#=======================================================================================================================
-class PhotoAlbum(Content):
-    photos = models.ManyToManyField(UserImage)
-
+        super(Discussion, self).autoSave(creator=creator, privacy=privacy)
 
 #=======================================================================================================================
 # Comment (the building block of forums)
@@ -2730,15 +2681,39 @@ class CongressVote(LGModel):
 
 ########################################################################################################################
 ########################################################################################################################
-#   QA Web
+#   QA
 #       Question is a piece of content (can be liked, disliked, too_complicated, commented on etc)
-#       Users can create questions... but we decide what is official.
-#       For any one question there can be as many or as few NextQuestion relations as desired, next_question associates
-#       other questions more or less strongly based on the particular answer that the user selected. answer
-#       should also have the possible value 'SKIP', which can be taken into account for next_question and for
-#       our data about the user and the question.
+#       Users can create questions.
+#
 ########################################################################################################################
 ########################################################################################################################
+#=======================================================================================================================
+# Poll, a bunch of questions
+#
+#=======================================================================================================================
+class Poll(Content):
+    questions = models.ManyToManyField("Question")
+    num_questions = models.IntegerField(default=0)
+    description = models.TextField(blank=True)
+
+    def getTitleDisplay(self):
+        return "Poll: " + self.title
+
+    def get_url(self):
+        return '/poll/' + str(self.id) + '/'
+
+    def autoSave(self, creator=None, privacy='PUB'):
+        self.type = "O"
+        self.in_feed = True
+        self.save()
+        super(Poll, self).autoSave(creator=creator, privacy=privacy)
+
+    def addQuestion(self, q):
+        if q not in self.questions.all():
+            self.questions.add(q)
+            self.num_questions += 1
+            self.save()
+
 #=======================================================================================================================
 # Answer
 #
@@ -2757,13 +2732,8 @@ class Answer(LGModel):
 #
 #=======================================================================================================================
 class Question(Content):
-    QUESTION_TYPE = (
-        ('MC', 'Multiple Choice'),
-        ('CB', 'Check Box'),
-        ('SS', 'Sliding Scale')
-        )
     question_text = models.TextField(max_length=500)
-    question_type = models.CharField(max_length=2, choices=QUESTION_TYPE)
+    question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
@@ -2775,9 +2745,15 @@ class Question(Content):
     def toJSON(self):
         pass
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Edit method, the question-specific version of the general content method.
-    #-------------------------------------------------------------------------------------------------------------------
+    def getTitleDisplay(self):
+        return "Question: " + self.title
+
+    def autoSave(self, creator=None, privacy='PUB'):
+        self.type = "Q"
+        self.in_feed = True
+        self.save()
+        super(Question, self).autoSave(creator=creator, privacy=privacy)
+
     def edit(self,field,value):
         if field=="question_text":
             self.question_text=value
@@ -2793,15 +2769,6 @@ class Question(Content):
         else:
             return DEFAULT_DISCUSSION_IMAGE_URL
 
-#=======================================================================================================================
-# NextQuestion is essentially a relation from one question to another, based on how you answered the first question.
-#
-#=======================================================================================================================
-class NextQuestion(LGModel):
-    from_question = models.ForeignKey(Question, related_name='fquestion')
-    to_question = models.ForeignKey(Question, related_name='tquestion')
-    answer_value = models.IntegerField(default=-1)
-    relevancy = models.IntegerField()
 
 #=======================================================================================================================
 # Response, abstract so that content users and groups can inherit from it
@@ -2818,15 +2785,18 @@ class Response(Content):
     answer_tallies = models.ManyToManyField('AnswerTally')
 
     def getPercent(self, a_id):
-        if a_id == self.most_chosen_answer_id:
-            percent = self.most_chosen_num / float(self.total_num)
-        else:
-            tally = self.answer_tallies.filter(answer_id=a_id)
-            if tally:
-                percent = tally.tally / float(self.total_num)
+        if self.total_num:
+            if a_id == self.most_chosen_answer_id:
+                percent = self.most_chosen_num / float(self.total_num)
             else:
-                percent = 0
-        return int(percent*100)
+                tally = self.answer_tallies.filter(answer_id=a_id)
+                if tally:
+                    percent = tally[0].tally / float(self.total_num)
+                else:
+                    percent = 0
+            return int(percent*100)
+        else:
+            return 0
 
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
@@ -2846,214 +2816,6 @@ class Response(Content):
 
     def clearAnswerTallies(self):
         self.answer_tallies.delete()
-
-
-########################################################################################################################
-########################################################################################################################
-#   Debates
-#       another important, slightly more complicated piece of content. There will be both persistent and live debates,
-#       formal and casual, with group voting and moderator voting. IDEAL, anyone can do it, because its fun and
-#       game-like and you and others can see your record...but if you do really well, and are really involved, your
-#       your record can actually make your voice more heard, and online debates can become a forum for serious political
-#       discourse.
-########################################################################################################################
-########################################################################################################################
-#=======================================================================================================================
-# A debate message, from a debater at a certain time.
-#
-#=======================================================================================================================
-class Message(Content):
-    debater = models.ForeignKey(UserProfile)
-    text = models.TextField()
-    when = models.DateTimeField(auto_now_add=True)
-
-#=======================================================================================================================
-# A persistent debate. The parent from which other specific kinds of debates will inherit.
-#
-#=======================================================================================================================
-class Persistent(Content):
-    # DEBATERS
-    affirmative = models.ForeignKey(UserProfile, related_name = "negative", null=True)
-    negative = models.ForeignKey(UserProfile, related_name="affirmative", null=True)
-    moderator = models.ForeignKey(UserProfile,related_name = "themoderator", null=True)
-    # DEBATE RESOLUTION AND STATEMENTS
-    resolution = models.CharField(max_length=200)
-    statements = models.ManyToManyField(Message)
-    # INFO ON DEBATE SETTINGS
-    debate_type = models.CharField(max_length=1, choices=DEBATE_CHOICES)
-    possible_users = models.ManyToManyField(UserProfile, related_name="possible") # the creator of debate can say who is allowed to join debate
-    debate_start_time = models.DateTimeField(auto_now_add=True)
-    debate_finish_time = models.DateTimeField(null=True)
-    debate_expiration_time = models.DateTimeField(null=True)
-    turns_total = models.IntegerField(default=6)      # number of responses per user, default is 6
-    allotted_response_delta = models.IntegerField(default=-1)      # window to respond, in minutes, default is unlimited
-    allotted_debate_delta = models.IntegerField(default=-1)         # total time for debate, in minutes, default is unlimited
-    allotted_expiration_delta = models.IntegerField(default=10080) # time post debate finish, until winner is determined by votes. default=1week
-    # DETERMINATION OF WINNER
-    votes_affirmative = models.IntegerField(default=0)
-    votes_negative = models.IntegerField(default=0)
-    turns_elapsed = models.IntegerField(default=0)        # number of turns passed so far
-    turn_current = models.BooleanField(default=True)
-    turn_lasttime = models.DateTimeField(auto_now_add=True)
-    winner = models.ForeignKey(UserProfile, null=True, related_name ="thewinner")
-    debate_finished = models.BooleanField(default=False)
-    voting_finished = models.BooleanField(default=False)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # # sets debate to voting finished and determines winner
-    #-------------------------------------------------------------------------------------------------------------
-    def addMessage(self, text):
-        now = datetime.datetime.now()
-        message = Message(text=text)
-        if self.turn_current:
-            message.debater = self.affirmative
-            to_user = self.negative
-        else:
-            message.debater = self.negative
-            to_user = self.affirmative
-        message.save()
-        self.statements.add(message)
-        # switch current_turn
-        self.turn_current = not self.turn_current
-        self.turn_lasttime = now
-        self.turns_elapsed += 1
-        self.save()
-        # check if turns have expired
-        if self.turns_elapsed > self.turns_total:
-            self.debate_finish_time = now
-            self.debate_expiration_time = now + self.getDelta(self.allotted_expiration_delta)
-            # for testing !!
-            test_delta = timedelta(seconds=60)
-            self.debate_expiration_time = now + test_delta
-            # 3nd of test
-            self.debate_finished = True
-            self.save()
-            # alert other user that debate is finished.
-            alert_text = message.debater.get_name() + " responded and the debate is finished."
-        # else alert the other debater it is now their turn.
-        else:
-            alert_text = message.debater.get_name() + " responded and it is your turn."
-            # send notification
-        to_user.debateNotification(message=alert_text, debate=self, from_user = message.debater)
-        return HttpResponse("message added")
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # # sets debate to voting finished and determines winner
-    #-------------------------------------------------------------------------------------------------------------
-    def setOver(self):
-        self.voting_finished = True
-        # deterimine winner of debate by type
-        if self.debate_type == 'C':
-            winner_text = "The debate is finished."
-            loser_text = "The debate is finished."
-            winner = self.affirmative
-            loser = self.negative
-            tie = False
-        elif self.debate_type == 'F':
-            winner_text = "You won a debate!"
-            loser_text = "You lost a debate."
-            if self.votes_affirmative > self.votes_negative:
-                self.winner = self.affirmative
-                winner = self.winner
-                loser = self.negative
-                tie = False
-            elif self.votes_negative > self.votes_affirmative:
-                self.winner = self.negative
-                winner = self.winner
-                loser = self.affirmative
-                tie = False
-            else:
-                tie = True
-                winner = self.affirmative
-                loser = self.negative
-                winner_text = "You tied a debate."
-                loser_text = "You tied a debate."
-        else:
-            print "cmann"
-            return HttpResponse("moderator did not vote")
-            # save
-        self.save()
-        # alert winner that they won and loser that they lost
-        if tie:
-            # add tie to both debate records
-            winner.addDebateResult(self, 0)
-            loser.addDebateResult(self, 0)
-        else:
-            winner.addDebateResult(self, 1)
-            loser.addDebateResult(self, -1)
-        winner.debateNotification(debate=self, from_user=loser, message=winner_text)
-        loser.debateNotification(debate=self, from_user=winner, message=loser_text)
-        return HttpResponse("And it was decided..")
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Checks if debate is over, as well as checking if turn has expired.
-    #-------------------------------------------------------------------------------------------------------------
-    def update(self):
-        now = datetime.datetime.now()
-        # check if debate already finished
-        if self.debate_finished:
-            # check if voting already finished
-            if self.voting_finished:
-                return HttpResponse("debate closed")
-            else:
-                # check if now is greater than expiration time
-                if now > self.debate_expiration_time:
-                    # sets debate to voting finished and determines winner
-                    return self.setOver()
-        else:
-            if now > self.debate_finish_time:
-                self.finished = True
-                return HttpResponse("debate finished")
-            else:
-                # else check if current turn has expired
-                turn_delta = self.getDelta(self.allotted_response_delta)
-                turn_over = self.turn_lasttime + turn_delta
-                if now > turn_over:
-                    # send missed turn message
-                    return self.addMessage("[missed turn]")
-        return HttpResponse("already up to date")
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Takes in a duration value (in minutes), and returns a python timedelta of that value
-    #-------------------------------------------------------------------------------------------------------------------
-    def getDelta(self, x):
-        # if unlimited
-        if x == -1:
-            delta = timedelta(days=100)
-        else:
-            delta = timedelta(minutes=x)
-        return delta
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Invites user to debate, and adds to list of possible users.
-    #-------------------------------------------------------------------------------------------------------------------
-    def invite(self, user, inviter, privacy='PUB'):
-        already_invited = DebateJoin.objects.filter(user=user, group=self)
-        if already_invited:
-            already_invited[0].invite()
-        else:
-            invitation = DebateJoin(user=user, content=self, group=self, privacy=privacy)
-            invitation.autoSave()
-            invitation.invite(inviter=inviter)
-        self.possible_users.add(user)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Autocreates and saves a debate with appropriate settings based on its type.
-    #-------------------------------------------------------------------------------------------------------------------
-    def autoSave(self, creator=None, privacy='PUB'):
-        if self.debate_type == 'F':
-            now = datetime.datetime.now()
-            # this is default settings
-            self.title = "Debate: " + self.resolution
-            self.type = 'Y'
-            self.debate_finish_time = now + self.getDelta(self.allotted_debate_delta)
-            self.save()
-            super(Persistent, self).autoSave(creator=creator, privacy=privacy)
-        else:
-            print "not yet implemented"
-
-
-
 
 ########################################################################################################################
 ########################################################################################################################
@@ -3256,12 +3018,12 @@ class AnswerTally(LGModel):
 #=======================================================================================================================
 class Group(Content):
     # people
-    admins = models.ManyToManyField(UserProfile, related_name='admin')
-    members = models.ManyToManyField(UserProfile, related_name='member')
+    admins = models.ManyToManyField(UserProfile, related_name='admin_of')
+    members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
-    group_content = models.ManyToManyField(Content, related_name='ongroup')
+    pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
@@ -3274,6 +3036,9 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
+
+    def getTitleDisplay(self):
+        return "Group: " + self.title
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
@@ -3980,8 +3745,6 @@ class Relationship(Privacy):
             object = self.ucrelationship.shared
         elif type == 'FC':
             object = self.ucrelationship.followed
-        elif type == 'DV':
-            object = self.ucrelationship.debatevoted
         elif type == 'MV':
             object = self.ucrelationship.motionvoted
         elif type == 'XX':
@@ -3991,8 +3754,6 @@ class Relationship(Privacy):
             object = self.ucrelationship.attending
         elif type== 'JO':
             object = self.ucrelationship.groupjoined
-        elif type== 'JD':
-            object = self.ucrelationship.debatejoined
         elif type == 'FO':
             object = self.uurelationship.userfollow
         elif type == 'SI':
@@ -4034,6 +3795,7 @@ class Invite(LGModel):
         else:
             self.save()
     def invite(self, inviter):
+        self.declined = False
         self.invited = True
         self.inviter = inviter.id
         self.save()
@@ -4080,8 +3842,7 @@ class UCRelationship(Relationship):
         return self.content
 
 #=======================================================================================================================
-# Exact same as vote, except for debates.
-# inherits from relationship
+# office held
 #=======================================================================================================================
 class OfficeHeld(UCRelationship):
     office = models.ForeignKey('Office',related_name="office_terms")
@@ -4100,17 +3861,6 @@ class OfficeHeld(UCRelationship):
         if (datetime.date.today() - self.end_date).days >= 0:
             return True
         return False
-
-#=======================================================================================================================
-# Exact same as vote, except for debates.
-# inherits from relationship
-#=======================================================================================================================
-class DebateVoted(UCRelationship):
-    value = models.IntegerField()        # 1 is like, 0 neutral, -1 dislike
-    def autoSave(self):
-        self.relationship_type = 'DV'
-        self.creator=self.user_id
-        self.save()
 
 #=======================================================================================================================
 # Exact same as vote, except for motions.
@@ -4213,6 +3963,7 @@ class Shared(UCRelationship):
             # action = Action(relationship=self, share_group=group)
             # action.autoSave()
 
+
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
 # inherits from relationship
@@ -4259,17 +4010,6 @@ class GroupJoined(UCRelationship, Invite):
     def autoSave(self):
         self.relationship_type = 'JO'
         self.content = self.group
-        self.creator = self.user
-        self.save()
-
-#=======================================================================================================================
-# Relation between user and event, about whether or not they are attending.
-#
-#=======================================================================================================================
-class DebateJoined(UCRelationship, Invite):
-    debate = models.ForeignKey(Persistent)
-    def autoSave(self):
-        self.relationship_type = 'JD'
         self.creator = self.user
         self.save()
 
@@ -4339,37 +4079,6 @@ class CommitteeJoined(GroupJoined):
     def autoSave(self):
         self.relationship_type = 'CJ'
         super(CommitteeJoined, self).autoSave()
-
-########################################################################################################################
-########################################################################################################################
-#   For storing what goes on your profile page.
-#
-#
-########################################################################################################################
-#####################################################################################################################
-#=======================================================================================================================
-# For storing some content on a users profile page.
-#
-#=======================================================================================================================
-class MyContent(LGModel):
-    content = models.ForeignKey(Content)
-    rank = models.IntegerField()
-
-#=======================================================================================================================
-# For storing some people on a users profile page.
-#
-#=======================================================================================================================
-class MyPeople(LGModel):
-    person = models.ForeignKey(UserProfile)
-    rank = models.IntegerField()
-
-#=======================================================================================================================
-# For storing activity on a users profile page.
-#
-#=======================================================================================================================
-class MyAction(LGModel):
-    action = models.ForeignKey(Action)
-    rank = models.IntegerField()
 
 #=======================================================================================================================
 # For a user to write about their views on a topic.

@@ -30,6 +30,7 @@
                     <span class="question-checkbox
                     answer_checkbox{% if your_response.most_chosen_answer.id == a.id %} clicked{% endif %}" data-a_id="{{ a.id }}"></span>
                     <span class="answer-text"> {{ a.answer_text }}</span>
+                    <div style="clear:both"></div>
                 </div>
             {% endfor %}
         </div>

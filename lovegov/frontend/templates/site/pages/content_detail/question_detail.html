@@ -1,4 +1,4 @@
-{% extends 'site/pages/top_sidebar_main.html' %}
+{% extends 'site/pages/home/top_sidebar_main.html' %}
 
 {% block top %}
 {% endblock %}
@@ -11,7 +11,7 @@
                 <div class="agree-with">
                     You agree with
                 </div>
-                {% include 'site/pages/qa/agrees_box.html' %}
+                {% include 'site/pages/qa/you_agree_with_stats.html' %}
             </div>
         {% endif %}
         <div class="friends">
@@ -28,6 +28,7 @@
         </div>
     </div>
 {% endblock %}
+
 
 {% block main %}
     <div class="question-detail">

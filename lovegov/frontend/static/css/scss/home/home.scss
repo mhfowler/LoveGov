@@ -5,43 +5,48 @@
 @import "compass";
 
 
+.gray-hover {
+  //@include border-radius(5px);
+  &:hover {
+    background-color:$light-gray;
+    color:white;
+  }
+  &.clicked {
+    background-color:$light-gray;
+    color:white;
+  }
+}
+
+
+
 table.home
 {
   width:100%;
 
   td.home-sidebar
   {
-    width:200px;
+    width:150px;
     overflow:hidden;
   }
 
   td.home-main
   {
-    padding-left:20px;
+    padding-left:30px;
 
     div.home-header
     {
       width:100%;
 
-      div.expand-info
+      div.minimize-button
       {
-        @include titleFont();
-        color:$deep-gray;
-        width:100%;
-        background-color:$light-gray;
-        text-align:center;
-        height: 18px;
-        line-height: 12px;
-        padding-top: 5px;
-        margin-top: 5px;
-      }
+        float: right;
+        cursor: pointer;
+        color: $text-blue-light;
+        font-size: 10px;
+        margin-top: 2px;
 
-      div.expand-info:hover
-      {
-        cursor:pointer;
-        background-color:$gray;
+        &:hover { color: $text-blue; }
       }
-
     }
 
     div.feed-wrapper
@@ -51,9 +56,28 @@ table.home
   }
 }
 
+div.expand-info
+{
+  @include titleFont();
+  color:$deep-gray;
+  width:100%;
+  background-color:$light-gray;
+  text-align:center;
+  height: 18px;
+  line-height: 12px;
+  padding-top: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+  &:hover {
+    cursor:pointer;
+    background-color:$gray;
+  }
+}
+
 div.left-navbar {
 
   @include titleFont();
+  width:150px;
   overflow:hidden;
 
   p.asterisk-pointer {
@@ -73,32 +97,20 @@ div.left-navbar {
       display:block;
       margin: 0px 0 0 10px;
       color:$black;
-      width:180px;
-    }
-    a.navbar-link:hover {
-      color:white;
-      background-color:$light-gray;
-    }
-    a.navbar-link.clicked {
-      color:white;
-      background-color:$light-gray;
+      width:139px;
+      @extend .gray-hover;
     }
   }
 
   div.navbar-title {
+    @extend .gray-hover;
     @include inline-block;
     @include grayText();
     @include fontSize(24px);
     padding: 5px;
   }
-  div.navbar-title:hover {
-    //text-decoration:underline;
-    background-color:$light-gray;
-    color:white;
-  }
   a.section_title.clicked {
     div.navbar-title {
-      //text-decoration:underline;
       background-color:$light-gray;
       color:white;
     }
@@ -112,6 +124,7 @@ div.left-navbar {
     @include transition(.25s);
     margin-left:15px;
     margin-bottom:3px;
+    display:none;
   }
   span.red-triangle-down {
     @include transform(rotate(90deg));
@@ -128,7 +141,7 @@ div.left-navbar {
     a.create-link {
       float:right;
       @include fontSize(12px);
-      margin-right:10px;
+      margin-right:50px;
       padding-right:5px;
     }
   }

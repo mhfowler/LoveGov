@@ -1,0 +1,32 @@
+<!--  CSS in follow-requests-modal.scss  -->
+
+<div class="follow-requests-modal">
+
+    <div class="modal-section-title">Follow Requests:</div>
+
+    {% for req in follow_requests %}
+
+        <table class="follow-request-container">
+            <tr>
+
+                <td class="follow-request-image">
+                    {% include 'site/pieces/avatar.html' with user=req.getFrom height="38" width="38" %}
+                </td>
+
+                <td class="follow-request-text follow_response_text">
+                    <a href="{{ req.getFrom.get_url }}">{{ req.getFrom.get_name }}</a> has requested to follow you:
+                    <div class='follow-request-append follow_response_append_y'>They are now following you</div>
+                    <div class='follow-request-append follow_response_append_n'>Request declined</div>
+                </td>
+
+                <td class="follow-request-button follow_response_buttons" data-follow_id="{{ req.getFrom.id }}">
+                    <a href="" class="follow_response_y button-red follow-button">accept</a>
+                    <a href="" class="follow_response_n button-red follow-button">decline</a>
+                </td>
+
+            </tr>
+        </table>
+
+    {% endfor %}
+
+</div>

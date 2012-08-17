@@ -18,7 +18,7 @@
             <div class="feed-user-name">
 
                 <div class="feed-avatar-image">
-                    {% include "site/pieces/avatar.html" with user=item.creator height='35' width='35' %}
+                    <a href="{{ item.creator.get_url }}">{% include "site/pieces/avatar.html" with user=item.creator height='35' width='35' %}</a>
                 </div>
 
                 <div class="feed-avatar-text">

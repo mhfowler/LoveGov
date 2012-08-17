@@ -4,9 +4,11 @@
     <div class="top">
 
         <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
-    <span class="state"> {% with state=profile.location.state %}
-        {% if state %}{{ profile.location.state }}{% else %} LoveGov {% endif %} {% endwith %}</span>
-    <span class="redheart">
+        {% with state=profile.location.state %}
+            <span class="state"> {{ profile.political_title }}{% if state %},{% endif %} </span>
+            <span class="state"> {% if state %}{{ profile.location.state }}{% endif %}</span>
+        {% endwith %}
+        <span class="redheart">
          {% with full_url='/static/images/icons/red_heart.png'|media_url:MEDIA_PREFIX %}
              {% thumbnail full_url "20" crop="center" format="PNG" as im %}
                  <img src="{{ im.url }}" />
@@ -30,11 +32,31 @@
                         {% include 'site/pieces/avatar.html' with width="150" height="200" user=profile hoveroff=1 %}
                     </div>
 
-                    {% if followsyou %}
-                        <div class="follows-you">
-                            <p> Follows You </p>
-                        </div>
+                    {% if viewer.id != profile.id %}
+
+                        {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
+                            <div class="user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
+                        {% elif is_user_confirmed %}
+                            <div class="user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
+                        {% elif is_user_requested %}
+                            <div class="user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
+                        {% endif %}
+
                     {% endif %}
+
+                    {% if viewer.id == profile.id %}
+
+                        {% if num_follow_requests > 0 %}
+                            <div class="user-follow follow_requests_modal">requests ({{ num_follow_requests }})</div>
+                        {% endif %}
+
+                        {% if num_group_invites > 0 %}
+                            <div class="user-follow group_invited_modal">invites ({{ num_group_invites }})</div>
+                        {% endif %}
+
+                    {% endif %}
+
+
 
                     <!-- text match -->
                     {% include 'site/pages/profile/sidebar_match.html' with to_compare=profile %}
@@ -95,16 +117,6 @@
                             </div>
                             <div style="clear:both;"></div>
                         </div>
-
-                        {% if not ifollow %}
-                            <div class="profile-bar-button follow-button user_follow">
-                                follow
-                            </div>
-                        {% else %}
-                            <div class="profile-bar-button follow-button user_follow">
-                                stop following
-                            </div>
-                        {% endif %}
 
                     </div>
 

@@ -1,0 +1,30 @@
+<div class="avatar-strip">
+
+    <div class="avatar-strip-top">
+        <span class="user-name"> {{ user.get_name }} </span>
+        <span class="user-title"> {{ user.political_title }} </span>
+        <span class="heart-icon"> </span>
+        <span class="heart-score"> {{ user.upvotes }}</span>
+    </div>
+
+    <div class="avatar-strip-main">
+        <div class="avatar-image">
+            {% include 'site/pieces/avatar.html' with user=user height="80" width="80" %}
+        </div>
+        <div class="avatar-stats">
+
+        </div>
+        <div class="avatar-description">
+
+        </div>
+        <div class="avatar-match">
+            <div class="match-number">
+                76
+            </div>
+            <div class="match-text">
+                match
+            </div>
+        </div>
+    </div>
+
+</div>

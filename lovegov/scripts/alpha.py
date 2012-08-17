@@ -223,19 +223,21 @@ def scriptCreateResponses(args=None):
                 politician = politician.user_profile
 
             # Get and print answer text
-            answer_text = sheet.cell(row,column).value
-            answer_text = answer_text.encode('utf-8','ignore')
-            print answer_text
+#            answer_text = sheet.cell(row,column).value
+#            answer_text = answer_text.encode('utf-8','ignore')
+#            print answer_text
+            answer_id = sheet.cell(row,column).value
+            print answer_id
 
             # Check for answer text
-            if not answer_text:
-                print "+WW+ No answer text"
+            if not answer_id:
+                print "+WW+ No answer id"
                 continue
 
             # Find answer
-            answer = Answer.lg.get_or_none(answer_text=answer_text)
+            answer = Answer.lg.get_or_none(id=answer_id)
             if not answer:
-                print "+WW+ Answer not found for text :: " + answer_text
+                print "+WW+ Answer not found for ID #" + str(answer_id)
                 continue
 
             questions = answer.question_set.all()

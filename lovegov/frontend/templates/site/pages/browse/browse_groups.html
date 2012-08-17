@@ -1,0 +1,28 @@
+{% extends 'site/pages/home/top_sidebar_main.html' %}
+
+{% block top %}
+{% endblock %}
+
+{% block sidebar %}
+    <a href="/groups/" class="back-to"> Back to My Groups </a>
+{% endblock %}
+
+{% block sidebar_fixed %}
+{% endblock %}
+
+{% block main %}
+    <div class="browse-all">
+        <div class="main-top">
+            <div class="header-title"> Browse All Groups </div>
+            <div class="red-line"></div>
+            <div style="clear:both;"></div>
+        </div>
+
+        <div class="browse-all-wrapper">
+            {% include 'site/pages/browse/feed_browse_groups.html' with special_feed="getGroups" %}
+        </div>
+    </div>
+
+    <script> rebind="browse"; </script>
+
+{% endblock %}

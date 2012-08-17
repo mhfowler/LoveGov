@@ -70,7 +70,6 @@ def getOtherNetwork():
 def getCongressNetwork():
     return Network.lg.get_or_none(alias="congress") or initializeCongressNetwork()
 
-
 def getToRegisterNumber():
     num = LGNumber.lg.get_or_none(alias="to_register")
     if not num:
@@ -78,6 +77,8 @@ def getToRegisterNumber():
         num.save()
     return num
 
+def getLoveGovPoll():
+    return Poll.lg.get_or_none(alias="lovegov_worldview_poll") or initializeLoveGovPoll()
 
 ########################################################################################################################
 ########################################################################################################################
@@ -96,6 +97,7 @@ def initializeLoveGov():
     initializeLoveGovUser()
     initializeTopicImages()
     initializeParties()
+    initializeLoveGovPoll()
     # filters
     initializeBestFilter()
     initializeNewFilter()
@@ -104,12 +106,15 @@ def initializeLoveGov():
     initializeFeeds()
     # init pass codes
     initializePassCodes()
+    resetTopics()
+
+def resetTopics():
+    for q in Question.objects.all(): q.setMainTopic()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes the user lovegov..... this user represents the site as a whole. Any content created by "us" will be attributed
 # to user lovegov.
 # lovegov's views will be an aggregate of the views of all memebers of the site.
-# we control lovegov.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLoveGovUser():
     if UserProfile.objects.filter(alias="lovegov"):
@@ -124,6 +129,20 @@ def initializeLoveGovUser():
         print "initialized: lovegov user"
         return user_profile
 
+#-----------------------------------------------------------------------------------------------------------------------
+# A poll housing all official lovegov questions
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeLoveGovPoll():
+    if Poll.objects.filter(alias="lovegov_worldview_poll"):
+        print("...lovegov poll already initialized")
+    else:
+        lgpoll = Poll(title="LoveGov Match", alias="lovegov_worldview_poll")
+        lgpoll.autoSave()
+        questions = Question.objects.filter(official=True)
+        for q in questions:
+            lgpoll.addQuestion(q)
+        print "initialized: lovegov poll"
+        return lgpoll
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Currently, just makes lovegov worldview equal to aggregate of all users on site. But could also do more later.
@@ -247,7 +266,7 @@ def initializeTopicImages():
 def initializeTopicImage(x):
     if x.topic_text in MAIN_TOPICS:
         # initialize image
-        ref = os.path.join(PROJECT_PATH, 'frontend'+x.getImageRef())
+        ref = os.path.join(PROJECT_PATH, 'frontend/static'+x.getImageRef())
         file = open(ref)
         x.image.save(photoKey(".png"), File(file))
         # initialize hover
@@ -439,6 +458,7 @@ def initializeDB():
     initializeContent()
     initializeSomeUserGroups()
     initializeSomeTestContent()
+    randomWhales()
     # valid emails
     initializeValidEmails()
     initializeValidRegisterCodes()
@@ -778,6 +798,24 @@ def initializeSomeTestContent():
     n = News(title="One more for the books",
         link="www.nytimes.com", link_summary="oh adsf asdfkjd lemme get it", posted_to=save_the)
     n.autoSave(creator=randy)
+
+    d = Discussion(title="How does lovegov make you feel?",
+        user_post="like a pile of pandas in the rain.", posted_to=save_the)
+    d.autoSave(creator=randy)
+
+    d = Discussion(title="Longer text means longer socks.",
+        user_post="Lorem ipsum dolor sit amet, consectetur adipiscing elit." \
+                  " Sed ac ligula molestie orci mattis aliquet. Duis vitae nisl id " \
+                  "leo porttitor laoreet. Integer rutrum, odio a tristique rhoncus, nunc" \
+                  " nisi pharetra turpis, in tempor tellus risus eget risus. Vestibulum posuere laoreet nisl. " \
+                  "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque " \
+                  "accumsan mauris et sapien rutrum sit amet sodales nulla luctus. Integer a dui eu neque porttitor placerat." \
+                  "Proin dignissim quam ac nulla mollis vitae hendrerit metus venenatis. " \
+                  "Suspendisse felis mi, dictum sit amet pulvinar et, rhoncus vitae lorem. Proin bibendum lobortis sodales. " \
+                  "Aliquam posuere, nulla ut malesuada ultrices, ipsum nunc condimentum leo, auctor consequat elit lacus a lectus. " \
+                  "Aliquam id massa tellus, eu malesuada diam. Donec quis ipsum eu est pellentesque ultrices. Curabitur nisi nisl",
+        posted_to=save_the)
+    d.autoSave(creator=katy)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Counts the number of files in a path

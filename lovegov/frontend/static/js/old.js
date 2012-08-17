@@ -4092,14 +4092,16 @@ function setHistogramExplanation() {
      $(".in_percentile").html(message);
 }
 
-function getAllGroupMembers(start, num, g_id) {
+function getAllGroupMembers(start, ng_id) {
 
+    var num=10;
+    var start = histogram.members_displayed;
      var replace = (start== 0);
      getHistogramMembersLockout = true;
 
      ajaxPost({
          data: {
-             'action':'getAllGroupMembers',
+             'action':'getAllHistogramGroupMembers',
              'start':start,
              'num':num,
              'g_id':g_id,

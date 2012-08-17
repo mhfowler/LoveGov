@@ -201,6 +201,138 @@ def userFollowAction(from_user,to_user,privacy):
 
 def userFollowStopAction(from_user,to_user,privacy):
     from_user.unfollow(to_user)
-    action = Action(privacy=privacy,relationship=user_follow,modifier='S')
+    user_follow = UserFollow.lg.get_or_none(user=from_user,to_user=to_user)
+    if user_follow:
+        action = Action(privacy=privacy,relationship=user_follow,modifier='S')
+        action.autoSave()
+        to_user.notify(action)
+
+
+## Action for joinGroup Responses ##
+## Returns a boolean of whether or not the user is in the group POST action completion ##
+def joinGroupResponseAction(group,from_user,response,privacy):
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if not group_joined:
+        return False
+
+    if group_joined.confirmed:
+        return True
+
+    elif group_joined.requested:
+        if response == 'Y':
+            group.joinMember(from_user, privacy=privacy)
+            action = Action(privacy=privacy,relationship=group_joined,modifier="A")
+            action.autoSave()
+            from_user.notify(action)
+            return True
+
+        elif response == 'N':
+            group_joined.reject()
+            action = Action(privacy=privacy,relationship=group_joined,modifier="X")
+            action.autoSave()
+            from_user.notify(action)
+            return False
+
+    else:
+        return False
+
+
+## Action for group invite Responses ##
+## Returns a boolean of whether or not the user is in the group POST action completion ##
+def groupInviteResponseAction(group,from_user,response,privacy):
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if not group_joined: # If there are any
+        LGException("User #" + str(from_user.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
+        return False
+
+    if group_joined.confirmed:
+        return True
+
+    if group_joined.invited:
+        if response == 'Y':
+            group.joinMember(from_user, privacy=privacy)
+            action = Action(privacy=privacy,relationship=group_joined,modifier="D")
+            action.autoSave()
+            for admin in group.admins.all():
+                admin.notify(action)
+            return True
+
+        elif response == 'N':
+            group_joined.decline()
+            action = Action(privacy=privacy,relationship=group_joined,modifier="N")
+            action.autoSave()
+            for admin in group.admins.all():
+                admin.notify(action)
+            return False
+
+    else:
+        LGException("User #" + str(from_user.id) + " attempted to respond to a group invite to group #" + str(group.id) + " when they were never invited." )
+        return False
+
+
+
+## Action for sending a group invite ##
+## Returns a boolean of whether or not the user is invited or added to the group POST action completion ##
+def groupInviteAction(from_user,group,inviter,privacy):
+    # Find any groupJoined objects that exist
+    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
+    if group_joined: # If there are any
+
+        if group_joined.confirmed:
+            return True
+
+        elif group_joined.invited:
+            group_joined.invite(inviter)
+            return True
+
+        elif group_joined.requested:
+            group.joinMember(from_user, privacy=privacy)
+            action = Action(privacy=privacy,relationship=group_joined,modifier="D")
+            action.autoSave()
+            from_user.notify(action)
+            return True
+
+    else:
+        group_joined = GroupJoined(user=from_user, group=group, privacy=privacy)
+        group_joined.autoSave()
+
+    group_joined.invite(inviter)
+    action = Action(privacy=privacy,relationship=group_joined,modifier="I")
     action.autoSave()
-    to_user.notify(action)
+    from_user.notify(action)
+    return True
+
+
+
+## Action for responding to a follow request ##
+## Returns a boolean of whether or not the from_user is following the to_user when the function is finished ##
+def userFollowResponseAction(from_user,to_user,response,privacy):
+    user_follow = UserFollow.lg.get_or_none(user=from_user, to_user=to_user)
+
+    if not user_follow:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a follow request with a non-existant UserFollow from " + str(from_user.id) )
+        return False
+
+    if user_follow.requested:
+        if response == 'Y':
+            # Create follow relationship!
+            from_user.follow(to_user)
+            action = Action(privacy=privacy,relationship=user_follow,modifier='A')
+            action.autoSave()
+            from_user.notify(action)
+            return True
+        elif response == 'N':
+            user_follow.reject()
+            action = Action(privacy=privacy,relationship=user_follow,modifier='X')
+            action.autoSave()
+            from_user.notify(action)
+            return False
+
+    elif user_follow.confirmed:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was already confirmed from " + str(from_user.id) )
+        return True
+
+    else:
+        LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was not requested from " + str(from_user.id) )
+        return False

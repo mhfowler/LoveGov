@@ -5,9 +5,13 @@
 </div>
 
 <div class="left-sidebar">
-{% block sidebar %}
-        left sidebar
-{% endblock %}
+    {% block sidebar %}
+    {% endblock %}
+    <div class="sidebar-fixed">
+        {% block sidebar_fixed %}
+
+        {% endblock %}
+    </div>
 </div>
 
 <div class="main-focus">

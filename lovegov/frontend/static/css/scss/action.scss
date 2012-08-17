@@ -1,6 +1,8 @@
 @import 'master-mixins';
 @import 'master-variables';
 
+@import 'compass';
+
 div.action
 {
   padding: 15px 10px 0px 10px;
@@ -8,7 +10,7 @@ div.action
 
 div.action:hover
 {
-  background-color: $light-gray;
+  background-color: $white-gray;
 }
 
 table.action-container
@@ -36,5 +38,11 @@ td.action-timestamp
   color: $dark-gray;
   text-align: right;
   font-style: italic;
-  @include fontSize(10px);
+  @include fontSize(12px);
+}
+
+div.action-separator
+{
+  @include horizontalSeparator(100px);
+  width: 100%;
 }

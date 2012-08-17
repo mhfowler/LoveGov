@@ -487,6 +487,10 @@ def editAccount(request, vals={}):
     if box == 'basic_info':
         if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
         if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
+        try:
+            if 'age' in request.POST: viewer.age = int(request.POST['age'])
+        except:
+            pass
 
         if 'address' in request.POST:
             address = request.POST['address']
@@ -515,7 +519,7 @@ def editAccount(request, vals={}):
         all_parties = list( Party.objects.all() )
 
         for party_type in PARTY_TYPE:
-            if party_type[1] in request.POST:
+            if str(party_type[1])+"_party" in request.POST:
                 party = Party.lg.get_or_none( party_type=party_type[0] )
                 party.joinMember(viewer)
                 all_parties.remove(party)
@@ -525,9 +529,9 @@ def editAccount(request, vals={}):
 
         viewer.bio = request.POST['bio']
         viewer.save()
-        return shortcuts.redirect('/account/profile/')
+        return shortcuts.redirect('/settings/profile/')
 
-    return shortcuts.redirect('/account/')
+    return shortcuts.redirect('/settings/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # FORM Edits group profile info
@@ -578,38 +582,71 @@ def editGroup(request, vals={}):
 # INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editProfile(request, vals={}):
+    from django.template import defaultfilters
     viewer = vals['viewer']
+
     if not 'val' in request.POST or not 'key' in request.POST:
-        return HttpResponse( json.dumps({'success':False,'value':''}) )
+        LGException( "Edit profile request sent without either value, key, or content ID.  Sent by ID #" + str(viewer.id) )
+        return HttpResponseBadRequest( 'Edit profile request missing vital information.' )
+
     value = request.POST['val']
     key = request.POST['key']
+
     if key not in USERPROFILE_EDITABLE_FIELDS:
-        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
+        LGException( "Edit profile request sent for not editable field.  Sent by ID #" + str(viewer.id) + " on content ID #" + str(content.id) )
+        return HttpResponseBadRequest( 'Invalid profile edit request.  Stop trying to break out site' )
+
     setattr( viewer , key , value )
     viewer.save()
-    return HttpResponse( json.dumps({'success':True,'value':value}) )
+
+    value = defaultfilters.urlize(value)
+    value = defaultfilters.linebreaksbr(value)
+
+    return HttpResponse( json.dumps({'value':value}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # INLINE Edits user profile information
 #-----------------------------------------------------------------------------------------------------------------------
 def editContent(request, vals={}):
-    viewer = vals['viewer']
-    if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
-        return HttpResponse( json.dumps({'success':False,'value':''}) )
-    value = request.POST['val']
     from django.template import defaultfilters
+    viewer = vals['viewer']
+
+    if not 'val' in request.POST or not 'key' in request.POST or not 'c_id' in request.POST:
+        LGException( "Edit content request sent without either value, key, or content ID.  Sent by ID #" + str(viewer.id) )
+        return HttpResponseBadRequest( 'Edit content request missing vital information.' )
+
+    value = request.POST['val']
     key = request.POST['key']
-    if key not in CONTENT_EDITABLE_FIELDS:
-        return HttpResponse( json.dumps({'success':True,'value':'Stop trying to break our site'}) )
+
     content = Content.lg.get_or_none(id=request.POST['c_id'])
-    if content and viewer.id == content.getCreator().id:
-        save_content = content.downcast()
-        setattr( save_content , key , value )
-        save_content.save()
-        value = defaultfilters.urlize(value)
-        value = defaultfilters.linebreaks_filter(value)
-        return HttpResponse( json.dumps({'success':True,'value':value}) )
-    return HttpResponse( json.dumps({'success':False,'value':''}) )
+    if not content:
+        LGException( "Edit content request sent with invalid content ID #" + str(request.POST['c_id']) )
+        return HttpResponseBadRequest( 'Edit content request sent with invalid content ID' )
+
+    if key not in CONTENT_EDITABLE_FIELDS:
+        LGException( "Edit content request sent for not editable field.  Sent by ID #" + str(viewer.id) + " on content ID #" + str(content.id) )
+        return HttpResponseBadRequest( 'Invalid content edit request.  Stop trying to break out site' )
+
+    downcast_content = content.downcast()
+
+    authorized = False
+    ## Check if this user is authorized ##
+    if downcast_content.type == "G" and viewer in downcast_content.admins.all():
+        authorized = True
+    elif viewer.id == downcast_content.getCreator().id:
+        authorized = True
+
+    if not authorized:
+        LGException( "Edit content request sent by unauthorized user ID #" + str(viewer.id) + " on content ID #" + str(content.id) )
+        return HttpResponseForbidden( 'You are not authorized to edit this field.' )
+
+    setattr( downcast_content , key , value )
+    downcast_content.save()
+
+    value = defaultfilters.urlize(value)
+    value = defaultfilters.linebreaksbr(value)
+
+    return HttpResponse( json.dumps({'value':value}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Edit content based on editform.
@@ -806,7 +843,6 @@ def stubAnswer(request, vals={}):
         privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
     vals['your_response'] = response
-    vals['show_answer'] = False
     if to_compare:
         their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
         vals['their_response'] = their_response
@@ -845,18 +881,30 @@ def updateMatch(request, vals={}):
 def updateStats(request, vals={}):
     viewer = vals['viewer']
     object = request.POST['object']
-    if object == 'question_stats':
+    if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
-        html = ajaxRender('site/pages/qa/question_stats.html', vals, request)
-    if object == 'agrees_box':
+        html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
+    if object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
         question = Question.objects.get(id=request.POST['q_id'])
         response = viewer.view.responses.filter(question=question)
+        if response:
+            response = response[0]
         vals['response'] = response
         vals['question'] = question
-        vals['group_tuples'] = getGroupTuples(viewer, question, response)
-        html = ajaxRender('site/pages/qa/agrees_box.html', vals, request)
+        if response:
+            vals['group_tuples'] = getGroupTuples(viewer, question, response)
+            html = ajaxRender('site/pages/qa/you_agree_with_stats.html', vals, request)
+        else:
+            html = "<p> answer to see how many people agree with you. </p>"
+    if object == 'poll_progress':
+        from lovegov.frontend.views_helpers import getPollProgress
+        poll = Poll.objects.get(id=request.POST['p_id'])
+        poll_progress = getPollProgress(viewer, poll)
+        vals['poll'] = poll
+        vals['poll_progress'] = poll_progress
+        html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -878,33 +926,24 @@ def joinGroupRequest(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def joinGroupResponse(request, vals={}):
     viewer = vals['viewer']
-    response = request.POST['response']
+
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast() # Parties have a slightly different joinMember
 
     if viewer not in group.admins.all():
+        LGException( "User ID #" + str(viewer.id) + " attempted to respond to a join request for group ID #" + str(group.id) )
         return HttpResponseForbidden("You are not authorized to respond to this group request")
 
-    already = GroupJoined.objects.filter(user=from_user, group=group)
-    if already:
-        group_joined = already[0]
-        if group_joined.confirmed:
-            return HttpResponse("This person is already in your group")
-        elif group_joined.requested:
-            if response == 'Y':
-                group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="A")
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("they're now in your group")
-            elif response == 'N':
-                group_joined.reject()
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="X")
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("you have rejected their join request")
-    return HttpResponse("this person has not requested to join you")
+    if not 'response' in request.POST:
+        LGException("No response supplied to joinGroupResponse for group ID #" + str(group.id) )
+        return HttpResponseBadRequest("Group request response sent without response text.")
+
+    response = request.POST['response']
+
+    result = joinGroupResponseAction(group,from_user,response,getPrivacy(request))
+
+    return HttpResponse( json.dumps({ 'success':result }) )
 
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or declines a group GroupJoined, if GroupJoined was invited.
@@ -914,45 +953,23 @@ def groupInviteResponse(request, vals={}):
     from_user = vals['viewer'] # Viewer is always recieving/responding to the invite
 
     if not 'g_id' in request.POST:
-        errors_logger.error("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
-        return HttpResponse("Group invite response sent without a group ID")
+        LGException("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
+        return HttpResponseBadRequest("Group invite response sent without a group ID")
 
     group = Group.lg.get_or_none(id=request.POST['g_id'])
     if not group:
-        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
-        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+        LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
+        return HttpResponseBadRequest("Group invite response sent with invalid group ID.")
 
     if not 'response' in request.POST:
-        errors_logger.error("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
+        LGException("No response supplied to groupInviteResponse for group ID #" + str(group.id) )
+        return HttpResponseBadRequest("Group invite response sent without response text.")
+
     response = request.POST['response']
 
-    # Find any groupJoined objects that exist
-    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
-    if group_joined: # If there are any
+    result = groupInviteResponseAction(group,from_user,response,getPrivacy(request))
 
-        if group_joined.confirmed:
-            errors_logger.error("User #" + str(from_user.id) + " responded to an invite to group #" + str(group.id) + " of which they are already a member")
-            return HttpResponse("You have already joined that group")
-
-        if group_joined.invited:
-            if response == 'Y':
-                group.joinMember(from_user, privacy=getPrivacy(request))
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
-                action.autoSave()
-                for admin in group.admins.all():
-                    admin.notify(action)
-                return HttpResponse("you have joined this group!")
-
-            elif response == 'N':
-                group_joined.decline()
-                action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="N")
-                action.autoSave()
-                for admin in group.admins.all():
-                    admin.notify(action)
-                return HttpResponse("you have rejected this group invitation")
-
-    errors_logger.error("User #" + str(viewer.id) + " attempted to respond to a nonexistant group invite to group #" + str(group.id) )
-    return HttpResponse("you were not invitied to join this group")
+    return HttpResponse( json.dumps({ 'success':result }) )
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites a set of users to a given group
@@ -962,66 +979,33 @@ def groupInvite(request, vals={}):
     inviter = vals['viewer'] # Viewer is always sending the invite
 
     if not 'g_id' in request.POST:
-        errors_logger.error("Group invite sent without a group ID by user " + str(inviter.id) + ".")
-        return HttpResponse("Group invite sent without a group ID")
+        LGException("Group invite sent without a group ID by user " + str(inviter.id) + ".")
+        return HttpResponseBadRequest("Group invite sent without a group ID")
 
     group = Group.lg.get_or_none(id=request.POST['g_id'])
     if not group:
-        errors_logger.error("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
-        return HttpResponse("Group with group ID #" + str(request.POST['g_id']) + " does not exist.")
+        LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
+        return HttpResponseBadRequest("Group invite sent with invalid group ID.")
 
     if inviter not in group.admins.all():
         return HttpResponseForbidden("You are not authorized to send group invites for this group")
 
     if not 'invitees' in request.POST:
-        errors_logger.error("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
-        return HttpResponse("Group invite sent without recieving user IDs")
+        LGException("Group invite sent without recieving user IDs for group #" + str(group.id) + " by user #" + str(inviter.id))
+        return HttpResponseBadRequest("Group invite sent without recieving user ID(s)")
 
     invitees = json.loads(request.POST['invitees'])
 
     for follow_id in invitees:
-        individualGroupInvite(follow_id,group,inviter,request)
+        from_user = UserProfile.lg.get_or_none(id=follow_id)
+
+        if not from_user:
+            LGException("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user ID #" + str(inviter.id))
+            continue
+
+        groupInviteAction(from_user,group,inviter,getPrivacy(request))
 
     return HttpResponse("invite success")
-
-#----------------------------------------------------------------------------------------------------------------------
-# Invites a single user to a given group
-# HELPER FUNCTION TO groupInvite().
-#-----------------------------------------------------------------------------------------------------------------------
-def individualGroupInvite(follow_id, group, inviter, request):
-    from_user = UserProfile.lg.get_or_none(id=follow_id)
-
-    if not from_user:
-        errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
-        return False
-
-    # Find any groupJoined objects that exist
-    group_joined = GroupJoined.lg.get_or_none(user=from_user, group=group)
-    if group_joined: # If there are any
-
-        if group_joined.confirmed:
-            errors_logger.error("User #" + str(from_user.id) + " was invited to group #" + str(group.id) + " of which they are already a member")
-            return False
-
-        elif group_joined.invited:
-            normal_logger.debug("User #" + str(from_user.id) + " was reinvited to join group #" + str(group.id) )
-            return False
-
-        elif group_joined.requested:
-            group.joinMember(from_user, privacy=getPrivacy(request))
-            action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="D")
-            action.autoSave()
-            from_user.notify(action)
-            return True
-    else:
-        group_joined = GroupJoined(user=from_user, group=group, privacy=getPrivacy(request))
-        group_joined.autoSave()
-
-    group_joined.invite(inviter)
-    action = Action(privacy=getPrivacy(request),relationship=group_joined,modifier="I")
-    action.autoSave()
-    from_user.notify(action)
-    return True
 
 #----------------------------------------------------------------------------------------------------------------------
 # Requests to follow inputted user.
@@ -1040,31 +1024,26 @@ def userFollowRequest(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def userFollowResponse(request, vals={}):
     to_user = vals['viewer']
-    response = request.POST['response']
+
+    response = request.POST.get('response')
+    if not response:
+        LGException( "User ID #" + str(to_user.id) + " submitted a user follow response with response" )
+        return HttpResponseBadRequest("No response in user follow response.")
+
     from_id = request.POST.get('p_id')
     if not from_id:
-        return HttpResponse("Invalid user id given")
-    from_user = UserProfile.objects.get(id=request.POST['p_id'])
-    already = UserFollow.objects.filter(user=from_user, to_user=to_user)
-    if already:
-        user_follow = already[0]
-        if user_follow.requested:
-            if response == 'Y':
-                # Create follow relationship!
-                from_user.follow(to_user)
-                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='A')
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("they're now following you")
-            elif response == 'N':
-                user_follow.reject()
-                action = Action(privacy=getPrivacy(request),relationship=user_follow,modifier='X')
-                action.autoSave()
-                from_user.notify(action)
-                return HttpResponse("you have rejected their follow request")
-        if user_follow.confirmed:
-            return HttpResponse("This person is already following you")
-    return HttpResponse("this person has not requested to follow you")
+        LGException( "User ID #" + str(to_user.id) + " submitted a user follow response with no user ID" )
+        return HttpResponseBadRequest("No user id in user follow response.")
+
+    from_user = UserProfile.lg.get_or_none(id=from_id)
+    if not from_user:
+        LGException( "User ID #" + str(to_user.id) + " submitted a user follow response with invalid user ID #" + str(from_id)  )
+        return HttpResponseBadRequest("Invalid user id in user follow response.")
+
+    response = userFollowResponseAction(from_user,to_user,response,getPrivacy(request))
+
+    return HttpResponse( json.dumps({'response':response}) ) # RETURN NOT CURRENTLY BEING USED
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Clears userfollow relationship between users.
@@ -1440,6 +1419,7 @@ def getFeed(request, vals):
         feed_types=feed_types, feed_start=feed_start, num=10)
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
+
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
     to_return = {'html':html, 'num_items':len(feed_items)}
     return HttpResponse(json.dumps(to_return))
@@ -1482,8 +1462,30 @@ def getQuestions(request, vals):
             feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
-    html = ajaxRender('site/pages/qa/question_feed_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_items':len(question_items)}))
+
+    html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get groups
+#-----------------------------------------------------------------------------------------------------------------------
+def getGroups(request, vals={}):
+    from lovegov.frontend.views_helpers import valsGroup
+    viewer = vals['viewer']
+    groups = Group.objects.filter(ghost=False).order_by("-num_members")
+    feed_start = int(request.POST['feed_start'])
+    groups = groups[feed_start:feed_start+5]
+
+    vals['groups'] = groups
+    groups_info = []
+    for count,g in enumerate(groups):
+        group_vals = {}
+        valsGroup(viewer, g, group_vals)
+        groups_info.append({'group':g, 'info':group_vals, 'num':feed_start+count+1})
+    vals['groups_info'] = groups_info
+
+    html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
@@ -1611,36 +1613,44 @@ def getNotifications(request, vals={}):
 
     vals['dropdown_notifications_text'] = notifications_text
     vals['num_notifications'] = num_notifications
-    html = ajaxRender('site/pieces/notifications/notification_snippet.html', vals, request)
+    html = ajaxRender('site/frame/notifications/notification_snippet.html', vals, request)
     if 'dropdown' in request.POST:
-        html = ajaxRender('site/pieces/notifications/notification_dropdown.html', vals, request)
+        html = ajaxRender('site/frame/notifications/notification_dropdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_notifications':num_notifications,'num_still_new':num_still_new}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets user activity feed
 #-----------------------------------------------------------------------------------------------------------------------
-def getUserActions(request, vals={}):
+def getUserActivity(request, vals={}):
     # Get Actions
     viewer = vals['viewer']
+
     if not 'p_id' in request.POST:
-        return HttpResponse(json.dumps({'error':'No profile id given'}))
+        LGException( 'User ID #' + str(viewer.id) + " requested user activity without submitting a user ID" )
+        return HttpResponseBadRequest("User activity requested without a user ID")
+
     user_prof = UserProfile.lg.get_or_none(id=request.POST['p_id'])
     if not user_prof:
-        return HttpResponse(json.dumps({'error':'Invalid profile id'}))
+        LGException( 'User ID #' + str(viewer.id) + " requested the user activity of an invalid user ID #" + str(request.POST['p_id']) )
+        return HttpResponseBadRequest("User activity requested from an invalid user ID")
+
     num_actions = 0
-    if 'num_actions' in request.POST:
-        num_actions = int(request.POST['num_actions'])
+    if 'feed_start' in request.POST:
+        num_actions = int(request.POST['feed_start'])
+
     actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
-    if len(actions) == 0:
-        return HttpResponse(json.dumps({'error':'No more actions'}))
+
+    num_actions += len(actions)
+
     actions_text = []
     for action in actions:
         actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
+
     vals['actions_text'] = actions_text
-    num_actions += NOTIFICATION_INCREMENT
-    vals['num_actions'] = num_actions
-    html = ajaxRender('site/pieces/notifications/action_snippet.html', vals, request)
-    return HttpResponse(json.dumps({'html':html,'num_actions':num_actions}))
+
+    html = ajaxRender('site/frame/notifications/action_snippet.html', vals, request)
+    return HttpResponse( json.dumps({'html':html,'feed_start':num_actions,'num_items':len(actions)}) )
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets group activity feed
@@ -1922,32 +1932,37 @@ def updateHistogram(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # returns html to render avatars of histogram percentile
 #-----------------------------------------------------------------------------------------------------------------------
-def getHistogramMembers(request, vals={}):
+def getUsersByUID(request, vals={}):
 
     u_ids = json.loads(request.POST['u_ids'])
     members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
+    vals['display']= request.POST['display']
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('site/pages/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
     return HttpResponse(json.dumps(to_return))
 
-def getAllGroupMembers(request, vals={}):
+
+def getGroupMembers(request, vals={}):
 
     group = Group.objects.get(id=request.POST['g_id'])
     start = int(request.POST['start'])
     num = int(request.POST['num'])
+    vals['display'] = request.POST['display']
     members = group.getMembers(start=start, num=num)
 
     vals['users'] = members
     how_many = len(members)
-    html = ajaxRender('site/pages/histogram/avatars_helper.html', vals, request)
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
-
     return HttpResponse(json.dumps(to_return))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# misc
+#-----------------------------------------------------------------------------------------------------------------------
 def likeThis(request, vals={}):
 
     html = ajaxRender('site/pages/feed/like_this.html', vals, request)
@@ -2100,30 +2115,72 @@ def getModal(request,vals={}):
         if 'g_id' in request.POST:
             g_id = request.POST['g_id']
         else: # If there's no group ID, exception
-            raise LGException( "Group requests modal requested without group ID by user ID #" + str(viewer.id) )
+            LGException( "Group requests modal requested without group ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group requests requested without a group ID" )
             # and Group
         group = Group.lg.get_or_none(id=g_id)
         # If there's no group matching that ID, raise an exception
         if not group:
-            raise LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group requests requested with an invalid group ID" )
+        modal_html = getGroupRequestsModal(group,viewer,vals)
 
-        modal_html = getGroupRequestsModal(group,viewer)
 
-
-    ## Group Invite Modal ##
+    ## Group Invite Modal ## Where a user invites someone to their group
     elif modal_name == "group_invite_modal":
         # Get group ID
         if 'g_id' in request.POST:
             g_id = request.POST['g_id']
         else: # If there's no group ID, exception
-            raise LGException( "group invite modal requested without group ID by user ID #" + str(viewer.id) )
+            LGException( "group invite modal requested without group ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group invite modal requested without a group ID" )
         # and Group
         group = Group.lg.get_or_none(id=g_id)
         # If there's no group matching that ID, raise an exception
         if not group:
-            raise LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Group invite modal requested with an invalid group ID" )
 
-        modal_html = getGroupInviteModal(group,viewer)
+        modal_html = getGroupInviteModal(group,viewer,vals)
+
+
+    ## Group Invited Modal ## Where a user see's his or her gropu invites
+    elif modal_name == "group_invited_modal":
+        modal_html = getGroupInvitedModal(viewer,vals)
+
+
+    ## Group Invite Modal ##
+    elif modal_name == "follow_requests_modal":
+        modal_html = getFollowRequestsModal(viewer,vals)
+
+
+    ## Facebook Share Modal ##
+    elif modal_name == "facebook_share_modal":
+        fb_name = request.POST.get('fb_name')
+        fb_share_id = request.POST.get('fb_share_id')
+
+        if not fb_share_id:
+            LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
+
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
+
+
+    ## Pin Content Modal ##
+#    elif modal_name == "pin_content_modal":
+#        c_id = request.POST.get('c_id')
+#
+#        if not c_id:
+#            LGException( "Pin content modal requested without content ID by user ID #" + str(viewer.id) )
+#            return HttpResponseBadRequest( "Pin content modal requested without content ID" )
+#
+#        content = Content.lg.get_or_none( id=c_id )
+#
+#        if not content:
+#            LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+#            return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
+#
+#        modal_html = getPinContentModal(content,viewer,vals)
 
 
     ## If a modal was successfully made, return it ##
@@ -2131,4 +2188,5 @@ def getModal(request,vals={}):
         return HttpResponse( json.dumps({'modal_html':modal_html}) )
     ## Otherwise raise an exception with an invalid modal name ##
     else:
-        raise LGException( "invalid modal name requested: " + str(modal_name) )
+        LGException( "invalid modal name requested: " + str(modal_name) )
+        return HttpResponseBadRequest( "Invalid modal requested" )

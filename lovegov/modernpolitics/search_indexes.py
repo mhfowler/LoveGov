@@ -37,15 +37,6 @@ class PetitionIndex(indexes.SearchIndex, indexes.Indexable):
     def index_queryset(self):
         return self.get_model().objects.all()
 
-class EventIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/event.txt')
-
-    def get_model(self):
-        return Event
-
-    def index_queryset(self):
-        return self.get_model().objects.all()
-
 class NewsIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/news.txt')
 
@@ -72,7 +63,6 @@ class MotionIndex(indexes.SearchIndex, indexes.Indexable):
 
     def index_queryset(self):
         return self.get_model().objects.all()
-
 
 class CommentIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/comment.txt')

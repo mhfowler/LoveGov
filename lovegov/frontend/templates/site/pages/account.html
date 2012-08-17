@@ -62,6 +62,13 @@
                         <td><textarea class="account_input limit_input address-field" name="address">{{ viewer.get_address }}</textarea></td>
                         <td></td>
                     </tr>
+                    <tr class="break-small"></tr>
+                    <tr>
+                        <td class="left"><h3>age</h3><p>Numbers only please</p></td>
+
+                        <td><input class="account_input" type="text" value="{% if viewer.age %}{{ viewer.age }}{% endif %}" name="age"/></td>
+                        <td></td>
+                    </tr>
                     <tr class="break-large"></tr>
                     <tr>
                         <td>
@@ -69,7 +76,7 @@
                                 {{ profile_message }}
                             </p>
                         </td>
-                        <td style="text-align:right"><input type="submit" action="/action/" class="button-red" value="save changes"/></td>
+                        <td style="text-align:right"><input type="submit" class="button-red" value="save changes"/></td>
                         <td width=20></td>
                     </tr>
                 </table>
@@ -109,7 +116,7 @@
                                 {{ password_message }}
                             </p>
                         </td>
-                        <td style="text-align:right"><input type="submit" action="" class="button-red" value="change password"/></td>
+                        <td style="text-align:right"><input type="submit" class="button-red" value="change password"/></td>
                         <td width=35></td>
                     </tr>
                 </table>
@@ -150,14 +157,16 @@
                         <td class="left"><h3>parties</h3></td>
                         <td>
                             {% for party in parties %}
+                                <span>
                                 {% thumbnail party.party_label "100x20" as im %}
-                                    <img class="party-choice" src="{{ im.url }}" data-input="#party-{{ party.alias }}"/>
+                                    <img class="party_choice party-choice" src="{{ im.url }}" />
                                 {% endthumbnail %}
                                 {% if party in user_parties %}
-                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="{{ party.alias }}" value="true" checked="checked">
+                                    <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}" checked="checked">
                                 {% else %}
-                                    <input id="party-{{ party.alias }}" class="party-choice" type="checkbox" name="{{ party.alias }}" value="true">
+                                    <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}">
                                 {% endif %}
+                                </span>
                             {% endfor %}
                         </td>
                         <td></td>
@@ -231,19 +240,19 @@
             $(this).prepend(pointer);
         });
 
-        $('img.party-choice').each( function(i)
+        $('img.party_choice').each( function(i)
         {
-            var $checkbox = $($(this).data('input'));
-            if( $checkbox.prop('checked') )
+            var checkbox = $(this).siblings('input.party_input');
+            if( checkbox.attr('checked') )
             {
                 $(this).addClass("party-choice-selected");
             }
         });
 
-        $('img.party-choice').click(function()
+        $('img.party_choice').click(function()
         {
-            var $checkbox = $($(this).data('input'));
-            $checkbox.prop('checked', !$checkbox.prop('checked'));
+            var checkbox = $(this).siblings('input.party_input');
+            checkbox.attr('checked', !checkbox.prop('checked'));
             $(this).toggleClass("party-choice-selected");
             if (!$(this).hasClass("party-choice-selected"))
             {
@@ -251,7 +260,7 @@
             }
         });
 
-        $('img.party-choice').mouseout(function()
+        $('img.party_choice').mouseout(function()
         {
             $(this).removeClass("party-choice-deselected");
         });

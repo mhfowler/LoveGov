@@ -1,9 +1,4 @@
 {% for action in actions_text %}
-    {% if forloop.first %}
-        <div class="action-separator"></div>
-    {% endif %}
-        {{ action|safe|escape }}
-    {% if not forloop.last %}
-        <div class="action-separator"></div>
-    {% endif %}
+    {{ action|safe|escape }}
+    <div class="action-separator"></div>
 {% endfor %}
