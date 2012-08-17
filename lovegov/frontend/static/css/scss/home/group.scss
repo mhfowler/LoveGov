@@ -42,6 +42,7 @@ div.group-expanded
   div.group-info
   {
     @include clearfix();
+    margin-bottom: 20px;
 
     div.group-info-title
     {
@@ -165,6 +166,7 @@ div.group-expanded
 
 
 div.group-histogram {
+  clear: left;
 
   div.histogram {
     height:100%;

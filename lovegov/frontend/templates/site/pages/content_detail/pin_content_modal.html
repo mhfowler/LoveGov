@@ -1,0 +1,26 @@
+<div class="pin-content-modal">
+
+    <div class="modal-section-title">Pin content: {{ content.title }}</div>
+    <div class="modal-instructions">Only the moderators of a group can pin content to that group</div>
+
+    <div class="pinnable-groups pinnable_groups" data-c_id="{{ content.id }}">
+    {% for group in groups %}
+
+        <div class="pin_to_group pin-to-group">
+
+            <div class="group-image">
+                {% thumbnail group.getImageURL "50x50" crop="center" as im %}
+                    <img src="{{ im.url }}"/>
+                {% endthumbnail %}
+            </div>
+
+            <div class="group-title">
+                {{ group.title }}
+            </div>
+
+        </div>
+
+    {% endfor %}
+    </div>
+
+</div>

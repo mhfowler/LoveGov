@@ -44,6 +44,53 @@ div.content-detail {
       margin-left:10px;
       @include fontSize(16px);
     }
+
+    span.hearts
+    {
+      vertical-align: middle;
+      text-align: center;
+      margin-top:10px;
+      padding-bottom: 15px;
+
+      div.heart-plus
+      {
+        @include staticImage('/images/icons/hearts/plusheart-gray.png');
+        background-repeat: no-repeat;
+        height: 18px;
+        width: 18px;
+        margin-right: 10px;
+        margin-left: 5px;
+        @include inline-block();
+        cursor: pointer;
+
+        &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+        &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+      }
+
+      div.heart-number
+      {
+        @include inline-block();
+        @include fontSize(16px);
+        font-weight: bold;
+        padding-top: 6px;
+        color: $black;
+      }
+
+      div.heart-minus
+      {
+        @include staticImage('/images/icons/hearts/minusheart-gray.png');
+        background-repeat: no-repeat;
+        height: 18px;
+        width: 18px;
+        margin-right: 5px;
+        margin-left: 10px;
+        @include inline-block();
+        cursor: pointer;
+
+        &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+        &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+      }
+    }
   }
 
   div.content-info-header {
@@ -79,6 +126,7 @@ div.content-detail {
     div.info-middle-right {
       div.created-by {
         margin-top:20px;
+        @include clearfix();
 
         div.avatar {
           float:left;
@@ -97,6 +145,7 @@ div.content-detail {
       width:200px;
       height:200px;
       text-align:center;
+
       a.comments-wrapper {
         width:100%;
         display:block;
@@ -127,6 +176,17 @@ div.content-detail {
           @include fontSize(26px);
           margin:auto;
         }
+      }
+
+      div.content-pin-button{
+        margin-top:10px;
+        padding: 5px 10px;
+        color: white;
+        @include fontSize(14px);
+        background-color: $red;
+        cursor: pointer;
+
+        &:hover { background-color: $red-light; }
       }
     }
   }

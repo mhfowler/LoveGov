@@ -3018,12 +3018,12 @@ class AnswerTally(LGModel):
 #=======================================================================================================================
 class Group(Content):
     # people
-    admins = models.ManyToManyField(UserProfile, related_name='admin')
-    members = models.ManyToManyField(UserProfile, related_name='member')
+    admins = models.ManyToManyField(UserProfile, related_name='admin_of')
+    members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
-    group_content = models.ManyToManyField(Content, related_name='ongroup')
+    pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
     # group type
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
@@ -3962,6 +3962,7 @@ class Shared(UCRelationship):
             # self.share_groups.add(group)
             # action = Action(relationship=self, share_group=group)
             # action.autoSave()
+
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.

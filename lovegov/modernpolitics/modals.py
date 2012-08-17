@@ -67,3 +67,19 @@ def getFacebookShareModal(fb_share_id,fb_name,vals):
     vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
 
     return render_to_string('site/pages/friends/facebook_share_modal.html',vals)
+
+
+#def getPinContentModal(content,user,vals):
+#    vals['content'] = content
+#
+#    admin_of_groups = user.admin_of.all()
+#
+#    pinnable_groups = []
+#
+#    for group in admin_of_groups:
+#        if content not in group.pinned_content.all():
+#            pinnable_groups.append(group)
+#
+#    vals['groups'] = pinnable_groups
+#
+#    return render_to_string('site/pages/content_detail/pin_content_modal.html',vals)
