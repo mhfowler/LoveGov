@@ -1,15 +1,12 @@
 <!-- Wrapper for thread page -->
-<div style="width:960px">
+<div style="width:700px">
 
 {% block thread %}
 
     <span class="discuss">Discuss</span>
-    <div class="reply">
-        <textarea class="reply" placeholder="What's your opinion?"></textarea>
-        <input class="tab-button" type="submit" value="Save">
-    </div>
+    {% include 'site/pieces/reply-form.html' with width="100%" depth='-1' content=content class="reply-new" %}
     <!-- comment thread -->
-    <div class="thread" data-cid="{{ content.id }}">
+    <div class="thread" data-cid="{{ content.id }}" data-num-showing="0">
         {{ thread_html|safe }}
     </div>
     <div class="load-more-comments">load more comments</div>

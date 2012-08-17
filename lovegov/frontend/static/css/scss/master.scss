@@ -597,23 +597,6 @@ span.content_header {
   display: block;
 }
 
-input.tab-button, a.tab-button, span.tab-button {
-  background-color: $red;
-  @include rounded-bottom(8px);
-  color: $white;
-  padding: 8px;
-  border: none;
-  margin-bottom: 6px;
-  &.alt {
-    background-color: $gray;
-  }
-  &:hover {
-    padding-top: 14px;
-    margin-bottom: 0;
-  }
-  display: block;
-}
-
 .tooltip {
   position: absolute;
   z-index: 1020;

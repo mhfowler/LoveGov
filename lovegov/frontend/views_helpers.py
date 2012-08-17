@@ -152,48 +152,83 @@ class AnswerClass:
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Creates the html for a comment thread.
+# Recursively generates the html for a comment thread.
+# Paramater usage:
+#   request: the request object
+#   object: the content object (News, Petition, etc. or a parent comment)
+#   user: the viewer's UserProfile
+#   depth: the level of nesting of the current comment
+#   user_votes: list of all votes made by the user
+#   user_commetns: list of all comments made by the user
+#   start: the comment to start rendering at
+#   limit: the max number of comments to render
+#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable
+# Returns:
+#   a string containing the content thread html
+#   the number of actual top-level comments (and their children) actually returned
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
         user_comments = Comment.objects.filter(creator=user)
-    comments = Comment.objects.filter(on_content=object).order_by('-status')
+    if not rendered_so_far:
+        rendered_so_far = [0]
+    # Get all comments that are children of the object
+    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status')[start:]
     viewer = vals['viewer']
+    top_levels = 0
     if comments:
+        # Start generating a string of html
         to_return = ''
         for c in comments:
+            # Stop if limit is reached
+            if rendered_so_far[0] >= limit and depth==0:
+                break
+            # If comment hasn't been deleted OR it has responses
             if c.active or c.num_comments:
-                margin = 30*(depth+1)
-                to_return += "<span class='collapse'>[-]</span><div class='threaddiv'>"     # open list
-                my_vote = user_votes.filter(content=c) # check if i like comment
-                if my_vote:
-                    i_vote = my_vote[0].value
-                else: i_vote = 0
-                i_own = user_comments.filter(id=c.id) # check if i own comment
-                vals.update({'comment': c,
-                             'my_vote': i_vote,
-                             'owner': i_own,
-                             'votes': c.upvotes - c.downvotes,
-                             'display_name': c.getThreadDisplayName(viewer, getSourcePath(request)),
-                             'creator': c.getCreatorDisplay(viewer),
-                             'public': c.getPublic(),
-                             'margin': margin,
-                             'width': 690-(30*depth+1)-30,
-                             'defaultImage':getDefaultImage().image,
-                             'depth':depth})
-
-                context = RequestContext(request,vals)
-                template = loader.get_template('site/pieces/comment.html')
-                comment_string = template.render(context)  # render comment html
-                to_return += comment_string
-                to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals)    # recur through children
+                to_return += "<div class='threaddiv'>"     # open list
+                to_return += renderComment(request, vals, c, depth, user_votes, user_comments)
+                rendered_so_far[0] += 1
+                if depth==0:
+                    top_levels += 1
+                to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals,limit=limit,rendered_so_far=rendered_so_far)[0]    # recur through children
                 to_return += "</div>"   # close list
-        return to_return
+        return to_return, top_levels
     else:
-        return ''
+        # No more comments found - return empty string
+        return '', top_levels
+
+
+def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
+    viewer = user = vals['viewer']
+    if not user_votes:
+        user_votes = Voted.objects.filter(user=user)
+    if not user_comments:
+        user_comments = Comment.objects.filter(creator=user)
+    margin = 30*(depth+1)
+    my_vote = user_votes.filter(content=c) # check if i like comment
+    if my_vote:
+        i_vote = my_vote[0].value
+    else: i_vote = 0
+    i_own = user_comments.filter(id=c.id) # check if i own comment
+    # Prepare vals to render the comment template with appropriate context
+    vals.update({'comment': c,
+                 'my_vote': i_vote,
+                 'owner': i_own,
+                 'votes': c.upvotes - c.downvotes,
+                 'display_name': c.getThreadDisplayName(viewer, getSourcePath(request)),
+                 'creator': c.getCreatorDisplay(viewer),
+                 'public': c.getPublic(),
+                 'margin': margin,
+                 'width': 690-(30*depth+1)-30,
+                 'defaultImage':getDefaultImage().image,
+                 'depth':depth})
+
+    context = RequestContext(request,vals)
+    template = loader.get_template('site/pieces/comment.html')
+    return template.render(context)  # render comment html
 
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for question_stats.html

@@ -1,4 +1,4 @@
-<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:100%">
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:{{width}}px">
     <div class="comment-username feed-username">
         {% load thumbnail %}
         {% if comment.active %}
@@ -22,7 +22,6 @@
         {% load humanize %}
         {{comment.created_when|naturaltime}}
     </span>
-    <div class="clearfix"></div>
     <div>
         <div class="comment-text inline_hide">
             {% if comment.active %}
@@ -31,27 +30,20 @@
                 deleted
             {% endif %}
         </div>
-        {% if creator.you %}
-            <div class="edit_button edit-link"></div>
-            <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{comment.id}}">
-                <textarea style="width:{{ width }}px" class="comment-textarea edit_input" type="text" name="text" maxlength='1000'>{{comment.text}}</textarea>
-                <input type="button" class="tab-button edit-link submit_inline_edit" style="float: right" value="Save">
-                <input type="button" class="tab-button cancel_inline_edit alt" style="float: right; margin-right: 10px" value="Cancel">
-                <div style="clear:both"></div>
-            </div>
-        {% endif %}
     </div>
-    <div class="comment-reply">
-        <div class="reply">
+    <div class="comment-actions">
+        <div class="reply-action">
             reply
         </div>
         <div class="share share_button" data-share_id="{{comment.id}}">
             share
         </div>
         {% if creator.you and comment.active %}
-            <div class="commentdelete">
+            <div class="append-action" data-cid="{{comment.id}}">
+                append
+            </div>
+            <div class="delete-action" data-cid="{{comment.id}}">
                 delete
-                <input type="hidden" class="delete_id" name="delete_id" value="{{ comment.id }}"/>
             </div>
         {% endif %}
     </div>
@@ -61,11 +53,10 @@
 
     </div>
 
-    <form class="replyform" name="postcomment" action="/comment/" method="post"> {% csrf_token %}
-        <textarea style="width:{{ width }}px" class="comment-textarea" type="text" name="comment" placeholder="what's your opinion?"></textarea>
-        <input class="hidden_id" type="hidden" name="c_id" value="{{ comment.id }}"/>
-        <input class="tab-button" type="submit" value="Save" style="float: right;" />
-        <input class="tab-button alt" type="button" value="Cancel" style="float: right; margin-right: 10px" /><div class="clearfix"></div>
-    </form>
+    {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth placeholder="Add more to this comment" class="reply-append" %}
+    {% if creator.you %}
+    {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth class="reply-reply" %}
+    {% endif %}
+
 </div>
 
