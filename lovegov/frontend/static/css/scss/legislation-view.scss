@@ -39,7 +39,7 @@ div.main {
 
   div.summary-outlook {
     float: left;
-    height: 100%;
+    height: auto;
     width: 350px;
     margin-top: 0px;
 
@@ -68,12 +68,12 @@ div.main {
     div.level1-summary-div {
       margin-left: 0px;
       margin-top: 10px;
-      height: 60px;
+      height: auto;
       width: 350px;
 
       div.summary.long_text.more {
         margin-top: 0px;
-        height: 100%;
+        height: auto;
         width: 350px;
         padding-left: 5px;
         text-align: justify;
@@ -132,6 +132,7 @@ div.main {
       }
 
       div.bill-outlook {
+        display:block;
         margin-left: 90px;
         margin-top: -35px;
         height:70px;
@@ -386,7 +387,7 @@ div.main {
         display: center;
         height: 100%;
         width: 140px;
-        margin: 5px 5px 5px 5px;
+        margin: 15px 5px 5px 5px;
         text-align: center;
 
         h3.progress-label {
@@ -610,145 +611,155 @@ div.main {
 }
 
 div.secondary {
-  margin-left: 0px;
-  margin-top: 0px;
+  display: block;
+  clear: both;
   height: 350px;
   width: 1250px;
 
-  div,bill-text {
-    float: left;
-    width: 780px;
+  div.secondary-top {
+    height:auto;
+    width: 1250px;
 
-    div.level2-bill-text {
-      margin-left: 0px;
-      margin-top: 0px;
-      height: 25px;
-      width: 780px;
+    div.bill-text {
+      float: left;
+      height: auto;
+      width: 790px;
 
-      div.bill-text-title {
+      div.level2-bill-text {
         height: 25px;
-        width: 780px;
+        width: 790px;
 
-        h4 {
-          font-size:18px;
-          text-align: left;
-          background-color: #E0E0E0;
-          color: black;
-          padding-top: 5px;
+        div.bill-text-title {
+          height: 25px;
+          width: 790px;
+
+          h4 {
+            font-size:18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
+          }
+        }
+      }
+
+      div.level2-bill-text-div {
+        margin-left: 0px;
+        margin-top: 10px;
+        height: auto;
+        width: 790px;
+
+        div.bill-text.long_text.more {
+          margin-top: 0px;
+          height: auto;
+          width: 790px;
           padding-left: 5px;
+          text-align: justify;
         }
       }
     }
 
-    div.level2-bill-text-div {
-      margin-left: 0px;
-      margin-top: 10px;
-      height: auto;
-      width: 780px;
-
-      div.bill-text.long_text.more {
-        margin-top: 0px;
-        height: auto;
-        width: 780px;
-        padding-left: 5px;
-        text-align: justify;
-      }
-    }
-  }
-
-  div.level2-recent-actions {
-    margin-left: 820px;
-    margin-top: -70px;
-    height: 25px;
-    width: 330px;
-
     div.bill-recent-actions {
-      height: 25px;
-      width: 330px;
+      display: inline-block;
+      margin-left: 10px;
+      height: auto;
+      width: 320px;
 
-      h4 {
-        font-size:18px;
-        text-align: left;
-        background-color: #E0E0E0;
-        color: black;
-        padding-top: 5px;
-        padding-left: 5px;
+      div.level2-recent-actions {
+        height: 25px;
+        width: 320px;
 
-      }
-    }
-  }
+        div.recent-actions-title {
+          height: 25px;
+          width: 320px;
 
-  div.level2-recent-actions-div {
-    margin-left: 820px;
-    margin-top: 0px;
-    height: 90px;
-    width: 330px;
-
-    div.recent-actions {
-      margin-top: 0px;
-      height: 90px;
-      width: 140px;
-      padding-left: -10px;
-      text-align: justify;
-
-      span{
-
-        ul {
-
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
+          h4 {
+            font-size:18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
 
           }
         }
       }
-    }
 
-    div.recent-action-dates {
-      margin-top: -103px;
-      margin-left: 170px;
-      height: 90px;
-      width: 120px;
-      padding-left: -5px;
+      div.level2-recent-actions-div {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: auto;
+        width: 320px;
 
-      span{
+        div.recent-actions {
+          display: inline-block;
+          margin-top: 0px;
+          height: auto;
+          width: 150px;
+          padding-left: -5px;
 
-        ul {
+          span{
 
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
+            ul {
 
-            a {
-              text-decoration: none;
-              font-color: black;
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+              }
             }
           }
         }
-      }
-    }
 
-    div.recent-action-results {
-      margin-top: -103px;
-      margin-left: 260px;
-      height: 190px;
-      width: 140px;
-      padding-left: -5px;
+        div.recent-action-dates {
+          display: inline-block;
+          margin-top: 0px;
+          margin-left: 0px;
+          height: auto;
+          width: 90px;
+          padding-left: 0px;
 
-      span{
+          span{
 
-        ul {
+            ul {
 
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
 
-            a {
-              text-decoration: none;
-              font-color: black;
+                a {
+                  text-decoration: none;
+                  font-color: black;
+                }
+              }
+            }
+          }
+        }
+
+        div.recent-action-results {
+          display: inline-block;
+          margin-top: 0px;
+          margin-left: 0px;
+          height: auto;
+          width: 70px;
+          padding-left: 0px;
+
+          span{
+
+            ul {
+
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+
+                a {
+                  text-decoration: none;
+                  font-color: black;
+                }
+              }
             }
           }
         }
@@ -757,14 +768,13 @@ div.secondary {
   }
 
   div.bill-amendments {
-    margin-left: 0px;
-    margin-top: 0px;
-    height: 160px;
-    width: 780px;
+    height: auto;
+    margin-top: 20px;
+    width: 790px;
 
     div.level2-bill-amendments {
-      height: 25px;
-      width: 780px;
+      height: auto;
+      width: 790px;
 
       div.bill-amendments-title {
 
@@ -780,18 +790,40 @@ div.secondary {
 
 
 
-    div.level2-bill-amendments-div {
-      margin-left: 0px;
-      margin-top: 10px;
-      height: auto;
-      width: 780px;
+      div.level2-bill-amendments-div {
+        margin-left: 0px;
+        margin-top: 10px;
+        height: auto;
+        width: 790px;
 
-      div.amendment-name {
-        margin-top: 0px;
+        div.amendment-name {
+          margin-top: 0px;
+          height: 90px;
+          width: 140px;
+          padding-left: -10px;
+          text-align: justify;
+
+          span{
+
+            ul {
+
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+
+              }
+            }
+          }
+        }
+      }
+
+      div.amendment-type {
+        margin-top: -103px;
+        margin-left: 120px;
         height: 90px;
-        width: 140px;
-        padding-left: -10px;
-        text-align: justify;
+        width: 200px;
+        padding-left: -5px;
 
         span{
 
@@ -802,61 +834,39 @@ div.secondary {
               list-style-type: none;
               font-size: 14px;
 
+              a {
+                text-decoration: none;
+                font-color: black;
+              }
             }
           }
         }
       }
-    }
-      
-    div.amendment-type {
-      margin-top: -103px;
-      margin-left: 120px;
-      height: 90px;
-      width: 200px;
-      padding-left: -5px;
 
-      span{
+      div.amendment-result {
+        margin-top: -103px;
+        margin-left: 340px;
+        height: 190px;
+        width: 60px;
+        padding-left: -5px;
 
-        ul {
+        span{
 
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
+          ul {
 
-            a {
-              text-decoration: none;
-              font-color: black;
-            }
-          }
-        }
-      }
-    }
+            li {
+              margin-left: -20px;
+              list-style-type: none;
+              font-size: 14px;
 
-    div.amendment-result {
-      margin-top: -103px;
-      margin-left: 340px;
-      height: 190px;
-      width: 60px;
-      padding-left: -5px;
-
-      span{
-
-        ul {
-
-          li {
-            margin-left: -20px;
-            list-style-type: none;
-            font-size: 14px;
-
-            a {
-              text-decoration: none;
-              font-color: black;
+              a {
+                text-decoration: none;
+                font-color: black;
+              }
             }
           }
         }
       }
     }
   }
-}
 }
