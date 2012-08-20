@@ -700,8 +700,16 @@ def pollDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion
 #-----------------------------------------------------------------------------------------------------------------------
-def discussionDetail(request, p_id=-1, vals={}):
-    return HttpResponse("Discussion!")
+def discussionDetail(request, d_id=-1, vals={}):
+
+    viewer = vals['viewer']
+    discussion = Discussion.objects.get(id=d_id)
+    vals['discussion'] = discussion
+    contentDetail(request, discussion, vals)
+
+    html = ajaxRender('site/pages/content_detail/discussion_detail.html', vals, request)
+    url = discussion.get_url()
+    return framedResponse(request, html, url, vals, rebind="discussion_detail")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # closeup of histogram

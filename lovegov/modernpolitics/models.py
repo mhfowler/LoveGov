@@ -260,6 +260,7 @@ class Content(Privacy, LocationLevel):
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
     unique_commenter_ids = custom_fields.ListField(default=[])
+    # unique_commenters = models.ManyToManyField("UserProfile")
     # POSTING TO GROUPS
     posted_to = models.ForeignKey("Group", null=True, related_name="posted_content")
     shared_to = models.ManyToManyField("Group", related_name="shared_content")
@@ -2573,6 +2574,9 @@ class Discussion(Content):
         self.in_feed = True
         self.type = "D"
         super(Discussion, self).autoSave(creator=creator, privacy=privacy)
+
+    def getTitleDisplay(self):
+        return "Discussion: " + self.title
 
 #=======================================================================================================================
 # Comment (the building block of forums)

@@ -538,15 +538,17 @@ bind(".sign-in-input", 'focusout', null, function(event) {
 });
 
 bind(null, "click", null, function(event) {
-    var outside = $(this).parents(".sign_in_dialogue").length == 0;
-    if ((event.target.id != "sign_in_button") && outside) {
-        //$(".sign_in_dialogue").hide();
+    if ((event.target.id != "sign_in_button")) {
+        $(".sign_in_dialogue").hide();
     }
 });
 
 bind(".sign_in_button", 'click', null, function(event) {
-    event.preventDefault();
-    $(".sign_in_dialogue").show();
+    $(".sign_in_dialogue").toggle();
+});
+
+bind(".sign_in_dialogue", 'click', null, function(event) {
+    event.stopPropagation();
 });
 
 /***********************************************************************************************************************
@@ -930,10 +932,18 @@ function leftSideToggle(wrapper)
  *
  ***********************************************************************************************************************/
 
-bind("header div.triangle-wrapper", "click", function(e) {
+bind(".user_menu_toggle", "click", function(event) {
     $('div.user-menu').fadeToggle(50);
+    event.stopPropagation();
 });
 
+bind(null, "click", function(e) {
+    $('div.user-menu').hide();
+});
+
+bind('div.user-menu', "click", function(event) {
+    event.stopPropagation();
+});
 
 function toggleUserMenu()
 {

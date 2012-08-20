@@ -51,9 +51,9 @@
 
                 <a class="comments-wrapper" href="#comments-wrapper">
                     <div class="comments-bubble">
-                            <div class="num-comments">
-                                {{ content.num_comments }}
-                            </div>
+                        <div class="num-comments">
+                            {{ content.num_comments }}
+                        </div>
                     </div>
                     <div class="comments-text">
                         comments
@@ -89,9 +89,11 @@
                         {% include 'site/pieces/avatar.html' with user=creator width="50" height="50" %}
                     </div>
                     <div class="name-and-submitted">
-                        <div class="name">
-                            {{ creator.get_name }}
-                        </div>
+                        <a href="{{ creator.get_url }}">
+                            <div class="name">
+                                {{ creator.get_name }}
+                            </div>
+                        </a>
                         <div class="submitted">
                             posted {{ content.created_when|naturaltime }}
                         </div>
@@ -107,6 +109,7 @@
         </div>
 
         <div id="comments-wrapper" class="content-discussion">
+            {% include 'site'%}
         </div>
 
     </div>

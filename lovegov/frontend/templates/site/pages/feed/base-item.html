@@ -61,7 +61,9 @@
         </div>
 
         {% block feed-image %}
-
+            <div class="feed-item-image">
+                {% include 'site/pieces/avatar.html' with user=item width="180" height="118" hoveroff=1 %}
+            </div>
         {% endblock %}
 
         {% block feed-item-content %}

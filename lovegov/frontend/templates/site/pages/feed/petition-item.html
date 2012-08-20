@@ -13,17 +13,6 @@
 
 
 
-{% block feed-image %}
-
-    <div class="feed-item-image">
-        {% thumbnail item.getImageURL "180x118" crop="center" as im %}
-            <img src="{{ im.url }}"/>
-        {% endthumbnail %}
-    </div>
-
-{% endblock %}
-
-
 
 {% block feed-item-content %}
 
