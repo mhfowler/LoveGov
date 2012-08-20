@@ -606,7 +606,7 @@ ACTIONS = [
     'getUsersByUID',
     'getGroupMembers',
 
-    'getGroupMembersForDisplay'
+    'getGroupMembersForDisplay',
 
     'getLegislation'
 ]

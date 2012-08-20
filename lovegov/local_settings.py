@@ -10,12 +10,12 @@ PROJECT_PATH = base_settings.PROJECT_PATH
 
 DATABASES = {
     'default': {
-         'ENGINE':  'django.db.backends.sqlite3',
-        'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
-        'USER':     '',
-        'PASSWORD': '',
-        'HOST':     '',
-        'PORT':     '',
+         'ENGINE':  'django.db.backends.mysql',
+        'NAME':     'localmirror',
+        'USER':     'root',
+        'PASSWORD': 'pel1ayo7val',
+        'HOST':     '127.0.0.1',
+        'PORT':     '3306',
         },
 }
 
