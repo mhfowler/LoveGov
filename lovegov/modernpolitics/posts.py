@@ -1688,8 +1688,9 @@ def getGroupMembers(request, vals={}):
     num_members = 0
     if 'num_members' in request.POST:
         num_members = int(request.POST['num_members'])
+    increment = int(request.POST.get('increment') or MEMBER_INCREMENT)
     print num_members
-    members = group.getMembers(num=MEMBER_INCREMENT,start=num_members)
+    members = group.getMembers(num=increment,start=num_members)
     print "member count: " + str(len(members))
     if len(members) == 0:
         return HttpResponse(json.dumps({'error':'No more members'}))
@@ -1941,7 +1942,7 @@ def getUsersByUID(request, vals={}):
     return HttpResponse(json.dumps(to_return))
 
 
-def getGroupMembers(request, vals={}):
+def getGroupMembersForDisplay(request, vals={}):
 
     group = Group.objects.get(id=request.POST['g_id'])
     start = int(request.POST['start'])

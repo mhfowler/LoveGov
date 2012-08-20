@@ -1,0 +1,25 @@
+{% extends 'site/pages/home/header_expandable.html' %}
+<!-- CSS for this file is in group.scss -->
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block header_top %}
+
+    <div class="home-section-title"> People & Friends </div>
+
+{% endblock %}
+
+
+{% block header_info %}
+
+    <div class="friends-header">
+        {% for friend in facebook_friends %}
+
+            {% include 'site/pages/friends/facebook_friend_card.html' with friend=friend %}
+
+        {% endfor %}
+    </div>
+
+{% endblock %}
+

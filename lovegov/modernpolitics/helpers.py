@@ -141,8 +141,7 @@ def randomAnswers(user):
         answers = list(q.answers.all())
         my_answer = random.choice(answers)
         # print "answered: ", my_answer.answer_text
-        answerAction(user, question=q, my_response=user.view.responses.filter(question=q),
-            privacy='PUB', answer_id=my_answer.id, weight=5, explanation="")
+        answerAction(user, question=q, privacy='PUB', answer_id=my_answer.id, weight=5, explanation="")
     user.last_answered = datetime.datetime.now()
     user.save()
 

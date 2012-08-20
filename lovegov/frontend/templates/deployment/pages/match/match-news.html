@@ -1,0 +1,15 @@
+<div class="match-title">
+    <h3 style="position:relative;top:200px;">{{ match_title }}</h3>
+</div>
+
+<div class="match-content">
+    {% if prof1 %}
+        {% include 'deployment/pages/match/match-new-box.html' with item=prof1 %}
+    {% endif %}
+
+    <div class="special-wrapper" style="margin-left:310px;float:left;">
+        {% if prof2 %}
+            {% include 'deployment/pages/match/match-new-box.html' with item=prof2 %}
+        {% endif %}
+    </div>
+</div>

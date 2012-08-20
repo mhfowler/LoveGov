@@ -15,24 +15,28 @@
                 </div>
             </div>
 
-            <div class="feed-user-name">
+            {% with creator=item.creator %}
+                <div class="feed-user-name">
 
-                <div class="feed-avatar-image">
-                    <a href="{{ item.creator.get_url }}">{% include "site/pieces/avatar.html" with user=item.creator height='35' width='35' %}</a>
-                </div>
-
-                <div class="feed-avatar-text">
-                    <div class="feed-avatar-name">
-                        {{ item.creator.get_name }}
+                    <div class="feed-avatar-image">
+                        <a href="{{ creator.get_url }}">{% include "site/pieces/avatar.html" with user=creator height='35' width='35' %}</a>
                     </div>
-                    <div class="feed-avatar-timestamp">
-                        {{ item.created_when|naturaltime }}
+
+                    <div class="feed-avatar-text">
+                        <a href="{{ creator.get_url }}">
+                            <div class="feed-avatar-name">
+                                {{ creator.get_name }}
+                            </div>
+                        </a>
+                        <div class="feed-avatar-timestamp">
+                            {{ item.created_when|naturaltime }}
+                        </div>
                     </div>
+
+                    <div style="clear:both"></div>
+
                 </div>
-
-                <div style="clear:both"></div>
-
-            </div>
+            {% endwith %}
 
         </div>
 

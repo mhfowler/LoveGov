@@ -524,10 +524,10 @@ class Content(Privacy, LocationLevel):
             object = self.news
         elif type == 'P':
             object = self.petition
-        elif type == 'E':
-            object = self.event
         elif type == 'C':
             object = self.comment
+        elif type == 'D':
+            object = self.discussion
         elif type == 'Q':
             object = self.question
         elif type == 'R':
@@ -1970,9 +1970,8 @@ class CreatedAction(Action):
         return self.content
 
     def getVerbose(self,viewer=None,vals={}):
-        you_acted = False
-        if viewer.id == self.user.id:
-            you_acted = True
+
+        you_acted = (viewer.id == self.user.id)
 
         vals.update({
             'timestamp' : self.when,
@@ -2571,6 +2570,7 @@ class News(Content):
 class Discussion(Content):
     user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
+        self.in_feed = True
         self.type = "D"
         super(Discussion, self).autoSave(creator=creator, privacy=privacy)
 

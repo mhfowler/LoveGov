@@ -1,5 +1,9 @@
-{% for friend in facebook_friends %}
+{% extends 'site/pages/home/focus.html' %}
 
-    {% include 'site/pages/friends/facebook_friend_card.html' with friend=friend %}
+{% block home_header %}
+    {% include 'site/pages/friends/friends_header.html' %}
+{% endblock %}
 
-{% endfor %}
+{% block home_feed %}
+    {% include 'site/pages/feed/feed.html' %}
+{% endblock %}
