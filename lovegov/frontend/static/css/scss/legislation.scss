@@ -1,0 +1,371 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+
+div.main-block {
+  margin-top: 40px;
+  margin-left: 140px;
+  height: 280px;
+  width: 660px;
+  overflow: hidden;
+  border-bottom: solid;
+  border-top: solid;
+  border-color: #ef503b;
+  border-width: 1px;
+  padding-left: 5px;
+  padding-top: 0px;
+
+  div.legislation_filter {
+    margin-left: 5px;
+    margin-top: 5px;
+    height: 260px;
+    width: 310px;
+    margin-top: 10px;
+    padding-left: 9px;
+
+    div.filter_prompt {
+      margin-bottom: 13px;
+    }
+
+    div.session_filter {
+      margin-bottom: 9px;
+    }
+
+    div.type_filter {
+      margin-bottom: 9px;
+    }
+
+    div.subject_filter {
+      margin-bottom: 9px;
+    }
+
+    div.committee_filter {
+      margin-bottom: 9px;
+    }
+
+    div.introduced_filter {
+      margin-bottom: 9px;
+    }
+
+    div.sponsor_filter {
+      margin-bottom: 9px;
+
+      div.myrepsvotes_filter {
+        display:block;
+      }
+    }
+
+    div.legislation_selector {
+      margin-left: 305px;
+      margin-top: -200px;
+      height: 240px;
+      width: 280px;
+
+      div.session_selector {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: 240px;
+        width: 400px;
+        padding-left: 0px;
+
+        ul, li {
+          list-style-type: none;
+        }
+      }
+
+      div.type_selector {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: 240px;
+        width: 400px;
+        padding-left: 0px;
+
+        ul, li {
+          list-style-type: none;
+        }
+      }
+
+      div.subject_selector {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: 240px;
+        width: 400px;
+        padding-left: 0px;
+
+        ul, li {
+          list-style-type: none;
+        }
+      }
+
+      div.committee_selector {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: 240px;
+        width: 400px;
+        padding-left: 0px;
+
+        ul, li {
+          list-style-type: none;
+        }
+      }
+
+      div.introduced_selector {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: 240px;
+        width: 400px;
+        padding-left: 0px;
+
+        ul, li {
+          list-style-type: none;
+        }
+      }
+
+      div.sponsor_selector {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: 240px;
+        width: 400px;
+        padding-left: 0px;
+
+        ul {
+
+          li {
+            list-style-type:none;
+
+            #sponsor_body {
+              display: block;
+            }
+
+            #sponsor_name {
+              display: block;
+            }
+
+            #sponsor_party {
+              display: block;
+            }
+
+            #sponsor_district {
+              display: block;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  div.div-select-button, div.div-select-button:active, div.div-select-button:link, div.div-select-button:visited {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+  /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #CCCCCC, #959595);
+
+  /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #CCCCCC, #959595);
+
+  /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #CCCCCC, #959595);
+
+  /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #CCCCCC, #959595);
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+    margin-left: 480px;
+    margin-top: -40px;
+    width: 100px;
+    height: 33px;
+    font-size: 15px;
+    font-family: "Sonus Light";
+    background-color: #f0f0f0;
+    color: #353535;
+    letter-spacing: 1px;
+    text-decoration: none;
+    outline: none;
+    border: 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-align: center;
+    z-index:1;
+
+    span {
+      display: inline-block;
+      margin-top: 6px;
+    }
+
+    &:hover {
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+      background-image: -webkit-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Firefox 3.6+ */
+      background-image: -moz-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* IE 10+ */
+      background-image: -ms-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Opera 11.10+ */
+      background-image: -o-linear-gradient(top, #FC8A81, #EF503B);
+      color: white;
+    }
+
+    .clicked {
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EF503B), to(#FC8A81));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+      background-image: -webkit-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Firefox 3.6+ */
+      background-image: -moz-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* IE 10+ */
+      background-image: -ms-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Opera 11.10+ */
+      background-image: -o-linear-gradient(top, #EF503B, #FC8A81);
+      color: white;
+    }
+
+  }
+
+  div.div-filter-button, div.div-filter-button:active, div.div-filter-button:link, div.div-filter-button:visited {
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+  /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+    background-image: -webkit-linear-gradient(top, #CCCCCC, #959595);
+
+  /* Firefox 3.6+ */
+    background-image: -moz-linear-gradient(top, #CCCCCC, #959595);
+
+  /* IE 10+ */
+    background-image: -ms-linear-gradient(top, #CCCCCC, #959595);
+
+  /* Opera 11.10+ */
+    background-image: -o-linear-gradient(top, #CCCCCC, #959595);
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+    margin-left: 585px;
+    margin-top: -33px;
+    width: 100px;
+    height: 33px;
+    font-size: 15px;
+    font-family: "Sonus Light";
+    background-color: #f0f0f0;
+    color: #353535;
+    letter-spacing: 1px;
+    text-decoration: none;
+    outline: none;
+    border: 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-align: center;
+    z-index:1;
+
+    span {
+      display: inline-block;
+      margin-top: 6px;
+    }
+
+    &:hover {
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FC8A81), to(#EF503B));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+      background-image: -webkit-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Firefox 3.6+ */
+      background-image: -moz-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* IE 10+ */
+      background-image: -ms-linear-gradient(top, #FC8A81, #EF503B);
+
+    /* Opera 11.10+ */
+      background-image: -o-linear-gradient(top, #FC8A81, #EF503B);
+      color: white;
+    }
+
+
+    .clicked {
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EF503B), to(#FC8A81));
+
+    /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+      background-image: -webkit-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Firefox 3.6+ */
+      background-image: -moz-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* IE 10+ */
+      background-image: -ms-linear-gradient(top, #EF503B, #FC8A81);
+
+    /* Opera 11.10+ */
+      background-image: -o-linear-gradient(top, #EF503B, #FC8A81);
+      color: white;
+    }
+  }
+
+  div.filter-results {
+    margin-left: 160px;
+    margin-top: 18px;
+    height:auto;
+    width: 780px;
+    overflow: auto;
+
+    div.results-heading {
+      margin-left: 5px;
+      margin-top: 5px;
+    }
+  }
+
+  div.filter-congress-feed {
+    margin-left:850px;
+    margin-top:-500px;
+    width: 300px;
+  }
+}
+
+input[type="checkbox"]{
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+input[type="form"]{
+  margin-top: 0px;
+  margin-right: 5px;
+  width:200px;
+  height: 20px;
+  text-decoration-color:#000000;
+  font-size: 14px;
+
+  :focus {
+    border: 1px solid #EF503B;
+  }
+}
+
+h5 {
+  color: #005468;
+
+  &:hover {
+    color: #ef503b;
+  }
+  .no-hover {
+    color: #005468;
+  }
+}
+
+.datepicker {
+  font-size: 14px;
+}
