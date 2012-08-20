@@ -627,7 +627,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    html = ajaxRender('site/pages/content/petition/petition_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/petition_detail.html', vals, request)
     url = petition.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -653,7 +653,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
 
-    html = ajaxRender('site/pages/news_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
 

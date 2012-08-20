@@ -1,0 +1,24 @@
+{% extends 'site/pages/content_detail/content_detail.html' %}
+
+{% block content_description %}
+    <div class="content-info-header">
+        Description
+    </div>
+
+    <div class="description">
+        {{ content.summary}}
+    </div>
+
+{% endblock %}
+
+
+{% block content_body %}
+
+    <div class="petition-wrapper">
+        {{ content.full_text }}
+    </div>
+
+    <script> rebind="petition_detail"; </script>
+
+{% endblock %}
+
