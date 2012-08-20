@@ -1970,9 +1970,8 @@ class CreatedAction(Action):
         return self.content
 
     def getVerbose(self,viewer=None,vals={}):
-        you_acted = False
-        if viewer.id == self.user.id:
-            you_acted = True
+
+        you_acted = (viewer.id == self.user.id)
 
         vals.update({
             'timestamp' : self.when,

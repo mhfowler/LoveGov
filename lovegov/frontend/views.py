@@ -365,7 +365,8 @@ def needConfirmation(request, vals={}):
                                            'Check your email for a confirmation link.  '\
                                            'It might be in your spam folder.'
     vals['state'] = 'need-confirmation'
-    return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+
+    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
@@ -478,7 +479,6 @@ def friends(request, vals):
     if viewer.facebook_id:
         friends_list = fbGet(request,'me/friends/')['data']
         vals['facebook_authorized'] = False
-
         if friends_list:
             vals['facebook_authorized'] = True
             fb_friends = []
@@ -490,8 +490,6 @@ def friends(request, vals):
                 fb_friends.append(fb_friend)
 
                 vals['facebook_friends'] = fb_friends
-
-
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
