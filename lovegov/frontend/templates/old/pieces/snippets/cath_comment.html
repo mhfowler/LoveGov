@@ -1,4 +1,4 @@
-<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:{{ width }}px">
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="margin-left:{{ margin }}px;width:100%">
     <div class="comment-username feed-username">
         {% load thumbnail %}
         {% if comment.active %}
@@ -34,7 +34,7 @@
         {% if creator.you %}
             <div class="edit_button edit-link"></div>
             <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{comment.id}}">
-                <textarea style="width:{{ width }}px" class="comment-textarea edit_input" type="text" name="text" maxlength='1000'>{{comment.text}}</textarea>
+                <textarea style="width:{{ width }}px" class="comment-textarea edit_input" type="text" name="text">{{comment.text}}</textarea>
                 <input type="button" class="tab-button edit-link submit_inline_edit" style="float: right" value="Save">
                 <input type="button" class="tab-button cancel_inline_edit alt" style="float: right; margin-right: 10px" value="Cancel">
                 <div style="clear:both"></div>

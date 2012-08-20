@@ -96,6 +96,7 @@ urlpatterns += patterns('',
     (r'^discussion/(\d+)/$', viewWrapper(views.discussionDetail, requires_login=True)),
     (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
+    (r'^thread/(\d+)/$', viewWrapper(views.thread, requires_login=True)),
 
     # special pages
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),              # profile/comparison

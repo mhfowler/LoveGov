@@ -601,6 +601,17 @@ def worldview(request, alias, vals={}):
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals)
 
+
+def thread(request, c_id, vals={}):
+    content = Content.lg.get_or_none(id=c_id)
+    if not content:
+        return HttpResponse("The indicated content item does not exist.")
+    vals['content'] = content
+    vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
+    html = ajaxRender('site/pages/thread.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------

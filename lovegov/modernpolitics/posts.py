@@ -719,7 +719,12 @@ def comment(request, vals={}):
         comment.on_content.getCreator().notify(action)
         if not comment.on_content == comment.root_content:
             comment.root_content.getCreator().notify(action)
-        return HttpResponse("+")
+        depth = int(request.POST.get('depth', 0))
+        from lovegov.frontend.views_helpers import renderComment 
+        html = '<div class="threaddiv">'
+        html += renderComment(request, vals, comment, depth)
+        html += '</div>'
+        return HttpResponse(html)
     else:
         if request.is_ajax():
             to_return = {'errors':[]}
@@ -729,6 +734,24 @@ def comment(request, vals={}):
         else:
             vals = {'message':'Comment post failed'}
             return renderToResponseCSRF('usable/message.html',vals,request)
+
+def appendComment(request, vals={}):
+    user = vals['viewer']
+    privacy = getPrivacy(request)
+    c_id = request.POST.get('c_id', None)
+    text = request.POST.get('comment', None)
+    if c_id:
+        comment = Comment.lg.get_or_none(id=c_id)
+        if comment:
+            if text:
+                appended_text = comment.text + '\n' + text
+                comment.text = appended_text
+                comment.save()
+                from django.template import defaultfilters
+                appended_text = defaultfilters.linebreaks_filter(appended_text)
+                appended_text = defaultfilters.urlize(appended_text)
+                return HttpResponse(appended_text)
+    return HttpResponseBadRequest("Something was wrong with the request.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sets privacy cookie and redirects to inputted page.
@@ -1327,8 +1350,10 @@ def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
     user = vals['viewer']
-    thread = makeThread(request, content, user, vals=vals)
-    to_return = {'html':thread}
+    limit = int(request.POST.get('limit', 500))
+    start = int(request.POST.get('start', 0))
+    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit)
+    to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------

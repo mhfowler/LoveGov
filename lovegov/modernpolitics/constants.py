@@ -67,7 +67,12 @@ URL_SPECIAL_NAMES = [
     'beta',
     'analytics',
     'api',
-    'motion'
+    'motion',
+    'thread',
+    'threads',
+    'comments',
+    'discuss',
+    'discussion',
 ]
 
 ########################################## EMAIL LISTS #################################################################
@@ -596,8 +601,10 @@ ACTIONS = [
     'updateMatch',
     'stubAnswer',
     'updateStats',
+    'appendComment',
     'getGroups',
     'getUsersByUID',
+    'getGroupMembers',
     'getGroupMembersForDisplay'
 ]
 
@@ -674,4 +681,5 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'groupInvite',
     'createMotion'
     #checkCompatability,
+    'appendComment',
 ]

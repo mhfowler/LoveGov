@@ -1,0 +1,243 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+@import 'compass';
+
+div.reply {
+    @include clearfix;
+    clear: both;
+    textarea.comment-textarea {
+        width: 100%;
+        height: 100px;
+        padding: 5px;
+        @include titleFont;
+        &:focus {
+            border: 1px solid $deep-gray;
+        }
+    }
+
+    input.tab-button, a.tab-button, span.tab-button {
+        float: right;  
+        background-color: $red;
+        @include rounded-bottom(8px);
+        color: $white;
+        padding: 8px;
+        border: none;
+        margin: 0 0 6px 10px;
+        cursor: pointer;
+        &.alt {
+            background-color: $gray;
+        }
+        &:hover {
+            padding-top: 14px;
+            margin-bottom: 0;
+        }
+            display: block;
+        }
+
+}
+
+div.comment
+{
+    position:relative;
+    margin-left:30px;
+    padding: 30px;
+    padding-bottom:20+30px;
+    &.level1 {
+	    background-color: $white-gray;
+	    border-bottom: 1px solid $gray;
+    }
+    &.level2 {
+	    border:1px dashed $gray;
+	    border-right: none;
+	    border-top: none;
+    }
+    &.toplevel {
+	    margin-top: 10px;
+    }
+    div.change-privacy {
+        float:left;
+    }
+}
+
+div#content-div p {
+    color: $deep-gray;
+    @include titleFont;
+    font-size: 18px;
+    clear: right;
+}
+
+div#content-div {
+    width: 720px;
+    height: auto;
+    float: left;
+}
+
+div.petition_bar {
+
+    margin-top: 25px;
+div.bar-wrapper {
+    width:100%;
+    height:14px;
+    border: 1px solid $red;
+    overflow:hidden;
+    div.red_bar {
+      height:14px;
+      background-color:$red;
+    }
+  }
+  div.goal-statement {
+    margin: 5px 0 0 0;
+  }
+}
+
+.comment-username
+{
+    padding-bottom:2px;
+    font-size:14pt;
+    color:$text-blue;
+    margin-bottom:10px;
+    float:left;
+    cursor:pointer;
+    @include titleFont;
+}
+
+.comment-username a, .comment-username a:hover, .comment-username a:link, .comment-username a:visited, .comment-username a:active
+{
+    color:#0f5569;
+    float:left;
+    margin-top:15px;
+    margin-left:5px;
+}
+
+.comment-actions
+{
+    position:relative;
+    margin-top:10px;
+    @include titleFont;
+    color: #f0503b;
+    font-size:13pt;
+    cursor:pointer;
+    margin-top:10px;
+    margin-bottom:10px;
+    div.reply-action {
+	    float: right;
+    }
+    div.delete-action, div.share, div.append-action {
+	    float: right;
+	    margin-right: 12px;
+    }
+    div:hover {
+        color: $red-light;
+    }
+}
+
+
+.comment-metadata
+{
+    position:relative;
+    float:right;
+    @include titleFont;
+    color: #ccc;
+    font-size:10pt;
+    padding-left:10px;
+    cursor:pointer;
+}
+
+.comment-textarea
+{
+    @include titleFont;
+    font-size:11pt;
+    border: 1px solid #ccc;
+    height:100px;
+    padding: 10px;
+}
+
+.comment-text
+{
+    clear:both;
+    margin-top: 10px;
+}
+
+#comment-text:focus
+{
+    outline:none;
+}
+
+#comment-thread
+{
+    margin-top:0px;
+    position:relative;
+    width:700px;
+}
+
+
+span.discuss
+{
+    font-size: 18px;
+    color: $red;
+    @include titleFont;
+    margin: 15px 0 10px 0;
+    display: block;
+}
+
+div.comment-username img {
+    float: left;
+    margin-right: 10px;
+}
+
+div.hearts_wrapper span.status {
+    color: $black;
+}
+
+
+
+div.comment-username div.avatar-box {
+    float: left;
+}
+
+div.thread
+{
+    position:relative;
+    padding-top:20px;
+    left:-20px;
+}
+
+div.comment span.timestamp {
+    float: left;
+    font-size: 12px;
+    color: $deep-gray;
+    margin-left: 10px;
+    margin-top: 18px;
+    display: block;
+    float: left;
+    font-family: $body-fonts;
+}
+
+
+span.collapse {
+    cursor: pointer;
+    position: relative;
+    float: left;
+    z-index: 1;
+    color: $deep-gray;
+    top: 85px;
+    left: 10px;
+}
+
+span.flag {
+    color: $gray;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-left: 10px;
+    display: block;
+    float: left;
+    &:hover {
+        color: $deep-gray;
+    }
+}
+
+div.threaddiv {
+    min-height: 50px;
+}
