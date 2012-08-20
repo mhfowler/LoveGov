@@ -53,10 +53,10 @@
 
     </div>
 
-    {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth placeholder="Add more to this comment" class="reply-append" %}
     {% if creator.you %}
-    {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth class="reply-reply" %}
+    {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth placeholder="Add more to this comment" class="reply-append" %}
     {% endif %}
+    {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth class="reply-reply" %}
 
 </div>
 
