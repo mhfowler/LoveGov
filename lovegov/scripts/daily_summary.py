@@ -73,7 +73,7 @@ def dailySummaryEmail(days_ago=1, days_for=0):
 print "*** SENDING DAILY SUMMARY EMAIL ***"
 print "args: [email] [days-ago-start] [how-many-days]"
 
-days_ago=0
+days_ago=1
 days_for=0
 if len(sys.argv) > 1:
     email = sys.argv[1]
