@@ -259,7 +259,7 @@ def create(request, vals={}):
     if form.is_valid():
         # save new piece of content
         c = form.complete(request)
-        action = Action(privacy=getPrivacy(request),relationship=c.getCreatedRelationship())
+        action = CreatedAction(privacy=getPrivacy(request),content=c)
         action.autoSave()
         # if ajax, return page center
         if request.is_ajax():
@@ -690,7 +690,7 @@ def delete(request, vals={}):
             if on_content != root_content:
                 on_content.num_comments -= 1
                 on_content.save()
-        deleted = Deleted(user=user, content=content, privacy=getPrivacy(request))
+        deleted = DeletedAction(user=user, content=content, privacy=getPrivacy(request))
         deleted.autoSave()
         return HttpResponse("successfully deleted content with id:" + request.POST['c_id'])
     else:
@@ -713,10 +713,8 @@ def comment(request, vals={}):
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():
         comment = comment_form.save(creator=user, privacy=privacy)
-        # save relationship, action and send notification
-        rel = Commented(user=user, content=comment.on_content, comment=comment, privacy=privacy)
-        rel.autoSave()
-        action = Action(privacy=getPrivacy(request),relationship=rel)
+        # save action and send notification
+        action = CreatedAction(user=user,privacy=getPrivacy(request),content=comment)
         action.autoSave()
         comment.on_content.getCreator().notify(action)
         if not comment.on_content == comment.root_content:
@@ -805,17 +803,16 @@ def answer(request, vals={}):
     user = vals['viewer']
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = request.POST.get('questionPRI')
-    my_response = user.view.responses.filter(question=question)
     if not privacy:
         privacy = getPrivacy(request)
     if 'choice' in request.POST:
         answer_id = request.POST['choice']
         weight = request.POST['weight']
         explanation = request.POST['explanation']
-        response = answerAction(user=user, question=question, my_response=my_response,
-                privacy=privacy, answer_id=answer_id, weight=weight, explanation=explanation)
+        response = answerAction(user=user, question=question, privacy=privacy, answer_id=answer_id, weight=weight, explanation=explanation )
         return HttpResponse(simplejson.dumps({'url': response.get_url(),'answer_avg':0}))
     else:
+        my_response = user.view.responses.filter(question=question)
         if my_response:
             response = my_response[0]
             response.delete()
@@ -838,9 +835,7 @@ def stubAnswer(request, vals={}):
     explanation = request.POST['explanation']
     if explanation == 'explain your answer':
         explanation = ""
-    my_response = user.view.responses.filter(question=question)
-    response = answerAction(user=user, question=question, my_response=my_response,
-        privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
+    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
     vals['your_response'] = response
     if to_compare:
@@ -941,7 +936,7 @@ def joinGroupResponse(request, vals={}):
 
     response = request.POST['response']
 
-    result = joinGroupResponseAction(group,from_user,response,getPrivacy(request))
+    result = joinGroupResponseAction(group,from_user,response,viewer,getPrivacy(request))
 
     return HttpResponse( json.dumps({ 'success':result }) )
 
@@ -1597,18 +1592,18 @@ def getNotifications(request, vals={}):
             old_notifications = list(viewer.getNotifications(num=diff,old=True))
 
         for notification in new_notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+            notifications_text.append( notification.getVerbose(viewer=viewer,vals=vals) )
 
         if old_notifications:
             for notification in old_notifications:
-                notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+                notifications_text.append( notification.getVerbose(viewer=viewer,vals=vals) )
 
     else:
         notifications = viewer.getNotifications(num=NOTIFICATION_INCREMENT,start=num_notifications)
         if not notifications:
             return HttpResponse(json.dumps({'error':'No more notifications'}))
         for notification in notifications:
-            notifications_text.append( notification.getVerbose(view_user=viewer,vals=vals) )
+            notifications_text.append( notification.getVerbose(viewer=viewer,vals=vals) )
         num_notifications += NOTIFICATION_INCREMENT
 
     vals['dropdown_notifications_text'] = notifications_text
@@ -1644,11 +1639,11 @@ def getUserActivity(request, vals={}):
 
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
+        actions_text.append( action.getVerbose(viewer=viewer, vals=vals) )
 
     vals['actions_text'] = actions_text
 
-    html = ajaxRender('site/frame/notifications/action_snippet.html', vals, request)
+    html = ajaxRender('site/pieces/actions/action_snippet.html', vals, request)
     return HttpResponse( json.dumps({'html':html,'feed_start':num_actions,'num_items':len(actions)}) )
 
 
@@ -1672,7 +1667,7 @@ def getGroupActions(request, vals={}):
         return HttpResponse(json.dumps({'error':'No more actions'}))
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(view_user=viewer, vals=vals) )
+        actions_text.append( action.getVerbose(viewer=viewer, vals=vals) )
     vals['actions_text'] = actions_text
     num_actions += NOTIFICATION_INCREMENT
     vals['num_actions'] = num_actions
