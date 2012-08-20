@@ -259,12 +259,13 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
-    unique_commenter_ids = custom_fields.ListField(default=[])
-    # unique_commenters = models.ManyToManyField("UserProfile")
+    commenters = models.ManyToManyField("UserProfile", related_name="commented_on_content")
     # POSTING TO GROUPS
     posted_to = models.ForeignKey("Group", null=True, related_name="posted_content")
     shared_to = models.ManyToManyField("Group", related_name="shared_content")
     content_privacy = models.CharField(max_length=1,choices=CONTENT_PRIVACY_CHOICES, default='O')
+    # deprecated
+    unique_commenter_ids = custom_fields.ListField(default=[])
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -304,6 +305,9 @@ class Content(Privacy, LocationLevel):
     def getBreakdownURL(self):
         return self.get_url() + 'breakdown/'
 
+    def getCommentsURL(self):
+        return self.get_url() + "#comments-wrapper"
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets name of content for display.
     #-------------------------------------------------------------------------------------------------------------------
@@ -336,26 +340,21 @@ class Content(Privacy, LocationLevel):
     def contentCommentsRecalculate(self):
         direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
-        commenters = set()
 
         if direct_comments:
             for comment in direct_comments:
 
-                commenters.add(comment.getCreator())
+                self.commenters.add(comment.getCreator())
 
-                num_children_comments, children_commenters = comment.contentCommentsRecalculate()
+                num_children_comments = comment.contentCommentsRecalculate()
 
                 num_comments += num_children_comments + 1
-                commenters.union(children_commenters)
 
         self.num_comments = num_comments
-        unique_commenter_ids = []
-        for x in commenters:
-            unique_commenter_ids.append(x.id)
-        self.unique_commenter_ids = unique_commenter_ids
         self.save()
 
-        return num_comments, commenters
+        return num_comments
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -461,6 +460,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
+        self.like(user=creator, privacy=privacy)
 
         logger.debug("created " + self.title)
 
@@ -509,10 +509,8 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def addComment(self, commenter):
         self.num_comments += 1
-        unique_commenter_ids = self.unique_commenter_ids
-        if commenter and (not commenter.id in unique_commenter_ids):
-            unique_commenter_ids.append(commenter.id)
-            self.unique_commenter_ids = unique_commenter_ids
+        if commenter and (not commenter in self.commenters.all()):
+            self.commenters.add(commenter)
             self.status += STATUS_COMMENT
         self.save()
 
@@ -650,7 +648,6 @@ class Content(Privacy, LocationLevel):
             # if disliked or neutral, increase vote by 1
             else:
                 my_vote.value += 1
-                my_vote.autoSave()
 
                 # adjust content values about status and vote
                 if my_vote.value == 1:
@@ -660,6 +657,7 @@ class Content(Privacy, LocationLevel):
 
                 self.status += STATUS_VOTE
                 self.save()
+                my_vote.save()
 
         else:
             # create new vote
@@ -694,7 +692,6 @@ class Content(Privacy, LocationLevel):
                 pass
             else:
                 my_vote.value -= 1
-                my_vote.autoSave()
                 # adjust content values about status and vote
                 if my_vote.value == -1:
                     self.downvotes += 1
@@ -702,7 +699,7 @@ class Content(Privacy, LocationLevel):
                     self.upvotes -= 1
                 self.status -= STATUS_VOTE
                 self.save()
-
+                my_vote.save()
         else:
             # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -1584,13 +1581,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         #Do aggregate notifications if necessary
         if type in AGGREGATE_NOTIFY_TYPES:
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
+            if type not in NOTIFY_MODIFIERS:
 
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
                 # Find all recent notifications with this action type/modifier directed towards this user
                 already = Notification.objects.filter(notify_user=self,
                                                         when__gte=stale_date,
-                                                        action__modifier=action.modifier,
                                                         action__action_type=type ).order_by('-when')
 
                 for notification in already: # For all recent notifications matching this one
@@ -1608,7 +1604,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         #Otherwise do normal notifications
         elif type in NOTIFY_TYPES:
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
+            if type not in NOTIFY_MODIFIERS:
                 notification = Notification(action=action, notify_user=self)
                 notification.save()
                 return True
@@ -2433,7 +2429,6 @@ class Office(Content):
 # Petition
 #
 #=======================================================================================================================
-
 class Petition(Content):
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
@@ -2444,6 +2439,9 @@ class Petition(Content):
 
     def getTitleDisplay(self):
         return "Petition: " + self.title
+
+    def getFilledPercent(self):
+        return int(100*(self.current / float(self.goal)))
 
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:

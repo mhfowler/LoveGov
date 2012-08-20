@@ -900,6 +900,33 @@ def updateStats(request, vals={}):
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
+    if object == 'petition_bar':
+        petition = Petition.objects.get(id=request.POST['p_id'])
+        vals['petition'] = petition
+        html = ajaxRender('site/pages/content_detail/petition_bar.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+#----------------------------------------------------------------------------------------------------------------------
+# gets html for next poll question
+#-----------------------------------------------------------------------------------------------------------------------
+def getNextPollQuestion(request, vals={}):
+    p_id = int(request.POST['p_id'])
+    which = int(request.POST['which'])
+    direction = request.POST['direction']
+    if direction == 'R':
+        next = which+1
+    else:
+        next = which-1
+    poll = Poll.objects.get(id=p_id)
+    questions = poll.questions.all()
+    num_questions = questions.count()
+    if next < 0 : next = (num_questions-1)
+    elif next > (num_questions-1): next=0
+    question = questions[next]
+    vals['question'] = question
+    vals['poll'] = poll
+    vals['which'] = next
+    html = ajaxRender('site/pages/content_detail/poll_sample.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------

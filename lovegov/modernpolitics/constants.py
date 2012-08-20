@@ -605,7 +605,8 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
-    'getGroupMembersForDisplay'
+    'getGroupMembersForDisplay',
+    'getNextPollQuestion'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

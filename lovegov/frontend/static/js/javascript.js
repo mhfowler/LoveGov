@@ -48,6 +48,16 @@ function bindOnNewElements() {
         setInfoHeight($(this));
     });
     bindNotificationsDropdownClickOutside();
+    pollAutoSwitch();
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    poll_autoswitch= setInterval(function()
+    {
+       cyclePollQuestions();
+    }, 5000);
 }
 
 /***********************************************************************************************************************
@@ -609,6 +619,30 @@ function neutral(div)
     div.find(".heart_minus").removeClass("clicked");
 }
 
+/* click through poll sample */
+bind(".poll_arrow", 'click', null, function(event) {
+    var direction = $(this).data("direction");
+   nextPollQuestion($(this).parents(".sample_question"), direction);
+});
+
+function nextPollQuestion(sample_question, direction) {
+    var p_id = sample_question.data('p_id');
+    var which = sample_question.data("which");
+    var data = {'action':'getNextPollQuestion', 'p_id':p_id, 'which':which, 'direction':direction};
+    action({
+        data:data,
+        success:function(data) {
+            var returned = eval('(' + data + ')');
+            sample_question.replaceWith(returned.html);
+        }
+    });
+}
+
+function cyclePollQuestions() {
+    $.each($(".sample_question"), function(i,e) {
+        nextPollQuestion($(this), 1);
+    });
+}
 
 /* filter buttons */
 bind(".rank_button" , "click" , null , function(event) {
@@ -2231,6 +2265,9 @@ function updateStatsObject(stats) {
         data['q_id'] = stats.data('q_id');
     }
     if (object == 'poll_progress') {
+        data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'petition_bar') {
         data['p_id'] = stats.data('p_id');
     }
     action({

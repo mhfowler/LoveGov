@@ -244,7 +244,10 @@ def getQuestionStats(vals):
         num = r.count()
         stat['total'] = total
         stat['num'] = num
-        percent = num/float(total)*100
+        if total:
+            percent = num/float(total)*100
+        else:
+            percent = 0
         stat['percent'] = percent
         stat['empty'] = 100-percent
         topic_stats.append(stat)

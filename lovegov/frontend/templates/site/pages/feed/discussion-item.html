@@ -2,7 +2,6 @@
 {% load thumbnail %}
 {% load customtags %}
 
-
 {% block content-image %}
 
     <div class="item-content-image news-image">
@@ -12,24 +11,11 @@
 {% endblock %}
 
 
+
 {% block feed-item-content %}
-
-    <div class="feed-item-main">
-        {% with g=item.posted_to %}
-            <a href="{{ g.get_url }}">
-                <div class="feed-item-group-name">
-                    {{ g.get_name }}
-                </div>
-            </a>
-        {% endwith %}
-
-        <div class="feed-item-title">
-            <a href="{{item.get_url}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
-        </div>
 
         <div class="feed-item-description">
             {{ item.user_post|truncate_chars:200}}
         </div>
-    </div>
 
 {% endblock %}

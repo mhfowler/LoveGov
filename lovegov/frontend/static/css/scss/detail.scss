@@ -202,3 +202,61 @@ div.content-detail {
     //@include opacity(0.4);
   }
 }
+
+
+/* petition bar */
+div.petition-bar-wrapper {
+  width:100%;
+  div.petition-bar {
+    width:100%;
+    border:1px solid $red;
+    height:15px;
+    div.red-bar {
+      height:100%;
+      background-color:$red;
+    }
+  }
+  div.petition-bar-text {
+    float:right;
+    color:$dark-gray;
+    margin-top:5px;
+    @include fontSize(12px);
+  }
+}
+
+/* poll sample question */
+div.sample-question {
+  float:left;
+  width:500px;
+  div.arrow {
+    @include fontSize(30px);
+    &:hover {
+      background-color:$light-gray;
+      cursor:pointer;
+    }
+  }
+  div.left-arrow {
+    float:left;
+  }
+  div.right-arrow {
+    float:right;
+  }
+  div.current-question {
+    width:410px;
+    text-align:center;
+    color:$black;
+    background-color:$light-gray;
+    padding:5px;
+    padding-left:10px;
+    padding-right:10px;
+    float:left;
+    margin-left:20px;
+    margin-right:15px;
+    margin-top:5px;
+    @include fontSize(16px);
+    &:hover  {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
+  }
+}
