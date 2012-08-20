@@ -4,7 +4,22 @@
 
 @import "compass";
 
+/* stuff for section headers */
+div.home-header-top {
+  @include clearfix;
+  div.home-section-title {
+    text-transform:uppercase;
+    @include fontSize(20px);
+    float:left;
+  }
 
+  div.minimize-button {
+    float:right;
+  }
+
+}
+
+/* home page stuff */
 .gray-hover {
   //@include border-radius(5px);
   &:hover {

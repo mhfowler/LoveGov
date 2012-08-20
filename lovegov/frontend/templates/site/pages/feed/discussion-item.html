@@ -12,32 +12,23 @@
 {% endblock %}
 
 
-
-{% block feed-image %}
-
-    <div class="feed-item-image">
-        {% thumbnail item.getImageURL "180x118" crop="center" as im %}
-            <img src="{{ im.url }}"/>
-        {% endthumbnail %}
-    </div>
-
-{% endblock %}
-
-
-
 {% block feed-item-content %}
 
     <div class="feed-item-main">
-        <div class="feed-item-group-name">
-            Save the whales
-        </div>
+        {% with g=item.posted_to %}
+            <a href="{{ g.get_url }}">
+                <div class="feed-item-group-name">
+                    {{ g.get_name }}
+                </div>
+            </a>
+        {% endwith %}
 
         <div class="feed-item-title">
-            <a href="{{item.link}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
+            <a href="{{item.get_url}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
         </div>
 
         <div class="feed-item-description">
-            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it lo...
+            {{ item.user_post|truncate_chars:200}}
         </div>
     </div>
 

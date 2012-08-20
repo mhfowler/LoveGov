@@ -55,8 +55,6 @@ def aliasToObject(alias):
         to_return = Group.lg.get_or_none(alias=alias)
     if not to_return:
         to_return = UserProfile.lg.get_or_none(alias=alias)
-    if not to_return:
-        to_return = Election.lg.get_or_none(alias=alias)
     return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -141,8 +139,7 @@ def randomAnswers(user):
         answers = list(q.answers.all())
         my_answer = random.choice(answers)
         # print "answered: ", my_answer.answer_text
-        answerAction(user, question=q, my_response=user.view.responses.filter(question=q),
-            privacy='PUB', answer_id=my_answer.id, weight=5, explanation="")
+        answerAction(user, question=q, privacy='PUB', answer_id=my_answer.id, weight=5, explanation="")
     user.last_answered = datetime.datetime.now()
     user.save()
 

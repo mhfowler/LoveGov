@@ -1,0 +1,5 @@
+<div class="reply {{class}}" style="width:{{width}}; {% if hidden %}display:none{% endif %}" data-reply-to="{{content.id}}" data-depth="{{depth}}">
+    <textarea class="comment-textarea" placeholder="{% firstof placeholder 'What\'s your opinion?' %}" maxlength="10000">{{default_reply}}</textarea>
+    <span class="tab-button save {{save_class}}">Save</span>
+    {% if cancel_button %}<span class="tab-button alt cancel">Cancel</span>{% endif %}
+</div>

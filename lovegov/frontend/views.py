@@ -365,7 +365,8 @@ def needConfirmation(request, vals={}):
                                            'Check your email for a confirmation link.  '\
                                            'It might be in your spam folder.'
     vals['state'] = 'need-confirmation'
-    return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+
+    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
@@ -436,6 +437,11 @@ def home(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def groups(request, vals):
+    viewer = vals['viewer']
+    #groups = viewer.getUserGroups()
+    groups = UserGroup.objects.all()
+    groups = groups[:6]
+    vals['groups'] = groups
     focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -478,7 +484,6 @@ def friends(request, vals):
     if viewer.facebook_id:
         friends_list = fbGet(request,'me/friends/')['data']
         vals['facebook_authorized'] = False
-
         if friends_list:
             vals['facebook_authorized'] = True
             fb_friends = []
@@ -490,8 +495,6 @@ def friends(request, vals):
                 fb_friends.append(fb_friend)
 
                 vals['facebook_friends'] = fb_friends
-
-
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -598,6 +601,17 @@ def worldview(request, alias, vals={}):
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals)
 
+
+def thread(request, c_id, vals={}):
+    content = Content.lg.get_or_none(id=c_id)
+    if not content:
+        return HttpResponse("The indicated content item does not exist.")
+    vals['content'] = content
+    vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
+    html = ajaxRender('site/pages/thread.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
@@ -613,7 +627,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    html = ajaxRender('site/pages/content/petition/petition_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/petition_detail.html', vals, request)
     url = petition.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -639,7 +653,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
 
-    html = ajaxRender('site/pages/news_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -697,8 +711,16 @@ def pollDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion
 #-----------------------------------------------------------------------------------------------------------------------
-def discussionDetail(request, p_id=-1, vals={}):
-    return HttpResponse("Discussion!")
+def discussionDetail(request, d_id=-1, vals={}):
+
+    viewer = vals['viewer']
+    discussion = Discussion.objects.get(id=d_id)
+    vals['discussion'] = discussion
+    contentDetail(request, discussion, vals)
+
+    html = ajaxRender('site/pages/content_detail/discussion_detail.html', vals, request)
+    url = discussion.get_url()
+    return framedResponse(request, html, url, vals, rebind="discussion_detail")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # closeup of histogram
