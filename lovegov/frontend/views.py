@@ -437,6 +437,11 @@ def home(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def groups(request, vals):
+    viewer = vals['viewer']
+    #groups = viewer.getUserGroups()
+    groups = UserGroup.objects.all()
+    groups = groups[:6]
+    vals['groups'] = groups
     focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)

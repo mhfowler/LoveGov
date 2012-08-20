@@ -87,10 +87,18 @@ div.feed-item-content
       }
     }
 
+    div.feed-item-description {
+        width:750px;
+    }
+
     div.feed-item-group-name
     {
       color: $red;
       font-style: italic;
+      &:hover {
+        color:$light-gray;
+        cursor:pointer;
+      }
     }
   }
 
@@ -141,6 +149,9 @@ div.feed-item-content
         {
           margin-top: 2px;
           font-size: 14px;
+          &:hover {
+            color:$black;
+          }
         }
 
         div.feed-avatar-timestamp

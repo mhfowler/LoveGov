@@ -6,10 +6,32 @@
 
 div.groups-header {
   width:100%;
+  @include clearfix;
+
+  div.groups-titles {
+    float:left;
+    @include clearfix;
+    div.group-title {
+      @include titleFont();
+      @include fontSize(16px);
+      font-weight:bold;
+      float:left;
+    }
+    div.group-plus {
+      @include fontSize(16px);
+      margin: 0 15px;
+      float:left;
+    }
+  }
 
   a.browse-all {
     float:right;
+    color:black;
+    @include fontSize(20px);
     margin-right:20px;
+    //margin-top:10px;
+    &:hover {
+      color:$gray;
+    }
   }
-
 }

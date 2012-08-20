@@ -6,7 +6,6 @@
 var rebind;
 function bindOnReload() {
     bindOnNewElements();
-    initHomePage();
     switch (rebind) {
         case "home":
             initFeed();
@@ -43,6 +42,7 @@ function undelegated() {
 function bindOnNewElements() {
     undelegated();
     loadHoverComparison();
+    initHomePage();
     loadHistograms();
     $.each($(".expandable_wrapper"), function(i,e) {
         setInfoHeight($(this));
@@ -2540,7 +2540,7 @@ function getHistogramMembersHelper(histogram_wrapper, identical) {
     }
     // else get members by posting start, end and group_id
     else {
-        post_data = {'action':'getGroupMembers',
+        post_data = {'action':'getGroupMembersForDisplay',
             'g_id':histogram_metadata.g_id,
             'start': start,
             'num': num,

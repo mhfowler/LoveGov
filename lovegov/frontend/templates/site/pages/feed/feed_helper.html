@@ -1,5 +1,5 @@
 {% for x in feed_items %}
-    {% with item=x.0 my_vote=x.1 %}
+    {% with item=x.0.downcast my_vote=x.1 %}
         {% if item.type == "N" %}
             {% include "site/pages/feed/news-item.html" %}
         {% elif item.type == "P" %}

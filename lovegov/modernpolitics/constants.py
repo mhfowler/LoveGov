@@ -598,7 +598,7 @@ ACTIONS = [
     'updateStats',
     'getGroups',
     'getUsersByUID',
-    'getGroupMembers'
+    'getGroupMembersForDisplay'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

@@ -68,7 +68,6 @@ urlpatterns += patterns('',
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
     (r'^presidential/$', viewWrapper(views.presidential, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
-    (r'^congress/$', viewWrapper(views.congress, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
 
