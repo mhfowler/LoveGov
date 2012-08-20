@@ -1461,6 +1461,16 @@ def getQuestions(request, vals):
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
 
+
+def getLegislation(request, vals={}):
+
+    feed_start = int(request.POST['feed_start'])
+    legislation_items = Legislation.objects.all()[feed_start:10]
+    vals['legislation_items'] = legislation_items
+
+    html = ajaxRender('site/pages/legislation/feed_helper_legislation.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
+
 #-----------------------------------------------------------------------------------------------------------------------
 # get groups
 #-----------------------------------------------------------------------------------------------------------------------

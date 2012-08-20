@@ -605,7 +605,10 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
+
     'getGroupMembersForDisplay'
+
+    'getLegislation'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

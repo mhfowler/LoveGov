@@ -10,6 +10,7 @@ function bindOnReload() {
 
         case "home": initHomePage(); break;
         case "profile": initFeed(); break;
+        case "legislation": showLegSelectors(); showSelectors(); break;
         case "legislation-view": shortenLongText(); break;
         case "home":
             initFeed();
@@ -734,6 +735,9 @@ function getFeed(container) {
     }
     else if (feed == 'getGroups') {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
+    }
+    else if (feed == 'getLegislation') {
+        data = {'action': 'getLegislation', 'feed_start':feed_start};
     }
     action({
             data: data,
@@ -1822,6 +1826,32 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
+function showSelectors() {
+    $('.legislation_selector').children().hide();
+}
+
+function showLegSelectors() {
+    $('.filter_box').change(function() {
+        if ($(this).closest('div').hasClass('unchecked')) {
+            $(this).closest('div').removeClass('unchecked');
+            $(this).closest('div').addClass('checked');
+            var selector = $("." + $(this).closest('div').data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+        else {
+            $(this).closest('div').removeClass('checked');
+            $(this).closest('div').addClass('unchecked');
+            var selector = $("." + $(this).closest('div').data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+    });
+}
+
+function filterSession() {
+
+}
 
 function shortenLongText() {
     var showChar = 300;

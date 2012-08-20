@@ -860,9 +860,17 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
-def legislation (request, vals={}):
+def legislation (request, session, type, number, vals={}):
+    vals['session'], vals['type'], vals['subjects'], vals['committees'], vals['dates'], vals['sponsor'] = session, type, subjects, committees, dates, sponsor
+    vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
+    type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
+    vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
+    vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
+    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', request=request, vals=vals)
 
+def legislation_helper (request, vals={}):
+    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
 
 
 

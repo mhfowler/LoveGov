@@ -1,6 +1,7 @@
 import os
 from lovegov.local_settings import *
 
+
 DATABASES = {
     'default': {
         'ENGINE':   'django.db.backends.mysql',
