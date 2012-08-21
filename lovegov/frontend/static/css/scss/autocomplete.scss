@@ -1,0 +1,93 @@
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+$autocomplete-width: 335px;
+div.search {
+  div.search-dropdown {
+    position: absolute;
+    top: 29px;
+    right: 0;
+    background-color: white;
+    border: 1px solid $gray;
+    border-top: 1px solid $deep-gray;
+    min-width: 335px;
+    @include clearfix;
+    display: none;
+    @include box-shadow(5px 5px 5px $gray);
+  }
+}
+
+div.autocomplete-header {
+  @include titleFont;
+  font-size: 18px;
+  width: 90%;
+  padding: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  color: $black;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+div.autocomplete-user
+{
+  position: relative;
+  height: 50px;
+  img {
+    float: left;
+  }
+  div.autocomplete-name {
+    span {
+      position: absolute;
+      bottom: 0;
+      left: 70px;
+      font-size: 20px;
+      color: $deep-gray;
+      @include titleFont;
+    }
+  }
+  &:hover {
+    background-color: $white-gray;
+    div span {
+      color: $black;
+    }
+  }
+}
+
+div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question, div.autocomplete-group {
+  padding: 5px;
+  position: relative;
+  div.autocomplete-image-wrapper {
+    height: 100%;
+    float: left;
+    margin-right: 10px;
+  }
+  div.autocomplete-name {
+    font-size: 14px;
+    @include titleFont;
+    color: $deep-gray;
+    strong {
+      text-decoration: underline;
+    }
+  }
+  &:hover {
+    background-color: $white-gray;
+    div {
+      color: $black;
+    }
+  }
+}
+
+div.autocomplete-div.autocomplete-more-results
+{
+  $padding: 5px;
+  padding: $padding;
+  width: $autocomplete-width - 2*$padding;
+  @include titleFont;
+  height: 20px;
+  font-size: 18px;
+  &:hover {
+    background-color: $white-gray;
+  }
+}

@@ -1,8 +1,20 @@
 bind('div.search input', 'keydown', function(e) {
-    // Capture enter events
-    if(e.which==13) {
-        search($(this).val());
+    // Capture certain keyboard press events
+    switch(e.which) {
+        // Enter
+        case 13:
+            search($(this).val());
+            break;
+        // Up
+        case 38:
+            e.stopPropagation();
+            break;
+        // Down
+        case 40:
+            e.stopPropagation();
+            break;
     }
+
 });
 
 // Checks whether the user seems to be typing and calls callback when they stop
@@ -14,15 +26,13 @@ function whenTypingStops(handler) {
 
 bind('div.search input', 'keypress', function(e) {
    var length = $(this).val().length;
-   var val = $(this).val();
    if(length > 2) {
-        whenTypingStops(function(e) { search(val); alert(val); });
+        whenTypingStops(function(e) { search($(this).val()); });
    }
 });
 
 bind('div.search input', 'focusout', function(e) {
    var dropdown = $("div.search div.search-dropdown");
-    alert(e.relatedTarget.nodeName);
    if(e.target!=dropdown) {
        dropdown.fadeOut(100);
    }
