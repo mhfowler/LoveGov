@@ -719,7 +719,12 @@ def comment(request, vals={}):
         comment.on_content.getCreator().notify(action)
         if not comment.on_content == comment.root_content:
             comment.root_content.getCreator().notify(action)
-        return HttpResponse("+")
+        depth = int(request.POST.get('depth', 0))
+        from lovegov.frontend.views_helpers import renderComment 
+        html = '<div class="threaddiv">'
+        html += renderComment(request, vals, comment, depth)
+        html += '</div>'
+        return HttpResponse(html)
     else:
         if request.is_ajax():
             to_return = {'errors':[]}
@@ -729,6 +734,24 @@ def comment(request, vals={}):
         else:
             vals = {'message':'Comment post failed'}
             return renderToResponseCSRF('usable/message.html',vals,request)
+
+def appendComment(request, vals={}):
+    user = vals['viewer']
+    privacy = getPrivacy(request)
+    c_id = request.POST.get('c_id', None)
+    text = request.POST.get('comment', None)
+    if c_id:
+        comment = Comment.lg.get_or_none(id=c_id)
+        if comment:
+            if text:
+                appended_text = comment.text + '\n' + text
+                comment.text = appended_text
+                comment.save()
+                from django.template import defaultfilters
+                appended_text = defaultfilters.linebreaks_filter(appended_text)
+                appended_text = defaultfilters.urlize(appended_text)
+                return HttpResponse(appended_text)
+    return HttpResponseBadRequest("Something was wrong with the request.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sets privacy cookie and redirects to inputted page.
@@ -877,6 +900,33 @@ def updateStats(request, vals={}):
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
+    if object == 'petition_bar':
+        petition = Petition.objects.get(id=request.POST['p_id'])
+        vals['petition'] = petition
+        html = ajaxRender('site/pages/content_detail/petition_bar.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+#----------------------------------------------------------------------------------------------------------------------
+# gets html for next poll question
+#-----------------------------------------------------------------------------------------------------------------------
+def getNextPollQuestion(request, vals={}):
+    p_id = int(request.POST['p_id'])
+    which = int(request.POST['which'])
+    direction = request.POST['direction']
+    if direction == 'R':
+        next = which+1
+    else:
+        next = which-1
+    poll = Poll.objects.get(id=p_id)
+    questions = poll.questions.all()
+    num_questions = questions.count()
+    if next < 0 : next = (num_questions-1)
+    elif next > (num_questions-1): next=0
+    question = questions[next]
+    vals['question'] = question
+    vals['poll'] = poll
+    vals['which'] = next
+    html = ajaxRender('site/pages/content_detail/poll_sample.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1327,8 +1377,10 @@ def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
     user = vals['viewer']
-    thread = makeThread(request, content, user, vals=vals)
-    to_return = {'html':thread}
+    limit = int(request.POST.get('limit', 500))
+    start = int(request.POST.get('start', 0))
+    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit)
+    to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1456,6 +1508,27 @@ def getGroups(request, vals={}):
 
     html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get elections
+#-----------------------------------------------------------------------------------------------------------------------
+def getElections(request, vals={}):
+    from lovegov.frontend.views_helpers import valsElection
+    viewer = vals['viewer']
+    elections = Election.objects.order_by("-num_members")
+    feed_start = int(request.POST['feed_start'])
+    elections = elections[feed_start:feed_start+5]
+
+    vals['elections'] = elections
+    elections_info = []
+    for count,e in enumerate(elections):
+        group_vals = {}
+        valsElection(viewer, e, group_vals)
+        elections_info.append({'group':e, 'info':group_vals, 'num':feed_start+count+1})
+    vals['elections_info'] = elections_info
+
+    html = ajaxRender('site/pages/browse/feed_helper_browse_elections.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(elections_info)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a filter setting
@@ -1905,12 +1978,17 @@ def updateHistogram(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getUsersByUID(request, vals={}):
 
+    viewer = vals['viewer']
     u_ids = json.loads(request.POST['u_ids'])
     members = UserProfile.objects.filter(id__in=u_ids).order_by('id')
-    vals['display']= request.POST['display']
+    display = request.POST['display']
+    vals['display'] = display
 
     vals['users'] = members
     how_many = len(members)
+    if display=='strip':
+        for u in members:
+            u.comparison = u.getComparison(viewer)
     html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
 
@@ -1919,14 +1997,19 @@ def getUsersByUID(request, vals={}):
 
 def getGroupMembersForDisplay(request, vals={}):
 
+    viewer = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     start = int(request.POST['start'])
     num = int(request.POST['num'])
-    vals['display'] = request.POST['display']
+    display = request.POST['display']
+    vals['display'] = display
     members = group.getMembers(start=start, num=num)
 
     vals['users'] = members
     how_many = len(members)
+    if display=='strip':
+        for u in members:
+            u.comparison = u.getComparison(viewer)
     html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
     to_return = {'html':html, 'num':how_many}
     return HttpResponse(json.dumps(to_return))

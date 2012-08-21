@@ -81,6 +81,10 @@
                     {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
                 </div>
 
+                <a href="{{ group.getHistogramURL }}" class="see-more">
+                    see comparison breakdown
+                </a>
+
             </div>
 
 
@@ -100,6 +104,10 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <a href="/profile/" class="see-more">
+                    see full description
+                </a>
             </div>
 
 
@@ -123,6 +131,10 @@
                     {% endfor %}
                     <div style="clear:both"></div>
                 </div>
+
+                <a href="{{ group.getHistogramURL }}" class="see-more">
+                    see all members
+                </a>
 
             </div>
 

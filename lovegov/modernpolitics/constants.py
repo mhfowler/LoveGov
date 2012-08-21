@@ -67,7 +67,12 @@ URL_SPECIAL_NAMES = [
     'beta',
     'analytics',
     'api',
-    'motion'
+    'motion',
+    'thread',
+    'threads',
+    'comments',
+    'discuss',
+    'discussion',
 ]
 
 ########################################## EMAIL LISTS #################################################################
@@ -366,8 +371,9 @@ GROUP_TYPE_CHOICES = (
     ('P','party'),
     ('C','committee'),
     ('U','user'),
+    ('E', 'election'),
     ('S','system')
-)
+    )
 
 # types of group government
 GOVERNMENT_TYPE_CHOICES = (
@@ -596,9 +602,13 @@ ACTIONS = [
     'updateMatch',
     'stubAnswer',
     'updateStats',
+    'appendComment',
     'getGroups',
     'getUsersByUID',
-    'getGroupMembersForDisplay'
+    'getGroupMembers',
+    'getGroupMembersForDisplay',
+    'getNextPollQuestion',
+    'getElections'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -674,4 +684,5 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'groupInvite',
     'createMotion'
     #checkCompatability,
+    'appendComment',
 ]

@@ -447,7 +447,7 @@ def groups(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/elections/elections.html', vals, request)
+    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -525,6 +525,8 @@ def groupPage(request, g_alias, vals={}):
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
     vals['group'] = group
+    if group.group_type=="E":
+        return electionPage(request, group.downcast(), vals)
 
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})
@@ -537,8 +539,13 @@ def groupPage(request, g_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # election detail
 #-----------------------------------------------------------------------------------------------------------------------
-def electionPage(request, e_alias, vals={}):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def electionPage(request, election, vals={}):
+
+    viewer = vals['viewer']
+    vals['info'] = valsElection(viewer, election, {})
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -601,6 +608,17 @@ def worldview(request, alias, vals={}):
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals)
 
+
+def thread(request, c_id, vals={}):
+    content = Content.lg.get_or_none(id=c_id)
+    if not content:
+        return HttpResponse("The indicated content item does not exist.")
+    vals['content'] = content
+    vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
+    html = ajaxRender('site/pages/thread.html', vals, request)
+    url = request.path
+    return framedResponse(request, html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
@@ -616,7 +634,7 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     vals['num_signers'] = len(signers)
 
     contentDetail(request=request, content=petition, vals=vals)
-    html = ajaxRender('site/pages/content/petition/petition_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/petition_detail.html', vals, request)
     url = petition.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -642,7 +660,7 @@ def newsDetail(request, n_id, vals={}):
     vals['news'] = news
     contentDetail(request=request, content=news, vals=vals)
 
-    html = ajaxRender('site/pages/news_detail.html', vals, request)
+    html = ajaxRender('site/pages/content_detail/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
 
@@ -700,8 +718,16 @@ def pollDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion
 #-----------------------------------------------------------------------------------------------------------------------
-def discussionDetail(request, p_id=-1, vals={}):
-    return HttpResponse("Discussion!")
+def discussionDetail(request, d_id=-1, vals={}):
+
+    viewer = vals['viewer']
+    discussion = Discussion.objects.get(id=d_id)
+    vals['discussion'] = discussion
+    contentDetail(request, discussion, vals)
+
+    html = ajaxRender('site/pages/content_detail/discussion_detail.html', vals, request)
+    url = discussion.get_url()
+    return framedResponse(request, html, url, vals, rebind="discussion_detail")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # closeup of histogram

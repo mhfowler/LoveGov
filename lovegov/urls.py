@@ -66,7 +66,6 @@ urlpatterns += patterns('',
     (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
-    (r'^presidential/$', viewWrapper(views.presidential, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
@@ -96,6 +95,7 @@ urlpatterns += patterns('',
     (r'^discussion/(\d+)/$', viewWrapper(views.discussionDetail, requires_login=True)),
     (r'^motion/(\d+)/$', viewWrapper(views.motionDetail, requires_login=True)),
     (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
+    (r'^thread/(\d+)/$', viewWrapper(views.thread, requires_login=True)),
 
     # special pages
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),              # profile/comparison

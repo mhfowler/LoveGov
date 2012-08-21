@@ -1,7 +1,7 @@
 <div class="avatar-strip">
 
     <div class="avatar-strip-top">
-        <span class="user-name"> {{ user.get_name }} </span>
+        <a href="{{ user.get_url }}"><span class="user-name"> {{ user.get_name }} </span></a>
         <span class="user-title"> {{ user.political_title }} </span>
         <span class="heart-icon"> </span>
         <span class="heart-score"> {{ user.upvotes }}</span>
@@ -19,7 +19,7 @@
         </div>
         <div class="avatar-match">
             <div class="match-number">
-                76
+                {{ user.comparison.result}}
             </div>
             <div class="match-text">
                 match
