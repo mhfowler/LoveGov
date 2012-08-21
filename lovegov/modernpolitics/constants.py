@@ -609,12 +609,14 @@ ACTIONS = [
     'getGroupMembersForDisplay',
     'getNextPollQuestion',
     'getElections',
-    'hoverWebComparison'
+    'hoverWebComparison',
+    'newRegister'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
     'logCompatability',
-    'getModal'
+    'getModal',
+    'newRegister'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []

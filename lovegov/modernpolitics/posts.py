@@ -10,6 +10,139 @@
 from lovegov.modernpolitics.modals import *
 
 #-----------------------------------------------------------------------------------------------------------------------
+# register from login page via form
+#-----------------------------------------------------------------------------------------------------------------------
+def newRegister(request,vals={}):
+
+    # get params from post
+    valid = True
+    name = request.POST['name']
+    email = request.POST['email']
+    email2 = request.POST['email2']
+    password = request.POST['password']
+    day = request.POST['day']
+    month = request.POST['month']
+    year = request.POST['year']
+    zip = request.POST['zip']
+    privacy = int(request.POST['privacy'])
+    form_type = request.POST['form_type']
+
+    # validate form
+    if not email:
+        vals['email_error'] = 'This field is required.'
+        valid = False
+    if not email2:
+        vals['email2_error'] = 'This field is required.'
+        valid = False
+    if email and email2:
+        if email != email2:
+            vals['email_error'] = "Both emails must be the same."
+        else:
+            splitted = email.split("@")
+            if len(splitted)!=2:
+                vals['email_error'] = "Please enter a valid email address."
+                valid = False
+            elif not checkUnique(email):
+                vals['email_error'] = "Someone already registered with this email."
+                valid = False
+
+    if not password and not form_type=="twitter_register":     # password is not required if it is twitter registration
+        vals['password_error'] = 'This field is required.'
+        valid = False
+
+    if not (day and month and year):
+        vals['dob_error'] = 'Day, month and year of birth are required.'
+        valid = False
+    else:
+        try:
+            day = int(day)
+            month = int(month)
+            year = int(year)
+            if (year > 2012):
+                vals['dob_error'] = "You must already be born to register."
+                valid = False
+            elif (year < 1900):
+                vals['dob_error'] = "Year must be above 1900."
+                valid = False
+            elif (day>31 or day<0):
+                vals['dob_error'] = "Please enter a day between 1 and 31."
+                valid = False
+            elif (month>12 or month <0):
+                vals['dob_error'] = "Please enter a month between 1 and 12."
+                valid = False
+        except:
+            vals['dob_error'] = "Day, month and year of birth must be numbers."
+            valid = False
+
+    if not privacy:
+        vals['privacy_error'] = 'click'
+        valid = False
+
+    if not name:
+        vals['name_error'] = "This field is required."
+        valid = False
+    else:
+        splitted = name.split()
+        if len(splitted) < 2:
+            vals['name_error'] = "You must enter a first and last name."
+            valid = False
+
+    # if twitter registration, check for twitter stuff in request
+    if form_type=="twitter_register":
+        from lovegov.modernpolitics.twitter import tatHelper
+        tat = tatHelper(request)
+        if tat:                                                 # ready to twitter register
+            twitter_user_id = tat['user_id']
+            already = UserProfile.lg.get_or_none(twitter_user_id = twitter_user_id)
+            if already:
+                vals['twitter_error'] = "There is already a user registered with your twitter id. Try signing in again."
+                valid=False
+        else:
+            vals['twitter_error'] = "You are not authenticated with twitter. Try clicking the twitter button again."
+
+    # if form is not valid, then rerender the form and return it (to replace the old form)
+    if not valid:
+        vals['name'] = name
+        vals['email'] = email
+        vals['email2'] = email2
+        vals['day'] = day
+        vals['month'] = month
+        vals['year'] = year
+        vals['zip'] = zip
+        vals['privacy'] = privacy
+        vals['form_type'] = form_type
+        html = ajaxRender('site/pages/login/new_register_form.html', vals, request)
+        return HttpResponse(json.dumps({'html':html}))
+
+    # if form is valid register the user
+    else:
+
+        # if no inputted password, generate random password (for twitter registration)
+        if not password:
+            password = generateRandomPassword(10)
+
+        # create user profile form form data
+        user_profile = registerHelper(name=name, email=email, password=password, day=day, month=month, year=year, zip=zip)
+
+        # send a confirmation email based on type of registration
+        if form_type=='twitter_register':
+            user_profile.twitter_user_id = tat['user_id']
+            user_profile.twitter_screen_name = tat['screen_name']
+            user_profile.save()
+            vals['name'] = user_profile.get_name()
+            vals['email'] = user_profile.email
+            vals['password'] = password
+            vals['confirmation_link'] = user_profile.confirmation_link
+            sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
+        else:
+            confirmation_link = user_profile.confirmation_link
+            vals = {'firstname':user_profile.first_name,'link':confirmation_link}
+            sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user_profile.email)
+
+        # return success, causes redirect to success page on client side
+        return HttpResponse(json.dumps({"success":True, 'email':email, 'name':name}))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------

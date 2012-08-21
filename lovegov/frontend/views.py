@@ -255,6 +255,11 @@ def login(request, to_page='web/', message="", vals={}):
     response.delete_cookie('lovegov_try')
     return response
 
+def welcome(request, vals={}):
+    vals['name'] = request.GET.get('name')
+    vals['email'] = request.GET.get('email')
+    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
+
 def loginAuthenticate(request,user,to_page=''):
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
@@ -280,7 +285,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             error = 'Invalid Login/Password'
         # Return whatever error was found
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
-        return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     # REGISTER
     elif request.POST['button'] == 'register':
@@ -295,7 +300,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
-            return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
