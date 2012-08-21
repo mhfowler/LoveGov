@@ -29,7 +29,7 @@
                     <div class="feed-avatar-text">
                         <a href="{{ creator.get_url }}">
                             <div class="feed-avatar-name">
-                                {{ creator.get_name }}
+                                {{ creator.get_name|truncatechars:14 }}
                             </div>
                         </a>
                         <div class="feed-avatar-timestamp">
