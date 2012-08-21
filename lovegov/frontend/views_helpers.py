@@ -330,3 +330,13 @@ def valsGroup(viewer, group, vals):
 
     return vals
 
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for a particular election
+#-----------------------------------------------------------------------------------------------------------------------
+def valsElection(viewer, election, vals):
+    running = election.running.all().order_by("-num_supporters")[:2]
+    for r in running:
+        r.comparison = r.getComparison(viewer)
+    vals['running'] = running
+    vals['election'] = election
+    return vals

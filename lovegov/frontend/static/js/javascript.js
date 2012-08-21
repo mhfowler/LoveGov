@@ -358,6 +358,7 @@ function expandInfoToggle(wrapper, animate)
     var info_div = wrapper.find(".home_header_info");
     var info_hidden = wrapper.data('info_hidden');
     var info_expanded = wrapper.data('info_expanded');
+    var reduced_height = info_div.data("height");
 
     // If info is hidden, expand the info to it's previous expanded state
     if( info_hidden )
@@ -367,7 +368,7 @@ function expandInfoToggle(wrapper, animate)
         // If the info was un-expanded, show it at un-expanded form
         if( !info_expanded )
         {
-            info_div.animate({"height":'100px'}, animation_time);
+            info_div.animate({"height":reduced_height}, animation_time);
             wrapper.find(".expand_info").text('+ expand info');
         } // If the info was expanded, show the full expanded form
         else
@@ -380,7 +381,7 @@ function expandInfoToggle(wrapper, animate)
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
-        info_div.animate({"height":'100px'}, animation_time);
+        info_div.animate({"height":reduced_height}, animation_time);
         wrapper.find(".expand_info").text('+ expand info');
     }
     else
@@ -424,6 +425,7 @@ function setInfoHeight(wrapper)
     var info_div = wrapper.find(".home_header_info");
     var info_hidden = wrapper.data('info_hidden');
     var info_expanded = wrapper.data('info_expanded');
+    var reduced_height=info_div.data("height");
 
     if( info_hidden )
     {
@@ -437,7 +439,7 @@ function setInfoHeight(wrapper)
     }
     else
     {
-        info_div.css("height","100px");
+        info_div.css("height",reduced_height);
         info_div.css("overflow",'hidden');
     }
 }
@@ -760,6 +762,10 @@ function getFeed(container) {
     {
         var p_id = container.data('p_id');
         data = { 'action': 'getUserActivity', 'feed_start':feed_start, 'p_id':p_id };
+    }
+    else if (feed == 'getElections')
+    {
+        data = {'action': 'getElections','feed_rank':feed_rank, 'feed_start':feed_start};
     }
     else if (feed == 'getGroups') {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};

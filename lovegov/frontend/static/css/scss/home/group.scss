@@ -118,6 +118,21 @@ div.group-expanded
     {
       width:230px;
       height:180px;
+      position:relative;
+      top:-20px;
+    }
+
+    a.see-more {
+      background-color:$light-gray;
+      padding:5px;
+      margin-top:20px;
+      color:$black;
+      width:100%;
+      float:left;
+      text-align:center;
+      &:hover {
+        background-color:$dark-gray;
+      }
     }
 
     div.group-text
@@ -131,6 +146,10 @@ div.group-expanded
       {
         width:300px;
         height:210px;
+      }
+
+      div.group-full-text {
+        height:254px;
       }
     }
 
@@ -146,7 +165,7 @@ div.group-expanded
       div.group-members
       {
         width: 160px;
-        height: 160px;
+        height: 170px;
 
         div.group-member-avatar
         {

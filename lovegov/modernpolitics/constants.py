@@ -371,8 +371,9 @@ GROUP_TYPE_CHOICES = (
     ('P','party'),
     ('C','committee'),
     ('U','user'),
+    ('E', 'election'),
     ('S','system')
-)
+    )
 
 # types of group government
 GOVERNMENT_TYPE_CHOICES = (
@@ -606,7 +607,8 @@ ACTIONS = [
     'getUsersByUID',
     'getGroupMembers',
     'getGroupMembersForDisplay',
-    'getNextPollQuestion'
+    'getNextPollQuestion',
+    'getElections'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

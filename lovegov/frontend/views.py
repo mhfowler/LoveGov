@@ -447,7 +447,7 @@ def groups(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/elections/elections.html', vals, request)
+    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -525,6 +525,8 @@ def groupPage(request, g_alias, vals={}):
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
     vals['group'] = group
+    if group.group_type=="E":
+        return electionPage(request, group.downcast(), vals)
 
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})
@@ -537,8 +539,13 @@ def groupPage(request, g_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # election detail
 #-----------------------------------------------------------------------------------------------------------------------
-def electionPage(request, e_alias, vals={}):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def electionPage(request, election, vals={}):
+
+    viewer = vals['viewer']
+    vals['info'] = valsElection(viewer, election, {})
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 

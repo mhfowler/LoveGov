@@ -3415,6 +3415,8 @@ class Group(Content):
             object = self.party
         elif type == 'U':
             object = self.usergroup
+        elif type == 'E':
+            object = self.election
         else: object = self
         return object
 
@@ -3848,15 +3850,29 @@ class Party(Group):
 #=======================================================================================================================
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
-        self.in_feed = (self.group_privacy != "S")
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
 
+#=======================================================================================================================
+# an election, is a group centered around a particular office
+#=======================================================================================================================
+class Election(Group):
+    running = models.ManyToManyField(UserProfile, related_name="running_for")
+    winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
+    office = models.ForeignKey(Office, null=True)
+    election_date = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(auto_now_add=True)
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.group_type = 'E'
+        super(Election, self).autoSave(creator=creator,privacy=privacy)
+
+    def joinRace(self, user):
+        if not user in self.running.all():
+            self.running.add(user)
 
 ########################################################################################################################
 ################################################### Committees #########################################################
-
-
 # External Imports
 class Committee(Group):
     code = models.CharField(max_length=20)
@@ -4298,6 +4314,27 @@ class CommitteeJoined(GroupJoined):
         self.relationship_type = 'CJ'
         super(CommitteeJoined, self).autoSave()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #=======================================================================================================================
 # For a user to write about their views on a topic.
 #
@@ -4305,7 +4342,6 @@ class CommitteeJoined(GroupJoined):
 class TopicView(Privacy):
     view = models.TextField(max_length=10000, blank=True)
     topic = models.ForeignKey(Topic)
-
 
 
 ########################################################################################################################
