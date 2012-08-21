@@ -40,9 +40,11 @@ urlpatterns += patterns('',
     # login page
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),
     (r'^login/$', viewWrapper(views.login)),
-    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
+    (r'^password_recovery/(\S*)/$', viewWrapper(views.passwordRecovery)),
+    (r'^password_recovery/$', viewWrapper(views.passwordRecovery)),
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
+    (r'^welcome/$', viewWrapper(views.welcome)),
 
     # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),

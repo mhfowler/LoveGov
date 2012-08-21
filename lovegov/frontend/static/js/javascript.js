@@ -1286,7 +1286,7 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Login
+ *      ~loagin
  *
  **********************************************************************************************************************/
 var login_state;
@@ -1367,6 +1367,46 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
     event.preventDefault();
     $("#sign-up-div").hide();
     $("#register-div").show();
+});
+
+
+bind(".r_register", 'click', null, function(event) {
+    var form = $(this).parents(".r_register_form");
+    var form_type = form.data("form_type");
+    form.find(".register_gif").show();
+    var name = form.find(".name_input").val();
+    var email = form.find(".email_input").val();
+    var email2 = form.find(".email2_input").val();
+    var day = form.find(".day_input").val();
+    var month = form.find(".month_input").val();
+    var year = form.find(".year_input").val();
+    var zip = form.find(".zip_input").val();
+    var privacy_check = form.find(".privacy_input");
+    var privacy = 0;
+    if (privacy_check.is(":checked")) {
+        privacy = 1;
+    }
+    var password = '';
+    if (form_type == 'email_register') {
+        password = form.find(".password_input").val();
+    }
+    var data = {'action':'newRegister', 'name':name,'email':email,
+        'email2':email2,'password':password,'day':day,'month':month,'year':year,
+        'zip':zip,'privacy':privacy, 'form_type':form_type};
+    action({
+        data: data,
+        success: function(data)
+        {
+            form.find(".register_gif").hide();
+            var returned = eval('(' + data + ')');
+            if (returned.success) {
+                window.location.href = "/welcome/";
+            }
+            else {
+                form.replaceWith(returned.html);
+            }
+        }
+    });
 });
 
 

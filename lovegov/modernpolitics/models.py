@@ -1162,6 +1162,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         location.zip = zip
         location.save()
 
+    def setDOB(self, dob):
+        self.dob = dob
+        age = datetime.date.today() - dob
+        years = age.days / 365
+        self.age = years
+        self.save()
+
     def isAnon(self):
         return self.alias == 'anonymous'
 

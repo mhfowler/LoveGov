@@ -20,11 +20,11 @@
             </div>
 
             <div id="register-div" class="state-div">
-                {% include 'site/pages/login/login-register.form.html' %}
+                {% include 'site/pages/login/new_register_form.html' %}
             </div>
 
             <div id="post-twitter-div" class="state-div">
-                {% include 'site/pages/login/post-twitter.html' %}
+                {% include 'site/pages/login/new_register_form.html' with form_type="twitter_register" %}
             </div>
 
             <div id="need-confirmation-div" class="state-div">
