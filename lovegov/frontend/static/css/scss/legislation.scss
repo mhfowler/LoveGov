@@ -6,8 +6,8 @@
 div.main-block {
   margin-top: 40px;
   margin-left: 140px;
-  height: 280px;
-  width: 720px;
+  height: auto;
+  width: 820px;
   border-bottom: solid;
   border-top: solid;
   border-color: #ef503b;
@@ -19,8 +19,8 @@ div.main-block {
     float: left;
     margin-left: 5px;
     margin-top: 5px;
-    height: 260px;
-    width: 310px;
+    height: auto;
+    width: 330px;
     padding-left: 9px;
 
     div.filter_prompt {
@@ -60,13 +60,13 @@ div.main-block {
     float: right;
     margin-left: 0px;
     margin-top: 30px;
-    height: 200px;
-    width: 400px;
+    height: auto;
+    width: 450px;
 
     div.session_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 200px;
+      height: auto;
       width: 400px;
       padding-left: 0px;
       z-index:0;
@@ -79,7 +79,7 @@ div.main-block {
     div.type_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 200px;
+      height: auto;
       width: 400px;
       padding-left: 0px;
       z-index:1;
@@ -92,7 +92,7 @@ div.main-block {
     div.subject_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 200px;
+      height: auto;
       width: 400px;
       padding-left: 0px;
       z-index:2;
@@ -105,7 +105,7 @@ div.main-block {
     div.committee_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 200px;
+      height: auto;
       width: 400px;
       padding-left: 0px;
       z-index:3;
@@ -118,7 +118,7 @@ div.main-block {
     div.introduced_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 200px;
+      height: auto;
       width: 400px;
       padding-left: 0px;
       z-index:4;
@@ -131,7 +131,7 @@ div.main-block {
     div.sponsor_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: 200px;
+      height: auto;
       width: 400px;
       padding-left: 0px;
       z-index:5;

@@ -10,7 +10,7 @@ function bindOnReload() {
 
         case "home": initHomePage(); break;
         case "profile": initFeed(); break;
-        case "legislation": showLegSelectors(); showSelectors(); break;
+        case "legislation": shortenLongText(); showLegSelectors(); showSelectors(); loadBillSelect2(); break;
         case "legislation-view": shortenLongText(); break;
         case "home":
             initFeed();
@@ -1826,6 +1826,13 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
+function loadBillSelect2()
+{
+    $('select.subject_select').select2({
+        placeholder: "search for bill subjects"
+    });
+}
+
 function showSelectors() {
     $('.legislation_selector').children().hide();
 }
@@ -1850,11 +1857,15 @@ function showLegSelectors() {
 }
 
 function shortenLongText() {
-    var showChar = 300;
     var ellipsestext = "...";
     var moretext = "read more";
     var lesstext = "less";
-
+    if ($('.long_text').hasClass("bill_detail")) {
+        var showChar = 300;
+    }
+    else {
+        var showChar = 150;
+    }
     $('.long_text').each(function() {
         var content = $(this).html();
 
@@ -1863,24 +1874,30 @@ function shortenLongText() {
             var c = content.substr(0, showChar);
             var h = content.substr(showChar, content.length - showChar);
 
-            var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
-
+            if($('.long_text').hasClass("bill_detail")) {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+            }
+            else {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><a href="/site/pages/legislation/legislation-view.html" class="morelink">' + moretext + '</a></span>';
+            }
             $(this).html(html);
         }
     });
 
-    $('.morelink').click(function(){
-        if($(this).hasClass("less")) {
-            $(this).removeClass("less");
-            $(this).html(moretext);
-        } else {
-            $(this).addClass("less");
-            $(this).html(lesstext);
-        }
-        $('.morecontent_span').toggle();
-        $('.moreellipses').toggle();
-        return false;
-    });
+    if($('.long_text').hasClass("bill_detail")) {
+        $('.morelink').click(function(){
+            if($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $('.morecontent_span').toggle();
+            $('.moreellipses').toggle();
+            return false;
+        });
+    }
 }
 
 /***********************************************************************************************************************

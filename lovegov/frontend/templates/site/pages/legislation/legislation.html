@@ -34,31 +34,34 @@
     </div>
     <div class="legislation_selector">
         <div class="session_selector">
+            {% for session in sessions %}
             <ul>
-                <li><input type="checkbox" id="session_109"><label for="session_109"><h5><span>109th Congress</span></h5></label></li>
-                <li><input type="checkbox" id="session_110"><label for="session_110"><h5><span>110th Congress</span></h5></label></li>
-                <li><input type="checkbox" id="session_111"><label for="session_111"><h5><span>111th Congress</span></h5></label></li>
-                <li><input type="checkbox" id="session_112"><label for="session_112"><h5><span>112th Congress</span></h5></label></li>
+                <li><input type="checkbox" id="session_{{ session }}"><label for="session_{{ session }}"><h5><span>Congressional Session {{ session }}</span></h5></label></li>
             </ul>
+            {% endfor %}
         </div>
         <div class="type_selector">
+            {% for type in types %}
             <ul>
-                <li><input type="checkbox" id="bill_typeA"><label for="bill_typeA"><h5><span>Bill Type A</span></h5></label></li>
-                <li><input type="checkbox" id="bill_typeB"><label for="bill_typeB"><h5><span>Bill Type B</span></h5></label></li>
-                <li><input type="checkbox" id="bill_typeC"><label for="bill_typeC"><h5><span>Bill Type C</span></h5></label></li>
-                <li><input type="checkbox" id="bill_typeD"><label for="bill_typeD"><h5><span>Bill Type D</span></h5></label></li>
+                <li><input type="checkbox" id={{ type }}><label for={{ type }}><h5><span>{{ type }}</span></h5></label></li>
             </ul>
+            {% endfor %}
         </div>
         <div class="subject_selector">
-            <ul>
-                <li><input type="form" id="subject_form" placeholder="Select subjects"><label for="subject_form"><h5>subjects</h5></label></li>
-            </ul>
+            <select multiple class="subject_select">
+                <optgroup label="Bill Subjects" id="bill_subjects">
+                    {% for subject in subjects %}
+                        <option class="bill-subjects" value='{{ subject }}'>{{ subject.name }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
         </div>
         <div class="committee_selector">
+            {% for committee in committees %}
             <ul>
-                <li><input type="form" id="committeeA"><label for="committeeA"><h5><span>House</span></h5></label></li>
-                <li><input type="form" id="committeeB"><label for="committeeB"><h5><span>Senate</span></h5></label></li>
+                <li><input type="checkbox" id={{ committee }}><label for={{ committee }}><h5><span>{{ committee }}</span></h5></label></li>
             </ul>
+            {% endfor %}
         </div>
         <div class="introduced_selector">
             <ul>
@@ -79,11 +82,6 @@
             </ul>
         </div>
     </div>
-</div>
-<div class="div-select-button">
-        <span>
-            Select
-        </span>
 </div>
 <div class="div-filter-button">
         <span>
