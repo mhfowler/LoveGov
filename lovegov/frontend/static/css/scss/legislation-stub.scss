@@ -1,0 +1,76 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+a {
+  color: #0254EB;
+
+  &:visited {
+    color: #0254EB
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  .morelink {
+    text-decoration:none;
+    outline: none;
+  }
+}
+
+.morecontent span {
+  display: none;
+}
+
+stub-container {
+  height: auto;
+  width: 100%;
+  border: 2px solid $gray;
+  background-color: $text-blue;
+
+  div.politician-action {
+    height: auto;
+    width: 100%;
+  }
+
+  div.sponsor {
+    height: 100%;
+    width: auto;
+
+      img.sponsor-img {
+        height: auto;
+        width: 100%;
+      }
+
+      div.sponsor-info {
+        height: auto;
+        width: 100%;
+        background-color: blue;
+      }
+  }
+
+  div,bill-title {
+    height: auto;
+    width: 100%;
+  }
+
+  div,bill-summary {
+    height: auto;
+    width: 100%;
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+

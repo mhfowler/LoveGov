@@ -1,9 +1,27 @@
-{% extends 'site/frame/frame.html' %}
+
 
 {% block content %}
 
 
+<div class="stub-container">
+    <div class="politician-action">
+        <h5><span>Politician voted:</span></h5>
+    </div>
+    <div class="sponsor">
+        <img class="sponsor-img">
+        <div class="sponsor-info">
+            <a href='{{l.sponsor.get_url}}'>{{l.sponsor.get_name}}</a>
+        </div>
+    </div>
+    <div class="bill-title">
+        <h3><span>{{l.full_title}}</span></h3>
+    </div>
+    <div class="bill-summary">
+        <h5><span>{{l.bill_summary}}</span></h5>
+    </div>
+</div>
 
+<!--
 
 <div>
      <h5>
@@ -49,7 +67,6 @@
 
 </div>
 
-
-
+-->
 
 {% endblock %}
