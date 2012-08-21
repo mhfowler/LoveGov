@@ -12,22 +12,8 @@
 {% endblock %}
 
 
-
-
 {% block feed-item-content %}
-
-    <div class="feed-item-main">
-        <div class="feed-item-group-name">
-            Save the whales
-        </div>
-
-        <div class="feed-item-title">
-            <a href="{{item.get_url}}" target="_blank"> <h3 class="title-text"> {{ item.title|truncate_chars:80 }} </h3> </a>
-        </div>
-
-        <div class="feed-item-description">
-            {{ "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here'"|truncate_chars:200}}
-        </div>
+    <div class="feed-item-description">
+        {{ "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here'"|truncate_chars:200}}
     </div>
-
 {% endblock %}

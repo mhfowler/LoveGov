@@ -1,0 +1,98 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+
+div.election-card-wrapper {
+  float:left;
+  margin-right:20px;
+}
+div.election-card-wrapper.last {
+  margin-right:0px;
+}
+
+div.election-card {
+  width:300px;
+
+  div.card-top {
+    width:100%;
+    div.politician-image {
+      float:left;
+    }
+    div.right-side {
+      float:left;
+      width:120px;
+      line-height:64px;
+      div.match-num {
+        color:$red;
+        text-align:center;
+        width:100%;
+        @include fontSize(64px);
+        font-weight:bold;
+      }
+      div.match-text {
+        color:$red;
+        text-align:center;
+        width:100%;
+        @include fontSize(32px);
+        font-weight:bold;
+        line-height:14px;
+      }
+      a.action-button {
+        text-align:center;
+        line-height:14px;
+        float:left;
+        margin-top:10px;
+        padding:5px;
+        color:$black;
+        margin-left:10%;
+        width:90%;
+        background-color:$light-gray;
+        &:hover {
+          background-color:$dark-gray;
+        }
+      }
+    }
+  }
+  div.card-bottom {
+    float:left;
+    width:100%;
+    a.politician-name {
+      @include fontSize(24px);
+      color:$black;
+      &:hover {
+        color:black;
+      }
+    }
+  }
+}
+
+
+div.running {
+  float:left;
+}
+div.election-info {
+  width:310px;
+  float:left;
+  div.election-date {
+    width:100%;
+    text-align:center;
+    background-color:$black;
+    color:white;
+    padding:15px;
+    @include fontSize(32px);
+    float:left;
+  }
+  div.election-info-lower {
+    margin-top:20px;
+    float:left;
+    width:100%;
+    div.election-description {
+      float:left;
+    }
+    div.election-actions {
+      float:right;
+    }
+  }
+}

@@ -244,7 +244,10 @@ def getQuestionStats(vals):
         num = r.count()
         stat['total'] = total
         stat['num'] = num
-        percent = num/float(total)*100
+        if total:
+            percent = num/float(total)*100
+        else:
+            percent = 0
         stat['percent'] = percent
         stat['empty'] = 100-percent
         topic_stats.append(stat)
@@ -327,3 +330,13 @@ def valsGroup(viewer, group, vals):
 
     return vals
 
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for a particular election
+#-----------------------------------------------------------------------------------------------------------------------
+def valsElection(viewer, election, vals):
+    running = election.running.all().order_by("-num_supporters")[:2]
+    for r in running:
+        r.comparison = r.getComparison(viewer)
+    vals['running'] = running
+    vals['election'] = election
+    return vals

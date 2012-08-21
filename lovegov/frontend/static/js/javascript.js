@@ -48,6 +48,23 @@ function bindOnNewElements() {
         setInfoHeight($(this));
     });
     bindNotificationsDropdownClickOutside();
+    pollAutoSwitch();
+    comparisonWebs();
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    poll_autoswitch= setInterval(function()
+    {
+       cyclePollQuestions();
+    }, 5000);
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
+    });
 }
 
 /***********************************************************************************************************************
@@ -348,6 +365,7 @@ function expandInfoToggle(wrapper, animate)
     var info_div = wrapper.find(".home_header_info");
     var info_hidden = wrapper.data('info_hidden');
     var info_expanded = wrapper.data('info_expanded');
+    var reduced_height = info_div.data("height");
 
     // If info is hidden, expand the info to it's previous expanded state
     if( info_hidden )
@@ -357,7 +375,7 @@ function expandInfoToggle(wrapper, animate)
         // If the info was un-expanded, show it at un-expanded form
         if( !info_expanded )
         {
-            info_div.animate({"height":'100px'}, animation_time);
+            info_div.animate({"height":reduced_height}, animation_time);
             wrapper.find(".expand_info").text('+ expand info');
         } // If the info was expanded, show the full expanded form
         else
@@ -370,7 +388,7 @@ function expandInfoToggle(wrapper, animate)
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
-        info_div.animate({"height":'100px'}, animation_time);
+        info_div.animate({"height":reduced_height}, animation_time);
         wrapper.find(".expand_info").text('+ expand info');
     }
     else
@@ -414,6 +432,7 @@ function setInfoHeight(wrapper)
     var info_div = wrapper.find(".home_header_info");
     var info_hidden = wrapper.data('info_hidden');
     var info_expanded = wrapper.data('info_expanded');
+    var reduced_height=info_div.data("height");
 
     if( info_hidden )
     {
@@ -427,7 +446,7 @@ function setInfoHeight(wrapper)
     }
     else
     {
-        info_div.css("height","100px");
+        info_div.css("height",reduced_height);
         info_div.css("overflow",'hidden');
     }
 }
@@ -609,6 +628,30 @@ function neutral(div)
     div.find(".heart_minus").removeClass("clicked");
 }
 
+/* click through poll sample */
+bind(".poll_arrow", 'click', null, function(event) {
+    var direction = $(this).data("direction");
+   nextPollQuestion($(this).parents(".sample_question"), direction);
+});
+
+function nextPollQuestion(sample_question, direction) {
+    var p_id = sample_question.data('p_id');
+    var which = sample_question.data("which");
+    var data = {'action':'getNextPollQuestion', 'p_id':p_id, 'which':which, 'direction':direction};
+    action({
+        data:data,
+        success:function(data) {
+            var returned = eval('(' + data + ')');
+            sample_question.replaceWith(returned.html);
+        }
+    });
+}
+
+function cyclePollQuestions() {
+    $.each($(".sample_question"), function(i,e) {
+        nextPollQuestion($(this), 1);
+    });
+}
 
 /* filter buttons */
 bind(".rank_button" , "click" , null , function(event) {
@@ -726,6 +769,10 @@ function getFeed(container) {
     {
         var p_id = container.data('p_id');
         data = { 'action': 'getUserActivity', 'feed_start':feed_start, 'p_id':p_id };
+    }
+    else if (feed == 'getElections')
+    {
+        data = {'action': 'getElections','feed_rank':feed_rank, 'feed_start':feed_start};
     }
     else if (feed == 'getGroups') {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
@@ -1986,7 +2033,7 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverComparison()
+function loadHoverBreakdown()
 {
 
     var hoverTimer;
@@ -2059,6 +2106,96 @@ function loadHoverComparison()
                             var obj = eval('(' + data + ')');
                             $('#comparison-hover-loading-img').hide();
                             $('#comparison-hover').html(obj.html);
+                        },
+                        'error': null
+                    });
+                }
+            },
+            function(event)
+            {
+                hoverTimer = setTimeout
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
+            }
+        );
+}
+
+function loadHoverComparison()
+{
+
+    var hoverTimer;
+    var hoverClearOK = true;
+
+    function clearHover()
+    {
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
+    }
+
+    $('#comparison-hover-div').hover
+        (
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
+            }
+        );
+
+    function findHoverPosition(selector)
+    {
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+        if (top <= $(document).scrollTop())
+        {
+            // show below
+            top = selector.offset().top + selector.height() + 30;
+            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+        }
+        else
+        {
+            // show above
+            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+        }
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+        return {top:top,left:left};
+    }
+
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
+        (
+            function(event)
+            {
+                var self = $(this);
+                var href = $(this).data('href');
+                var displayName = $(this).data("display_name");
+                if (href != "")
+                {
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    var title_html = 'You &  <a href="' + href+ '">' + displayName + '</a>';
+                    $('#comparison-hover-div p.hover-title').html(title_html);
+                    var offset = findHoverPosition(self);
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    action({
+                        'data': {'action':'hoverWebComparison','href':href},
+                        'success': function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            $('#comparison-hover').visualComparison(obj,true);
                         },
                         'error': null
                     });
@@ -2231,6 +2368,9 @@ function updateStatsObject(stats) {
         data['q_id'] = stats.data('q_id');
     }
     if (object == 'poll_progress') {
+        data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'petition_bar') {
         data['p_id'] = stats.data('p_id');
     }
     action({
@@ -2811,7 +2951,7 @@ bind( '.facebook_share_submit' , 'click' , null , function(e)
 
 /***********************************************************************************************************************
  *
- *      ~Check browser compatibility using Modernizr
+ *      ~pin content
  *
  ***********************************************************************************************************************/
 
@@ -2841,3 +2981,81 @@ bind( '.pin_to_group' , 'click' , null , function(e)
     });
 });
 
+
+/***********************************************************************************************************************
+ *
+ *      ~dismissible header stuff, representatives
+ *
+ ***********************************************************************************************************************/
+bind('.dismissible_x' , 'click' , null , function(e)
+{
+    $(this).parents(".dismissible_header").hide();
+});
+
+
+function loadGoogleMap()
+{
+    function createDistrictsOverlay(outlines_only, opacity, state, district)
+    {
+        return {
+            getTileUrl: function(coord, zoom)
+            {
+                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
+                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
+                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
+                    + (!district ? "%25"
+                    : "/cd/110/" + district)
+                    : "")
+                    + "&FORMAT=image/png";
+            },
+            tileSize: new google.maps.Size(256,256),
+            minZoom: 2,
+            maxZoom: 28,
+            opacity: opacity,
+            isPng: true
+        };
+    }
+
+    var map;
+
+    function initialize()
+    {
+        var myOptions =
+        {
+            zoom: 10,
+            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: false
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+    }
+
+    initialize();
+}
+
+
+/* find address */
+bind('.find_address_button' , 'click' , null , function(e)
+{
+    var form = $(this).parents(".address_form");
+    var street = form.find(".street_input").val();
+    var state = form.find(".state_input").val();
+    var zip = form.find(".zip_input").val();
+    action({
+            data: {'action': 'submitAddress', 'street': street, 'state':state,
+            'zip':zip},
+            success: function(data) {
+                alert(data);
+            }}
+    );
+});

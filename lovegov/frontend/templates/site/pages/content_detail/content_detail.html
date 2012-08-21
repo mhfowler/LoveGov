@@ -34,7 +34,7 @@
                 {% endwith %}
             </span>
 
-            <span class="hearts">
+            <span class="hearts" data-c_id="{{ content.id }}">
                 <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
                 <div class="heart-number heart_number">{{ content.status }}</div>
                 <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
