@@ -1,4 +1,5 @@
-
+{% include 'site/frame/javascript-all.html' %}
+{% include 'site/frame/css-all.html' %}
 
 {% block content %}
 
@@ -8,16 +9,16 @@
         <h5><span>Politician voted:</span></h5>
     </div>
     <div class="sponsor">
-        <img class="sponsor-img">
+        <img src={{sor }} class="sponsor-img">
         <div class="sponsor-info">
             <a href='{{l.sponsor.get_url}}'>{{l.sponsor.get_name}}</a>
         </div>
     </div>
     <div class="bill-title">
-        <h3><span>{{l.full_title}}</span></h3>
+        <h5><span>{{l.bill_type}} {{l.bill_number}} {{l.full_title}}</span></h5>
     </div>
     <div class="bill-summary">
-        <h5><span>{{l.bill_summary}}</span></h5>
+        <h6><span>{{l.bill_summary}}</span></h6>
     </div>
 </div>
 

@@ -1849,15 +1849,12 @@ function showLegSelectors() {
     });
 }
 
-function filterSession() {
-
-}
-
 function shortenLongText() {
     var showChar = 300;
     var ellipsestext = "...";
     var moretext = "read more";
     var lesstext = "less";
+
     $('.long_text').each(function() {
         var content = $(this).html();
 
@@ -1870,7 +1867,6 @@ function shortenLongText() {
 
             $(this).html(html);
         }
-
     });
 
     $('.morelink').click(function(){

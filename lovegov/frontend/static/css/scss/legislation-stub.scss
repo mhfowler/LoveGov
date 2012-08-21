@@ -24,11 +24,11 @@ a {
   display: none;
 }
 
-stub-container {
+div.stub-container {
   height: auto;
   width: 100%;
   border: 2px solid $gray;
-  background-color: $text-blue;
+  padding: 5px 10px;
 
   div.politician-action {
     height: auto;
@@ -47,20 +47,22 @@ stub-container {
       div.sponsor-info {
         height: auto;
         width: 100%;
-        background-color: blue;
       }
   }
 
   div,bill-title {
     height: auto;
     width: 100%;
+    text-align: justify;
   }
 
   div,bill-summary {
-    height: auto;
+    height: 50px;
     width: 100%;
+    text-align: justify;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
 }
 
 
