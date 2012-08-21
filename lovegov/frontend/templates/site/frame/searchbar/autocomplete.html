@@ -2,35 +2,35 @@
 <img id="autocomplete-loading-gif" src="{{ STATIC_URL }}/images/ajax-loader.gif" style="display:none"/>
 
 {% for userProfile in userProfiles %}
-    {% include 'site/frame/search_bar/autocomplete-user.html' with userProfile=userProfile %}
+    {% include 'site/frame/searchbar/autocomplete-user.html' with userProfile=userProfile %}
 {% endfor %}
 
 {% if questions %}
 <div class="autocomplete-div autocomplete-header">Discussions</div>
 {% endif %}
 {% for question in questions %}
-	{% include 'site/frame/search_bar/autocomplete-question.html' with question=question %}
+	{% include 'site/frame/searchbar/autocomplete-question.html' with question=question %}
 {% endfor %}
 
 {% if news %}
 <div class="autocomplete-div autocomplete-header">News</div>
 {% endif %}
 {% for article in news %}
-	{% include 'site/frame/search_bar/autocomplete-news.html' with news=article %}
+	{% include 'site/frame/searchbar/autocomplete-news.html' with news=article %}
 {% endfor %}
 
 {% if petitions %}
 <div class="autocomplete-div autocomplete-header">Petitions</div>
 {% endif %}
 {% for petition in petitions %}
-	{% include 'site/frame/search_bar/autocomplete-petition.html' with petition=petition %}
+	{% include 'site/frame/searchbar/autocomplete-petition.html' with petition=petition %}
 {% endfor %}
 
 {% if groups %}
     <div class="autocomplete-div autocomplete-header">Groups</div>
 {% endif %}
 {% for group in groups %}
-    {% include 'site/frame/search_bar/autocomplete-group.html' with group=group %}
+    {% include 'site/frame/searchbar/autocomplete-group.html' with group=group %}
 {% endfor %}
 
 
