@@ -608,7 +608,8 @@ ACTIONS = [
     'getGroupMembers',
     'getGroupMembersForDisplay',
     'getNextPollQuestion',
-    'getElections'
+    'getElections',
+    'hoverWebComparison'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

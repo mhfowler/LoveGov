@@ -167,5 +167,26 @@ div.left-navbar {
 }
 
 
+/* dismissible header */
+div.dismissible-header {
+  width:100%;
+  padding:10px;
+  @include clearfix;
+  background-color:$blue-light;
+  div.the-content {
+    float:left;
+  }
+  div.x-out {
+    float:right;
+    @include fontSize(32px);
+    padding:5px;
+    &:hover {
+      background-color:$black;
+      color:white;
+      cursor:pointer;
+    }
+  }
+}
+
 
 

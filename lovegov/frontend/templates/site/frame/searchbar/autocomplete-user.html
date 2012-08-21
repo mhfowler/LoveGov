@@ -1,7 +1,7 @@
 {% load customtags %}
 <a href="{{ userProfile.getAlphaURL }}">
     <div class="autocomplete-div autocomplete-user">
-        {% include 'site/pieces/snippets/avatar.html' with user=userProfile height='50' width='50' %}
+        {% include 'site/pieces/avatar.html' with user=userProfile height='50' width='50' %}
         <div class="autocomplete-name">
             <span>{{ userProfile.first_name }} {{ userProfile.last_name }}</span>
         </div>

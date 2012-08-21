@@ -133,7 +133,7 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
-    groups = SearchQuerySet().models(Group).filter(content=term)
+    groups = SearchQuerySet().models(Group).filter(content=term,ghost=False)
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
@@ -198,7 +198,7 @@ def searchAutoComplete(request,vals={},limit=5):
     vals['search_string'] = string
     vals['num_results'] = total_results
     vals['shown'] = results_length
-    html = ajaxRender('site/pieces/autocomplete.html', vals, request)
+    html = ajaxRender('site/frame/searchbar/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1347,6 +1347,11 @@ def hoverComparison(request,vals={}):
     html = ajaxRender('site/pieces/comparison_hover_body.html', vals, request)
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
+
+def hoverWebComparison(request, vals={}):
+    object = urlToObject(request.POST['href'])
+    comparison = object.getComparison(vals['viewer'])
+    return HttpResponse(comparison.toJSON())
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds e-mail to mailing list

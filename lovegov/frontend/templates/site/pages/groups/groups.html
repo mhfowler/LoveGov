@@ -2,7 +2,7 @@
     <div class="groups-titles">
         <a href="/browse_groups/" class="browse-all"> browse all groups </a>
         {% for g in groups %}
-            <a href="{{ g.get_url }}"><div class="group-title"> {{ g.title|truncatechars:15 }} </div></a> {% if not forloop.last %}<div class="group-plus">+</div>{% endif %}
+            <a href="{{ g.get_url }}"><div class="group-title"> {{ g.title|truncatechars:35 }} </div></a> {% if not forloop.last %}<div class="group-plus">+</div>{% endif %}
         {% endfor %}
     </div>
 </div>

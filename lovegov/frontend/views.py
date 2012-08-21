@@ -462,6 +462,34 @@ def presidential(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
+
+    viewer = vals['viewer']
+    location = viewer.location
+    vals['location'] = None
+
+#    congressmen = []
+#    if viewer.location:
+#        vals['state'] = location.state
+#        vals['district'] = location.district
+#        vals['latitude'] = location.latitude
+#        vals['longitude'] = location.longitude
+#        senator_tag = OfficeTag.objects.get(name="senator")
+#        senator_office = senator_tag.tag_offices.filter(location=location.state)[0]
+#        senators = OfficeHeld.objects.filter(content=senator_office, confirmed=True).values_list("user", flat=True)
+#
+#        representative = UserProfile.lg.get_or_none(elected_official=True, location__state=location.state,location__district=location.district)
+#        if representative:
+#            congressmen.append(representative)
+#        senators = UserProfile.objects.filter(elected_offical=True,location__state=location.state)
+#        for senator in senators:
+#            congressmen.append(senator)
+#        vals['congressmen'] = congressmen
+#    for x in congressmen:
+#        x.prepComparison(viewer)
+#    congressmen.sort(key=lambda x:x.result,reverse=True)
+#    if not congressmen:
+#        vals['invalid_address'] = True
+
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -578,9 +606,13 @@ def profile(request, alias=None, vals={}):
     vals['profile_groups'] = user_profile.getGroups()[:4]
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
-    comparison = user_profile.getComparison(viewer)
-    vals['to_compare'] = profile
-    vals['comparison'] = comparison.toBreakdown()
+#    comparison = user_profile.getComparison(viewer)
+#    vals['to_compare'] = profile
+#    vals['comparison'] = comparison.toBreakdown()
+
+    comparison, json = viewer.getComparisonJSON(viewer)
+    vals['web_comparison'] = comparison
+    vals['web_json'] = json
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:

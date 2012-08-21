@@ -196,9 +196,10 @@ div.profile-page {
         }
       }
 
+
       div.bio-statement {
         float:left;
-        width:400px;
+        width:300px;
 
         div.bio-text {
           padding-left:10px;
@@ -212,6 +213,7 @@ div.profile-page {
         }
 
       }
+
       div.profile-about {
         margin-left:30px;
         float:left;
@@ -234,12 +236,21 @@ div.profile-page {
         }
       }
 
+      div.match-container {
+        float:left;
+        span.web-match {
+          position:relative;
+          top:-20px;
+          left:-20px;
+        }
+      }
+
       div.profile-breakdown {
         width:100%;
         margin-top:20px;
 
         span.breakdown-box {
-          float:left;
+          float:right;
           width:240px;
           margin-right:70px;
           height:200px;
@@ -262,6 +273,14 @@ div.profile-page {
               cursor:pointer;
             }
           }
+        }
+        span.web-match {
+          float:left;
+          position:relative;
+          top:-20px;
+        }
+        div.bio-text {
+          float:left;
         }
       }
 

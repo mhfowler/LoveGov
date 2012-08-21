@@ -8,12 +8,21 @@
     <div class='profile'>
 
         <div class="profile-top">
-            <div class="bio-statement">
 
+            <div class="match-container">
+                <div class="profile-header">
+                    Match
+                </div>
+
+                 <span class="web-match">
+                    <div class="{{ profile.get_name|slugify }}-canvas web_comparison" data-json="{{ web_json }}"></div>
+                </span>
+            </div>
+
+            <div class="bio-statement">
                 <div class="profile-header">
                     About Me
                 </div>
-
                 <div class="bio-text inline-editable">
                     <div class="inline-div inline_hide">
                         {{ profile.bio }}
@@ -27,19 +36,15 @@
                         </div>
                     {% endif %}
                 </div>
-
             </div>
 
             <div class="profile-about">
-
                 <div class="profile-header">
                     Info
                 </div>
-
                 <div class="about-item">
                     <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
                 </div>
-
                 <div class="about-item">
                     <span class="label"> age: </span>
 
@@ -47,7 +52,6 @@
                         {% if profile.age %}{{ profile.age }}{% endif %}
                     </div>
                 </div>
-
                 <div class="about-item">
                     <span class="label"> location: </span>
                     <span class="value">
@@ -79,11 +83,13 @@
                 </div>
 
             </div>
+
             <div style="clear:both"></div>
         </div>
 
 
         <div class="profile-breakdown">
+            {% comment %}
             <span class="match-breakdown breakdown-box">
                 <div class="profile-header">
                     Match Breakdown
@@ -93,6 +99,8 @@
                 </div>
                 <a href="{{ profile.getQuestionsURL }}" class="view-all"> see comparison breakdown </a>
             </span>
+            {% endcomment %}
+
             <span class="profile-groups breakdown-box">
                  <div class="profile-header">
                      Groups
@@ -133,15 +141,15 @@
             </div>
 
             <div class="profile-focus">
-                    <div class="questions_focus profile_focus">
-                        {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" %}
-                    </div>
-                    <div class="posts_focus profile_focus">
-                        {% include 'site/pages/feed/feed.html' %}
-                    </div>
-                    <div class="activity_focus profile_focus">
-                        {% include 'site/pages/profile/profile_activity.html' with p_id=profile.id %}
-                    </div>
+                <div class="questions_focus profile_focus">
+                    {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" %}
+                </div>
+                <div class="posts_focus profile_focus">
+                    {% include 'site/pages/feed/feed.html' %}
+                </div>
+                <div class="activity_focus profile_focus">
+                    {% include 'site/pages/profile/profile_activity.html' with p_id=profile.id %}
+                </div>
             </div>
         </div>
     </div>
