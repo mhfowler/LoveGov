@@ -1348,6 +1348,11 @@ def hoverComparison(request,vals={}):
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
+def hoverWebComparison(request, vals={}):
+    object = urlToObject(request.POST['href'])
+    comparison = object.getComparison(vals['viewer'])
+    return HttpResponse(comparison.toJSON())
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds e-mail to mailing list
 #-----------------------------------------------------------------------------------------------------------------------

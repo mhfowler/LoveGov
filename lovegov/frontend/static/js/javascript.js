@@ -49,6 +49,7 @@ function bindOnNewElements() {
     });
     bindNotificationsDropdownClickOutside();
     pollAutoSwitch();
+    comparisonWebs();
 }
 
 var poll_autoswitch;
@@ -58,6 +59,12 @@ function pollAutoSwitch() {
     {
        cyclePollQuestions();
     }, 5000);
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
+    });
 }
 
 /***********************************************************************************************************************
@@ -2026,7 +2033,7 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverComparison()
+function loadHoverBreakdown()
 {
 
     var hoverTimer;
@@ -2099,6 +2106,96 @@ function loadHoverComparison()
                             var obj = eval('(' + data + ')');
                             $('#comparison-hover-loading-img').hide();
                             $('#comparison-hover').html(obj.html);
+                        },
+                        'error': null
+                    });
+                }
+            },
+            function(event)
+            {
+                hoverTimer = setTimeout
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
+            }
+        );
+}
+
+function loadHoverComparison()
+{
+
+    var hoverTimer;
+    var hoverClearOK = true;
+
+    function clearHover()
+    {
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
+    }
+
+    $('#comparison-hover-div').hover
+        (
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
+            }
+        );
+
+    function findHoverPosition(selector)
+    {
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+        if (top <= $(document).scrollTop())
+        {
+            // show below
+            top = selector.offset().top + selector.height() + 30;
+            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+        }
+        else
+        {
+            // show above
+            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+        }
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+        return {top:top,left:left};
+    }
+
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
+        (
+            function(event)
+            {
+                var self = $(this);
+                var href = $(this).data('href');
+                var displayName = $(this).data("display_name");
+                if (href != "")
+                {
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    var title_html = 'You &  <a href="' + href+ '">' + displayName + '</a>';
+                    $('#comparison-hover-div p.hover-title').html(title_html);
+                    var offset = findHoverPosition(self);
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    action({
+                        'data': {'action':'hoverWebComparison','href':href},
+                        'success': function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            $('#comparison-hover').visualComparison(obj,true);
                         },
                         'error': null
                     });
@@ -2854,7 +2951,7 @@ bind( '.facebook_share_submit' , 'click' , null , function(e)
 
 /***********************************************************************************************************************
  *
- *      ~Check browser compatibility using Modernizr
+ *      ~pin content
  *
  ***********************************************************************************************************************/
 
@@ -2884,3 +2981,81 @@ bind( '.pin_to_group' , 'click' , null , function(e)
     });
 });
 
+
+/***********************************************************************************************************************
+ *
+ *      ~dismissible header stuff, representatives
+ *
+ ***********************************************************************************************************************/
+bind('.dismissible_x' , 'click' , null , function(e)
+{
+    $(this).parents(".dismissible_header").hide();
+});
+
+
+function loadGoogleMap()
+{
+    function createDistrictsOverlay(outlines_only, opacity, state, district)
+    {
+        return {
+            getTileUrl: function(coord, zoom)
+            {
+                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
+                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
+                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
+                    + (!district ? "%25"
+                    : "/cd/110/" + district)
+                    : "")
+                    + "&FORMAT=image/png";
+            },
+            tileSize: new google.maps.Size(256,256),
+            minZoom: 2,
+            maxZoom: 28,
+            opacity: opacity,
+            isPng: true
+        };
+    }
+
+    var map;
+
+    function initialize()
+    {
+        var myOptions =
+        {
+            zoom: 10,
+            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: false
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+    }
+
+    initialize();
+}
+
+
+/* find address */
+bind('.find_address_button' , 'click' , null , function(e)
+{
+    var form = $(this).parents(".address_form");
+    var street = form.find(".street_input").val();
+    var state = form.find(".state_input").val();
+    var zip = form.find(".zip_input").val();
+    action({
+            data: {'action': 'submitAddress', 'street': street, 'state':state,
+            'zip':zip},
+            success: function(data) {
+                alert(data);
+            }}
+    );
+});

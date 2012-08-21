@@ -1,1 +1,15 @@
-<h4> representatives! </h4>
+<div class="representatives">
+
+    <div class="representatives-header">
+        {% if location %}
+            {% include 'site/pages/politicians/representatives_header.html' with info_height="150px" %}
+        {% else %}
+            {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
+        {% endif %}
+    </div>
+
+    <div class="representatives-feed-wrapper">
+        {% include 'site/pages/feed/feed.html' %}
+    </div>
+
+</div>

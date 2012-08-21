@@ -65,7 +65,7 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
-        loadAjaxifyAnchors();
+        //loadAjaxifyAnchors();
     },
 
     /**

@@ -6,7 +6,7 @@
 
 div.groups-header {
   width:100%;
-  margin-top:25px;
+  margin-top:10px;
   @include clearfix;
 
   div.groups-titles {
@@ -25,6 +25,7 @@ div.groups-header {
       float:left;
     }
     a.browse-all {
+      margin-bottom:10px;
       float:left;
       color:$black;
       padding:5px;
