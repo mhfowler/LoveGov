@@ -606,19 +606,16 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
-<<<<<<< HEAD
 
-    'getGroupMembersForDisplay',
+    'getLegislation',
 
-    'getLegislation'
-=======
     'getGroupMembersForDisplay',
     'getNextPollQuestion',
     'getElections',
     'hoverWebComparison',
     'newRegister',
     'saveAnswer'
->>>>>>> e95f7dde3a7df3b04b9d5949495f00de0b4a834c
+
 ]
 
 UNAUTHENTICATED_ACTIONS = [

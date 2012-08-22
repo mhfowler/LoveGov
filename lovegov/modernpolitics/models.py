@@ -24,6 +24,7 @@ import json
 import time
 from datetime import timedelta
 from datetime import datetime
+import re
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -2765,6 +2766,10 @@ class Legislation(Content):
             creator = self.sponsor
             self.creator = creator
         super(Legislation,self).autoSave(creator,privacy)
+
+    def getTypeName(self):
+        bill_type_full = re.search()self.bill_type.sub()
+        return
 
 #=======================================================================================================================
 #
