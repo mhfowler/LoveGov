@@ -57,13 +57,9 @@
                     {% endif %}
 
 
-
-                    <!-- text match -->
-                    {% include 'site/pages/profile/sidebar_match.html' with to_compare=profile %}
-
                     <div class="stats">
 
-                        <div class="stats-row-one">
+                        <div class="stats-row first">
                             <div class="stats-box white-box left-box">
                                 <div class="num">
                                     {{ profile.num_followme}}
@@ -72,7 +68,7 @@
                                     followers
                                 </div>
                             </div>
-                            <div class="stats-box gray-box center-box">
+                            <div class="stats-box gray-box right-box">
                                 <div class="num">
                                     {{ profile.num_ifollow }}
                                 </div>
@@ -80,7 +76,10 @@
                                     following
                                 </div>
                             </div>
-                            <div class="stats-box gray-box  right-box">
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="stats-row">
+                            <div class="stats-box gray-box left-box">
                                 <div class="num">
                                     {{ profile.num_groups}}
                                 </div>
@@ -88,10 +87,7 @@
                                     groups
                                 </div>
                             </div>
-                            <div style="clear:both;"></div>
-                        </div>
-                        <div class="stats-row-two">
-                            <div class="stats-box gray-box  left-box">
+                            <div class="stats-box gray-box  right-box">
                                 <div class="num">
                                     {{ profile.num_posts}}
                                 </div>
@@ -99,7 +95,10 @@
                                     posts
                                 </div>
                             </div>
-                            <div class="stats-box gray-box center-box">
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="stats-row">
+                            <div class="stats-box gray-box left-box">
                                 <div class="num">
                                     {{ profile.num_answers }}
                                 </div>
@@ -115,7 +114,6 @@
                                     signatures
                                 </div>
                             </div>
-                            <div style="clear:both;"></div>
                         </div>
 
                     </div>

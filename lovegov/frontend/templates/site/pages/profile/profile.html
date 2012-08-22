@@ -8,66 +8,70 @@
     <div class='profile'>
 
         <div class="profile-top">
-            <div class="bio-statement">
 
+            <div class="match-container">
                 <div class="profile-header">
-                    About Me
+                    Match
                 </div>
 
-                <div class="bio-text inline-editable">
-                    <div class="inline-div inline_hide">
-                        {{ profile.bio }}
-                    </div>
-                    {% if viewer.id == profile.id %}
-                        <div class="edit-link edit_button"></div>
-                        <div class="inline-edit-input inline_edit" data-model="UserProfile" data-id="{{ profile.id }}">
-                            <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
-                            <a href="" class="edit-link submit_inline_edit">submit</a>
-                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
-                        </div>
-                    {% endif %}
-                </div>
+                 <span class="web-match">
+                     <div class="web-comparison-wrapper">
+                         {% include 'site/pages/qa/comparison_web.html' with to_compare=profile %}
+                     </div>
+                </span>
 
+                <a href="{{ profile.getQuestionsURL }}" class="see-breakdown"> see comparison breakdown </a>
             </div>
 
-            <div class="profile-about">
+            <div class="profile-info">
 
-                <div class="profile-header">
-                    Info
-                </div>
-
-                <div class="about-item">
-                    <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
-                </div>
-
-                <div class="about-item">
-                    <span class="label"> age: </span>
-
-                    <div class="value">
-                        {% if profile.age %}{{ profile.age }}{% endif %}
+                <div class="bio-statement">
+                    <div class="profile-header">
+                        About Me
+                    </div>
+                    <div class="bio-text inline-editable">
+                        <div class="inline-div inline_hide">
+                            {{ profile.bio }}
+                        </div>
+                        {% if viewer.id == profile.id %}
+                            <div class="edit-link edit_button"></div>
+                            <div class="inline-edit-input inline_edit" data-model="UserProfile" data-id="{{ profile.id }}">
+                                <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
+                                <a href="" class="edit-link submit_inline_edit">submit</a>
+                                <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
-                <div class="about-item">
-                    <span class="label"> location: </span>
+                <div class="profile-about">
+                    <div class="profile-header">
+                        Info
+                    </div>
+                    <div class="about-item">
+                        <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
+                    </div>
+                    <div class="about-item">
+                        <span class="label"> age: </span>
+
+                        <div class="value">
+                            {% if profile.age %}{{ profile.age }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="about-item">
+                        <span class="label"> town: </span>
                     <span class="value">
                         {% with loc=profile.location %}
-                            {% if loc.address_string %}
-                                {{ loc.address_string }}
-                            {% else %}
-                                {% if loc.city %}
-                                    {{ loc.city }},
-                                {% endif %}
-                                {% if loc.state %}
-                                    {{ loc.state }}
-                                {% endif %}
+                            {% if loc.city %}
+                                {{ loc.city }},
                             {% endif %}
+                            {{ loc.state }}
                         {% endwith %}
                     </span>
-                </div>
+                    </div>
 
-                <div class="about-item">
-                    <span class="label"> parties: </span> <span class="value">
+                    <div class="about-item">
+                        <span class="label"> parties: </span> <span class="value">
                         {% for p in profile.parties.all %}
                             {% with full_url=p.party_label %}
                                 {% thumbnail full_url "x20" format="PNG" as im %}
@@ -76,47 +80,47 @@
                             {% endwith %}
                         {% endfor %}
                     </span>
+                    </div>
+
                 </div>
 
             </div>
-            <div style="clear:both"></div>
-        </div>
 
+            <div class="profile-stuff">
 
-        <div class="profile-breakdown">
-            <span class="match-breakdown breakdown-box">
-                <div class="profile-header">
-                    Match Breakdown
-                </div>
-                <div class="stuff">
-                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with to_compare=profile comparison=comparison %}
-                </div>
-                <a href="{{ profile.getQuestionsURL }}" class="view-all"> see comparison breakdown </a>
-            </span>
-            <span class="profile-groups breakdown-box">
-                 <div class="profile-header">
-                     Groups
-                 </div>
-                <div class="stuff">
-                    {% for g in profile_groups %}
-                        <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
-                    {% endfor %}
-                </div>
-                <a class="view-all"> view all </a>
-            </span>
-            <span class="profile-politicians breakdown-box">
-                 <div class="profile-header">
-                     Politicians
-                 </div>
-                <div class="stuff">
-                    {% for p in profile_politicians %}
-                        <a class="profile-avatar" href="{{ p.get_url }}">
-                            {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
-                        </a>
-                    {% endfor %}
-                </div>
-                <a class="view-all"> view all </a>
-            </span>
+                <span class="profile-groups breakdown-box">
+                    <div class="breakdown-top">
+                        <div class="profile-header">
+                            Groups
+                        </div>
+                        <a class="link-all dumm_link"> view all </a>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div class="stuff">
+                        {% for g in profile_groups %}
+                            <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
+                        {% endfor %}
+                    </div>
+                </span>
+
+                <span class="profile-politicians breakdown-box">
+                    <div class="breakdown-top">
+                        <div class="profile-header">
+                            Politicians
+                        </div>
+                        <a class="link-all dummy_link"> view all </a>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div class="stuff">
+                        {% for p in profile_politicians %}
+                            <a class="profile-avatar" href="{{ p.get_url }}">
+                                {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </span>
+
+            </div>
 
             <div style="clear:both"></div>
         </div>
@@ -133,15 +137,15 @@
             </div>
 
             <div class="profile-focus">
-                    <div class="questions_focus profile_focus">
-                        {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" %}
-                    </div>
-                    <div class="posts_focus profile_focus">
-                        {% include 'site/pages/feed/feed.html' %}
-                    </div>
-                    <div class="activity_focus profile_focus">
-                        {% include 'site/pages/profile/profile_activity.html' with p_id=profile.id %}
-                    </div>
+                <div class="questions_focus profile_focus">
+                    {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" default_display="your_response"%}
+                </div>
+                <div class="posts_focus profile_focus">
+                    {% include 'site/pages/feed/feed.html' %}
+                </div>
+                <div class="activity_focus profile_focus">
+                    {% include 'site/pages/profile/profile_activity.html' with p_id=profile.id %}
+                </div>
             </div>
         </div>
     </div>

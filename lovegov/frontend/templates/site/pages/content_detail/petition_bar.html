@@ -1,0 +1,8 @@
+<div class="petition-bar-wrapper petition_bar_wrapper stats_object" data-object="petition_bar" data-p_id="{{petition.id}}">
+    <div class="petition-bar">
+        <div class="red-bar" style="width:{{ petition.getFilledPercent }}%;"></div>
+    </div>
+    <div class="petition-bar-text">
+        {{ petition.current }}/{{ petition.goal }} signatures
+    </div>
+</div>

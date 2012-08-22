@@ -36,7 +36,7 @@
 
             <tr>
                 <td>
-                    <input type="text" id="age-register-input" class="login-input" name="ageregister" placeholder="age"/>
+                    <input type="text" id="age-register-input" class="login-input" name="ageregister" placeholder="age" value="{% if not registerform.age.errors and registerform.age.value %}{{ registerform.age.value }}{% elif registerform.age.errors %}{{ registerform.age.errors|striptags }}{% endif %}"/>
                     <input type="text" id="zip-register-input" class="login-input" name="zipregister" placeholder="zip [optional]"/>
                 </td>
                 <td>

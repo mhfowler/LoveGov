@@ -54,103 +54,107 @@ header
     }
   }
 
-  div.search
-  {
-    @include inline-block();
-    margin-top: 15px;
-    margin-right:10px;
+  div.head-right {
     float: right;
-    position: relative;
-    input {
-      height: 30px;
-      padding: 0 30px 0 10px;
-      font-size: 12px;
-      color: $deep-gray;
-      width: 190px;
-      @include transition(0.25s);
-      font-family: Sonus-ExtraLight;
-      &:focus {
-        border-color: $deep-gray;
-        width: 245px;
+
+    div.search
+    {
+      @include inline-block();
+      float: left;
+      margin-top: 15px;
+      margin-right:10px;
+      position: relative;
+      input {
+        height: 30px;
+        padding: 0 30px 0 10px;
+        font-size: 12px;
+        color: $deep-gray;
+        width: 190px;
         @include transition(0.25s);
+        font-family: Sonus-ExtraLight;
+        &:focus {
+          border-color: $deep-gray;
+          width: 245px;
+          @include transition(0.25s);
+        }
+      }
+      img.mag-glass {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
       }
     }
-    img {
-      position: absolute;
-      top: 5px;
-      right: 5px;
+
+    img.setting-icon, div.setting-icon {
+      float: left;
+      height: 25px;
+      margin: 17px 0 10px 10px;
       cursor: pointer;
-    }
-  }
-
-  img.setting-icon, div.setting-icon {
-    float: right;
-    height: 25px;
-    margin: 17px 0 10px 10px;
-    cursor: pointer;
-    padding-top:1px;
-  }
-
-  div.notices {
-    float: right;
-    height: 25px;
-    width: 25px;
-    background-color: $red;
-    position: relative;
-    color: white;
-    text-align: center;
-    font-size: 18px;
-    vertical-align: middle;
-    cursor: pointer;
-
-    span.triangle {
-      @include triangle('down', $red, 10px);
-      position: absolute;
-      top: 20px;
-      left: 3px;
+      padding-top:1px;
     }
 
-    div.notifications-dropdown-button
-    {
-      margin-top: 3px;
+    div.notices {
+      float: left;
+      height: 25px;
+      width: 25px;
+      background-color: $red;
+      position: relative;
+      color: white;
+      text-align: center;
+      font-size: 18px;
+      vertical-align: middle;
+      cursor: pointer;
+
+      span.triangle {
+        @include triangle('down', $red, 10px);
+        position: absolute;
+        top: 20px;
+        left: 3px;
+      }
+
+      div.notifications-dropdown-button
+      {
+        margin-top: 3px;
+      }
     }
-  }
 
-  span.head-avatar div.avatar-box {
-    float: right;
-    margin: 10px;
-    margin-top:15px;
-  }
+    span.header-id {
+      span.head-avatar div.avatar-box {
+        float: left;
+        margin: 10px;
+        margin-top:15px;
+      }
 
-  span.name {
-    max-width: 150px;
-    float: right;
-    text-overflow: ellipsis;
-    @include inline-block;
-    #white-space: nowrap;
-    overflow: hidden;
-    margin: 15px 4px 0 0;
-    height: 30px;
-    text-align: center;
-  }
-
-
-
-  div.triangle-area {
-    display: inline;
-    float: right;
-
-  }
-  div.triangle-wrapper {
-    cursor: pointer;
-    padding: 32px 3px 0px 3px;
-    @include inline-block
-  }
-  span.head-triangle {
-    @include triangle('down', $red, 6px);
-  }
+      span.name {
+        float: left;
+        max-width: 150px;
+        text-overflow: ellipsis;
+        @include inline-block;
+        #white-space: nowrap;
+        overflow: hidden;
+        margin: 15px 4px 0 0;
+        height: 30px;
+        text-align: center;
+      }
 
 
+
+      div.triangle-area {
+        float: left;
+        display: inline;
+      }
+      div.triangle-wrapper {
+        cursor: pointer;
+        padding: 32px 3px 0px 3px;
+        @include inline-block
+      }
+      span.head-triangle {
+        @include triangle('down', $red, 6px);
+      }
+    }
+
+    }
 
 }
 

@@ -132,6 +132,7 @@ class PhysicalAddress(LGModel):
     longitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     state = models.CharField(max_length=2, null=True)
+    city = models.CharField(max_length=500, null=True)
     district = models.IntegerField(default=-1)
 
 #=======================================================================================================================
@@ -259,12 +260,13 @@ class Content(Privacy, LocationLevel):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
-    unique_commenter_ids = custom_fields.ListField(default=[])
-    # unique_commenters = models.ManyToManyField("UserProfile")
+    commenters = models.ManyToManyField("UserProfile", related_name="commented_on_content")
     # POSTING TO GROUPS
     posted_to = models.ForeignKey("Group", null=True, related_name="posted_content")
     shared_to = models.ManyToManyField("Group", related_name="shared_content")
     content_privacy = models.CharField(max_length=1,choices=CONTENT_PRIVACY_CHOICES, default='O')
+    # deprecated
+    unique_commenter_ids = custom_fields.ListField(default=[])
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
@@ -304,6 +306,9 @@ class Content(Privacy, LocationLevel):
     def getBreakdownURL(self):
         return self.get_url() + 'breakdown/'
 
+    def getCommentsURL(self):
+        return self.get_url() + "#comments-wrapper"
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets name of content for display.
     #-------------------------------------------------------------------------------------------------------------------
@@ -336,26 +341,21 @@ class Content(Privacy, LocationLevel):
     def contentCommentsRecalculate(self):
         direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
-        commenters = set()
 
         if direct_comments:
             for comment in direct_comments:
 
-                commenters.add(comment.getCreator())
+                self.commenters.add(comment.getCreator())
 
-                num_children_comments, children_commenters = comment.contentCommentsRecalculate()
+                num_children_comments = comment.contentCommentsRecalculate()
 
                 num_comments += num_children_comments + 1
-                commenters.union(children_commenters)
 
         self.num_comments = num_comments
-        unique_commenter_ids = []
-        for x in commenters:
-            unique_commenter_ids.append(x.id)
-        self.unique_commenter_ids = unique_commenter_ids
         self.save()
 
-        return num_comments, commenters
+        return num_comments
+
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -461,6 +461,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
+        self.like(user=creator, privacy=privacy)
 
         logger.debug("created " + self.title)
 
@@ -509,10 +510,8 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def addComment(self, commenter):
         self.num_comments += 1
-        unique_commenter_ids = self.unique_commenter_ids
-        if commenter and (not commenter.id in unique_commenter_ids):
-            unique_commenter_ids.append(commenter.id)
-            self.unique_commenter_ids = unique_commenter_ids
+        if commenter and (not commenter in self.commenters.all()):
+            self.commenters.add(commenter)
             self.status += STATUS_COMMENT
         self.save()
 
@@ -650,7 +649,6 @@ class Content(Privacy, LocationLevel):
             # if disliked or neutral, increase vote by 1
             else:
                 my_vote.value += 1
-                my_vote.autoSave()
 
                 # adjust content values about status and vote
                 if my_vote.value == 1:
@@ -660,6 +658,7 @@ class Content(Privacy, LocationLevel):
 
                 self.status += STATUS_VOTE
                 self.save()
+                my_vote.save()
 
         else:
             # create new vote
@@ -694,7 +693,6 @@ class Content(Privacy, LocationLevel):
                 pass
             else:
                 my_vote.value -= 1
-                my_vote.autoSave()
                 # adjust content values about status and vote
                 if my_vote.value == -1:
                     self.downvotes += 1
@@ -702,7 +700,7 @@ class Content(Privacy, LocationLevel):
                     self.upvotes -= 1
                 self.status -= STATUS_VOTE
                 self.save()
-
+                my_vote.save()
         else:
             # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
@@ -1165,6 +1163,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         location.zip = zip
         location.save()
 
+    def setDOB(self, dob):
+        self.dob = dob
+        age = datetime.date.today() - dob
+        years = age.days / 365
+        self.age = years
+        self.save()
+
     def isAnon(self):
         return self.alias == 'anonymous'
 
@@ -1176,6 +1181,31 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def clearResponses(self):
         return self.getView().clearResponses()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # automatically parse city and state groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def joinCityGroup(self, city, state):
+        if city:
+            already = CityGroup.lg.get_or_none(location__city=city, location__state=state)
+            if already:
+                if not self in already.members.all():
+                    already.joinMember(self)
+            else:
+                city_group = CityGroup().autoCreate(city, state)
+                city_group.joinMember(self)
+
+    def joinStateGroup(self, state):
+        if state:
+            already = StateGroup.lg.get_or_none(location__state=state)
+            if already:
+                if not self in already.members.all():
+                    already.joinMember(self)
+
+    def joinLocationGroups(self):
+        if self.location:
+            self.joinCityGroup(self.location.city, self.location.state)
+            self.joinStateGroup(self.location.state)
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
@@ -1219,11 +1249,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location:
             return self.location
         else:
-            location = PhysicalAddress()
-            location.save()
-            self.location = location
-            self.save()
-            return location
+            return self.newLocation()
+
+    def newLocation(self):
+        location = PhysicalAddress()
+        location.save()
+        self.location = location
+        self.save()
+        return location
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.
@@ -1584,13 +1617,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         #Do aggregate notifications if necessary
         if type in AGGREGATE_NOTIFY_TYPES:
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
+            if type not in NOTIFY_MODIFIERS:
 
                 stale_date = datetime.datetime.today() - STALE_TIME_DELTA
                 # Find all recent notifications with this action type/modifier directed towards this user
                 already = Notification.objects.filter(notify_user=self,
                                                         when__gte=stale_date,
-                                                        action__modifier=action.modifier,
                                                         action__action_type=type ).order_by('-when')
 
                 for notification in already: # For all recent notifications matching this one
@@ -1608,7 +1640,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         #Otherwise do normal notifications
         elif type in NOTIFY_TYPES:
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS or action.modifier in NOTIFY_MODIFIERS[type]:
+            if type not in NOTIFY_MODIFIERS:
                 notification = Notification(action=action, notify_user=self)
                 notification.save()
                 return True
@@ -1724,6 +1756,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getNetworks(self):
         return self.networks.all()
+
+    def getGroupSubscriptions(self):
+        return self.getGroups().filter(ghost=False)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
@@ -2433,7 +2468,6 @@ class Office(Content):
 # Petition
 #
 #=======================================================================================================================
-
 class Petition(Content):
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
@@ -2444,6 +2478,9 @@ class Petition(Content):
 
     def getTitleDisplay(self):
         return "Petition: " + self.title
+
+    def getFilledPercent(self):
+        return int(100*(self.current / float(self.goal)))
 
     def autoSave(self, creator=None, privacy='PUB'):
         if not self.summary:
@@ -3265,7 +3302,7 @@ class ViewComparison(LGModel):
                 topic_text = t.topic_text
                 topic_dict = {'text':topic_text,
                              'colors': MAIN_TOPICS_COLORS[topic_text],
-                             'mini_img': MAIN_TOPICS_MINI_IMG[topic_text],
+                             'mini_img': '/static' + MAIN_TOPICS_MINI_IMG[topic_text],
                              'order': MAIN_TOPICS_CLOCKWISE_ORDER[topic_text],
                              'result':0,
                              'num_q':0}
@@ -3417,6 +3454,12 @@ class Group(Content):
             object = self.party
         elif type == 'U':
             object = self.usergroup
+        elif type == 'E':
+            object = self.election
+        elif type == 'S':
+            object = self.stategroup
+        elif type == 'C':
+            object = self.citygroup
         else: object = self
         return object
 
@@ -3801,7 +3844,7 @@ class Motion(Content):
         return not (self.passed or self.expired)
 
 #=======================================================================================================================
-# Network Group
+# Network Group, created by parsing facebook networks
 #
 #=======================================================================================================================
 class Network(Group):
@@ -3813,11 +3856,46 @@ class Network(Group):
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'N'
         self.system = True
-        self.group_privacy = "P"
+        self.group_privacy = "O"
         super(Network, self).autoSave()
 
 #=======================================================================================================================
-# Network Group
+# Location group, is created for specific locations (from submitted addresses)
+#
+#=======================================================================================================================
+class StateGroup(Group):
+    pass
+    def autoCreate(self, state):
+        state_text = STATES_DICT[state]
+        self.title = state_text + " State Group"
+        self.description = "A group for sharing political information relevant to the state of " + state_text + "."
+        self.group_type = 'S'
+        self.system = True
+        self.group_privacy = "O"
+        super(StateGroup, self).autoSave()
+        location = PhysicalAddress(state=state)
+        location.save()
+        self.location = location
+        self.save()
+
+class CityGroup(Group):
+    pass
+    def autoCreate(self, city, state):
+        city_state = city + ", " + state
+        self.title = city_state + " Group"
+        self.description = "A group for sharing political information relevant to " + city_state + "."
+        self.group_type = 'C'
+        self.system = True
+        self.group_privacy = "O"
+        super(CityGroup, self).autoSave()
+        location = PhysicalAddress(state=state, city=city)
+        location.save()
+        self.location = location
+        self.save()
+
+
+    #=======================================================================================================================
+# Political party group
 #
 #=======================================================================================================================
 class Party(Group):
@@ -3850,15 +3928,32 @@ class Party(Group):
 #=======================================================================================================================
 class UserGroup(Group):
     def autoSave(self, creator=None, privacy="PUB"):
-        self.in_feed = (self.group_privacy != "S")
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
 
+#=======================================================================================================================
+# an election, is a group centered around a particular office
+#=======================================================================================================================
+class Election(Group):
+    running = models.ManyToManyField(UserProfile, related_name="running_for")
+    winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
+    office = models.ForeignKey(Office, null=True)
+    election_date = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(auto_now_add=True)
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.group_type = 'E'
+        super(Election, self).autoSave(creator=creator,privacy=privacy)
+
+    def joinRace(self, user):
+        if not user in self.running.all():
+            self.running.add(user)
+
+    def getCandidatesURL(self):
+        return self.get_url() + '/candidates/'
 
 ########################################################################################################################
 ################################################### Committees #########################################################
-
-
 # External Imports
 class Committee(Group):
     code = models.CharField(max_length=20)
@@ -4300,6 +4395,27 @@ class CommitteeJoined(GroupJoined):
         self.relationship_type = 'CJ'
         super(CommitteeJoined, self).autoSave()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #=======================================================================================================================
 # For a user to write about their views on a topic.
 #
@@ -4307,7 +4423,6 @@ class CommitteeJoined(GroupJoined):
 class TopicView(Privacy):
     view = models.TextField(max_length=10000, blank=True)
     topic = models.ForeignKey(Topic)
-
 
 
 ########################################################################################################################

@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 #----------------------------------------------------------------------------------------------------------------------
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def answerAction(user, question, privacy, answer_id, weight, explanation):
+def answerAction(user, question, privacy, answer_id, weight=None, explanation=None):
     chosen_answer = Answer.lg.get_or_none(id=answer_id)
     if not chosen_answer:
         chosen_answer = None
@@ -28,6 +28,10 @@ def answerAction(user, question, privacy, answer_id, weight, explanation):
     my_response = user.view.responses.filter(question=question)
 
     if not my_response:
+        if not weight:
+            weight = 50
+        if not explanation:
+            explanation = ""
         response = Response( question = question,
             most_chosen_answer = chosen_answer,
             weight = weight,
@@ -41,6 +45,10 @@ def answerAction(user, question, privacy, answer_id, weight, explanation):
     # else update old response
     else:
         response = my_response[0]
+        if not weight:
+            weight = response.weight
+        if not explanation:
+            explanation = response.explanation
         response.most_chosen_answer = chosen_answer
         response.weight = weight
         response.explanation = explanation

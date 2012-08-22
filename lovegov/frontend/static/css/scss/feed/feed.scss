@@ -131,6 +131,10 @@ div.feed-main
 
   div.feed-content-wrapper {
 
+    div.feed-item {
+      margin-bottom:25px;
+    }
+
     div.feed-fetching {
       @include staticImage("/images/gifs/fetching.gif");
       width:500px;

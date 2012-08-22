@@ -28,9 +28,8 @@
 })( jQuery );
 
 /**
- * @author Clay
  *
- * This object handles generating visual comparisons on LoveGov. This object is extremely easy to use. Just call:
+ * This object handles generating visual comparisons on LoveGov.
  *
  * new VisualComparison(domEle,comparisonJSON).draw()
  *
@@ -65,7 +64,7 @@ var VisualComparison = Class.extend
         this.radiusTopic = 30;
         this.radiusMiddle = 45;
         this.skew = 100;
-        loadAjaxifyAnchors();
+        //loadAjaxifyAnchors();
     },
 
     /**

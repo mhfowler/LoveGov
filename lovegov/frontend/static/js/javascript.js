@@ -53,6 +53,24 @@ function bindOnNewElements() {
         setInfoHeight($(this));
     });
     bindNotificationsDropdownClickOutside();
+    pollAutoSwitch();
+    comparisonWebs();
+    updateQuestionStubsDisplay();
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    poll_autoswitch= setInterval(function()
+    {
+        cyclePollQuestions();
+    }, 5000);
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
+    });
 }
 
 
@@ -354,6 +372,7 @@ function expandInfoToggle(wrapper, animate)
     var info_div = wrapper.find(".home_header_info");
     var info_hidden = wrapper.data('info_hidden');
     var info_expanded = wrapper.data('info_expanded');
+    var reduced_height = info_div.data("height");
 
     // If info is hidden, expand the info to it's previous expanded state
     if( info_hidden )
@@ -363,7 +382,7 @@ function expandInfoToggle(wrapper, animate)
         // If the info was un-expanded, show it at un-expanded form
         if( !info_expanded )
         {
-            info_div.animate({"height":'100px'}, animation_time);
+            info_div.animate({"height":reduced_height}, animation_time);
             wrapper.find(".expand_info").text('+ expand info');
         } // If the info was expanded, show the full expanded form
         else
@@ -376,7 +395,7 @@ function expandInfoToggle(wrapper, animate)
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
-        info_div.animate({"height":'100px'}, animation_time);
+        info_div.animate({"height":reduced_height}, animation_time);
         wrapper.find(".expand_info").text('+ expand info');
     }
     else
@@ -420,6 +439,7 @@ function setInfoHeight(wrapper)
     var info_div = wrapper.find(".home_header_info");
     var info_hidden = wrapper.data('info_hidden');
     var info_expanded = wrapper.data('info_expanded');
+    var reduced_height=info_div.data("height");
 
     if( info_hidden )
     {
@@ -433,7 +453,7 @@ function setInfoHeight(wrapper)
     }
     else
     {
-        info_div.css("height","100px");
+        info_div.css("height",reduced_height);
         info_div.css("overflow",'hidden');
     }
 }
@@ -516,6 +536,7 @@ function ajaxReload(theurl, loadimg)
                 $(".main_content").html(returned.html);
                 $('.main_content').show();
                 rebind = returned.rebind;
+                path = returned.url;
                 bindOnReload();
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -615,6 +636,30 @@ function neutral(div)
     div.find(".heart_minus").removeClass("clicked");
 }
 
+/* click through poll sample */
+bind(".poll_arrow", 'click', null, function(event) {
+    var direction = $(this).data("direction");
+    nextPollQuestion($(this).parents(".sample_question"), direction);
+});
+
+function nextPollQuestion(sample_question, direction) {
+    var p_id = sample_question.data('p_id');
+    var which = sample_question.data("which");
+    var data = {'action':'getNextPollQuestion', 'p_id':p_id, 'which':which, 'direction':direction};
+    action({
+        data:data,
+        success:function(data) {
+            var returned = eval('(' + data + ')');
+            sample_question.replaceWith(returned.html);
+        }
+    });
+}
+
+function cyclePollQuestions() {
+    $.each($(".sample_question"), function(i,e) {
+        nextPollQuestion($(this), 1);
+    });
+}
 
 /* filter buttons */
 bind(".rank_button" , "click" , null , function(event) {
@@ -721,17 +766,22 @@ function getFeed(container) {
     else if (feed == 'getQuestions')
     {
         var only_unanswered = container.data('only_unanswered');
+        var default_display = container.data("default_display");
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
         }
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
             'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
-            'only_unanswered':only_unanswered };
+            'only_unanswered':only_unanswered , 'default_display':default_display};
     }
     else if (feed == 'getUserActivity')
     {
         var p_id = container.data('p_id');
         data = { 'action': 'getUserActivity', 'feed_start':feed_start, 'p_id':p_id };
+    }
+    else if (feed == 'getElections')
+    {
+        data = {'action': 'getElections','feed_rank':feed_rank, 'feed_start':feed_start};
     }
     else if (feed == 'getGroups') {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
@@ -979,11 +1029,11 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
  *
  ***********************************************************************************************************************/
 
- // Cancel button click
+    // Cancel button click
 bind("div.reply .tab-button.cancel", "click", function(event) {
 
-        $(this).parent("div.reply").hide();
-    });
+    $(this).parent("div.reply").hide();
+});
 
 
 bind("div.reply .tab-button.save", "click", function(event) {
@@ -1033,10 +1083,10 @@ function goodLength(text) {
 
 
 function incNumComments() {
-     var ncspan = $('span.num_comments');
-     var num_comments = parseInt(ncspan.text());
-     ncspan.text(num_comments + 1);
- }
+    var ncspan = $('span.num_comments');
+    var num_comments = parseInt(ncspan.text());
+    ncspan.text(num_comments + 1);
+}
 
 // bind("#commentform","submit",function(event)
 //      {
@@ -1063,26 +1113,26 @@ function incNumComments() {
 //      });
 
 bind("div.comment-actions div.reply-action", "click",function()
-     {
-         $(this).parent().siblings('div.reply.reply-reply').toggle();
-     });
+{
+    $(this).parent().siblings('div.reply.reply-reply').toggle();
+});
 
 bind("div.comment-actions div.delete-action", "click",function()
-     {
-        var comment = $(this).closest("div.comment");
-        var content_id = $(this).data('cid');
-         action({
-            'data': {'action':'delete','c_id':content_id},
-             'success': function(data) {
-                 comment.html("Comment deleted.");
-             }
-         });
-     });
+{
+    var comment = $(this).closest("div.comment");
+    var content_id = $(this).data('cid');
+    action({
+        'data': {'action':'delete','c_id':content_id},
+        'success': function(data) {
+            comment.html("Comment deleted.");
+        }
+    });
+});
 
 bind("div.comment-actions div.append-action", "click",function()
-     {
-        $(this).parent().siblings('div.reply.reply-append').toggle();
-     });
+{
+    $(this).parent().siblings('div.reply.reply-append').toggle();
+});
 
 
 // bind("input.tab-button.alt","click",function()
@@ -1156,11 +1206,11 @@ bind('div.load-more-comments', 'click', function(e) {
         action({
             data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start},
             success: function(data)
-             {
-                 var returned = eval('(' + data + ')');
-                 $(returned.html).hide().appendTo('div.thread').fadeIn(500);
-                 $('div.thread').data('num-showing', next_start + returned.top_count);
-             }
+            {
+                var returned = eval('(' + data + ')');
+                $(returned.html).hide().appendTo('div.thread').fadeIn(500);
+                $('div.thread').data('num-showing', next_start + returned.top_count);
+            }
         });
     }
 });
@@ -1248,7 +1298,7 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Login
+ *      ~loagin
  *
  **********************************************************************************************************************/
 var login_state;
@@ -1329,6 +1379,46 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
     event.preventDefault();
     $("#sign-up-div").hide();
     $("#register-div").show();
+});
+
+
+bind(".r_register", 'click', null, function(event) {
+    var form = $(this).parents(".r_register_form");
+    var form_type = form.data("form_type");
+    form.find(".register_gif").show();
+    var name = form.find(".name_input").val();
+    var email = form.find(".email_input").val();
+    var email2 = form.find(".email2_input").val();
+    var day = form.find(".day_input").val();
+    var month = form.find(".month_input").val();
+    var year = form.find(".year_input").val();
+    var zip = form.find(".zip_input").val();
+    var privacy_check = form.find(".privacy_input");
+    var privacy = 0;
+    if (privacy_check.is(":checked")) {
+        privacy = 1;
+    }
+    var password = '';
+    if (form_type == 'email_register') {
+        password = form.find(".password_input").val();
+    }
+    var data = {'action':'newRegister', 'name':name,'email':email,
+        'email2':email2,'password':password,'day':day,'month':month,'year':year,
+        'zip':zip,'privacy':privacy, 'form_type':form_type};
+    action({
+        data: data,
+        success: function(data)
+        {
+            form.find(".register_gif").hide();
+            var returned = eval('(' + data + ')');
+            if (returned.success) {
+                window.location.href = "/welcome/";
+            }
+            else {
+                form.replaceWith(returned.html);
+            }
+        }
+    });
 });
 
 
@@ -2076,7 +2166,7 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverComparison()
+function loadHoverBreakdown()
 {
 
     var hoverTimer;
@@ -2165,6 +2255,96 @@ function loadHoverComparison()
         );
 }
 
+function loadHoverComparison()
+{
+
+    var hoverTimer;
+    var hoverClearOK = true;
+
+    function clearHover()
+    {
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
+    }
+
+    $('#comparison-hover-div').hover
+        (
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
+            }
+        );
+
+    function findHoverPosition(selector)
+    {
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+        if (top <= $(document).scrollTop())
+        {
+            // show below
+            top = selector.offset().top + selector.height() + 30;
+            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+        }
+        else
+        {
+            // show above
+            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+        }
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+        return {top:top,left:left};
+    }
+
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
+        (
+            function(event)
+            {
+                var self = $(this);
+                var href = $(this).data('href');
+                var displayName = $(this).data("display_name");
+                if (href != "")
+                {
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    var title_html = 'You &  <a href="' + href+ '">' + displayName + '</a>';
+                    $('#comparison-hover-div p.hover-title').html(title_html);
+                    var offset = findHoverPosition(self);
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    action({
+                        'data': {'action':'hoverWebComparison','href':href},
+                        'success': function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            $('#comparison-hover').visualComparison(obj,true);
+                        },
+                        'error': null
+                    });
+                }
+            },
+            function(event)
+            {
+                hoverTimer = setTimeout
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
+            }
+        );
+}
+
 /***********************************************************************************************************************
  *
  *     ~QA
@@ -2174,20 +2354,75 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
-    expandAnswerInterface(stub);
+    expandChooseInterface(stub);
 });
 
-function expandAnswerInterface(stub) {
-    stub.find(".question_comparison").hide();
-    stub.find(".answer_expanded").show();
+bind('.goback_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    expandChooseInterface(stub);
+});
+
+bind('.hide_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    hideStub(stub);
+});
+
+bind('.change_explanation' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_explain").show();
+});
+
+function hideStub(stub) {
+    stub.find(".question_expanded").hide();
+    stub.find(".hide_button").hide();
+    stub.find(".answer_button").show();
+}
+
+function expandChooseInterface(stub) {
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_choose").show();
     stub.find(".answer_button").hide();
+    stub.find(".hide_button").show();
 }
 
-function expandResponse(stub) {
-    stub.find(".answer_expanded").hide();
-    stub.find(".question_comparison").show();
+function expandExplainInterface(stub) {
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_explain").show();
+    stub.find(".answer_button").hide();
+    stub.find(".hide_button").show();
 }
 
+function expandResponses(stub) {
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_responses").show();
+}
+
+/* sets question stubs to display appropriately */
+function updateQuestionStubsDisplay() {
+    $.each($(".question_stub"), function(i,e) {
+        updateQuestionStubDisplay($(this));
+    });
+}
+
+function updateQuestionStubDisplay(stub) {
+    var default_display = stub.data("default_display");
+    if (default_display == 'none') {
+        hideStub(stub);
+    }
+    if (default_display == 'choose') {
+        expandChooseInterface(stub);
+    }
+    if (default_display == 'explain') {
+        expandExplainInterface(stub);
+    }
+    if (default_display == 'responses') {
+        expandResponses(stub);
+    }
+}
 
 bind('.answer_checkbox' , 'click' , null , function(event)
 {
@@ -2199,6 +2434,7 @@ bind('.answer_checkbox' , 'click' , null , function(event)
         stub.find(".answer_checkbox").removeClass("clicked");
         $(this).addClass("clicked");
     }
+    saveAnswer(stub);
 });
 
 bind('.save_button' , 'click' , null , function(event)
@@ -2207,7 +2443,35 @@ bind('.save_button' , 'click' , null , function(event)
     saveQuestion(stub);
 });
 
+// stage 1, save answer
+function saveAnswer(stub) {
+    var box = stub.find(".answer_checkbox.clicked");
+    var a_id;
+    if (box.length!=0) {
+        a_id = box.data('a_id');
+    }
+    else {
+        a_id = -1;
+    }
+    var q_id = stub.data('q_id');
+    action({
+        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':'explain'},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            stub.replaceWith(new_element);
+            var saved_message = new_element.find(".saved_message");
+            saved_message.show();
+            saved_message.fadeOut(5000);
+            updateQuestionStubDisplay(new_element);
+            bindImportanceSlider(new_element.find(".importance_bar"));
+            updateMatches();
+            updateStats();
+        }
+    });
+}
 
+// old way, answer and explanation (stage 2)
 function saveQuestion(stub) {
     var box = stub.find(".answer_checkbox.clicked");
     var a_id;
@@ -2227,18 +2491,24 @@ function saveQuestion(stub) {
     }
     var q_id = stub.data('q_id');
     var weight = stub.find(".importance_bar").slider("value");
+    var container = stub.parents(".feed_main");
+    var default_display = "choose";
+    if (container.length!=0) {
+        default_display = container.data("default_display");
+    }
     action({
         data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
             'explanation':explanation,'a_id':a_id, 'weight':weight,
-            'to_compare_id':to_compare_id},
+            'to_compare_id':to_compare_id, 'default_display':default_display},
         success: function(data) {
             var returned = eval('(' + data + ')');
-
-            var container = stub.parents(".feed_main");
-            var only_unanswered = container.data('only_unanswered');
+            var only_unanswered = false;
+            if (container.length!=0) {
+                only_unanswered = container.data('only_unanswered');
+            }
             if (only_unanswered) {
                 stub.hide();
-                expandAnswerInterface(stub.next('.question_stub'));
+                expandChooseInterface(stub.next('.question_stub'));
             }
             else {
                 var new_element = $(returned.html);
@@ -2247,9 +2517,7 @@ function saveQuestion(stub) {
                 saved_message.show();
                 saved_message.fadeOut(5000);
                 bindImportanceSlider(new_element.find(".importance_bar"));
-            }
-            if (rebind=="question_detail" || rebind=='poll_detail') {
-                expandResponse(new_element);
+                updateQuestionStubDisplay(new_element);
             }
             updateMatches();
             updateStats();
@@ -2260,13 +2528,6 @@ function saveQuestion(stub) {
 bind('.privacy_checkbox' , 'click' , null , function(event)
 {
     $(this).toggleClass("clicked");
-});
-
-bind('.cancel_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    stub.find(".answer_expanded").hide();
-    stub.find(".answer_button").show();
 });
 
 function bindImportanceSliders() {
@@ -2304,6 +2565,9 @@ function updateMatch(match) {
             var returned = eval('(' + data + ')');
             var new_element = $(returned.html);
             match.replaceWith(new_element);
+            if (display=='comparison_web') {
+                new_element.visualComparison();
+            }
         }
     });
 }
@@ -2321,6 +2585,9 @@ function updateStatsObject(stats) {
         data['q_id'] = stats.data('q_id');
     }
     if (object == 'poll_progress') {
+        data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'petition_bar') {
         data['p_id'] = stats.data('p_id');
     }
     action({
@@ -2901,7 +3168,7 @@ bind( '.facebook_share_submit' , 'click' , null , function(e)
 
 /***********************************************************************************************************************
  *
- *      ~Check browser compatibility using Modernizr
+ *      ~pin content
  *
  ***********************************************************************************************************************/
 
@@ -2931,3 +3198,82 @@ bind( '.pin_to_group' , 'click' , null , function(e)
     });
 });
 
+
+/***********************************************************************************************************************
+ *
+ *      ~dismissible header stuff, representatives
+ *
+ ***********************************************************************************************************************/
+bind('.dismissible_x' , 'click' , null , function(e)
+{
+    $(this).parents(".dismissible_header").hide();
+});
+
+
+function loadGoogleMap()
+{
+    function createDistrictsOverlay(outlines_only, opacity, state, district)
+    {
+        return {
+            getTileUrl: function(coord, zoom)
+            {
+                return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
+                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
+                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
+                    + (!district ? "%25"
+                    : "/cd/110/" + district)
+                    : "")
+                    + "&FORMAT=image/png";
+            },
+            tileSize: new google.maps.Size(256,256),
+            minZoom: 2,
+            maxZoom: 28,
+            opacity: opacity,
+            isPng: true
+        };
+    }
+
+    var map;
+
+    function initialize()
+    {
+        var myOptions =
+        {
+            zoom: 10,
+            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: false
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        map.overlayMapTypes.insertAt(0, overlayWMS);
+    }
+
+    initialize();
+}
+
+
+/* find address */
+bind('.find_address_button' , 'click' , null , function(e)
+{
+    var form = $(this).parents(".address_form");
+    var address = form.find(".street_input").val();
+    var state = form.find(".state_input").val();
+    var zip = form.find(".zip_input").val();
+    var city = form.find(".city_input").val();
+    action({
+            data: {'action': 'submitAddress', 'address': address, 'city':city, 'state':state,
+                'zip':zip},
+            success: function(data) {
+                alert(data);
+            }}
+    );
+});

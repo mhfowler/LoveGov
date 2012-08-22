@@ -11,6 +11,24 @@
 from lovegov.modernpolitics.initialize import *
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Register from email form
+#-----------------------------------------------------------------------------------------------------------------------
+def registerHelper(name, email, password, day, month, year, zip):
+
+    user = createUser(name,email,password)
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    user.save()
+
+    user_profile = user.user_profile
+    if zip:
+        user_profile.setZipCode(zip)
+
+    dob = datetime.date(year=year, month=month, day=day)
+    user_profile.setDOB(dob)
+
+    return user_profile
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Resets a users password and sends an email.
 #-----------------------------------------------------------------------------------------------------------------------
 def resetPassword(user):
@@ -51,6 +69,7 @@ def createTwitterUser(name, email, vals={}):
 # - name, email, password
 #-------------------------------------------------------------------------------------------------------------------
 def createUser(name, email, password,active=True):
+    # NORMAL CASE
     if not ControllingUser.objects.filter(username=email):
         control = ControllingUser.objects.create_user(username=email, email=email, password=password)
         control.is_active = active
@@ -61,17 +80,17 @@ def createUser(name, email, password,active=True):
         control.user_profile = user_profile
         control.save()
         return control
+
+    # SPECIAL CASE FOR CREATING USERS DURING PARSE SCRIPTS
     else:
+        logger.error("DUPLICATE USERNAME REGISTRATION.")
         splitted = email.split("@")
         if len(splitted)==1:
-            print ("deletes! " + email)
             c = ControllingUser.objects.get(username=email)
             c.delete()
             return createUser(name, email, password, active)
         else:
-            print ("email duplicate!" + email)
             if splitted[1] == "lovegov.com":
-                print ("deletes! " + email)
                 c = ControllingUser.objects.get(username=email)
                 c.delete()
                 return createUser(name, email, password, active)
@@ -81,45 +100,48 @@ def createUser(name, email, password,active=True):
 # - name, email, passwordtype='userProfile'
 #-------------------------------------------------------------------------------------------------------------------
 def createUserHelper(control,name,active=True):
-    # new user profile
-    userProfile = UserProfile()
 
-    names = name.split(" ")
-    if len(names) == 2:
-        userProfile.first_name = names[0]
-        userProfile.last_name = names[1]
-    elif len(names) > 2:
-        userProfile.first_name = names[0] + " " + names[1]
-        userProfile.last_name = names[2]
-    else:
-        userProfile.first_name = names[0]
-        userProfile.last_name = ""
+    user_profile = UserProfile()
 
-    userProfile.email = control.email
-    userProfile.username = control.username
+    names = name.split()
+    num_names = len(names)
+    first_name = ""
+    last_name = ""
+    for i,name in enumerate(names):
+        name = str(name)
+        if i==0:
+            first_name = str.capitalize(name)
+        elif i < (num_names-1):
+            first_name += " " + str.capitalize(name)
+        else:
+            last_name = str.capitalize(name)
+    user_profile.first_name = first_name
+    user_profile.last_name = last_name
+
+    user_profile.email = control.email
+    user_profile.username = control.username
+
     # active
-    userProfile.is_active = active
-    userProfile.confirmation_link = str(random.randint(1,9999999999999999999))
+    user_profile.is_active = active
+    user_profile.confirmation_link = str(random.randint(1,9999999999999999999))
+
     # worldview
     world_view = WorldView()
     world_view.save()
-    userProfile.view = world_view
-    userProfile.save()
-    # alias
-    userProfile.makeAlias()
-    # filter settings
-    filter_setting = getDefaultFilter()
-    userProfile.filter_setting = filter_setting
-    # notification settings
-    userProfile.initNotificationSettings()
-    # connections group and lovegov group and join or create network group
-    userProfile.createIFollowGroup()
-    userProfile.createFollowMeGroup()
-    userProfile.joinLoveGovGroup()
-    userProfile.createDefaultFilter()
-    # associate with control
-    userProfile.user = control
-    userProfile.save()
-    # return user prof
-    return userProfile
+    user_profile.view = world_view
+    user_profile.save()
 
+    # alias
+    user_profile.makeAlias()
+
+    # connections group and lovegov group and join or create network group
+    user_profile.createIFollowGroup()
+    user_profile.createFollowMeGroup()
+    user_profile.joinLoveGovGroup()
+
+    # associate with control
+    user_profile.user = control
+    user_profile.save()
+
+    # return user prof
+    return user_profile

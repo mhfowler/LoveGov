@@ -255,6 +255,11 @@ def login(request, to_page='web/', message="", vals={}):
     response.delete_cookie('lovegov_try')
     return response
 
+def welcome(request, vals={}):
+    vals['name'] = request.GET.get('name')
+    vals['email'] = request.GET.get('email')
+    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
+
 def loginAuthenticate(request,user,to_page=''):
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
@@ -280,7 +285,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             error = 'Invalid Login/Password'
         # Return whatever error was found
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
-        return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     # REGISTER
     elif request.POST['button'] == 'register':
@@ -295,7 +300,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
-            return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
@@ -438,16 +443,13 @@ def home(request, vals):
 
 def groups(request, vals):
     viewer = vals['viewer']
-    #groups = viewer.getUserGroups()
-    groups = UserGroup.objects.all()
-    groups = groups[:6]
-    vals['groups'] = groups
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
     focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/elections/elections.html', vals, request)
+    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -462,6 +464,34 @@ def presidential(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
+
+    viewer = vals['viewer']
+    location = viewer.location
+    vals['location'] = None
+
+#    congressmen = []
+#    if viewer.location:
+#        vals['state'] = location.state
+#        vals['district'] = location.district
+#        vals['latitude'] = location.latitude
+#        vals['longitude'] = location.longitude
+#        senator_tag = OfficeTag.objects.get(name="senator")
+#        senator_office = senator_tag.tag_offices.filter(location=location.state)[0]
+#        senators = OfficeHeld.objects.filter(content=senator_office, confirmed=True).values_list("user", flat=True)
+#
+#        representative = UserProfile.lg.get_or_none(elected_official=True, location__state=location.state,location__district=location.district)
+#        if representative:
+#            congressmen.append(representative)
+#        senators = UserProfile.objects.filter(elected_offical=True,location__state=location.state)
+#        for senator in senators:
+#            congressmen.append(senator)
+#        vals['congressmen'] = congressmen
+#    for x in congressmen:
+#        x.prepComparison(viewer)
+#    congressmen.sort(key=lambda x:x.result,reverse=True)
+#    if not congressmen:
+#        vals['invalid_address'] = True
+
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -525,6 +555,8 @@ def groupPage(request, g_alias, vals={}):
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
     vals['group'] = group
+    if group.group_type=="E":
+        return electionPage(request, group.downcast(), vals)
 
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})
@@ -537,8 +569,13 @@ def groupPage(request, g_alias, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # election detail
 #-----------------------------------------------------------------------------------------------------------------------
-def electionPage(request, e_alias, vals={}):
-    focus_html =  ajaxRender('site/pages/home/focus.html', vals, request)
+def electionPage(request, election, vals={}):
+
+    viewer = vals['viewer']
+    vals['info'] = valsElection(viewer, election, {})
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -568,12 +605,12 @@ def profile(request, alias=None, vals={}):
         if user_follow.rejected:
             vals['is_user_rejected'] = True
     
-    vals['profile_groups'] = user_profile.getGroups()[:4]
+    vals['profile_groups'] = user_profile.getGroupSubscriptions()[:4]
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
-    comparison = user_profile.getComparison(viewer)
-    vals['to_compare'] = profile
-    vals['comparison'] = comparison.toBreakdown()
+    comparison, web_json = user_profile.getComparisonJSON(viewer)
+    vals['web_comparison'] = comparison
+    vals['web_json'] = web_json
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
@@ -737,6 +774,15 @@ def histogramDetail(request, alias, vals={}):
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# browse all candidates of an election
+#-----------------------------------------------------------------------------------------------------------------------
+def candidates(request, alias, vals={}):
+
+    election = Election.objects.get(alias=alias)
+    vals['election'] = election
+    vals['candidates']
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link

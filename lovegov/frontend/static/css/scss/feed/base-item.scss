@@ -88,7 +88,7 @@ div.feed-item-content
     }
 
     div.feed-item-description {
-        width:750px;
+      width:750px;
     }
 
     div.feed-item-group-name
@@ -112,22 +112,31 @@ div.feed-item-content
     margin-right: 5px;
     margin-left: 20px;
 
-    div.feed-item-comments
-    {
-      @include staticImage('/images/icons/red_comment.png');
-      background-repeat: no-repeat;
-      background-size: 60px 50px;
-      background-position: 90px 10px;
-      padding-left: 95px;
-      padding-top: 20px;
-      height: 70px;
-
-      div.feed-num-comments
+    div.feed-item-comments-wrapper {
+      @include clearfix();
+      display:block;
+      div.feed-item-comments
       {
-        font-size: 20px;
-        color: white;
-        text-align: center;
-        width: 50px;
+        @include staticImage('/images/icons/red_comment.png');
+        float: right;
+        background-repeat: no-repeat;
+        background-size: 60px 50px;
+        background-position: 0px 10px;
+        margin-right:10px;
+        padding:5px;
+        height: 70px;
+        &:hover {
+          background-color:$light-gray;
+        }
+
+        div.feed-num-comments
+        {
+          font-size: 20px;
+          color: white;
+          text-align: center;
+          width: 50px;
+          padding-top:14px;
+        }
       }
     }
 
@@ -164,4 +173,17 @@ div.feed-item-content
 
     }
   }
+}
+
+
+/* petition item */
+div.feed-petition-bar {
+  margin-top:5px;
+  width:40%;
+  float:left;
+}
+
+/* poll sample */
+div.sample-question {
+  margin-top:10px;
 }

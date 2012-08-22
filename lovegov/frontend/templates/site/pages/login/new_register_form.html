@@ -1,0 +1,58 @@
+<div class="new-register-form r_register_form"
+        {% if form_type == 'twitter_register' %} data-form_type="twitter_register" style="position:relative;top:-40px;"{% else %} data-form_type="email_register" {% endif %}>
+
+        {% if form_type == 'twitter_register'%}
+            <p>
+         To finish your registration with twitter, fill in your info below. <span class="r-error"> {{ twitter_error }}</span>
+            </p>
+        {% else %}
+            <h2 class="register-title">
+        Register
+            </h2>
+        {% endif %}
+
+    <div class="r-form-input">
+        <input type="text" class="r-input name_input" placeholder="full name" value="{{ name }}"/> <span class="r-label"> full name </span>
+        <span class="r-error"> {{ name_error }} </span>
+    </div>
+
+    <div class="r-form-input">
+        <input type="text" class="r-input email_input" placeholder="email" value="{{ email }}"/> <span class="r-label"> email </span>
+        <span class="r-error"> {{ email_error }} </span>
+    </div>
+
+    <div class="r-form-input">
+        <input type="text" class="r-input email2_input" placeholder="email"  value="{{ email2 }}"/> <span class="r-label"> email </span>
+        <span class="r-error"> {{ email2_error }} </span>
+    </div>
+
+    {% if form_type != 'twitter_register' %}
+        <div class="r-form-input">
+            <input type="password" class="r-input password_input" placeholder="password"/> <span class="r-label"> password </span>
+            <span class="r-error"> {{ password_error }} </span>
+        </div>
+    {% endif %}
+
+    <div class="r-form-input">
+        <input type="text" class="r-input dob-input month_input" placeholder="m"  value="{{ month }}"/>
+        <span class="dob-sep"> / </span>
+        <input type="text" class="r-input dob-input day_input" placeholder="d"  value="{{ day }}"/>
+        <span class="dob-sep"> / </span>
+        <input type="text" class="r-input year-input year_input" placeholder="y"  value="{{ year }}"/>
+        <span class="r-label dob-label"> dob </span>
+        <input type="text" class="r-input zip-input zip_input" placeholder="zip"  value="{{ zip }}"/> <span class="r-label"> zip [optional] </span>
+        <span class="r-error"> {{ dob_error }} </span>
+    </div>
+
+    <div class="r-bottom">
+        <span class="r-error"> {{ privacy_error }} </span>
+        <input class="privacy-checkbox privacy_input" type="checkbox" name="privacy" {% if privacy == 1 %} checked="checked" {% endif  %}/>
+        <span class="privacy-agree">I agree to the <a class="invert_link privacy_policy">Privacy Policy</a></span>
+        <a href="#" class="button-red r-register r_register dummy_link"> register </a>
+        <div class="registering-gif registering_gif"></div>
+    </div>
+
+    <div style="clear:both;"></div>
+
+
+</div>

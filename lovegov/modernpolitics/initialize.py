@@ -1784,3 +1784,47 @@ def initFirstLogin():
         else:
             p.first_login = 0
         p.save()
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# initialize elections
+#-----------------------------------------------------------------------------------------------------------------------
+def getPresidentialElection2012():
+    return Election.objects.get(alias="presidential_election") or initializePresidentialElection2012()
+
+def initializePresidentialElection2012():
+    print "initializing presidential election!"
+    election = Election(title="Presidential Election", summary="who will be America's next president?",
+    election_date=datetime.date(year=2012, month=11, day=6))
+    election.autoSave()
+    return election
+
+def initializePresidentialCandidates2012():
+    print "initializing presidential candidates!"
+    election = getPresidentialElection2012()
+    if LOCAL:
+        obama = getUser("Randy Johnson")
+        mitt = getUser("Katy Perry")
+        ron = getUser("Joseph Stalin")
+    else:
+        obama = getUser("Barack Obama")
+        mitt = getUser("Mitt Romney")
+        ron = getUser("Ronald Paul")
+    election.joinRace(obama)
+    election.joinRace(mitt)
+    election.joinRace(ron)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# initialize state groups
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeStateGroups():
+    for x in STATES:
+        state = x[0]
+        already = StateGroup.lg.get_or_none(location__state=state)
+        if not already:
+            print "initializing " + state + " state group."
+            StateGroup().autoCreate(state)
+        else:
+            print "..." + state + " state group already initialized."
+    for u in UserProfile.objects.all():
+        u.joinLocationGroups()

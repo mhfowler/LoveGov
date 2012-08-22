@@ -1,5 +1,23 @@
-{% for x in question_items %}
-    {% with question=x.question your_response=x.you their_response=x.them disagree=x.disagree show_answer=x.show_answer %}
-        {% include 'site/pages/qa/question_stub.html' %}
-    {% endwith %}
-{% endfor %}
+<!-- if default_display=your_response then display none if you haven't responded, else display the response if you have -->
+{% if default_display == 'your_response' %}
+    {% for x in question_items %}
+        {% with question=x.question your_response=x.you compare_responses=x.compare_responses %}
+            {% if your_response %}
+                {% with default_display="responses" %}
+                    {% include 'site/pages/qa/question_stub.html' %}
+                {% endwith %}
+            {% else %}
+                {% with default_display="none" %}
+                    {% include 'site/pages/qa/question_stub.html' %}
+                {% endwith %}
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+<!-- for all other displays, just display each stub with whatever the default is -->
+{% else %}
+    {% for x in question_items %}
+        {% with question=x.question your_response=x.you compare_responses=x.compare_responses %}
+            {% include 'site/pages/qa/question_stub.html' %}
+        {% endwith %}
+    {% endfor %}
+{% endif %}

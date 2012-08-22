@@ -371,8 +371,9 @@ GROUP_TYPE_CHOICES = (
     ('P','party'),
     ('C','committee'),
     ('U','user'),
+    ('E', 'election'),
     ('S','system')
-)
+    )
 
 # types of group government
 GOVERNMENT_TYPE_CHOICES = (
@@ -605,15 +606,25 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
+<<<<<<< HEAD
 
     'getGroupMembersForDisplay',
 
     'getLegislation'
+=======
+    'getGroupMembersForDisplay',
+    'getNextPollQuestion',
+    'getElections',
+    'hoverWebComparison',
+    'newRegister',
+    'saveAnswer'
+>>>>>>> e95f7dde3a7df3b04b9d5949495f00de0b4a834c
 ]
 
 UNAUTHENTICATED_ACTIONS = [
     'logCompatability',
-    'getModal'
+    'getModal',
+    'newRegister'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
@@ -686,3 +697,25 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     #checkCompatability,
     'appendComment',
 ]
+
+###################################### DATA #########################################################################
+
+STATES = [('AL', 'Alabama'), ('AK', 'Alaska'), ('AS', 'American Samoa'), ('AZ' , 'Arizona'), ('AR', 'Arkansas'),
+    ('CA', 'California'), ('CO', 'Colorado'), ('CT', 'Connecticut'), ('DE', 'Delaware'), ('DC', 'District of Columbia'),
+    ('FM Fed.', 'States of Micronesia'), ('FL', 'Florida'), ('GA', 'Georgia'), ('GU', 'Guam'), ('HI', 'Hawaii'), ('ID', 'Idaho'),
+    ('IL', 'Illinois'), ('IN', 'Indiana'), ('IA', 'Iowa'), ('KS', 'Kansas'), ('KY', 'Kentucky'), ('LA', 'Louisiana'), ('ME', 'Maine'),
+    ('MH', 'Marshall Islands'), ('MD', 'Maryland'), ('MA', 'Massachusetts'), ('MI', 'Michigan'), ('MN', 'Minnesota'), ('MS', 'Mississippi'),
+    ('MO', 'Missouri'), ('MT', 'Montana'), ('NE', 'Nebraska'), ('NV', 'Nevada'), ('NH', 'New Hampshire'), ('NJ', 'New Jersey'),
+    ('NM', 'New Mexico'), ('NY', 'New York'), ('NC', 'North Carolina'), ('ND', 'North Dakota'), ('MP', 'Northern Mariana Is.'),
+    ('OH', 'Ohio'), ('OK', 'Oklahoma'), ('OR', 'Oregon'), ('PW', 'Palau'), ('PA', 'Pennsylvania'), ('PR',  'Puerto Rico'),
+    ('RI',  'Rhode Island'), ('SC', 'South Carolina'), ('SD', 'South Dakota'), ('TN', 'Tennessee'), ('TX', 'Texas'),
+    ('UT', 'Utah'), ('VT', 'Vermont'), ('VA', 'Virginia'), ('VI', 'Virgin Islands'), ('WA', 'Washington'),
+    ('WV', 'West Virginia'), ('WI', 'Wisconsin'), ('WY', 'Wyoming')]
+
+CANADIAN_PROVINCES = [ ('AB', 'Alberta'), ('BC', 'British Columbia'), ('MB', 'Manitoba'), ('NB', 'New Brunswick'),
+    ('NF', 'Newfoundland'), ('NT', 'Northwest Territories'), ('NS', 'Nova Scotia'), ('ON', 'Ontario'),
+    ('PE', 'Prince Edward Island'), ('QC', 'Quebec'), ('SK', 'Saskatchewan'), ('YT', 'Yukon')]
+
+STATES_DICT = {}
+for x in STATES:
+    STATES_DICT[x[0]]=x[1]

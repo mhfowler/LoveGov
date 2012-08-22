@@ -1,0 +1,62 @@
+{% extends 'site/pages/home/header_expandable.html' %}
+<!-- CSS for this file is in group.scss -->
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block header_top %}
+
+    <div class="group-top">
+
+        <span class="group-title">
+            <div class="inline-div inline_hide">
+                {{ group.title }}
+            </div>
+            {% if info.is_user_admin %}
+                <div class="edit-link edit_button"></div>
+                <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                    <input type="text" maxlength="200" value="{{ group.title }}" class="edit_input" name="title"/>
+                    <a href="" class="edit-link submit_inline_edit">submit</a>
+                    <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                </div>
+            {% endif %}
+        </span>
+
+
+        <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+        <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+
+    </div>
+
+{% endblock %}
+
+
+{% block header_info %}
+
+    <div class="group-expanded">
+
+        <div class="running">
+            {% for politician in info.running %}
+                <div class="election-card-wrapper {% if forloop.last %} last {% endif %}">
+                    {% include 'site/pages/elections/election_card.html'  %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="election-info">
+            <div class="election-date">
+                {{ info.election.election_date|date:"jS F" }}
+            </div>
+            <div class="election-info-lower">
+                <div class="election-description">
+                        a description
+                </div>
+                <div class="election-actions">
+                        <a href="{{ info.election.getCandidatesURL }}" class="election-action"> see all candidates </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

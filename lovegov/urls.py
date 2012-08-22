@@ -40,9 +40,11 @@ urlpatterns += patterns('',
     # login page
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),
     (r'^login/$', viewWrapper(views.login)),
-    (r'^passwordRecovery/(\S*)$', viewWrapper(views.passwordRecovery)),
+    (r'^password_recovery/(\S*)/$', viewWrapper(views.passwordRecovery)),
+    (r'^password_recovery/$', viewWrapper(views.passwordRecovery)),
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
+    (r'^welcome/$', viewWrapper(views.welcome)),
 
     # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),
@@ -66,7 +68,6 @@ urlpatterns += patterns('',
     (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
-    (r'^presidential/$', viewWrapper(views.presidential, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
@@ -143,6 +144,7 @@ urlpatterns += patterns('',
     (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
     (r'^(?P<alias>\w+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
     (r'^(?P<alias>\w+)/histogram/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+    (r'(?P<alias>\w+)/candidates/$', viewWrapper(views.candidates, requires_login=True)),                # see
 
     # REDIRECT
     (r'(?P<alias>\w+)/$', views.aliasDowncast),

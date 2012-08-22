@@ -6,6 +6,7 @@
 
 div.groups-header {
   width:100%;
+  margin-top:10px;
   @include clearfix;
 
   div.groups-titles {
@@ -16,22 +17,24 @@ div.groups-header {
       @include fontSize(16px);
       font-weight:bold;
       float:left;
+      padding-top:5px;
     }
     div.group-plus {
       @include fontSize(16px);
-      margin: 0 15px;
+      margin: 5px 15px;
       float:left;
     }
-  }
-
-  a.browse-all {
-    float:right;
-    color:black;
-    @include fontSize(20px);
-    margin-right:20px;
-    //margin-top:10px;
-    &:hover {
-      color:$gray;
+    a.browse-all {
+      margin-bottom:10px;
+      float:left;
+      color:$black;
+      padding:5px;
+      @include fontSize(16px);
+      margin-right:20px;
+      background-color:$gray;
+      &:hover {
+        background-color:$dark-gray;
+      }
     }
   }
 }

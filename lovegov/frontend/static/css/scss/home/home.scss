@@ -7,6 +7,7 @@
 /* stuff for section headers */
 div.home-header-top {
   @include clearfix;
+  margin-bottom:12px;
   div.home-section-title {
     text-transform:uppercase;
     @include fontSize(20px);
@@ -51,6 +52,7 @@ table.home
     div.home-header
     {
       width:100%;
+      margin-top:13px;
 
       div.minimize-button
       {
@@ -91,6 +93,7 @@ div.expand-info
 
 div.left-navbar {
 
+  margin-top:2px;
   @include titleFont();
   width:150px;
   overflow:hidden;
@@ -139,7 +142,7 @@ div.left-navbar {
     @include transition(.25s);
     margin-left:15px;
     margin-bottom:3px;
-    display:none;
+    //display:none;
   }
   span.red-triangle-down {
     @include transform(rotate(90deg));
@@ -163,6 +166,27 @@ div.left-navbar {
 
 }
 
+
+/* dismissible header */
+div.dismissible-header {
+  width:100%;
+  padding:10px;
+  @include clearfix;
+  background-color:$blue-light;
+  div.the-content {
+    float:left;
+  }
+  div.x-out {
+    float:right;
+    @include fontSize(32px);
+    padding:5px;
+    &:hover {
+      background-color:$black;
+      color:white;
+      cursor:pointer;
+    }
+  }
+}
 
 
 
