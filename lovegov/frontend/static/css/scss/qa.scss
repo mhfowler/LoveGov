@@ -150,14 +150,14 @@ div.question_stub {
   border:1px solid $light-gray;
   margin-top:10px;
 
-  div.answer_expanded {
+  div.question_expanded_choose {
     display:none;
   }
-  div.question_comparison {
+  div.question_expanded_explain {
     display:none;
   }
-  div.question_comparison.displayed {
-    display:block;
+  div.question_expanded_compare {
+    display:none;
   }
 
 
@@ -217,6 +217,41 @@ div.question_stub {
     }
   }
 
+
+  div.question_expanded_choose {
+    padding:10px;
+    padding-left:20px;
+    padding-right:20px;
+
+    span.question-checkbox {
+      float:left;
+      @include inline-block;
+      width:20px;
+      height:20px;
+      border:1px solid $black;
+      &.clicked {
+        background-color:$blue;
+      }
+      &:hover {
+        background-color:$blue;
+        @include opacity(.3);
+        cursor:pointer;
+      }
+    }
+
+    div.answers-wrapper {
+      div.answer-wrapper {
+        margin-top:15px;
+      }
+      span.answer-text {
+        margin-left:15px;
+        margin-top:2px;
+        @include fontSize(14px);
+      }
+    }
+  }
+
+  /*
   div.answer_expanded {
 
     padding:10px;
@@ -326,6 +361,7 @@ div.question_stub {
       }
     }
   }
+  */
 
   div.question-comparison {
     padding:20px;
@@ -364,7 +400,7 @@ div.question_stub {
 /**********************************************************************************************************************/
 #comparison-hover-div
 {
-  width:302px;
+  width:303px;
   position:absolute;
   background-color:#FFFFFF;
   -moz-border-radius: 20px;

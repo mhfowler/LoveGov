@@ -24,8 +24,8 @@ def rightSideBar(request, vals):
 # left sidedbar for home page (navbar)
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
-    vals['sidebar'] = 'sidebar'
-    vals['groups'] = UserGroup.objects.all()
+    viewer = vals['viewer']
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions

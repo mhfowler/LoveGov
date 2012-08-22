@@ -529,6 +529,7 @@ function ajaxReload(theurl, loadimg)
                 $(".main_content").html(returned.html);
                 $('.main_content').show();
                 rebind = returned.rebind;
+                path = returned.url;
                 bindOnReload();
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -2265,14 +2266,14 @@ bind('.answer_button' , 'click' , null , function(event)
 });
 
 function expandAnswerInterface(stub) {
-    stub.find(".question_comparison").hide();
-    stub.find(".answer_expanded").show();
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_choose").show();
     stub.find(".answer_button").hide();
 }
 
 function expandResponse(stub) {
-    stub.find(".answer_expanded").hide();
-    stub.find(".question_comparison").show();
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_compare").show();
 }
 
 
@@ -2391,6 +2392,9 @@ function updateMatch(match) {
             var returned = eval('(' + data + ')');
             var new_element = $(returned.html);
             match.replaceWith(new_element);
+            if (display=='comparison_web') {
+                new_element.visualComparison();
+            }
         }
     });
 }
@@ -3088,11 +3092,12 @@ function loadGoogleMap()
 bind('.find_address_button' , 'click' , null , function(e)
 {
     var form = $(this).parents(".address_form");
-    var street = form.find(".street_input").val();
+    var address = form.find(".street_input").val();
     var state = form.find(".state_input").val();
     var zip = form.find(".zip_input").val();
+    var city = form.find(".city_input").val();
     action({
-            data: {'action': 'submitAddress', 'street': street, 'state':state,
+            data: {'action': 'submitAddress', 'address': address, 'city':city, 'state':state,
             'zip':zip},
             success: function(data) {
                 alert(data);

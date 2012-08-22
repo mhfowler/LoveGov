@@ -563,35 +563,18 @@ def messageRep(request, vals={}):
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
-    full_address = ''
+
+    viewer = vals['viewer']
 
     address = request.POST.get('address')
-    if address:
-        full_address += address
-
     city = request.POST.get('city')
-    if city:
-        if not full_address == '':
-            full_address += ', '
-        full_address += city
-
     state = request.POST.get('state')
-    if state:
-        if not full_address == '':
-            full_address += ', '
-        full_address += state
-
     zip = request.POST.get('zip')
-    if zip:
-        if full_address == '':
-            full_address = zip
-
 
     try:
-        location = locationHelper(full_address, zip)
-        viewer = vals['viewer']
-        viewer.location = location
-        viewer.save()
+        location = viewer.getLocation()
+        locationHelper(address=address, city=city, state=state, zip=zip, location=location)
+        viewer.joinLocationGroups()
     except:
         return HttpResponse("The given address was not specific enough to determine your voting district")
 
@@ -987,11 +970,15 @@ def updateMatch(request, vals={}):
     viewer = vals['viewer']
     to_compare_alias = request.POST['to_compare_alias']
     to_compare = aliasToObject(to_compare_alias)
-    comparison = to_compare.getComparison(viewer)
-    vals['comparison_object'] = comparison
-    vals['to_compare'] = to_compare
-    vals['comparison'] = comparison.toBreakdown()
     display = request.POST['display']
+    vals['to_compare'] = to_compare
+    if display == 'comparison_web':
+        comparison, web_json = to_compare.getComparisonJSON(viewer)
+        vals['web_json'] = web_json
+    else:
+        comparison = to_compare.getComparison(viewer)
+        vals['comparison_object'] = comparison
+        vals['comparison'] = comparison.toBreakdown()
     if display == 'vertical_breakdown':
         html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
     elif display == 'horizontal_breakdown':
@@ -1001,6 +988,8 @@ def updateMatch(request, vals={}):
         html = ajaxRender('site/pages/profile/sidebar_match.html', vals, request)
     elif display == 'has_answered':
         html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
+    elif display == 'comparison_web':
+        html = ajaxRender('site/pages/qa/comparison_web.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
