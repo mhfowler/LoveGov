@@ -1,0 +1,17 @@
+<div class="response-stub">
+    <!-- avatar plus answer text -->
+    {% include 'site/pages/qa/avatar_and_response_text.html' %}
+    <!-- explanation plus importance -->
+    <div class="below-response">
+        {% if response.explanation %}
+            <div class="response-explanation">"{{ response.explanation}}"
+            </div>
+            {% comment %}
+            <div class="pipe-break"> | </div>
+            <div class="response-importance"> {{ response.weight }}% importance </div>
+            {% endcomment %}
+        {% endif %}
+        <div style="clear:both;"></div>
+    </div>
+    <div style="clear:both;"></div>
+</div>

@@ -610,7 +610,8 @@ ACTIONS = [
     'getNextPollQuestion',
     'getElections',
     'hoverWebComparison',
-    'newRegister'
+    'newRegister',
+    'saveAnswer'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

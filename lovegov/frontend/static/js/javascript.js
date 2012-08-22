@@ -50,6 +50,7 @@ function bindOnNewElements() {
     bindNotificationsDropdownClickOutside();
     pollAutoSwitch();
     comparisonWebs();
+    updateQuestionStubsDisplay();
 }
 
 var poll_autoswitch;
@@ -57,7 +58,7 @@ function pollAutoSwitch() {
     clearInterval(poll_autoswitch);
     poll_autoswitch= setInterval(function()
     {
-       cyclePollQuestions();
+        cyclePollQuestions();
     }, 5000);
 }
 
@@ -632,7 +633,7 @@ function neutral(div)
 /* click through poll sample */
 bind(".poll_arrow", 'click', null, function(event) {
     var direction = $(this).data("direction");
-   nextPollQuestion($(this).parents(".sample_question"), direction);
+    nextPollQuestion($(this).parents(".sample_question"), direction);
 });
 
 function nextPollQuestion(sample_question, direction) {
@@ -759,12 +760,13 @@ function getFeed(container) {
     else if (feed == 'getQuestions')
     {
         var only_unanswered = container.data('only_unanswered');
+        var default_display = container.data("default_display");
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
         }
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
             'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
-            'only_unanswered':only_unanswered };
+            'only_unanswered':only_unanswered , 'default_display':default_display};
     }
     else if (feed == 'getUserActivity')
     {
@@ -1018,11 +1020,11 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
  *
  ***********************************************************************************************************************/
 
- // Cancel button click
+    // Cancel button click
 bind("div.reply .tab-button.cancel", "click", function(event) {
 
-        $(this).parent("div.reply").hide();
-    });
+    $(this).parent("div.reply").hide();
+});
 
 
 bind("div.reply .tab-button.save", "click", function(event) {
@@ -1072,10 +1074,10 @@ function goodLength(text) {
 
 
 function incNumComments() {
-     var ncspan = $('span.num_comments');
-     var num_comments = parseInt(ncspan.text());
-     ncspan.text(num_comments + 1);
- }
+    var ncspan = $('span.num_comments');
+    var num_comments = parseInt(ncspan.text());
+    ncspan.text(num_comments + 1);
+}
 
 // bind("#commentform","submit",function(event)
 //      {
@@ -1102,26 +1104,26 @@ function incNumComments() {
 //      });
 
 bind("div.comment-actions div.reply-action", "click",function()
-     {
-         $(this).parent().siblings('div.reply.reply-reply').toggle();
-     });
+{
+    $(this).parent().siblings('div.reply.reply-reply').toggle();
+});
 
 bind("div.comment-actions div.delete-action", "click",function()
-     {
-        var comment = $(this).closest("div.comment");
-        var content_id = $(this).data('cid');
-         action({
-            'data': {'action':'delete','c_id':content_id},
-             'success': function(data) {
-                 comment.html("Comment deleted.");
-             }
-         });
-     });
+{
+    var comment = $(this).closest("div.comment");
+    var content_id = $(this).data('cid');
+    action({
+        'data': {'action':'delete','c_id':content_id},
+        'success': function(data) {
+            comment.html("Comment deleted.");
+        }
+    });
+});
 
 bind("div.comment-actions div.append-action", "click",function()
-     {
-        $(this).parent().siblings('div.reply.reply-append').toggle();
-     });
+{
+    $(this).parent().siblings('div.reply.reply-append').toggle();
+});
 
 
 // bind("input.tab-button.alt","click",function()
@@ -1195,11 +1197,11 @@ bind('div.load-more-comments', 'click', function(e) {
         action({
             data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start},
             success: function(data)
-             {
-                 var returned = eval('(' + data + ')');
-                 $(returned.html).hide().appendTo('div.thread').fadeIn(500);
-                 $('div.thread').data('num-showing', next_start + returned.top_count);
-             }
+            {
+                var returned = eval('(' + data + ')');
+                $(returned.html).hide().appendTo('div.thread').fadeIn(500);
+                $('div.thread').data('num-showing', next_start + returned.top_count);
+            }
         });
     }
 });
@@ -2262,20 +2264,75 @@ function loadHoverComparison()
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
-    expandAnswerInterface(stub);
+    expandChooseInterface(stub);
 });
 
-function expandAnswerInterface(stub) {
+bind('.goback_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    expandChooseInterface(stub);
+});
+
+bind('.hide_button' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    hideStub(stub);
+});
+
+bind('.change_explanation' , 'click' , null , function(event)
+{
+    var stub = $(this).parents(".question_stub");
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_explain").show();
+});
+
+function hideStub(stub) {
+    stub.find(".question_expanded").hide();
+    stub.find(".hide_button").hide();
+    stub.find(".answer_button").show();
+}
+
+function expandChooseInterface(stub) {
     stub.find(".question_expanded").hide();
     stub.find(".question_expanded_choose").show();
     stub.find(".answer_button").hide();
+    stub.find(".hide_button").show();
 }
 
-function expandResponse(stub) {
+function expandExplainInterface(stub) {
     stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_compare").show();
+    stub.find(".question_expanded_explain").show();
+    stub.find(".answer_button").hide();
+    stub.find(".hide_button").show();
 }
 
+function expandResponses(stub) {
+    stub.find(".question_expanded").hide();
+    stub.find(".question_expanded_responses").show();
+}
+
+/* sets question stubs to display appropriately */
+function updateQuestionStubsDisplay() {
+    $.each($(".question_stub"), function(i,e) {
+        updateQuestionStubDisplay($(this));
+    });
+}
+
+function updateQuestionStubDisplay(stub) {
+    var default_display = stub.data("default_display");
+    if (default_display == 'none') {
+        hideStub(stub);
+    }
+    if (default_display == 'choose') {
+        expandChooseInterface(stub);
+    }
+    if (default_display == 'explain') {
+        expandExplainInterface(stub);
+    }
+    if (default_display == 'responses') {
+        expandResponses(stub);
+    }
+}
 
 bind('.answer_checkbox' , 'click' , null , function(event)
 {
@@ -2287,6 +2344,7 @@ bind('.answer_checkbox' , 'click' , null , function(event)
         stub.find(".answer_checkbox").removeClass("clicked");
         $(this).addClass("clicked");
     }
+    saveAnswer(stub);
 });
 
 bind('.save_button' , 'click' , null , function(event)
@@ -2295,7 +2353,35 @@ bind('.save_button' , 'click' , null , function(event)
     saveQuestion(stub);
 });
 
+// stage 1, save answer
+function saveAnswer(stub) {
+    var box = stub.find(".answer_checkbox.clicked");
+    var a_id;
+    if (box.length!=0) {
+        a_id = box.data('a_id');
+    }
+    else {
+        a_id = -1;
+    }
+    var q_id = stub.data('q_id');
+    action({
+        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':'explain'},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            var new_element = $(returned.html);
+            stub.replaceWith(new_element);
+            var saved_message = new_element.find(".saved_message");
+            saved_message.show();
+            saved_message.fadeOut(5000);
+            updateQuestionStubDisplay(new_element);
+            bindImportanceSlider(new_element.find(".importance_bar"));
+            updateMatches();
+            updateStats();
+        }
+    });
+}
 
+// old way, answer and explanation (stage 2)
 function saveQuestion(stub) {
     var box = stub.find(".answer_checkbox.clicked");
     var a_id;
@@ -2315,18 +2401,24 @@ function saveQuestion(stub) {
     }
     var q_id = stub.data('q_id');
     var weight = stub.find(".importance_bar").slider("value");
+    var container = stub.parents(".feed_main");
+    var default_display = "choose";
+    if (container.length!=0) {
+        default_display = container.data("default_display");
+    }
     action({
         data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
             'explanation':explanation,'a_id':a_id, 'weight':weight,
-            'to_compare_id':to_compare_id},
+            'to_compare_id':to_compare_id, 'default_display':default_display},
         success: function(data) {
             var returned = eval('(' + data + ')');
-
-            var container = stub.parents(".feed_main");
-            var only_unanswered = container.data('only_unanswered');
+            var only_unanswered = false;
+            if (container.length!=0) {
+                only_unanswered = container.data('only_unanswered');
+            }
             if (only_unanswered) {
                 stub.hide();
-                expandAnswerInterface(stub.next('.question_stub'));
+                expandChooseInterface(stub.next('.question_stub'));
             }
             else {
                 var new_element = $(returned.html);
@@ -2335,9 +2427,7 @@ function saveQuestion(stub) {
                 saved_message.show();
                 saved_message.fadeOut(5000);
                 bindImportanceSlider(new_element.find(".importance_bar"));
-            }
-            if (rebind=="question_detail" || rebind=='poll_detail') {
-                expandResponse(new_element);
+                updateQuestionStubDisplay(new_element);
             }
             updateMatches();
             updateStats();
@@ -2348,13 +2438,6 @@ function saveQuestion(stub) {
 bind('.privacy_checkbox' , 'click' , null , function(event)
 {
     $(this).toggleClass("clicked");
-});
-
-bind('.cancel_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    stub.find(".answer_expanded").hide();
-    stub.find(".answer_button").show();
 });
 
 function bindImportanceSliders() {
@@ -3098,7 +3181,7 @@ bind('.find_address_button' , 'click' , null , function(e)
     var city = form.find(".city_input").val();
     action({
             data: {'action': 'submitAddress', 'address': address, 'city':city, 'state':state,
-            'zip':zip},
+                'zip':zip},
             success: function(data) {
                 alert(data);
             }}

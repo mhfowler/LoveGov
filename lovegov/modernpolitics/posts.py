@@ -936,7 +936,6 @@ def answer(request, vals={}):
             user.save()
         return HttpResponse("+")
 
-
 def stubAnswer(request, vals={}):
     user = vals['viewer']
     to_compare_id = request.POST.get('to_compare_id')
@@ -951,15 +950,29 @@ def stubAnswer(request, vals={}):
     explanation = request.POST['explanation']
     if explanation == 'explain your answer':
         explanation = ""
-    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
+    your_response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
-    vals['your_response'] = response
+    vals['your_response'] = your_response
+    responses = []
     if to_compare:
         their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
-        vals['their_response'] = their_response
-        vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
-        vals['to_compare'] = to_compare
-        vals['show_answer'] = response and their_response
+        if their_response:
+            responses.append(their_response)
+    responses.append(your_response)
+    vals['compare_responses'] = responses
+    vals['default_display'] = request.POST.get('default_display')
+    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+def saveAnswer(request, vals={}):
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = getPrivacy(request)
+    a_id = request.POST['a_id']
+    user = vals['viewer']
+    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
+    vals['question'] = question
+    vals['your_response'] = response
+    vals['default_display'] = request.POST.get('default_display')
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1611,6 +1624,7 @@ def getQuestions(request, vals):
             feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
+    vals['default_display'] = request.POST.get('default_display')
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))

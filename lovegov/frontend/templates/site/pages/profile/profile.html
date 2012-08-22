@@ -138,7 +138,7 @@
 
             <div class="profile-focus">
                 <div class="questions_focus profile_focus">
-                    {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" %}
+                    {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" default_display="your_response"%}
                 </div>
                 <div class="posts_focus profile_focus">
                     {% include 'site/pages/feed/feed.html' %}
