@@ -132,6 +132,7 @@ class PhysicalAddress(LGModel):
     longitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     state = models.CharField(max_length=2, null=True)
+    city = models.CharField(max_length=500, null=True)
     district = models.IntegerField(default=-1)
 
 #=======================================================================================================================
@@ -1182,6 +1183,31 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.getView().clearResponses()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # automatically parse city and state groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def joinCityGroup(self, city, state):
+        if city:
+            already = CityGroup.lg.get_or_none(location__city=city, location__state=state)
+            if already:
+                if not self in already.members.all():
+                    already.joinMember(self)
+            else:
+                city_group = CityGroup().autoCreate(city, state)
+                city_group.joinMember(self)
+
+    def joinStateGroup(self, state):
+        if state:
+            already = StateGroup.lg.get_or_none(location__state=state)
+            if already:
+                if not self in already.members.all():
+                    already.joinMember(self)
+
+    def joinLocationGroups(self):
+        if self.location:
+            self.joinCityGroup(self.location.city, self.location.state)
+            self.joinStateGroup(self.location.state)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
     #-------------------------------------------------------------------------------------------------------------------
     def getNumSessions(self):
@@ -1223,11 +1249,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location:
             return self.location
         else:
-            location = PhysicalAddress()
-            location.save()
-            self.location = location
-            self.save()
-            return location
+            return self.newLocation()
+
+    def newLocation(self):
+        location = PhysicalAddress()
+        location.save()
+        self.location = location
+        self.save()
+        return location
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.
@@ -1727,6 +1756,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getNetworks(self):
         return self.networks.all()
+
+    def getGroupSubscriptions(self):
+        return self.getGroups().filter(ghost=False)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
@@ -3270,7 +3302,7 @@ class ViewComparison(LGModel):
                 topic_text = t.topic_text
                 topic_dict = {'text':topic_text,
                              'colors': MAIN_TOPICS_COLORS[topic_text],
-                             'mini_img': MAIN_TOPICS_MINI_IMG[topic_text],
+                             'mini_img': '/static' + MAIN_TOPICS_MINI_IMG[topic_text],
                              'order': MAIN_TOPICS_CLOCKWISE_ORDER[topic_text],
                              'result':0,
                              'num_q':0}
@@ -3424,6 +3456,10 @@ class Group(Content):
             object = self.usergroup
         elif type == 'E':
             object = self.election
+        elif type == 'S':
+            object = self.stategroup
+        elif type == 'C':
+            object = self.citygroup
         else: object = self
         return object
 
@@ -3808,7 +3844,7 @@ class Motion(Content):
         return not (self.passed or self.expired)
 
 #=======================================================================================================================
-# Network Group
+# Network Group, created by parsing facebook networks
 #
 #=======================================================================================================================
 class Network(Group):
@@ -3820,11 +3856,46 @@ class Network(Group):
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'N'
         self.system = True
-        self.group_privacy = "P"
+        self.group_privacy = "O"
         super(Network, self).autoSave()
 
 #=======================================================================================================================
-# Network Group
+# Location group, is created for specific locations (from submitted addresses)
+#
+#=======================================================================================================================
+class StateGroup(Group):
+    pass
+    def autoCreate(self, state):
+        state_text = STATES_DICT[state]
+        self.title = state_text + " State Group"
+        self.description = "A group for sharing political information relevant to the state of " + state_text + "."
+        self.group_type = 'S'
+        self.system = True
+        self.group_privacy = "O"
+        super(StateGroup, self).autoSave()
+        location = PhysicalAddress(state=state)
+        location.save()
+        self.location = location
+        self.save()
+
+class CityGroup(Group):
+    pass
+    def autoCreate(self, city, state):
+        city_state = city + ", " + state
+        self.title = city_state + " Group"
+        self.description = "A group for sharing political information relevant to " + city_state + "."
+        self.group_type = 'C'
+        self.system = True
+        self.group_privacy = "O"
+        super(CityGroup, self).autoSave()
+        location = PhysicalAddress(state=state, city=city)
+        location.save()
+        self.location = location
+        self.save()
+
+
+    #=======================================================================================================================
+# Political party group
 #
 #=======================================================================================================================
 class Party(Group):
@@ -3877,6 +3948,9 @@ class Election(Group):
     def joinRace(self, user):
         if not user in self.running.all():
             self.running.add(user)
+
+    def getCandidatesURL(self):
+        return self.get_url() + '/candidates/'
 
 ########################################################################################################################
 ################################################### Committees #########################################################

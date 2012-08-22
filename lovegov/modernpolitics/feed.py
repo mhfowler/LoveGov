@@ -72,8 +72,9 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     # append
     for r in them_responses:
         q = r.question
-        q_item = getQuestionItem(q, getResponseHelper(you_responses, q), r)
-        q_item['show_answer'] = q_item['you'] and q_item['them']
+        your_response = getResponseHelper(you_responses, q)
+        their_response = r
+        q_item = getQuestionItem(question=q, your_response=your_response, their_response=their_response)
         question_items.append(q_item)
 
     # sort
@@ -107,10 +108,13 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
 
     # sort
     questions = sortHelper(questions, feed_ranking)
-
     for q in questions:
-        q_item = getQuestionItem(q, getResponseHelper(you_responses, q), None)
-        q_item['show_answer'] = False
+        your_response = getResponseHelper(you_responses, q)
+        if your_response:
+            responses = [your_response]
+        else:
+            responses= []
+        q_item = getQuestionItem(question=q, your_response=your_response, their_response=None)
         question_items.append(q_item)
 
     # paginate
@@ -127,7 +131,6 @@ def getResponseHelper(responses, question):
         return r[0]
     else:
         return None
-
 
 def sortHelper(content, feed_ranking):
     if feed_ranking == 'N':
@@ -170,26 +173,27 @@ def responsesSortHelper(question_items, ranking):
         question_items = filter(lambda x:x['agree']==-1, question_items)
     return question_items
 
-
-def getQuestionItem(question, you_response, them_response):
-    q_item = {'question':question, 'you':you_response, 'them':them_response}
+def getQuestionItem(question, your_response, their_response):
+    responses = []
+    if their_response:
+        responses.append(their_response)
+    if your_response:
+        responses.append(your_response)
+    q_item = {'question':question, 'you':your_response, 'them':their_response, 'compare_responses':responses}
     compareQuestionItem(q_item)
     return q_item
 
-
-def compareQuestionItem(item):
-    you = item['you']
-    them = item['them']
-    to_return = 0
-    if you and them:
-        if you.most_chosen_answer_id == them.most_chosen_answer_id:
-            to_return = 1
+def compareQuestionItem(q_item):
+    your_response = q_item['you']
+    their_response = q_item['them']
+    if your_response and their_response:
+        if your_response.most_chosen_answer_id == their_response.most_chosen_answer_id:
+            agree = 1
         else:
-            to_return = -1
-    item['agree'] = to_return
-    item['disagree'] = (to_return==-1)
-    return to_return
-
+            agree = -1
+    else:
+        agree = 0
+    q_item['agree'] = agree
 
 def getFeedHelper(content, ranking, start, stop):
     if ranking == 'N':

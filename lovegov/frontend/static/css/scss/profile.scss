@@ -46,7 +46,7 @@ div.profile-page {
       float:left;
       margin-left:8px;
       margin-top:16px;
-      width:865px;
+      width:820px;
       border-top: 1px solid $red;
     }
 
@@ -111,25 +111,27 @@ div.profile-page {
 
 
         div.stats {
-          div.stats-row-one {
+          div.stats-row.first {
             margin-top:12px;
           }
-          div.stats-row-two {
-            margin-top:6px;
+          div.stats-row {
+            margin-top:15px;
           }
 
           div.stats-box {
             float:left;
-            width:40px;
-            height:40px;
+            width:60px;
+            height:60px;
             border: 1px solid $gray;
-            margin-left:15px;
             text-align:center;
             div.num {
-              @include fontSize(20px);
+              margin-top:14px;
+              @include fontSize(36px);
+              line-height:20px;
             }
             div.label {
-              @include fontSize(8px);
+              @include fontSize(12px);
+              margin-top:5px;
             }
             &:hover {
               cursor:pointer;
@@ -137,7 +139,12 @@ div.profile-page {
             }
           }
           div.left-box {
-            margin-left:0;
+            margin-left:5px;
+            float:left;
+          }
+          div.right-box {
+            float:right;
+            margin-right:5px;
           }
 
           div.gray-box {
@@ -183,12 +190,11 @@ div.profile-page {
 
     div.profile {
       width:100%;
-
       a.box-link {
         width:100%;
         background-color:$gray;
         color:$black;
-        padding:5px;
+        padding:3px;
         display:block;
         &:hover {
           background-color:$dark-gray;
@@ -196,204 +202,231 @@ div.profile-page {
         }
       }
 
+    /* profile top */
+      div.profile-top {
 
-      div.bio-statement {
-        float:left;
-        width:300px;
-
-        div.bio-text {
-          padding-left:10px;
-          margin-top:6px;
-
-          textarea.bio-inline
-          {
-            height: 60px;
-            width: 360px;
+        div.match-container {
+          float:left;
+          width:250px;
+          margin-right:80px;
+          div.web-comparison-wrapper {
+            position:relative;
+            top:-20px;
+            left:-20px;
           }
-        }
-
-      }
-
-      div.profile-about {
-        margin-left:30px;
-        float:left;
-
-        div.about-items {
-          margin-top:25px;
-        }
-        div.about-item {
-          margin-top:10px;
-        }
-        .value {
-          margin-left:15px;
-          display:inline;
-
-          img.party-label
-          {
-            margin-right: 5px;
-            margin-bttom: 10px;
-          }
-        }
-      }
-
-      div.match-container {
-        float:left;
-        span.web-match {
-          position:relative;
-          top:-20px;
-          left:-20px;
-        }
-      }
-
-      div.profile-breakdown {
-        width:100%;
-        margin-top:20px;
-
-        span.breakdown-box {
-          float:right;
-          width:240px;
-          margin-right:70px;
-          height:200px;
-
-          div.stuff {
-            //background-color:$gray;
+          a.see-breakdown {
             width:100%;
-            height:150px;
-            margin-top:10px;
-          }
-
-          a.view-all {
-            width:100%;
-            margin-top:10px;
+            float:left;
+            text-align:center;
+            color:$black;
             background-color:$light-gray;
             padding:5px;
-            padding-left:10px;
+            position: relative;
+            top: -16px;
+            left: 4px;
             &:hover {
               background-color:$dark-gray;
               cursor:pointer;
             }
           }
         }
-        span.web-match {
-          float:left;
-          position:relative;
-          top:-20px;
-        }
-        div.bio-text {
-          float:left;
-        }
-      }
 
-      span.profile-groups {
-        a.box-link {
-          margin-top:10px;
-        }
-        a.box-link.first-box {
-          margin-top:0;
-        }
-      }
-
-      span.profile-politicians {
-        a.profile-avatar {
+        div.profile-info {
           float:left;
-          margin-right:20px;
-          margin-bottom:20px;
-          &:hover {
-            cursor:pointer;
+          width:300px;
+          margin-right:30px;
+          div.bio-statement {
+            height:180px;
+            display:block;
+            width:100%;
+            div.bio-text {
+              overflow:hidden;
+              //padding-left:10px;
+              width:100%;
+              margin-top:6px;
+              div.inline-div {
+                width:100%;
+              }
+              textarea.bio-inline
+              {
+                height: 60px;
+                width: 100%;
+              }
+            }
+          }
+
+          div.profile-about {
+            width:100%;
+            display:block;
+
+            div.about-items {
+              margin-top:25px;
+            }
+            div.about-item {
+              margin-top:10px;
+            }
+            .value {
+              margin-left:15px;
+              display:inline;
+
+              img.party-label
+              {
+                margin-right: 5px;
+                margin-bttom: 10px;
+              }
+            }
           }
         }
-      }
 
-      div.profile-tabs {
-        width:100%;
-        margin-top:100px;
-        a.profile-tab {
+        div.profile-stuff {
           float:left;
-          position:relative;
-          top:-41px;
-          background-color:$light-gray;
-          padding:6px 14px;
-          @include fontSize(20px);
-          color:$black;
-          border: 1px solid $gray;
-          border-bottom: none;
-          &:hover {
-            border-color:$black;
-          }
-        }
-        a.profile-tab.clicked {
-          background-color:white;
-          z-index:1;
-          &:hover {
-            border-color:$black;
-          }
-        }
-        div.separator-line {
-          float:left;
-          border-bottom:1px solid $gray;
-          width:15px;
-        }
-        div.separator-line.end {
-          width:630px;
-        }
-      }
-    }
+          span.breakdown-box {
+            width:240px;
+            display:block;
+            height:180px;
 
-    div.profile-focus {
-      div.profile_focus {
-        display:none;
-      }
-      div.profile_focus.questions_focus {
-        display:block;
-      }
+            div.breakdown-top {
+              div.profile-header {
+                float:left;
+              }
+              a.link-all {
+                float:right;
+                margin-top:3px;
+                margin-right:3px;
+              }
+            }
 
-      div.activity {
-        width:100%;
-        div.activity-header {
-          width:100%;
-          margin-top:50px;
-          span.filter-by {
+            div.stuff {
+              width:100%;
+              height:150px;
+              margin-top:3px;
+            }
+
+            a.view-all {
+              width:100%;
+              margin-top:10px;
+              background-color:$light-gray;
+              padding:5px;
+              padding-left:10px;
+              &:hover {
+                background-color:$dark-gray;
+                cursor:pointer;
+              }
+            }
+          }
+
+          span.profile-groups {
+            a.box-link {
+              margin-top:10px;
+            }
+            a.box-link.first-box {
+              margin-top:0;
+            }
+          }
+
+          span.profile-politicians {
+            a.profile-avatar {
               float:left;
+              margin-right:20px;
+              margin-bottom:20px;
+              &:hover {
+                cursor:pointer;
+              }
+            }
           }
         }
       }
-    }
 
-
-    div.profile-questions {
-
-
-      div.breakdown-wrapper {
-        float:left;
-        width:800px;
+    /* Profile bottom */
+      div.profile-bottom {
+        position: relative;
+        top: -71px;
+        div.profile-tabs {
+          width:100%;
+          margin-top:100px;
+          a.profile-tab {
+            float:left;
+            position:relative;
+            top:-41px;
+            background-color:$light-gray;
+            padding:6px 14px;
+            @include fontSize(20px);
+            color:$black;
+            border: 1px solid $gray;
+            border-bottom: none;
+            &:hover {
+              border-color:$black;
+            }
+          }
+          a.profile-tab.clicked {
+            background-color:white;
+            z-index:1;
+            &:hover {
+              border-color:$black;
+            }
+          }
+          div.separator-line {
+            float:left;
+            border-bottom:1px solid $gray;
+            width:15px;
+          }
+          div.separator-line.end {
+            width:630px;
+          }
+        }
       }
 
-      div.has-answered-text {
-        margin-top: 20px;
-        @include fontSize(16px);
-        float:left;
+      div.profile-focus {
+        div.profile_focus {
+          display:none;
+        }
+        div.profile_focus.questions_focus {
+          display:block;
+        }
+
+        div.activity {
+          width:100%;
+          div.activity-header {
+            width:100%;
+            margin-top:50px;
+            span.filter-by {
+              float:left;
+            }
+          }
+        }
       }
 
-      div.questions-feed-wrapper {
-        margin-top:15px;
 
-        a.browse-all {
-          padding:5px;
-          padding-left:10px;
-          padding-right:10px;
-          background-color:$gray;
-          color:white;
-          margin-top:2px;
-          float:right;
-          &:hover {
-            background-color:$dark-gray;
+      div.profile-questions {
+
+        div.breakdown-wrapper {
+          float:left;
+          width:800px;
+        }
+
+        div.has-answered-text {
+          margin-top: 20px;
+          @include fontSize(16px);
+          float:left;
+        }
+
+        div.questions-feed-wrapper {
+          margin-top:15px;
+          a.browse-all {
+            padding:5px;
+            padding-left:10px;
+            padding-right:10px;
+            background-color:$gray;
             color:white;
+            margin-top:2px;
+            float:right;
+            &:hover {
+              background-color:$dark-gray;
+              color:white;
+            }
           }
         }
       }
-
-
     }
-
   }
 }

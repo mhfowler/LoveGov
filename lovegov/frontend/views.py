@@ -443,10 +443,7 @@ def home(request, vals):
 
 def groups(request, vals):
     viewer = vals['viewer']
-    #groups = viewer.getUserGroups()
-    groups = UserGroup.objects.all()
-    groups = groups[:6]
-    vals['groups'] = groups
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
     focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -608,16 +605,12 @@ def profile(request, alias=None, vals={}):
         if user_follow.rejected:
             vals['is_user_rejected'] = True
     
-    vals['profile_groups'] = user_profile.getGroups()[:4]
+    vals['profile_groups'] = user_profile.getGroupSubscriptions()[:4]
     vals['profile_politicians'] = UserProfile.objects.all()[:6]
 
-#    comparison = user_profile.getComparison(viewer)
-#    vals['to_compare'] = profile
-#    vals['comparison'] = comparison.toBreakdown()
-
-    comparison, json = viewer.getComparisonJSON(viewer)
+    comparison, web_json = user_profile.getComparisonJSON(viewer)
     vals['web_comparison'] = comparison
-    vals['web_json'] = json
+    vals['web_json'] = web_json
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
@@ -781,6 +774,15 @@ def histogramDetail(request, alias, vals={}):
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# browse all candidates of an election
+#-----------------------------------------------------------------------------------------------------------------------
+def candidates(request, alias, vals={}):
+
+    election = Election.objects.get(alias=alias)
+    vals['election'] = election
+    vals['candidates']
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link

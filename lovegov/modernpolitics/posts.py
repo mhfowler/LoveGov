@@ -563,35 +563,18 @@ def messageRep(request, vals={}):
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
-    full_address = ''
+
+    viewer = vals['viewer']
 
     address = request.POST.get('address')
-    if address:
-        full_address += address
-
     city = request.POST.get('city')
-    if city:
-        if not full_address == '':
-            full_address += ', '
-        full_address += city
-
     state = request.POST.get('state')
-    if state:
-        if not full_address == '':
-            full_address += ', '
-        full_address += state
-
     zip = request.POST.get('zip')
-    if zip:
-        if full_address == '':
-            full_address = zip
-
 
     try:
-        location = locationHelper(full_address, zip)
-        viewer = vals['viewer']
-        viewer.location = location
-        viewer.save()
+        location = viewer.getLocation()
+        locationHelper(address=address, city=city, state=state, zip=zip, location=location)
+        viewer.joinLocationGroups()
     except:
         return HttpResponse("The given address was not specific enough to determine your voting district")
 
@@ -953,7 +936,6 @@ def answer(request, vals={}):
             user.save()
         return HttpResponse("+")
 
-
 def stubAnswer(request, vals={}):
     user = vals['viewer']
     to_compare_id = request.POST.get('to_compare_id')
@@ -968,15 +950,29 @@ def stubAnswer(request, vals={}):
     explanation = request.POST['explanation']
     if explanation == 'explain your answer':
         explanation = ""
-    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
+    your_response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
-    vals['your_response'] = response
+    vals['your_response'] = your_response
+    responses = []
     if to_compare:
         their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
-        vals['their_response'] = their_response
-        vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
-        vals['to_compare'] = to_compare
-        vals['show_answer'] = response and their_response
+        if their_response:
+            responses.append(their_response)
+    responses.append(your_response)
+    vals['compare_responses'] = responses
+    vals['default_display'] = request.POST.get('default_display')
+    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+def saveAnswer(request, vals={}):
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = getPrivacy(request)
+    a_id = request.POST['a_id']
+    user = vals['viewer']
+    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
+    vals['question'] = question
+    vals['your_response'] = response
+    vals['default_display'] = request.POST.get('default_display')
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -987,11 +983,15 @@ def updateMatch(request, vals={}):
     viewer = vals['viewer']
     to_compare_alias = request.POST['to_compare_alias']
     to_compare = aliasToObject(to_compare_alias)
-    comparison = to_compare.getComparison(viewer)
-    vals['comparison_object'] = comparison
-    vals['to_compare'] = to_compare
-    vals['comparison'] = comparison.toBreakdown()
     display = request.POST['display']
+    vals['to_compare'] = to_compare
+    if display == 'comparison_web':
+        comparison, web_json = to_compare.getComparisonJSON(viewer)
+        vals['web_json'] = web_json
+    else:
+        comparison = to_compare.getComparison(viewer)
+        vals['comparison_object'] = comparison
+        vals['comparison'] = comparison.toBreakdown()
     if display == 'vertical_breakdown':
         html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
     elif display == 'horizontal_breakdown':
@@ -1001,6 +1001,8 @@ def updateMatch(request, vals={}):
         html = ajaxRender('site/pages/profile/sidebar_match.html', vals, request)
     elif display == 'has_answered':
         html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
+    elif display == 'comparison_web':
+        html = ajaxRender('site/pages/qa/comparison_web.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1622,6 +1624,7 @@ def getQuestions(request, vals):
             feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
+    vals['default_display'] = request.POST.get('default_display')
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
