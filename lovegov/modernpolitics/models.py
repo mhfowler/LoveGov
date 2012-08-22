@@ -2767,10 +2767,6 @@ class Legislation(Content):
             self.creator = creator
         super(Legislation,self).autoSave(creator,privacy)
 
-    def getTypeName(self):
-        bill_type_full = re.search()self.bill_type.sub()
-        return
-
 #=======================================================================================================================
 #
 # LegislationSubject

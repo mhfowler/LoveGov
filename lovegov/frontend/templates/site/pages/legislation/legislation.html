@@ -6,62 +6,65 @@
 <div class="main-block">
     <div class="legislation_filter">
         <div class="filter_prompt">
-            <h5 class="no-hover">
+            <h6 class="no-hover">
                 filter legislation by:
-            </h5>
+            </h6>
         </div>
-        <div class="session_filter unchecked" data-selector="session_selector">
-            <input type="checkbox" class="filter_box" id="session_filter"><label class="filter_label" for="session_filter"><h5><span>session</span></h5></label>
+        <div class="session_filter filter_box unchecked" data-selector="session_selector">
+            <span>session</span>
         </div>
-        <div class="type_filter unchecked" data-selector="type_selector">
-            <input type="checkbox" class="filter_box" id="type_filter"><label class="filter_label" for="type_filter"><h5><span>type</span></h5></label>
+        <div class="type_filter filter_box unchecked" data-selector="type_selector">
+            <span>type</span>
         </div>
-        <div class="subject_filter unchecked" data-selector="subject_selector">
-            <input type="checkbox" class="filter_box" id="subject_filter"><label class="filter_label" for="subject_filter"><h5><span>subjects</span></h5></label>
+        <div class="subject_filter filter_box unchecked" data-selector="subject_selector">
+            <span>subjects</span>
         </div>
-        <div class="committee_filter unchecked" data-selector="committee_selector">
-            <input type="checkbox" class="filter_box" id="committee_filter"><label class="filter_label" for="committee_filter"><h5><span>committees</span></h5></label>
+        <div class="committee_filter filter_box unchecked" data-selector="committee_selector">
+            <span>committees</span>
         </div>
-        <div class="introduced_filter unchecked" data-selector="introduced_selector">
-            <input type="checkbox" class="filter_box" id="introduced_filter"><label class="filter_label" for="introduced_filter"><h5><span>date introduced</span></h5></label>
+        <div class="introduced_filter filter_box unchecked" data-selector="introduced_selector">
+            <span>dates</span>
         </div>
-        <div class="sponsor_filter unchecked" data-selector="sponsor_selector">
-            <input type="checkbox" class="filter_box" id="sponsor_filter"><label class="filter_label" for="sponsor_filter"><h5><span>sponsor</span></h5></label>
-        </div>
-        <div class="myrepsvotes_filter checked">
-            <input type="checkbox" class="filter_box" id="myrepsvotes_filter"><label class="filter_label" for="myrepsvotes_filter"><h5><span>include my representatives' votes</span></h5></label>
+        <div class="sponsor_filter filter_box unchecked" data-selector="sponsor_selector">
+            <span>sponsor</span>
         </div>
     </div>
     <div class="legislation_selector">
         <div class="session_selector">
-            {% for session in sessions %}
-            <ul>
-                <li><input type="checkbox" id="session_{{ session }}"><label for="session_{{ session }}"><h5><span>Congressional Session {{ session }}</span></h5></label></li>
-            </ul>
-            {% endfor %}
+            <select multiple class="session_select">
+                <optgroup label="Congress Sessions" id="bill_sessions">
+                    {% for session in sessions %}
+                        <option class="bill-sessions" value='{{ session }}'>{{ session }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
         </div>
         <div class="type_selector">
-            {% for type in types %}
-            <ul>
-                <li><input type="checkbox" id={{ type }}><label for={{ type }}><h5><span>{{ type }}</span></h5></label></li>
-            </ul>
-            {% endfor %}
+            <select multiple class="type_select">
+                <optgroup label="Bill Types" id="bill_types">
+                    {% for type in types %}
+                        <option class="bill-types" value='{{ type }}'>{{ type }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
         </div>
         <div class="subject_selector">
             <select multiple class="subject_select">
                 <optgroup label="Bill Subjects" id="bill_subjects">
                     {% for subject in subjects %}
-                        <option class="bill-subjects" value='{{ subject }}'>{{ subject.name }}</option>
+                        <option class="bill-subjects" value='{{ subject.related_name }}'>{{ subject.related_name }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
         </div>
         <div class="committee_selector">
-            {% for committee in committees %}
-            <ul>
-                <li><input type="checkbox" id={{ committee }}><label for={{ committee }}><h5><span>{{ committee }}</span></h5></label></li>
-            </ul>
-            {% endfor %}
+            <select multiple class="committee_select">
+                <optgroup label="Committees" id="bill-committees">
+                    {% for committee in committees %}
+                        <option class="committees" value='{{ committee.related_name }}'>{{ committee.related_name }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
         </div>
         <div class="introduced_selector">
             <ul>
@@ -75,33 +78,56 @@
         </div>
         <div class="sponsor_selector">
             <ul>
-                <li><input type="form" id="sponsor_body" placeholder="Select a representative body"><label><h5>sponsor body</h5></label></li>
-                <li><input type="form" id="sponsor_name" placeholder="Search for a sponsor"><label><h5>sponsor name</h5></label></li>
-                <li><input type="form" id="sponsor_party" placeholder="Choose a party or movement"><label><h5>sponsor party</h5></label></li>
-                <li><input type="form" id="sponsor_district" placeholder="Choose a district"><label><h5>sponsor district</h5></label></li>
+                <li>
+                    <select multiple class="sponsor_select_body">
+                        <optgroup label="Sponsor body" id="bill_sponsor_body">
+                                <option class="sponsors" value='Senate'>US Senate</option>
+                                <option class="sponsors" value='House'>US House of Representatives</option>
+                        </optgroup>
+                    </select>
+                </li>
+                <li>
+                    <select multiple class="sponsor_select_name">
+                        <optgroup label="Sponsor name" id="bill_sponsor_name">
+                            {% for sponsor in sponsors %}
+                                <option class="sponsors" value='{{ sponsor.get_name }}'>{{ sponsor.get_name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </li>
+                <li>
+                    <select multiple class="sponsor_select_party">
+                        <optgroup label="Sponsor party" id="bill_sponsor_party">
+                            {% for sponsor in sponsors %}
+                                <option class="sponsors" value='{{ sponsor.getParty }}'>{{ sponsor.getParty }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </li>
+                <li>
+                    <select multiple class="sponsor_select_district">
+                        <optgroup label="Sponsor district" id="bill_sponsor_district">
+                            {% for sponsor in sponsors %}
+                                <option class="sponsors" value='{{ sponsor.getDistrict }}'>{{ sponsor.getDistrict }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </li>
             </ul>
         </div>
     </div>
 </div>
-<div class="div-filter-button">
-        <span>
-            Filter
-        </span>
-</div>
 <div class="filter-results">
     <div class="results-heading-">
-        <h5 class="no-hover">
+        <h6 class="no-hover">
             results:
-        </h5>
+        </h6>
         <p>
         <div class="legislation-feed-wrapper">
             {% include 'site/pages/legislation/feed_legislation.html' with special_feed="getLegislation" %}
         </div>
         </p>
     </div>
-</div>
-<div class="filter-congress-feed">
-    <input type="checkbox" id="filter-congress-feed"><label for="filter-congress-feed"><h5 class="no-hover">filter feed for my regions</h5></label>
 </div>
 <!-- Javascript -->
 <script> rebind='legislation'; </script>

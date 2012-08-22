@@ -4,14 +4,10 @@
 
 
 div.main-block {
-  margin-top: 40px;
+  margin-top: 20px;
   margin-left: 140px;
   height: auto;
   width: 820px;
-  border-bottom: solid;
-  border-top: solid;
-  border-color: #ef503b;
-  border-width: 1px;
   padding-left: 5px;
   padding-top: 0px;
 
@@ -20,38 +16,120 @@ div.main-block {
     margin-left: 5px;
     margin-top: 5px;
     height: auto;
-    width: 330px;
+    width: 800px;
     padding-left: 9px;
 
     div.filter_prompt {
-      margin-bottom: 13px;
+      float: left;
+      width: 150px;
+      margin-bottom: 9px;
+      margin-right: 5px;
     }
 
     div.session_filter {
+      display: inline-block;
+      width: 85px;
       margin-bottom: 9px;
+      padding-top: 5px;
+      margin-right: 5px;
+      text-align: center;
+      border-bottom: 5px solid $gray;
+
+      &:hover {
+        background-color: $gray;
+      }
+
+      &.clicked {
+        background-color: $gray;
+      }
     }
 
     div.type_filter {
+      display: inline-block;
+      width: 85px;
       margin-bottom: 9px;
+      padding-top: 5px;
+      margin-right: 5px;
+      text-align: center;
+      border-bottom: 5px solid $gray;
+
+      &:hover {
+        background-color: $gray;
+      }
+
+      &.clicked {
+        background-color: $gray;
+      }
     }
 
     div.subject_filter {
+      display: inline-block;
+      width: 85px;
       margin-bottom: 9px;
+      padding-top: 5px;
+      margin-right: 5px;
+      text-align: center;
+      border-bottom: 5px solid $gray;
+      &:hover {
+        background-color: $gray;
+      }
+
+      &.clicked {
+        background-color: $gray;
+      }
     }
 
     div.committee_filter {
+      display: inline-block;
+      width: 85px;
       margin-bottom: 9px;
+      padding-top: 5px;
+      margin-right: 5px;
+      text-align: center;
+      border-bottom: 5px solid $gray;
+
+      &:hover {
+        background-color: $gray;
+      }
+
+      &.clicked {
+        background-color: $gray;
+      }
     }
 
     div.introduced_filter {
+      display: inline-block;
+      width: 85px;
       margin-bottom: 9px;
+      padding-top: 5px;
+      margin-right: 5px;
+      text-align: center;
+      border-bottom: 5px solid $gray;
+
+      &:hover {
+        background-color: $gray;
+      }
+
+      &.clicked {
+        background-color: $gray;
+      }
     }
 
     div.sponsor_filter {
+      display: inline-block;
+      width: 85px;
       margin-bottom: 9px;
+      padding-top: 5px;
+      margin-right: 5px;
+      text-align: center;
+      border-bottom: 5px solid $gray;
 
-      div.myrepsvotes_filter {
-        display:block;
+      &:hover {
+        background-color: $gray;
+      }
+
+      &.clicked {
+        background-color: $gray;
       }
     }
   }
@@ -67,12 +145,20 @@ div.main-block {
       margin-left: 0px;
       margin-top: 0px;
       height: auto;
-      width: 400px;
+      width: 350px;
       padding-left: 0px;
       z-index:0;
 
-      ul, li {
-        list-style-type: none;
+      select.session_select {
+        width: 350px;
+
+        #bill-sessions {
+          color: $blue;
+        }
+      }
+
+      div.select2-container {
+        width: 350px;
       }
     }
 
@@ -80,25 +166,41 @@ div.main-block {
       margin-left: 0px;
       margin-top: 0px;
       height: auto;
-      width: 400px;
+      width: 350px;
       padding-left: 0px;
       z-index:1;
 
-      ul, li {
-        list-style-type: none;
+      select.type_select {
+        width: 350px;
+
+        #bill-types {
+          color: $blue;
+        }
+      }
+
+      div.select2-container {
+        width: 350px;
       }
     }
 
     div.subject_selector {
       margin-left: 0px;
       margin-top: 0px;
-      height: auto;
-      width: 400px;
+      min-height: 30px;
+      width: 300px;
       padding-left: 0px;
       z-index:2;
 
-      ul, li {
-        list-style-type: none;
+      select.subject_select {
+        width: 300px;
+
+        #bill-subjects {
+          color: $blue;
+        }
+      }
+
+      div.select2-container {
+        width: 300px;
       }
     }
 
@@ -106,12 +208,20 @@ div.main-block {
       margin-left: 0px;
       margin-top: 0px;
       height: auto;
-      width: 400px;
+      width: 350px;
       padding-left: 0px;
       z-index:3;
 
-      ul, li {
-        list-style-type: none;
+      select.committee_select {
+        width: 350px;
+
+        #bill-committees {
+          color: $blue;
+        }
+      }
+
+      div.select2-container {
+        width: 350px;
       }
     }
 
@@ -119,7 +229,7 @@ div.main-block {
       margin-left: 0px;
       margin-top: 0px;
       height: auto;
-      width: 400px;
+      width: 350px;
       padding-left: 0px;
       z-index:4;
 
@@ -132,7 +242,7 @@ div.main-block {
       margin-left: 0px;
       margin-top: 0px;
       height: auto;
-      width: 400px;
+      width: 350px;
       padding-left: 0px;
       z-index:5;
 
@@ -141,20 +251,40 @@ div.main-block {
         li {
           list-style-type:none;
 
-          #sponsor_body {
+          select.sponsor_select_body {
             display: block;
+            width: 300px;
           }
 
-          #sponsor_name {
-            display: block;
+          div.select2-container {
+            width: 300px;
           }
 
-          #sponsor_party {
+          select.sponsor_select_name {
             display: block;
+            width: 300px;
           }
 
-          #sponsor_district {
+          div.select2-container {
+            width: 300px;
+          }
+
+          select.sponsor_select_party {
             display: block;
+            width: 300px;
+          }
+
+          div.select2-container {
+            width: 300px;
+          }
+
+          select.sponsor_select_district {
+            display: block;
+            width: 300px;
+          }
+
+          div.select2-container {
+            width: 300px;
           }
         }
       }

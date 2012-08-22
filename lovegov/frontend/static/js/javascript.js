@@ -1916,10 +1916,41 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
-function loadBillSelect2()
-{
-    $('select.subject_select').select2({
+bind( '.filter_box' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+    }
+    else {
+        $(this).addClass('clicked');
+    }
+});
+
+
+function loadBillSelect2() {
+    $('.session_select').select2({
+        placeholder: "search for bill sessions"
+    });
+    $('.type_select').select2({
+        placeholder: "search for bill types"
+    });
+    $('.subject_select').select2({
         placeholder: "search for bill subjects"
+    });
+    $('.committee_select').select2({
+        placeholder: "search for bill committees"
+    });
+    $('.sponsor_select_body').select2({
+        placeholder: "search for bill sponsor body"
+    });
+    $('.sponsor_select_name').select2({
+        placeholder: "search for bill sponsor name"
+    });
+    $('.sponsor_select_party').select2({
+        placeholder: "search for bill sponsor party"
+    });
+    $('.sponsor_select_district').select2({
+        placeholder: "search for bill sponsor district"
     });
 }
 
@@ -1928,18 +1959,19 @@ function showSelectors() {
 }
 
 function showLegSelectors() {
-    $('.filter_box').change(function() {
-        if ($(this).closest('div').hasClass('unchecked')) {
-            $(this).closest('div').removeClass('unchecked');
-            $(this).closest('div').addClass('checked');
-            var selector = $("." + $(this).closest('div').data('selector'));
+    $('.filter_box').click(function(event) {
+        event.preventDefault();
+        if ($(this).hasClass('unchecked')) {
+            $(this).removeClass('unchecked');
+            $(this).addClass('checked');
+            var selector = $("." + $(this).data('selector'));
             selector.siblings().hide('fast');
             selector.show('fast');
         }
         else {
-            $(this).closest('div').removeClass('checked');
-            $(this).closest('div').addClass('unchecked');
-            var selector = $("." + $(this).closest('div').data('selector'));
+            $(this).removeClass('checked');
+            $(this).addClass('unchecked');
+            var selector = $("." + $(this).data('selector'));
             selector.siblings().hide('fast');
             selector.show('fast');
         }
