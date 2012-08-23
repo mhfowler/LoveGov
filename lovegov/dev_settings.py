@@ -75,8 +75,8 @@ if USE_S3:
     STATICFILES_DIRS = base_settings.STATICFILES_DIRS
     STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
-    #from compressor_settings import *
-    #COMPRESS_ENABLED = False
+    from compressor_settings import *
+    COMPRESS_ENABLED = False
 
 else:
     # URL prefix for static files.
@@ -85,7 +85,9 @@ else:
     ADMIN_MEDIA_PREFIX = base_settings.ADMIN_MEDIA_PREFIX
     STATICFILES_DIRS = base_settings.STATICFILES_DIRS
     STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
-    #COMPRESS_ENABLED = False
+    from compressor_settings import *
+    COMPRESS_URL = "/fake/"
+    COMPRESS_ENABLED = False
 
 
 ########################################################################################################################

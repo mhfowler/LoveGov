@@ -29,7 +29,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'debug_toolbar',
     'django_extensions',
-    #'compressor',
+    'compressor',
 
     # internal
     'lovegov.modernpolitics',
