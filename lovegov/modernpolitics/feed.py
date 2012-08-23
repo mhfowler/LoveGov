@@ -228,9 +228,18 @@ def getLegislationItems(session_set, type_set, feed_start):
     if committee_set:
         legislation_items = legislation_items.filter(
             committees__in=committee_set)
-    if sponsor_set:
+    if sponsor_body_set:
         legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_set)
+            sponsor__in=sponsor_body_set)
+    if sponsor_name_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_name_set)
+    if sponsor_party_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_party_set)
+    if sponsor_district_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_district_set)
 
     # paginate
     legislation_items = legislation_items[feed_start:feed_start+10]

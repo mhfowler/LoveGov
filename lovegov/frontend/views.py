@@ -921,9 +921,10 @@ def legislation_helper (request, vals={}):
     type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
     vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
     vals['subjects'] = LegislationSubject.objects.all()
-    vals['committees'] = Committee.objects.filter(legislation_committees__isnull=False)
+    vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
+    vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
 
 

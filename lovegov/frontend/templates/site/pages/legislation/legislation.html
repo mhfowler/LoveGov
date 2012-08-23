@@ -31,10 +31,10 @@
     </div>
     <div class="legislation_selector">
         <div class="session_selector">
-            <select multiple class="session_select">
+            <select multiple class="session_select" data-selector="session_filter">
                 <optgroup label="Congress Sessions" id="bill_sessions">
-                    {% for session in sessions %}
-                        <option class="bill-sessions" value='{{ session.id }}'>{{ session.session }}</option>
+                    {% for session_number in sessions %}
+                        <option class="bill-sessions" value='{{ session_number.id }}'>{{ session_number.session }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -49,7 +49,7 @@
             </select>
         </div>
         <div class="subject_selector">
-            <select multiple class="subject_select">
+            <select multiple class="subject_select" data-selector="subject_filter">
                 <optgroup label="Bill Subjects" id="bill_subjects">
                     {% for subject in subjects %}
                         <option class="bill-subjects" value='{{ subject.id }}'>{{ subject.name }}</option>
@@ -58,28 +58,25 @@
             </select>
         </div>
         <div class="committee_selector">
-            <select multiple class="committee_select">
+            <select multiple class="committee_select" data-selector="committee_filter">
                 <optgroup label="Committees" id="bill-committees">
-                    {% for committee in committees %}
-                        <option class="committees" value='{{ committee.id }}'>{{ committee.title }}</option>
+                    {% for committee_title in committees %}
+                        <option class="committees" value='{{ committee_title.id }}'>{{ committee_title.title }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
         </div>
         <div class="introduced_selector">
-            <ul>
-                <li><input type="form" class="datepicker" id="datepicker1" placeholder="Choose a date"><label for="datepicker1"><h6>from</h6></label>
-                    <input type="form" class="datepicker" id="datepicker2" placeholder="Choose a date"><label for="datepicker2"><h6>to</h6></label></li>
-                <li><input type="form" class="datepicker" id="datepicker3" placeholder="Choose a date"><label for="datepicker3"><h6>from</h6></label>
-                    <input type="form" class="datepicker" id="datepicker4" placeholder="Choose a date"><label for="datepicker4"><h6>to</h6></label></li>
-                <li><input type="form" class="datepicker" id="datepicker5" placeholder="Choose a date"><label for="datepicker5"><h6>from</h6></label>
-                    <input type="form" class="datepicker" id="datepicker6" placeholder="Choose a date"><label for="datepicker6"><h6>to</h6></label></li>
-            </ul>
+            <select class="introduced_select" data-selector="introduced_filter">
+                <optgroup label="Committees" id="introduced-dates">
+                    <option class="introduced" value='{{ datetime }}'></option>
+                </optgroup>
+            </select>
         </div>
         <div class="sponsor_selector">
             <ul>
                 <li>
-                    <select multiple class="sponsor_select_body">
+                    <select multiple class="sponsor_select_body" data-selector="sponsor_filter">
                         <optgroup label="Sponsor body" id="bill_sponsor_body">
                                 <option class="sponsors" value='Senate'>US Senate</option>
                                 <option class="sponsors" value='House'>US House of Representatives</option>
@@ -87,25 +84,25 @@
                     </select>
                 </li>
                 <li>
-                    <select multiple class="sponsor_select_name">
+                    <select multiple class="sponsor_select_name" data-selector="sponsor_filter">
                         <optgroup label="Sponsor name" id="bill_sponsor_name">
                             {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.id }}'>{{ sponsor.first_name }} {{ sponsor.last_name }}</option>
+                                <option class="sponsors" value='{{ sponsor.id }}'>{{ sponsor.get_name }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>
                 </li>
                 <li>
-                    <select multiple class="sponsor_select_party">
+                    <select multiple class="sponsor_select_party" data-selector="sponsor_filter">
                         <optgroup label="Sponsor party" id="bill_sponsor_party">
-                            {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.parties.id }}'>{{ sponsor.parties.title }}</option>
+                            {% for sponsor_party in sponsor_parties %}
+                                <option class="sponsors" value='{{ sponsor_party.id }}'>{{ sponsor_party.title }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>
                 </li>
                 <li>
-                    <select multiple class="sponsor_select_district">
+                    <select multiple class="sponsor_select_district" data-selector="sponsor_filter">
                         <optgroup label="Sponsor district" id="bill_sponsor_district">
                             {% for sponsor in sponsors %}
                                 <option class="sponsors" value='{{ sponsor.state }}'>{{ sponsor.state }}</option>

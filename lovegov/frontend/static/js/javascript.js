@@ -793,16 +793,67 @@ function getFeed(container) {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
     }
     else if (feed == 'getLegislation') {
-        var session = $('select.session_select').val();
-        var session_json = JSON.stringify(session);
-        var type = $('select.type_select').val();
-        var type_json = JSON.stringify(type);
-        var committee = $('select.committee_select').val();
-        var committee_json = JSON.stringify(committee);
-        var sponsor = $('select.sponsor_select').val();
-        var sponsor_json = JSON.stringify(sponsor);
+        if ($("." + $('select.session_select').data('selector')).hasClass('clicked')) {
+            var session = $(this).val();
+            var session_json = JSON.stringify(session);
+        }
+        else {
+            var session = null;
+        }
+        if ($("." + $('select.type_select').data('selector')).hasClass('clicked')) {
+            var type = $(this).val();
+            var type_json = JSON.stringify(type);
+        }
+        else {
+            var type = null;
+        }
+        if ($("." + $('select.committee_select').data('selector')).hasClass('clicked')) {
+            var committee = $(this).val();
+            var committee_json = JSON.stringify(committee);
+        }
+        else {
+            var committee = null;
+        }
+        if ($("." + $('select.introduced_select').data('selector')).hasClass('clicked')) {
+            var introduced = $(this).val();
+            var introduced_json = JSON.stringify(introduced);
+        }
+        else {
+            var introduced = null;
+        }
+        if ($("." + $('select.sponsor_select_body').data('selector')).hasClass('clicked')) {
+            var sponsor_body = $(this).val();
+            var sponsor_body_json = JSON.stringify(sponsor_body);
+        }
+        else {
+            var sponsor_body = null;
+        }
+        if ($("." + $('select.sponsor_select_name').data('selector')).hasClass('clicked')) {
+            var sponsor_name = $(this).val();
+            var sponsor_name_json = JSON.stringify(sponsor_name);
+        }
+        else {
+            var sponsor_name = null;
+        }
+        if ($("." + $('select.sponsor_select_party').data('selector')).hasClass('clicked')) {
+            var sponsor_party = $(this).val();
+            var sponsor_party_json = JSON.stringify(sponsor_party);
+        }
+        else {
+            var sponsor_party = null;
+        }
+        if ($("." + $('select.sponsor_select_district').data('selector')).hasClass('clicked')) {
+            var sponsor_district = $(this).val();
+            var sponsor_district_json = JSON.stringify(sponsor_district);
+        }
+        else {
+            var sponsor_district = null;
+        }
+
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
-            'type_set':type_json, 'committee_set':committee_json, 'sponsor_set':sponsor_json};
+            'type_set':type_json, 'committee_set':committee_json, 'sponsor_body_set':sponsor_body_json,
+            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
+            'sponsor_district_set':sponsor_district_json};
     }
     action({
             data: data,
@@ -1955,6 +2006,9 @@ function loadBillSelect2() {
     $('.committee_select').select2({
         placeholder: "search for bill committees"
     });
+    $('.introduced_select').select2({
+        placeholder: "search by date period"
+    });
     $('.sponsor_select_body').select2({
         placeholder: "search for bill sponsor body"
     });
@@ -1998,7 +2052,7 @@ function shortenLongText() {
     var moretext = "read more";
     var lesstext = "less";
     if ($('.long_text').hasClass("bill_detail")) {
-        var showChar = 300;
+        var showChar = 300;q
     }
     else {
         var showChar = 150;
