@@ -1,0 +1,1 @@
+nohup ./optimizeCurrentCongressSession.py > /log/legislation/legislation_log.txt &

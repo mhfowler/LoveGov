@@ -1820,23 +1820,16 @@ def initializeStateGroups():
 # optimizations for retrieving reps and senators
 #-----------------------------------------------------------------------------------------------------------------------
 def setOfficeTypeBooleans():
-    print "+RUNNING+ syncOfficeBooleans"
+    print "+RUNNING+ syncOfficeTypeBooleans"
     count = 0
     for o in Office.objects.all():
-        o.setBooleans()
-        if  not count%20:
-            print str(count)
         count += 1
         o.setBooleans()
-    print "representatives offices: " + str(Office.objects.filter(representative=True).count())
-    print "senator offices: " + str(Office.objects.filter(senator=True).count())
 
 def setOfficeHeldCurrent():
     print "+RUNNING+ syncOfficeHeldCurrent"
     count = 0
     for o in OfficeHeld.objects.all():
-        if  not count%20:
-            print str(count)
         count += 1
         o.setCurrent()
 
@@ -1844,29 +1837,39 @@ def setPoliticiansCurrentlyElected():
     clearPoliticiansCurrentlyElected()
     print "+RUNNING+ setPoliticianCurrentlyElected"
     p_ids = []
-    for o in OfficeHeld.objects.all():
-        if o.current:
-            politician = o.user
-            p_id = politician.id
-            if not p_id in p_ids:
-                print "+II+ setting primary role for " + politician.get_name()
-                p_ids.append(politician.id)
-                politician.currently_elected = True
-                politician.primary_role = o
-                politician.save()
-                office_location = o.office.location
-                if office_location:
-                    location = politician.getLocation()
-                    location.clear()
-                    location.state = office_location.state
-                    location.district = office_location.district
-                    location.save()
-            else:
-                print "+WW+ " + politician.get_name() + " had two currently occupied offices"
-    print "representatives: " + str(UserProfile.objects.filter(elected_official=True, primary_role__office__representative=True).count())
-    print "senators: " + str(UserProfile.objects.filter(elected_official=True, primary_role__office__senator=True).count())
+    for o in OfficeHeld.objects.filter(confirmed=True, current=True):
+        politician = o.user
+        p_id = politician.id
+        if not p_id in p_ids:
+            print "+II+ setting primary role for " + politician.get_name()
+            p_ids.append(politician.id)
+            politician.currently_elected = True
+            politician.primary_role = o
+            politician.save()
+            office_location = o.office.location
+            if office_location:
+                location = politician.getLocation()
+                location.clear()
+                location.state = office_location.state
+                location.district = office_location.district
+                location.save()
+        else:
+            print "+WW+ +BAD+ " + politician.get_name() + " had two currently occupied offices"
+    print '============================================================='
+    print '============================================================='
+    print '---                       RESULT                          ---'
+    print '============================================================='
+    print '============================================================='
+    print "offices: " + str(Office.objects.count())
+    print "representatives offices: " + str(Office.objects.filter(representative=True).count())
+    print "senator offices: " + str(Office.objects.filter(senator=True).count())
+    print "office_helds: " + str(OfficeHeld.objects.count())
+    print "current office_helds: " + str(OfficeHeld.objects.filter(current=True).count())
+    print "politicians all time: " + str(UserProfile.objects.filter(politician=True).count())
     print "elected officials all time: " + str(UserProfile.objects.filter(elected_official=True).count())
     print "currently elected: " + str(UserProfile.objects.filter(currently_elected=True).count())
+    print "current representatives: " + str(UserProfile.objects.filter(currently_elected=True, primary_role__office__representative=True).count())
+    print "current senators: " + str(UserProfile.objects.filter(currently_elected=True, primary_role__office__senator=True).count())
 
 def clearPoliticiansCurrentlyElected():
     print "+RUNNING+ clearPoliticianCurrentlyElected"
@@ -1877,7 +1880,7 @@ def clearPoliticiansCurrentlyElected():
         x.primary_role = None
         x.save()
 
-def optimizeRepsAndSens():
+def optimizeCurrentCongressSession():
     setOfficeTypeBooleans()
     setOfficeHeldCurrent()
     setPoliticiansCurrentlyElected()
