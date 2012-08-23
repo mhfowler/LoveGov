@@ -52,27 +52,27 @@ MIDDLEWARE_CLASSES = base_settings.MIDDLEWARE_CLASSES
 #
 ########################################################################################################################
 
-"""
-import s3_configuration
-AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
-AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
 
-DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
-STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
+#import s3_configuration
+#AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
+#AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
+#AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
+#
+#DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+#STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
+#
+#DEFAULT_S3_PATH = "media"
+#STATIC_S3_PATH = "static"
+#
+#MEDIA_ROOT = '/%s/' % DEFAULT_S3_PATH
+#MEDIA_URL = 'https://%s.s3.amazonaws.com/media' % AWS_STORAGE_BUCKET_NAME
+#STATIC_ROOT = "/%s/" % STATIC_S3_PATH
+#STATIC_URL = 'https://%s.s3.amazonaws.com/static' % AWS_STORAGE_BUCKET_NAME
+#ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+#
+#STATICFILES_DIRS = base_settings.STATICFILES_DIRS
+#STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
-DEFAULT_S3_PATH = "media"
-STATIC_S3_PATH = "static"
-
-MEDIA_ROOT = '/%s/' % DEFAULT_S3_PATH
-MEDIA_URL = 'https://%s.s3.amazonaws.com/media' % AWS_STORAGE_BUCKET_NAME
-STATIC_ROOT = "/%s/" % STATIC_S3_PATH
-STATIC_URL = 'https://%s.s3.amazonaws.com/static' % AWS_STORAGE_BUCKET_NAME
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
-STATICFILES_DIRS = base_settings.STATICFILES_DIRS
-STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
-"""
 
 # URL prefix for static files.
 STATIC_URL = '/static'
@@ -91,6 +91,7 @@ STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
 from compressor_settings import *
 COMPRESS_ENABLED = False
+
 
 ########################################################################################################################
 #    templates
