@@ -402,6 +402,7 @@ def initializeCongressNetwork():
         network = Network(alias="congress")
         network.title = "Congress"
         network.summary = "all members of Congress."
+        network.system = True
         network.autoSave()
         # join all members
         congress = UserProfile.objects.filter(elected_official=True)

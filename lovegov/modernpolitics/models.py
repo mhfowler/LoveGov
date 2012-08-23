@@ -1665,7 +1665,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not Group.lg.get_or_none(id=self.i_follow_id):
             title = "People who " + self.get_name() + " follows"
             group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_feed=False)
-            group.ghost = True
+            group.system = True
+            group.hidden = True
             group.autoSave()
             self.i_follow = group
             self.save()
@@ -1677,8 +1678,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def createFollowMeGroup(self):
         if not Group.lg.get_or_none(id=self.follow_me_id):
             title = "People who follow " + self.get_name()
-            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', system=True, in_search=False, in_feed=False)
-            group.ghost = True
+            group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', in_search=False, in_feed=False)
+            group.system = True
+            group.hidden = True
             group.autoSave()
             self.follow_me = group
             self.save()
@@ -3524,10 +3526,11 @@ class Group(Content):
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
     # group type
-    group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
-    system = models.BooleanField(default=False)
-    ghost = models.BooleanField(default=False)
+    group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')   # for non-system groups, is it open or invite-only?
+    system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
+    hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
+    autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
     # democratic groups
     democratic = models.BooleanField(default=False)       # if false, fields below have no importance
     government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
@@ -3653,7 +3656,7 @@ class Group(Content):
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
-        if not group_joined.confirmed and not group_joined.group.ghost:
+        if not group_joined.confirmed and not group_joined.group.system:
             user.num_groups += 1
             user.save()
         group_joined.confirm()
@@ -3965,7 +3968,7 @@ class Network(Group):
     # autosave any network
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'N'
-        self.system = True
+        self.autogen = True
         self.group_privacy = "O"
         super(Network, self).autoSave()
 
@@ -3980,7 +3983,7 @@ class StateGroup(Group):
         self.title = state_text + " State Group"
         self.description = "A group for sharing political information relevant to the state of " + state_text + "."
         self.group_type = 'S'
-        self.system = True
+        self.autogen = True
         self.group_privacy = "O"
         super(StateGroup, self).autoSave()
         location = PhysicalAddress(state=state)
@@ -3995,7 +3998,7 @@ class CityGroup(Group):
         self.title = city_state + " Group"
         self.description = "A group for sharing political information relevant to " + city_state + "."
         self.group_type = 'C'
-        self.system = True
+        self.autogen = True
         self.group_privacy = "O"
         super(CityGroup, self).autoSave()
         location = PhysicalAddress(state=state, city=city)
@@ -4003,8 +4006,7 @@ class CityGroup(Group):
         self.location = location
         self.save()
 
-
-    #=======================================================================================================================
+#=======================================================================================================================
 # Political party group
 #
 #=======================================================================================================================

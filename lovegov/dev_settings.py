@@ -51,6 +51,8 @@ MIDDLEWARE_CLASSES = base_settings.MIDDLEWARE_CLASSES
 #    static and media
 #
 ########################################################################################################################
+
+"""
 import s3_configuration
 AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
@@ -69,6 +71,22 @@ STATIC_URL = 'https://%s.s3.amazonaws.com/static' % AWS_STORAGE_BUCKET_NAME
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_DIRS = base_settings.STATICFILES_DIRS
+STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
+"""
+
+# URL prefix for static files.
+STATIC_URL = base_settings.STATIC_URL
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
+MEDIA_URL =  base_settings.MEDIA_URL
+
+# URL prefix for admin static files -- CSS, JavaScript and images. Make sure to use a trailing slash.
+ADMIN_MEDIA_PREFIX = base_settings.ADMIN_MEDIA_PREFIX
+
+# Additional locations of static files
+STATICFILES_DIRS = base_settings.STATICFILES_DIRS
+
+# List of finder classes that know how to find static files in various locations.
 STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 
 from compressor_settings import *

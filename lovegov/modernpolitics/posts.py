@@ -1097,7 +1097,7 @@ def getNextPollQuestion(request, vals={}):
 def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
     viewer = vals['viewer']
-    group = Group.objects.get(id=request.POST['g_id'])
+    group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast()  # Parties have a slightly different joinMember
 
     response = joinGroupAction(group,viewer,getPrivacy(request))
@@ -1111,7 +1111,7 @@ def joinGroupResponse(request, vals={}):
     viewer = vals['viewer']
 
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
-    group = Group.objects.get(id=request.POST['g_id'])
+    group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast() # Parties have a slightly different joinMember
 
     if viewer not in group.admins.all():
@@ -1139,7 +1139,7 @@ def groupInviteResponse(request, vals={}):
         LGException("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
         return HttpResponseBadRequest("Group invite response sent without a group ID")
 
-    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    group = Group.lg.get_or_none(id=request.POST['g_id'], system=False)
     if not group:
         LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
         return HttpResponseBadRequest("Group invite response sent with invalid group ID.")
@@ -1165,7 +1165,7 @@ def groupInvite(request, vals={}):
         LGException("Group invite sent without a group ID by user " + str(inviter.id) + ".")
         return HttpResponseBadRequest("Group invite sent without a group ID")
 
-    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    group = Group.lg.get_or_none(id=request.POST['g_id'], system=False)
     if not group:
         LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
         return HttpResponseBadRequest("Group invite sent with invalid group ID.")
@@ -1270,7 +1270,7 @@ def joinGroupInvite(request, vals={}):
     """Invites inputted to join group, if inviting user is admin."""
     user = vals['viewer']
     to_invite = UserProfile.objects.get(id=request.POST['invited_id'])
-    group = Group.objects.get(id=request.POST['g_id'])
+    group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast()
     admin = group.admins.filter(id=user.id)
     if admin:
