@@ -616,7 +616,8 @@ ACTIONS = [
     'saveAnswer',
     'signPetition',
     'finalizePetition',
-    'supportPolitician'
+    'supportPolitician',
+    'createContent',
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -694,6 +695,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'createMotion'
     #checkCompatability,
     'appendComment',
+    'createContent',
 ]
 
 ###################################### DATA #########################################################################

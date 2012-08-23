@@ -266,7 +266,7 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
-    groups = SearchQuerySet().models(Group).filter(content=term,ghost=False)
+    groups = SearchQuerySet().models(Group).filter(content=term,hidden=False)
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
@@ -1680,7 +1680,7 @@ def getQuestions(request, vals):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(ghost=False).order_by("-num_members")
+    groups = Group.objects.filter(hidden=False).order_by("-num_members")
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
 
@@ -2316,6 +2316,40 @@ def logCompatability(request, vals={}):
         page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Creates a piece of content, e.g. from the create modal
+#-----------------------------------------------------------------------------------------------------------------------
+def createContent(request, vals={}):
+    section = request.POST.get('sectionType')
+    title = request.POST.get('title')
+    full_text = request.POST.get('full_text')
+    post_to = request.POST.get('post_to')
+    group = Group.lg.get_or_none(id=post_to)
+    post_as = request.POST.get('post_as')
+    image = request.POST.get('content-image')
+    viewer = vals['viewer']
+    if post_as == 'user':
+        privacy = 'PUB'
+    elif post_as == 'anonymous':
+        privacy = 'PRI'
+    else:
+        privacy = 'PUB'
+    redirect = ''
+    if section=='discussion':
+        if title and full_text:
+            newDiscussion = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                                        posted_to=group)
+            newDiscussion.autoSave(creator=viewer, privacy=privacy)
+            redirect = newDiscussion.getUrl()
+    elif section=='petition':
+        if title and full_text:
+            newPetition = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                                        posted_to=group)
+            newPetition.autoSave(creator=viewer, privacy=privacy)
+            redirect = newPetition.getUrl()
+    return HttpResponse(json.dumps({'redirect': redirect}))
 
 
 #-----------------------------------------------------------------------------------------------------------------------

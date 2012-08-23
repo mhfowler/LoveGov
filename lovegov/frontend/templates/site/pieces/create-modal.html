@@ -1,20 +1,20 @@
 {% load macros %}
 
 
-{% macro textbox label %}
+{% macro textbox label class %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><input type="text"></div>
+        <div class="field"><input type="text" class="{{ class }}"></div>
     </div>
 
 {% endmacro %}
 
-{% macro textarea label %}
+{% macro textarea label class %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><textarea rows="8"></textarea></div>
+        <div class="field"><textarea class="{{ class }}"></textarea></div>
     </div>
 
 {% endmacro %}
@@ -24,9 +24,9 @@
     <div class="form-row">
         <div class="label">Post to:</div>
         <div class="field">
-            <select>
+            <select class="post-to">
             {% for group in groups %}
-                <option>{{ group.title }}</option>
+                <option value="{{ group.id }}">{{ group.title }}</option>
             {% endfor %}
             </select>
         </div>
@@ -39,11 +39,11 @@
     <div class="form-row">
         <div class="label">Post as:</div>
         <div class="field">
-            <span class="post-as selected">
+            <span class="post-as selected" data-poster="user">
                 {% include 'site/pieces/avatar.html' with user=viewer width='40' height='40' hoveroff="True" %}
                 <span class="post-as-label">{{ viewer.get_name }}</span>
             </span>
-            <span class="post-as">
+            <span class="post-as" data-poster="anonymous">
                 {% include 'site/pieces/avatar.html' with private="True" width='40' height='40' hoveroff="True" %}
                 <span class="post-as-label">Anonymous</span>
             </span>

@@ -1763,7 +1763,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     # get groups that non-ghost groups
     def getRealGroups(self):
-        return self.getGroups().filter(ghost=False)
+        return self.getGroups().filter(hidden=False)
 
     def getUserGroups(self, num=-1, start=0):
         if num == -1:
