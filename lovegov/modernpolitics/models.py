@@ -1771,6 +1771,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getGroupSubscriptions(self):
         return self.getGroups().filter(ghost=False)
 
+    def getPoliticians(self):
+        supported = Supported.objects.filter(confirmed=True, user=self)
+        politician_ids = supported.values_list("to_user", flat=True)
+        return UserProfile.objects.filter(id__in=politician_ids)
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------

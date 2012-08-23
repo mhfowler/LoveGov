@@ -297,6 +297,7 @@ div.profile-page {
                 float:right;
                 margin-top:3px;
                 margin-right:3px;
+                display:none;
               }
             }
 
@@ -336,6 +337,9 @@ div.profile-page {
               &:hover {
                 cursor:pointer;
               }
+            }
+            div.empty-profile {
+              margin-top:15px;
             }
           }
         }
