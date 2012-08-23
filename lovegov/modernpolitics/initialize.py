@@ -1874,3 +1874,4 @@ def syncOffices():
         if  not count%20:
             print str(count)
         count += 1
+        o.setCurrent()

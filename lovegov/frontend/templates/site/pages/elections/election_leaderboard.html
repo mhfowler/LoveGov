@@ -1,0 +1,8 @@
+<div class="stats_object" data-object="election_leaderboard" data-e_id="{{ info.election.id }}">
+{% for politician in info.running %}
+    <div class="politician-supporters">
+        <a class="politician-name" href="{{ politician.get_url }}"> {{ politician.get_name }}</a>
+        <span class="num-supporters"> - {{ politician.num_supporters }} supporter{{ politician.num_supporters|pluralize }}</span>
+    </div>
+{% endfor %}
+</div>
