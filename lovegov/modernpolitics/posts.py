@@ -8,6 +8,8 @@
 ########################################################################################################################
 
 from lovegov.modernpolitics.modals import *
+from django.db.models import Q
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # register from login page via form
@@ -1631,9 +1633,14 @@ def getQuestions(request, vals):
 
 
 def getLegislation(request, vals={}):
-
     feed_start = int(request.POST['feed_start'])
-    legislation_items = Legislation.objects.all()[feed_start:10]
+    session_set = request.POST['session_set']
+    type_set = request.POST['type_set']
+
+    legislation_items = Legislation.objects.filter(
+        congress_session__in=session_set,
+        bill_type__in=type_set)[feed_start:10]
+
     vals['legislation_items'] = legislation_items
 
     html = ajaxRender('site/pages/legislation/feed_helper_legislation.html', vals, request)

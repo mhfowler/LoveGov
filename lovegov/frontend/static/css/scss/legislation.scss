@@ -23,6 +23,7 @@ div.main-block {
       float: left;
       width: 150px;
       margin-bottom: 9px;
+      padding-top: 5px;
       margin-right: 5px;
     }
 
@@ -37,10 +38,14 @@ div.main-block {
 
       &:hover {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
 
       &.clicked {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
     }
 
@@ -55,10 +60,14 @@ div.main-block {
 
       &:hover {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
 
       &.clicked {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
     }
 
@@ -70,12 +79,17 @@ div.main-block {
       margin-right: 5px;
       text-align: center;
       border-bottom: 5px solid $gray;
+
       &:hover {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
 
       &.clicked {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
     }
 
@@ -90,10 +104,14 @@ div.main-block {
 
       &:hover {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
 
       &.clicked {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
     }
 
@@ -108,10 +126,14 @@ div.main-block {
 
       &:hover {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
 
       &.clicked {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
     }
 
@@ -126,10 +148,14 @@ div.main-block {
 
       &:hover {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
 
       &.clicked {
         background-color: $gray;
+        color: $white;
+        font-weight: bold;
       }
     }
   }

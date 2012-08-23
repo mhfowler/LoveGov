@@ -10,8 +10,14 @@ function bindOnReload() {
 
         case "home": initHomePage(); break;
         case "profile": initFeed(); break;
-        case "legislation": shortenLongText(); showLegSelectors(); showSelectors(); loadBillSelect2(); break;
-        case "legislation-view": shortenLongText(); break;
+        case "legislation":
+            shortenLongText();
+            showLegSelectors();
+            showSelectors();
+            loadBillSelect2();
+            break;
+        case "legislation-view":
+            shortenLongText(); break;
         case "home":
             initFeed();
             break;
@@ -787,7 +793,10 @@ function getFeed(container) {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
     }
     else if (feed == 'getLegislation') {
-        data = {'action': 'getLegislation', 'feed_start':feed_start};
+        var session = $('select.session_select').val();
+        var type = $('select.type_select').val();
+        data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session,
+            'type_set':type, 'subjects_set':subjects, 'committees_set':committees};
     }
     action({
             data: data,
