@@ -10,6 +10,139 @@
 from lovegov.modernpolitics.modals import *
 
 #-----------------------------------------------------------------------------------------------------------------------
+# register from login page via form
+#-----------------------------------------------------------------------------------------------------------------------
+def newRegister(request,vals={}):
+
+    # get params from post
+    valid = True
+    name = request.POST['name']
+    email = request.POST['email']
+    email2 = request.POST['email2']
+    password = request.POST['password']
+    day = request.POST['day']
+    month = request.POST['month']
+    year = request.POST['year']
+    zip = request.POST['zip']
+    privacy = int(request.POST['privacy'])
+    form_type = request.POST['form_type']
+
+    # validate form
+    if not email:
+        vals['email_error'] = 'This field is required.'
+        valid = False
+    if not email2:
+        vals['email2_error'] = 'This field is required.'
+        valid = False
+    if email and email2:
+        if email != email2:
+            vals['email_error'] = "Both emails must be the same."
+        else:
+            splitted = email.split("@")
+            if len(splitted)!=2:
+                vals['email_error'] = "Please enter a valid email address."
+                valid = False
+            elif not checkUnique(email):
+                vals['email_error'] = "Someone already registered with this email."
+                valid = False
+
+    if not password and not form_type=="twitter_register":     # password is not required if it is twitter registration
+        vals['password_error'] = 'This field is required.'
+        valid = False
+
+    if not (day and month and year):
+        vals['dob_error'] = 'Day, month and year of birth are required.'
+        valid = False
+    else:
+        try:
+            day = int(day)
+            month = int(month)
+            year = int(year)
+            if (year > 2012):
+                vals['dob_error'] = "You must already be born to register."
+                valid = False
+            elif (year < 1900):
+                vals['dob_error'] = "Year must be above 1900."
+                valid = False
+            elif (day>31 or day<0):
+                vals['dob_error'] = "Please enter a day between 1 and 31."
+                valid = False
+            elif (month>12 or month <0):
+                vals['dob_error'] = "Please enter a month between 1 and 12."
+                valid = False
+        except:
+            vals['dob_error'] = "Day, month and year of birth must be numbers."
+            valid = False
+
+    if not privacy:
+        vals['privacy_error'] = 'click'
+        valid = False
+
+    if not name:
+        vals['name_error'] = "This field is required."
+        valid = False
+    else:
+        splitted = name.split()
+        if len(splitted) < 2:
+            vals['name_error'] = "You must enter a first and last name."
+            valid = False
+
+    # if twitter registration, check for twitter stuff in request
+    if form_type=="twitter_register":
+        from lovegov.modernpolitics.twitter import tatHelper
+        tat = tatHelper(request)
+        if tat:                                                 # ready to twitter register
+            twitter_user_id = tat['user_id']
+            already = UserProfile.lg.get_or_none(twitter_user_id = twitter_user_id)
+            if already:
+                vals['twitter_error'] = "There is already a user registered with your twitter id. Try signing in again."
+                valid=False
+        else:
+            vals['twitter_error'] = "You are not authenticated with twitter. Try clicking the twitter button again."
+
+    # if form is not valid, then rerender the form and return it (to replace the old form)
+    if not valid:
+        vals['name'] = name
+        vals['email'] = email
+        vals['email2'] = email2
+        vals['day'] = day
+        vals['month'] = month
+        vals['year'] = year
+        vals['zip'] = zip
+        vals['privacy'] = privacy
+        vals['form_type'] = form_type
+        html = ajaxRender('site/pages/login/new_register_form.html', vals, request)
+        return HttpResponse(json.dumps({'html':html}))
+
+    # if form is valid register the user
+    else:
+
+        # if no inputted password, generate random password (for twitter registration)
+        if not password:
+            password = generateRandomPassword(10)
+
+        # create user profile form form data
+        user_profile = registerHelper(name=name, email=email, password=password, day=day, month=month, year=year, zip=zip)
+
+        # send a confirmation email based on type of registration
+        if form_type=='twitter_register':
+            user_profile.twitter_user_id = tat['user_id']
+            user_profile.twitter_screen_name = tat['screen_name']
+            user_profile.save()
+            vals['name'] = user_profile.get_name()
+            vals['email'] = user_profile.email
+            vals['password'] = password
+            vals['confirmation_link'] = user_profile.confirmation_link
+            sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
+        else:
+            confirmation_link = user_profile.confirmation_link
+            vals = {'firstname':user_profile.first_name,'link':confirmation_link}
+            sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user_profile.email)
+
+        # return success, causes redirect to success page on client side
+        return HttpResponse(json.dumps({"success":True, 'email':email, 'name':name}))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
 # snapshot of the website.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -396,21 +529,43 @@ def sign(request, vals={}):
         vals = {"success":False, "error": "You must be in public mode to sign a petition."}
     return HttpResponse(json.dumps(vals))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Support a politician.
-#-----------------------------------------------------------------------------------------------------------------------
-def support(request, vals={}):
-
+def signPetition(request, vals={}):
+    from lovegov.frontend.views_helpers import valsPetition
     viewer = vals['viewer']
-    politician = Politician.objects.get(id=request.POST['p_id'])
-
-    confirmed = int(request.POST['confirmed'])
-    if confirmed:
-        politician.support(viewer)
+    privacy = getPrivacy(request)
+    p_id = int(request.POST['p_id'])
+    error = None
+    if privacy == 'PUB':
+        petition = Petition.lg.get_or_none(id=p_id)
+        if not petition:
+            return HttpResponse("This petition does not exist")
+        if petition.finalized:
+            if petition.sign(viewer):
+                pass
+            else:
+                LGException(viewer.get_name() +  "|have already signed this petition|" + petition.get_name())
+        else:
+            LGException(viewer.get_name() +  "|has not been finalized|" + petition.get_name())
     else:
-        politician.unsupport(viewer)
+        error = "You must be in public mode to sign a petition."
+    if not error:
+        valsPetition(viewer, petition, vals)
+        html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    else:
+        html = error
+    return HttpResponse(json.dumps({'html':html}))
 
-    return HttpResponse(json.dumps({'num':politician.num_supporters}))
+def finalizePetition(request, vals={}):
+    from lovegov.frontend.views_helpers import valsPetition
+    viewer = vals['viewer']
+    p_id = int(request.POST['p_id'])
+    petition = Petition.objects.get(id=p_id)
+    creator = petition.getCreator()
+    if viewer==creator:
+        petition.finalize()
+    valsPetition(viewer, petition, vals)
+    html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Messages a politician.
@@ -430,35 +585,18 @@ def messageRep(request, vals={}):
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
-    full_address = ''
+
+    viewer = vals['viewer']
 
     address = request.POST.get('address')
-    if address:
-        full_address += address
-
     city = request.POST.get('city')
-    if city:
-        if not full_address == '':
-            full_address += ', '
-        full_address += city
-
     state = request.POST.get('state')
-    if state:
-        if not full_address == '':
-            full_address += ', '
-        full_address += state
-
     zip = request.POST.get('zip')
-    if zip:
-        if full_address == '':
-            full_address = zip
-
 
     try:
-        location = locationHelper(full_address, zip)
-        viewer = vals['viewer']
-        viewer.location = location
-        viewer.save()
+        location = viewer.getLocation()
+        locationHelper(address=address, city=city, state=state, zip=zip, location=location)
+        viewer.joinLocationGroups()
     except:
         return HttpResponse("The given address was not specific enough to determine your voting district")
 
@@ -820,7 +958,6 @@ def answer(request, vals={}):
             user.save()
         return HttpResponse("+")
 
-
 def stubAnswer(request, vals={}):
     user = vals['viewer']
     to_compare_id = request.POST.get('to_compare_id')
@@ -835,15 +972,29 @@ def stubAnswer(request, vals={}):
     explanation = request.POST['explanation']
     if explanation == 'explain your answer':
         explanation = ""
-    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
+    your_response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id, weight=weight, explanation=explanation)
     vals['question'] = question
-    vals['your_response'] = response
+    vals['your_response'] = your_response
+    responses = []
     if to_compare:
         their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
-        vals['their_response'] = their_response
-        vals['disagree'] = (their_response and their_response.most_chosen_answer_id != response.most_chosen_answer_id)
-        vals['to_compare'] = to_compare
-        vals['show_answer'] = response and their_response
+        if their_response:
+            responses.append(their_response)
+    responses.append(your_response)
+    vals['compare_responses'] = responses
+    vals['default_display'] = request.POST.get('default_display')
+    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+def saveAnswer(request, vals={}):
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = getPrivacy(request)
+    a_id = request.POST['a_id']
+    user = vals['viewer']
+    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
+    vals['question'] = question
+    vals['your_response'] = response
+    vals['default_display'] = request.POST.get('default_display')
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -854,11 +1005,15 @@ def updateMatch(request, vals={}):
     viewer = vals['viewer']
     to_compare_alias = request.POST['to_compare_alias']
     to_compare = aliasToObject(to_compare_alias)
-    comparison = to_compare.getComparison(viewer)
-    vals['comparison_object'] = comparison
-    vals['to_compare'] = to_compare
-    vals['comparison'] = comparison.toBreakdown()
     display = request.POST['display']
+    vals['to_compare'] = to_compare
+    if display == 'comparison_web':
+        comparison, web_json = to_compare.getComparisonJSON(viewer)
+        vals['web_json'] = web_json
+    else:
+        comparison = to_compare.getComparison(viewer)
+        vals['comparison_object'] = comparison
+        vals['comparison'] = comparison.toBreakdown()
     if display == 'vertical_breakdown':
         html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
     elif display == 'horizontal_breakdown':
@@ -868,6 +1023,8 @@ def updateMatch(request, vals={}):
         html = ajaxRender('site/pages/profile/sidebar_match.html', vals, request)
     elif display == 'has_answered':
         html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
+    elif display == 'comparison_web':
+        html = ajaxRender('site/pages/qa/comparison_web.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -880,7 +1037,7 @@ def updateStats(request, vals={}):
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
-    if object == 'you_agree_with':
+    elif object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
         question = Question.objects.get(id=request.POST['q_id'])
         response = viewer.view.responses.filter(question=question)
@@ -893,17 +1050,21 @@ def updateStats(request, vals={}):
             html = ajaxRender('site/pages/qa/you_agree_with_stats.html', vals, request)
         else:
             html = "<p> answer to see how many people agree with you. </p>"
-    if object == 'poll_progress':
+    elif object == 'poll_progress':
         from lovegov.frontend.views_helpers import getPollProgress
         poll = Poll.objects.get(id=request.POST['p_id'])
         poll_progress = getPollProgress(viewer, poll)
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
-    if object == 'petition_bar':
+    elif object == 'petition_bar':
         petition = Petition.objects.get(id=request.POST['p_id'])
         vals['petition'] = petition
         html = ajaxRender('site/pages/content_detail/petition_bar.html', vals, request)
+    elif object == 'profile_stats':
+        profile = UserProfile.objects.get(id=request.POST['p_id'])
+        vals['profile'] = profile
+        html = ajaxRender('site/pages/profile/profile_stats.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -936,7 +1097,7 @@ def getNextPollQuestion(request, vals={}):
 def joinGroupRequest(request, vals={}):
     """Joins group if user is not already a part."""
     viewer = vals['viewer']
-    group = Group.objects.get(id=request.POST['g_id'])
+    group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast()  # Parties have a slightly different joinMember
 
     response = joinGroupAction(group,viewer,getPrivacy(request))
@@ -950,7 +1111,7 @@ def joinGroupResponse(request, vals={}):
     viewer = vals['viewer']
 
     from_user = UserProfile.objects.get(id=request.POST['follow_id'])
-    group = Group.objects.get(id=request.POST['g_id'])
+    group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast() # Parties have a slightly different joinMember
 
     if viewer not in group.admins.all():
@@ -978,7 +1139,7 @@ def groupInviteResponse(request, vals={}):
         LGException("Group invite response sent without a group ID to user " + str(from_user.id) + ".")
         return HttpResponseBadRequest("Group invite response sent without a group ID")
 
-    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    group = Group.lg.get_or_none(id=request.POST['g_id'], system=False)
     if not group:
         LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInviteResponse")
         return HttpResponseBadRequest("Group invite response sent with invalid group ID.")
@@ -1004,7 +1165,7 @@ def groupInvite(request, vals={}):
         LGException("Group invite sent without a group ID by user " + str(inviter.id) + ".")
         return HttpResponseBadRequest("Group invite sent without a group ID")
 
-    group = Group.lg.get_or_none(id=request.POST['g_id'])
+    group = Group.lg.get_or_none(id=request.POST['g_id'], system=False)
     if not group:
         LGException("Group with group ID #" + str(request.POST['g_id']) + " does not exist.  Given to groupInvite by user #" + str(inviter.id))
         return HttpResponseBadRequest("Group invite sent with invalid group ID.")
@@ -1082,6 +1243,25 @@ def userFollowStop(request, vals={}):
 
     return HttpResponse( json.dumps({'response':'removed'}) )
 
+#-----------------------------------------------------------------------------------------------------------------------
+# supports or unsupports a politician based on posted value of 'support'
+#-----------------------------------------------------------------------------------------------------------------------
+def supportPolitician(request, vals={}):
+    viewer = vals['viewer']
+    p_id = request.POST['p_id']
+    politician = UserProfile.lg.get_or_none(id=p_id, politician=True)
+    if not politician:
+        LGException(viewer.get_name() + " tried to support a user who was not a politician|" + str(p_id))
+        return HttpResponse("not politician.")
+    support = request.POST['support']
+    vals['politician'] = politician
+    support_bool = False
+    if support == 'true':
+        support_bool = True
+    supportAction(viewer, politician, support_bool, getPrivacy(request))
+    vals['is_user_supporting'] = support_bool
+    html = ajaxRender('site/pages/profile/support_button.html',vals,request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
@@ -1090,7 +1270,7 @@ def joinGroupInvite(request, vals={}):
     """Invites inputted to join group, if inviting user is admin."""
     user = vals['viewer']
     to_invite = UserProfile.objects.get(id=request.POST['invited_id'])
-    group = Group.objects.get(id=request.POST['g_id'])
+    group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast()
     admin = group.admins.filter(id=user.id)
     if admin:
@@ -1489,6 +1669,7 @@ def getQuestions(request, vals):
             feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
+    vals['default_display'] = request.POST.get('default_display')
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
@@ -2135,6 +2316,7 @@ def logCompatability(request, vals={}):
         page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]

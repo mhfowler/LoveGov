@@ -2,6 +2,7 @@
 @import 'master-mixins';
 
 
+
 div#content-div h3, div.content-left-side h3 {
     color: $red;
     @include titleFont;
@@ -316,7 +317,6 @@ div.change-privacy {
     position: relative;
     margin-left: 10px;
     cursor:pointer;
-    width: 400px;
 }
 
 

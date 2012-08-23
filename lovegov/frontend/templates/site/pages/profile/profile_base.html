@@ -32,93 +32,42 @@
                         {% include 'site/pieces/avatar.html' with width="150" height="200" user=profile hoveroff=1 %}
                     </div>
 
-                    {% if viewer.id != profile.id %}
+                    <!-- support or follow -->
+                    {% if profile.politician %}
+
+                        {% include 'site/pages/profile/support_button.html' with politician=profile %}
+
+                        <div class="message-politician message_politician" data-p_id="{{ politician.id }}"> message </div>
+
+                    {% elif viewer.id != profile.id %}
 
                         {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
-                            <div class="user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
+                            <div class=" user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
                         {% elif is_user_confirmed %}
-                            <div class="user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
+                            <div class=" user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
                         {% elif is_user_requested %}
-                            <div class="user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
+                            <div class=" user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
                         {% endif %}
 
                     {% endif %}
+
+
 
                     {% if viewer.id == profile.id %}
 
                         {% if num_follow_requests > 0 %}
-                            <div class="user-follow follow_requests_modal">requests ({{ num_follow_requests }})</div>
+                            <div class=" user-follow follow_requests_modal">requests ({{ num_follow_requests }})</div>
                         {% endif %}
 
                         {% if num_group_invites > 0 %}
-                            <div class="user-follow group_invited_modal">invites ({{ num_group_invites }})</div>
+                            <div class=" user-follow group_invited_modal">invites ({{ num_group_invites }})</div>
                         {% endif %}
 
                     {% endif %}
 
 
-
-                    <!-- text match -->
-                    {% include 'site/pages/profile/sidebar_match.html' with to_compare=profile %}
-
-                    <div class="stats">
-
-                        <div class="stats-row-one">
-                            <div class="stats-box white-box left-box">
-                                <div class="num">
-                                    {{ profile.num_followme}}
-                                </div>
-                                <div class="label">
-                                    followers
-                                </div>
-                            </div>
-                            <div class="stats-box gray-box center-box">
-                                <div class="num">
-                                    {{ profile.num_ifollow }}
-                                </div>
-                                <div class="label">
-                                    following
-                                </div>
-                            </div>
-                            <div class="stats-box gray-box  right-box">
-                                <div class="num">
-                                    {{ profile.num_groups}}
-                                </div>
-                                <div class="label">
-                                    groups
-                                </div>
-                            </div>
-                            <div style="clear:both;"></div>
-                        </div>
-                        <div class="stats-row-two">
-                            <div class="stats-box gray-box  left-box">
-                                <div class="num">
-                                    {{ profile.num_posts}}
-                                </div>
-                                <div class="label">
-                                    posts
-                                </div>
-                            </div>
-                            <div class="stats-box gray-box center-box">
-                                <div class="num">
-                                    {{ profile.num_answers }}
-                                </div>
-                                <div class="label">
-                                    answers
-                                </div>
-                            </div>
-                            <div class="stats-box gray-box right-box">
-                                <div class="num">
-                                    {{ profile.num_signatures }}
-                                </div>
-                                <div class="label">
-                                    signatures
-                                </div>
-                            </div>
-                            <div style="clear:both;"></div>
-                        </div>
-
-                    </div>
+                    <!-- stats -->
+                    {% include 'site/pages/profile/profile_stats.html' %}
 
                 </td>
 

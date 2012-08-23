@@ -402,6 +402,7 @@ def initializeCongressNetwork():
         network = Network(alias="congress")
         network.title = "Congress"
         network.summary = "all members of Congress."
+        network.system = True
         network.autoSave()
         # join all members
         congress = UserProfile.objects.filter(elected_official=True)
@@ -1813,3 +1814,18 @@ def initializePresidentialCandidates2012():
     election.joinRace(obama)
     election.joinRace(mitt)
     election.joinRace(ron)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# initialize state groups
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeStateGroups():
+    for x in STATES:
+        state = x[0]
+        already = StateGroup.lg.get_or_none(location__state=state)
+        if not already:
+            print "initializing " + state + " state group."
+            StateGroup().autoCreate(state)
+        else:
+            print "..." + state + " state group already initialized."
+    for u in UserProfile.objects.all():
+        u.joinLocationGroups()

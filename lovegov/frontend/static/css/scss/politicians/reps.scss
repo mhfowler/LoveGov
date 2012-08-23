@@ -1,0 +1,47 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+div.find-your-reps {
+
+  div.find-your-reps-title {
+    @include fontSize(20px);
+  }
+  div.find-your-reps-form {
+    padding-top:10px;
+    padding-left:30px;
+    padding-bottom:50px;
+    input.reps-input {
+      float:left;
+      margin-right:25px;
+      height:30px;
+      padding-left:5px;
+    }
+    input.street-input {
+      width:250px;
+    }
+    input.city-input {
+      width:150px;
+    }
+    input.state-input {
+      width:100px;
+    }
+    input.zip-input {
+      width:100px;
+    }
+    a.find-button {
+      float:left;
+      background-color:$black;
+      color:white;
+      @include fontSize(16px);
+      text-align:center;
+      padding:5px;
+      width:100px;
+      &:hover {
+        background-color:$light-gray;
+        color:$black;
+      }
+    }
+  }
+}

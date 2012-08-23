@@ -255,6 +255,11 @@ def login(request, to_page='web/', message="", vals={}):
     response.delete_cookie('lovegov_try')
     return response
 
+def welcome(request, vals={}):
+    vals['name'] = request.GET.get('name')
+    vals['email'] = request.GET.get('email')
+    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
+
 def loginAuthenticate(request,user,to_page=''):
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
@@ -280,7 +285,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             error = 'Invalid Login/Password'
         # Return whatever error was found
         vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
-        return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     # REGISTER
     elif request.POST['button'] == 'register':
@@ -295,7 +300,7 @@ def loginPOST(request, to_page='web',message="",vals={}):
             return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
         else:
             vals.update({"registerform":registerform, "state":'register_error'})
-            return renderToResponseCSRF(template='site/pages/login/login-feed.html', vals=vals, request=request)
+            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
     elif request.POST['button'] == 'post-twitter':
         return twitterRegister(request, vals)
@@ -438,10 +443,7 @@ def home(request, vals):
 
 def groups(request, vals):
     viewer = vals['viewer']
-    #groups = viewer.getUserGroups()
-    groups = UserGroup.objects.all()
-    groups = groups[:6]
-    vals['groups'] = groups
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
     focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -603,21 +605,20 @@ def profile(request, alias=None, vals={}):
         if user_follow.rejected:
             vals['is_user_rejected'] = True
     
-    vals['profile_groups'] = user_profile.getGroups()[:4]
-    vals['profile_politicians'] = UserProfile.objects.all()[:6]
+    vals['profile_groups'] = user_profile.getGroupSubscriptions()[:4]
+    vals['profile_politicians'] = user_profile.getPoliticians()
 
-#    comparison = user_profile.getComparison(viewer)
-#    vals['to_compare'] = profile
-#    vals['comparison'] = comparison.toBreakdown()
-
-    comparison, json = viewer.getComparisonJSON(viewer)
+    comparison, web_json = user_profile.getComparisonJSON(viewer)
     vals['web_comparison'] = comparison
-    vals['web_json'] = json
+    vals['web_json'] = web_json
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()
         vals['num_group_invites'] = user_profile.getNumGroupInvites()
+
+    if user_profile.politician:
+        vals['is_user_supporting'] = Supported.lg.get_or_none(confirmed=True, user=viewer, to_user=user_profile)
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = user_profile.get_url()
@@ -659,11 +660,9 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
-    vals['petition'] = petition
-    signers = petition.getSigners()
-    vals['signers'] = signers[:signerLimit]
-    vals['i_signed'] = (vals['viewer'] in signers)
-    vals['num_signers'] = len(signers)
+
+    viewer = vals['viewer']
+    valsPetition(viewer, petition, vals)
 
     contentDetail(request=request, content=petition, vals=vals)
     html = ajaxRender('site/pages/content_detail/petition_detail.html', vals, request)
@@ -690,8 +689,9 @@ def motionDetail(request, m_id, vals={}):
 def newsDetail(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
     vals['news'] = news
+    liked = news.getSupporters()
+    vals['liked'] = liked
     contentDetail(request=request, content=news, vals=vals)
-
     html = ajaxRender('site/pages/content_detail/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
@@ -755,8 +755,8 @@ def discussionDetail(request, d_id=-1, vals={}):
     viewer = vals['viewer']
     discussion = Discussion.objects.get(id=d_id)
     vals['discussion'] = discussion
+    vals['liked'] = discussion.getSupporters()
     contentDetail(request, discussion, vals)
-
     html = ajaxRender('site/pages/content_detail/discussion_detail.html', vals, request)
     url = discussion.get_url()
     return framedResponse(request, html, url, vals, rebind="discussion_detail")
@@ -776,6 +776,15 @@ def histogramDetail(request, alias, vals={}):
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# browse all candidates of an election
+#-----------------------------------------------------------------------------------------------------------------------
+def candidates(request, alias, vals={}):
+
+    election = Election.objects.get(alias=alias)
+    vals['election'] = election
+    vals['candidates']
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link

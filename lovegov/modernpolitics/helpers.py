@@ -20,6 +20,7 @@ import string
 import httpagentparser
 from googlemaps import GoogleMaps
 import sunlight
+from sunlight.errors import BadRequestException
 from curses.ascii import isalnum
 
 browser_logger = logging.getLogger('browserlogger')
@@ -205,28 +206,63 @@ def checkBrowserCompatible(request):
     return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Returns location from address string and zipcode.
+# Returns a location with coordinates, either by using passed in location, or creating a new one
 #-----------------------------------------------------------------------------------------------------------------------
-def locationHelper(address, zip):
+def locationHelper(address, city, state, zip, location=None):
 
-    location = PhysicalAddress.lg.get_or_none(address_string=address, zip=zip)
     if not location:
-        if (not address) and zip:
-            address_string = zip
-        else:
-            address_string = address
-        gmaps = GoogleMaps(GOOGLEMAPS_API_KEY)
-        coordinates = gmaps.address_to_latlng(address_string)
+        location = PhysicalAddress()
+        location.save()
+
+    full_address = ''
+    if address:
+        full_address += address
+    if city:
+        if not full_address == '':
+            full_address += ', '
+        full_address += city
+    if state:
+        if not full_address == '':
+            full_address += ', '
+        full_address += state
+    if zip:
+        if not full_address == '':
+            full_address += ', '
+        full_address += zip
+
+    location.address_string = address
+    location.city = city
+    location.state = state
+    location.zip = zip
+
+    gmaps = GoogleMaps(GOOGLEMAPS_API_KEY)
+    coordinates = gmaps.address_to_latlng(full_address)
+    latitude = coordinates[0]
+    longitude = coordinates[1]
+    location.latitude = latitude
+    location.longitude = longitude
+    location.save()
+
+    setDistrict(location)
+
+    return location
+
+def setDistrict(location):
+    latitude = location.latitude
+    longitude = location.longitude
+    if latitude and longitude:
         try:
-            state_district = sunlight.congress.districts_for_lat_lon(coordinates[0],coordinates[1])
-            location = PhysicalAddress(address_string=address,zip=zip,latitude=coordinates[0],
-                longitude=coordinates[1],state=state_district[0]['state'],district=state_district[0]['number'])
+            state_district = sunlight.congress.districts_for_lat_lon(latitude,longitude)[0]
+            state = state_district['state']
+            district = state_district['number']
+            location.state = state
+            location.district = district
             location.save()
         except BadRequestException as e:
             error = "sunlight error: ", e
             errors_logger.error(error)
-
-    return location
+    else:
+        LGException("set district was called on location with no latitude or longitude")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this

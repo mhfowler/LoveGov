@@ -253,3 +253,20 @@ def removeDeprecatedPoliticians():
                 # Is most likely a deprecated politician
                 print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
                 person.delete()
+
+def resetGroupSystemBooleans():
+    print "SETTING ALL NETWORKS TO AUTOGEN=True and SYSTEM=False"
+    for n in Network.objects.all():
+        print "resetting, " + n.get_name()
+        n.autogen = True
+        n.system = False
+        n.save()
+    print "SETTING ALL SYSTEM GROUPS TO ALSO BE HIDDEN"
+    for g in Group.objects.filter(system=True):
+        g.hidden = True
+        g.save()
+    print "SETTING CONGRESS NETWORK TO SYSTEM=True Hidden=False"
+    c = getCongressNetwork()
+    c.system = True
+    c.hidden = False
+    c.save()

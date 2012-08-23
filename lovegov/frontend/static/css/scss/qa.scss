@@ -150,28 +150,27 @@ div.question_stub {
   border:1px solid $light-gray;
   margin-top:10px;
 
-  div.answer_expanded {
+  div.question_expanded_choose {
     display:none;
   }
-  div.question_comparison {
+  div.question_expanded_explain {
     display:none;
   }
-  div.question_comparison.displayed {
-    display:block;
+  div.question_expanded_compare {
+    display:none;
   }
 
-
+/* question header */
   div.question-header {
     padding:5px;
     background-color:$light-gray;
-    height:70px;
     a.question-title {
       @include inline-block;
       width:600px;
       margin-left:8px;
       padding-top:10px;
       padding-bottom:6px;
-      @include fontSize(16px);
+      @include fontSize(20px);
       color:$black;
       &:hover {
         color:black;
@@ -207,6 +206,17 @@ div.question_stub {
         background-color:$dark-green;
       }
     }
+    a.hide-button {
+      display:none;
+      width:130px;
+      text-align:center;
+      margin-right:10px;
+      float:right;
+    }
+    div.change-privacy {
+      float:right;
+      margin-right:15px;
+    }
 
     table.valign {
       width:100%;
@@ -217,54 +227,118 @@ div.question_stub {
     }
   }
 
-  div.answer_expanded {
+/* appears in two different expandeds */
+  span.question-checkbox {
+    float:left;
+    @include inline-block;
+    width:20px;
+    height:20px;
+    border:1px solid $black;
+    &.clicked {
+      background-color:$blue;
+    }
+    &:hover {
+      background-color:$blue;
+      @include opacity(.3);
+      cursor:pointer;
+    }
+  }
 
+  div.a-response {
+    a.response-avatar {
+      @include inline-block;
+      margin-top:1px;
+      vertical-align:top;
+    }
+    div.response-wrapper {
+      vertical-align:top;
+      @include inline-block;
+      margin-left:20px;
+      span.response-text {
+        display:block;
+        padding-top:10px;
+      }
+      span.response-text.disagree {
+        color:$red;
+      }
+      div.response-explanation {
+        display:block;
+        margin-top:10px;
+        color:$gray;
+      }
+    }
+  }
+
+/* choose interface */
+  div.question_expanded_choose {
     padding:10px;
     padding-left:20px;
     padding-right:20px;
 
-    span.question-checkbox {
-      float:left;
-      @include inline-block;
-      width:20px;
-      height:20px;
-      border:1px solid $black;
-      &.clicked {
-        background-color:$blue;
-      }
-      &:hover {
-        background-color:$blue;
-        @include opacity(.3);
-        cursor:pointer;
-      }
-    }
-
     div.answers-wrapper {
+      padding-bottom:20px;
       div.answer-wrapper {
         margin-top:15px;
       }
       span.answer-text {
+        width:830px;
         margin-left:15px;
         margin-top:2px;
-        @include fontSize(14px);
+        @include fontSize(16px);
       }
     }
+    a.change-explanation {
+      float:right;
+      text-decoration:italic;
+      color:$black;
+      &:hover {
+        color:$gray;
+      }
+    }
+  }
+
+/* explain inteface */
+  div.question_expanded_explain {
+    padding: 20px 40px 0 30px;
+
+    a.go-back {
+      display:block;
+    }
+
+    div.details-headers {
+      margin-top:10px;
+      display:block;
+      width:100%;
+      div.explanation-header {
+        margin-left:150px;
+      }
+      div.importance-header {
+        margin-left:380px;
+      }
+      div.answer-header {
+        float:left;
+        @include fontSize(16px);
+        font-weight:bold;
+      }
+    }
+
     div.answer-details {
-      margin-top:20px;
+      margin-top:0px;
 
       textarea.explanation {
         float:left;
-        margin-left:30px;
         width:400px;
         height:100px;
-        padding:2px;
+        padding:5px;
         color:$black;
       }
       div.importance {
+        padding-top:20px;
         float:right;
         border-left:1px solid $light-gray;
         padding-left:30px;
         width:400px;
+        height:100px;
         div.importance-bar {
           margin-top:10px;
           width:100%;
@@ -327,35 +401,29 @@ div.question_stub {
     }
   }
 
-  div.question-comparison {
-    padding:20px;
-    a.response-avatar {
-      @include inline-block;
-      margin-top:1px;
-      vertical-align:top;
-    }
-    div.response-wrapper {
-      vertical-align:top;
-      @include inline-block;
-      margin-left:20px;
-      span.response-text {
-        display:block;
-        padding-top:10px;
-      }
-      span.response-text.disagree {
-        color:$red;
-      }
-      div.response-explanation {
-        display:block;
-        margin-top:10px;
+  div.question_expanded_responses {
+    width:100%;
+    padding: 10px 40px 20px 30px;
+
+    div.response-stub {
+      margin-top:15px;
+      div.below-response {
+        margin-left:80px;
         color:$gray;
+        div.response-explanation {
+          float:left;
+          margin-right:20px;
+        }
+        div.pipe-break {
+          float:left;
+          margin-right:20px;
+        }
+        div.response-importance {
+          float:left;
+        }
       }
-    }
-    div.your-response {
-      margin-top:10px;
     }
   }
-
 }
 
 
@@ -364,7 +432,7 @@ div.question_stub {
 /**********************************************************************************************************************/
 #comparison-hover-div
 {
-  width:302px;
+  width:303px;
   position:absolute;
   background-color:#FFFFFF;
   -moz-border-radius: 20px;

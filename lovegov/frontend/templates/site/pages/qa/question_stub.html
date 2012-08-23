@@ -1,5 +1,7 @@
-<div class="question-stub question_stub" data-q_id="{{ question.id }}">
-    <!-- question displayed -->
+<div class="question-stub question_stub" data-q_id="{{ question.id }}"
+        {% if default_display %} data-default_display="{{ default_display }}" {% else  %} data-default_display="none" {% endif %}
+        >
+    <!-- question text -->
     <div class="question-header">
         <table class="valign">
             <tr>
@@ -15,15 +17,17 @@
                 <td>
                     {% if your_response %}
                         <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>
+                        {% comment %} {% include 'site/pieces/content-privacy.html' with content=your_response %} {% endcomment %}
                     {% else %}
                         <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
                     {% endif %}
+                    <a href="#" class="hide-button hide_button dummy_link"> hide </a>
                 </td>
             </tr>
         </table>
     </div>
-    <!-- inline expansion for answering questions -->
-    <div class="answer_expanded">
+    <!-- inline expansion for choosing answer, stage1 -->
+    <div class="question_expanded_choose question_expanded">
         <div class="answers-wrapper">
             {% for a in question.answers.all %}
                 <div class="answer-wrapper">
@@ -33,6 +37,29 @@
                     <div style="clear:both"></div>
                 </div>
             {% endfor %}
+            {% if your_response %}
+                <a href="#" class="change-explanation change_explanation dummy_link">
+                    change explanation
+                </a>
+            {% endif %}
+        </div>
+        {% comment %}
+        <div class="choose-answer-bottom">
+            <span class="question-checkbox privacy_checkbox {% if your_response.getPrivate %} clicked {% endif %}"></span>
+            <span class="privacy-text"> Answer this question Privately </span>
+        </div>
+        {% endcomment %}
+    </div>
+    <!-- inline expansion for importance and explanation, stage2 -->
+    <div class="question_expanded_explain question_expanded">
+        <!--<a href="#" class="go-back goback_button dummy_link"> go back </a> -->
+        <div class="your-response">
+            {% include 'site/pages/qa/avatar_and_response_text.html' with response=your_response%}
+        </div>
+        <div class="details-headers">
+            <div class="explanation-header answer-header"> explanation </div>
+            <div class="importance-header answer-header""> importance </div>
+            <div style="clear:both;"></div>
         </div>
         <div class="answer-details">
             <textarea class="explanation">{% if your_response.explanation %}{{ your_response.explanation }}{% else %}explain your answer{% endif %}</textarea>
@@ -51,48 +78,17 @@
         </div>
         <div class="answer-bottom">
             <span class="answer-button save-button save_button"> save </span>
-            <span class="answer-button cancel-button cancel_button"> cancel </span>
-            <span class="privacy-text"> Answer this question Privately</span>
+            <span class="answer-button cancel-button hide_button"> skip </span>
+            <span class="privacy-text"> Answer this question Privately </span>
             <span class="question-checkbox privacy_checkbox {% if your_response.getPrivate %} clicked {% endif %}"></span>
             <div style="clear:both"></div>
         </div>
         <div style="clear:both"></div>
     </div>
-
-    <!-- displays your two responses to this question -->
-    {% if your_response or their_response %}
-        <div class="question-comparison question_comparison {% if show_answer %} displayed {% endif %}">
-            <!-- their response -->
-            {% if their_response %}
-                <div class="their-response a-response">
-                    <a class="response-avatar" href="{{ to_compare.get_url }}">
-                        {% include 'site/pieces/avatar.html' with user=to_compare width="30" height="30" %}
-                    </a>
-                    <div class="response-wrapper">
-                        <span class="response-text {% if disagree %} disagree {% endif %}">{{ their_response.most_chosen_answer.answer_text }}</span>
-                        <div class="response-explanation">
-                            {% if their_response.explanation %}"{{ their_response.explanation }}"{% endif %}
-                        </div>
-                    </div>
-                    <div style="clear:both;"></div>
-                </div>
-            {% endif %}
-            <!-- your response -->
-            {% if your_response %}
-                <div class="your-response a-response">
-                    <a class="response-avatar" href="{{ viewer.get_url }}">
-                        {% include 'site/pieces/avatar.html' with user=viewer width="30" height="30" %}
-                    </a>
-                    <div class="response-wrapper">
-                    <span class="response-text"> {% if your_response.most_chosen_answer %}
-                        {{ your_response.most_chosen_answer.answer_text }} {% else %} <b> Chose not to answer. </b> {% endif %} </span>
-                        <div class="response-explanation">
-                            {% if your_response.explanation %}"{{ your_response.explanation}}"{% endif %}
-                        </div>
-                    </div>
-                    <div style="clear:both;"></div>
-                </div>
-            {% endif %}
-        </div>
-    {% endif %}
+    <!-- display inputted responses to this question -->
+    <div class="question-responses question_expanded_responses question_expanded">
+        {% for response in compare_responses %}
+            {% include 'site/pages/qa/response_stub.html' %}
+        {% endfor %}
+    </div>
 </div>

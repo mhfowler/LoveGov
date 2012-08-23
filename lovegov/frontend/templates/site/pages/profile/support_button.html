@@ -1,0 +1,5 @@
+{% if not is_user_supporting %}
+    <div class="support-politician support_politician" data-p_id="{{ politician.id }}"> support </div>
+{% else %}
+    <div class="unsupport-politician unsupport_politician" data-p_id="{{ politician.id }}"> supporting </div>
+{% endif %}
