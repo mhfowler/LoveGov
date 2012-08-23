@@ -3755,7 +3755,7 @@ class Group(Content):
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
-        if group_joined.confirmed and not group_joined.group.ghost:
+        if group_joined.confirmed and not group_joined.group.hidden:
             user.num_groups -= 1
             user.save()
         group_joined.clear()
