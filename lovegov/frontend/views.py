@@ -606,7 +606,7 @@ def profile(request, alias=None, vals={}):
             vals['is_user_rejected'] = True
     
     vals['profile_groups'] = user_profile.getGroupSubscriptions()[:4]
-    vals['profile_politicians'] = UserProfile.objects.all()[:6]
+    vals['profile_politicians'] = user_profile.getPoliticians()
 
     comparison, web_json = user_profile.getComparisonJSON(viewer)
     vals['web_comparison'] = comparison

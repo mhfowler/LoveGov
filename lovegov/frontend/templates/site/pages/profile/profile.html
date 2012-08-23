@@ -93,14 +93,15 @@
                 <span class="profile-groups breakdown-box">
                     <div class="breakdown-top">
                         <div class="profile-header">
-                            Groups
+                            Groups They're In
                         </div>
-                        <a class="link-all dumm_link"> view all </a>
+                        <a class="link-all dummy_link"> view all </a>
                         <div style="clear:both;"></div>
                     </div>
                     <div class="stuff">
                         {% for g in profile_groups %}
                             <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
+                        {% empty %}
                         {% endfor %}
                     </div>
                 </span>
@@ -108,7 +109,7 @@
                 <span class="profile-politicians breakdown-box">
                     <div class="breakdown-top">
                         <div class="profile-header">
-                            Politicians
+                            Politicians They Support
                         </div>
                         <a class="link-all dummy_link"> view all </a>
                         <div style="clear:both;"></div>
@@ -118,6 +119,10 @@
                             <a class="profile-avatar" href="{{ p.get_url }}">
                                 {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
                             </a>
+                        {% empty %}
+                            <div class="empty-profile">
+                                {{ profile.first_name }} hasn't supported any politicians yet.
+                            </div>
                         {% endfor %}
                     </div>
                 </span>
