@@ -133,7 +133,7 @@ class PhysicalAddress(LGModel):
     latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     state = models.CharField(max_length=2, null=True)
     city = models.CharField(max_length=500, null=True)
-    district = models.IntegerField(default=-1)
+    district = models.IntegerField(null=True)
 
     def clear(self):
         self.address_string = None
@@ -142,7 +142,7 @@ class PhysicalAddress(LGModel):
         self.latitude = None
         self.state = None
         self.city = None
-        self.district = -1
+        self.district = None
         self.save()
 
 #=======================================================================================================================
