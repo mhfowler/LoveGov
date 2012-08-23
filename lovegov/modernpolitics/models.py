@@ -4496,7 +4496,7 @@ class OfficeHeld(UCRelationship):
         self.save()
 
     def isCurrent(self):
-        if (datetime.date.today() - self.end_date).days >= 0:
+        if (datetime.date.today() - self.end_date).days <= 0:
             return True
         return False
 
