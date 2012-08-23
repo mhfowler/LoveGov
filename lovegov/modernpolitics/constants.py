@@ -316,7 +316,9 @@ ACTION_CHOICES = (
     ('ED', 'edited'),
     ('SH', 'shared'),
     ('XX', 'deleted'),
-    ('SU', 'supported')
+    ('SU', 'supported'),
+    ('ME', 'messaged'),
+    ('AS', 'asked')
 )
 
 # default, request, invite, deny, reject
@@ -616,7 +618,10 @@ ACTIONS = [
     'saveAnswer',
     'signPetition',
     'finalizePetition',
-    'supportPolitician'
+    'supportPolitician',
+    'askToJoin',
+    'claimProfile',
+    'messagePolitician'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

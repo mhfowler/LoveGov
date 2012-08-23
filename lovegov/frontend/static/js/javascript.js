@@ -56,10 +56,11 @@ function bindOnNewElements() {
 var poll_autoswitch;
 function pollAutoSwitch() {
     clearInterval(poll_autoswitch);
+    /*
     poll_autoswitch= setInterval(function()
     {
         cyclePollQuestions();
-    }, 5000);
+    }, 5000); */
 }
 
 function comparisonWebs() {
@@ -1443,6 +1444,11 @@ bind(".r_register", 'click', null, function(event) {
  *      ~Profile
  *
  **********************************************************************************************************************/
+
+bind(".message_politician", 'mouseenter', null, function(event) {
+    var p_id = $(this).data("p_id");
+    getModal("message_politician", {'p_id':p_id});
+});
 
 bind(".user_unfollow", 'mouseenter', null, function(event) {
     $(this).text('stop');
@@ -3294,11 +3300,24 @@ bind('.find_address_button' , 'click' , null , function(e)
  ***********************************************************************************************************************/
 bind('.claim_profile_button' , 'click' , null , function(e)
 {
-    $(".claimed_message").fadeIn();
+    var p_id = $(this).data('p_id');
+    var email = $(".claim_profile_email").val();
+    action({
+            data: {'action': 'claimProfile', 'p_id':p_id, 'email':email},
+            success: function(data) {
+                $(".claimed_message").fadeIn();
+            }}
+    );
 });
 
 
 bind('.ask_to_join' , 'click' , null , function(e)
 {
-    $(".asked_message").fadeIn();
+    var p_id = $(this).data('p_id');
+    action({
+            data: {'action': 'askToJoin', 'p_id':p_id},
+            success: function(data) {
+                $(".asked_message").fadeIn();
+            }}
+    );
 });

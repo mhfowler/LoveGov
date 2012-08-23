@@ -142,7 +142,7 @@
                         <div class="are-you-a-politician">
                             Are you {{ profile.get_name }}? If so, enter your email address here and we will get
                             in contact with you to verify you and let you claim your profile.
-                            <a class="claim-profile-button claim_profile_button dummy_link"> claim </a>
+                            <a class="claim-profile-button claim_profile_button dummy_link" data-p_id="{{ profile.id }}"> claim </a>
                             <input type="text" class="claim-profile claim_profile_email" placeholder="email"/>
                             <p class="claimed-message claimed_message"> Thankyou! We'll email you and hope to see you on
                                 LoveGov very soon.
@@ -157,7 +157,7 @@
                             <p class="asked-message asked_message"> We sent {{ profile.get_name }} an email, hopefully he'll
                                 take notice. Thankyou!
                             </p>
-                            <a class="ask-to-join ask_to_join"> ask to join </a>
+                            <a class="ask-to-join ask_to_join" data-p_id="{{ profile.id }}"> ask to join </a>
                         </div>
                 </div>
 

@@ -1087,6 +1087,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     elected_official = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
+    num_messages = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
     political_statement = models.TextField(null=True)
     # anon ids
@@ -1185,14 +1186,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     # automatically parse city and state groups
     #-------------------------------------------------------------------------------------------------------------------
-    def joinCityGroup(self, city, state):
+    def joinTownGroup(self, city, state):
         if city:
-            already = CityGroup.lg.get_or_none(location__city=city, location__state=state)
+            already = TownGroup.lg.get_or_none(location__city=city, location__state=state)
             if already:
                 if not self in already.members.all():
                     already.joinMember(self)
             else:
-                city_group = CityGroup().autoCreate(city, state)
+                city_group = TownGroup().autoCreate(city, state)
                 city_group.joinMember(self)
 
     def joinStateGroup(self, state):
@@ -1204,7 +1205,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def joinLocationGroups(self):
         if self.location:
-            self.joinCityGroup(self.location.city, self.location.state)
+            self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1973,6 +1974,10 @@ class Action(Privacy):
             object = self.deletedaction
         elif action_type == 'SU':
             object = self.supportedaction
+        elif action_type == 'AS':
+            object = self.askedaction
+        elif action_type == 'ME':
+            object = self.messagedaction
         else:
             object = None
         return object
@@ -2014,6 +2019,74 @@ class SignedAction(Action):
         })
 
         return render_to_string('site/pieces/actions/signed_verbose.html',vals)
+
+#=======================================================================================================================
+# Message a politician
+#=======================================================================================================================
+class MessagedAction(Action):
+    politician = models.ForeignKey(UserProfile)
+    message = models.TextField()
+
+    def autoSave(self):
+        self.action_type = 'ME'
+        politician = self.politician
+        politician.num_messages += 1
+        politician.save()
+        super(MessageAction,self).autoSave()
+        print "sent " + self.politician.get_name() + " an email with message!"
+
+    def getTo(self):
+        return self.politician
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.politician
+        })
+
+        return render_to_string('site/pieces/actions/messaged_verbose.html',vals)
+
+#=======================================================================================================================
+# Asking a politician to join lovegov.
+#=======================================================================================================================
+class AskedAction(Action):
+    politician = models.ForeignKey(UserProfile)
+
+    def autoSave(self):
+        self.action_type = 'AS'
+        print "sent an email to " + self.politician.get_name() + " !"
+        super(AskedAction,self).autoSave()
+
+    def getTo(self):
+        return self.politician
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.politician
+        })
+
+        return render_to_string('site/pieces/actions/asked_verbose.html',vals)
+
+class ClaimProfile(LGModel):
+    user = models.ForeignKey(UserProfile, related_name="claims")
+    politician = models.ForeignKey(UserProfile, related_name="claimers")
+    email = models.CharField(max_length=200)
+    def autoSave(self):
+        print "sent us an email telling about claim"
+        self.save()
 
 #=======================================================================================================================
 # Creating some content action
@@ -3572,7 +3645,11 @@ class Group(Content):
         elif type == 'S':
             object = self.stategroup
         elif type == 'C':
-            object = self.citygroup
+            object = self.committee
+        elif type == 'T':               # for towngroup?
+            object = self.towngroup
+        elif type == 'Y':
+            object = self.politiciangroup
         else: object = self
         return object
 
@@ -3991,20 +4068,32 @@ class StateGroup(Group):
         self.location = location
         self.save()
 
-class CityGroup(Group):
+class TownGroup(Group):
     pass
     def autoCreate(self, city, state):
         city_state = city + ", " + state
         self.title = city_state + " Group"
         self.description = "A group for sharing political information relevant to " + city_state + "."
-        self.group_type = 'C'
+        self.group_type = 'T'
         self.autogen = True
         self.group_privacy = "O"
-        super(CityGroup, self).autoSave()
+        super(TownGroup, self).autoSave()
         location = PhysicalAddress(state=state, city=city)
         location.save()
         self.location = location
         self.save()
+
+#=======================================================================================================================
+# Politician group, is a sytem group for organizing politicians
+#
+#=======================================================================================================================
+class PoliticianGroup(Group):
+    def autoSave(self):
+        self.group_type = 'Y'
+        self.system = True
+        self.autogen = True
+        self.group_privacy = 'O'
+        super(Party, self).autoSave()
 
 #=======================================================================================================================
 # Political party group
@@ -4483,19 +4572,6 @@ class Supported(UURelationship):
         self.creator = self.user
         self.save()
 
-
-#class Messaged(UURelationship):
-#    message = models.TextField()
-#    def autoSave(self):
-#        self.relationship_type = 'ME'
-#        self.creator = self.user
-#        to_user = self.to_user.downcast()
-#        to_user.num_messages += 1
-#        to_user.save()
-#        self.save()
-#        return to_user.num_messages
-
-
 #=======================================================================================================================
 # A Method that stores data on the relationship between an Elected Offical and a Committee
 #
@@ -4507,8 +4583,6 @@ class CommitteeJoined(GroupJoined):
     def autoSave(self):
         self.relationship_type = 'CJ'
         super(CommitteeJoined, self).autoSave()
-
-
 
 
 

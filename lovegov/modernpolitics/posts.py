@@ -2319,6 +2319,35 @@ def logCompatability(request, vals={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# asks a politicain to join the website
+#-----------------------------------------------------------------------------------------------------------------------
+def askToJoin(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = UserProfile.objects.get(ghost=True, id=request.POST['p_id'])
+
+    already = AskedAction.lg.get_or_none(user=viewer, politician=politician)
+    if not already:
+        asked = AskedAction(user=viewer, politician=politician)
+        asked.autoSave()
+    return HttpResponse("asked to join")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# stores that this person wanted to claim a politician profile
+#-----------------------------------------------------------------------------------------------------------------------
+def claimProfile(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = UserProfile.objects.get(ghost=True, id=request.POST['p_id'])
+    email = request.POST['email']
+
+    if email:
+        claim = ClaimProfile(user=viewer, politician=politician, email=email)
+        claim.autoSave()
+
+    return HttpResponse("asked to claim profile")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------

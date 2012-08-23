@@ -618,6 +618,8 @@ def initializeGeorgeBush():
     from lovegov.modernpolitics.register import createUser
     normal = createUser(name="George Bush", email="george@gmail.com", password="george")
     normal.user_profile.confirmed = True
+    normal.politician = True
+    normal.ghost = True
     normal.user_profile.save()
     print "initialized: George Bush"
 
@@ -1829,3 +1831,28 @@ def initializeStateGroups():
             print "..." + state + " state group already initialized."
     for u in UserProfile.objects.all():
         u.joinLocationGroups()
+
+#-----------------------------------------------------------------------------------------------------------------------
+# initialize politician groups for each state
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeStateCongressGroups():
+    congress_tag = OfficeTag.objects.get(name="congress")
+    congress_offices = congress_tag.tag_offices.all()
+    for state in STATES:
+        print "============"
+        print "|initialize group for state of " + state
+        state_offices = congress_offices.filter(location__state=state)
+        print "... offices: " + str(state_offices.count())
+        state_office_ids = state_offices.values_list("id", flat=True)
+        helds = OfficeHeld.objects.filter(office_id__in=state_office_ids)
+        politicians_ids = helds.values_list("user", flat=True)
+        print "... p_ids: " + str(len(politicians_ids))
+        politicians = UserProfile.objects.filter(politician=True, id__in=politicians_ids)
+        print "... politicians: " + str(politicians.count())
+        group = PoliticianGroup()
+        group.title = state + " State Politician Group"
+        group.summary = "group of all politicians currently serving in the state of " + state
+        group.autoSave()
+        for x in politicians:
+            print "joining, " + x.get_name()
+            group.joinMember(x)
