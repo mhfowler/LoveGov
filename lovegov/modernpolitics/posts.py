@@ -2435,6 +2435,9 @@ def getModal(request,vals={}):
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
 
+    elif modal_name == "create_modal":
+       modal_html = getCreateModal(vals)
+
 
     ## Pin Content Modal ##
 #    elif modal_name == "pin_content_modal":
