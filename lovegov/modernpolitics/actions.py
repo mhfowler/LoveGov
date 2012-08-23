@@ -347,3 +347,35 @@ def userFollowResponseAction(from_user,to_user,response,privacy):
     else:
         LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was not requested from " + str(from_user.id) )
         return False
+
+
+## Action causes user to support or unsupport inputted politician, support is true or false, depending on whether to start or stop ##
+def supportAction(viewer, politician, support, privacy):
+    if politician.politician:
+        # relationship
+        support_relationship = Supported.lg.get_or_none(user=viewer, to_user=politician)
+        if not support_relationship:
+            support_relationship = Supported(user=viewer, to_user=politician)
+            support_relationship.autoSave()
+            if support:
+                politician.num_supporters += 1
+                politician.save()
+        else:
+            if support and not support_relationship.confirmed:
+                politician.num_supporters += 1
+                politician.save()
+            if not support and support_relationship.confirmed:
+                politician.num_supporters -= 1
+                politician.save()
+            support_relationship.confirmed = support
+            support_relationship.privacy = privacy
+            support_relationship.save()
+        # action
+        if support:
+            modifier = "A"
+        else:
+            modifier = "S"
+        action = SupportedAction(user=viewer,privacy=privacy,support=support_relationship,modifier=modifier)
+        action.autoSave()
+        # notification
+        politician.notify(action)

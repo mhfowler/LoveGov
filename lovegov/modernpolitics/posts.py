@@ -529,21 +529,43 @@ def sign(request, vals={}):
         vals = {"success":False, "error": "You must be in public mode to sign a petition."}
     return HttpResponse(json.dumps(vals))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Support a politician.
-#-----------------------------------------------------------------------------------------------------------------------
-def support(request, vals={}):
-
+def signPetition(request, vals={}):
+    from lovegov.frontend.views_helpers import valsPetition
     viewer = vals['viewer']
-    politician = Politician.objects.get(id=request.POST['p_id'])
-
-    confirmed = int(request.POST['confirmed'])
-    if confirmed:
-        politician.support(viewer)
+    privacy = getPrivacy(request)
+    p_id = int(request.POST['p_id'])
+    error = None
+    if privacy == 'PUB':
+        petition = Petition.lg.get_or_none(id=p_id)
+        if not petition:
+            return HttpResponse("This petition does not exist")
+        if petition.finalized:
+            if petition.sign(viewer):
+                pass
+            else:
+                LGException(viewer.get_name() +  "|have already signed this petition|" + petition.get_name())
+        else:
+            LGException(viewer.get_name() +  "|has not been finalized|" + petition.get_name())
     else:
-        politician.unsupport(viewer)
+        error = "You must be in public mode to sign a petition."
+    if not error:
+        valsPetition(viewer, petition, vals)
+        html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    else:
+        html = error
+    return HttpResponse(json.dumps({'html':html}))
 
-    return HttpResponse(json.dumps({'num':politician.num_supporters}))
+def finalizePetition(request, vals={}):
+    from lovegov.frontend.views_helpers import valsPetition
+    viewer = vals['viewer']
+    p_id = int(request.POST['p_id'])
+    petition = Petition.objects.get(id=p_id)
+    creator = petition.getCreator()
+    if viewer==creator:
+        petition.finalize()
+    valsPetition(viewer, petition, vals)
+    html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Messages a politician.
@@ -1015,7 +1037,7 @@ def updateStats(request, vals={}):
         from lovegov.frontend.views_helpers import getQuestionStats
         getQuestionStats(vals)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
-    if object == 'you_agree_with':
+    elif object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
         question = Question.objects.get(id=request.POST['q_id'])
         response = viewer.view.responses.filter(question=question)
@@ -1028,17 +1050,21 @@ def updateStats(request, vals={}):
             html = ajaxRender('site/pages/qa/you_agree_with_stats.html', vals, request)
         else:
             html = "<p> answer to see how many people agree with you. </p>"
-    if object == 'poll_progress':
+    elif object == 'poll_progress':
         from lovegov.frontend.views_helpers import getPollProgress
         poll = Poll.objects.get(id=request.POST['p_id'])
         poll_progress = getPollProgress(viewer, poll)
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
-    if object == 'petition_bar':
+    elif object == 'petition_bar':
         petition = Petition.objects.get(id=request.POST['p_id'])
         vals['petition'] = petition
         html = ajaxRender('site/pages/content_detail/petition_bar.html', vals, request)
+    elif object == 'profile_stats':
+        profile = UserProfile.objects.get(id=request.POST['p_id'])
+        vals['profile'] = profile
+        html = ajaxRender('site/pages/profile/profile_stats.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1217,6 +1243,25 @@ def userFollowStop(request, vals={}):
 
     return HttpResponse( json.dumps({'response':'removed'}) )
 
+#-----------------------------------------------------------------------------------------------------------------------
+# supports or unsupports a politician based on posted value of 'support'
+#-----------------------------------------------------------------------------------------------------------------------
+def supportPolitician(request, vals={}):
+    viewer = vals['viewer']
+    p_id = request.POST['p_id']
+    politician = UserProfile.lg.get_or_none(id=p_id, politician=True)
+    if not politician:
+        LGException(viewer.get_name() + " tried to support a user who was not a politician|" + str(p_id))
+        return HttpResponse("not politician.")
+    support = request.POST['support']
+    vals['politician'] = politician
+    support_bool = False
+    if support == 'true':
+        support_bool = True
+    supportAction(viewer, politician, support_bool, getPrivacy(request))
+    vals['is_user_supporting'] = support_bool
+    html = ajaxRender('site/pages/profile/support_button.html',vals,request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
@@ -2271,6 +2316,7 @@ def logCompatability(request, vals={}):
         page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]

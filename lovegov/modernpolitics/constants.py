@@ -293,7 +293,7 @@ NOTIFICATION_CHOICES = (
 # types of user action (for display)
 RELATIONSHIP_CHOICES = (
     ('SI', 'signed'),
-#    ('SU', 'supported'),
+    ('SU', 'supported'),
 #    ('ME', 'messaged'),
     ('FO', 'user_follow'),
     ('VO', 'voted'),                        # divided into like and dislike
@@ -316,6 +316,7 @@ ACTION_CHOICES = (
     ('ED', 'edited'),
     ('SH', 'shared'),
     ('XX', 'deleted'),
+    ('SU', 'supported')
 )
 
 # default, request, invite, deny, reject
@@ -329,14 +330,15 @@ ACTION_MODIFIERS = (
     ('S', 'stopped_following'),
 )
 
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU']
 
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
     'JO': ['A','F','R','I'],
-    'FO': ['A','F','R']
+    'FO': ['A','F','R'],
+    'SU': ['A']
 }
 
 NOTIFY_CREATOR_TYPES = ['VO','CO','SI']
@@ -611,7 +613,10 @@ ACTIONS = [
     'getElections',
     'hoverWebComparison',
     'newRegister',
-    'saveAnswer'
+    'saveAnswer',
+    'signPetition',
+    'finalizePetition',
+    'supportPolitician'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

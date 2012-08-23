@@ -7,8 +7,20 @@
 
 {% block sidebar %}
     <div class="content-detail-sidebar">
+        <a href="/home/" class='back-to-feed'> Back To Feed </a>
         {% block content_detail_sidebar %}
-            content_detail_sidebar
+            <div class="sidebar-header"> who liked this </div>
+            <div class="liked-wrapper">
+                {% for x in liked %}
+                    <a href="{{ x.get_url }}" class="liked-avatar">
+                        {% include 'site/pieces/avatar.html' with user=x width="50" height="50" %}
+                    </a>
+                {% empty %}
+                    <p>
+                        no one has liked this news yet :(
+                    </p>
+                {% endfor %}
+            </div>
         {% endblock %}
     </div>
 {% endblock %}
@@ -65,7 +77,7 @@
 
             <div class="info-left">
                 <div class="content-image">
-
+                    {% include 'site/pieces/avatar.html' with user=content width="200" height="200" hoveroff=1 %}
                 </div>
             </div>
 

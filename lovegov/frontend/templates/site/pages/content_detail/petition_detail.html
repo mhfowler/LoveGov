@@ -1,12 +1,21 @@
 {% extends 'site/pages/content_detail/content_detail.html' %}
 
+{% block content_detail_sidebar %}
+    {% include 'site/pages/content_detail/signers_sidebar.html' %}
+{% endblock %}
+
+
 {% block content_description %}
     <div class="content-info-header">
         Description
     </div>
 
-    <div class="description">
+    <div class="petition-description">
         {{ content.summary}}
+    </div>
+
+    <div class="petition-bar-wrapper">
+        {% include 'site/pages/content_detail/petition_bar.html' %}
     </div>
 
 {% endblock %}
@@ -15,7 +24,13 @@
 {% block content_body %}
 
     <div class="petition-wrapper">
-        {{ content.full_text }}
+        <div class="content-info-header">
+            Full Text
+        </div>
+        <div class="text-wrapper">
+            {{ content.full_text }}
+        </div>
+
     </div>
 
     <script> rebind="petition_detail"; </script>

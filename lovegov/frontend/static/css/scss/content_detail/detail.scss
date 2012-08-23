@@ -260,3 +260,89 @@ div.sample-question {
     }
   }
 }
+
+
+/* content detail sidebar */
+div.content-detail-sidebar {
+  a.back-to-feed {
+    @include fontSize(22px);
+    color:$gray;
+    margin-bottom:5px;
+    margin-left:0px;
+    &:hover {
+      color:$dark-gray;
+    }
+  }
+  div.sidebar-header {
+    margin-top:5px;
+    margin-bottom:5px;
+    @include fontSize(22px);
+  }
+    div.liked-wrapper {
+      padding:10px 10px 10px 0;
+      a.liked-avatar {
+        float:left;
+        margin-right:15px;
+      }
+    }
+}
+
+/* news detail */
+a.news-link {
+  height:40px;
+  padding-top:5px;
+  float:left;
+  width:100%;
+}
+
+/* petition detail */
+div.petition-description {
+  height:140px;
+}
+
+div.signers-sidebar {
+  width:100%;
+
+  div.sign-area {
+    height: 40px;
+    margin-bottom: 5px;
+    div.signed {
+      margin-top:7px;
+      margin-left:10px;
+      font-style:italic;
+    }
+    a.action-button {
+      padding:5px;
+      width:100%;
+      text-align:center;
+      background-color:$dark-gray;
+      float:left;
+      color:$white;
+      @include fontSize(20px);
+      &:hover {
+        background-color:$black;
+      }
+    }
+  }
+
+  div.signer-wrapper {
+    margin-top:5px;
+    span.signer-image {
+      float:left;
+    }
+    span.signer-name {
+      float:left;
+      margin-top: 18px;
+      margin-left: 13px;
+      @include fontSize(12px);
+    }
+  }
+}
+
+
+
+div.petition-wrapper {
+  div.text-wrapper {
+    margin-top:15px;
+  }
+}

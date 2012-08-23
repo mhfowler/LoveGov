@@ -14,10 +14,17 @@
 
 {% block content_body %}
 
-    <div class="user-post-wrapper">
-        {{ content.user_post }}
-    </div>
 
+    {% if discussion.user_post %}
+        <div class="user-post-wrapper">
+            <div class="content-info-header">
+                Discussion Subject
+            </div>
+            <div class="text-wrapper">
+                {{ discussion.user_post }}
+            </div>
+        </div>
+    {% endif %}
     <script> rebind="discussion_detail"; </script>
 
 {% endblock %}

@@ -617,6 +617,9 @@ def profile(request, alias=None, vals={}):
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()
         vals['num_group_invites'] = user_profile.getNumGroupInvites()
 
+    if user_profile.politician:
+        vals['is_user_supporting'] = Supported.lg.get_or_none(confirmed=True, user=viewer, to_user=user_profile)
+
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals, rebind="profile")
@@ -657,11 +660,9 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
-    vals['petition'] = petition
-    signers = petition.getSigners()
-    vals['signers'] = signers[:signerLimit]
-    vals['i_signed'] = (vals['viewer'] in signers)
-    vals['num_signers'] = len(signers)
+
+    viewer = vals['viewer']
+    valsPetition(viewer, petition, vals)
 
     contentDetail(request=request, content=petition, vals=vals)
     html = ajaxRender('site/pages/content_detail/petition_detail.html', vals, request)
@@ -688,8 +689,9 @@ def motionDetail(request, m_id, vals={}):
 def newsDetail(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
     vals['news'] = news
+    liked = news.getSupporters()
+    vals['liked'] = liked
     contentDetail(request=request, content=news, vals=vals)
-
     html = ajaxRender('site/pages/content_detail/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
@@ -753,8 +755,8 @@ def discussionDetail(request, d_id=-1, vals={}):
     viewer = vals['viewer']
     discussion = Discussion.objects.get(id=d_id)
     vals['discussion'] = discussion
+    vals['liked'] = discussion.getSupporters()
     contentDetail(request, discussion, vals)
-
     html = ajaxRender('site/pages/content_detail/discussion_detail.html', vals, request)
     url = discussion.get_url()
     return framedResponse(request, html, url, vals, rebind="discussion_detail")
