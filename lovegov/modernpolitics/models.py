@@ -142,7 +142,7 @@ class PhysicalAddress(LGModel):
         self.latitude = None
         self.state = None
         self.city = None
-        self.district = None
+        self.district = -1
         self.save()
 
 #=======================================================================================================================
@@ -4128,11 +4128,11 @@ class PoliticianGroup(Group):
         self.group_privacy = 'O'
         super(PoliticianGroup, self).autoSave()
 
-# uniquely identified by location__state
+# uniquely identified by location__state                # for visualization of all congress from a state
 class StatePoliticianGroup(PoliticianGroup):
     pass
 
-# uniquely identified by location__state location__district combo
+# uniquely identified by location__state location__district combo           # for visualization for all congress form a district
 class DistrictPoliticianGroup(PoliticianGroup):
     representatives = models.ManyToManyField(UserProfile, related_name="district_rep_group")
     senators = models.ManyToManyField(UserProfile, related_name="district_sen_group")

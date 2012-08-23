@@ -1889,6 +1889,42 @@ def getPoliticiansFromLocation(state, district=None):
     return politicians
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Initialize politiciangroup for congress
+#-----------------------------------------------------------------------------------------------------------------------
+def getCongressGroup():
+    return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
+
+def initializeCongressGroup():
+    if PoliticianGroup.objects.filter(alias="congress"):
+        print ("...congress group already initialized")
+    else:
+        group = PoliticianGroup(alias="congress")
+        group.title = "Congress"
+        group.summary = "all members of Congress."
+        group.system = True
+        group.autoSave()
+        # join all members
+        congress = UserProfile.objects.filter(elected_official=True)
+        for u in congress:
+            group.members.add(u)
+        print ("initialized: Congress Group")
+        return group
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeStatePoliticianGroups():
@@ -1978,25 +2014,3 @@ def getCurrentHoldersOfOffices(offices):
     held = OfficeHeld.objects.filter(office_id__in=offices_ids, current=True)
     politician_ids = held.values_list("user", flat=True)
     return UserProfile.objects.filter(id__in=politician_ids)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initialize politiciangroup for congress
-#-----------------------------------------------------------------------------------------------------------------------
-def getCongressGroup():
-    return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
-
-def initializeCongressGroup():
-    if PoliticianGroup.objects.filter(alias="congress"):
-        print ("...congress group already initialized")
-    else:
-        group = PoliticianGroup(alias="congress")
-        group.title = "Congress"
-        group.summary = "all members of Congress."
-        group.system = True
-        group.autoSave()
-        # join all members
-        congress = UserProfile.objects.filter(elected_official=True)
-        for u in congress:
-            group.members.add(u)
-        print ("initialized: Congress Group")
-        return group
