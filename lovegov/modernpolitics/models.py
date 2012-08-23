@@ -4134,8 +4134,8 @@ class StatePoliticianGroup(PoliticianGroup):
 
 # uniquely identified by location__state location__district combo
 class DistrictPoliticianGroup(PoliticianGroup):
-    representatives = models.ManyToManyField(UserProfile)
-    senators = models.ManyToManyField(UserProfile)
+    representatives = models.ManyToManyField(UserProfile, related_name="district_rep_group")
+    senators = models.ManyToManyField(UserProfile, related_name="district_sen_group")
     pass
 
 #=======================================================================================================================
