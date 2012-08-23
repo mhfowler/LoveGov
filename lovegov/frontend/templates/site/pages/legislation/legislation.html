@@ -34,7 +34,7 @@
             <select multiple class="session_select" data-selector="session_filter">
                 <optgroup label="Congress Sessions" id="bill_sessions">
                     {% for session_number in sessions %}
-                        <option class="bill-sessions" value='{{ session_number.id }}'>{{ session_number.session }}</option>
+                        <option class="bill-sessions" value='{{ session_number.session }}'>{{ session_number.session }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -68,8 +68,11 @@
         </div>
         <div class="introduced_selector">
             <select class="introduced_select" data-selector="introduced_filter">
-                <optgroup label="Committees" id="introduced-dates">
-                    <option class="introduced" value='{{ datetime }}'></option>
+                <optgroup label="Bill Introduction" id="introduced-dates">
+                    <option class="introduced" value='{{ date.0 }}'>Introduced within the past 6 months</option>
+                    <option class="introduced" value='{{ date.1 }}'>Introduced within the past 12 months</option>
+                    <option class="introduced" value='{{ date.2 }}'>Introduced within the past 2 years</option>
+                    <option class="introduced" value='{{ date.3 }}'>Introduced within the past 4 years</option>
                 </optgroup>
             </select>
         </div>

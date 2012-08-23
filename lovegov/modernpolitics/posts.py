@@ -1636,14 +1636,16 @@ def getLegislation(request, vals={}):
     feed_start = int(request.POST['feed_start'])
     session_set = json.loads(request.POST['session_set'])
     type_set = json.loads(request.POST['type_set'])
+    subject_set = json.loads(request.POST['subject_set'])
     committee_set = json.loads(request.POST['committee_set'])
+    introduced_set = json.loads(request.POST['introduced_set'])
     sponsor_body_set = json.loads(request.POST['sponsor_body_set'])
     sponsor_name_set = json.loads(request.POST['sponsor_name_set'])
     sponsor_party_set = json.loads(request.POST['sponsor_party_set'])
     sponsor_district_set = json.loads(request.POST['sponsor_district_set'])
 
-    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set,
-        committee_set=committee_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
+    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
+        committee_set=committee_set, introduced_set=introduced_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
         sponsor_party_set=sponsor_party_set, sponsor_district_set=sponsor_district_set,
         feed_start=feed_start)
 

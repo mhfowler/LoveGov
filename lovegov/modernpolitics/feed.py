@@ -210,34 +210,37 @@ def getFeedHelper(content, ranking, start, stop):
 
 
 ### gets legislation based on filter parametrs ###
-def getLegislationItems(session_set, type_set, feed_start):
+def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party_set, sponsor_district_set, feed_start):
 
     # all legislation
     legislation_items = Legislation.objects.all()
 
     # filter
-    if session_set:
+    if session_set !=null:
         legislation_items = legislation_items.filter(
             congress_session__in=session_set)
-    if type_set:
+    if type_set !=null:
         legislation_items = legislation_items.filter(
             bill_type__in=type_set)
-    if subject_set:
+    if subject_set !=null:
         legislation_items = legislation_items.filter(
-            subjects__in=subject_set)
-    if committee_set:
+            bill_subjects__in=subject_set)
+    if committee_set !=null:
         legislation_items = legislation_items.filter(
             committees__in=committee_set)
-    if sponsor_body_set:
+    if introduced_set !=null:
+        legislation_items = legislation_items.filter(
+            bill_introduced__gte=introduced_set)
+    if sponsor_body_set !=null:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_body_set)
-    if sponsor_name_set:
+    if sponsor_name_set !=null:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_name_set)
-    if sponsor_party_set:
+    if sponsor_party_set !=null:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_party_set)
-    if sponsor_district_set:
+    if sponsor_district_set !=null:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_district_set)
 

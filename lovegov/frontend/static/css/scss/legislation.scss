@@ -176,6 +176,7 @@ div.main-block {
       z-index:0;
 
       select.session_select {
+        height: 15px;
         width: 350px;
 
         #bill-sessions {
@@ -185,6 +186,13 @@ div.main-block {
 
       div.select2-container {
         width: 350px;
+
+        ul {
+
+          li.select-2-search-field {
+            height: 100%;
+          }
+        }
       }
     }
 
@@ -206,6 +214,13 @@ div.main-block {
 
       div.select2-container {
         width: 500px;
+
+        ul {
+
+          li.select-2-search-field {
+            height: 100%;
+          }
+        }
       }
     }
 
@@ -227,6 +242,13 @@ div.main-block {
 
       div.select2-container {
         width: 350px;
+
+        ul {
+
+          li.select-2-search-field {
+            height: 100%;
+          }
+        }
       }
     }
 
@@ -248,6 +270,13 @@ div.main-block {
 
       div.select2-container {
         width: 500px;
+
+        ul {
+
+          li.select-2-search-field {
+            height: 100%;
+          }
+        }
       }
     }
 
@@ -257,17 +286,27 @@ div.main-block {
       height: auto;
       width: 350px;
       padding-left: 0px;
-      z-index:4;
+      z-index:3;
 
-      ul li {
-        list-style-type: none;
+      select.introduced_select {
+        width: 350px;
 
-        h6 {
-          margin-top: 5px;
+        #introduced-dates {
+          color: $blue;
+        }
+      }
+
+      div.select2-container {
+        width: 350px;
+
+        ul {
+
+          li.select-2-search-field {
+            height: 100%;
+          }
         }
       }
     }
-
     div.sponsor_selector {
       margin-left: 0px;
       margin-top: 0px;
@@ -288,6 +327,13 @@ div.main-block {
 
           div.select2-container {
             width: 400px;
+
+            ul {
+
+              li.select-2-search-field {
+                height: 100%;
+              }
+            }
           }
 
           select.sponsor_select_name {
@@ -297,6 +343,13 @@ div.main-block {
 
           div.select2-container {
             width: 400px;
+
+            ul {
+
+              li.select-2-search-field {
+                height: 100%;
+              }
+            }
           }
 
           select.sponsor_select_party {
@@ -306,6 +359,13 @@ div.main-block {
 
           div.select2-container {
             width: 400px;
+
+            ul {
+
+              li.select-2-search-field {
+                height: 100%;
+              }
+            }
           }
 
           select.sponsor_select_district {
@@ -315,6 +375,13 @@ div.main-block {
 
           div.select2-container {
             width: 400px;
+
+            ul {
+
+              li.select-2-search-field {
+                height: 100%;
+              }
+            }
           }
         }
       }

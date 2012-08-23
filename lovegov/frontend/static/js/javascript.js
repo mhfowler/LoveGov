@@ -794,56 +794,63 @@ function getFeed(container) {
     }
     else if (feed == 'getLegislation') {
         if ($("." + $('select.session_select').data('selector')).hasClass('clicked')) {
-            var session = $(this).val();
+            var session = $('select.session_select').val();
             var session_json = JSON.stringify(session);
         }
         else {
             var session = null;
         }
         if ($("." + $('select.type_select').data('selector')).hasClass('clicked')) {
-            var type = $(this).val();
+            var type = $('select.type_select').val();
             var type_json = JSON.stringify(type);
         }
         else {
             var type = null;
         }
+        if ($("." + $('select.subject_select').data('selector')).hasClass('clicked')) {
+            var subject = $('select.subject_select').val();
+            var subject_json = JSON.stringify(subject);
+        }
+        else {
+            var subject = null;
+        }
         if ($("." + $('select.committee_select').data('selector')).hasClass('clicked')) {
-            var committee = $(this).val();
+            var committee = $('select.committee_select').val();
             var committee_json = JSON.stringify(committee);
         }
         else {
             var committee = null;
         }
         if ($("." + $('select.introduced_select').data('selector')).hasClass('clicked')) {
-            var introduced = $(this).val();
+            var introduced = $('select.introduced_select').val();
             var introduced_json = JSON.stringify(introduced);
         }
         else {
             var introduced = null;
         }
-        if ($("." + $('select.sponsor_select_body').data('selector')).hasClass('clicked')) {
-            var sponsor_body = $(this).val();
+        if ($("." + $('select.sponsor_select_body').data('selector')).hasClass('clicked') && $('select.sponsor_select_body').val() != null) {
+            var sponsor_body = $('select.sponsor_select_body').val();
             var sponsor_body_json = JSON.stringify(sponsor_body);
         }
         else {
             var sponsor_body = null;
         }
-        if ($("." + $('select.sponsor_select_name').data('selector')).hasClass('clicked')) {
-            var sponsor_name = $(this).val();
+        if ($("." + $('select.sponsor_select_name').data('selector')).hasClass('clicked') && $('select.sponsor_select_name').val() != null) {
+            var sponsor_name = $('select.sponsor_select_name').val();
             var sponsor_name_json = JSON.stringify(sponsor_name);
         }
         else {
             var sponsor_name = null;
         }
-        if ($("." + $('select.sponsor_select_party').data('selector')).hasClass('clicked')) {
-            var sponsor_party = $(this).val();
+        if ($("." + $('select.sponsor_select_party').data('selector')).hasClass('clicked') && $('select.sponsor_select_party').val() != null) {
+            var sponsor_party = $('select.sponsor_select_party').val();
             var sponsor_party_json = JSON.stringify(sponsor_party);
         }
         else {
             var sponsor_party = null;
         }
-        if ($("." + $('select.sponsor_select_district').data('selector')).hasClass('clicked')) {
-            var sponsor_district = $(this).val();
+        if ($("." + $('select.sponsor_select_district').data('selector')).hasClass('clicked') && $('select.sponsor_select_district').val() != null) {
+            var sponsor_district = $('select.sponsor_select_district').val();
             var sponsor_district_json = JSON.stringify(sponsor_district);
         }
         else {
@@ -851,7 +858,7 @@ function getFeed(container) {
         }
 
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
-            'type_set':type_json, 'committee_set':committee_json, 'sponsor_body_set':sponsor_body_json,
+            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json, 'sponsor_body_set':sponsor_body_json,
             'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
             'sponsor_district_set':sponsor_district_json};
     }

@@ -11,6 +11,8 @@ from lovegov.frontend.views_helpers import *
 
 from pprint import pprint
 
+from datetime import datetime, timedelta
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
 #-----------------------------------------------------------------------------------------------------------------------
@@ -906,7 +908,7 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
-def legislation (request, session, type, number, vals={}):
+def legislation (request, vals={}):
     vals['session'], vals['type'], vals['subjects'], vals['committees'], vals['dates'], vals['sponsor'] = session, type, subjects, committees, dates, sponsor
     vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
     type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
@@ -923,6 +925,9 @@ def legislation_helper (request, vals={}):
     vals['subjects'] = LegislationSubject.objects.all()
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+    now = datetime.now()
+    range_time = [183,366,732,1464]
+    vals['introduced_dates'] = [now - timedelta(days=x) for x in range_time]
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
