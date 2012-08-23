@@ -1834,10 +1834,13 @@ def syncOfficeBooleans():
             print str(count)
         count += 1
         o.setBooleans()
+    print "representatives offices: " + str(Office.objects.filter(representative=True).count())
+    print "senator offices: " + str(Office.objects.filter(senator=True).count())
 
 def setPoliticianPrimaryRolesAndLocations():
     print "+RUNNING+ setPrimaryRoles"
     elected = UserProfile.objects.filter(elected_official=True)
+    print "elected officials: " + str(elected.count())
     for e in elected:
         held = OfficeHeld.objects.filter(user=e, current=True)
         if not held:
@@ -1855,6 +1858,8 @@ def setPoliticianPrimaryRolesAndLocations():
                 location.state = office_location.state
                 location.district = office_location.district
                 location.save()
+    print "representatives: " + str(UserProfile.objects.filter(elected_official=True, primary_role__office__representative=True).count())
+    print "senators: " + str(UserProfile.objects.filter(elected_official=True, primary_role__office__senator=True).count())
 
 def optimizeRepsAndSens():
     syncOfficeHeldCurrent()
