@@ -1841,7 +1841,7 @@ def setPoliticiansCurrentlyElected():
         politician = o.user
         p_id = politician.id
         if not p_id in p_ids:
-            print "+II+ setting primary role for " + politician.get_name()
+            print "+II+ setting primary role for " + enc(politician.get_name())
             p_ids.append(politician.id)
             politician.currently_in_office = True
             politician.primary_role = o
