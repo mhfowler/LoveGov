@@ -1091,9 +1091,14 @@ def joinGroupRequest(request, vals={}):
     group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast()  # Parties have a slightly different joinMember
 
-    response = joinGroupAction(group,viewer,getPrivacy(request))
+    joinGroupAction(group,viewer,getPrivacy(request))
 
-    return HttpResponse( json.dumps({'response':response}) )
+    from lovegov.frontend.views_helpers import valsGroupButtons
+    vals['info'] = valsGroupButtons(viewer, group, {})
+    vals['group'] = group
+    html = ajaxRender('site/pages/group/group_join_button.html', vals, request)
+    return HttpResponse( json.dumps({'html':html}) )
+
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or rejects a user GroupJoined, if GroupJoined was requested.
 #
@@ -1254,6 +1259,23 @@ def supportPolitician(request, vals={}):
     html = ajaxRender('site/pages/profile/support_button.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# follows or unfollows a group based on value of follow
+#-----------------------------------------------------------------------------------------------------------------------
+def followGroup(request, vals={}):
+    viewer = vals['viewer']
+    g_id = request.POST['g_id']
+    group = Group.lg.get_or_none(id=g_id)
+    follow = request.POST['follow']
+    vals['group'] = group
+    follow_bool = False
+    if follow == 'true':
+        follow_bool = True
+    followGroupAction(viewer, group, follow_bool, getPrivacy(request))
+    vals['is_user_following'] = follow_bool
+    html = ajaxRender('site/pages/group/group_follow_button.html',vals,request)
+    return HttpResponse(json.dumps({'html':html}))
+
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1290,13 +1312,17 @@ def leaveGroup(request, vals={}):
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast()
 
-    if group.id == getLoveGovGroup().id:
-        LGException('User ID #' + str(viewer.id) + ' attempted to leave the LoveGov group')
+    if group.system:
+        LGException('User ID #' + str(viewer.id) + ' attempted to leave system group,' + str(group.id))
         return HttpResponse( json.dumps({'response':'fail'}) )
 
     leaveGroupAction(group,viewer,getPrivacy(request))
 
-    return HttpResponse( json.dumps({'response':'removed'}) )
+    from lovegov.frontend.views_helpers import valsGroupButtons
+    vals['info'] = valsGroupButtons(viewer, group, {})
+    vals['group'] = group
+    html = ajaxRender('site/pages/group/group_join_button.html', vals, request)
+    return HttpResponse( json.dumps({'html':html}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds content to group.
@@ -1671,7 +1697,7 @@ def getQuestions(request, vals):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(ghost=False).order_by("-num_members")
+    groups = Group.objects.filter(hidden=False).order_by("-num_members")
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
 
@@ -1864,7 +1890,9 @@ def getUserActivity(request, vals={}):
 
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(viewer=viewer, vals=vals) )
+        action_text = action.getVerbose(viewer=viewer, vals=vals)
+        if action_text:
+            actions_text.append(action_text)
 
     vals['actions_text'] = actions_text
 

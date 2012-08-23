@@ -1083,8 +1083,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     parties = models.ManyToManyField("Party", related_name='parties')
-    # feeds & ranking
-    my_filters = models.ManyToManyField(SimpleFilter)
+    # my groups and feeds
+    group_subscriptions = models.ManyToManyField("Group")
     # SETTINGS
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
@@ -1096,6 +1096,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     primary_role = models.ForeignKey("OfficeHeld", null=True)
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
+    currently_in_office = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
     num_messages = models.IntegerField(default=0)
@@ -1679,6 +1680,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_feed=False)
             group.system = True
             group.hidden = True
+            group.subscribable = False
+            group.content_by_posting = False
             group.autoSave()
             self.i_follow = group
             self.save()
@@ -1693,6 +1696,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', in_search=False, in_feed=False)
             group.system = True
             group.hidden = True
+            group.subscribable = False
+            group.content_by_posting = False
             group.autoSave()
             self.follow_me = group
             self.save()
@@ -1775,7 +1780,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     # get groups that non-ghost groups
     def getRealGroups(self):
-        return self.getGroups().filter(ghost=False)
+        return self.getGroups().filter(hidden=False)
 
     def getUserGroups(self, num=-1, start=0):
         if num == -1:
@@ -1787,7 +1792,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.networks.all()
 
     def getGroupSubscriptions(self):
-        return self.getGroups().filter(hidden=False)
+        return self.group_subscriptions.all()
 
     def getPoliticians(self):
         supported = Supported.objects.filter(confirmed=True, user=self)
@@ -1970,7 +1975,6 @@ class Action(Privacy):
 
     def downcast(self):
         action_type = self.action_type
-
         if action_type == 'VO':
             object = self.votedaction
         elif action_type== 'JO':
@@ -1993,6 +1997,8 @@ class Action(Privacy):
             object = self.askedaction
         elif action_type == 'ME':
             object = self.messagedaction
+        elif action_type == 'GF':
+            object = self.groupfollowaction
         else:
             object = None
         return object
@@ -2005,7 +2011,6 @@ class Action(Privacy):
 
     def getModifier(self):
         return None
-
 
 
 #=======================================================================================================================
@@ -2034,6 +2039,31 @@ class SignedAction(Action):
         })
 
         return render_to_string('site/pieces/actions/signed_verbose.html',vals)
+
+#=======================================================================================================================
+# Following or unfollowing a group, aka adding or removing from group subscriptions
+#=======================================================================================================================
+class GroupFollowAction(Action):
+    group = models.ForeignKey("Group")
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getModifier(self):
+        return self.modifier
+
+    def getTo(self):
+        return self.group
+
+    def autoSave(self):
+        self.action_type = 'GF'
+        self.privacy = "PRI"
+        super(GroupFollowAction,self).autoSave()
+
+    def getTo(self):
+        return self.group
+
+    def getVerbose(self,viewer=None,vals={}):
+        return None
+
 
 #=======================================================================================================================
 # Message a politician
@@ -3636,6 +3666,9 @@ class Group(Content):
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
+    subscribable = models.BooleanField(default=True)                                            # indicates whether or not you can follow or unfollow this group
+    content_by_posting = models.BooleanField(default=True)                                      # if true, group content is determined based on what is posted to group
+                                                                                                # else false, then group content is determined by things created by members anywhere
     # democratic groups
     democratic = models.BooleanField(default=False)       # if false, fields below have no importance
     government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
@@ -3773,6 +3806,8 @@ class Group(Content):
         self.members.add(user)
         self.num_members += 1
         self.save()
+        from lovegov.modernpolitics.actions import followGroupAction
+        followGroupAction(user, self, True, privacy)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -4125,6 +4160,7 @@ class PoliticianGroup(Group):
         self.group_type = 'Y'
         self.system = True
         self.autogen = True
+        self.content_by_posting = False
         self.group_privacy = 'O'
         super(PoliticianGroup, self).autoSave()
 

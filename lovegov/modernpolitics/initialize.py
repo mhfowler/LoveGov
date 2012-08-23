@@ -152,6 +152,7 @@ def initializeLoveGovGroup():
         print("...lovegov group already initialized.")
     else:
         group = Group(title="LoveGov Group", group_type='O', full_text="We are lovegov.", system=True, alias="LoveGov_Group")
+        group.content_by_posting = True
         group.autoSave()
         group.saveDefaultCreated()
         # add all users
@@ -439,6 +440,8 @@ def initializeDB():
     initializeContent()
     initializeSomeUserGroups()
     initializeSomeTestContent()
+    initializePresidentialElection2012()
+    initializePresidentialCandidates2012()
     randomWhales()
     # valid emails
     initializeValidEmails()
@@ -598,8 +601,8 @@ def initializeGeorgeBush():
     from lovegov.modernpolitics.register import createUser
     normal = createUser(name="George Bush", email="george@gmail.com", password="george")
     normal.user_profile.confirmed = True
-    normal.politician = True
-    normal.ghost = True
+    normal.user_profile.politician = True
+    normal.user_profile.ghost = True
     normal.user_profile.save()
     print "initialized: George Bush"
 
@@ -2009,8 +2012,12 @@ def getOfficesFromTagName(name):
     offices = tag.tag_offices.all()
     return offices
 
-def getCurrentHoldersOfOffices(offices):
+def getOfficeHeldFromOffices(offices):
     offices_ids = offices.values_list("id", flat=True)
     held = OfficeHeld.objects.filter(office_id__in=offices_ids, current=True)
+    return held
+
+def getCurrentHoldersOfOffices(offices):
+    held = getOfficeHeldFromOffices(offices)
     politician_ids = held.values_list("user", flat=True)
     return UserProfile.objects.filter(id__in=politician_ids)

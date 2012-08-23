@@ -318,7 +318,8 @@ ACTION_CHOICES = (
     ('XX', 'deleted'),
     ('SU', 'supported'),
     ('ME', 'messaged'),
-    ('AS', 'asked')
+    ('AS', 'asked'),
+    ('GF', 'group_follow')
 )
 
 # default, request, invite, deny, reject
@@ -621,7 +622,8 @@ ACTIONS = [
     'supportPolitician',
     'askToJoin',
     'claimProfile',
-    'messagePolitician'
+    'messagePolitician',
+    'followGroup'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

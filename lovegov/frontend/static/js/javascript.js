@@ -57,10 +57,10 @@ var poll_autoswitch;
 function pollAutoSwitch() {
     clearInterval(poll_autoswitch);
     /*
-    poll_autoswitch= setInterval(function()
-    {
-        cyclePollQuestions();
-    }, 5000); */
+     poll_autoswitch= setInterval(function()
+     {
+     cyclePollQuestions();
+     }, 5000); */
 }
 
 function comparisonWebs() {
@@ -1476,27 +1476,17 @@ bind(".send_message", 'click', null, function(event) {
     );
 });
 
-bind(".user_unfollow", 'mouseenter', null, function(event) {
-    $(this).text('stop');
+/* mouse over text change for some buttons */
+bind(".hover_text", 'mouseenter', null, function(event) {
+    var hover_text = $(this).data("hover_text");
+    $(this).text(hover_text);
 });
-bind(".user_unfollow", 'mouseout', null, function(event) {
-    $(this).text('following');
-});
-
-bind(".unsupport_politician", 'mouseenter', null, function(event) {
-    $(this).text('stop');
-});
-bind(".unsupport_politician", 'mouseout', null, function(event) {
-    $(this).text('supporting');
+bind(".hover_text", 'mouseout', null, function(event) {
+    var original_text = $(this).data("original_text");
+    $(this).text(original_text);
 });
 
-bind(".user_unrequest", 'mouseenter', null, function(event) {
-    $(this).text('un-request');
-});
-bind(".user_unrequest", 'mouseout', null, function(event) {
-    $(this).text('requested');
-});
-
+/* profile tabs */
 bind(".profile_tab", 'click', null, function(event) {
     $(".profile_tab").removeClass("clicked");
     $(this).addClass("clicked");
@@ -1642,16 +1632,16 @@ function supportPolitician(div,support,p_id)
 bind( 'div.group_join' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
-    groupFollow(event,$(this),true,g_id);
+    groupJoin(event,$(this),true,g_id);
 });
 
 bind( 'div.group_leave' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
-    groupFollow(event,$(this),false,g_id);
+    groupJoin(event,$(this),false,g_id);
 });
 
-function groupFollow(event,div,follow,g_id)
+function groupJoin(event,div,follow,g_id)
 {
     event.preventDefault();
     // If follow is true, this is a join request
@@ -1671,26 +1661,11 @@ function groupFollow(event,div,follow,g_id)
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                var response = returned.response;
-
-                if( response == "joined")
-                {
-                    div.html("leave group");
-                    div.removeClass("group_join");
-                    div.addClass("group_leave");
+                if (follow) {
+                    var follow_button = div.siblings(".group_follow_button");
+                    followGroup(follow_button, follow, g_id);
                 }
-                else if( response == "requested")
-                {
-                    div.html("un-request group");
-                    div.removeClass("group_join");
-                    div.addClass("group_leave")
-                }
-                else if( response == "removed")
-                {
-                    div.html("join group");
-                    div.removeClass("group_leave");
-                    div.addClass("group_join")
-                }
+                div.replaceWith(returned.html);
             }
         });
 }
@@ -1772,7 +1747,7 @@ bind( ".group_response_y" , 'click' , null , function(event)
 {
     var wrapper = $(this).parent(".group_request_buttons");
     wrapper.fadeOut(600);
-    groupFollowResponse(event,"Y",wrapper);
+    groupJoinResponse(event,"Y",wrapper);
     wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
 });
 
@@ -1780,11 +1755,11 @@ bind( ".group_response_n" , 'click' , null , function(event)
 {
     var wrapper = $(this).parent(".group_request_buttons");
     wrapper.fadeOut(600);
-    groupFollowResponse(event,"N",wrapper);
+    groupJoinResponse(event,"N",wrapper);
     wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
 });
 
-function groupFollowResponse(event,response,div)
+function groupJoinResponse(event,response,div)
 {
     event.preventDefault();
     var follow_id = div.data("follow_id");
@@ -1799,6 +1774,48 @@ function groupFollowResponse(event,response,div)
             success: function(data)
             {
 
+            }
+        }
+    );
+}
+
+
+/* follow group */
+bind('.group_follow' , 'click' , null , function(event)
+{
+    var g_id = $(this).data("g_id");
+    followGroup($(this),true,g_id);
+});
+
+bind('.group_unfollow' , 'click' , null , function(event)
+{
+    var g_id = $(this).data("g_id");
+    followGroup($(this),false,g_id);
+});
+
+
+/* follow group */
+function followGroup(div,follow,g_id)
+{
+    // If follow is true, start following
+    // If follow is false, stop following
+    action({
+            data: {
+                'action': 'followGroup',
+                'follow': follow,
+                'g_id': g_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (div.length!=0) {
+                    div.replaceWith(returned.html);
+                }
+                /*
+                var nav_link = getNavLink(returned.href);
+                if (nav_link) {
+                    // get rid of it
+                } */
             }
         }
     );

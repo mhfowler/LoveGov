@@ -65,12 +65,24 @@ div.group-expanded
         margin-bottom:7px;
         display: block;
         color: $black;
+        @include border-radius(8px);
 
         &:hover
         {
           background-color:$dark-gray;
           cursor:pointer;
         }
+      }
+
+      div.on-button {
+        background-color:$green;
+        color:white;
+        &:hover { background-color: $dark-gray; }
+      }
+      div.group-membership {
+        background-color:$black;
+        color:white;
+        &:hover { background-color: $dark-gray; }
       }
     }
 

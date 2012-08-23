@@ -2433,10 +2433,10 @@ function loadGroup()
      });
 
      $("#group_follow").click( function(event) {
-         groupFollow(event,$(this),true);
+         groupJoin(event,$(this),true);
      });
      $("#group_unfollow").click( function(event) {
-         groupFollow(event,$(this),false);
+         groupJoin(event,$(this),false);
      });
 
      // select histogram block

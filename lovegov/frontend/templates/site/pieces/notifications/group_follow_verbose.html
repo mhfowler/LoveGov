@@ -1,0 +1,23 @@
+{% extends 'site/pieces/notifications/notification_verbose.html' %}
+
+{% load thumbnail %}
+
+{% block notification_content %}
+
+    <td class="notification-thumbnail">
+        {% include "site/pieces/avatar.html" with object=user width="25" height="25" hoveroff=hover_off %}
+    </td>
+
+    {% if modifier == 'A' %}
+        <td class="notification-text">
+            {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
+            followed
+        </td>
+    {% elif modifier == 'S' %}
+        <td class="notification-text">
+            {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
+            stopped following
+        </td>
+    {% endif %}
+
+{% endblock %}

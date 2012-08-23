@@ -307,6 +307,20 @@ def valsGroup(viewer, group, vals):
     # Get the total number of members
     vals['num_members'] = group.num_members
 
+    # vals for group buttons
+    valsGroupButtons(viewer, group, vals)
+
+    ## TEST ##
+    items = Content.objects.filter(type='N')
+    vals['item1'] = items[0]
+    vals['item2'] = items[1]
+
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
+    return vals
+
+def valsGroupButtons(viewer, group, vals):
     # Is the current viewer already (requesting to) following this group?
     vals['is_user_requested'] = False
     vals['is_user_confirmed'] = False
@@ -319,15 +333,7 @@ def valsGroup(viewer, group, vals):
             vals['is_user_requested'] = True
         if group_joined.rejected:
             vals['is_user_rejected'] = True
-
-    ## TEST ##
-    items = Content.objects.filter(type='N')
-    vals['item1'] = items[0]
-    vals['item2'] = items[1]
-
-    # histogram
-    loadHistogram(5, group.id, 'mini', vals=vals)
-
+    vals['is_user_following'] = group in viewer.group_subscriptions.all()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------

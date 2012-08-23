@@ -38,7 +38,7 @@
         <div class="group-info">
 
             <!-- float right -->
-            <div class="group-actions">
+            <div class="group-actions group_actions">
 
                 {% if info.is_user_admin %}
                     <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
@@ -48,13 +48,9 @@
                     {% endif %}
                 {% endif %}
 
-                {% if info.is_user_rejected or not info.is_user_confirmed and not info.is_user_requested %}
-                    <div class="group-action group_join" data-g_id="{{ group.id }}"> join group </div>
-                {% elif info.is_user_confirmed %}
-                    <div class="group-action group_leave" data-g_id="{{ group.id }}"> leave group </div>
-                {% elif info.is_user_requested %}
-                    <div class="group-action group_leave" data-g_id="{{ group.id }}"> un-request group </div>
-                {% endif %}
+                {% include 'site/pages/group/group_join_button.html' %}
+
+                {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
 
             </div>
 
