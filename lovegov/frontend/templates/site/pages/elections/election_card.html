@@ -16,12 +16,13 @@
                 match
             </div>
         </div>
-        <a href="#" class="support-button action-button">
-            support
-        </a>
-        <a class="profile-button action-button">
+
+        {% include 'site/pages/profile/support_button.html' with politician=politician %}
+
+        <a href="{{ politician.get_url }}" class="profile-button action-button">
             view profile
         </a>
+
     </div>
     </div>
     <div class="card-bottom">

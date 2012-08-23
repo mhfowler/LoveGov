@@ -316,7 +316,10 @@ ACTION_CHOICES = (
     ('ED', 'edited'),
     ('SH', 'shared'),
     ('XX', 'deleted'),
-    ('SU', 'supported')
+    ('SU', 'supported'),
+    ('ME', 'messaged'),
+    ('AS', 'asked'),
+    ('GF', 'group_follow')
 )
 
 # default, request, invite, deny, reject
@@ -618,6 +621,10 @@ ACTIONS = [
     'finalizePetition',
     'supportPolitician',
     'createContent',
+    'askToJoin',
+    'claimProfile',
+    'messagePolitician',
+    'followGroup'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -719,3 +726,5 @@ CANADIAN_PROVINCES = [ ('AB', 'Alberta'), ('BC', 'British Columbia'), ('MB', 'Ma
 STATES_DICT = {}
 for x in STATES:
     STATES_DICT[x[0]]=x[1]
+
+CURRENT_CONGRESS_SESSION = 112

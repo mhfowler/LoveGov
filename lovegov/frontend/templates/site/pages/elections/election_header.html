@@ -48,12 +48,18 @@
                 {{ info.election.election_date|date:"jS F" }}
             </div>
             <div class="election-info-lower">
+                <div class="leaderboard-wrapper">
+                <div class="leaderboard-header"> LEADERBOARD </div>
+                    {% include 'site/pages/elections/election_leaderboard.html' %}
+                </div>
+                {% comment %}
                 <div class="election-description">
                         a description
                 </div>
                 <div class="election-actions">
                         <a href="{{ info.election.getCandidatesURL }}" class="election-action"> see all candidates </a>
                 </div>
+                {% endcomment %}
             </div>
         </div>
 

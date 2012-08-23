@@ -1,0 +1,32 @@
+<div class="message-politician-wrapper message_politician_wrapper" data-p_id="{{ politician.id }}">
+
+    <div class="send_a_message">
+        <div class="message-header"> Send a Message to {{ politician.get_name }} </div>
+
+        <div class="message-wrapper">
+            <div class="message-beginning">
+                <p>
+                    Dear {{ politician.get_name }},
+                </p>
+                <p>
+                    You have received a message from one of your constituents via the online political platform
+                    <a href="http://lovegov.com"> LoveGov </a>.
+                </p>
+            </div>
+            <textarea class="message-textarea message_textarea">Hi {{ politician.first_name }}, my name is {{ viewer.get_name }} and I </textarea>
+        </div>
+
+        <a class="send-message send_message"> send </a>
+
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="message-success message_success">
+
+        We sent your message to {{ politician.get_name }}. Thankyou!
+
+        <a class="modal_close close-button"> close </a>
+
+    </div>
+
+</div>

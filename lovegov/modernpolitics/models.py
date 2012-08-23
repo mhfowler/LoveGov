@@ -133,7 +133,17 @@ class PhysicalAddress(LGModel):
     latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     state = models.CharField(max_length=2, null=True)
     city = models.CharField(max_length=500, null=True)
-    district = models.IntegerField(default=-1)
+    district = models.IntegerField(null=True)
+
+    def clear(self):
+        self.address_string = None
+        self.zip = None
+        self.longitude = None
+        self.latitude = None
+        self.state = None
+        self.city = None
+        self.district = None
+        self.save()
 
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
@@ -1073,8 +1083,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     parties = models.ManyToManyField("Party", related_name='parties')
-    # feeds & ranking
-    my_filters = models.ManyToManyField(SimpleFilter)
+    # my groups and feeds
+    group_subscriptions = models.ManyToManyField("Group")
     # SETTINGS
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
@@ -1083,10 +1093,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     ghost = models.BooleanField(default=False)
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
+    primary_role = models.ForeignKey("OfficeHeld", null=True)
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
+    currently_in_office = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
+    num_messages = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
     political_statement = models.TextField(null=True)
     # anon ids
@@ -1185,14 +1198,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     # automatically parse city and state groups
     #-------------------------------------------------------------------------------------------------------------------
-    def joinCityGroup(self, city, state):
+    def joinTownGroup(self, city, state):
         if city:
-            already = CityGroup.lg.get_or_none(location__city=city, location__state=state)
+            already = TownGroup.lg.get_or_none(location__city=city, location__state=state)
             if already:
                 if not self in already.members.all():
                     already.joinMember(self)
             else:
-                city_group = CityGroup().autoCreate(city, state)
+                city_group = TownGroup().autoCreate(city, state)
                 city_group.joinMember(self)
 
     def joinStateGroup(self, state):
@@ -1204,7 +1217,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def joinLocationGroups(self):
         if self.location:
-            self.joinCityGroup(self.location.city, self.location.state)
+            self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1667,6 +1680,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             group = Group(title=title, full_text="Group of people who "+self.get_name()+" is following.", group_privacy='S', system=True, in_search=False, in_feed=False)
             group.system = True
             group.hidden = True
+            group.subscribable = False
+            group.content_by_posting = False
             group.autoSave()
             self.i_follow = group
             self.save()
@@ -1681,6 +1696,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             group = Group(title=title, full_text="Group of people who are following "+self.get_name(), group_privacy='S', in_search=False, in_feed=False)
             group.system = True
             group.hidden = True
+            group.subscribable = False
+            group.content_by_posting = False
             group.autoSave()
             self.follow_me = group
             self.save()
@@ -1775,7 +1792,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.networks.all()
 
     def getGroupSubscriptions(self):
-        return self.getGroups().filter(hidden=False)
+        return self.group_subscriptions.all()
 
     def getPoliticians(self):
         supported = Supported.objects.filter(confirmed=True, user=self)
@@ -1958,7 +1975,6 @@ class Action(Privacy):
 
     def downcast(self):
         action_type = self.action_type
-
         if action_type == 'VO':
             object = self.votedaction
         elif action_type== 'JO':
@@ -1977,6 +1993,12 @@ class Action(Privacy):
             object = self.deletedaction
         elif action_type == 'SU':
             object = self.supportedaction
+        elif action_type == 'AS':
+            object = self.askedaction
+        elif action_type == 'ME':
+            object = self.messagedaction
+        elif action_type == 'GF':
+            object = self.groupfollowaction
         else:
             object = None
         return object
@@ -1989,7 +2011,6 @@ class Action(Privacy):
 
     def getModifier(self):
         return None
-
 
 
 #=======================================================================================================================
@@ -2018,6 +2039,99 @@ class SignedAction(Action):
         })
 
         return render_to_string('site/pieces/actions/signed_verbose.html',vals)
+
+#=======================================================================================================================
+# Following or unfollowing a group, aka adding or removing from group subscriptions
+#=======================================================================================================================
+class GroupFollowAction(Action):
+    group = models.ForeignKey("Group")
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getModifier(self):
+        return self.modifier
+
+    def getTo(self):
+        return self.group
+
+    def autoSave(self):
+        self.action_type = 'GF'
+        self.privacy = "PRI"
+        super(GroupFollowAction,self).autoSave()
+
+    def getTo(self):
+        return self.group
+
+    def getVerbose(self,viewer=None,vals={}):
+        return None
+
+
+#=======================================================================================================================
+# Message a politician
+#=======================================================================================================================
+class MessagedAction(Action):
+    politician = models.ForeignKey(UserProfile)
+    message = models.TextField()
+
+    def autoSave(self):
+        self.action_type = 'ME'
+        politician = self.politician
+        politician.num_messages += 1
+        politician.save()
+        super(MessagedAction,self).autoSave()
+        print "sent " + self.politician.get_name() + " an email with message!"
+
+    def getTo(self):
+        return self.politician
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.politician
+        })
+
+        return render_to_string('site/pieces/actions/messaged_verbose.html',vals)
+
+#=======================================================================================================================
+# Asking a politician to join lovegov.
+#=======================================================================================================================
+class AskedAction(Action):
+    politician = models.ForeignKey(UserProfile)
+
+    def autoSave(self):
+        self.action_type = 'AS'
+        print "sent an email to " + self.politician.get_name() + " !"
+        super(AskedAction,self).autoSave()
+
+    def getTo(self):
+        return self.politician
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.politician
+        })
+
+        return render_to_string('site/pieces/actions/asked_verbose.html',vals)
+
+class ClaimProfile(LGModel):
+    user = models.ForeignKey(UserProfile, related_name="claims")
+    politician = models.ForeignKey(UserProfile, related_name="claimers")
+    email = models.CharField(max_length=200)
+    def autoSave(self):
+        print "sent us an email telling about claim"
+        self.save()
 
 #=======================================================================================================================
 # Creating some content action
@@ -2564,13 +2678,30 @@ class Notification(Privacy):
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
-    governmental = models.BooleanField(default=False)
     tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
+    # optimization
+    governmental = models.BooleanField(default=False)
+    representative = models.BooleanField(default=False)
+    senator = models.BooleanField(default=False)
 
     def autoSave(self,creator=None,privacy='PUB'):
         self.type = "O"
         self.in_search = True
         super(Office,self).autoSave(creator,privacy)
+
+    def setBooleans(self):
+        rep_tag = OfficeTag.objects.get(name="representative")
+        if rep_tag in self.tags.all():
+            self.representative=True
+            self.save()
+        sen_tag = OfficeTag.objects.get(name="senator")
+        if sen_tag in self.tags.all():
+            self.senator = True
+            self.save()
+        congress_tag = OfficeTag.objects.get(name="congress")
+        if congress_tag in self.tags.all():
+            self.governmental = True
+            self.save()
 
 
 ########################################################################################################################
@@ -3535,6 +3666,9 @@ class Group(Content):
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
+    subscribable = models.BooleanField(default=True)                                            # indicates whether or not you can follow or unfollow this group
+    content_by_posting = models.BooleanField(default=True)                                      # if true, group content is determined based on what is posted to group
+                                                                                                # else false, then group content is determined by things created by members anywhere
     # democratic groups
     democratic = models.BooleanField(default=False)       # if false, fields below have no importance
     government_type = models.CharField(max_length=30, choices=GOVERNMENT_TYPE_CHOICES, default="traditional")
@@ -3576,7 +3710,11 @@ class Group(Content):
         elif type == 'S':
             object = self.stategroup
         elif type == 'C':
-            object = self.citygroup
+            object = self.committee
+        elif type == 'T':               # for towngroup?
+            object = self.towngroup
+        elif type == 'Y':
+            object = self.politiciangroup
         else: object = self
         return object
 
@@ -3668,6 +3806,8 @@ class Group(Content):
         self.members.add(user)
         self.num_members += 1
         self.save()
+        from lovegov.modernpolitics.actions import followGroupAction
+        followGroupAction(user, self, True, privacy)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -3678,14 +3818,15 @@ class Group(Content):
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
         group_joined.privacy = privacy
-        if group_joined.confirmed and not group_joined.group.ghost:
+        if group_joined.confirmed and not group_joined.group.hidden:
             user.num_groups -= 1
             user.save()
         group_joined.clear()
+        if user in self.members.all():
+            self.num_members -= 1
+            self.save()
         self.members.remove(user)
         self.admins.remove(user)
-        self.num_members -= 1
-        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
@@ -3995,20 +4136,43 @@ class StateGroup(Group):
         self.location = location
         self.save()
 
-class CityGroup(Group):
+class TownGroup(Group):
     pass
     def autoCreate(self, city, state):
         city_state = city + ", " + state
         self.title = city_state + " Group"
         self.description = "A group for sharing political information relevant to " + city_state + "."
-        self.group_type = 'C'
+        self.group_type = 'T'
         self.autogen = True
         self.group_privacy = "O"
-        super(CityGroup, self).autoSave()
+        super(TownGroup, self).autoSave()
         location = PhysicalAddress(state=state, city=city)
         location.save()
         self.location = location
         self.save()
+
+#=======================================================================================================================
+# Politician group, is a sytem group for organizing politicians
+#
+#=======================================================================================================================
+class PoliticianGroup(Group):
+    def autoSave(self):
+        self.group_type = 'Y'
+        self.system = True
+        self.autogen = True
+        self.content_by_posting = False
+        self.group_privacy = 'O'
+        super(PoliticianGroup, self).autoSave()
+
+# uniquely identified by location__state                # for visualization of all congress from a state
+class StatePoliticianGroup(PoliticianGroup):
+    pass
+
+# uniquely identified by location__state location__district combo           # for visualization for all congress form a district
+class DistrictPoliticianGroup(PoliticianGroup):
+    representatives = models.ManyToManyField(UserProfile, related_name="district_rep_group")
+    senators = models.ManyToManyField(UserProfile, related_name="district_sen_group")
+    pass
 
 #=======================================================================================================================
 # Political party group
@@ -4396,6 +4560,7 @@ class OfficeHeld(UCRelationship):
     confirmed = models.BooleanField(default=False)
     start_date = models.DateField()
     end_date = models.DateField()
+    current = models.BooleanField(default=False)
     election = models.BooleanField(default=False)
     congress_sessions = models.ManyToManyField(CongressSession)
 
@@ -4405,9 +4570,23 @@ class OfficeHeld(UCRelationship):
         self.save()
 
     def isCurrent(self):
-        if (datetime.date.today() - self.end_date).days >= 0:
+        if (datetime.date.today() - self.end_date).days <= 0:
             return True
         return False
+
+    def setCurrent(self):
+        if self.office.tags.filter(name="congress"):
+            if self.congress_sessions.filter(session=CURRENT_CONGRESS_SESSION) and self.confirmed:
+                self.current = True
+                self.save()
+            else:
+                self.current = False
+                self.save()
+        else:
+            is_current = self.isCurrent()
+            if is_current and self.confirmed:
+                self.current = True
+                self.save()
 
 
 #=======================================================================================================================
@@ -4487,19 +4666,6 @@ class Supported(UURelationship):
         self.creator = self.user
         self.save()
 
-
-#class Messaged(UURelationship):
-#    message = models.TextField()
-#    def autoSave(self):
-#        self.relationship_type = 'ME'
-#        self.creator = self.user
-#        to_user = self.to_user.downcast()
-#        to_user.num_messages += 1
-#        to_user.save()
-#        self.save()
-#        return to_user.num_messages
-
-
 #=======================================================================================================================
 # A Method that stores data on the relationship between an Elected Offical and a Committee
 #
@@ -4511,8 +4677,6 @@ class CommitteeJoined(GroupJoined):
     def autoSave(self):
         self.relationship_type = 'CJ'
         super(CommitteeJoined, self).autoSave()
-
-
 
 
 

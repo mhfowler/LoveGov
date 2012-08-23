@@ -37,16 +37,18 @@
 
                         {% include 'site/pages/profile/support_button.html' with politician=profile %}
 
-                        <div class="message-politician message_politician" data-p_id="{{ politician.id }}"> message </div>
+                        <div class="message-politician message_politician" data-p_id="{{ profile.id }}"> message </div>
 
                     {% elif viewer.id != profile.id %}
 
                         {% if is_user_rejected or not is_user_confirmed and not is_user_requested %}
                             <div class=" user-follow user_follow" data-p_id="{{ profile.id }}">follow</div>
                         {% elif is_user_confirmed %}
-                            <div class=" user-unfollow user_unfollow" data-p_id="{{ profile.id }}">following</div>
+                            <div class=" user-unfollow user_unfollow hover_text"
+                                 data-p_id="{{ profile.id }}" data-hover_text="stop" data-original_text="following">following</div>
                         {% elif is_user_requested %}
-                            <div class=" user-unfollow user_unrequest" data-p_id="{{ profile.id }}">requested</div>
+                            <div class=" user-unfollow user_unrequest hover_text" data-p_id="{{ profile.id }}"
+                                 data-hover_text="un-request" data-original_text="requested">requested</div>
                         {% endif %}
 
                     {% endif %}

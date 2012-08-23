@@ -568,20 +568,6 @@ def finalizePetition(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Messages a politician.
-#-----------------------------------------------------------------------------------------------------------------------
-def messageRep(request, vals={}):
-
-    viewer = vals['viewer']
-    politician = Politician.objects.get(id=request.POST['p_id'])
-    message = request.POST['message']
-
-    message = Messaged(user=viewer, to_user=politician, message=message)
-    num_messages = message.autoSave()
-
-    return HttpResponse(json.dumps({'num':num_messages}))
-
-#-----------------------------------------------------------------------------------------------------------------------
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
@@ -1065,6 +1051,11 @@ def updateStats(request, vals={}):
         profile = UserProfile.objects.get(id=request.POST['p_id'])
         vals['profile'] = profile
         html = ajaxRender('site/pages/profile/profile_stats.html', vals, request)
+    elif object == 'election_leaderboard':
+        from lovegov.frontend.views_helpers import valsElection
+        election = Election.objects.get(id=request.POST['e_id'])
+        vals['info'] = valsElection(viewer, election, {})
+        html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1100,9 +1091,14 @@ def joinGroupRequest(request, vals={}):
     group = Group.objects.get(id=request.POST['g_id'], system=False)
     group = group.downcast()  # Parties have a slightly different joinMember
 
-    response = joinGroupAction(group,viewer,getPrivacy(request))
+    joinGroupAction(group,viewer,getPrivacy(request))
 
-    return HttpResponse( json.dumps({'response':response}) )
+    from lovegov.frontend.views_helpers import valsGroupButtons
+    vals['info'] = valsGroupButtons(viewer, group, {})
+    vals['group'] = group
+    html = ajaxRender('site/pages/group/group_join_button.html', vals, request)
+    return HttpResponse( json.dumps({'html':html}) )
+
 #----------------------------------------------------------------------------------------------------------------------
 # Confirms or rejects a user GroupJoined, if GroupJoined was requested.
 #
@@ -1263,6 +1259,23 @@ def supportPolitician(request, vals={}):
     html = ajaxRender('site/pages/profile/support_button.html',vals,request)
     return HttpResponse(json.dumps({'html':html}))
 
+#-----------------------------------------------------------------------------------------------------------------------
+# follows or unfollows a group based on value of follow
+#-----------------------------------------------------------------------------------------------------------------------
+def followGroup(request, vals={}):
+    viewer = vals['viewer']
+    g_id = request.POST['g_id']
+    group = Group.lg.get_or_none(id=g_id)
+    follow = request.POST['follow']
+    vals['group'] = group
+    follow_bool = False
+    if follow == 'true':
+        follow_bool = True
+    followGroupAction(viewer, group, follow_bool, getPrivacy(request))
+    vals['is_user_following'] = follow_bool
+    html = ajaxRender('site/pages/group/group_follow_button.html',vals,request)
+    return HttpResponse(json.dumps({'html':html}))
+
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1299,13 +1312,17 @@ def leaveGroup(request, vals={}):
     group = Group.objects.get(id=request.POST['g_id'])
     group = group.downcast()
 
-    if group.id == getLoveGovGroup().id:
-        LGException('User ID #' + str(viewer.id) + ' attempted to leave the LoveGov group')
+    if group.system:
+        LGException('User ID #' + str(viewer.id) + ' attempted to leave system group,' + str(group.id))
         return HttpResponse( json.dumps({'response':'fail'}) )
 
     leaveGroupAction(group,viewer,getPrivacy(request))
 
-    return HttpResponse( json.dumps({'response':'removed'}) )
+    from lovegov.frontend.views_helpers import valsGroupButtons
+    vals['info'] = valsGroupButtons(viewer, group, {})
+    vals['group'] = group
+    html = ajaxRender('site/pages/group/group_join_button.html', vals, request)
+    return HttpResponse( json.dumps({'html':html}) )
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Adds content to group.
@@ -1873,7 +1890,9 @@ def getUserActivity(request, vals={}):
 
     actions_text = []
     for action in actions:
-        actions_text.append( action.getVerbose(viewer=viewer, vals=vals) )
+        action_text = action.getVerbose(viewer=viewer, vals=vals)
+        if action_text:
+            actions_text.append(action_text)
 
     vals['actions_text'] = actions_text
 
@@ -2272,26 +2291,6 @@ def getAggregateNotificationUsers(request, vals={}):
     html = ajaxRender('site/pieces/notifications/aggregate-notifications-popup.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
-
-def getSigners(request, vals={}):
-    html = ''
-    viewer = vals['viewer']
-    error = ''
-    petition_id = request.GET.get('petition_id')
-    if petition_id:
-        if Petition.lg.get_or_none(id=petition_id):
-            petition = Petition.lg.get_or_none(id=petition_id)
-            vals['signers'] = petition.signers.all()
-            html = ajaxRender('site/snippets/petition-signers.html', vals, request)
-        else:
-            error = 'The given petition identifier is invalid.'
-    else:
-        error = 'No petition identifier given.'
-    to_return = {'html':html, 'error': error}
-    response = HttpResponse(json.dumps(to_return))
-    response.status_code = 500 if error else 200
-    return response
-
 def setFirstLoginStage(request, vals={}):
     viewer = vals['viewer']
     stage = request.POST.get('stage')
@@ -2351,6 +2350,48 @@ def createContent(request, vals={}):
             redirect = newPetition.getUrl()
     return HttpResponse(json.dumps({'redirect': redirect}))
 
+###############
+# asks a politicain to join the website
+#-----------------------------------------------------------------------------------------------------------------------
+def askToJoin(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = UserProfile.objects.get(ghost=True, id=request.POST['p_id'])
+
+    already = AskedAction.lg.get_or_none(user=viewer, politician=politician)
+    if not already:
+        asked = AskedAction(user=viewer, politician=politician)
+        asked.autoSave()
+    return HttpResponse("asked to join")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# stores that this person wanted to claim a politician profile
+#-----------------------------------------------------------------------------------------------------------------------
+def claimProfile(request, vals={}):
+
+    viewer = vals['viewer']
+    politician = UserProfile.objects.get(ghost=True, id=request.POST['p_id'])
+    email = request.POST['email']
+
+    if email:
+        claim = ClaimProfile(user=viewer, politician=politician, email=email)
+        claim.autoSave()
+
+    return HttpResponse("asked to claim profile")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# sends a message to politician
+#-----------------------------------------------------------------------------------------------------------------------
+def messagePolitician(request, vals={}):
+
+    viewer = vals['viewer']
+    message = request.POST['message']
+    politician = UserProfile.objects.get(politician=True, id=request.POST['p_id'])
+
+    messaged = MessagedAction(user=viewer, message=message, politician=politician)
+    messaged.autoSave()
+
+    return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
@@ -2440,9 +2481,14 @@ def getModal(request,vals={}):
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
 
+    ## create modal ##
     elif modal_name == "create_modal":
        modal_html = getCreateModal(vals)
 
+    ## message politician modal ##
+    elif modal_name == "message_politician":
+        politician = UserProfile.objects.get(id=request.POST['p_id'])
+        modal_html = getMessagePoliticianModal(politician, vals)
 
     ## Pin Content Modal ##
 #    elif modal_name == "pin_content_modal":

@@ -354,19 +354,23 @@ def supportAction(viewer, politician, support, privacy):
     if politician.politician:
         # relationship
         support_relationship = Supported.lg.get_or_none(user=viewer, to_user=politician)
+        change = False
         if not support_relationship:
             support_relationship = Supported(user=viewer, to_user=politician)
             support_relationship.autoSave()
             if support:
                 politician.num_supporters += 1
                 politician.save()
+                change = True
         else:
             if support and not support_relationship.confirmed:
                 politician.num_supporters += 1
                 politician.save()
+                change = True
             if not support and support_relationship.confirmed:
                 politician.num_supporters -= 1
                 politician.save()
+                change = True
             support_relationship.confirmed = support
             support_relationship.privacy = privacy
             support_relationship.save()
@@ -375,7 +379,27 @@ def supportAction(viewer, politician, support, privacy):
             modifier = "A"
         else:
             modifier = "S"
-        action = SupportedAction(user=viewer,privacy=privacy,support=support_relationship,modifier=modifier)
-        action.autoSave()
-        # notification
-        politician.notify(action)
+        if change:
+            action = SupportedAction(user=viewer,privacy=privacy,support=support_relationship,modifier=modifier)
+            action.autoSave()
+            # notification
+            politician.notify(action)
+
+## Action causes user to follow or unfollow inputted group, follow is true or false, depending on whether to start or stop ##
+def followGroupAction(viewer, group, follow, privacy):
+    if group.subscribable:
+        # action and add or remove from many to many
+        change = False
+        if follow:
+            modifier = "A"
+            if not group in viewer.group_subscriptions.all():
+                viewer.group_subscriptions.add(group)
+                change = True
+        else:
+            modifier = "S"
+            if group in viewer.group_subscriptions.all():
+                viewer.group_subscriptions.remove(group)
+                change = True
+        if change:
+            action = GroupFollowAction(user=viewer,privacy=privacy,group=group,modifier=modifier)
+            action.autoSave()

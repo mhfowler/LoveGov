@@ -63,7 +63,7 @@ bind("div.create-modal div.save", "click", function(e) {
     var full_text = section.find("textarea.description").val();
     var post_to = section.find("select.post-to").val();
     var post_as = section.find("span.post-as.selected").data("poster");
-    var image = 
+    var image =
     action({
        'data': {'action': 'createContent',
                 'sectionType': sectionType,

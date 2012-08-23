@@ -605,7 +605,7 @@ def profile(request, alias=None, vals={}):
         if user_follow.rejected:
             vals['is_user_rejected'] = True
     
-    vals['profile_groups'] = user_profile.getGroupSubscriptions()[:4]
+    vals['profile_groups'] = user_profile.getRealGroups()[:4]
     vals['profile_politicians'] = user_profile.getPoliticians()
 
     comparison, web_json = user_profile.getComparisonJSON(viewer)

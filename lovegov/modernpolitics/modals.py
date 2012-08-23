@@ -72,6 +72,11 @@ def getFacebookShareModal(fb_share_id,fb_name,vals):
 def getCreateModal(vals={}):
     return render_to_string('site/pages/create_modal.html',vals)
 
+
+def getMessagePoliticianModal(politician, vals={}):
+    vals['politician'] = politician
+    return render_to_string('site/pages/profile/message_politician_modal.html',vals)
+
 #def getPinContentModal(content,user,vals):
 #    vals['content'] = content
 #
