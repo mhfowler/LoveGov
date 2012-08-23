@@ -1771,7 +1771,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.networks.all()
 
     def getGroupSubscriptions(self):
-        return self.getGroups().filter(ghost=False)
+        return self.getGroups().filter(hidden=False)
 
     def getPoliticians(self):
         supported = Supported.objects.filter(confirmed=True, user=self)
