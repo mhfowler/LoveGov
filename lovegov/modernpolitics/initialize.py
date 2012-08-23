@@ -1843,7 +1843,7 @@ def setPoliticiansCurrentlyElected():
         if not p_id in p_ids:
             print "+II+ setting primary role for " + politician.get_name()
             p_ids.append(politician.id)
-            politician.currently_elected = True
+            politician.currently_in_office = True
             politician.primary_role = o
             politician.save()
             office_location = o.office.location
@@ -1867,16 +1867,16 @@ def setPoliticiansCurrentlyElected():
     print "current office_helds: " + str(OfficeHeld.objects.filter(current=True).count())
     print "politicians all time: " + str(UserProfile.objects.filter(politician=True).count())
     print "elected officials all time: " + str(UserProfile.objects.filter(elected_official=True).count())
-    print "currently elected: " + str(UserProfile.objects.filter(currently_elected=True).count())
-    print "current representatives: " + str(UserProfile.objects.filter(currently_elected=True, primary_role__office__representative=True).count())
-    print "current senators: " + str(UserProfile.objects.filter(currently_elected=True, primary_role__office__senator=True).count())
+    print "currently elected: " + str(UserProfile.objects.filter(currently_in_office=True).count())
+    print "current representatives: " + str(UserProfile.objects.filter(currently_in_office=True, primary_role__office__representative=True).count())
+    print "current senators: " + str(UserProfile.objects.filter(currently_in_office=True, primary_role__office__senator=True).count())
 
 def clearPoliticiansCurrentlyElected():
     print "+RUNNING+ clearPoliticianCurrentlyElected"
-    old = UserProfile.objects.filter(currently_elected=True)
+    old = UserProfile.objects.filter(currently_in_office=True)
     for x in old:
         print "+II+ clearing " + x.get_name()
-        x.currently_elected = False
+        x.currently_in_office = False
         x.primary_role = None
         x.save()
 
@@ -1916,19 +1916,19 @@ def getCurrentPoliticiansFromTagName(name):
 # helpers for getting reps and senators from state and district
 #-----------------------------------------------------------------------------------------------------------------------
 def getRepsFromLocation(state, district=None):
-    elected = UserProfile.objects.filter(currently_elected=True)
+    elected = UserProfile.objects.filter(currently_in_office=True)
     reps = elected.filter(primary_role__office__representative=True, location__state=state)
     if district:
         reps = reps.filter(location__district=district)
     return reps
 
 def getSensFromState(state):
-    elected = UserProfile.objects.filter(currently_elected=True)
+    elected = UserProfile.objects.filter(currently_in_office=True)
     sens = elected.filter(primary_role__office__senator=True, location__state=state)
     return sens
 
 def getPoliticiansFromLocation(state, district=None):
-    elected = UserProfile.objects.filter(currently_elected=True)
+    elected = UserProfile.objects.filter(currently_in_office=True)
     politicians = elected.filter(location__state=state)
     if district:
         politicians = politicians.filter(location__district=district)
@@ -1956,7 +1956,7 @@ def syncCongressGroupMembers():
     group = getCongressGroup()
     for x in group.members.all():
         group.removeMember(x)
-    congress = UserProfile.objects.filter(currently_elected=True)
+    congress = UserProfile.objects.filter(currently_in_office=True)
     for x in congress:
         group.joinMember(x)
     print ("initialized: Congress Group")
