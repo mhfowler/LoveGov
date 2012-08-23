@@ -34,7 +34,7 @@
             <select multiple class="session_select">
                 <optgroup label="Congress Sessions" id="bill_sessions">
                     {% for session in sessions %}
-                        <option class="bill-sessions" value='{{ session }}'>{{ session }}</option>
+                        <option class="bill-sessions" value='{{ session.id }}'>{{ session.session }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -43,7 +43,7 @@
             <select multiple class="type_select">
                 <optgroup label="Bill Types" id="bill_types">
                     {% for type in types %}
-                        <option class="bill-types" value='{{ type }}'>{{ type }}</option>
+                        <option class="bill-types" value='{{ type.abbreviation }}'>{{ type.verbose }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -52,7 +52,7 @@
             <select multiple class="subject_select">
                 <optgroup label="Bill Subjects" id="bill_subjects">
                     {% for subject in subjects %}
-                        <option class="bill-subjects" value='{{ subject.related_name }}'>{{ subject.related_name }}</option>
+                        <option class="bill-subjects" value='{{ subject.id }}'>{{ subject.name }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -61,7 +61,7 @@
             <select multiple class="committee_select">
                 <optgroup label="Committees" id="bill-committees">
                     {% for committee in committees %}
-                        <option class="committees" value='{{ committee.related_name }}'>{{ committee.related_name }}</option>
+                        <option class="committees" value='{{ committee.id }}'>{{ committee.title }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -90,7 +90,7 @@
                     <select multiple class="sponsor_select_name">
                         <optgroup label="Sponsor name" id="bill_sponsor_name">
                             {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.get_name }}'>{{ sponsor.get_name }}</option>
+                                <option class="sponsors" value='{{ sponsor.id }}'>{{ sponsor.first_name }} {{ sponsor.last_name }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>
@@ -99,7 +99,7 @@
                     <select multiple class="sponsor_select_party">
                         <optgroup label="Sponsor party" id="bill_sponsor_party">
                             {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.getParty }}'>{{ sponsor.getParty }}</option>
+                                <option class="sponsors" value='{{ sponsor.parties.id }}'>{{ sponsor.parties.title }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>
@@ -108,7 +108,7 @@
                     <select multiple class="sponsor_select_district">
                         <optgroup label="Sponsor district" id="bill_sponsor_district">
                             {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.getDistrict }}'>{{ sponsor.getDistrict }}</option>
+                                <option class="sponsors" value='{{ sponsor.state }}'>{{ sponsor.state }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>

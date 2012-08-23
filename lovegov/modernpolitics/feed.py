@@ -207,3 +207,34 @@ def getFeedHelper(content, ranking, start, stop):
         for x in items:
             to_return.append(x.content)
         return to_return
+
+
+### gets legislation based on filter parametrs ###
+def getLegislationItems(session_set, type_set, feed_start):
+
+    # all legislation
+    legislation_items = Legislation.objects.all()
+
+    # filter
+    if session_set:
+        legislation_items = legislation_items.filter(
+            congress_session__in=session_set)
+    if type_set:
+        legislation_items = legislation_items.filter(
+            bill_type__in=type_set)
+    if subject_set:
+        legislation_items = legislation_items.filter(
+            subjects__in=subject_set)
+    if committee_set:
+        legislation_items = legislation_items.filter(
+            committees__in=committee_set)
+    if sponsor_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_set)
+
+    # paginate
+    legislation_items = legislation_items[feed_start:feed_start+10]
+
+    return legislation_items
+
+

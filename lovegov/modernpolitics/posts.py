@@ -1634,12 +1634,13 @@ def getQuestions(request, vals):
 
 def getLegislation(request, vals={}):
     feed_start = int(request.POST['feed_start'])
-    session_set = request.POST['session_set']
-    type_set = request.POST['type_set']
+    session_set = json.loads(request.POST['session_set'])
+    type_set = json.loads(request.POST['type_set'])
+    committee_set = json.loads(request.POST['committee_set'])
+    sponsor_set = json.loads(request.POST['committee_set'])
 
-    legislation_items = Legislation.objects.filter(
-        congress_session__in=session_set,
-        bill_type__in=type_set)[feed_start:10]
+    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set,
+        committee_set=committee_set, sponsor_set=sponsor_set, feed_start=feed_start)
 
     vals['legislation_items'] = legislation_items
 

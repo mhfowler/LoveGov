@@ -917,13 +917,13 @@ def legislation (request, session, type, number, vals={}):
 
 def legislation_helper (request, vals={}):
     vals['legislation_items'] = Legislation.objects.all()
-    vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
+    vals['sessions'] = CongressSession.objects.all()
     type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
-    vals['types'] = [BILL_TYPES[x] for x in type_list]
-    vals['subjects'] = [x['bill_subjects'] for x in Legislation.objects.values('bill_subjects').distinct()]
-    vals['committees'] = [x['committees'] for x in Legislation.objects.values('committees').distinct()]
+    vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
+    vals['subjects'] = LegislationSubject.objects.all()
+    vals['committees'] = Committee.objects.filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
-    vals['sponsors'] = [x['sponsor'] for x in Legislation.objects.values('sponsor').distinct()]
+    vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
 
 

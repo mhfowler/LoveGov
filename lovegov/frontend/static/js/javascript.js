@@ -794,9 +794,15 @@ function getFeed(container) {
     }
     else if (feed == 'getLegislation') {
         var session = $('select.session_select').val();
+        var session_json = JSON.stringify(session);
         var type = $('select.type_select').val();
-        data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session,
-            'type_set':type, 'subjects_set':subjects, 'committees_set':committees};
+        var type_json = JSON.stringify(type);
+        var committee = $('select.committee_select').val();
+        var committee_json = JSON.stringify(committee);
+        var sponsor = $('select.sponsor_select').val();
+        var sponsor_json = JSON.stringify(sponsor);
+        data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
+            'type_set':type_json, 'committee_set':committee_json, 'sponsor_set':sponsor_json};
     }
     action({
             data: data,
