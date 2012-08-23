@@ -28,7 +28,7 @@ div.main-block {
 
     div.session_filter {
       display: inline-block;
-      width: 85px;
+      width: 90px;
       margin-bottom: 9px;
       padding-top: 5px;
       margin-right: 5px;
@@ -46,7 +46,7 @@ div.main-block {
 
     div.type_filter {
       display: inline-block;
-      width: 85px;
+      width: 90px;
       margin-bottom: 9px;
       padding-top: 5px;
       margin-right: 5px;
@@ -64,7 +64,7 @@ div.main-block {
 
     div.subject_filter {
       display: inline-block;
-      width: 85px;
+      width: 90px;
       margin-bottom: 9px;
       padding-top: 5px;
       margin-right: 5px;
@@ -81,7 +81,7 @@ div.main-block {
 
     div.committee_filter {
       display: inline-block;
-      width: 85px;
+      width: 90px;
       margin-bottom: 9px;
       padding-top: 5px;
       margin-right: 5px;
@@ -99,7 +99,7 @@ div.main-block {
 
     div.introduced_filter {
       display: inline-block;
-      width: 85px;
+      width: 90px;
       margin-bottom: 9px;
       padding-top: 5px;
       margin-right: 5px;
@@ -117,7 +117,7 @@ div.main-block {
 
     div.sponsor_filter {
       display: inline-block;
-      width: 85px;
+      width: 90px;
       margin-bottom: 9px;
       padding-top: 5px;
       margin-right: 5px;
@@ -233,8 +233,12 @@ div.main-block {
       padding-left: 0px;
       z-index:4;
 
-      ul, li {
+      ul li {
         list-style-type: none;
+
+        h6 {
+          margin-top: 5px;
+        }
       }
     }
 
