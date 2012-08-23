@@ -1448,9 +1448,32 @@ bind(".r_register", 'click', null, function(event) {
  *
  **********************************************************************************************************************/
 
-bind(".message_politician", 'mouseenter', null, function(event) {
+bind(".message_politician", 'click', null, function(event) {
     var p_id = $(this).data("p_id");
     getModal("message_politician", {'p_id':p_id});
+});
+
+bind(".send_message", 'click', null, function(event) {
+    var wrapper = $(this).parents(".message_politician_wrapper");
+    var p_id = wrapper.data("p_id");
+    var message = wrapper.find(".message_textarea").val();
+    action({
+            data: {
+                'action': 'messagePolitician',
+                'p_id': p_id,
+                'message': message
+            },
+            success: function(data)
+            {
+                var old_height = wrapper.height();
+                var old_width = wrapper.width();
+                wrapper.css({"height":old_height,"width":old_width});
+                wrapper.find(".send_a_message").hide();
+                wrapper.find(".message_success").fadeIn(100);
+                //setTimeout(hideModal(null),1000);
+            }
+        }
+    );
 });
 
 bind(".user_unfollow", 'mouseenter', null, function(event) {
@@ -1844,7 +1867,6 @@ function groupInviteResponse(event,response,div)
 
 
 function hideModal(event) {
-    event.preventDefault();
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
 }
@@ -1857,7 +1879,7 @@ function showModal() {
 // Bind clicks outside modal to closing the modal
 bind( 'div.modal-wrapper', 'click', hideModal);
 bind( 'div.modal_overdiv', 'click', hideModal);
-bind( 'div.modal_close', 'click', hideModal);
+bind( '.modal_close', 'click', hideModal);
 // Don't propogate modal clicks to modal-wrapper (which would close modal)
 bind( 'div.modal-general', 'click', function(e) {e.stopPropagation();});
 
@@ -2583,6 +2605,9 @@ function updateStatsObject(stats) {
     }
     if (object == 'profile_stats') {
         data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'election_leaderboard') {
+        data['e_id'] = stats.data('e_id');
     }
     action({
         data: data,

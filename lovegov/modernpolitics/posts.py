@@ -568,20 +568,6 @@ def finalizePetition(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Messages a politician.
-#-----------------------------------------------------------------------------------------------------------------------
-def messageRep(request, vals={}):
-
-    viewer = vals['viewer']
-    politician = Politician.objects.get(id=request.POST['p_id'])
-    message = request.POST['message']
-
-    message = Messaged(user=viewer, to_user=politician, message=message)
-    num_messages = message.autoSave()
-
-    return HttpResponse(json.dumps({'num':num_messages}))
-
-#-----------------------------------------------------------------------------------------------------------------------
 # changes address for a user
 #-----------------------------------------------------------------------------------------------------------------------
 def submitAddress(request, vals={}):
@@ -1065,6 +1051,11 @@ def updateStats(request, vals={}):
         profile = UserProfile.objects.get(id=request.POST['p_id'])
         vals['profile'] = profile
         html = ajaxRender('site/pages/profile/profile_stats.html', vals, request)
+    elif object == 'election_leaderboard':
+        from lovegov.frontend.views_helpers import valsElection
+        election = Election.objects.get(id=request.POST['e_id'])
+        vals['info'] = valsElection(viewer, election, {})
+        html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -2272,26 +2263,6 @@ def getAggregateNotificationUsers(request, vals={}):
     html = ajaxRender('site/pieces/notifications/aggregate-notifications-popup.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
-
-def getSigners(request, vals={}):
-    html = ''
-    viewer = vals['viewer']
-    error = ''
-    petition_id = request.GET.get('petition_id')
-    if petition_id:
-        if Petition.lg.get_or_none(id=petition_id):
-            petition = Petition.lg.get_or_none(id=petition_id)
-            vals['signers'] = petition.signers.all()
-            html = ajaxRender('site/snippets/petition-signers.html', vals, request)
-        else:
-            error = 'The given petition identifier is invalid.'
-    else:
-        error = 'No petition identifier given.'
-    to_return = {'html':html, 'error': error}
-    response = HttpResponse(json.dumps(to_return))
-    response.status_code = 500 if error else 200
-    return response
-
 def setFirstLoginStage(request, vals={}):
     viewer = vals['viewer']
     stage = request.POST.get('stage')
@@ -2346,6 +2317,20 @@ def claimProfile(request, vals={}):
         claim.autoSave()
 
     return HttpResponse("asked to claim profile")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# sends a message to politician
+#-----------------------------------------------------------------------------------------------------------------------
+def messagePolitician(request, vals={}):
+
+    viewer = vals['viewer']
+    message = request.POST['message']
+    politician = UserProfile.objects.get(politician=True, id=request.POST['p_id'])
+
+    messaged = MessagedAction(user=viewer, message=message, politician=politician)
+    messaged.autoSave()
+
+    return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
@@ -2435,9 +2420,14 @@ def getModal(request,vals={}):
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
 
+    ## create modal ##
     elif modal_name == "create_modal":
        modal_html = getCreateModal(vals)
 
+    ## message politician modal ##
+    elif modal_name == "message_politician":
+        politician = UserProfile.objects.get(id=request.POST['p_id'])
+        modal_html = getMessagePoliticianModal(politician, vals)
 
     ## Pin Content Modal ##
 #    elif modal_name == "pin_content_modal":

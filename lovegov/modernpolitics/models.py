@@ -2036,7 +2036,7 @@ class MessagedAction(Action):
         politician = self.politician
         politician.num_messages += 1
         politician.save()
-        super(MessageAction,self).autoSave()
+        super(MessagedAction,self).autoSave()
         print "sent " + self.politician.get_name() + " an email with message!"
 
     def getTo(self):

@@ -38,8 +38,9 @@ div.election-card {
         @include fontSize(32px);
         font-weight:bold;
         line-height:14px;
+        margin-bottom:6px;
       }
-      a.action-button {
+      .action-button {
         text-align:center;
         line-height:14px;
         float:left;
@@ -51,6 +52,19 @@ div.election-card {
         background-color:$light-gray;
         &:hover {
           background-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+      div.support-politician {
+        @extend .action-button;
+      }
+      div.unsupport-politician {
+        @extend .action-button;
+        background-color:$blue;
+        color:white;
+        &:hover {
+          background-color:$red;
+          cursor:pointer;
         }
       }
     }
