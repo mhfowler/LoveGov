@@ -647,7 +647,7 @@ def thread(request, c_id, vals={}):
         return HttpResponse("The indicated content item does not exist.")
     vals['content'] = content
     vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
-    html = ajaxRender('site/pages/thread.html', vals, request)
+    html = ajaxRender('site/pieces/thread.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals)
 

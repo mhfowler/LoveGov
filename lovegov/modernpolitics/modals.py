@@ -69,6 +69,9 @@ def getFacebookShareModal(fb_share_id,fb_name,vals):
     return render_to_string('site/pages/friends/facebook_share_modal.html',vals)
 
 
+def getCreateModal(vals={}):
+    return render_to_string('site/pages/create_modal.html',vals)
+
 #def getPinContentModal(content,user,vals):
 #    vals['content'] = content
 #

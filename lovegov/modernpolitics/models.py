@@ -1712,6 +1712,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         g_ids = GroupJoined.objects.filter(user=self, confirmed=True).values_list('group', flat=True)
         return Group.objects.filter(id__in=g_ids)
 
+    # get groups that non-ghost groups
+    def getRealGroups(self):
+        return self.getGroups().filter(ghost=False)
+
     def getUserGroups(self, num=-1, start=0):
         if num == -1:
             return self.getGroups().filter(group_type='U',system=False)[start:]

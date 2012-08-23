@@ -139,6 +139,7 @@ $(document).ready(function()
 
     // init page with js
     bindOnReload();
+    bindTooltips();
 
 });
 
@@ -191,10 +192,12 @@ function checkCompatability() {
  *
  ***********************************************************************************************************************/
 
-bind(".tooltip-top", "tooltip", {'placement': 'top', 'animation': 'true'});
-bind(".tooltip-bottom", "tooltip", {'placement': 'bottom', 'animation': 'true'});
-bind(".tooltip-right", "tooltip", {'placement': 'right', 'animation': 'true'});
-bind(".tooltip-left", "tooltip", {'placement': 'left', 'animation': 'true'});
+function bindTooltips() {
+    $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
+    $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
+    $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
+    $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+}
 
 bind(".bind_link", "click", null, function(event) {
     event.preventDefault();
@@ -1723,25 +1726,37 @@ function groupInviteResponse(event,response,div)
  *
  **********************************************************************************************************************/
 
-bind( 'div.modal_overdiv' , 'click' , null , function(event)
-{
-    event.preventDefault();
-    $(this).hide();
-    $('div.modal_wrapper').hide();
-});
 
-bind( 'div.modal_close' , 'click' , null , function(event)
-{
+function hideModal(event) {
     event.preventDefault();
-    $('div.modal_wrapper').hide();
+    $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
-});
+}
+
+function showModal() {
+    $('div.modal_general').fadeIn(500).css('display', 'inline-block');
+    $('div.modal_overdiv').fadeIn(500);
+}
+
+// Bind clicks outside modal to closing the modal
+bind( 'div.modal-wrapper', 'click', hideModal);
+bind( 'div.modal_overdiv', 'click', hideModal);
+bind( 'div.modal_close', 'click', hideModal);
+// Don't propogate modal clicks to modal-wrapper (which would close modal)
+bind( 'div.modal-general', 'click', function(e) {e.stopPropagation();});
 
 function getModal(modal_name,data)
 {
     if( typeof(data)=='undefined'){ data = { 'modal_name':modal_name }; }
     else{ data['modal_name'] = modal_name; }
     data['action'] = 'getModal';
+    var modal_general = $('div.modal_general');
+
+    // If create modal has recently been opened, use version in memory to avoid data loss
+    if(modal_name=="create_modal" && modal_name==modal_general.data('last-loaded')) {
+        showModal();
+        return;
+    }
 
     action({
         data: data,
@@ -1749,17 +1764,10 @@ function getModal(modal_name,data)
         {
             var returned = eval('(' + response_data + ')');
             $('div.modal_content').html( returned.modal_html );
+            modal_general.data('last-loaded',modal_name);
 
-            var modal_wrapper = $('div.modal_wrapper');
+            showModal();
 
-            //Get New Modal Position
-            var body_middle = $('body').width()/2;
-            var left_offset = modal_wrapper.outerWidth()/2;
-            var left_position = body_middle - left_offset;
-            modal_wrapper.css('left',left_position);
-
-            modal_wrapper.fadeIn(500);
-            $('div.modal_overdiv').fadeIn(500);
         }
     });
 }
