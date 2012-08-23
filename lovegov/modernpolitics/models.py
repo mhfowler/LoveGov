@@ -4575,10 +4575,18 @@ class OfficeHeld(UCRelationship):
         return False
 
     def setCurrent(self):
-        is_current = self.isCurrent()
-        if is_current and self.confirmed:
-            self.current = True
-            self.save()
+        if self.office.tags.filter(name="congress"):
+            if self.congress_sessions.filter(sessions=CURRENT_CONGRESS_SESSION) and self.confirmed:
+                self.current = True
+                self.save()
+            else:
+                self.current = False
+                self.save()
+        else:
+            is_current = self.isCurrent()
+            if is_current and self.confirmed:
+                self.current = True
+                self.save()
 
 
 #=======================================================================================================================
