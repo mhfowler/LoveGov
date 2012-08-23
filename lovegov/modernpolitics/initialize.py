@@ -1840,10 +1840,25 @@ def initializeStateCongressGroups():
         initializeStateCongressGroup(state)
 
 def initializeStateCongressGroup(state):
+    print "============ initialize state congress group for " + state
+    group = PoliticianGroup()
+    group.title = state + " State Politician Group"
+    group.summary = "group of all politicians currently serving in the state of " + state
+    group.autoSave()
+    location = PhysicalAddress(state=state)
+    location.save()
+    group.location = location
+    group.save()
+    joinStateCongressGroupMembers(state)
+    return group
+
+def joinStateCongressGroupMembers(state):
+    group = getStateCongressGroup(state)
+    for x in group.members.all():
+        group.removeMember(x)
     congress_tag = OfficeTag.objects.get(name="congress")
     congress_offices = congress_tag.tag_offices.all()
-    print "============"
-    print "|initialize group for state of " + state
+    print "|joining members for " + group.get_name()
     state_offices = congress_offices.filter(location__state=state)
     print "... offices: " + str(state_offices.count())
     state_office_ids = state_offices.values_list("id", flat=True)
@@ -1854,14 +1869,9 @@ def initializeStateCongressGroup(state):
     print "... p_ids: " + str(len(politicians_ids))
     politicians = UserProfile.objects.filter(politician=True, id__in=politicians_ids)
     print "... politicians: " + str(politicians.count())
-    group = PoliticianGroup()
-    group.title = state + " State Politician Group"
-    group.summary = "group of all politicians currently serving in the state of " + state
-    group.autoSave()
     for x in politicians:
         print "joining, " + x.get_name()
         group.joinMember(x)
-    return group
 
 def getStateCongressGroup(state):
     return PoliticianGroup.lg.get_or_none(alias=state + "_state_politician_group") or initializeStateCongressGroup(state)

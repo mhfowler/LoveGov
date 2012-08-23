@@ -3759,10 +3759,11 @@ class Group(Content):
             user.num_groups -= 1
             user.save()
         group_joined.clear()
+        if user in self.members.all():
+            self.num_members -= 1
+            self.save()
         self.members.remove(user)
         self.admins.remove(user)
-        self.num_members -= 1
-        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
