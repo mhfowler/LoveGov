@@ -1509,20 +1509,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not self.i_follow:
             self.createIFollowGroup()
         self.i_follow.joinMember(to_user)
-        self.num_ifollow += 1
-        self.save()
 
         if not to_user.follow_me:
             to_user.createFollowMeGroup()
         to_user.follow_me.joinMember(self)
-        to_user.num_followme += 1
-        to_user.save()
 
         #Check and Make Relationship A
         if not relationship:
             relationship = UserFollow( user=self , to_user=to_user , confirmed=True, fb=fb )
             relationship.autoSave()
+            self.num_ifollow += 1
+            self.save()
+            to_user.num_followme += 1
+            to_user.save()
         else:
+            if not relationship.confirmed:
+                self.num_ifollow += 1
+                self.save()
+                to_user.num_followme += 1
+                to_user.save()
             relationship.confirmed = True
             if fb: #Add fb value to relationship if fb is true
                 relationship.fb = True
@@ -1540,6 +1545,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             to_user.follow_me.members.remove(self)
         # Clear UserFollow
         if relationship:
+            if relationship.confirmed:
+                self.num_ifollow -= 1
+                self.save()
+                to_user.num_followme -= 1
+                to_user.save()
             relationship.clear()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -1639,8 +1649,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
         #Otherwise do normal notifications
         elif type in NOTIFY_TYPES:
+            modifier = action.getModifier()
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS:
+            if type not in NOTIFY_MODIFIERS or (modifier and modifier in NOTIFY_MODIFIERS[type]):
                 notification = Notification(action=action, notify_user=self)
                 notification.save()
                 return True
@@ -1953,6 +1964,8 @@ class Action(Privacy):
             object = self.sharedaction
         elif action_type == 'XX':
             object = self.deletedaction
+        elif action_type == 'SU':
+            object = self.supportedaction
         else:
             object = None
         return object
@@ -1962,6 +1975,9 @@ class Action(Privacy):
         if action:
             return action.getVerbose(viewer,vals)
         return ''
+
+    def getModifier(self):
+        return None
 
 
 
@@ -2124,6 +2140,9 @@ class UserFollowAction(Action):
     user_follow = models.ForeignKey('UserFollow', related_name="follow_actions")
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
 
+    def getModifier(self):
+        return self.modifier
+
     def getTo(self):
         return self.user_follow
 
@@ -2162,6 +2181,53 @@ class UserFollowAction(Action):
 
         return render_to_string('site/pieces/actions/user_follow_verbose.html',vals)
 
+#=======================================================================================================================
+# Some action that changes a politician supported relationship
+#=======================================================================================================================
+class SupportedAction(Action):
+    support = models.ForeignKey('Supported', related_name="support_actions")
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getModifier(self):
+        return self.modifier
+
+    def getTo(self):
+        return self.support
+
+    def autoSave(self):
+        self.action_type = 'SU'
+        super(SupportedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        support = self.support
+        from_you = False
+        to_you = False
+
+        from_user = support.user
+        to_user = support.to_user
+
+        if from_user.id == viewer.id:
+            from_you = True
+        elif to_user.id == viewer.id:
+            to_you = True
+
+        vals.update({
+            'user' : self.user,
+            'timestamp' : self.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'to_you' : to_you,
+            'to_user' : to_user,
+            'from_user' : from_user,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/support_verbose.html',vals)
 
 #=======================================================================================================================
 # Some action that changes a GroupJoined relationship
@@ -2169,6 +2235,9 @@ class UserFollowAction(Action):
 class GroupJoinedAction(Action):
     group_joined = models.ForeignKey('GroupJoined', related_name="joined_actions" )
     modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def getModifier(self):
+        return self.modifier
 
     def getTo(self):
         return self.group_joined
@@ -2275,6 +2344,8 @@ class Notification(Privacy):
             return self.getSignedVerbose(viewer,vals)
         elif type == 'SH':
             return self.getSharedVerbose(viewer,vals)
+        elif type == 'SU':
+            return self.getSupportedVerbose(viewer, vals)
         else:
             return ''
 
@@ -2443,7 +2514,41 @@ class Notification(Privacy):
 
         return render_to_string('site/pieces/notifications/user_follow_verbose.html',vals)
 
+    ## Supported verbose ##
+    def getSupportedVerbose(self,viewer,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
 
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        support_relationship = action.support
+
+        from_user = support_relationship.user
+        to_user = support_relationship.to_user
+        from_you = False
+        to_you = False
+
+        if from_user.id == viewer.id:
+            from_you = True
+        elif to_user.id == viewer.id:
+            to_you = True
+
+        vals.update({
+            'user' : action_user,
+            'timestamp' : action.when,
+            'viewer' : viewer,
+            'you_acted' : you_acted,
+            'from_you' : from_you,
+            'to_you' : to_you,
+            'to_user' : to_user,
+            'from_user' : from_user,
+            'modifier' : action.modifier,
+            'support' : support_relationship,
+        })
+
+        return render_to_string('site/pieces/notifications/support_verbose.html',vals)
 
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
@@ -4364,13 +4469,14 @@ class UserFollow(UURelationship, Invite):
 #=======================================================================================================================
 # Support a politician.
 #=======================================================================================================================
-#class Supported(UURelationship):
-#    confirmed = models.BooleanField(default=False)
-#    def autoSave(self):
-#        self.relationship_type = 'SU'
-#        self.creator = self.user
-#        self.save()
-#
+class Supported(UURelationship):
+    confirmed = models.BooleanField(default=True)
+    def autoSave(self):
+        self.relationship_type = 'SU'
+        self.creator = self.user
+        self.save()
+
+
 #class Messaged(UURelationship):
 #    message = models.TextField()
 #    def autoSave(self):

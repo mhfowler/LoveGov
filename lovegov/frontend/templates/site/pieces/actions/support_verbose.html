@@ -16,26 +16,12 @@
     </td>
     <td class="action-text">
         {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-        {% if modifier == 'R' %}
-            requested to follow
+        {% if modifier == 'A' %}
+            supported
             {% include "site/pieces/actions/action_name_snippet.html" with object=to_user you=to_you %}
-
-        {% elif modifier == 'F' %}
-            followed
-            {% include "site/pieces/actions/action_name_snippet.html" with object=to_user you=to_you %}
-
-        {% elif modifier == 'X' %}
-            rejected
-            {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you %}
-            from following them
-
-        {% elif modifier == 'A' %}
-            allowed
-            {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you %}
-            to follow them
 
         {% elif modifier == 'S' %}
-            stopped following
+            stopped supporting
             {% include "site/pieces/actions/action_name_snippet.html" with object=to_user you=to_you %}
 
         {% endif %}

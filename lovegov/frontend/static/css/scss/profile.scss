@@ -62,52 +62,53 @@ div.profile-page {
         width:150px;
         margin-right:30px;
 
-        div.user-follow {
+        .profile-button {
           width:100%;
           height:30px;
           margin-top:5px;
           text-align:center;
-          background-color:$light-gray;
-          color: $black;
           cursor: pointer;
           text-transform:uppercase;
           @include fontSize(16px);
           padding:7px;
+        }
 
+        div.user-follow {
+          @extend .profile-button;
+          background-color:$light-gray;
+          color: $black;
           &:hover { background-color: $gray; }
         }
 
         div.user-unfollow {
-          width:100%;
-          height:30px;
-          margin-top:5px;
-          text-align:center;
+          @extend .profile-button;
           background-color:$green;
           color:white;
-          cursor: pointer;
-          text-transform:uppercase;
-          @include fontSize(16px);
-          padding:7px;
-
           &:hover { background-color: $red; }
         }
 
-        div.match-percent {
-          color:$red;
-          @include fontSize(64px);
-          margin-top:14px;
-          line-height:48px;
+        div.support-politician {
+          @extend .profile-button;
+          background-color:$light-gray;
+          color: $black;
+          &:hover { background-color: $gray; }
         }
-        div.match-from {
-          @include fontSize(24px);
-          color:$red;
-          margin-top:14px;
-          line-height:24px;
+
+        div.unsupport-politician {
+          @extend .profile-button;
+          background-color:$blue;
+          color:white;
+          &:hover { background-color: $red; }
         }
-        div.match-from.how-many {
-          font-weight:bold;
+
+        div.message-politician {
+          @extend .profile-button;
           margin-top:10px;
+          background-color:$light-gray;
+          color: $black;
+          &:hover { background-color: $gray; }
         }
+
 
 
         div.stats {
@@ -137,6 +138,9 @@ div.profile-page {
               cursor:pointer;
               background-color:$dark-gray;
             }
+          }
+          div.stats-box.supporter-box {
+            width:90%;
           }
           div.left-box {
             margin-left:5px;
@@ -204,7 +208,7 @@ div.profile-page {
 
     /* profile top */
       div.profile-top {
-
+        height:385px;
         div.match-container {
           float:left;
           width:250px;
@@ -332,6 +336,66 @@ div.profile-page {
               &:hover {
                 cursor:pointer;
               }
+            }
+          }
+        }
+        div.profile-ghost {
+          padding-top:20px;
+          div.ghost-header {
+            @include fontSize(24px);
+          }
+          .claim-button {
+            float:right;
+            margin-right:70px;
+            margin-top:8px;
+            //background-color:$light-gray;
+            padding:5px;
+            &:hover {
+              background-color:$light-gray;
+            }
+          }
+          div.are-you-a-politician {
+            margin-top:35px;
+            @include fontSize(14px);
+            position:relative;
+            input.claim-profile {
+              width:250px;
+              margin-top:10px;
+              height:25px;
+              float:right;
+              margin-right:15px;
+              padding-left:5px;
+              color:$black;
+            }
+            a.claim-profile-button {
+              @extend .claim-button;
+            }
+            p.claimed-message {
+              @include fontSize(12px);
+              position: absolute;
+              left: 546px;
+              top: 68px;
+              width: 450px;
+              color:$dark-gray;
+              display:none;
+            }
+          }
+          div.are-you-concerned {
+            margin-top:55px;
+            position:relative;
+            @include fontSize(14px);
+            a.ask-to-join {
+              @extend .claim-button;
+              margin-right: 245px;
+            }
+            p.asked-message {
+              @include fontSize(12px);
+              position: absolute;
+              left: 769px;
+              top: 31px;
+              width: 150px;
+              color:$dark-gray;
+              display:none;
             }
           }
         }

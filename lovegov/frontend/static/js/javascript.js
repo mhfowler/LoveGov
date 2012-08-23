@@ -108,6 +108,7 @@ function action(dict) {
     });
 }
 
+var auto_update_page;
 $(document).ready(function()
 {
     // csrf protect
@@ -141,7 +142,31 @@ $(document).ready(function()
     // init page with js
     bindOnReload();
 
+    // check for notifications on schedule
+    clearInterval(auto_update_page);
+    auto_update_page= setInterval(function()
+    {
+        updatePage();
+    }, 60000);
+
 });
+
+function updatePage() {
+    action({
+        'data': {'action':'updatePage', 'log-ignore':true},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+
+            // update notifications num
+            $(".notifications_dropdown_button").text(obj.notifications_num);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
+    });
+}
 
 /* does some javascript manipulation of home page */
 function initHomePage() {
@@ -1426,6 +1451,13 @@ bind(".user_unfollow", 'mouseout', null, function(event) {
     $(this).text('following');
 });
 
+bind(".unsupport_politician", 'mouseenter', null, function(event) {
+    $(this).text('stop');
+});
+bind(".unsupport_politician", 'mouseout', null, function(event) {
+    $(this).text('supporting');
+});
+
 bind(".user_unrequest", 'mouseenter', null, function(event) {
     $(this).text('un-request');
 });
@@ -1535,10 +1567,45 @@ function userFollow(event,div,follow,p_id)
                     div.removeClass('user-unfollow');
                     div.addClass('user-follow');
                 }
+                updateStats();
             }
         }
     );
 }
+
+bind('div.support_politician' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    supportPolitician($(this),true,p_id);
+});
+
+bind('div.unsupport_politician' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    supportPolitician($(this),false,p_id);
+});
+
+/* user follower */
+function supportPolitician(div,support,p_id)
+{
+    // If support is true, start supporting
+    // If support is false, stop supporting
+    action({
+            data: {
+                'action': 'supportPolitician',
+                'support': support,
+                'p_id': p_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                div.replaceWith(returned.html);
+                updateStats();
+            }
+        }
+    );
+}
+
 
 bind( 'div.group_join' , 'click' , null , function(event)
 {
@@ -2500,6 +2567,9 @@ function updateStatsObject(stats) {
     if (object == 'petition_bar') {
         data['p_id'] = stats.data('p_id');
     }
+    if (object == 'profile_stats') {
+        data['p_id'] = stats.data('p_id');
+    }
     action({
         data: data,
         success: function(data) {
@@ -3109,6 +3179,34 @@ bind( '.pin_to_group' , 'click' , null , function(e)
 });
 
 
+bind('.sign_button' , 'click' , null , function(e)
+{
+    var p_id = $(this).data('p_id');
+    var signers_sidebar = $(this).parents(".signers_sidebar");
+    action({
+            data: {'action': 'signPetition', 'p_id':p_id},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                signers_sidebar.replaceWith(returned.html);
+                updateStats();
+            }}
+    );
+});
+
+bind('.finalize_button' , 'click' , null , function(e)
+{
+    var p_id = $(this).data('p_id');
+    var signers_sidebar = $(this).parents(".signers_sidebar");
+    action({
+            data: {'action': 'finalizePetition', 'p_id':p_id},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                signers_sidebar.replaceWith(returned.html);
+            }}
+    );
+});
+
+
 /***********************************************************************************************************************
  *
  *      ~dismissible header stuff, representatives
@@ -3186,4 +3284,21 @@ bind('.find_address_button' , 'click' , null , function(e)
                 alert(data);
             }}
     );
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~claim your profile
+ *
+ ***********************************************************************************************************************/
+bind('.claim_profile_button' , 'click' , null , function(e)
+{
+    $(".claimed_message").fadeIn();
+});
+
+
+bind('.ask_to_join' , 'click' , null , function(e)
+{
+    $(".asked_message").fadeIn();
 });

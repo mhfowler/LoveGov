@@ -1,0 +1,12 @@
+<div class="signer-wrapper">
+    <a href="{{ signer.get_url }}">
+                     <span class="signer-image">
+                        {% include "site/pieces/avatar.html" with user=signer height="50" width="50" %}
+                     </span>
+    </a>
+    <a href="{{ signer.get_url }}">
+                     <span class="signer-name">
+                        {{ signer.get_name }}
+                     </span>
+    </a>
+</div>

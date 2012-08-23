@@ -340,3 +340,15 @@ def valsElection(viewer, election, vals):
     vals['running'] = running
     vals['election'] = election
     return vals
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for a petition
+#-----------------------------------------------------------------------------------------------------------------------
+def valsPetition(viewer, petition, vals):
+    signers_limit = 8
+    vals['petition'] = petition
+    signers = petition.getSigners()
+    vals['signers'] = signers[:signers_limit]
+    vals['i_signed'] = (viewer in signers)
+    vals['num_signers'] = len(signers)
+    vals['i_created'] = (petition.creator == viewer)
