@@ -4097,7 +4097,7 @@ class PoliticianGroup(Group):
         self.system = True
         self.autogen = True
         self.group_privacy = 'O'
-        super(Party, self).autoSave()
+        super(PoliticianGroup, self).autoSave()
 
 #=======================================================================================================================
 # Political party group
@@ -4485,6 +4485,7 @@ class OfficeHeld(UCRelationship):
     confirmed = models.BooleanField(default=False)
     start_date = models.DateField()
     end_date = models.DateField()
+    current = models.BooleanField(default=False)
     election = models.BooleanField(default=False)
     congress_sessions = models.ManyToManyField(CongressSession)
 
@@ -4497,6 +4498,12 @@ class OfficeHeld(UCRelationship):
         if (datetime.date.today() - self.end_date).days >= 0:
             return True
         return False
+
+    def setCurrent(self):
+        is_current = self.isCurrent()
+        if is_current and self.confirmed:
+            self.current = True
+            self.save()
 
 
 #=======================================================================================================================

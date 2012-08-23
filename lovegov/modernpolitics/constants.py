@@ -722,3 +722,5 @@ CANADIAN_PROVINCES = [ ('AB', 'Alberta'), ('BC', 'British Columbia'), ('MB', 'Ma
 STATES_DICT = {}
 for x in STATES:
     STATES_DICT[x[0]]=x[1]
+
+CURRENT_CONGRESS_SESSION = 112

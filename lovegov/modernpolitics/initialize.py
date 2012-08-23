@@ -1848,6 +1848,8 @@ def initializeStateCongressGroup(state):
     print "... offices: " + str(state_offices.count())
     state_office_ids = state_offices.values_list("id", flat=True)
     helds = OfficeHeld.objects.filter(office_id__in=state_office_ids)
+    print "... held all time: " + str(held.count())
+    helds = helds.filter
     politicians_ids = helds.values_list("user", flat=True)
     print "... p_ids: " + str(len(politicians_ids))
     politicians = UserProfile.objects.filter(politician=True, id__in=politicians_ids)
@@ -1863,3 +1865,12 @@ def initializeStateCongressGroup(state):
 
 def getStateCongressGroup(state):
     return PoliticianGroup.lg.get_or_none(alias=state + "_state_politician_group") or initializeStateCongressGroup(state)
+
+def syncOffices():
+    count = 0
+    for o in OfficeHeld.objects.all():
+        o.confirmed = True
+        o.save()
+        if  not count%20:
+            print str(count)
+        count += 1
