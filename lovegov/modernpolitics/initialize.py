@@ -68,7 +68,7 @@ def getOtherNetwork():
     return Network.lg.get_or_none(name="other") or initializeOtherNetwork()
 
 def getCongressNetwork():
-    return Network.lg.get_or_none(alias="congress") or initializeCongressNetwork()
+    return getCongressGroup()
 
 def getToRegisterNumber():
     num = LGNumber.lg.get_or_none(alias="to_register")
@@ -390,26 +390,6 @@ def initializeOtherNetwork():
         network.summary = "Network of all people with non recognized emails."
         network.autoSave()
         print ("initialized: Other Network")
-        return network
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initialize network for congress
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeCongressNetwork():
-    if Network.objects.filter(alias="congress"):
-        print ("...congress network already initialized")
-    else:
-        network = Network(alias="congress")
-        network.title = "Congress"
-        network.summary = "all members of Congress."
-        network.system = True
-        network.autoSave()
-        # join all members
-        congress = UserProfile.objects.filter(elected_official=True)
-        for u in congress:
-            network.members.add(u)
-            u.networks.add(network)
-        print ("initialized: Congress Network")
         return network
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1832,56 +1812,186 @@ def initializeStateGroups():
     for u in UserProfile.objects.all():
         u.joinLocationGroups()
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# optimizations for retrieving reps and senators
+#-----------------------------------------------------------------------------------------------------------------------
+def syncOfficeHeldCurrent():
+    print "+RUNNING+ syncOfficeHeldCurrent"
+    count = 0
+    for o in OfficeHeld.objects.all():
+        if  not count%20:
+            print str(count)
+        count += 1
+        o.setCurrent()
+
+def syncOfficeBooleans():
+    print "+RUNNING+ syncOfficeBooleans"
+    count = 0
+    for o in Office.objects.all():
+        o.setBooleans()
+        if  not count%20:
+            print str(count)
+        count += 1
+        o.setBooleans()
+
+def setPoliticianPrimaryRolesAndLocations():
+    print "+RUNNING+ setPrimaryRoles"
+    elected = UserProfile.objects.filter(elected_official=True)
+    for e in elected:
+        held = OfficeHeld.objects.filter(user=e, current=True)
+        if not held:
+            print "+WW+ " + e.get_name() + " is elected_official but does not currently hold an office."
+        elif len(held) > 1:
+            print "+WW+ " + e.get_name() + " holds more than one office currently?"
+        else:
+            print "+II+ set primary role for " + e.get_name()
+            held = held[0]
+            e.primary_role = held
+            office_location = held.office.location
+            if office_location:
+                location = e.getLocation()
+                location.clear()
+                location.state = office_location.state
+                location.district = office_location.district
+                location.save()
+
+def optimizeRepsAndSens():
+    syncOfficeHeldCurrent()
+    syncOfficeBooleans()
+    setPoliticianPrimaryRolesAndLocations()
+
+#-----------------------------------------------------------------------------------------------------------------------
+# helpers for getting reps and senators from state and district
+#-----------------------------------------------------------------------------------------------------------------------
+def getRepsFromLocation(state, district=None):
+    elected = UserProfile.objects.filter(elected_offical=True)
+    reps = elected.filter(primary_role__office__representative=True, location__state=state)
+    if district:
+        reps = reps.filter(location__district=district)
+    return reps
+
+def getSensFromState(state):
+    elected = UserProfile.objects.filter(elected_offical=True)
+    sens = elected.filter(primary_role__office__senator=True, location__state=state)
+    return sens
+
+def getPoliticiansFromLocation(state, district=None):
+    elected = UserProfile.objects.filter(elected_offical=True)
+    politicians = elected.filter(location__state=state)
+    if district:
+        politicians = politicians.filter(location__district=district)
+    return politicians
+
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
 #-----------------------------------------------------------------------------------------------------------------------
-def initializeStateCongressGroups():
+def initializeStatePoliticianGroups():
     for state in STATES:
-        initializeStateCongressGroup(state)
+        initializeStatePoliticianGroup(state)
 
-def initializeStateCongressGroup(state):
-    print "============ initialize state congress group for " + state
-    group = PoliticianGroup()
-    group.title = state + " State Politician Group"
-    group.summary = "group of all politicians currently serving in the state of " + state
-    group.autoSave()
-    location = PhysicalAddress(state=state)
-    location.save()
-    group.location = location
-    group.save()
-    joinStateCongressGroupMembers(state)
-    return group
+def initializeStatePoliticianGroup(state):
+    if state in STATES:
+        print "============ initialize state congress group for " + state
+        group = StatePoliticianGroup()
+        group.title = state + " State Politician Group"
+        group.summary = "group of all politicians currently serving in the state of " + state
+        group.autoSave()
+        location = PhysicalAddress(state=state)
+        location.save()
+        group.location = location
+        group.save()
+        joinStatePoliticianGroupMembers(state)
+        return group
 
-def joinStateCongressGroupMembers(state):
-    group = getStateCongressGroup(state)
+def joinStatePoliticianGroupMembers(state):
+    group = getStatePoliticianGroup(state)
     for x in group.members.all():
         group.removeMember(x)
-    congress_tag = OfficeTag.objects.get(name="congress")
-    congress_offices = congress_tag.tag_offices.all()
-    print "|joining members for " + group.get_name()
-    state_offices = congress_offices.filter(location__state=state)
-    print "... offices: " + str(state_offices.count())
-    state_office_ids = state_offices.values_list("id", flat=True)
-    helds = OfficeHeld.objects.filter(office_id__in=state_office_ids)
-    print "... held all time: " + str(helds.count())
-    helds = helds.filter(current=True)
-    politicians_ids = helds.values_list("user", flat=True)
-    print "... p_ids: " + str(len(politicians_ids))
-    politicians = UserProfile.objects.filter(politician=True, id__in=politicians_ids)
+    state_offices = getOfficesFromTagName("congress").filter(location__state=state)
+    politicians = getCurrentHoldersOfOffices(state_offices)
     print "... politicians: " + str(politicians.count())
     for x in politicians:
         print "joining, " + x.get_name()
         group.joinMember(x)
 
-def getStateCongressGroup(state):
-    return PoliticianGroup.lg.get_or_none(alias=state + "_state_politician_group") or initializeStateCongressGroup(state)
+def getStatePoliticianGroup(state):
+    return StatePoliticianGroup.lg.get_or_none(location__state=state) or initializeStatePoliticianGroup(state)
 
-def syncOffices():
-    count = 0
-    for o in OfficeHeld.objects.all():
-        o.confirmed = True
-        o.save()
-        if  not count%20:
-            print str(count)
-        count += 1
-        o.setCurrent()
+#-----------------------------------------------------------------------------------------------------------------------
+# initialize politician groups for each district
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeDistrictPoliticianGroup(state, district):
+    print "============ initialize district congress group for " + state + " , district: " + str(district)
+    group = DistrictPoliticianGroup()
+    group.title = state + " District " + str(district) + " Politician Group"
+    group.summary = "group of all representatives and senators currently serving in the district " + str(district), ", " + state
+    group.autoSave()
+    location = PhysicalAddress(state=state, district=district)
+    location.save()
+    group.location = location
+    group.save()
+    joinDistrictPoliticianGroupMembers(state, district)
+    return group
+
+def joinDistrictPoliticianGroupMembers(state, district):
+    group = getDistrictPoliticianGroup(state, district)
+    for x in group.members.all():
+        group.removeMember(x)
+    group.representatives.clear()
+    group.senators.clear()
+    print " - joining members for " + group.get_name() + " - "
+    print "joining reps"
+    rep_offices = getOfficesFromTagName("representative")
+    rep_offices = rep_offices.filter(location__state=state, location__district=district)
+    representatives = getCurrentHoldersOfOffices(rep_offices)
+    print "...num representatives: " + str(representatives.count())
+    for x in representatives:
+        print "joining, " + x.get_name()
+        group.representatives.add(x)
+        group.joinMember(x)
+    print "joining senators"
+    sen_offices = getOfficesFromTagName("senator")
+    sen_offices = sen_offices.filter(location__state=state)
+    senators = getCurrentHoldersOfOffices(sen_offices)
+    print "...num senators: " + str(senators.count())
+    for x in senators:
+        print "joining, " + x.get_name()
+        group.senators.add(x)
+        group.joinMember(x)
+
+def getDistrictPoliticianGroup(state, district):
+    return DistrictPoliticianGroup.lg.get_or_none(location__state=state, location__district=district) or initializeDistrictPoliticianGroup(state, district)
+
+def getOfficesFromTagName(name):
+    tag = OfficeTag.objects.get(name=name)
+    offices = tag.tag_offices.all()
+    return offices
+
+def getCurrentHoldersOfOffices(offices):
+    offices_ids = offices.values_list("id", flat=True)
+    held = OfficeHeld.objects.filter(office_id__in=offices_ids, current=True)
+    politician_ids = held.values_list("user", flat=True)
+    return UserProfile.objects.filter(id__in=politician_ids)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Initialize politiciangroup for congress
+#-----------------------------------------------------------------------------------------------------------------------
+def getCongressGroup():
+    return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
+
+def initializeCongressGroup():
+    if PoliticianGroup.objects.filter(alias="congress"):
+        print ("...congress group already initialized")
+    else:
+        group = PoliticianGroup(alias="congress")
+        group.title = "Congress"
+        group.summary = "all members of Congress."
+        group.system = True
+        group.autoSave()
+        # join all members
+        congress = UserProfile.objects.filter(elected_official=True)
+        for u in congress:
+            group.members.add(u)
+        print ("initialized: Congress Group")
+        return group

@@ -135,6 +135,16 @@ class PhysicalAddress(LGModel):
     city = models.CharField(max_length=500, null=True)
     district = models.IntegerField(default=-1)
 
+    def clear(self):
+        self.address_string = None
+        self.zip = None
+        self.longitude = None
+        self.latitude = None
+        self.state = None
+        self.city = None
+        self.district = None
+        self.save()
+
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
@@ -1083,6 +1093,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     ghost = models.BooleanField(default=False)
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
+    primary_role = models.ForeignKey("OfficeHeld", null=True)
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
@@ -2637,13 +2648,30 @@ class Notification(Privacy):
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
-    governmental = models.BooleanField(default=False)
     tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
+    # optimization
+    governmental = models.BooleanField(default=False)
+    representative = models.BooleanField(default=False)
+    senator = models.BooleanField(default=False)
 
     def autoSave(self,creator=None,privacy='PUB'):
         self.type = "O"
         self.in_search = True
         super(Office,self).autoSave(creator,privacy)
+
+    def setBooleans(self):
+        rep_tag = OfficeTag.objects.get(name="representative")
+        if rep_tag in self.tags.all():
+            self.representative=True
+            self.save()
+        sen_tag = OfficeTag.objects.get(name="senator")
+        if sen_tag in self.tags.all():
+            self.senator = True
+            self.save()
+        congress_tag = OfficeTag.objects.get(name="congress")
+        if congress_tag in self.tags.all():
+            self.governmental = True
+            self.save()
 
 
 ########################################################################################################################
@@ -4099,6 +4127,16 @@ class PoliticianGroup(Group):
         self.autogen = True
         self.group_privacy = 'O'
         super(PoliticianGroup, self).autoSave()
+
+# uniquely identified by location__state
+class StatePoliticianGroup(PoliticianGroup):
+    pass
+
+# uniquely identified by location__state location__district combo
+class DistrictPoliticianGroup(PoliticianGroup):
+    representatives = models.ManyToManyField(UserProfile)
+    senators = models.ManyToManyField(UserProfile)
+    pass
 
 #=======================================================================================================================
 # Political party group
