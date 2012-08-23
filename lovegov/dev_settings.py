@@ -75,7 +75,7 @@ STATICFILES_FINDERS = base_settings.STATICFILES_FINDERS
 """
 
 # URL prefix for static files.
-STATIC_URL = base_settings.STATIC_URL
+STATIC_URL = '/static'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 MEDIA_URL =  base_settings.MEDIA_URL
