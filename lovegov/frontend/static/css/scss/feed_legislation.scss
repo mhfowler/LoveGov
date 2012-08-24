@@ -1,0 +1,26 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+$button-top-padding: 5px;
+$button-side-padding: 12px;
+
+
+div.feed-button
+{
+  float: left;
+  border: solid $light-gray;
+  border-width: 1px 0px 1px 1px;
+  padding: $button-top-padding $button-side-padding;
+
+  &:hover
+  {
+    background-color: $light-gray;
+    cursor:pointer;
+  }
+}
+div.feed-button.clicked {
+  background-color: $light-gray;
+}

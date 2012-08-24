@@ -793,72 +793,27 @@ function getFeed(container) {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
     }
     else if (feed == 'getLegislation') {
-        if ($("." + $('select.session_select').data('selector')).hasClass('clicked')) {
-            var session = $('select.session_select').val();
-            var session_json = JSON.stringify(session);
-        }
-        else {
-            var session = null;
-        }
-        if ($("." + $('select.type_select').data('selector')).hasClass('clicked')) {
-            var type = $('select.type_select').val();
-            var type_json = JSON.stringify(type);
-        }
-        else {
-            var type = null;
-        }
-        if ($("." + $('select.subject_select').data('selector')).hasClass('clicked')) {
-            var subject = $('select.subject_select').val();
-            var subject_json = JSON.stringify(subject);
-        }
-        else {
-            var subject = null;
-        }
-        if ($("." + $('select.committee_select').data('selector')).hasClass('clicked')) {
-            var committee = $('select.committee_select').val();
-            var committee_json = JSON.stringify(committee);
-        }
-        else {
-            var committee = null;
-        }
-        if ($("." + $('select.introduced_select').data('selector')).hasClass('clicked')) {
-            var introduced = $('select.introduced_select').val();
-            var introduced_json = JSON.stringify(introduced);
-        }
-        else {
-            var introduced = null;
-        }
-        if ($("." + $('select.sponsor_select_body').data('selector')).hasClass('clicked') && $('select.sponsor_select_body').val() != null) {
-            var sponsor_body = $('select.sponsor_select_body').val();
-            var sponsor_body_json = JSON.stringify(sponsor_body);
-        }
-        else {
-            var sponsor_body = null;
-        }
-        if ($("." + $('select.sponsor_select_name').data('selector')).hasClass('clicked') && $('select.sponsor_select_name').val() != null) {
-            var sponsor_name = $('select.sponsor_select_name').val();
-            var sponsor_name_json = JSON.stringify(sponsor_name);
-        }
-        else {
-            var sponsor_name = null;
-        }
-        if ($("." + $('select.sponsor_select_party').data('selector')).hasClass('clicked') && $('select.sponsor_select_party').val() != null) {
-            var sponsor_party = $('select.sponsor_select_party').val();
-            var sponsor_party_json = JSON.stringify(sponsor_party);
-        }
-        else {
-            var sponsor_party = null;
-        }
-        if ($("." + $('select.sponsor_select_district').data('selector')).hasClass('clicked') && $('select.sponsor_select_district').val() != null) {
-            var sponsor_district = $('select.sponsor_select_district').val();
-            var sponsor_district_json = JSON.stringify(sponsor_district);
-        }
-        else {
-            var sponsor_district = null;
-        }
+        var session = $('select.session_select').val();
+        var session_json = JSON.stringify(session);
+        var type = $('select.type_select').val();
+        var type_json = JSON.stringify(type);
+        var subject = $('select.subject_select').val();
+        var subject_json = JSON.stringify(subject);
+        var committee = $('select.committee_select').val();
+        var committee_json = JSON.stringify(committee);
+        var introduced = $('select.introduced_select').val();
+        var introduced_json = JSON.stringify(introduced);
+        var sponsor_body = $('select.sponsor_select_body').val();
+        var sponsor_body_json = JSON.stringify(sponsor_body);
+        var sponsor_name = $('select.sponsor_select_name').val();
+        var sponsor_name_json = JSON.stringify(sponsor_name);
+        var sponsor_party = $('select.sponsor_select_party').val();
+        var sponsor_party_json = JSON.stringify(sponsor_party);
+        var sponsor_district = $('select.sponsor_select_district').val();
+        var sponsor_district_json = JSON.stringify(sponsor_district);
 
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
-            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json, 'sponsor_body_set':sponsor_body_json,
+            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json, 'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
             'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
             'sponsor_district_set':sponsor_district_json};
     }
@@ -2076,7 +2031,7 @@ function shortenLongText() {
                 var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
             }
             else {
-                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><a href="/site/pages/legislation/legislation-view.html" class="morelink">' + moretext + '</a></span>';
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span>';
             }
             $(this).html(html);
         }

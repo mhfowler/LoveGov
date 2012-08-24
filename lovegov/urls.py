@@ -110,7 +110,7 @@ urlpatterns += patterns('',
     #(r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=False)),
     #(r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=False)),
 
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=False)),
+    (r'^legislation/$', viewWrapper(views.legislation, requires_login=False)),
 
     # ajax pages
     (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),

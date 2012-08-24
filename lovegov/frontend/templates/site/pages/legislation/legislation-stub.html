@@ -18,27 +18,30 @@
         <div class="bill-title long_text">
 
                 {% if l.bill_type == "s" %}
-                    <h5><span>Session {{l.congress_session}} S {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} S {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif l.bill_type = "h" %}
-                    <h5><span>Session {{l.congress_session}} H.R. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} H.R. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif l.bill_type == "hr" %}
-                    <h5><span>Session {{l.congress_session}} H.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} H.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif l.bill_type == "sr" %}
-                    <h5><span>Session {{l.congress_session}} S.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} S.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif l.bill_type == "hc" %}
-                    <h5><span>Session {{l.congress_session}} H.Con.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} H.Con.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif l.bill_type == "sc" %}
-                    <h5><span>Session {{l.congress_session}} S.Con.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} S.Con.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif l.bill_type == "hj" %}
-                    <h5><span>Session {{l.congress_session}} H.J.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} H.J.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% elif .bill_type == "sj" %}
-                    <h5><span>Session {{l.congress_session}} S.J.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
+                    <h5><span>Session {{l.congress_session_id}} S.J.Res. {{l.bill_number}} - {{l.full_title}}</span></h5>
                 {% endif %}
 
         </div>
         <div class="bill-summary long_text">
             <h6><span><span class="summary-intro">Summary: </span>{{l.bill_summary}}</span></h6>
         </div>
+    </div>
+    <div class="bill-expand-link">
+        <h6><span><a href="/site/pages/legislation/legislation-view.html"></a>Detail</span></h6>
     </div>
 </div>
 
