@@ -25,7 +25,6 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    valsFBFriends(request, vals)
     vals['group_subscriptions'] = viewer.getGroupSubscriptions()
 
 #-----------------------------------------------------------------------------------------------------------------------
