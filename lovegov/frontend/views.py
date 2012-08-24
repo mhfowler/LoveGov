@@ -484,7 +484,8 @@ def representatives(request, vals):
                 for r in reps:
                     congressmen.append(r)
     if LOCAL and location:
-        congressmen = [getUser("Randy Johnson"), getUser("Katy Perry"), getUser("Joseph Stalin")]
+        bush = getUser("George Bush")
+        congressmen = [bush, bush, bush]
     vals['congressmen'] = congressmen
     for x in congressmen:
         x.comparison = x.getComparison(viewer)
@@ -506,29 +507,19 @@ def congress(request, vals):
 # friends focus (home page)
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
-    class FBFriend:
-        pass
-
     viewer = vals['viewer']
-
-    if viewer.facebook_id:
-        friends_list = fbGet(request,'me/friends/')['data']
-        vals['facebook_authorized'] = False
-        if friends_list:
-            vals['facebook_authorized'] = True
-            fb_friends = []
-            for friend in friends_list[:4]:
-                fb_friend = FBFriend()
-                fb_friend.name = friend['name']
-                fb_friend.id = friend['id']
-                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                fb_friends.append(fb_friend)
-
-                vals['facebook_friends'] = fb_friends
+    friends = viewer.getIFollow()
+    friends = random.sample(friends, min(8, len(friends)))
+    vals['friends'] = friends
+    for f in friends:
+        f.comparison = f.getComparison(viewer)
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# question answering center
+#-----------------------------------------------------------------------------------------------------------------------
 def questions(request, vals={}):
 
     getMainTopics(vals)

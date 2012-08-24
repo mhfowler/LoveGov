@@ -2404,6 +2404,15 @@ def messagePolitician(request, vals={}):
     return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------
+# gets fb friend snippet html for invite sidebar
+#-----------------------------------------------------------------------------------------------------------------------
+def getFBInviteFriends(request, vals={}):
+    from lovegov.frontend.views_helpers import valsFBFriends
+    valsFBFriends(request, vals)
+    html =  ajaxRender('site/pages/friends/fb_invite_friends_helper.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------

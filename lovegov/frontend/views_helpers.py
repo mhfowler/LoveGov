@@ -25,6 +25,7 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
+    valsFBFriends(request, vals)
     vals['group_subscriptions'] = viewer.getGroupSubscriptions()
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -358,3 +359,24 @@ def valsPetition(viewer, petition, vals):
     vals['i_signed'] = (viewer in signers)
     vals['num_signers'] = len(signers)
     vals['i_created'] = (petition.creator == viewer)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for fb friends invite sidebar
+#-----------------------------------------------------------------------------------------------------------------------
+def valsFBFriends(request, vals):
+    class FBFriend:
+        pass
+    viewer = vals['viewer']
+    if viewer.facebook_id:
+        friends_list = fbGet(request,'me/friends/')['data']
+        vals['facebook_authorized'] = False
+        if friends_list:
+            vals['facebook_authorized'] = True
+            fb_friends = []
+            for friend in random.sample(friends_list, 4):
+                fb_friend = FBFriend()
+                fb_friend.name = friend['name']
+                fb_friend.id = friend['id']
+                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                fb_friends.append(fb_friend)
+                vals['facebook_friends'] = fb_friends

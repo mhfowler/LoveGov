@@ -34,11 +34,10 @@
 
     <div class="navbar-section navbar_section">
         <a class="home_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
-        <div class="navbar_links_wrapper friends_wrapper">
-            {% for x in friends %}
-                {% include 'site/pages/home/navbar_snippet.html' %}
-            {% endfor %}
-        </div>
     </div>
+
+    {% if viewer.facebook_id %}
+        {% include 'site/pages/friends/fb_invite_sidebar.html' %}
+    {% endif %}
 
 </div>

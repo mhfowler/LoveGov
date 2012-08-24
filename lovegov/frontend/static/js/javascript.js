@@ -6,6 +6,7 @@
 var rebind;
 function bindOnReload() {
     bindOnNewElements();
+    getFBInviteFriends();
     switch (rebind) {
         case "home":
             initFeed();
@@ -27,9 +28,6 @@ function bindOnReload() {
             break;
         case 'browse':
             initFeed();
-            break;
-        case 'representatives':
-            loadGoogleMap();
             break;
     }
 
@@ -54,6 +52,7 @@ function bindOnNewElements() {
     pollAutoSwitch();
     comparisonWebs();
     updateQuestionStubsDisplay();
+    loadGoogleMap();
 }
 
 var poll_autoswitch;
@@ -235,11 +234,27 @@ bind(".bind_link", "click", null, function(event) {
     window.location.href = url;
 });
 
+
 /***********************************************************************************************************************
  *
  *      ~Home
  *
  ***********************************************************************************************************************/
+
+/* fill fb invite sidebar after page load */
+function getFBInviteFriends() {
+    var invite_wrapper = $(".fb_friends_wrapper");
+    if (invite_wrapper.length!=0) {
+        action({
+            data: {'action':'getFBInviteFriends' },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                invite_wrapper.html(returned.html)
+            }
+        });
+    }
+}
 
 /* red triangle toggles navsection options */
 bind(".red_triangle", 'click', null, function(event) {
@@ -3330,7 +3345,7 @@ function loadGoogleMap()
         map.overlayMapTypes.insertAt(0, overlayWMS);
     }
 
-    if (reps_latitude && reps_longitude && reps_state && reps_district) {
+    if (rebind=="representatives" && reps_latitude && reps_longitude && reps_state && reps_district) {
         initialize();
     }
 }

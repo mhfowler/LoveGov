@@ -1125,6 +1125,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.getWebURL()
     def getWebURL(self):
         return '/profile/web/' + self.alias + '/'
+    def getIFollowHistogramURL(self):
+        return self.i_follow.getHistogramURL()
     def getAlphaURL(self):
         return self.get_url()
     def get_name(self):
