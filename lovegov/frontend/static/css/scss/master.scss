@@ -593,9 +593,7 @@ div.heart_plus:hover {
 }
 
 div.overdiv {
-  filter: alpha(opacity=35);
-  -moz-opacity: .35;
-  opacity: .35;
+  @include opacity(0.15);
   background-color: #000;
   position: fixed;
   top: 0px;
@@ -669,7 +667,7 @@ div.modal-wrapper {
   text-align: center;
   div.modal-general {
     background-color: white;
-    @include box-shadow(20px 20px 10px #616161);
+    @include box-shadow(20px 20px 200px #616161);
     @include border-radius(5px);
     @include clearfix;
     display: none;

@@ -620,6 +620,7 @@ ACTIONS = [
     'signPetition',
     'finalizePetition',
     'supportPolitician',
+    'createContent',
     'askToJoin',
     'claimProfile',
     'messagePolitician',
@@ -702,6 +703,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'createMotion'
     #checkCompatability,
     'appendComment',
+    'createContent',
 ]
 
 ###################################### DATA #########################################################################

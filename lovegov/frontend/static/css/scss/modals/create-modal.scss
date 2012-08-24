@@ -2,7 +2,7 @@
 @import "compass";
 
 div.create-modal {
-  $create-section-width: 1000px;
+  $create-section-width: 900px;
 
   div.type-select {
     div.selection {
@@ -126,7 +126,6 @@ div.create-modal {
         display: none;
         @include transition(0.2s);
       }
-      background-color: auto;
       border: 1px solid $deep-gray;
       input {
         margin: 10px;
@@ -134,18 +133,33 @@ div.create-modal {
         width: 460px;
       }
       textarea {
-        height: 60px;
+        height: 30px;
+        width: 500px;
         &:focus {
-          height: 100px;
+          height: 60px;
         }
       }
       div.question-title {
         padding: 5px;
-        background-color: $gray;
+        background-color: $orange-light;
+        div.label {
+          margin: 10px;
+        }
       }
       div.question-answers {
         padding: 5px;
         background-color: white;
+
+      }
+      span.remove {
+        color: $orange;
+        float: right;
+        margin: 10px;
+        font-size: 14px;
+        cursor: pointer;
+        &:hover {
+          color: $red;
+        }
       }
     }
     div.add-question {
@@ -165,15 +179,14 @@ div.create-modal {
     }
   }
   textarea, input, select {
-    width: 600px;
+    width: 550px;
     font-size: 16px;
     padding: 5px;
   }
   textarea {
-    height: 40px;
-    @include transition(0.05s);
+    height: 80px;
     &:focus {
-      height: 80px;
+      height: 120px;
     }
   }
 }

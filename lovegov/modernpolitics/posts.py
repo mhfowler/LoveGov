@@ -260,7 +260,7 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
-    groups = SearchQuerySet().models(Group).filter(content=term,ghost=False)
+    groups = SearchQuerySet().models(Group).filter(content=term,hidden=False)
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
@@ -2328,6 +2328,39 @@ def logCompatability(request, vals={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Creates a piece of content, e.g. from the create modal
+#-----------------------------------------------------------------------------------------------------------------------
+def createContent(request, vals={}):
+    section = request.POST.get('sectionType')
+    title = request.POST.get('title')
+    full_text = request.POST.get('full_text')
+    post_to = request.POST.get('post_to')
+    group = Group.lg.get_or_none(id=post_to)
+    post_as = request.POST.get('post_as')
+    image = request.POST.get('content-image')
+    viewer = vals['viewer']
+    if post_as == 'user':
+        privacy = 'PUB'
+    elif post_as == 'anonymous':
+        privacy = 'PRI'
+    else:
+        privacy = 'PUB'
+    redirect = ''
+    if section=='discussion':
+        if title and full_text:
+            newDiscussion = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                                        posted_to=group)
+            newDiscussion.autoSave(creator=viewer, privacy=privacy)
+            redirect = newDiscussion.getUrl()
+    elif section=='petition':
+        if title and full_text:
+            newPetition = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                                        posted_to=group)
+            newPetition.autoSave(creator=viewer, privacy=privacy)
+            redirect = newPetition.getUrl()
+    return HttpResponse(json.dumps({'redirect': redirect}))
+
+###############
 # asks a politicain to join the website
 #-----------------------------------------------------------------------------------------------------------------------
 def askToJoin(request, vals={}):

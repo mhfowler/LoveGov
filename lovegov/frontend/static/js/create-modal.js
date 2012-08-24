@@ -27,4 +27,54 @@ bind("div.create-modal span.post-as", "click", function(e) {
 bind("div.create-modal div.add-question", "click", function(e) {
    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
+    newQuestion.removeClass("model");
+});
+
+// Delete questions
+bind("div.create-modal div.questions span.remove", "click", function(e) {
+    var hasContent = false;
+    var question = $(this).closest("div.question");
+    question.find("input,textarea").each(function(i,e) {
+        if($(this).val()!='') {
+            hasContent = true;
+            // break loop
+            return false;
+        }
+    });
+    if (hasContent) {
+        if(confirm("Remove this question?")) {
+            question.remove();
+       }
+    } else {
+        question.remove();
+    }
+});
+
+bind("div.create-modal div.save", "click", function(e) {
+    var section = $(this).closest('div.create-section');
+    var sectionType;
+    var types = ['discussion', 'poll', 'news', 'petition'];
+    for(var i=0; i<types.length; i++) {
+        if(section.hasClass(types[i])) {
+            sectionType = types[i];
+        }
+    }
+    var title = section.find("input.title").val();
+    var full_text = section.find("textarea.description").val();
+    var post_to = section.find("select.post-to").val();
+    var post_as = section.find("span.post-as.selected").data("poster");
+    var image =
+    action({
+       'data': {'action': 'createContent',
+                'sectionType': sectionType,
+                'title': title,
+                'full_text': full_text,
+                'post_to': post_to,
+                'post_as': post_as},
+       'success': function(data) {
+           var obj = eval('(' + data + ')');
+           window.location = obj.redirect;
+       }
+
+   })
 });
