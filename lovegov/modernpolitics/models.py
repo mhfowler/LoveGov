@@ -2961,6 +2961,9 @@ class Legislation(Content):
         else:
             return 'No Legislation Title Available'
 
+    def getTitleDisplay(self):
+        return "LEGISLATION: " + self.getTitle()
+
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
     def getCosponsors(self):
