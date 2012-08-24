@@ -1304,7 +1304,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getComparisonJSON(self, viewer):
         comparison = self.getComparison(viewer)
-        return comparison, comparison.toJSON(viewB_url=self.getWebURL())
+        return comparison, comparison.toJSON()
 
     def prepComparison(self, viewer):
         comparison, json = self.getComparisonJSON(viewer)
