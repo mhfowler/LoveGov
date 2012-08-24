@@ -923,7 +923,7 @@ def legislation(request, session=None, type=None, number=None, vals={}):
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# legislation detail 
+# legislation detail
 #-----------------------------------------------------------------------------------------------------------------------
 def legislationDetail(request, l_id, vals={}):
 

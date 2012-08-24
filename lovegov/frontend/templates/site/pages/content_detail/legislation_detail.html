@@ -1,0 +1,36 @@
+{% extends 'site/pages/content_detail/content_detail.html' %}
+
+{% block content_detail_sidebar %}
+    {% include 'site/pages/content_detail/signers_sidebar.html' %}
+{% endblock %}
+
+
+{% block content_description %}
+    <div class="content-info-header">
+        Bill Summary
+    </div>
+
+    <div class="petition-description">
+        {{ content.summary}}
+    </div>
+
+{% endblock %}
+
+
+{% block content_body %}
+
+    <div class="legislation-wrapper">
+
+        hey edric, your html from the detail page should go here
+        <br>
+        {{ legislation.full_text }}
+        <br>
+        and here, you can ignore/remove the above brs and .full_text that was just to see if it was grabbing
+        a bill properly.
+
+    </div>
+
+    <script> rebind="legislation_detail"; </script>
+
+{% endblock %}
+

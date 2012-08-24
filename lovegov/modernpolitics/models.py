@@ -4152,6 +4152,7 @@ class CalculatedGroup(Group):
         self.group_type = 'X'
         self.system = True
         self.autogen = True
+        self.hidden = True
         self.content_by_posting = False
         self.group_privacy = 'O'
         super(CalculatedGroup, self).autoSave()
