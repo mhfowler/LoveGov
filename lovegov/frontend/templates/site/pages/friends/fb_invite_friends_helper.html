@@ -1,0 +1,5 @@
+{% for friend in facebook_friends %}
+    <div class="fb-friend-wrapper">
+        {% include 'site/pages/friends/fb_invite_card.html' with friend=friend %}
+    </div>
+{% endfor %}
