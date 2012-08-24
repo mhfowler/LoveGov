@@ -466,31 +466,31 @@ def presidential(request, vals):
 def representatives(request, vals):
 
     viewer = vals['viewer']
-    location = viewer.location
-    vals['location'] = None
+    location = viewer.temp_location or viewer.location
+    vals['location'] = location
 
-#    congressmen = []
-#    if viewer.location:
-#        vals['state'] = location.state
-#        vals['district'] = location.district
-#        vals['latitude'] = location.latitude
-#        vals['longitude'] = location.longitude
-#        senator_tag = OfficeTag.objects.get(name="senator")
-#        senator_office = senator_tag.tag_offices.filter(location=location.state)[0]
-#        senators = OfficeHeld.objects.filter(content=senator_office, confirmed=True).values_list("user", flat=True)
-#
-#        representative = UserProfile.lg.get_or_none(elected_official=True, location__state=location.state,location__district=location.district)
-#        if representative:
-#            congressmen.append(representative)
-#        senators = UserProfile.objects.filter(elected_offical=True,location__state=location.state)
-#        for senator in senators:
-#            congressmen.append(senator)
-#        vals['congressmen'] = congressmen
-#    for x in congressmen:
-#        x.prepComparison(viewer)
-#    congressmen.sort(key=lambda x:x.result,reverse=True)
-#    if not congressmen:
-#        vals['invalid_address'] = True
+    congressmen = []
+    if location:
+        vals['state'] = location.state
+        vals['district'] = location.district
+        vals['latitude'] = location.latitude
+        vals['longitude'] = location.longitude
+        if location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+    if LOCAL and location:
+        congressmen = [getUser("Randy Johnson"), getUser("Katy Perry"), getUser("Joseph Stalin")]
+    vals['congressmen'] = congressmen
+    for x in congressmen:
+        x.comparison = x.getComparison(viewer)
+    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
+    if len(congressmen) < 3:
+        vals['few_congressmen'] = True
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path

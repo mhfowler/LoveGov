@@ -2,15 +2,31 @@
 
 {% block header_top %}
 
-    <p style="float:left;"> top </p>
+    <div class="reps-top">
+        <div class="reps-header"> Your Representatives </div>
+
+        <div class="reps-where"> {{ location.state }} [District {{ location.district }}] </div>
+
+        <a class="enter-new-address enter_new_address dummy_link">
+            not your district? enter a different address.
+        </a>
+    </div>
 
 {% endblock %}
 
 
 {% block header_info %}
 
-    <p class="info">
-    ze info
-    </p>
+    <div class="reps-wrapper">
+    {% for politician in congressmen %}
+        <div class="congressman-wrapper {% if forloop.first %} first {% endif %}">
+            {% include 'site/pages/elections/election_card.html' %}
+        </div>
+    {% endfor %}
+    </div>
+
+    <div class="google-maps-wrapper">
+        <div id="map_canvas" class="google-map"> </div>
+    </div>
 
 {% endblock %}

@@ -7,7 +7,7 @@
 /* stuff for section headers */
 div.home-header-top {
   @include clearfix;
-  margin-bottom:12px;
+  margin-bottom: 7px;
   div.home-section-title {
     text-transform:uppercase;
     @include fontSize(20px);

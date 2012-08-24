@@ -623,7 +623,8 @@ ACTIONS = [
     'askToJoin',
     'claimProfile',
     'messagePolitician',
-    'followGroup'
+    'followGroup',
+    'submitTempAddress'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

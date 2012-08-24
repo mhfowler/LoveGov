@@ -239,13 +239,7 @@ def getCongressmen(request, vals={}):
     location = locationHelper(address, zip)
 
     congressmen = []
-    representative = Representative.objects.get(congresssessions=112,state=location.state,district=location.district)
-    representative.json = representative.getComparison(viewer).toJSON()
-    congressmen.append(representative)
-    senators = Senator.objects.filter(congresssessions=112,state=location.state)
-    for senator in senators:
-        senator.json = senator.getComparison(viewer).toJSON()
-        congressmen.append(senator)
+
 
     vals['userProfile'] = viewer
     vals['congressmen'] = congressmen
@@ -573,21 +567,37 @@ def finalizePetition(request, vals={}):
 def submitAddress(request, vals={}):
 
     viewer = vals['viewer']
+    try:
+        location = postLocationHelper(request)
+        viewer.setNewLocation(location)
+        viewer.joinLocationGroups()
+    except:
+        return HttpResponse(json.dumps({'success':-1}))
 
+    return HttpResponse(json.dumps({'success':1}))
+
+
+def submitTempAddress(request, vals={}):
+    viewer = vals['viewer']
+    try:
+        location = postLocationHelper(request)
+        viewer.setNewTempLocation(location)
+    except:
+        return HttpResponse(json.dumps({'success':-1}))
+
+    return HttpResponse(json.dumps({'success':1}))
+
+
+# returns a new location based on inputted parameters
+def postLocationHelper(request):
     address = request.POST.get('address')
     city = request.POST.get('city')
     state = request.POST.get('state')
     zip = request.POST.get('zip')
-
-    try:
-        location = viewer.getLocation()
-        locationHelper(address=address, city=city, state=state, zip=zip, location=location)
-        viewer.joinLocationGroups()
-    except:
-        return HttpResponse("The given address was not specific enough to determine your voting district")
-
-    return HttpResponse("success")
-
+    location = PhysicalAddress()
+    location.save()
+    location = locationHelper(address=address, city=city, state=state, zip=zip, location=location)
+    return location
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
@@ -1274,7 +1284,7 @@ def followGroup(request, vals={}):
     followGroupAction(viewer, group, follow_bool, getPrivacy(request))
     vals['is_user_following'] = follow_bool
     html = ajaxRender('site/pages/group/group_follow_button.html',vals,request)
-    return HttpResponse(json.dumps({'html':html}))
+    return HttpResponse(json.dumps({'html':html, 'href':group.get_url()}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.

@@ -1060,6 +1060,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     view = models.ForeignKey("WorldView", default=initView)
     networks = models.ManyToManyField("Network", related_name='networks')
     location = models.ForeignKey(PhysicalAddress, null=True)
+    temp_location = models.ForeignKey(PhysicalAddress, null=True, related_name='temp_users')
+    old_locations = models.ManyToManyField(PhysicalAddress, related_name='old_users')
     # GAMIFICATION
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -1268,6 +1270,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         location = PhysicalAddress()
         location.save()
         self.location = location
+        self.save()
+        return location
+
+    def setNewLocation(self, location):
+        if self.location:
+            self.old_locations.add(self.location)
+        self.location = location
+        self.save()
+
+    def setNewTempLocation(self, location):
+        if self.temp_location:
+            self.old_locations.add(self.temp_location)
+        self.temp_location = location
         self.save()
         return location
 

@@ -28,6 +28,9 @@ function bindOnReload() {
         case 'browse':
             initFeed();
             break;
+        case 'representatives':
+            loadGoogleMap();
+            break;
     }
 
 }
@@ -1811,11 +1814,12 @@ function followGroup(div,follow,g_id)
                 if (div.length!=0) {
                     div.replaceWith(returned.html);
                 }
-                /*
-                var nav_link = getNavLink(returned.href);
-                if (nav_link) {
-                    // get rid of it
-                } */
+                if (!follow) {
+                    var nav_link = getNavLink(returned.href);
+                    if (nav_link) {
+                        nav_link.remove();
+                    }
+                }
             }
         }
     );
@@ -3274,8 +3278,13 @@ bind('.dismissible_x' , 'click' , null , function(e)
 });
 
 
+var reps_longitude;
+var reps_latitude;
+var reps_state;
+var reps_district;
 function loadGoogleMap()
 {
+
     function createDistrictsOverlay(outlines_only, opacity, state, district)
     {
         return {
@@ -3304,7 +3313,7 @@ function loadGoogleMap()
         var myOptions =
         {
             zoom: 10,
-            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            center: new google.maps.LatLng(reps_latitude, reps_longitude),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             panControl: false,
             zoomControl: true,
@@ -3314,14 +3323,16 @@ function loadGoogleMap()
         };
         map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, reps_state, reps_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, reps_state, reps_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
     }
 
-    initialize();
+    if (reps_latitude && reps_longitude && reps_state && reps_district) {
+        initialize();
+    }
 }
 
 
@@ -3333,15 +3344,26 @@ bind('.find_address_button' , 'click' , null , function(e)
     var state = form.find(".state_input").val();
     var zip = form.find(".zip_input").val();
     var city = form.find(".city_input").val();
+    var error_message = $(this).parents(".find_your_reps").find(".error_message");
+    error_message.hide();
     action({
-            data: {'action': 'submitAddress', 'address': address, 'city':city, 'state':state,
+            data: {'action': 'submitTempAddress', 'address': address, 'city':city, 'state':state,
                 'zip':zip},
             success: function(data) {
-                alert(data);
+                var returned = eval('(' + data + ')');
+                if (returned.success == -1) {
+                    error_message.fadeIn();
+                }
+                else {
+                    location.reload();
+                }
             }}
     );
 });
 
+bind('.enter_new_address' , 'click' , null , function(e) {
+    $(".dismissible_header").show();
+});
 
 /***********************************************************************************************************************
  *
