@@ -303,8 +303,8 @@ class Content(Privacy, LocationLevel):
             return '/question/' + str(self.id) + '/'
         elif self.type=='D':
             return '/discussion/' + str(self.id) + '/'
-        elif self.type=='E':
-            return '/event/' + str(self.id) + '/'
+        elif self.type=='L':
+            return '/legislation/' + str(self.id) + '/'
         elif self.type=='G':
             return self.getAliasURL() or '/group/' + str(self.id) + '/'
         else:
@@ -1113,22 +1113,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.first_name
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # duck typing
+    #-------------------------------------------------------------------------------------------------------------------
     def get_url(self):
         if self.alias!='' and self.alias!='default':
             return '/' + self.alias + '/'
         else:
             return '/profile/' + str(self.id) + '/'
-    def getQuestionsURL(self):
-        return self.get_url() + 'worldview/'
 
-    def getWebUrl(self):
-        return self.getWebURL()
-    def getWebURL(self):
-        return '/profile/web/' + self.alias + '/'
-    def getIFollowHistogramURL(self):
-        return self.i_follow.getHistogramURL()
-    def getAlphaURL(self):
-        return self.get_url()
     def get_name(self):
         try:
             to_return = (self.first_name + " " + self.last_name)
@@ -1141,6 +1135,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # getters and setters and helpers
+    #-------------------------------------------------------------------------------------------------------------------
+    def getQuestionsURL(self):
+        return self.get_url() + 'worldview/'
+
+    def getIFollowHistogramURL(self):
+        return self.i_follow.getHistogramURL()
+
     def get_nameShort(self, max_length=15):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
@@ -1187,6 +1191,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.age = years
         self.save()
 
+    def clearResponses(self):
+        return self.getView().clearResponses()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # special user checks
+    #-------------------------------------------------------------------------------------------------------------------
     def isAnon(self):
         return self.alias == 'anonymous'
 
@@ -1195,9 +1205,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def isNormal(self):
         return not (self.politician or self.elected_official)
-
-    def clearResponses(self):
-        return self.getView().clearResponses()
 
     #-------------------------------------------------------------------------------------------------------------------
     # automatically parse city and state groups
@@ -1327,12 +1334,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # create default fillter
+    # get my like-minded group if it exists, or return none
     #-------------------------------------------------------------------------------------------------------------------
-    def createDefaultFilter(self):
-        filter = SimpleFilter(creator=self, ranking="N")
-        filter.save()
-        self.my_filters.add(filter)
+    def getLikeMindedGroup(self):
+        if self.like_minded:
+            return self.like_minded
+        else:
+            return self.initializeLikeMindedGroup()
+
+    def initializeLikeMindedGroup(self):
+        if self.num_answers < 20:
+            return None
+        like_minded = CalculatedGroup().createLikeMinded(self)
+        return like_minded
 
     #-------------------------------------------------------------------------------------------------------------------
     # get last page access
@@ -1358,7 +1372,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return "Anonymous"
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profile image for this user.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1381,6 +1394,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getImageURL(self):
         return self.getProfileImageURL()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Stats recalculate
+    #-------------------------------------------------------------------------------------------------------------------
     def userPetitionsRecalculate(self):
         self.num_petitions = Created.objects.filter(user=self,content__type="P").count()
         self.save()
@@ -1398,6 +1414,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # politician support
+    #-------------------------------------------------------------------------------------------------------------------
     def getSupporters(self):
         support = Supported.objects.filter(user=self, confirmed=True)
         supporter_ids = support.values_list('to_user', flat=True)
@@ -1616,33 +1635,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.profile_image = img
             self.save()
 
-
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Creates involvement tuple and adds it to myinvolvement if user is not already involved with inputted content
-    # otherwise just increases amount of invovlement in tupble.
-    #-------------------------------------------------------------------------------------------------------------------
-    def updateInvolvement(self, content, amount):
-        c = self.my_involvement.filter(content=content)
-        # if already involved with content, increase your involvement
-        if c:
-            c[0].involvement += amount
-            c[0].when = datetime.datetime.now()
-            c[0].save()
-        # else create new involved and add to myinvolvement
-        else:
-            i = Involved(content=content, involvement=amount)
-            i.save()
-            self.my_involvement.add(i)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Send email to user alerting them of notificaiton... depending on their settings.
-    #-------------------------------------------------------------------------------------------------------------------
-    def emailNotification(self, notification):
-        pass
-        #send_mail(subject='Notification', message=notification.getEmail(),
-        # from_email='info@lovegov.com', recipient_list=[self.email])
-
     #-------------------------------------------------------------------------------------------------------------------
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
@@ -1727,12 +1719,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         from modernpolitics.backend import getLoveGovGroup
         lovegov = getLoveGovGroup()
         lovegov.joinMember(self)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearMyFeed(self):
-        self.my_feed.all().delete()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
@@ -1914,45 +1900,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             qr.append((q,None))
 
         return qr
-
-
-    def setAddress(self, newAddress):
-        self.userAddress.currentAddress = False
-        self.userAddress.save()
-        newAddress.currentAddress = True
-        self.userAddress = newAddress
-        self.save()
-
-
-#    def getSupporters(self):
-#        support = Supported.objects.filter(user=self, confirmed=True)
-#        supporter_ids = support.values_list('to_user', flat=True)
-#        return UserProfile.objects.filter(id__in=supporter_ids)
-
-    def addSupporter(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if not supported:
-            supported = Supported(user=user, to_user=self)
-            supported.confirmed()
-            supported.autoSave()
-            supporters.add(user)
-            self.num_supporters += 1
-            self.save()
-        if not supported.confirmed:
-            supported.confirmed = True
-            supported.save()
-            self.num_supporters += 1
-            self.save()
-
-    def removeSupporter(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if supported and supported.confirmed:
-            supported.confirmed = False
-            supported.save()
-            self.num_supporters -= 1
-            self.save()
-        if user in supporters:
-            supporters.remove(user)
 
 #=======================================================================================================================
 # Permissions for user to modify shit.. right now just char Field, but could be expanded later
@@ -3732,6 +3679,8 @@ class Group(Content):
             object = self.towngroup
         elif type == 'Y':
             object = self.politiciangroup
+        elif type == 'X':
+            object = self.calculatedgroup
         else: object = self
         return object
 
@@ -4190,6 +4139,62 @@ class DistrictPoliticianGroup(PoliticianGroup):
     representatives = models.ManyToManyField(UserProfile, related_name="district_rep_group")
     senators = models.ManyToManyField(UserProfile, related_name="district_sen_group")
     pass
+
+#=======================================================================================================================
+# Calculated group, is a system group for doing like-minded and opposite minded
+#
+#=======================================================================================================================
+class CalculatedGroup(Group):
+    calculation_type = models.CharField(max_length=2, default="LM")
+    user = models.ForeignKey(UserProfile)
+    processed = models.ManyToManyField(UserProfile)
+    def autoSave(self):
+        self.group_type = 'X'
+        self.system = True
+        self.autogen = True
+        self.content_by_posting = False
+        self.group_privacy = 'O'
+        super(CalculatedGroup, self).autoSave()
+        class Meta:
+            abstract = True
+
+    def createLikeMinded(self, user):
+        self.title = user.get_name() + " Like-Minded Group"
+        self.user = user
+        self.calculation_type = "LM"
+        self.autoSave()
+
+    def update(self):
+        if self.calculation_type == "LM":
+            self.updateLikeMinded()
+
+    def updateLikeMinded(self):
+        self.members.clear()
+        self.processed.clear()
+        self.addMoreLikeMinded(num=100)
+
+    def addMore(self, num=0):
+        if self.calculation_type == "LM":
+            self.addMoreLikeMinded(num=num)
+
+    def addMoreLikeMinded(self, num=0):
+        viewer = self.user
+        # the pool to consider is all non-members
+        processed_ids = self.processed.all().values_list("id", flat=True)
+        to_process = UserProfile.objects.exclude(id__in=processed_ids).order_by("-num_answers")
+        if num: #paginate
+            to_process = to_process[:num]
+
+        LIKE_MINDED_RESULT_THRESHOLD = 80
+        LIKE_MINDED_NUMQ_THRESHOLD = 20
+        # for each person in pool, do comparison, and
+        for x in to_process:
+            comparison = x.getComparison(viewer)
+            if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
+                self.members.add(x)
+            self.processed.add(x)
+
+
 
 #=======================================================================================================================
 # Political party group

@@ -52,7 +52,7 @@ table.home
     div.home-header
     {
       width:100%;
-      margin-top:13px;
+      margin-top:8px;
 
       div.minimize-button
       {
@@ -93,7 +93,7 @@ div.expand-info
 
 div.left-navbar {
 
-  margin-top:20px;
+  margin-top:5px;
   @include titleFont();
   width:150px;
   overflow:hidden;
@@ -102,7 +102,7 @@ div.left-navbar {
     color:$black;
     position:absolute;
     @include titleFont();
-    @include fontSize(22px);
+    @include fontSize(14px);
     display:none;
   }
 
@@ -110,6 +110,7 @@ div.left-navbar {
     margin-bottom:10px;
     width:200px;
 
+    /* old way of navbar link
     a.navbar-link {
       padding:5px 0 5px 5px;
       display:block;
@@ -118,8 +119,58 @@ div.left-navbar {
       width:139px;
       @extend .gray-hover;
     }
+    */
+    a.navbar-link {
+      padding:5px 0 5px 5px;
+      display:block;
+      margin: 0px 0 0 10px;
+      color:$black;
+      width:139px;
+      &:hover {
+        font-style:italic;
+      }
+      &.clicked {
+        font-style:italic;
+      }
+    }
   }
 
+  /* navbar - simple */
+  div.navbar-divider {
+    width:85%;
+    border-bottom:1px solid $gray;
+    margin: 8px 0px 5px 0px;
+    div.divider-title {
+      margin-left: 3px;
+      @include fontSize(10px);
+    }
+  }
+  div.simple_navsection {
+    div.navbar-divider {
+      a.navbar-link {
+        &.clicked {
+        }
+        &:hover {
+        }
+      }
+    }
+  }
+  a.navbar-link {
+    padding:5px 0 5px 0px;
+    display:block;
+    margin: 0px 0 0 0px;
+    color:$black;
+    width:139px;
+    text-transform:lowercase;
+    &:hover {
+      font-style:italic;
+    }
+    &.clicked {
+      font-style:italic;
+    }
+  }
+
+  /* old way  of doing navbars
   div.navbar-title {
     @extend .gray-hover;
     @include inline-block;
@@ -133,15 +184,36 @@ div.left-navbar {
       color:white;
     }
   }
+  */
+  div.navbar-title {
+    @include inline-block;
+    @include fontSize(12px);
+    padding: 5px;
+    color:$black;
+    &:hover {
+      font-style:italic;
+    }
+  }
+  a.section_title.clicked {
+    div.navbar-title {
+      font-style:italic;
+    }
+  }
 
   span.red-triangle {
     @include inline-block;
+    /*
     width:9px;
     height:18px;
+    */
     @include staticImage('/images/icons/arrow_right_red.png');
     @include transition(.25s);
-    margin-left:15px;
-    margin-bottom:3px;
+    margin-left: 6px;
+    margin-bottom: 2px;
+    background-repeat: no-repeat;
+    background-size: 5px 10px;
+    width: 5px;
+    height: 10px;
     //display:none;
   }
   span.red-triangle-down {
@@ -161,6 +233,13 @@ div.left-navbar {
       @include fontSize(12px);
       margin-right:50px;
       padding-right:5px;
+    }
+
+    div.create-wrapper {
+      background-color:blue;
+      a.create-link {
+        float:right;
+      }
     }
   }
 

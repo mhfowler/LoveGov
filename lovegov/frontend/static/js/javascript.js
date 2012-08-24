@@ -6,6 +6,7 @@
 var rebind;
 function bindOnReload() {
     bindOnNewElements();
+    navSectionOpenAll();
     getFBInviteFriends();
     switch (rebind) {
         case "home":
@@ -274,14 +275,15 @@ bind(".home_link", 'click', null, function(event) {
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
         //closeAllNavBarSections();
-        navSectionToggle(navbar_section, true, true);
+        //navSectionToggle(navbar_section, true, true);
         homeReload($(this).attr("href"));
     } else {
+        /*
         if (navbar_section.hasClass("section_shown")) {
             navSectionToggle(navbar_section, false, true);
         } else {
             navSectionToggle(navbar_section, true, true);
-        }
+        } */
     }
 });
 
@@ -314,6 +316,15 @@ bind(null, 'keydown', null, function(event) {
     }
 });
 
+
+// opens all navbar sections
+function navSectionOpenAll() {
+    $.each($(".navbar_section"), function(i,e) {
+       navSectionToggle($(this), true, true);
+    });
+}
+
+
 function navSectionToggle(navbar_section, show, animate) {
     if (animate) {
         var animation_time = 100;
@@ -335,7 +346,8 @@ function selectNavLink(navlink) {
             var navbar_section = navlink.parents(".navbar_section");
             navSectionToggle(navbar_section, true, false);
         }
-        moveAsterisk(navlink);
+
+        //moveAsterisk(navlink);
     }
 }
 
@@ -377,7 +389,7 @@ function navSectionShow(navbar_section, animation_time) {
         navbarlinks.css('height', 'auto');
         var autoHeight = navbarlinks.height();
         navbarlinks.css('height', '0px');
-        navbarlinks.animate({"height":autoHeight}, animation_time);
+        navbarlinks.animate({"height":autoHeight}, {"duration":animation_time, "complete":function(){navbarlinks.css("height", "auto");}});
         redtriangle.addClass("clicked");
         // check if currently selected link is in section being hidden
         var current_link = getNavLink(path);
@@ -1830,10 +1842,14 @@ function followGroup(div,follow,g_id)
                     div.replaceWith(returned.html);
                 }
                 if (!follow) {
-                    var nav_link = getNavLink(returned.href);
-                    if (nav_link) {
-                        nav_link.remove();
+                    var navlink = getNavLink(returned.href);
+                    if (navlink) {
+                        navlink.remove();
                     }
+                }
+                else {
+                    var navlink_html = returned.navlink_html;
+                    $(".groups_wrapper").prepend(navlink_html);
                 }
             }
         }

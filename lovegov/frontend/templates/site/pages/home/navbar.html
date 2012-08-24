@@ -1,11 +1,16 @@
 {% load customtags %}
 <div class="left-navbar">
 
-    <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/home/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Home </div> </a>
+    <div class="navbar-section navbar_section home_section">
+        <a class="home_link section_title" href="/home/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Home </div> </a> <span class="red_triangle red-triangle"></span>
+        <div class="navbar_links_wrapper home_wrapper">
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="my representatives" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="like-minded" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="friends" %}
+        </div>
     </div>
 
-    <div class="navbar-section navbar_section">
+    <div class="navbar-section navbar_section groups_section">
         <a class="home_link section_title" href="/groups/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Groups </div> </a>  <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper groups_wrapper">
             {% for x in group_subscriptions %}
@@ -15,26 +20,31 @@
         </div>
     </div>
 
-    <div class="navbar-section navbar_section">
+    <div class="navbar-section navbar_section elections_section">
         <a class="home_link section_title" href="/elections/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Elections </div> </a> <span class="red_triangle red-triangle"></span>
-        <div class="navbar_links_wrapper politicians_wrapper">
+        <div class="navbar_links_wrapper elections_wrapper">
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/presidential_election/" section_title="presidential" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/presidential_election/" section_title="ma senate" %}
             <a href="#" class="create-link"> + Create an Election </a>
         </div>
     </div>
 
+{% comment %}
     <div class="navbar-section navbar_section">
         <a class="home_link section_title" href="/congress/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Politicians </div> </a> <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper politicians_wrapper">
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="representatives" %}
         </div>
     </div>
+    {% endcomment %}
 
     <p class="asterisk_pointer asterisk-pointer">*</p>
 
+{% comment %}
     <div class="navbar-section navbar_section">
         <a class="home_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
     </div>
+    {% endcomment %}
 
     {% if viewer.facebook_id %}
         {% include 'site/pages/friends/fb_invite_sidebar.html' %}

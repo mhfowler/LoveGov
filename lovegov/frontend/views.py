@@ -534,9 +534,10 @@ def questions(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def browseGroups(request, vals={}):
 
-    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    # Render and return HTML
+    focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="browse")
+    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -920,6 +921,19 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# legislation detail 
+#-----------------------------------------------------------------------------------------------------------------------
+def legislationDetail(request, l_id, vals={}):
+
+    legislation = Legislation.objects.get(id=l_id)
+    vals['legislation'] = legislation
+
+    contentDetail(request=request, content=legislation, vals=vals)
+    html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
+    url = legislation.get_url()
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept

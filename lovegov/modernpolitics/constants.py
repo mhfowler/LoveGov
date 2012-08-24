@@ -377,6 +377,7 @@ GROUP_TYPE_CHOICES = (
     ('C','committee'),
     ('U','user'),
     ('E', 'election'),
+    ('X', 'calculated'),
     ('S','system')
     )
 

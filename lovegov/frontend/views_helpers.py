@@ -98,7 +98,7 @@ def contentDetail(request, content, vals):
         vals['my_vote'] = my_vote[0].value
     else:
         vals['my_vote'] = 0
-    vals['iown'] = (creator_display.you)
+    vals['iown'] = creator_display.you
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get share button values
@@ -296,7 +296,7 @@ def valsGroup(viewer, group, vals):
             break
 
     # Get list of all Admins
-    vals['group_admins'] = group.admins.all()
+    vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
     vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
@@ -366,16 +366,19 @@ def valsFBFriends(request, vals):
     class FBFriend:
         pass
     viewer = vals['viewer']
+    fb_friends = []
     if viewer.facebook_id:
-        friends_list = fbGet(request,'me/friends/')['data']
-        vals['facebook_authorized'] = False
-        if friends_list:
-            vals['facebook_authorized'] = True
-            fb_friends = []
-            for friend in random.sample(friends_list, 4):
-                fb_friend = FBFriend()
-                fb_friend.name = friend['name']
-                fb_friend.id = friend['id']
-                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                fb_friends.append(fb_friend)
-                vals['facebook_friends'] = fb_friends
+        fb_return = fbGet(request,'me/friends/')
+        if fb_return:
+            friends_list = fb_return['data']
+            vals['facebook_authorized'] = False
+            if friends_list:
+                vals['facebook_authorized'] = True
+                for friend in random.sample(friends_list, 4):
+                    fb_friend = FBFriend()
+                    fb_friend.name = friend['name']
+                    fb_friend.id = friend['id']
+                    fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                    fb_friends.append(fb_friend)
+                    vals['facebook_friends'] = fb_friends
+    return fb_friends

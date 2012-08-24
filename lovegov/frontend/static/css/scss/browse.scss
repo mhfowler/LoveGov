@@ -4,20 +4,32 @@
 @import "compass";
 
 div.browse-all {
+
+  div.main-top {
+    div.red-line {
+      width:760px;
+    }
+  }
+
   div.browse-all-wrapper {
     padding-top:0px;
 
     div.group-item-wrapper {
       border-bottom:1px solid $gray;
-      padding-top:25px;
+      margin-bottom:25px;
       position:relative;
 
       div.num-label {
         position:absolute;
-        top: 85px;
-        left: -95px;
-        @include fontSize(38px);
+        top: -5px;
+        left: -27px;
+        @include fontSize(22px);
+        display:none;
       }
+    }
+
+    div.feed-main {
+      padding:0px;
     }
 
   }
