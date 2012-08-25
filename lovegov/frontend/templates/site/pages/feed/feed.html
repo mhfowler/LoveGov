@@ -37,13 +37,13 @@
 
             <td>
                 {% block right_button %}
-                <table class='create-button'>
-                    <tr>
-                        <td class="create-button">
-                            create
-                        </td>
-                    </tr>
-                </table>
+                    <table class='create-button'>
+                        <tr>
+                            <td class="create-button">
+                                create
+                            </td>
+                        </tr>
+                    </table>
                 {% endblock %}
             </td>
 
@@ -54,6 +54,20 @@
         <div class="feed-content feed_content"></div>
         <div class="feed-fetching feed_fetching"></div>
         <div class="load-more load_more"> <p> load more </p></div>
+        <div class="everything_loaded_wrapper">
+            <div class="reached_the_end everything-loaded-header everything_loaded_header">
+                You reached the end of the feed, so here's a politician.
+            </div>
+            <div class="nothing_there everything-loaded-header everything_loaded_header">
+                This feed doesn't have any content, so here's a funny picture of a politician.
+            </div>
+            <div class="everything_loaded_image_wrapper">
+
+            </div>
+            {% comment %}
+            <script src="//www.gmodules.com/ig/ifr?url=http://hosting.gmodules.com/ig/gadgets/file/108222585237173953480/XKCD-1_0_4.xml&amp;up_show_date=0&amp;up_show_summ=1&amp;up_num_entries=1&amp;synd=open&amp;w=940&amp;h=300&amp;title=&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"></script>
+            {% endcomment %}
+        </div>
     </div>
 
 </div>

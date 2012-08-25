@@ -240,13 +240,7 @@ def getCongressmen(request, vals={}):
     location = locationHelper(address, zip)
 
     congressmen = []
-    representative = Representative.objects.get(congresssessions=112,state=location.state,district=location.district)
-    representative.json = representative.getComparison(viewer).toJSON()
-    congressmen.append(representative)
-    senators = Senator.objects.filter(congresssessions=112,state=location.state)
-    for senator in senators:
-        senator.json = senator.getComparison(viewer).toJSON()
-        congressmen.append(senator)
+
 
     vals['userProfile'] = viewer
     vals['congressmen'] = congressmen
@@ -574,21 +568,37 @@ def finalizePetition(request, vals={}):
 def submitAddress(request, vals={}):
 
     viewer = vals['viewer']
+    try:
+        location = postLocationHelper(request)
+        viewer.setNewLocation(location)
+        viewer.joinLocationGroups()
+    except:
+        return HttpResponse(json.dumps({'success':-1}))
 
+    return HttpResponse(json.dumps({'success':1}))
+
+
+def submitTempAddress(request, vals={}):
+    viewer = vals['viewer']
+    try:
+        location = postLocationHelper(request)
+        viewer.setNewTempLocation(location)
+    except:
+        return HttpResponse(json.dumps({'success':-1}))
+
+    return HttpResponse(json.dumps({'success':1}))
+
+
+# returns a new location based on inputted parameters
+def postLocationHelper(request):
     address = request.POST.get('address')
     city = request.POST.get('city')
     state = request.POST.get('state')
     zip = request.POST.get('zip')
-
-    try:
-        location = viewer.getLocation()
-        locationHelper(address=address, city=city, state=state, zip=zip, location=location)
-        viewer.joinLocationGroups()
-    except:
-        return HttpResponse("The given address was not specific enough to determine your voting district")
-
-    return HttpResponse("success")
-
+    location = PhysicalAddress()
+    location.save()
+    location = locationHelper(address=address, city=city, state=state, zip=zip, location=location)
+    return location
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
@@ -1057,6 +1067,8 @@ def updateStats(request, vals={}):
         election = Election.objects.get(id=request.POST['e_id'])
         vals['info'] = valsElection(viewer, election, {})
         html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
+    elif object == 'like_minded_counter':
+        html = ajaxRender('site/pages/groups/like_minded_counter.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1275,7 +1287,12 @@ def followGroup(request, vals={}):
     followGroupAction(viewer, group, follow_bool, getPrivacy(request))
     vals['is_user_following'] = follow_bool
     html = ajaxRender('site/pages/group/group_follow_button.html',vals,request)
-    return HttpResponse(json.dumps({'html':html}))
+    to_return = {'html':html, 'href':group.get_url()}
+    if follow_bool:
+        vals['x'] = group
+        navlink = ajaxRender('site/pages/home/navbar_snippet.html', vals, request)
+        to_return['navlink_html'] = navlink
+    return HttpResponse(json.dumps(to_return))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
@@ -1646,7 +1663,17 @@ def getFeed(request, vals):
     vals['feed_items'] = feed_items
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    to_return = {'html':html, 'num_items':len(feed_items)}
+
+    # if no items, return a random picture of a politician
+    num_items = len(feed_items)
+    if not num_items:
+        p = random.choice(UserProfile.objects.filter(politician=True))
+        vals['politician'] = p
+        everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
+    else:
+        everything_loaded = ""
+
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 def contentToFeedItems(content, user):
@@ -2412,6 +2439,34 @@ def messagePolitician(request, vals={}):
     return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------
+# gets fb friend snippet html for invite sidebar
+#-----------------------------------------------------------------------------------------------------------------------
+def getFBInviteFriends(request, vals={}):
+    from lovegov.frontend.views_helpers import valsFBFriends
+    valsFBFriends(request, vals)
+    html =  ajaxRender('site/pages/friends/fb_invite_friends_helper.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# calculate like minded group members
+#-----------------------------------------------------------------------------------------------------------------------
+def findLikeMinded(request, vals={}):
+    viewer = vals['viewer']
+    new_members, num_processed = viewer.findLikeMinded()
+    vals['display'] = 'avatar'
+    vals['users'] = new_members
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'num_processed':num_processed, 'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# calculate like minded group members
+#-----------------------------------------------------------------------------------------------------------------------
+def clearLikeMinded(request, vals={}):
+    viewer = vals['viewer']
+    viewer.clearLikeMinded()
+    return HttpResponse("cleared")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2497,7 +2552,7 @@ def getModal(request,vals={}):
             LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
 
-        modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,vals)
 
     ## create modal ##
     elif modal_name == "create_modal":

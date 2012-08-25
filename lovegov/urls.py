@@ -65,11 +65,12 @@ urlpatterns += patterns('',
 
     # home pages
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
-    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
+    (r'^groups/$', viewWrapper(views.browseGroups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
+    (r'^like_minded/$', viewWrapper(views.likeMinded, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
 
     # browse-all
@@ -106,9 +107,7 @@ urlpatterns += patterns('',
 
     # legislation
     (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
+    (r'^legislation/(\d+)/$', viewWrapper(views.legislationDetail, requires_login=True)),
 
     # ajax pages
     (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),

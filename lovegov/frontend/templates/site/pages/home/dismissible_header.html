@@ -1,4 +1,4 @@
-<div class="dismissible-header dismissible_header">
+<div class="dismissible-header dismissible_header" {% if dismissible_hide %} style="display:none"{% endif %}>
     <div class="the-content">
         {% block dismissible_content %}
                 this is dismissible

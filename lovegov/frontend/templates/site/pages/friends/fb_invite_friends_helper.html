@@ -1,0 +1,10 @@
+{% for friend in facebook_friends %}
+    <div class="fb-friend-wrapper">
+        {% include 'site/pages/friends/fb_invite_card.html' with friend=friend %}
+    </div>
+{% empty %}
+    <div class="not-connected">
+        Connect with facebook to find friends on LoveGov.
+        <a href="{{ fb_link }}" class="sign-in-fb"> </a>
+    </div>
+{% endfor %}

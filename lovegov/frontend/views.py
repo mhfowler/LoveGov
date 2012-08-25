@@ -466,31 +466,32 @@ def presidential(request, vals):
 def representatives(request, vals):
 
     viewer = vals['viewer']
-    location = viewer.location
-    vals['location'] = None
+    location = viewer.temp_location or viewer.location
+    vals['location'] = location
 
-#    congressmen = []
-#    if viewer.location:
-#        vals['state'] = location.state
-#        vals['district'] = location.district
-#        vals['latitude'] = location.latitude
-#        vals['longitude'] = location.longitude
-#        senator_tag = OfficeTag.objects.get(name="senator")
-#        senator_office = senator_tag.tag_offices.filter(location=location.state)[0]
-#        senators = OfficeHeld.objects.filter(content=senator_office, confirmed=True).values_list("user", flat=True)
-#
-#        representative = UserProfile.lg.get_or_none(elected_official=True, location__state=location.state,location__district=location.district)
-#        if representative:
-#            congressmen.append(representative)
-#        senators = UserProfile.objects.filter(elected_offical=True,location__state=location.state)
-#        for senator in senators:
-#            congressmen.append(senator)
-#        vals['congressmen'] = congressmen
-#    for x in congressmen:
-#        x.prepComparison(viewer)
-#    congressmen.sort(key=lambda x:x.result,reverse=True)
-#    if not congressmen:
-#        vals['invalid_address'] = True
+    congressmen = []
+    if location:
+        vals['state'] = location.state
+        vals['district'] = location.district
+        vals['latitude'] = location.latitude
+        vals['longitude'] = location.longitude
+        if location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+    if LOCAL and location:
+        bush = getUser("George Bush")
+        congressmen = [bush, bush, bush]
+    vals['congressmen'] = congressmen
+    for x in congressmen:
+        x.comparison = x.getComparison(viewer)
+    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
+    if len(congressmen) < 3:
+        vals['few_congressmen'] = True
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
@@ -506,29 +507,20 @@ def congress(request, vals):
 # friends focus (home page)
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
-    class FBFriend:
-        pass
-
     viewer = vals['viewer']
-
-    if viewer.facebook_id:
-        friends_list = fbGet(request,'me/friends/')['data']
-        vals['facebook_authorized'] = False
-        if friends_list:
-            vals['facebook_authorized'] = True
-            fb_friends = []
-            for friend in friends_list[:4]:
-                fb_friend = FBFriend()
-                fb_friend.name = friend['name']
-                fb_friend.id = friend['id']
-                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                fb_friends.append(fb_friend)
-
-                vals['facebook_friends'] = fb_friends
+    friends = viewer.getIFollow()
+    vals['i_follow'] = viewer.i_follow
+    friends = random.sample(friends, min(8, len(friends)))
+    vals['friends'] = friends
+    for f in friends:
+        f.comparison = f.getComparison(viewer)
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# question answering center
+#-----------------------------------------------------------------------------------------------------------------------
 def questions(request, vals={}):
 
     getMainTopics(vals)
@@ -543,9 +535,10 @@ def questions(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def browseGroups(request, vals={}):
 
-    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    # Render and return HTML
+    focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="browse")
+    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -576,6 +569,26 @@ def electionPage(request, election, vals={}):
 
     # render and return html
     focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# like-minded group page
+#-----------------------------------------------------------------------------------------------------------------------
+def likeMinded(request, vals={}):
+
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    if not like_minded:
+        getMainTopics(vals)     # for question answering
+    else:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+    vals['like_minded'] = like_minded
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -929,6 +942,19 @@ def legislation(request, session=None, type=None, number=None, vals={}):
         vals['leg_titles'] = leg.legislationtitle_set.all()
         vals['leg'] = leg
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# legislation detail
+#-----------------------------------------------------------------------------------------------------------------------
+def legislationDetail(request, l_id, vals={}):
+
+    legislation = Legislation.objects.get(id=l_id)
+    vals['legislation'] = legislation
+
+    contentDetail(request=request, content=legislation, vals=vals)
+    html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
+    url = legislation.get_url()
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept

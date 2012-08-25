@@ -5,73 +5,76 @@
  ***********************************************************************************************************************/
 var rebind;
 function bindOnReload() {
+
+    // things that get bound on items loaded by feeds and such (everything)
     bindOnNewElements();
+
+    // ajax get fb friends for sidebar after page load
+    getFBInviteFriends();
+
+    // any feeds on the page, go get themselves
+    refreshFeeds();
+
+    // for all home pages
+    navSectionOpenAll();
+    initHomePage();
+
+    // for reps page
+    loadGoogleMap();
+
+    // misc
+    bindNotificationsDropdownClickOutside();
+
     switch (rebind) {
         case "home":
-            initFeed();
             break;
         case "profile":
-            initFeed();
             break;
         case "groupedit":
             loadGroupEdit();
             break;
         case 'questions':
-            initFeed();
             break;
         case 'question_detail':
-            bindImportanceSliders();
             break;
         case 'poll_detail':
-            bindImportanceSliders();
             break;
         case 'browse':
-            initFeed();
             break;
     }
-
 }
 
-function undelegated() {
-    var undelegated = $('.dummy_link');
-    undelegated.bindOnce('click.undelegate', function(event) {
-        event.preventDefault();
-    });
-}
-
+/* gets called on all new elements appended to dom */
 function bindOnNewElements() {
+
+    // dummy_links are prevent defaulted
     undelegated();
+
+    // hover comparison popup
     loadHoverComparison();
-    initHomePage();
+
+    // all histogram go get themselves  (because there is a feed of groups, this must be here)
     loadHistograms();
+
+    // all expandable headers set themselves to correct starting height
     $.each($(".expandable_wrapper"), function(i,e) {
         setInfoHeight($(this));
     });
-    bindNotificationsDropdownClickOutside();
+
+    // poll feed items autoswitch
     pollAutoSwitch();
+
+    // comparison webs initialize
     comparisonWebs();
+
+    // question stubs
     updateQuestionStubsDisplay();
-}
-
-var poll_autoswitch;
-function pollAutoSwitch() {
-    clearInterval(poll_autoswitch);
-    /*
-     poll_autoswitch= setInterval(function()
-     {
-     cyclePollQuestions();
-     }, 5000); */
-}
-
-function comparisonWebs() {
-    $.each($(".web_comparison"), function(i,e) {
-        $(this).visualComparison();
-    });
+    bindImportanceSliders();
 }
 
 /***********************************************************************************************************************
  *
- *     ~Delegated binding function, similar to jquery's deprecated ".live()"
+ *     ~document.ready() of initial page load
  *
  ***********************************************************************************************************************/
 function bind(selector, events, data, handler) {
@@ -112,6 +115,7 @@ function action(dict) {
 }
 
 var auto_update_page;
+
 $(document).ready(function()
 {
     // csrf protect
@@ -146,14 +150,62 @@ $(document).ready(function()
     bindOnReload();
     bindTooltips();
 
-    // check for notifications on schedule
+    // auto page update every minute (check for notifications)
     clearInterval(auto_update_page);
     auto_update_page= setInterval(function()
     {
         updatePage();
     }, 60000);
-
 });
+
+var auto_update_page;
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Delegated binding function, similar to jquery's deprecated ".live()"
+ *
+ ***********************************************************************************************************************/
+function bind(selector, events, data, handler) {
+    $(document).on(events, selector, data, handler);
+}
+
+var current_page_nonce=0;
+function action(dict) {
+    var pre_page_nonce=current_page_nonce;
+    var data = dict['data'];
+    var success_fun = function(data) {
+        var super_success = dict['success'];
+        if (pre_page_nonce == current_page_nonce) {
+            if (super_success) {
+                super_success(data);
+            }
+        }
+    };
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if (pre_page_nonce == current_page_nonce) {
+            if(jqXHR.status==403) {
+                //launch403Modal(jqXHR.responseText);
+                return;
+            }
+            var super_error = dict['error'];
+            if (super_error) {
+                super_error();
+            } else {
+                $("body").html(jqXHR.responseText);
+            }
+        }
+    };
+    data['url'] = window.location.href;
+    data['current_page_nonce'] = current_page_nonce;
+    $.ajax({
+        url: '/action/',
+        type: 'POST',
+        data: data,
+        success: success_fun,
+        error: error_fun
+    });
+}
 
 function updatePage() {
     action({
@@ -172,30 +224,106 @@ function updatePage() {
     });
 }
 
+/***********************************************************************************************************************
+ *
+ *      ~Ajax links
+ *
+ ***********************************************************************************************************************/
+bind(".do_ajax_link", 'click', null, function(event) {
+    ajaxReload($(this).attr("href"), true);
+});
+
+function ajaxReload(theurl, loadimg)
+{
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
+    $('#search-dropdown').hide();
+    $('.main_content').hide();
+    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
+    $.ajax
+        ({
+            url:theurl,
+            type: 'GET',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                    $('body').css("overflow","scroll");
+                    $('.main_content').css("top","0px");
+                    $(".main_content").html(returned.html);
+                    $('.main_content').show();
+                    rebind = returned.rebind;
+                    path = returned.url;
+                    bindOnReload();
+                }
+                else {
+                    alert("skippe!");
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        });
+}
+
+/***********************************************************************************************************************
+ *
+ *     ~random helpers/bindings
+ *
+ ***********************************************************************************************************************/
+function undelegated() {
+    var undelegated = $('.dummy_link');
+    undelegated.bindOnce('click.undelegate', function(event) {
+        event.preventDefault();
+    });
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    /*
+     poll_autoswitch= setInterval(function()
+     {
+     cyclePollQuestions();
+     }, 5000); */
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
+    });
+}
+
 /* does some javascript manipulation of home page */
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
+    initFeedParameters();
 }
 
-/* does a get request for all feeds on page */
-function initFeed() {
+/* sets feed parameters pased on js variables */
+function initFeedParameters() {
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
     $.each(feed_types, function(i, e) {
         selectType(e);
     });
+}
+
+/* does a get request for all feeds on page */
+function refreshFeeds() {
     $.each($(".feed_main"), function(i,e) {
         refreshFeed($(this));
     });
 }
 
-/***********************************************************************************************************************
- *
- *      ~Check browser compatibility using Modernizr
- *
- ***********************************************************************************************************************/
-
+/* check browser compatability using modernizer */
 function checkCompatability() {
     var compatability_cookie =  $.cookie('compatability');
     if (compatability_cookie == null) {
@@ -234,11 +362,72 @@ bind(".bind_link", "click", null, function(event) {
     window.location.href = url;
 });
 
+
 /***********************************************************************************************************************
  *
  *      ~Home
  *
  ***********************************************************************************************************************/
+/* ajax load home sections */
+function homeReload(theurl) {
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
+    $('#search-dropdown').hide();
+    $(".home_reloading").show();
+    $.ajax
+        ({
+            url:theurl,
+            type: 'POST',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $(".home_reloading").hide();
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    path = returned.url;
+                    $(".home_focus").html(returned.focus_html);
+                    bindOnReload();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        });
+}
+
+/* move asterisk, when section is selected */
+function moveAsterisk(to_where) {
+    if (to_where.length!=0) {
+        if (to_where.hasClass("navbar_link")) {
+            var offset = -4;
+        } else {
+            offset = to_where.height()/2;
+        }
+        var position = to_where.offset();
+        var top = position.top - offset;
+        var left = position.left - 40;
+        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
+    }
+}
+
+/* fill fb invite sidebar after page load */
+function getFBInviteFriends() {
+    var invite_wrapper = $(".fb_friends_wrapper");
+    if (invite_wrapper.length!=0) {
+        action({
+            data: {'action':'getFBInviteFriends' },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                invite_wrapper.html(returned.html)
+            }
+        });
+    }
+}
 
 /* red triangle toggles navsection options */
 bind(".red_triangle", 'click', null, function(event) {
@@ -258,14 +447,15 @@ bind(".home_link", 'click', null, function(event) {
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
         //closeAllNavBarSections();
-        navSectionToggle(navbar_section, true, true);
+        //navSectionToggle(navbar_section, true, true);
         homeReload($(this).attr("href"));
     } else {
-        if (navbar_section.hasClass("section_shown")) {
-            navSectionToggle(navbar_section, false, true);
-        } else {
-            navSectionToggle(navbar_section, true, true);
-        }
+        /*
+         if (navbar_section.hasClass("section_shown")) {
+         navSectionToggle(navbar_section, false, true);
+         } else {
+         navSectionToggle(navbar_section, true, true);
+         } */
     }
 });
 
@@ -298,6 +488,15 @@ bind(null, 'keydown', null, function(event) {
     }
 });
 
+
+// opens all navbar sections
+function navSectionOpenAll() {
+    $.each($(".navbar_section"), function(i,e) {
+        navSectionToggle($(this), true, true);
+    });
+}
+
+
 function navSectionToggle(navbar_section, show, animate) {
     if (animate) {
         var animation_time = 100;
@@ -319,7 +518,7 @@ function selectNavLink(navlink) {
             var navbar_section = navlink.parents(".navbar_section");
             navSectionToggle(navbar_section, true, false);
         }
-        moveAsterisk(navlink);
+        //moveAsterisk(navlink);
     }
 }
 
@@ -361,7 +560,7 @@ function navSectionShow(navbar_section, animation_time) {
         navbarlinks.css('height', 'auto');
         var autoHeight = navbarlinks.height();
         navbarlinks.css('height', '0px');
-        navbarlinks.animate({"height":autoHeight}, animation_time);
+        navbarlinks.animate({"height":autoHeight}, {"duration":animation_time, "complete":function(){navbarlinks.css("height", "auto");}});
         redtriangle.addClass("clicked");
         // check if currently selected link is in section being hidden
         var current_link = getNavLink(path);
@@ -483,7 +682,6 @@ function setInfoHeight(wrapper)
     }
 }
 
-
 /* expands a div from it's current height to the "auto" height */
 function expandAnimation( div , animation_time)
 {
@@ -492,83 +690,6 @@ function expandAnimation( div , animation_time)
     var autoHeight = div.height();
     div.css('height', beforeHeight + 'px');
     div.animate( { "height" : autoHeight } , animation_time);
-}
-
-function homeReload(theurl) {
-    $('#search-dropdown').hide();
-    $.ajax
-        ({
-            url:theurl,
-            type: 'POST',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                path = returned.url;
-                $(".home_focus").html(returned.focus_html);
-                bindOnNewElements();
-                initFeed();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
-}
-
-/* move asterisk, when section is selected */
-function moveAsterisk(to_where) {
-    if (to_where.length!=0) {
-        if (to_where.hasClass("navbar_link")) {
-            var offset = -4;
-        } else {
-            offset = to_where.height()/2;
-        }
-        var position = to_where.offset();
-        var top = position.top - offset;
-        var left = position.left - 40;
-        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
-    }
-}
-
-/***********************************************************************************************************************
- *
- *      ~Ajax links
- *
- ***********************************************************************************************************************/
-bind(".do_ajax_link", 'click', null, function(event) {
-    ajaxReload($(this).attr("href"), true);
-});
-
-function ajaxReload(theurl, loadimg)
-{
-    $('#search-dropdown').hide();
-    $('.main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
-    $.ajax
-        ({
-            url:theurl,
-            type: 'GET',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
-                $('body').css("overflow","scroll");
-                $('.main_content').css("top","0px");
-                $(".main_content").html(returned.html);
-                $('.main_content').show();
-                rebind = returned.rebind;
-                path = returned.url;
-                bindOnReload();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
 }
 
 /***********************************************************************************************************************
@@ -602,6 +723,7 @@ bind(".sign_in_button", 'click', null, function(event) {
 bind(".sign_in_dialogue", 'click', null, function(event) {
     event.stopPropagation();
 });
+
 
 /***********************************************************************************************************************
  *
@@ -776,6 +898,8 @@ function getFeed(container) {
         var old_height = $("body").height();
         $("body").css('min-height', old_height);
         container.find(".feed_content").empty();
+        container.find(".load_more").show();
+        container.find(".everything_loaded_wrapper").find();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
@@ -825,7 +949,17 @@ function getFeed(container) {
                 clearTimeout(feed_timeout);
                 container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    container.find(".load_more").text('you loaded all that there is to load')
+                    container.find(".load_more").hide();
+                    var everything_loaded = container.find(".everything_loaded_wrapper");
+                    everything_loaded.find(".everything_loaded_image_wrapper").html(returned.everything_loaded);
+                    everything_loaded.show();
+                    everything_loaded.find(".everything_loaded_header").hide();
+                    if (feed_start==0) {
+                        everything_loaded.find(".nothing_there").show();
+                    }
+                    else {
+                        everything_loaded.find(".reached_the_end").show();
+                    }
                 }
                 bindImportanceSliders();
                 bindOnNewElements();
@@ -845,7 +979,6 @@ bind(".load_more" , "click" , null , function(event) {
  *      ~About page
  *
  **********************************************************************************************************************/
-
 bind("div.about-div-button", "click",
     function(e) {
         $('div.about-div-button').removeClass("active");
@@ -1012,7 +1145,6 @@ function leftSideToggle(wrapper)
  *      ~User menu
  *
  ***********************************************************************************************************************/
-
 bind(".user_menu_toggle", "click", function(event) {
     $('div.user-menu').fadeToggle(50);
     event.stopPropagation();
@@ -1238,7 +1370,6 @@ bind('div.load-more-comments', 'click', function(e) {
 });
 
 
-
 /***********************************************************************************************************************
  *
  *      ~InlineEdits
@@ -1280,7 +1411,6 @@ function editContent( c_id , info , edit_div )
 }
 
 
-
 bind( ".edit_button" , 'click', null , function(event)
 {
     event.preventDefault();
@@ -1320,7 +1450,7 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~loagin
+ *      ~login
  *
  **********************************************************************************************************************/
 var login_state;
@@ -1524,7 +1654,7 @@ bind(".group_invited_modal" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Following
+ *      ~Following, Supporting and other Actions
  *
  ***********************************************************************************************************************/
 bind('div.user_follow' , 'click' , null , function(event)
@@ -1813,11 +1943,16 @@ function followGroup(div,follow,g_id)
                 if (div.length!=0) {
                     div.replaceWith(returned.html);
                 }
-                /*
-                var nav_link = getNavLink(returned.href);
-                if (nav_link) {
-                    // get rid of it
-                } */
+                if (!follow) {
+                    var navlink = getNavLink(returned.href);
+                    if (navlink) {
+                        navlink.remove();
+                    }
+                }
+                else {
+                    var navlink_html = returned.navlink_html;
+                    $(".groups_wrapper").prepend(navlink_html);
+                }
             }
         }
     );
@@ -1883,8 +2018,6 @@ function groupInviteResponse(event,response,div)
  *     ~Modal General
  *
  **********************************************************************************************************************/
-
-
 function hideModal(event) {
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
@@ -1935,7 +2068,6 @@ function getModal(modal_name,data)
  *     ~Group Header
  *
  **********************************************************************************************************************/
-
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
@@ -2198,95 +2330,6 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverBreakdown()
-{
-
-    var hoverTimer;
-    var hoverClearOK = true;
-
-    function clearHover()
-    {
-        if( hoverClearOK )
-        {
-            $('#comparison-hover-div p').empty();
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(300);
-        }
-    }
-
-    $('#comparison-hover-div').hover
-        (
-            function() { hoverClearOK = false; },
-            function()
-            {
-                hoverClearOK = true;
-                hoverTimer = setTimeout
-                    (
-                        function() { clearHover(); },
-                        300
-                    );
-            }
-        );
-
-    function findHoverPosition(selector)
-    {
-        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
-        if (top <= $(document).scrollTop())
-        {
-            // show below
-            top = selector.offset().top + selector.height() + 30;
-            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-        }
-        else
-        {
-            // show above
-            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-        }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
-        return {top:top,left:left};
-    }
-
-    var to_hover = $('.has_hover_comparison').not('.already_hover');
-    to_hover.addClass('already_hover');
-    to_hover.hoverIntent
-        (
-            function(event)
-            {
-                var self = $(this);
-                var href = $(this).data('href');
-                var displayName = $(this).data("display_name");
-                if (href != "")
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').text('You & ' + displayName);
-                    var offset = findHoverPosition(self);
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    action({
-                        'data': {'action':'hoverComparison','href':href},
-                        'success': function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            $('#comparison-hover').html(obj.html);
-                        },
-                        'error': null
-                    });
-                }
-            },
-            function(event)
-            {
-                hoverTimer = setTimeout
-                    (
-                        function(){ clearHover(); },
-                        1000
-                    );
-            }
-        );
-}
-
 function loadHoverComparison()
 {
 
@@ -2376,6 +2419,97 @@ function loadHoverComparison()
             }
         );
 }
+
+/* deprecated
+ function loadHoverBreakdown()
+ {
+
+ var hoverTimer;
+ var hoverClearOK = true;
+
+ function clearHover()
+ {
+ if( hoverClearOK )
+ {
+ $('#comparison-hover-div p').empty();
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div').fadeOut(300);
+ }
+ }
+
+ $('#comparison-hover-div').hover
+ (
+ function() { hoverClearOK = false; },
+ function()
+ {
+ hoverClearOK = true;
+ hoverTimer = setTimeout
+ (
+ function() { clearHover(); },
+ 300
+ );
+ }
+ );
+
+ function findHoverPosition(selector)
+ {
+ var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+ if (top <= $(document).scrollTop())
+ {
+ // show below
+ top = selector.offset().top + selector.height() + 30;
+ $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+ }
+ else
+ {
+ // show above
+ $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+ }
+ var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+ return {top:top,left:left};
+ }
+
+ var to_hover = $('.has_hover_comparison').not('.already_hover');
+ to_hover.addClass('already_hover');
+ to_hover.hoverIntent
+ (
+ function(event)
+ {
+ var self = $(this);
+ var href = $(this).data('href');
+ var displayName = $(this).data("display_name");
+ if (href != "")
+ {
+ clearTimeout(hoverTimer);
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div p').text('You & ' + displayName);
+ var offset = findHoverPosition(self);
+ $('#comparison-hover-loading-img').show();
+ $('#comparison-hover-div').fadeIn(100);
+ $('#comparison-hover-div').offset(offset);
+ action({
+ 'data': {'action':'hoverComparison','href':href},
+ 'success': function(data)
+ {
+ var obj = eval('(' + data + ')');
+ $('#comparison-hover-loading-img').hide();
+ $('#comparison-hover').html(obj.html);
+ },
+ 'error': null
+ });
+ }
+ },
+ function(event)
+ {
+ hoverTimer = setTimeout
+ (
+ function(){ clearHover(); },
+ 1000
+ );
+ }
+ );
+ }
+ */
 
 /***********************************************************************************************************************
  *
@@ -2582,6 +2716,22 @@ function bindImportanceSlider(div) {
     });
 }
 
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
+
+
+
+
+/***********************************************************************************************************************
+ *
+ *     ~ homemade backbone.... dom elements which update themselves
+ *
+ **********************************************************************************************************************/
 function updateMatches() {
     $.each($(".match_object"), function(i, e) {
         updateMatch($(this));
@@ -2637,14 +2787,6 @@ function updateStatsObject(stats) {
         }
     });
 }
-
-bind('.only_unanswered' , 'click' , null , function(event)
-{
-    $(this).toggleClass("clicked");
-    var container = $(this).parents(".feed_main");
-    container.data("only_unanswered", $(this).hasClass("clicked"));
-    refreshFeed(container);
-});
 
 /***********************************************************************************************************************
  *
@@ -2905,9 +3047,14 @@ function updateHistogram(histogram_wrapper, recursive) {
                 renderHistogram(histogram_wrapper);
                 getHistogramMembers(histogram_wrapper);
                 getIdenticalMembers(histogram_wrapper);
-
                 if (returned.total != 0 && recursive) {
-                    updateHistogram(histogram_wrapper, true);
+                    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+                    if (histogram_metadata.maximum == -1 || histogram_metadata.total < histogram_metadata.maximum) {
+                        updateHistogram(histogram_wrapper, true);
+                    }
+                    else {
+                        alert(histogram_metadata.total);
+                    }
                 }
             }
         }
@@ -3091,7 +3238,6 @@ function getHistogramGroupMembers(histogram_wrapper) {
     });
 }
 
-
 /***********************************************************************************************************************
  *
  *     ~Topics
@@ -3162,7 +3308,7 @@ function showTopicIcon(wrapper) {
 
 /***********************************************************************************************************************
  *
- *      ~Friends
+ *      ~Friends and facebook share
  *
  ***********************************************************************************************************************/
 
@@ -3176,13 +3322,6 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
     getModal('facebook_share_modal' , data);
 });
 
-
-
-/***********************************************************************************************************************
- *
- *      ~Facebook Share Modal
- *
- ***********************************************************************************************************************/
 
 bind( '.facebook_share_submit' , 'click' , null , function(e)
 {
@@ -3237,6 +3376,11 @@ bind( '.pin_to_group' , 'click' , null , function(e)
 });
 
 
+/***********************************************************************************************************************
+ *
+ *      ~Petition sign
+ *
+ ***********************************************************************************************************************/
 bind('.sign_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
@@ -3276,8 +3420,13 @@ bind('.dismissible_x' , 'click' , null , function(e)
 });
 
 
+var reps_longitude;
+var reps_latitude;
+var reps_state;
+var reps_district;
 function loadGoogleMap()
 {
+
     function createDistrictsOverlay(outlines_only, opacity, state, district)
     {
         return {
@@ -3306,7 +3455,7 @@ function loadGoogleMap()
         var myOptions =
         {
             zoom: 10,
-            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            center: new google.maps.LatLng(reps_latitude, reps_longitude),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             panControl: false,
             zoomControl: true,
@@ -3316,14 +3465,16 @@ function loadGoogleMap()
         };
         map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, reps_state, reps_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, reps_state, reps_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
     }
 
-    initialize();
+    if (rebind=="representatives" && reps_latitude && reps_longitude && reps_state && reps_district) {
+        initialize();
+    }
 }
 
 
@@ -3335,13 +3486,25 @@ bind('.find_address_button' , 'click' , null , function(e)
     var state = form.find(".state_input").val();
     var zip = form.find(".zip_input").val();
     var city = form.find(".city_input").val();
+    var error_message = $(this).parents(".find_your_reps").find(".error_message");
+    error_message.hide();
     action({
-            data: {'action': 'submitAddress', 'address': address, 'city':city, 'state':state,
+            data: {'action': 'submitTempAddress', 'address': address, 'city':city, 'state':state,
                 'zip':zip},
             success: function(data) {
-                alert(data);
+                var returned = eval('(' + data + ')');
+                if (returned.success == -1) {
+                    error_message.fadeIn();
+                }
+                else {
+                    location.reload();
+                }
             }}
     );
+});
+
+bind('.enter_new_address' , 'click' , null , function(e) {
+    $(".dismissible_header").show();
 });
 
 
@@ -3372,4 +3535,66 @@ bind('.ask_to_join' , 'click' , null , function(e)
                 $(".asked_message").fadeIn();
             }}
     );
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~like minded group
+ *
+ ***********************************************************************************************************************/
+bind('.find_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    $(".find_loading").show();
+    action({
+            data: {'action': 'findLikeMinded'},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                $(".find_loading").hide();
+                var num_new = returned.num_new_members;
+                // display num new members
+                $('.num_new_found').html(num_new);
+                $('.num_processed').html(returned.num_processed);
+                $(".find_result").show();
+                // change total members number
+                var total_num = $(".total_members").data('num');
+                total_num += num_new;
+                $(".total_members").html(total_num);
+                // if there were members adjust shit appropriately
+                if (num_new != 0) {
+                    $(".no_members").hide();
+                    $(".some_members").show();
+                    $(".like_minded_members").prepend(returned.html);
+                    bindOnNewElements();
+                }
+            }}
+    );
+});
+
+bind('.clear_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    if (confirm("are you sure you want to do this? After clearing you will have to recalculate the members of your like-minded group.")) {
+        action({
+                data: {'action': 'clearLikeMinded'},
+                success: function(data) {
+                    $(".like_minded_members").empty();
+                    $(".clear_result").show();
+                    $(".total_members").html(0);
+                }}
+        );
+    }
+});
+
+bind('.like_minded_explanation' , 'click' , null , function(e)
+{
+    $(".button_explanations").show();
+    $(".home_header_info").css("overflow", "visible");
+});
+
+bind('.like_minded_close' , 'click' , null , function(e)
+{
+    $(".home_header_info").css("overflow", "hidden");
+    $(".button_explanations").hide();
 });

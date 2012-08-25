@@ -21,6 +21,9 @@
                     </p>
                 {% endfor %}
             </div>
+            {% if viewer.facebook_id %}
+                {% include 'site/pages/friends/fb_invite_sidebar.html' %}
+            {% endif %}
         {% endblock %}
     </div>
 {% endblock %}

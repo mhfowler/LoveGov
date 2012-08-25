@@ -5,32 +5,32 @@
 @import "compass";
 
 
+span.group-title
+{
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 10px;
+  @include inline-block();
+}
+
+span.group-scale
+{
+  color: $dark-gray;
+  font-size: 12px;
+  @include inline-block();
+  margin-right: 10px;
+}
+
+span.group-num-members
+{
+  font-size: 12px;
+  @include inline-block();
+}
+
 div.group-top
 {
   @include inline-block();
-
-  span.group-title
-  {
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 16px;
-    margin-right: 10px;
-    @include inline-block();
-  }
-
-  span.group-scale
-  {
-    color: $dark-gray;
-    font-size: 12px;
-    @include inline-block();
-    margin-right: 10px;
-  }
-
-  span.group-num-members
-  {
-    font-size: 12px;
-    @include inline-block();
-  }
 }
 
 div.group-expanded
@@ -131,7 +131,7 @@ div.group-expanded
       width:230px;
       height:180px;
       position:relative;
-      top:-20px;
+      top:-13px;
     }
 
     a.see-more {
@@ -185,6 +185,9 @@ div.group-expanded
           margin-bottom:10px;
           float: left;
         }
+      }
+      a.see-more {
+        margin-top: 4px;
       }
     }
   }

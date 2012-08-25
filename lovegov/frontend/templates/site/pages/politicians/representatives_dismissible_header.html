@@ -1,7 +1,7 @@
 {% extends 'site/pages/home/dismissible_header.html' %}
 
 {% block dismissible_content %}
-        <div class="find-your-reps">
+        <div class="find-your-reps find_your_reps">
             <div class="find-your-reps-title">
                 Find your representatives:
             </div>
@@ -11,6 +11,10 @@
                 <input class="state-input state_input reps-input" type="text" placeholder="state"/>
                 <input class="zip-input zip_input reps-input " type="text" placeholder="zip code"/>
                 <a href="#" class="find-button find_address_button dummy_link"> find reps </a>
+            </div>
+            <div class="error-message error_message">
+                Sorry we weren't able to locate your district. Please try submitting the form again or entering
+                a different address.
             </div>
         </div>
 {% endblock %}

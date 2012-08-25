@@ -3,8 +3,16 @@
 @import 'master-mixins';
 @import "compass";
 
+div.dismissible-header {
+  margin-bottom:10px;
+}
+
 div.find-your-reps {
 
+  div.error-message {
+    margin-left: 130px;
+    display:none;
+  }
   div.find-your-reps-title {
     @include fontSize(20px);
   }
@@ -43,5 +51,53 @@ div.find-your-reps {
         color:$black;
       }
     }
+  }
+}
+
+
+div.reps-top {
+  div.reps-header {
+    @include fontSize(20px);
+    float:left;
+    text-transform:uppercase;
+  }
+  div.reps-where {
+    float:left;
+    color:$gray;
+    margin-left: 25px;
+    @include fontSize(16px);
+    margin-top: 4px;
+  }
+  span.not-your-district {
+    margin-top: 4px;
+    margin-left: 33px;
+    float:left;
+    color:$black;
+  }
+  a.enter-new-address {
+    float:left;
+    margin-top: 4px;
+    margin-left: 4px;
+  }
+}
+
+
+div.reps-wrapper {
+  div.congressman-wrapper {
+    float:left;
+    margin-left:45px;
+  }
+  div.congressman-wrapper.first {
+    margin-left:0px;
+  }
+}
+
+div.google-maps-wrapper {
+  margin-top:4px;
+  margin-bottom:10px;
+  float:left;
+  div.google-map {
+    width:1000px;
+    height:300px;
   }
 }

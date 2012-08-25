@@ -4,8 +4,59 @@
 
 @import "compass";
 
+div.friends-title {
+  float:left;
+}
+span.num-people {
+  float:left;
+  margin-top: 4px;
+  margin-left: 18px;
+}
+a.view-all-friends {
+  float:left;
+  margin-left:20px;
+  @include fontSize(14px);
+  color:$black;
+  margin-top:3px;
+  &:hover {
+    color:$dark-gray;
+  }
+}
+
 div.friends-header {
 
+  div.no-friends {
 
+    div.import-friends {
+      margin-top:15px;
+    }
+  }
 
+  div.friend-card {
+    float:left;
+    margin-right:20px;
+    div.friend-top {
+      display:block;
+      div.friend-image {
+        float:left;
+      }
+      div.friend-match {
+        float:left;
+        color:$red;
+        line-height:24px;
+        width:60px;
+        div.match-num {
+          width:100%;
+          text-align:center;
+          margin-top:8px;
+          @include fontSize(36px);
+        }
+        div.match-text {
+          width:100%;
+          text-align:center;
+          @include fontSize(22px);
+        }
+      }
+    }
+  }
 }
