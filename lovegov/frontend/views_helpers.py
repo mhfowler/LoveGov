@@ -299,7 +299,8 @@ def valsGroup(viewer, group, vals):
     vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
-    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
+    group_members = group.getMembers()
+    vals['group_members'] = group_members[:16]
 
     # Get the number of group Follow Requests
     vals['num_group_requests'] = group.getNumFollowRequests()
