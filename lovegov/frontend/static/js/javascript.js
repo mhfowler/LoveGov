@@ -3434,10 +3434,12 @@ bind('.ask_to_join' , 'click' , null , function(e)
 bind('.find_like_minded' , 'click' , null , function(e)
 {
     $(".button_result").hide();
+    $(".find_loading").show();
     action({
             data: {'action': 'findLikeMinded'},
             success: function(data) {
                 var returned = eval('(' + data + ')');
+                $(".find_loading").hide();
                 var num_new = returned.num_new_members;
                 // display num new members
                 $('.num_new_found').html(num_new);

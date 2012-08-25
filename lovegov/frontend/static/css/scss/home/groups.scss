@@ -203,6 +203,14 @@ div.like-minded-header {
             display:none;
             color:$red;
           }
+          div.find-loading {
+            @include staticImage("/images/gifs/ajax-loader.gif");
+            width: 15px;
+            height: 15px;
+            background-size: 15px 13px;
+            background-repeat: no-repeat;
+            display:none;
+          }
         }
       }
       div.like-minded-members {
