@@ -1349,10 +1349,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
         return like_minded
 
-    def findLikeMinded(self):
+    def findLikeMinded(self, num=LIKE_MINDED_FIND_INCREMENT):
         like_minded = self.getLikeMindedGroup()
         if like_minded:
-            return like_minded.calculate()
+            return like_minded.calculate(num=num)
         else:
             return None
 
@@ -4203,8 +4203,6 @@ class CalculatedGroup(Group):
         if num: #paginate
             to_process = to_process[:num]
 
-        LIKE_MINDED_RESULT_THRESHOLD = 0
-        LIKE_MINDED_NUMQ_THRESHOLD = 0
         # for each person in pool, do comparison, and
         new = []
         for x in to_process:
