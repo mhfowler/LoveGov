@@ -3008,9 +3008,14 @@ function updateHistogram(histogram_wrapper, recursive) {
                 renderHistogram(histogram_wrapper);
                 getHistogramMembers(histogram_wrapper);
                 getIdenticalMembers(histogram_wrapper);
-
                 if (returned.total != 0 && recursive) {
-                    updateHistogram(histogram_wrapper, true);
+                    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+                    if (histogram_metadata.maximum == -1 || histogram_metadata.total < histogram_metadata.maximum) {
+                        updateHistogram(histogram_wrapper, true);
+                    }
+                    else {
+                        alert(histogram_metadata.total);
+                    }
                 }
             }
         }

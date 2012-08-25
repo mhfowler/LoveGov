@@ -71,6 +71,10 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
     bucket_uids = {}
     for x in bucket_list:
         bucket_uids[x] = []
+    if which=='mini':
+        maximum = MINI_HISTOGRAM_MAXIMUM
+    else:
+        maximum = -1
     histogram_metadata = {'total':0,
                           'identical':0,
                           'identical_uids':[],
@@ -80,7 +84,8 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
                           'increment':increment,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
+                          'current_bucket': -1 ,
+                          'maximum': maximum}
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
 
