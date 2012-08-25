@@ -96,16 +96,18 @@ function action(dict) {
         if (super_error) {
             super_error();
         } else {
-            $("body").html(jqXHR.responseText);
+            alert(jqXHR.responseText);
         }
     };
+    var complete_fun = dict['complete'];
     data['url'] = window.location.href;
     $.ajax({
         url: '/action/',
         type: 'POST',
         data: data,
         success: success_fun,
-        error: error_fun
+        error: error_fun,
+        complete: complete_fun
     });
 }
 
