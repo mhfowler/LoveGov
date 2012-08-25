@@ -9,9 +9,11 @@
     <div class="group-top">
 
         <span class="group-title">
-            <div class="inline-div inline_hide">
-                {{ group.title }}
-            </div>
+            <a href="{{ group.get_url }}">
+                <div class="inline-div inline_hide">
+                    {{ group.title }}
+                </div>
+            </a>
             {% if info.is_user_admin %}
                 <div class="edit-link edit_button"></div>
                 <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
