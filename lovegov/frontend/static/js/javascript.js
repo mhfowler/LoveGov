@@ -131,28 +131,34 @@ function bind(selector, events, data, handler) {
     $(document).on(events, selector, data, handler);
 }
 
+var current_page_nonce=0;
 function action(dict) {
+    var pre_page_nonce=current_page_nonce;
     var data = dict['data'];
     var success_fun = function(data) {
         var super_success = dict['success'];
-        if (super_success) {
-            super_success(data);
+        if (pre_page_nonce == current_page_nonce) {
+            if (super_success) {
+                super_success(data);
+            }
         }
-        undelegated();
     };
     var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status==403) {
-            //launch403Modal(jqXHR.responseText);
-            return;
-        }
-        var super_error = dict['error'];
-        if (super_error) {
-            super_error();
-        } else {
-            $("body").html(jqXHR.responseText);
+        if (pre_page_nonce == current_page_nonce) {
+            if(jqXHR.status==403) {
+                //launch403Modal(jqXHR.responseText);
+                return;
+            }
+            var super_error = dict['error'];
+            if (super_error) {
+                super_error();
+            } else {
+                $("body").html(jqXHR.responseText);
+            }
         }
     };
     data['url'] = window.location.href;
+    data['current_page_nonce'] = current_page_nonce;
     $.ajax({
         url: '/action/',
         type: 'POST',
@@ -190,6 +196,8 @@ bind(".do_ajax_link", 'click', null, function(event) {
 
 function ajaxReload(theurl, loadimg)
 {
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $('.main_content').hide();
     if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
@@ -200,20 +208,27 @@ function ajaxReload(theurl, loadimg)
             data: {'url':window.location.href},
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
-                $('body').css("overflow","scroll");
-                $('.main_content').css("top","0px");
-                $(".main_content").html(returned.html);
-                $('.main_content').show();
-                rebind = returned.rebind;
-                path = returned.url;
-                bindOnReload();
+                if (pre_page_nonce == current_page_nonce) {
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                    $('body').css("overflow","scroll");
+                    $('.main_content').css("top","0px");
+                    $(".main_content").html(returned.html);
+                    $('.main_content').show();
+                    rebind = returned.rebind;
+                    path = returned.url;
+                    bindOnReload();
+                }
+                else {
+                    alert("skippe!");
+                }
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                $('body').html(jqXHR.responseText);
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
             }
         });
 }
@@ -314,10 +329,12 @@ bind(".bind_link", "click", null, function(event) {
  *      ~Home
  *
  ***********************************************************************************************************************/
-
 /* ajax load home sections */
 function homeReload(theurl) {
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
+    $(".home_reloading").show();
     $.ajax
         ({
             url:theurl,
@@ -325,15 +342,20 @@ function homeReload(theurl) {
             data: {'url':window.location.href},
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                path = returned.url;
-                $(".home_focus").html(returned.focus_html);
-                bindOnReload();
+                if (pre_page_nonce == current_page_nonce) {
+                    $(".home_reloading").hide();
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    path = returned.url;
+                    $(".home_focus").html(returned.focus_html);
+                    bindOnReload();
+                }
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
-                $('body').html(jqXHR.responseText);
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
             }
         });
 }
@@ -2360,95 +2382,95 @@ function loadHoverComparison()
 }
 
 /* deprecated
-function loadHoverBreakdown()
-{
+ function loadHoverBreakdown()
+ {
 
-    var hoverTimer;
-    var hoverClearOK = true;
+ var hoverTimer;
+ var hoverClearOK = true;
 
-    function clearHover()
-    {
-        if( hoverClearOK )
-        {
-            $('#comparison-hover-div p').empty();
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(300);
-        }
-    }
+ function clearHover()
+ {
+ if( hoverClearOK )
+ {
+ $('#comparison-hover-div p').empty();
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div').fadeOut(300);
+ }
+ }
 
-    $('#comparison-hover-div').hover
-        (
-            function() { hoverClearOK = false; },
-            function()
-            {
-                hoverClearOK = true;
-                hoverTimer = setTimeout
-                    (
-                        function() { clearHover(); },
-                        300
-                    );
-            }
-        );
+ $('#comparison-hover-div').hover
+ (
+ function() { hoverClearOK = false; },
+ function()
+ {
+ hoverClearOK = true;
+ hoverTimer = setTimeout
+ (
+ function() { clearHover(); },
+ 300
+ );
+ }
+ );
 
-    function findHoverPosition(selector)
-    {
-        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
-        if (top <= $(document).scrollTop())
-        {
-            // show below
-            top = selector.offset().top + selector.height() + 30;
-            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-        }
-        else
-        {
-            // show above
-            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-        }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
-        return {top:top,left:left};
-    }
+ function findHoverPosition(selector)
+ {
+ var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+ if (top <= $(document).scrollTop())
+ {
+ // show below
+ top = selector.offset().top + selector.height() + 30;
+ $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+ }
+ else
+ {
+ // show above
+ $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+ }
+ var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+ return {top:top,left:left};
+ }
 
-    var to_hover = $('.has_hover_comparison').not('.already_hover');
-    to_hover.addClass('already_hover');
-    to_hover.hoverIntent
-        (
-            function(event)
-            {
-                var self = $(this);
-                var href = $(this).data('href');
-                var displayName = $(this).data("display_name");
-                if (href != "")
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').text('You & ' + displayName);
-                    var offset = findHoverPosition(self);
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    action({
-                        'data': {'action':'hoverComparison','href':href},
-                        'success': function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            $('#comparison-hover').html(obj.html);
-                        },
-                        'error': null
-                    });
-                }
-            },
-            function(event)
-            {
-                hoverTimer = setTimeout
-                    (
-                        function(){ clearHover(); },
-                        1000
-                    );
-            }
-        );
-}
-*/
+ var to_hover = $('.has_hover_comparison').not('.already_hover');
+ to_hover.addClass('already_hover');
+ to_hover.hoverIntent
+ (
+ function(event)
+ {
+ var self = $(this);
+ var href = $(this).data('href');
+ var displayName = $(this).data("display_name");
+ if (href != "")
+ {
+ clearTimeout(hoverTimer);
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div p').text('You & ' + displayName);
+ var offset = findHoverPosition(self);
+ $('#comparison-hover-loading-img').show();
+ $('#comparison-hover-div').fadeIn(100);
+ $('#comparison-hover-div').offset(offset);
+ action({
+ 'data': {'action':'hoverComparison','href':href},
+ 'success': function(data)
+ {
+ var obj = eval('(' + data + ')');
+ $('#comparison-hover-loading-img').hide();
+ $('#comparison-hover').html(obj.html);
+ },
+ 'error': null
+ });
+ }
+ },
+ function(event)
+ {
+ hoverTimer = setTimeout
+ (
+ function(){ clearHover(); },
+ 1000
+ );
+ }
+ );
+ }
+ */
 
 /***********************************************************************************************************************
  *
