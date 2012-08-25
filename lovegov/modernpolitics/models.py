@@ -4204,14 +4204,16 @@ class CalculatedGroup(Group):
             to_process = to_process[:num]
 
         # for each person in pool, do comparison, and
-        new = []
+        found = []
+        processed_num = 0
         for x in to_process:
             comparison = x.getComparison(viewer)
             if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
                 self.members.add(x)
-                new.append(x)
+                found.append(x)
             self.processed.add(x)
-        return new
+            processed_num += 1
+        return found, processed_num
 
 
 

@@ -2424,11 +2424,11 @@ def getFBInviteFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def findLikeMinded(request, vals={}):
     viewer = vals['viewer']
-    new_members = viewer.findLikeMinded()
+    new_members, num_processed = viewer.findLikeMinded()
     vals['display'] = 'avatar'
     vals['users'] = new_members
     html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'html':html}))
+    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'num_processed':num_processed, 'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # calculate like minded group members

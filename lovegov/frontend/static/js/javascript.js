@@ -3441,6 +3441,7 @@ bind('.find_like_minded' , 'click' , null , function(e)
                 var num_new = returned.num_new_members;
                 // display num new members
                 $('.num_new_found').html(num_new);
+                $('.num_processed').html(returned.num_processed);
                 $(".find_result").show();
                 // change total members number
                 var total_num = $(".total_members").data('num');
