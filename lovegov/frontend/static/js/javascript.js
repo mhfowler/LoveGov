@@ -5,10 +5,26 @@
  ***********************************************************************************************************************/
 var rebind;
 function bindOnReload() {
+
+    // things that get bound on items loaded by feeds and such (everything)
     bindOnNewElements();
-    navSectionOpenAll();
+
+    // ajax get fb friends for sidebar after page load
     getFBInviteFriends();
-    initFeed();
+
+    // any feeds on the page, go get themselves
+    refreshFeeds();
+
+    // for all home pages
+    navSectionOpenAll();
+    initHomePage();
+
+    // for reps page
+    loadGoogleMap();
+
+    // misc
+    bindNotificationsDropdownClickOutside();
+
     switch (rebind) {
         case "home":
             break;
@@ -20,54 +36,91 @@ function bindOnReload() {
         case 'questions':
             break;
         case 'question_detail':
-            bindImportanceSliders();
             break;
         case 'poll_detail':
-            bindImportanceSliders();
             break;
         case 'browse':
             break;
     }
-
 }
 
-function undelegated() {
-    var undelegated = $('.dummy_link');
-    undelegated.bindOnce('click.undelegate', function(event) {
-        event.preventDefault();
-    });
-}
-
+/* gets called on all new elements appended to dom */
 function bindOnNewElements() {
+
+    // dummy_links are prevent defaulted
     undelegated();
+
+    // hover comparison popup
     loadHoverComparison();
-    initHomePage();
+
+    // all histogram go get themselves  (because there is a feed of groups, this must be here)
     loadHistograms();
+
+    // all expandable headers set themselves to correct starting height
     $.each($(".expandable_wrapper"), function(i,e) {
         setInfoHeight($(this));
     });
-    bindNotificationsDropdownClickOutside();
+
+    // poll feed items autoswitch
     pollAutoSwitch();
+
+    // comparison webs initialize
     comparisonWebs();
+
+    // question stubs
     updateQuestionStubsDisplay();
-    loadGoogleMap();
+    bindImportanceSliders();
 }
 
-var poll_autoswitch;
-function pollAutoSwitch() {
-    clearInterval(poll_autoswitch);
-    /*
-     poll_autoswitch= setInterval(function()
-     {
-     cyclePollQuestions();
-     }, 5000); */
-}
+/***********************************************************************************************************************
+ *
+ *     ~document.ready() of initial page load
+ *
+ ***********************************************************************************************************************/
+$(document).ready(function()
+{
+    // csrf protect
+    $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
 
-function comparisonWebs() {
-    $.each($(".web_comparison"), function(i,e) {
-        $(this).visualComparison();
+    // check browser compatability
+    checkCompatability();
+
+    // Prepare
+    var History = window.History; // Note: We are using a capital H instead of a lower h
+    if ( !History.enabled )
+    {
+        // History.js is disabled for this browser.
+        // This is because we can optionally choose to support HTML4 browsers or not.
+        return false;
+    }
+    // Bind to StateChange Eveent
+    History.Adapter.bind(window,'statechange',function()
+    {
+        // Note: We are using statechange instead of popstate
+        var State = History.getState(); // Note: We are using History.getState() instead of event.state
+        History.log(State.data, State.title, State.url);
     });
-}
+
+    // back button reload
+    window.onpopstate = function(event)
+    {
+        if (event.state != null) { window.location.reload(); }
+    };
+
+    // init page with js
+    bindOnReload();
+    bindTooltips();
+
+    // auto page update every minute (check for notifications)
+    clearInterval(auto_update_page);
+    auto_update_page= setInterval(function()
+    {
+        updatePage();
+    }, 60000);
+});
+
+var auto_update_page;
+
 
 /***********************************************************************************************************************
  *
@@ -109,50 +162,6 @@ function action(dict) {
     });
 }
 
-var auto_update_page;
-$(document).ready(function()
-{
-    // csrf protect
-    $.ajaxSetup({ data: {csrfmiddlewaretoken: csrf} });
-
-    // check browser compatability
-    checkCompatability();
-
-    // Prepare
-    var History = window.History; // Note: We are using a capital H instead of a lower h
-    if ( !History.enabled )
-    {
-        // History.js is disabled for this browser.
-        // This is because we can optionally choose to support HTML4 browsers or not.
-        return false;
-    }
-    // Bind to StateChange Eveent
-    History.Adapter.bind(window,'statechange',function()
-    {
-        // Note: We are using statechange instead of popstate
-        var State = History.getState(); // Note: We are using History.getState() instead of event.state
-        History.log(State.data, State.title, State.url);
-    });
-
-    // back button reload
-    window.onpopstate = function(event)
-    {
-        if (event.state != null) { window.location.reload(); }
-    };
-
-    // init page with js
-    bindOnReload();
-    bindTooltips();
-
-    // check for notifications on schedule
-    clearInterval(auto_update_page);
-    auto_update_page= setInterval(function()
-    {
-        updatePage();
-    }, 60000);
-
-});
-
 function updatePage() {
     action({
         'data': {'action':'updatePage', 'log-ignore':true},
@@ -170,30 +179,97 @@ function updatePage() {
     });
 }
 
+/***********************************************************************************************************************
+ *
+ *      ~Ajax links
+ *
+ ***********************************************************************************************************************/
+bind(".do_ajax_link", 'click', null, function(event) {
+    ajaxReload($(this).attr("href"), true);
+});
+
+function ajaxReload(theurl, loadimg)
+{
+    $('#search-dropdown').hide();
+    $('.main_content').hide();
+    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
+    $.ajax
+        ({
+            url:theurl,
+            type: 'GET',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                $('body').css("overflow","scroll");
+                $('.main_content').css("top","0px");
+                $(".main_content").html(returned.html);
+                $('.main_content').show();
+                rebind = returned.rebind;
+                path = returned.url;
+                bindOnReload();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+}
+
+/***********************************************************************************************************************
+ *
+ *     ~random helpers/bindings
+ *
+ ***********************************************************************************************************************/
+function undelegated() {
+    var undelegated = $('.dummy_link');
+    undelegated.bindOnce('click.undelegate', function(event) {
+        event.preventDefault();
+    });
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    /*
+     poll_autoswitch= setInterval(function()
+     {
+     cyclePollQuestions();
+     }, 5000); */
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
+    });
+}
+
 /* does some javascript manipulation of home page */
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
+    initFeedParameters();
 }
 
-/* does a get request for all feeds on page */
-function initFeed() {
+/* sets feed parameters pased on js variables */
+function initFeedParameters() {
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
     $.each(feed_types, function(i, e) {
         selectType(e);
     });
+}
+
+/* does a get request for all feeds on page */
+function refreshFeeds() {
     $.each($(".feed_main"), function(i,e) {
         refreshFeed($(this));
     });
 }
 
-/***********************************************************************************************************************
- *
- *      ~Check browser compatibility using Modernizr
- *
- ***********************************************************************************************************************/
-
+/* check browser compatability using modernizer */
 function checkCompatability() {
     var compatability_cookie =  $.cookie('compatability');
     if (compatability_cookie == null) {
@@ -238,6 +314,44 @@ bind(".bind_link", "click", null, function(event) {
  *      ~Home
  *
  ***********************************************************************************************************************/
+
+/* ajax load home sections */
+function homeReload(theurl) {
+    $('#search-dropdown').hide();
+    $.ajax
+        ({
+            url:theurl,
+            type: 'POST',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                path = returned.url;
+                $(".home_focus").html(returned.focus_html);
+                bindOnReload();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                $('body').html(jqXHR.responseText);
+            }
+        });
+}
+
+/* move asterisk, when section is selected */
+function moveAsterisk(to_where) {
+    if (to_where.length!=0) {
+        if (to_where.hasClass("navbar_link")) {
+            var offset = -4;
+        } else {
+            offset = to_where.height()/2;
+        }
+        var position = to_where.offset();
+        var top = position.top - offset;
+        var left = position.left - 40;
+        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
+    }
+}
 
 /* fill fb invite sidebar after page load */
 function getFBInviteFriends() {
@@ -343,7 +457,6 @@ function selectNavLink(navlink) {
             var navbar_section = navlink.parents(".navbar_section");
             navSectionToggle(navbar_section, true, false);
         }
-
         //moveAsterisk(navlink);
     }
 }
@@ -508,7 +621,6 @@ function setInfoHeight(wrapper)
     }
 }
 
-
 /* expands a div from it's current height to the "auto" height */
 function expandAnimation( div , animation_time)
 {
@@ -517,82 +629,6 @@ function expandAnimation( div , animation_time)
     var autoHeight = div.height();
     div.css('height', beforeHeight + 'px');
     div.animate( { "height" : autoHeight } , animation_time);
-}
-
-function homeReload(theurl) {
-    $('#search-dropdown').hide();
-    $.ajax
-        ({
-            url:theurl,
-            type: 'POST',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                path = returned.url;
-                $(".home_focus").html(returned.focus_html);
-                bindOnReload();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
-}
-
-/* move asterisk, when section is selected */
-function moveAsterisk(to_where) {
-    if (to_where.length!=0) {
-        if (to_where.hasClass("navbar_link")) {
-            var offset = -4;
-        } else {
-            offset = to_where.height()/2;
-        }
-        var position = to_where.offset();
-        var top = position.top - offset;
-        var left = position.left - 40;
-        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
-    }
-}
-
-/***********************************************************************************************************************
- *
- *      ~Ajax links
- *
- ***********************************************************************************************************************/
-bind(".do_ajax_link", 'click', null, function(event) {
-    ajaxReload($(this).attr("href"), true);
-});
-
-function ajaxReload(theurl, loadimg)
-{
-    $('#search-dropdown').hide();
-    $('.main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
-    $.ajax
-        ({
-            url:theurl,
-            type: 'GET',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
-                $('body').css("overflow","scroll");
-                $('.main_content').css("top","0px");
-                $(".main_content").html(returned.html);
-                $('.main_content').show();
-                rebind = returned.rebind;
-                path = returned.url;
-                bindOnReload();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
 }
 
 /***********************************************************************************************************************
@@ -626,6 +662,7 @@ bind(".sign_in_button", 'click', null, function(event) {
 bind(".sign_in_dialogue", 'click', null, function(event) {
     event.stopPropagation();
 });
+
 
 /***********************************************************************************************************************
  *
@@ -853,7 +890,7 @@ function getFeed(container) {
                 if (returned.num_items == 0) {
                     container.find(".load_more").hide();
                     var everything_loaded = container.find(".everything_loaded_wrapper");
-                    everything_loaded.append(returned.everything_loaded);
+                    everything_loaded.find(".everything_loaded_image_wrapper").html(returned.everything_loaded);
                     everything_loaded.show();
                     everything_loaded.find(".everything_loaded_header").hide();
                     if (feed_start==0) {
@@ -881,7 +918,6 @@ bind(".load_more" , "click" , null , function(event) {
  *      ~About page
  *
  **********************************************************************************************************************/
-
 bind("div.about-div-button", "click",
     function(e) {
         $('div.about-div-button').removeClass("active");
@@ -1048,7 +1084,6 @@ function leftSideToggle(wrapper)
  *      ~User menu
  *
  ***********************************************************************************************************************/
-
 bind(".user_menu_toggle", "click", function(event) {
     $('div.user-menu').fadeToggle(50);
     event.stopPropagation();
@@ -1274,7 +1309,6 @@ bind('div.load-more-comments', 'click', function(e) {
 });
 
 
-
 /***********************************************************************************************************************
  *
  *      ~InlineEdits
@@ -1316,7 +1350,6 @@ function editContent( c_id , info , edit_div )
 }
 
 
-
 bind( ".edit_button" , 'click', null , function(event)
 {
     event.preventDefault();
@@ -1356,7 +1389,7 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~loagin
+ *      ~login
  *
  **********************************************************************************************************************/
 var login_state;
@@ -1560,7 +1593,7 @@ bind(".group_invited_modal" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Following
+ *      ~Following, Supporting and other Actions
  *
  ***********************************************************************************************************************/
 bind('div.user_follow' , 'click' , null , function(event)
@@ -1924,8 +1957,6 @@ function groupInviteResponse(event,response,div)
  *     ~Modal General
  *
  **********************************************************************************************************************/
-
-
 function hideModal(event) {
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
@@ -1976,7 +2007,6 @@ function getModal(modal_name,data)
  *     ~Group Header
  *
  **********************************************************************************************************************/
-
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
@@ -2239,95 +2269,6 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverBreakdown()
-{
-
-    var hoverTimer;
-    var hoverClearOK = true;
-
-    function clearHover()
-    {
-        if( hoverClearOK )
-        {
-            $('#comparison-hover-div p').empty();
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(300);
-        }
-    }
-
-    $('#comparison-hover-div').hover
-        (
-            function() { hoverClearOK = false; },
-            function()
-            {
-                hoverClearOK = true;
-                hoverTimer = setTimeout
-                    (
-                        function() { clearHover(); },
-                        300
-                    );
-            }
-        );
-
-    function findHoverPosition(selector)
-    {
-        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
-        if (top <= $(document).scrollTop())
-        {
-            // show below
-            top = selector.offset().top + selector.height() + 30;
-            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-        }
-        else
-        {
-            // show above
-            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-        }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
-        return {top:top,left:left};
-    }
-
-    var to_hover = $('.has_hover_comparison').not('.already_hover');
-    to_hover.addClass('already_hover');
-    to_hover.hoverIntent
-        (
-            function(event)
-            {
-                var self = $(this);
-                var href = $(this).data('href');
-                var displayName = $(this).data("display_name");
-                if (href != "")
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').text('You & ' + displayName);
-                    var offset = findHoverPosition(self);
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    action({
-                        'data': {'action':'hoverComparison','href':href},
-                        'success': function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            $('#comparison-hover').html(obj.html);
-                        },
-                        'error': null
-                    });
-                }
-            },
-            function(event)
-            {
-                hoverTimer = setTimeout
-                    (
-                        function(){ clearHover(); },
-                        1000
-                    );
-            }
-        );
-}
-
 function loadHoverComparison()
 {
 
@@ -2417,6 +2358,97 @@ function loadHoverComparison()
             }
         );
 }
+
+/* deprecated
+function loadHoverBreakdown()
+{
+
+    var hoverTimer;
+    var hoverClearOK = true;
+
+    function clearHover()
+    {
+        if( hoverClearOK )
+        {
+            $('#comparison-hover-div p').empty();
+            $('#comparison-hover').empty();
+            $('#comparison-hover-div').fadeOut(300);
+        }
+    }
+
+    $('#comparison-hover-div').hover
+        (
+            function() { hoverClearOK = false; },
+            function()
+            {
+                hoverClearOK = true;
+                hoverTimer = setTimeout
+                    (
+                        function() { clearHover(); },
+                        300
+                    );
+            }
+        );
+
+    function findHoverPosition(selector)
+    {
+        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+        if (top <= $(document).scrollTop())
+        {
+            // show below
+            top = selector.offset().top + selector.height() + 30;
+            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+        }
+        else
+        {
+            // show above
+            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+        }
+        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+        return {top:top,left:left};
+    }
+
+    var to_hover = $('.has_hover_comparison').not('.already_hover');
+    to_hover.addClass('already_hover');
+    to_hover.hoverIntent
+        (
+            function(event)
+            {
+                var self = $(this);
+                var href = $(this).data('href');
+                var displayName = $(this).data("display_name");
+                if (href != "")
+                {
+                    clearTimeout(hoverTimer);
+                    $('#comparison-hover').empty();
+                    $('#comparison-hover-div p').text('You & ' + displayName);
+                    var offset = findHoverPosition(self);
+                    $('#comparison-hover-loading-img').show();
+                    $('#comparison-hover-div').fadeIn(100);
+                    $('#comparison-hover-div').offset(offset);
+                    action({
+                        'data': {'action':'hoverComparison','href':href},
+                        'success': function(data)
+                        {
+                            var obj = eval('(' + data + ')');
+                            $('#comparison-hover-loading-img').hide();
+                            $('#comparison-hover').html(obj.html);
+                        },
+                        'error': null
+                    });
+                }
+            },
+            function(event)
+            {
+                hoverTimer = setTimeout
+                    (
+                        function(){ clearHover(); },
+                        1000
+                    );
+            }
+        );
+}
+*/
 
 /***********************************************************************************************************************
  *
@@ -2623,6 +2655,22 @@ function bindImportanceSlider(div) {
     });
 }
 
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
+
+
+
+
+/***********************************************************************************************************************
+ *
+ *     ~ homemade backbone.... dom elements which update themselves
+ *
+ **********************************************************************************************************************/
 function updateMatches() {
     $.each($(".match_object"), function(i, e) {
         updateMatch($(this));
@@ -2678,14 +2726,6 @@ function updateStatsObject(stats) {
         }
     });
 }
-
-bind('.only_unanswered' , 'click' , null , function(event)
-{
-    $(this).toggleClass("clicked");
-    var container = $(this).parents(".feed_main");
-    container.data("only_unanswered", $(this).hasClass("clicked"));
-    refreshFeed(container);
-});
 
 /***********************************************************************************************************************
  *
@@ -3132,7 +3172,6 @@ function getHistogramGroupMembers(histogram_wrapper) {
     });
 }
 
-
 /***********************************************************************************************************************
  *
  *     ~Topics
@@ -3203,7 +3242,7 @@ function showTopicIcon(wrapper) {
 
 /***********************************************************************************************************************
  *
- *      ~Friends
+ *      ~Friends and facebook share
  *
  ***********************************************************************************************************************/
 
@@ -3217,13 +3256,6 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
     getModal('facebook_share_modal' , data);
 });
 
-
-
-/***********************************************************************************************************************
- *
- *      ~Facebook Share Modal
- *
- ***********************************************************************************************************************/
 
 bind( '.facebook_share_submit' , 'click' , null , function(e)
 {
@@ -3278,6 +3310,11 @@ bind( '.pin_to_group' , 'click' , null , function(e)
 });
 
 
+/***********************************************************************************************************************
+ *
+ *      ~Petition sign
+ *
+ ***********************************************************************************************************************/
 bind('.sign_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
@@ -3403,6 +3440,7 @@ bind('.find_address_button' , 'click' , null , function(e)
 bind('.enter_new_address' , 'click' , null , function(e) {
     $(".dismissible_header").show();
 });
+
 
 /***********************************************************************************************************************
  *
