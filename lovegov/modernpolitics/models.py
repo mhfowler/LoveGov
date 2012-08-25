@@ -4203,8 +4203,8 @@ class CalculatedGroup(Group):
         if num: #paginate
             to_process = to_process[:num]
 
-        LIKE_MINDED_RESULT_THRESHOLD = 80
-        LIKE_MINDED_NUMQ_THRESHOLD = 5
+        LIKE_MINDED_RESULT_THRESHOLD = 0
+        LIKE_MINDED_NUMQ_THRESHOLD = 0
         # for each person in pool, do comparison, and
         new = []
         for x in to_process:
