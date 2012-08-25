@@ -12,6 +12,9 @@ span.group-title
   font-size: 16px;
   margin-right: 10px;
   @include inline-block();
+  a {
+    color:$black;
+  }
 }
 
 span.group-scale
@@ -129,15 +132,15 @@ div.group-expanded
     div.group-histogram
     {
       width:230px;
-      height:180px;
+      height: 199px;
       position:relative;
-      top:-13px;
+      top:-29px;
     }
 
     a.see-more {
       background-color:$light-gray;
       padding:5px;
-      margin-top:20px;
+      margin-top:0px;
       color:$black;
       width:100%;
       float:left;
@@ -161,7 +164,7 @@ div.group-expanded
       }
 
       div.group-full-text {
-        height:254px;
+        height:273px;
       }
     }
 
@@ -177,7 +180,7 @@ div.group-expanded
       div.group-members
       {
         width: 160px;
-        height: 170px;
+        height: 190px;
 
         div.group-member-avatar
         {
@@ -186,15 +189,22 @@ div.group-expanded
           float: left;
         }
       }
-      a.see-more {
-        margin-top: 4px;
-      }
     }
   }
 
   div.group-pinned-content
   {
     padding: 10px;
+    div.pinned-wrapper {
+      position:relative;
+      a.unpin-content {
+        color:$gray;
+        margin-left: 8px;
+        &:hover {
+          color:$dark-gray;
+        }
+      }
+    }
   }
 }
 

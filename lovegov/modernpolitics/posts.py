@@ -1704,7 +1704,6 @@ def getQuestions(request, vals):
         feed_topic = Topic.lg.get_or_none(alias=feed_topic_alias)
     else:
         feed_topic = None
-
     if to_compare:
         question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
             question_ranking=question_ranking, feed_topic=feed_topic, feed_start=feed_start, num=10)
@@ -1918,8 +1917,7 @@ def getUserActivity(request, vals={}):
     actions_text = []
     for action in actions:
         action_text = action.getVerbose(viewer=viewer, vals=vals)
-        if action_text:
-            actions_text.append(action_text)
+        actions_text.append(action_text)
 
     vals['actions_text'] = actions_text
 
@@ -2449,6 +2447,20 @@ def clearLikeMinded(request, vals={}):
     return HttpResponse("cleared")
 
 #-----------------------------------------------------------------------------------------------------------------------
+# pin a piece of content to a group
+#-----------------------------------------------------------------------------------------------------------------------
+def pinContent(request, vals={}):
+    viewer = vals['viewer']
+    group = Group.objects.get(id=request.POST['g_id'])
+    content = Content.objects.get(id=request.POST['c_id'])
+    pin = int(request.POST['pin'])
+    if pin==1:
+        pinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
+    else:
+        unpinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
+    return HttpResponse("pinned")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2546,20 +2558,20 @@ def getModal(request,vals={}):
         modal_html = getMessagePoliticianModal(politician, vals)
 
     ## Pin Content Modal ##
-#    elif modal_name == "pin_content_modal":
-#        c_id = request.POST.get('c_id')
-#
-#        if not c_id:
-#            LGException( "Pin content modal requested without content ID by user ID #" + str(viewer.id) )
-#            return HttpResponseBadRequest( "Pin content modal requested without content ID" )
-#
-#        content = Content.lg.get_or_none( id=c_id )
-#
-#        if not content:
-#            LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
-#            return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
-#
-#        modal_html = getPinContentModal(content,viewer,vals)
+    elif modal_name == "pin_content_modal":
+        c_id = request.POST.get('c_id')
+
+        if not c_id:
+            LGException( "Pin content modal requested without content ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Pin content modal requested without content ID" )
+
+        content = Content.lg.get_or_none( id=c_id )
+
+        if not content:
+            LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
+
+        modal_html = getPinContentModal(content,viewer,vals)
 
 
     ## If a modal was successfully made, return it ##

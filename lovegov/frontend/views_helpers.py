@@ -304,7 +304,8 @@ def valsGroup(viewer, group, vals):
     vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
-    group_members = group.getMembers()
+    group_members = list(group.getMembers())
+    group_members += list(UserProfile.objects.all())
     vals['group_members'] = group_members[:16]
 
     # Get the number of group Follow Requests
@@ -316,10 +317,9 @@ def valsGroup(viewer, group, vals):
     # vals for group buttons
     valsGroupButtons(viewer, group, vals)
 
-    ## TEST ##
-    items = Content.objects.filter(type='N')
-    vals['item1'] = items[0]
-    vals['item2'] = items[1]
+    # pinned
+    pinned = group.pinned_content.all()
+    vals['pinned'] = pinned
 
     # histogram
     loadHistogram(5, group.id, 'mini', vals=vals)

@@ -73,6 +73,12 @@ div.question-detail-sidebar {
 /**********************************************************************************************************************/
 /*  ~ browse questions                                                                                                */
 /**********************************************************************************************************************/
+div.questions-main {
+  div.red-line {
+    width:832px;
+  }
+}
+
 div.questions-sidebar {
   margin-top: 10px;
   width:150px;
@@ -204,7 +210,7 @@ div.question_stub {
         background-color:$dark-green;
       }
     }
-    a.hide-button {
+    a.button-cancel {
       display:none;
       width:130px;
       text-align:center;
@@ -269,29 +275,128 @@ div.question_stub {
 
 /* choose interface */
   div.question_expanded_choose {
-    padding:10px;
-    padding-left:20px;
-    padding-right:20px;
+    padding:20px;
 
     div.answers-wrapper {
-      padding-bottom:20px;
-      div.answer-wrapper {
-        margin-top:15px;
+      float:left;
+      width: 660px;
+      min-height:182px;
+      div.answer-choice {
+        float:left;
+        width:100%;
+        padding:10px;
+        min-height:70px;
+        @include border-radius(8px);
+        &:hover {
+          background-color:$awesome-blue;
+          cursor:pointer;
+        }
+        &.clicked {
+          background-color:$awesome-blue;
+          //border:1px solid $green;
+          &:hover {
+            background-color:$awesome-blue;
+          }
+        }
+        span.answer-text {
+          @include fontSize(18px);
+        }
       }
-      span.answer-text {
-        width:830px;
-        margin-left:15px;
-        margin-top:2px;
-        @include fontSize(16px);
+      div.answer-choice.first {
+        margin-top:0px;
+      }
+      div.add-explanation {
+        color:$gray;
+        float: left;
+        margin-top: 2px;
+        margin-left: 30px;
+        margin-bottom: 6px;
       }
     }
-    a.change-explanation {
-      float:left;
-      margin-top:5px;
-      text-decoration:italic;
-      color:$gray;
-      &:hover {
-        color:$blue;
+    div.answer-actions {
+      width:190px;
+      float:right;
+      @include fontSize(16px);
+      padding: 10px 0px;
+      div.a-action {
+        margin-top:20px;
+        height:30px;
+        display:block;
+        span.action-icon {
+          float:left;
+          width:25px;
+          height:25px;
+        }
+        span.action-text {
+          float:left;
+          margin-left:15px;
+          width:150px;
+          span.action-text-upper {
+            color:$black;
+          }
+          a.action-text-upper {
+            color:$black;
+            &:hover {
+              color:black;
+            }
+          }
+          span.action-text-lower {
+            float:left;
+            color:$gray;
+            @include fontSize(14px);
+            margin-left:20px;
+          }
+        }
+
+        span.public-icon {
+          @include staticImage("/images/public.png");
+          background-repeat:no-repeat;
+          background-size:15px 15px;
+        }
+        span.answer-importance-num {
+          color:$dark-gray;
+          position: relative;
+          left: -6px;
+          @include fontSize(16px);
+        }
+      }
+      div.a-action.answer-privacy {
+        margin-top:0px;
+      }
+      div.a-action.discuss-question {
+        margin-top:21px;
+      }
+      div.a-action.answer-importance {
+        margin-top:21px;
+
+        div.importance-bar {
+          margin-top: 9px;
+          width: 90%;
+          height:8px;
+          border:1px solid $gray;
+          @include border-radius(0px);
+          a.ui-slider-handle {
+            background:none;
+            background-color:white;
+            border-color:$black;
+            width: 10px;
+            position: absolute;
+            top: -9px;
+            margin-left: -2.3px;
+            height: 23px;
+            @include border-radius(0px);
+          }
+        }
+        div.importance-axis {
+          margin-top:2px;
+          display:none;
+          span.importance-percent {
+            margin-left:150px;
+          }
+          span.high {
+            float:right;
+          }
+        }
       }
     }
   }

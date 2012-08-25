@@ -138,10 +138,20 @@
 
         </div>
 
-        <div class="group-pinned-content">
-            {% include 'site/pages/feed/base-item-thin.html' with item=info.item1 %}
-            {% include 'site/pages/feed/base-item-thin.html' with item=info.item2%}
-        </div>
+        {% with pinned=info.pinned %}
+            {% if pinned %}
+                <div class="group-pinned-content">
+                    {% for item in pinned %}
+                        <div class="pinned-wrapper pinned_wrapper">
+                            {% if info.is_user_admin %}
+                                <a class="unpin-content unpin_content" data-c_id="{{ item.id }}" data-g_id="{{ group.id }}"> unpin </a>
+                            {% endif %}
+                            {% include 'site/pages/feed/base-item-thin.html' with item=item %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
     </div>
 

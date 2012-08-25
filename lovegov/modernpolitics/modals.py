@@ -77,17 +77,17 @@ def getMessagePoliticianModal(politician, vals={}):
     vals['politician'] = politician
     return render_to_string('site/pages/profile/message_politician_modal.html',vals)
 
-#def getPinContentModal(content,user,vals):
-#    vals['content'] = content
-#
-#    admin_of_groups = user.admin_of.all()
-#
-#    pinnable_groups = []
-#
-#    for group in admin_of_groups:
-#        if content not in group.pinned_content.all():
-#            pinnable_groups.append(group)
-#
-#    vals['groups'] = pinnable_groups
-#
-#    return render_to_string('site/pages/content_detail/pin_content_modal.html',vals)
+def getPinContentModal(content,user,vals):
+    vals['content'] = content
+
+    admin_of_groups = user.admin_of.all()
+
+    pinnable_groups = []
+
+    for group in admin_of_groups:
+        if content not in group.pinned_content.all():
+            pinnable_groups.append(group)
+
+    vals['groups'] = pinnable_groups
+
+    return render_to_string('site/pages/content_detail/pin_content_modal.html',vals)

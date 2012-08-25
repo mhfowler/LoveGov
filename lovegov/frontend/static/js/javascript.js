@@ -67,6 +67,9 @@ function bindOnNewElements() {
     // comparison webs initialize
     comparisonWebs();
 
+    // bind select2s
+    bindSelect2s();
+
     // question stubs
     updateQuestionStubsDisplay();
     bindImportanceSliders();
@@ -220,9 +223,6 @@ function ajaxReload(theurl, loadimg)
                     path = returned.url;
                     bindOnReload();
                 }
-                else {
-                    alert("skippe!");
-                }
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -302,6 +302,16 @@ function checkCompatability() {
                 }}
         );
     }
+}
+
+/* binds all select 2s */
+function bindSelect2s() {
+    $.each($('.select_2'), function(i,e) {
+        var placeholder = $(this).data("placeholder");
+        $(this).select2({
+            placeholder: placeholder
+        });
+    });
 }
 
 /***********************************************************************************************************************
@@ -2018,7 +2028,7 @@ function getModal(modal_name,data)
             modal_general.data('last-loaded',modal_name);
 
             showModal();
-
+            bindOnNewElements();
         }
     });
 }
@@ -2474,10 +2484,9 @@ function loadHoverComparison()
 
 /***********************************************************************************************************************
  *
- *     ~QA
+ *     ~ q&a interface
  *
  **********************************************************************************************************************/
-
 bind('.answer_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
@@ -2496,13 +2505,6 @@ bind('.hide_button' , 'click' , null , function(event)
     hideStub(stub);
 });
 
-bind('.change_explanation' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
-});
-
 function hideStub(stub) {
     stub.find(".question_expanded").hide();
     stub.find(".hide_button").hide();
@@ -2512,13 +2514,6 @@ function hideStub(stub) {
 function expandChooseInterface(stub) {
     stub.find(".question_expanded").hide();
     stub.find(".question_expanded_choose").show();
-    stub.find(".answer_button").hide();
-    stub.find(".hide_button").show();
-}
-
-function expandExplainInterface(stub) {
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
     stub.find(".answer_button").hide();
     stub.find(".hide_button").show();
 }
@@ -2535,6 +2530,7 @@ function updateQuestionStubsDisplay() {
     });
 }
 
+/* set initial display for all stubs */
 function updateQuestionStubDisplay(stub) {
     var default_display = stub.data("default_display");
     if (default_display == 'none') {
@@ -2543,36 +2539,28 @@ function updateQuestionStubDisplay(stub) {
     if (default_display == 'choose') {
         expandChooseInterface(stub);
     }
-    if (default_display == 'explain') {
-        expandExplainInterface(stub);
-    }
     if (default_display == 'responses') {
         expandResponses(stub);
     }
 }
 
-bind('.answer_checkbox' , 'click' , null , function(event)
+bind('.answer_choice' , 'click' , null , function(event)
 {
     if ($(this).hasClass("clicked")) {
         $(this).removeClass("clicked");
     }
     else {
         var stub = $(this).parents(".question_stub");
-        stub.find(".answer_checkbox").removeClass("clicked");
+        stub.find(".answer_choice").removeClass("clicked");
         $(this).addClass("clicked");
     }
     saveAnswer(stub);
 });
 
-bind('.save_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    saveQuestion(stub);
-});
 
 // stage 1, save answer
 function saveAnswer(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
+    var box = stub.find(".answer_choice.clicked");
     var a_id;
     if (box.length!=0) {
         a_id = box.data('a_id');
@@ -2581,22 +2569,62 @@ function saveAnswer(stub) {
         a_id = -1;
     }
     var q_id = stub.data('q_id');
+    var default_display = stub.data("default_display");
     action({
-        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':'explain'},
+        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':default_display},
         success: function(data) {
             var returned = eval('(' + data + ')');
             var new_element = $(returned.html);
             stub.replaceWith(new_element);
+            updateQuestionStubDisplay(new_element);
             var saved_message = new_element.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
-            updateQuestionStubDisplay(new_element);
-            bindImportanceSlider(new_element.find(".importance_bar"));
             updateMatches();
             updateStats();
+            bindOnNewElements();
         }
     });
 }
+
+
+/* importance sliders */
+function bindImportanceSliders() {
+    var importance_bars = $(".importance_bar");
+    $.each(importance_bars, function(i, e) {
+        bindImportanceSlider($(this));
+    });
+}
+
+function bindImportanceSlider(div) {
+    var weight = div.data('weight');
+    div.slider({'min':0,
+        'max':100,
+        'step':1,
+        'value':weight,
+        slide: function(event, ui) {
+            var text = ui.value + "%";
+            $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        }
+    });
+}
+
+
+
+
+/*
+ bind('.answer_checkbox' , 'click' , null , function(event)
+ {
+ if ($(this).hasClass("clicked")) {
+ $(this).removeClass("clicked");
+ }
+ else {
+ var stub = $(this).parents(".question_stub");
+ stub.find(".answer_checkbox").removeClass("clicked");
+ $(this).addClass("clicked");
+ }
+ saveAnswer(stub);
+ });
 
 // old way, answer and explanation (stage 2)
 function saveQuestion(stub) {
@@ -2652,31 +2680,18 @@ function saveQuestion(stub) {
     });
 }
 
-bind('.privacy_checkbox' , 'click' , null , function(event)
-{
-    $(this).toggleClass("clicked");
-});
+ bind('.privacy_checkbox' , 'click' , null , function(event)
+ {
+ $(this).toggleClass("clicked");
+ });
 
-function bindImportanceSliders() {
-    var importance_bars = $(".importance_bar");
-    $.each(importance_bars, function(i, e) {
-        bindImportanceSlider($(this));
-    });
-}
+*/
 
-function bindImportanceSlider(div) {
-    var weight = div.data('weight');
-    div.slider({'min':0,
-        'max':100,
-        'step':1,
-        'value':weight,
-        slide: function(event, ui) {
-            var text = ui.value + "%";
-            $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
-        }
-    });
-}
-
+/***********************************************************************************************************************
+ *
+ *     ~ q&a feed
+ *
+ **********************************************************************************************************************/
 bind('.only_unanswered' , 'click' , null , function(event)
 {
     $(this).toggleClass("clicked");
@@ -2684,9 +2699,6 @@ bind('.only_unanswered' , 'click' , null , function(event)
     container.data("only_unanswered", $(this).hasClass("clicked"));
     refreshFeed(container);
 });
-
-
-
 
 /***********************************************************************************************************************
  *
@@ -3013,9 +3025,6 @@ function updateHistogram(histogram_wrapper, recursive) {
                     if (histogram_metadata.maximum == -1 || histogram_metadata.total < histogram_metadata.maximum) {
                         updateHistogram(histogram_wrapper, true);
                     }
-                    else {
-                        alert(histogram_metadata.total);
-                    }
                 }
             }
         }
@@ -3336,6 +3345,42 @@ bind( '.pin_to_group' , 'click' , null , function(e)
     });
 });
 
+bind('.pin_it' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(".pin_to_select").val();
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':1
+        },
+        success: function(data)
+        {
+            $(".was_pinned").fadeIn(500, function() { setTimeout(hideModal(), 2000)});
+        }
+    });
+});
+
+bind('.unpin_content' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(this).data("g_id");
+    var to_remove = $(this).parents(".pinned_wrapper");
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':-1
+        },
+        success: function(data)
+        {
+            to_remove.remove();
+        }
+    });
+});
 
 /***********************************************************************************************************************
  *

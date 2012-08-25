@@ -1978,6 +1978,8 @@ class Action(Privacy):
             object = self.messagedaction
         elif action_type == 'GF':
             object = self.groupfollowaction
+        elif action_type == 'PI':
+            object = self.pinnedaction
         else:
             object = None
         return object
@@ -2208,6 +2210,40 @@ class SharedAction(Action):
         })
 
         return render_to_string('site/pieces/actions/shared_verbose.html',vals)
+
+
+#=======================================================================================================================
+# Pinning content to a group
+#=======================================================================================================================
+class PinnedAction(Action):
+    content = models.ForeignKey(Content)
+    to_group = models.ForeignKey('Group',null=True,related_name="pinned_to_actions")
+    confirmed = models.BooleanField(default=True)
+
+    def getTo(self):
+        return self.to_group
+
+    def autoSave(self):
+        self.action_type = 'PI'
+        super(PinnedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = self.to_group
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'pinned_object' : self.content,
+            'to_object' : to_object,
+            'confirmed': self.confirmed
+        })
+
+        return render_to_string('site/pieces/actions/pinned_verbose.html',vals)
 
 
 #=======================================================================================================================
@@ -3771,6 +3807,14 @@ class Group(Content):
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Thin wrapper for adding admin.
+    #-------------------------------------------------------------------------------------------------------------------
+    def addAdmin(self, user):
+        if not self.hasMember(user):
+            self.joinMember(user)
+        self.admins.add(user)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
     #-------------------------------------------------------------------------------------------------------------------
     def joinMember(self, user, privacy='PUB'):
@@ -3851,12 +3895,6 @@ class Group(Content):
         super(Group, self).autoSave(creator=creator, privacy=privacy)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # getFeed
-    #-------------------------------------------------------------------------------------------------------------------
-    def getFeed(self):
-        return self.group_newfeed.order_by('-rank')
-
-    #-------------------------------------------------------------------------------------------------------------------
     # getGroupView
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupView(self):
@@ -3873,22 +3911,21 @@ class Group(Content):
             return False
 
     #-------------------------------------------------------------------------------------------------------------------
+    # check if group has admin
+    #-------------------------------------------------------------------------------------------------------------------
+    def hasAdmin(self, user):
+        test = self.admins.filter(id=user.id)
+        if test:
+            return True
+        else:
+            return False
+
+    #-------------------------------------------------------------------------------------------------------------------
     # gets group motions
     #-------------------------------------------------------------------------------------------------------------------
     def getMotions(self):
         motions = Motion.objects.filter(group=self)
         return motions
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearGroupFeed(self, feed_type):
-        if feed_type=='N':
-            self.group_newfeed.all().delete()
-        elif feed_type=='B':
-            self.group_bestfeed.all().delete()
-        elif feed_type=='H':
-            self.group_hotfeed.all().delete()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
@@ -3925,7 +3962,6 @@ class Group(Content):
         if num != 1:
             return actions[start:start+num]
         return actions[start:]
-
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns the number of petitions the whole group has created
@@ -3971,6 +4007,9 @@ class Group(Content):
         self.save()
         return self.alias
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Democratic group stuff
+    #-------------------------------------------------------------------------------------------------------------------
     def getMotionExpiration(self):
         now = datetime.datetime.now()
         delta = datetime.timedelta(days=self.motion_expiration)
