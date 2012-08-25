@@ -2532,12 +2532,6 @@ bind('.answer_button' , 'click' , null , function(event)
     expandChooseInterface(stub);
 });
 
-bind('.goback_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    expandChooseInterface(stub);
-});
-
 bind('.hide_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");

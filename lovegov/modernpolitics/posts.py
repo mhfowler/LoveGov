@@ -992,7 +992,7 @@ def saveAnswer(request, vals={}):
     vals['question'] = question
     vals['your_response'] = response
     vals['default_display'] = request.POST.get('default_display')
-    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+    html = ajaxRender('site/pages/qa/question_stub_helper.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------

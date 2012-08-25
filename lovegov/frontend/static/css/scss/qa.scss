@@ -211,11 +211,12 @@ div.question_stub {
       }
     }
     a.button-cancel {
+      background-color:$gray;
+      color:white;
       display:none;
-      width:130px;
-      text-align:center;
-      margin-right:10px;
-      float:right;
+      &:hover {
+        background-color:$dark-gray;
+      }
     }
     div.change-privacy {
       float:right;
