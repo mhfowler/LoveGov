@@ -1,0 +1,116 @@
+{% extends 'site/pages/home/header_expandable.html' %}
+<!-- CSS for this file is in group.scss -->
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block header_top %}
+
+    <div class="like-minded-title">
+        <span class="group-title"> Like-Minded Group </span>
+        {% if like_minded %}
+            <span class="group-num-members"> {{ num_members }} member{{ num_members|pluralize }} </span>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+
+{% block header_info %}
+
+    <div class="like-minded-header">
+
+        {% if like_minded %}
+            <div class="real-like-minded-header">
+
+                <div class="like-minded-top">
+                    <div class="like-minded-buttons">
+                        <a class="find-button like-minded-button find_like_minded"> find </a>
+                        <a class="clear-button like-minded-button clear_like_minded"> clear </a>
+                        <a class="like-minded-explanation like_minded_explanation"> explanation </a>
+                    </div>
+                    <div class="button-explanations button_explanations">
+                        <div class="explanation-header">
+                            Like-Minded Group Explanation
+                        </div>
+                        <div class="button-explanation">
+                            The find button compares yourself with 20 random users, and checks if any of them
+                            share over 20 responses with you and are over 80% similar. If any of them are, it adds them to your group.
+                        </div>
+                        <div class="button-explanation">
+                            The clear button removes all of the current members of your like-minded group. Be careful with it,
+                            you will need to recalculate the whole group again, but we have it just in case you have
+                            a change of heart, and the people you used to think like, now think unlike.
+                        </div>
+                        <a class="like_minded_close close-like-minded dummy_link"> close </a>
+                    </div>
+                    <div class="like-minded-description">
+                        <div class="like-minded-description-header"> What is this? </div>
+                            <div class="no-members no_members" {% if num_members %} style="display:none;" {% endif %}>
+                                <div class="no-members-message">
+                                    You don't have anyone in your like-minded group yet. Press the find button on the left to tap
+                                    into our data-mainframe supercomputer and find the people on LoveGov most similar to you!
+                                </div>
+                            </div>
+                            <div class="like-minded-description-text some_members" {% if not num_members %} style="display:none;" {% endif %}>
+                                This is a group of all the people on LoveGov who answered questions similarly to you. Below is a feed
+                                of only the content created by those people. Your like-minded group currently has
+                                <span class="total_members" data-num="{{ num_members }}"> {{ num_members }} </span>
+                                member{{ num_members|pluralize }}. To find more like-minded people, click the find button to the left
+                                and it will search LoveGov for other people who share over 20 questions with you and are atleast 80%
+                                similar.
+                            </div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+                <div class="like-minded-bottom">
+                    <div class="like-minded-bottom-header">
+                        <div class="members-header">
+                            Members
+                        </div>
+                        <a class="view-all-friends" href="{{ like_minded.getHistogramURL }}"> view all </a>
+                        <div class="button-result">
+                            <div class="button_result find_result find-result">
+                                <div class="num_new_found num-found"> 6 </div>
+                                new like minded people were found.
+                            </div>
+                            <div class="button_result clear_result clear-result">
+                                your like minded group was cleared.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="like_minded_members">
+                        {% for user in members %}
+                            {% include 'site/pieces/avatar_href.html' with width="50" height="50" %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="not-yet">
+
+                <div class="not-yet-message">
+                    <div class="hi-top">
+                        Hi {{ viewer.first_name }},
+                    </div>
+                    <div class="below-message">
+                        to make use of this group you need to answer at least 20 questions. Once you've answered enough questions,
+                        we'll use your answers to find all the people on LoveGov who are over 80% similar to you and show you
+                        a feed of just the content that those like-minded people are posting.
+                    </div>
+                </div>
+
+                {% include 'site/pages/groups/like_minded_counter.html' %}
+
+                {% if viewer.num_answers < 20 %}
+                    <div class="fixed-counter">
+                        {% include 'site/pages/groups/like_minded_counter.html' %}
+                    </div>
+                {% endif %}
+
+                <div style="clear:both;"></div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+

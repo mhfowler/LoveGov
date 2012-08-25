@@ -3439,13 +3439,20 @@ bind('.find_like_minded' , 'click' , null , function(e)
             success: function(data) {
                 var returned = eval('(' + data + ')');
                 var num_new = returned.num_new_members;
+                // display num new members
                 $('.num_new_found').html(num_new);
+                $(".find_result").show();
+                // change total members number
+                var total_num = $(".total_members").data('num');
+                total_num += num_new;
+                $(".total_members").html(total_num);
+                // if there were members adjust shit appropriately
                 if (num_new != 0) {
                     $(".no_members").hide();
+                    $(".some_members").show();
                     $(".like_minded_members").prepend(returned.html);
                     bindOnNewElements();
                 }
-                $(".find_result").show();
             }}
     );
 });
@@ -3459,7 +3466,20 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                 success: function(data) {
                     $(".like_minded_members").empty();
                     $(".clear_result").show();
+                    $(".total_members").html(0);
                 }}
         );
     }
+});
+
+bind('.like_minded_explanation' , 'click' , null , function(e)
+{
+    $(".button_explanations").show();
+    $(".home_header_info").css("overflow", "visible");
+});
+
+bind('.like_minded_close' , 'click' , null , function(e)
+{
+    $(".home_header_info").css("overflow", "hidden");
+    $(".button_explanations").hide();
 });

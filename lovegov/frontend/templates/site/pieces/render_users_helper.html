@@ -1,8 +1,6 @@
 {% if display == 'avatar' %}
     {% for u in users %}
-        <a class="href-avatar" href="{{ u.get_url }}">
-            {% include 'site/pieces/avatar.html' with user=u width="50" height="50" %}
-        </a>
+        {% include 'site/pieces/avatar_href.html' with user=u %}
     {% endfor %}
 {% elif display == 'strip' %}
     {% for u in users %}

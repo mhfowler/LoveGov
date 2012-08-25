@@ -68,10 +68,16 @@ div.reps-top {
     @include fontSize(16px);
     margin-top: 4px;
   }
+  span.not-your-district {
+    margin-top: 4px;
+    margin-left: 33px;
+    float:left;
+    color:$black;
+  }
   a.enter-new-address {
     float:left;
     margin-top: 4px;
-    margin-left: 240px;
+    margin-left: 4px;
   }
 }
 

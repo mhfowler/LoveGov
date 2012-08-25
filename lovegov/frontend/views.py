@@ -509,6 +509,7 @@ def congress(request, vals):
 def friends(request, vals):
     viewer = vals['viewer']
     friends = viewer.getIFollow()
+    vals['i_follow'] = viewer.i_follow
     friends = random.sample(friends, min(8, len(friends)))
     vals['friends'] = friends
     for f in friends:
@@ -581,7 +582,9 @@ def likeMinded(request, vals={}):
     if not like_minded:
         getMainTopics(vals)     # for question answering
     else:
-        vals['members'] = like_minded.members.all()
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
     vals['like_minded'] = like_minded
 
     # render and return html

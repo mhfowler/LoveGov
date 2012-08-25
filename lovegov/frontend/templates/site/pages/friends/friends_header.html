@@ -7,8 +7,8 @@
 {% block header_top %}
 
     <div class="home-section-title friends-title"> People & Friends </div>
-
-    <a class="view-all-friends" href="{{ viewer.getIFollowHistogramURL }}"> view all </a>
+    <span class="num-people"> {{ i_follow.num_members }} people </span>
+    <a class="view-all-friends" href="{{ i_follow.getHistogramURL }}"> view all </a>
 
 {% endblock %}
 

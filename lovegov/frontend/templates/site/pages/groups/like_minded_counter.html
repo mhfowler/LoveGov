@@ -1,0 +1,8 @@
+<div class="not-yet-counter stats_object" data-object="like_minded_counter">
+    <div class="counter-num">
+        {{ viewer.num_answers }} / 20
+    </div>
+    {% if viewer.num_answers > 19 %}
+    <div> refresh the page to see your like-minded group. </div>
+    {% endif %}
+</div>
