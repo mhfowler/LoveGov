@@ -8,6 +8,7 @@
 ########################################################################################################################
 
 from lovegov.modernpolitics.modals import *
+from django.core.files.base import ContentFile
 
 #-----------------------------------------------------------------------------------------------------------------------
 # register from login page via form
@@ -187,7 +188,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
             list = []
             first_image = None
 
-            for num in range(0,len(image_refs)):
+            for num in range(len(image_refs)):
                 try:
                     img_url = image_refs[num]['src']
                     if num == 0:
@@ -219,12 +220,12 @@ def getLinkInfo(request, vals={}, html="",URL=""):
 
             vals['imglink'] = list
 
-            html = ajaxRender('site/snippets/news-autogen.html', vals, request)
+            html = ajaxRender('site/pieces/news-link-autogen.html', vals, request)
             return HttpResponse(json.dumps({'html':html}))
         else:
-            return HttpResponse("-")
+            return HttpResponseBadRequest("Something went wrong.")
     except:
-        return HttpResponse("-")
+        return HttpResponseBadRequest("Something went wrong parsing the page.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
@@ -2346,6 +2347,7 @@ def logCompatability(request, vals={}):
 # Creates a piece of content, e.g. from the create modal
 #-----------------------------------------------------------------------------------------------------------------------
 def createContent(request, vals={}):
+    # Get possible values from post request
     section = request.POST.get('sectionType')
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
@@ -2353,6 +2355,8 @@ def createContent(request, vals={}):
     group = Group.lg.get_or_none(id=post_to)
     post_as = request.POST.get('post_as')
     image = request.POST.get('content-image')
+    link = request.POST.get('link')
+    screenshot = request.POST.get('screenshot')
     viewer = vals['viewer']
     if post_as == 'user':
         privacy = 'PUB'
@@ -2363,19 +2367,33 @@ def createContent(request, vals={}):
     redirect = ''
     if section=='discussion':
         if title and full_text:
-            newDiscussion = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+            newc = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
                                         posted_to=group)
-            newDiscussion.autoSave(creator=viewer, privacy=privacy)
-            redirect = newDiscussion.getUrl()
+            newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'image' in request.FILES:
+                    file_content = ContentFile(request.FILES['image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
     elif section=='petition':
         if title and full_text:
-            newPetition = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+            newc = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
                                         posted_to=group)
-            newPetition.autoSave(creator=viewer, privacy=privacy)
-            redirect = newPetition.getUrl()
+            newc.autoSave(creator=viewer, privacy=privacy)
+    elif section=='news':
+        if link:
+            newc = News(link=link)
+            ref = str(screenshot)
+            if ref != 'undefined':
+                newc.saveScreenShot(ref)
+            newc.autoSave(creator=viewer, privacy=privacy)
+    redirect = newc.getUrl()
+
     return HttpResponse(json.dumps({'redirect': redirect}))
 
-###############
+#-----------------------------------------------------------------------------------------------------------------------
 # asks a politicain to join the website
 #-----------------------------------------------------------------------------------------------------------------------
 def askToJoin(request, vals={}):

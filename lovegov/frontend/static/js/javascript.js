@@ -80,6 +80,45 @@ function bindOnNewElements() {
  *     ~document.ready() of initial page load
  *
  ***********************************************************************************************************************/
+function bind(selector, events, data, handler) {
+    $(document).on(events, selector, data, handler);
+}
+
+function action(dict) {
+    var data = dict['data'];
+    var success_fun = function(data) {
+        var super_success = dict['success'];
+        if (super_success) {
+            super_success(data);
+        }
+        undelegated();
+    };
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if(jqXHR.status==403) {
+            //launch403Modal(jqXHR.responseText);
+            return;
+        }
+        var super_error = dict['error'];
+        if (super_error) {
+            super_error();
+        } else {
+            alert(jqXHR.responseText);
+        }
+    };
+    var complete_fun = dict['complete'];
+    data['url'] = window.location.href;
+    $.ajax({
+        url: '/action/',
+        type: 'POST',
+        data: data,
+        success: success_fun,
+        error: error_fun,
+        complete: complete_fun
+    });
+}
+
+var auto_update_page;
+
 $(document).ready(function()
 {
     // csrf protect
