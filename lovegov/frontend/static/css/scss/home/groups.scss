@@ -209,7 +209,7 @@ div.like-minded-header {
         float:left;
         width:100%;
         a.href-avatar {
-          @include inline-block;
+          float:left;
           margin-left:10px;
           margin-bottom:15px;
         }
