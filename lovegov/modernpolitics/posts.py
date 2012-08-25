@@ -1066,6 +1066,8 @@ def updateStats(request, vals={}):
         election = Election.objects.get(id=request.POST['e_id'])
         vals['info'] = valsElection(viewer, election, {})
         html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
+    elif object == 'like_minded_counter':
+        html = ajaxRender('site/pages/groups/like_minded_counter.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -2418,6 +2420,25 @@ def getFBInviteFriends(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
+# calculate like minded group members
+#-----------------------------------------------------------------------------------------------------------------------
+def findLikeMinded(request, vals={}):
+    viewer = vals['viewer']
+    new_members = viewer.findLikeMinded()
+    vals['display'] = 'avatar'
+    vals['users'] = new_members
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# calculate like minded group members
+#-----------------------------------------------------------------------------------------------------------------------
+def clearLikeMinded(request, vals={}):
+    viewer = vals['viewer']
+    viewer.clearLikeMinded()
+    return HttpResponse("cleared")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2503,7 +2524,7 @@ def getModal(request,vals={}):
             LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
 
-        modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,vals)
 
     ## create modal ##
     elif modal_name == "create_modal":

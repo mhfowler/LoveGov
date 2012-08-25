@@ -279,11 +279,11 @@ bind(".home_link", 'click', null, function(event) {
         homeReload($(this).attr("href"));
     } else {
         /*
-        if (navbar_section.hasClass("section_shown")) {
-            navSectionToggle(navbar_section, false, true);
-        } else {
-            navSectionToggle(navbar_section, true, true);
-        } */
+         if (navbar_section.hasClass("section_shown")) {
+         navSectionToggle(navbar_section, false, true);
+         } else {
+         navSectionToggle(navbar_section, true, true);
+         } */
     }
 });
 
@@ -320,7 +320,7 @@ bind(null, 'keydown', null, function(event) {
 // opens all navbar sections
 function navSectionOpenAll() {
     $.each($(".navbar_section"), function(i,e) {
-       navSectionToggle($(this), true, true);
+        navSectionToggle($(this), true, true);
     });
 }
 
@@ -3423,4 +3423,43 @@ bind('.ask_to_join' , 'click' , null , function(e)
                 $(".asked_message").fadeIn();
             }}
     );
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~like minded group
+ *
+ ***********************************************************************************************************************/
+bind('.find_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    action({
+            data: {'action': 'findLikeMinded'},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                var num_new = returned.num_new_members;
+                $('.num_new_found').html(num_new);
+                if (num_new != 0) {
+                    $(".no_members").hide();
+                    $(".like_minded_members").prepend(returned.html);
+                    bindOnNewElements();
+                }
+                $(".find_result").show();
+            }}
+    );
+});
+
+bind('.clear_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    if (confirm("are you sure you want to do this? After clearing you will have to recalculate the members of your like-minded group.")) {
+        action({
+                data: {'action': 'clearLikeMinded'},
+                success: function(data) {
+                    $(".like_minded_members").empty();
+                    $(".clear_result").show();
+                }}
+        );
+    }
 });

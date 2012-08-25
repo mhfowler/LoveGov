@@ -627,7 +627,9 @@ ACTIONS = [
     'messagePolitician',
     'followGroup',
     'submitTempAddress',
-    'getFBInviteFriends'
+    'getFBInviteFriends',
+    'findLikeMinded',
+    'clearLikeMinded'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

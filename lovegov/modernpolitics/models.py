@@ -1043,7 +1043,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # twitter integration
     twitter_user_id = models.IntegerField(null=True)
     twitter_screen_name = models.CharField(max_length=200, null=True)
-    # info
+    # basic info
     alias = models.CharField(max_length=200, blank=True)
     username = models.CharField(max_length=500, null=True)      # for display, not for login!
     first_name = models.CharField(max_length=200)
@@ -1057,8 +1057,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
+    political_statement = models.TextField(null=True)
     view = models.ForeignKey("WorldView", default=initView)
     networks = models.ManyToManyField("Network", related_name='networks')
+    parties = models.ManyToManyField("Party", related_name='parties')
     location = models.ForeignKey(PhysicalAddress, null=True)
     temp_location = models.ForeignKey(PhysicalAddress, null=True, related_name='temp_users')
     old_locations = models.ManyToManyField(PhysicalAddress, related_name='old_users')
@@ -1075,27 +1077,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     num_posts = models.IntegerField(default=0)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
-    # CONTENT LISTS
-    last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
+    # hidden groups
     i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
     follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
-    private_follow = models.BooleanField(default=False)
-    my_involvement = models.ManyToManyField(Involved)       # deprecated
-    my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
-    privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
+    like_minded = models.ForeignKey('CalculatedGroup', null=True, related_name="user_origin")
+    # temp data
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
-    parties = models.ManyToManyField("Party", related_name='parties')
+    last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
     # SETTINGS
+    private_follow = models.BooleanField(default=False)
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
-    ghost = models.BooleanField(default=False)
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
     primary_role = models.ForeignKey("OfficeHeld", null=True)
+    ghost = models.BooleanField(default=False)
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     currently_in_office = models.BooleanField(default=False)
@@ -1103,7 +1103,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     num_supporters = models.IntegerField(default=0)
     num_messages = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
-    political_statement = models.TextField(null=True)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     # deprecated
@@ -1346,7 +1345,23 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.num_answers < 20:
             return None
         like_minded = CalculatedGroup().createLikeMinded(self)
+        self.like_minded = like_minded
+        self.save()
         return like_minded
+
+    def findLikeMinded(self):
+        like_minded = self.getLikeMindedGroup()
+        if like_minded:
+            return like_minded.calculate()
+        else:
+            return None
+
+    def clearLikeMinded(self):
+        like_minded = self.getLikeMindedGroup()
+        if like_minded:
+            return like_minded.clear()
+        else:
+            return None
 
     #-------------------------------------------------------------------------------------------------------------------
     # get last page access
@@ -3557,9 +3572,6 @@ class ViewComparison(LGModel):
             to_return['main']['empty'] = 100 - to_return['main']['result']
             return to_return
 
-
-
-
     def toJSON(self, viewB_url=''):
         return json.dumps(self.toDict(viewB_url))
 
@@ -4150,7 +4162,7 @@ class DistrictPoliticianGroup(PoliticianGroup):
 class CalculatedGroup(Group):
     calculation_type = models.CharField(max_length=2, default="LM")
     user = models.ForeignKey(UserProfile)
-    processed = models.ManyToManyField(UserProfile)
+    processed = models.ManyToManyField(UserProfile, related_name="processed_by")
     def autoSave(self):
         self.group_type = 'X'
         self.system = True
@@ -4159,29 +4171,31 @@ class CalculatedGroup(Group):
         self.content_by_posting = False
         self.group_privacy = 'O'
         super(CalculatedGroup, self).autoSave()
-        class Meta:
-            abstract = True
 
     def createLikeMinded(self, user):
         self.title = user.get_name() + " Like-Minded Group"
         self.user = user
         self.calculation_type = "LM"
         self.autoSave()
+        return self
 
     def update(self):
+        self.clear()
         if self.calculation_type == "LM":
             self.updateLikeMinded()
 
     def updateLikeMinded(self):
+        self.calculateLikeMinded(num=100)
+
+    def calculate(self, num=0):
+        if self.calculation_type == "LM":
+            return self.calculateLikeMinded(num=num)
+
+    def clear(self):
         self.members.clear()
         self.processed.clear()
-        self.addMoreLikeMinded(num=100)
 
-    def addMore(self, num=0):
-        if self.calculation_type == "LM":
-            self.addMoreLikeMinded(num=num)
-
-    def addMoreLikeMinded(self, num=0):
+    def calculateLikeMinded(self, num=0):
         viewer = self.user
         # the pool to consider is all non-members
         processed_ids = self.processed.all().values_list("id", flat=True)
@@ -4190,13 +4204,16 @@ class CalculatedGroup(Group):
             to_process = to_process[:num]
 
         LIKE_MINDED_RESULT_THRESHOLD = 80
-        LIKE_MINDED_NUMQ_THRESHOLD = 20
+        LIKE_MINDED_NUMQ_THRESHOLD = 5
         # for each person in pool, do comparison, and
+        new = []
         for x in to_process:
             comparison = x.getComparison(viewer)
             if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
                 self.members.add(x)
+                new.append(x)
             self.processed.add(x)
+        return new
 
 
 

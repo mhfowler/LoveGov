@@ -38,3 +38,144 @@ div.groups-header {
     }
   }
 }
+
+
+/* like minded page */
+div.like-minded-title {
+  float:left;
+  span.group-title {
+    float:left;
+  }
+  span.group-num-members {
+    float:left;
+  }
+  a.view-all-friends {
+    float:left;
+    margin-left:16px;
+    margin-top:-3px;
+  }
+}
+
+div.like-minded-header {
+  div.not-yet {
+    margin-bottom:15px;
+    div.not-yet-message {
+      margin-top:15px;
+      float:left;
+      width:500px;
+      @include fontSize(18px);
+      div.hi-top {
+        margin-bottom:8px;
+      }
+    }
+    div.not-yet-counter {
+      float:right;
+      margin-right: 153px;
+      margin-top: 40px;
+      div.counter-num {
+        @include fontSize(64px);
+        float:left;
+      }
+      div.counter-text {
+        float:left;
+      }
+    }
+    div.fixed-counter {
+      position:fixed;
+      left: 1400px;
+    }
+  }
+
+  div.real-like-minded-header {
+    position:relative;
+    div.like-minded-buttons {
+      float:left;
+      @include inline-block;
+      width:100px;
+      a.like-minded-explanation {
+        color:$gray;
+        margin-left:6px;
+        positioN: relative;
+        top: 3px;
+        &:hover {
+          color:$black;
+        }
+      }
+      a.like-minded-button {
+        display:block;
+        padding:7px;
+        width:80px;
+        color:white;
+        text-transform:uppercase;
+        @include border-radius(7px);
+        margin-top: 7px;
+        text-align: center;
+      }
+      a.find-button {
+        background-color:$gray;
+        &:hover {
+          background-color:$dark-gray;
+        }
+      }
+      a.clear-button {
+        background-color:$blue;
+        &:hover {
+          background-color:$blue-light;
+        }
+      }
+    }
+    div.button-explanations {
+      position:absolute;
+      z-index:1;
+      padding:20px;
+      border:1px solid $black;
+      @include border-radius(8px);
+      width:300px;
+      height:300px;
+      background-color:white;
+      left:100px;
+      display:none;
+      div.explanation-header {
+        font-weight:bold;
+      }
+      div.button-explanation {
+        display:block;
+        margin-top:10px;
+        div.click-for-explanation {
+          @include fontSize(18px);
+        }
+        div.click-explanation {
+          display:none;
+        }
+      }
+    }
+    div.button-result {
+      width: 90px;
+      height: 100px;
+      float:left;
+      padding-top:16px;
+      div.find-result {
+        display:none;
+        div.num-found {
+          @include inline-block;
+        }
+      }
+      div.clear-result {
+        display:none;
+      }
+    }
+    div.members-wrapper {
+      float:left;
+      width:400px;
+      a.href-avatar {
+        @include inline-block;
+        margin-left:10px;
+        margin-bottom:10px;
+      }
+    }
+  }
+
+  div.no-members {
+    margin-top:10px;
+  }
+}

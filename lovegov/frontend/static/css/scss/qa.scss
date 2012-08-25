@@ -120,28 +120,26 @@ div.questions-sidebar {
   }
 }
 
-div.questions-main {
-  margin-top: 0px;
 
-  div.questions-wrapper {
-    margin-top:0px;
+div.questions-wrapper {
+  margin-top:0px;
 
-    span.answered-filter {
-      border: 1px solid $light-gray;
-      padding:8px;
-      margin-left:55px;
-      &.clicked {
-        background-color:$dark-green;
-        color:white;
-      }
-      &:hover {
-        background-color:$dark-green;
-        color:white;
-        cursor:pointer;
-      }
+  span.answered-filter {
+    border: 1px solid $light-gray;
+    padding:8px;
+    margin-left:55px;
+    &.clicked {
+      background-color:$dark-green;
+      color:white;
+    }
+    &:hover {
+      background-color:$dark-green;
+      color:white;
+      cursor:pointer;
     }
   }
 }
+
 
 /**********************************************************************************************************************/
 /*  ~Questions Stub                                                                                                   */
@@ -288,11 +286,12 @@ div.question_stub {
       }
     }
     a.change-explanation {
-      float:right;
+      float:left;
+      margin-top:5px;
       text-decoration:italic;
-      color:$black;
+      color:$gray;
       &:hover {
-        color:$gray;
+        color:$blue;
       }
     }
   }

@@ -42,16 +42,11 @@ def getContentFromAlias(alias, viewer):
         content = object.getContent()
     elif alias == 'home':
         content = Content.objects.filter(in_feed=True)
-    elif alias == 'groups':
-        groups_ids = viewer.getGroups().values_list("id", flat=True)
-        content = Content.objects.filter(in_feed=True, posted_to_id__in=groups_ids)
-    elif alias == 'elections':
-        content = Petition.objects.all()
-    elif alias == 'politicians':
-        content = Legislation.objects.all()
     elif alias == 'friends':
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
         content = Content.objects.filter(in_feed=True, creator_id__in=friends_ids)
+    elif alias == 'like_minded':
+        content = viewer.getLikeMindedGroup().getContent()
     elif alias == 'me':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         friends_ids = viewer.getIFollow().values_list("id", flat=True)

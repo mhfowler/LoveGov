@@ -5,32 +5,32 @@
 @import "compass";
 
 
+span.group-title
+{
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 10px;
+  @include inline-block();
+}
+
+span.group-scale
+{
+  color: $dark-gray;
+  font-size: 12px;
+  @include inline-block();
+  margin-right: 10px;
+}
+
+span.group-num-members
+{
+  font-size: 12px;
+  @include inline-block();
+}
+
 div.group-top
 {
   @include inline-block();
-
-  span.group-title
-  {
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 16px;
-    margin-right: 10px;
-    @include inline-block();
-  }
-
-  span.group-scale
-  {
-    color: $dark-gray;
-    font-size: 12px;
-    @include inline-block();
-    margin-right: 10px;
-  }
-
-  span.group-num-members
-  {
-    font-size: 12px;
-    @include inline-block();
-  }
 }
 
 div.group-expanded

@@ -572,6 +572,24 @@ def electionPage(request, election, vals={}):
     return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# like-minded group page
+#-----------------------------------------------------------------------------------------------------------------------
+def likeMinded(request, vals={}):
+
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    if not like_minded:
+        getMainTopics(vals)     # for question answering
+    else:
+        vals['members'] = like_minded.members.all()
+    vals['like_minded'] = like_minded
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # profile page
 #-----------------------------------------------------------------------------------------------------------------------
 def profile(request, alias=None, vals={}):
