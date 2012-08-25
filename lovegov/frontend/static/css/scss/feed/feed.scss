@@ -144,6 +144,23 @@ div.feed-main
       margin-bottom:50px;
       margin-top:70px;
     }
+
+    div.everything_loaded_wrapper {
+      width:100%;
+      text-align:center;
+      display:none;
+      width:100%;
+      margin-top:50px;
+      div.everything-loaded-header {
+        @include fontSize(20px);
+        margin-bottom:15px;
+        display:none;
+      }
+      div.everything-loaded-image {
+        width:100%;
+        text-align:center;
+      }
+    }
   }
 }
 

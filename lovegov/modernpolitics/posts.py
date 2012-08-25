@@ -1662,7 +1662,17 @@ def getFeed(request, vals):
     vals['feed_items'] = feed_items
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    to_return = {'html':html, 'num_items':len(feed_items)}
+
+    # if no items, return a random picture of a politician
+    num_items = len(feed_items)
+    if not num_items:
+        p = random.choice(UserProfile.objects.filter(politician=True))
+        vals['politician'] = p
+        everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
+    else:
+        everything_loaded = ""
+
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 def contentToFeedItems(content, user):

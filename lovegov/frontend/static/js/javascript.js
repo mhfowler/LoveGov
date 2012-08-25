@@ -8,18 +8,16 @@ function bindOnReload() {
     bindOnNewElements();
     navSectionOpenAll();
     getFBInviteFriends();
+    initFeed();
     switch (rebind) {
         case "home":
-            initFeed();
             break;
         case "profile":
-            initFeed();
             break;
         case "groupedit":
             loadGroupEdit();
             break;
         case 'questions':
-            initFeed();
             break;
         case 'question_detail':
             bindImportanceSliders();
@@ -28,7 +26,6 @@ function bindOnReload() {
             bindImportanceSliders();
             break;
         case 'browse':
-            initFeed();
             break;
     }
 
@@ -535,8 +532,7 @@ function homeReload(theurl) {
                 History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 path = returned.url;
                 $(".home_focus").html(returned.focus_html);
-                bindOnNewElements();
-                initFeed();
+                bindOnReload();
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -804,6 +800,8 @@ function getFeed(container) {
         var old_height = $("body").height();
         $("body").css('min-height', old_height);
         container.find(".feed_content").empty();
+        container.find(".load_more").show();
+        container.find(".everything_loaded_wrapper").find();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
@@ -853,7 +851,17 @@ function getFeed(container) {
                 clearTimeout(feed_timeout);
                 container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    container.find(".load_more").text('you loaded all that there is to load')
+                    container.find(".load_more").hide();
+                    var everything_loaded = container.find(".everything_loaded_wrapper");
+                    everything_loaded.append(returned.everything_loaded);
+                    everything_loaded.show();
+                    everything_loaded.find(".everything_loaded_header").hide();
+                    if (feed_start==0) {
+                        everything_loaded.find(".nothing_there").show();
+                    }
+                    else {
+                        everything_loaded.find(".reached_the_end").show();
+                    }
                 }
                 bindImportanceSliders();
                 bindOnNewElements();
