@@ -14,8 +14,8 @@ div.notifications-dropdown
   border-right: solid 1px $gray;
   border-left: solid 1px $gray;
   position: absolute;
-  left: -135px;
-  top: 40px;
+  left: 13px;
+  top: 66px;
   color: $black;
   font-size: 13px;
   width: 300px;
@@ -24,12 +24,32 @@ div.notifications-dropdown
   cursor: auto;
   display: none;
 
+  $triangle-size: 16px;
+  span.triangle-wrapper {
+    position:relative;
+    left: 253px;
+    top: 1px;
+    span.triangle {
+      @include triangle('up', $white, $triangle-size + -1px);
+      position: absolute;
+      top:-$triangle-size + 1px;
+      right:20px;
+    }
+    span.triangle-border {
+      @extend span.triangle;
+      @include triangle('up', $deep-gray, $triangle-size);
+      top:-16px;
+      right:19px;
+    }
+  }
+
   div.notifications-header
   {
     @include grayText();
     @include fontSize(18px);
     padding-top: 10px;
     padding-bottom: 5px;
+    text-align:center;
     border-bottom: solid 1px $gray;
   }
 
@@ -63,6 +83,22 @@ div.notifications-dropdown
     text-align: center;
 
     &:hover{ background-color: $light-gray; }
+  }
+
+
+  div.notifications-container {
+    min-height: 55px;
+    div.notifications-loading {
+      @include staticImage("/images/gifs/ajax-loader.gif");
+      width: 15px;
+      height: 15px;
+      background-size: 15px 13px;
+      background-repeat: no-repeat;
+      position: absolute;
+      top: 65px;
+      left: 137px;
+      display:none;
+    }
   }
 }
 

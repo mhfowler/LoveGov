@@ -60,6 +60,7 @@ header
 
   div.head-right {
     float: right;
+    width: 320px;
 
     div.search
     {
@@ -96,6 +97,10 @@ header
       margin: 17px 0 10px 10px;
       cursor: pointer;
       padding-top:1px;
+    }
+
+    div.notifications-wrapper {
+      position:relative;
     }
 
     div.notices {

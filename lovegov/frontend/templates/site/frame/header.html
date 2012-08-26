@@ -7,7 +7,7 @@
     <a href="/home/"><div class="header-logo"></div></a>
     <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
     <ul>
-        {% comment %} <a href="/home/" class="do_ajax_link dummy_link tooltip-right" title="Home"><li>home</li></a> {% endcomment %}
+        <a href="/home/" class="do_ajax_link dummy_link"><li>home</li></a>
         <a href="/questions/" class=""><li>questions</li></a>
         {% comment %} <a href="/match/" class="do_ajax_link dummy_link"><li>match</li></a> {% endcomment %}
         <a href="/about/" class=""><li>about</li></a>
@@ -21,8 +21,10 @@
             <div class="search-dropdown"></div>
         </div>
 
-        <div class="notices setting-icon new-notifications">
-            <div class='notifications_dropdown_button notifications-dropdown-button'>{{ notifications_num }}</div>
+        <div class="notifications-wrapper">
+
+           {% include 'site/frame/notifications/notifications_button.html'%}
+
             <span class="triangle"></span>
             <div class="notifications-dropdown notifications_dropdown">
                 {% include 'site/frame/notifications/notification_dropdown.html' %}

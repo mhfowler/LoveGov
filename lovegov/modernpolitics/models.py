@@ -307,6 +307,8 @@ class Content(Privacy, LocationLevel):
             return '/news/' + str(self.id) + '/'
         elif self.type=='O':
             return '/poll/' + str(self.id) + '/'
+        elif self.type =='S':
+            return '/scorecard/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
         elif self.type=='D':
@@ -480,7 +482,6 @@ class Content(Privacy, LocationLevel):
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
         self.like(user=creator, privacy=privacy)
-
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -554,6 +555,8 @@ class Content(Privacy, LocationLevel):
             object = self.userimage
         elif type == 'O':
             object = self.poll
+        elif type == 'S':
+            object = self.scorecard
         elif type == 'G':
             object = self.group
         elif type == 'Z':
@@ -3373,6 +3376,32 @@ class Poll(Content):
             self.questions.add(q)
             self.num_questions += 1
             self.save()
+
+#=======================================================================================================================
+# Scorecard, a group response to a poll
+#
+#=======================================================================================================================
+class Scorecard(Content):
+    group = models.ForeignKey("Group", null=True)
+    poll = models.ForeignKey(Poll)
+    scorecard_view = models.ForeignKey("WorldView")
+    politicians = models.ManyToManyField(UserProfile)
+    full_text = models.TextField()
+
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.type = "S"
+        scorecard_view = WorldView()
+        scorecard_view.save()
+        self.scorecard_view = scorecard_view
+        self.in_feed = False
+        if not self.summary:
+            self.summary = self.full_text[:200]
+        self.save()
+        super(Scorecard, self).autoSave(creator=creator, privacy=privacy)
+
+
+    def getTitleDisplay(self):
+        return "Scorecard: " + self.title
 
 #=======================================================================================================================
 # Answer

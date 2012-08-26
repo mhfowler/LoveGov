@@ -267,18 +267,20 @@ PRIVACY_CHOICES = (
 
 # content types
 TYPE_CHOICES = (
-    ('E','event'),
     ('P','petition'),
     ('N','news'),
     ('L','legislation'),
     ('Q','question'),
     ('O','poll'),
+    ('S','scorecard'),
     ('R','response'),
     ('G','group'),
     ('C','comment'),
     ('A','amendment'),
     ('D','discussion'),
+    # coming soon
     ('M', 'motion'),
+    ('E','event'),
     )
 
 # types of notifications
@@ -640,7 +642,8 @@ ACTIONS = [
     'clearLikeMinded',
     'pinContent',
     'changeAnswerPrivacy',
-    'editExplanation'
+    'editExplanation',
+    'editPetitionFullText'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

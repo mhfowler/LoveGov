@@ -1,30 +1,48 @@
+{% load thumbnail %}
+
 <div class="avatar-strip">
 
-    <div class="avatar-strip-top">
-        <a href="{{ user.get_url }}"><span class="user-name"> {{ user.get_name }} </span></a>
-        <span class="user-title"> {{ user.political_title }} </span>
-        <span class="heart-icon"> </span>
-        <span class="heart-score"> {{ user.upvotes }}</span>
+    <div class="avatar-image">
+        {% include 'site/pieces/avatar.html' with user=user height="80" width="80" %}
     </div>
 
     <div class="avatar-strip-main">
-        <div class="avatar-image">
-            {% include 'site/pieces/avatar.html' with user=user height="80" width="80" %}
+        <div class="avatar-strip-top">
+            <a href="{{ user.get_url }}"><span class="user-name"> {{ user.get_name }} </span></a>
+            <span class="heart-icon"> </span>
+            <span class="heart-score"> {{ user.upvotes }}</span>
         </div>
-        <div class="avatar-stats">
-
-        </div>
-        <div class="avatar-description">
-
-        </div>
-        <div class="avatar-match">
-            <div class="match-number">
-                {{ user.comparison.result}}
-            </div>
-            <div class="match-text">
-                match
-            </div>
+        <div class="avatar-strip-bottom">
+            <span class="user-title"> {{ user.political_title }} </span>
+                <span class="parties-wrapper">
+                    {% for p in user.parties.all %}
+                        {% with full_url=p.party_label %}
+                            <a href="{{ p.get_url }}">
+                                {% thumbnail full_url "x20" format="PNG" as im %}
+                                    <img src="{{ im.url }}" class="party-label"/>
+                                {% endthumbnail %}
+                            </a>
+                        {% endwith %}
+                    {% endfor %}
+                </span>
         </div>
     </div>
 
+    {% if scorecard_strip %}
+        <div class="scorecard-match">
+            <div class="scorecard-match-number">
+               {{ user.comparison.result}} %
+            </div>
+        </div>
+        <a class="view-all-answers"> view all answers </a>
+    {% else %}
+        <div class='avatar-match'>
+            <div class="match-text">
+                match
+            </div>
+            <div class="match-number">
+                {{ user.comparison.result}}
+            </div>
+        </div>
+    {% endif %}
 </div>

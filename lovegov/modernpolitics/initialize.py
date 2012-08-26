@@ -440,6 +440,7 @@ def initializeDB():
     initializeContent()
     initializeSomeUserGroups()
     initializeSomeTestContent()
+    initializeTestScorecard()
     initializePresidentialElection2012()
     initializePresidentialCandidates2012()
     #randomWhales()
@@ -468,6 +469,12 @@ def initializeGovernmentDatabase():
     scriptCreateCongressAnswers()
 
 
+def initializeTestScorecard():
+    poll = getLoveGovPoll()
+    group = Group.objects.get(title="Save The Whales")
+    scorecard = Scorecard(title="Test Scorecard", full_text="This is a scorecard about blah blah and blah", poll=poll, group=group)
+    randy = getUser("Randy Johnson")
+    scorecard.autoSave(creator=randy)
 
 def setTopicAlias():
     for t in Topic.objects.all():

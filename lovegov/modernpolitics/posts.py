@@ -2543,6 +2543,23 @@ def pinContent(request, vals={}):
     return HttpResponse("pinned")
 
 #-----------------------------------------------------------------------------------------------------------------------
+# edit a petitions full text
+#-----------------------------------------------------------------------------------------------------------------------
+def editPetitionFullText(request, vals={}):
+    petition = Petition.objects.get(id=request.POST['p_id'])
+    viewer = vals['viewer']
+    if viewer == petition.creator and not petition.finalized:
+        full_text = request.POST['full_text']
+        petition.full_text = full_text
+        petition.save()
+        action = EditedAction(user=viewer, content=petition, privacy = getPrivacy(request))
+        action.autoSave()
+        return HttpResponse(json.dumps({'value':full_text}))
+    else:
+        LGException( "User editing petition and is finalized or is not owner #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------

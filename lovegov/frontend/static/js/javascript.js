@@ -1465,6 +1465,21 @@ function editExplanation(r_id, q_id, explanation, being_edited, not_editing_disp
     });
 }
 
+
+function editPetitionFullText(p_id, full_text, being_edited, not_editing_display )
+{
+    action({
+        'data': {'action':'editPetitionFullText', 'p_id':p_id, 'full_text':full_text},
+
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html(obj.value);
+            not_editing_display.show();
+        }
+    });
+}
+
 bind( ".edit_button" , 'click', null , function(event)
 {
     var wrapper = $(this).parents(".inline_editable");
@@ -1520,6 +1535,12 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
         var q_id = wrapper.data('q_id');
         var explanation = value;
         editExplanation(r_id, q_id, explanation, being_edited, not_editing_display);
+    }
+    else if (model == "Petition")
+    {
+        var p_id = wrapper.data("p_id");
+        var full_text = value;
+        editPetitionFullText(p_id, full_text, being_edited, not_editing_display);
     }
 
     $(this).parent().siblings('.edit_button').show();

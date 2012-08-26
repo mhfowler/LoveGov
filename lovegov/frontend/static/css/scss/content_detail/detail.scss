@@ -336,8 +336,60 @@ div.signers-sidebar {
 
 
 
+/* petition */
 div.petition-wrapper {
+
   div.text-wrapper {
     margin-top:15px;
   }
+
+  div.header-wrapper {
+    width:100%;
+    display:block;
+    div.content-info-header {
+      float:left;
+    }
+    div.pencil-button {
+      float:left;
+      margin-left:8px;
+    }
+  }
+
+  textarea.edit-petition {
+    width:100%;
+    height:200px;
+    padding:5px;
+  }
+  a.edit-link {
+    float:right;
+    margin-left:6px;
+    margin-top:5px;
+  }
+}
+
+
+
+/* scorecards */
+
+div.scorecard-section-header {
+  @include fontSize(20px);
+  color:$gray;
+}
+
+div.scorecard-avatar-strips-wrapper {
+  width:100%;
+  div.scorecard-avatar-strip-wrapper {
+    width:100%;
+    margin-bottom:10px;
+  }
+}
+
+div.reps-compare {
+  width:100%;
+  margin-top:10px;
+}
+
+div.politicians-compare {
+  width:100%;
+  margin-top:10px;
 }

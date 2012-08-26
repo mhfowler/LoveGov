@@ -1077,3 +1077,30 @@ def search(request, term='', vals={}):
     html = ajaxRender('site/pages/search/search.html', vals, request)
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Scorecards
+#-----------------------------------------------------------------------------------------------------------------------
+def scorecardDetail(request, s_id, vals={}):
+
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+
+    vals['representatives'] = UserProfile.objects.all()
+    vals['politicians'] = UserProfile.objects.all()
+
+    contentDetail(request=request, content=scorecard, vals=vals)
+    html = ajaxRender('site/pages/content_detail/scorecards/scorecard_detail.html', vals, request)
+    url = scorecard.get_url()
+    return framedResponse(request, html, url, vals)
+
+def scorecardEdit(request, s_id, vals={}):
+    return HttpResponse('scorecard edit!')
+
+def scorecardCompare(request, s_id, p_alias, vals={}):
+        return HttpResponse('scorecard compare!')
+
+def scorecardMe(request, s_id, vals={}):
+    viewer = vals['viewer']
+    return scorecardCompare(request, s_id, viewer.alias, vals)
