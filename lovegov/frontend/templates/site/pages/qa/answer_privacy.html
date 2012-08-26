@@ -1,0 +1,12 @@
+<div class="answer-privacy a-action first answer_privacy_wrapper">
+    <span class="action-icon change_answer_privacy {% if not anonymous %} public-icon {% else %} private-icon {% endif %}"
+          data-r_id="{{ your_response.id }}" data-q_id="{{ q_id }}">
+          </span>
+                <span class="action-text">
+                    <a class="action-text-upper your-answer change_answer_privacy" data-r_id="{{ your_response.id }}" data-q_id="{{ q_id }}">
+                        {% if not anonymous %} Your answer is public {% else %} Your answer is private {% endif %}
+                    </a>
+                    <span class="action-text-lower"> (click to change) </span>
+                </span>
+    <span style="clear:both;"></span>
+</div>
