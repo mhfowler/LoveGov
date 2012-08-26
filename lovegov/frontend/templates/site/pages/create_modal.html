@@ -23,81 +23,104 @@
     </div>
 
     <div class="create-section discussion">
-        <header><img src="{{ STATIC_URL }}/images/create/discussion_blue.png"> Create a Discussion</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Title:" "title" %}
-            {% usemacro textarea "Full text:" "description" %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="optional">
-                {% usemacro optional-label %}
-                {% usemacro image %}
-                {% usemacro topic %}
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="discussion">
+            <header><img src="{{ STATIC_URL }}/images/create/discussion_blue.png"> Create a Discussion</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" %}
+                {% usemacro textarea "Full text:" "description" "full_text" %}
+                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-as %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
+                    {% usemacro topic %}
+                </div>
             </div>
-        </div>
-        {% usemacro save %}
+            {% usemacro save %}
+        </form>
     </div>
     <div class="create-section petition">
-        <header><img src="{{ STATIC_URL }}/images/create/petition_blue.png"> Create a Petition</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Title:" "title" %}
-            {% usemacro textarea "Full text:" "description" %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="optional">
-                {% usemacro optional-label %}
-                {% usemacro image %}
-                {% usemacro topic %}
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="petition">
+            <header><img src="{{ STATIC_URL }}/images/create/petition_blue.png"> Create a Petition</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" %}
+                {% usemacro textarea "Full text:" "description" "full_text" %}
+                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-as %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
+                    {% usemacro topic %}
+                </div>
             </div>
-        </div>
-        {% usemacro save %}
+            {% usemacro save %}
+        </form>
     </div>
     <div class="create-section news">
-        <header><img src="{{ STATIC_URL }}/images/create/news_blue.png"> Submit News</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Link:" "link" %}
-            {% usemacro link-image %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="optional">
-                {% usemacro optional-label %}
-                {% usemacro textarea "Your opinion:" "description" %}
-                {% usemacro topic %}
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="news">
+            <header><img src="{{ STATIC_URL }}/images/create/news_blue.png"> Submit News</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Link:" "link" "link" %}
+                {% usemacro link-image %}
+                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-as %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro textarea "Your opinion:" "description" "full_text" %}
+                    {% usemacro topic %}
+                </div>
             </div>
-        </div>
-        {% usemacro save %}
+            {% usemacro save %}
+        </form>
     </div>
     <div class="create-section poll">
-        {{ MAIN_TOPICS_IMG }}
-        <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Poll</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Title:" "title" %}
-            {% usemacro textarea "Poll description:" "description" %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="questions">
-                <div class="question model">
-                    <div class="question-title form-row">
-                        <span class="remove">remove</span>
-                        <div class="label">Question:</div>
-                        <div class="field"><input type="text" placeholder="Enter a question"></div>
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="poll">
+            <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Poll</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" %}
+                {% usemacro textarea "Poll description:" "description" "full_text" %}
+                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-as %}
+                <div class="questions">
+                    <div class="question model">
+                        <div class="question-title form-row">
+                            <span class="controls">
+                                <span class="remove">remove</span>
+                                <span class="add-source">add source</span>
+                            </span>
+                            <div class="label padded">Question:</div>
+                            <div class="field"><input type="text" placeholder="Enter a question"></div>
+                        </div>
+                        <div class="question-answers form-row">
+                            <div class="label">Answer:</div>
+                            <div class="field"><textarea placeholder="Enter the first answer"></textarea></div>
+                        </div>
+                        <div class="question-answers form-row">
+                            <div class="label">Answer:</div>
+                            <div class="field"><textarea type="input" placeholder="Enter the second answer"></textarea></div>
+                        </div>
+                        <div class="question-source form-row">
+                            <div class="label padded">Source:</div>
+                            <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation"></div>
+                        </div>
                     </div>
-                    <div class="question-answers form-row">
-                        <div class="label">Answer:</div>
-                        <div class="field"><textarea placeholder="Enter the first answer"></textarea></div>
-                    </div>
-                    <div class="question-answers form-row">
-                        <div class="label">Answer:</div>
-                        <div class="field"><textarea type="input" placeholder="Enter the second answer"></textarea></div>
-                    </div>
+                    <div class="add-question">+ add a question</div>
                 </div>
-                <div class="add-question">+ add a question</div>
+                {% usemacro save %}
             </div>
-        </div>
-        {% usemacro save %}
+        </form>
     </div>
+
 </div>

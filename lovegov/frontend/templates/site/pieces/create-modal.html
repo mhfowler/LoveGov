@@ -1,20 +1,20 @@
 {% load macros %}
 
 
-{% macro textbox label class %}
+{% macro textbox label class name %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><input type="text" class="{{ class }}"></div>
+        <div class="field"><input type="text" class="{{ class }}" name="{{ name }}"></div>
     </div>
 
 {% endmacro %}
 
-{% macro textarea label class %}
+{% macro textarea label class name %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><textarea class="{{ class }}"></textarea></div>
+        <div class="field"><textarea class="{{ class }}" name="{{ name }}"></textarea></div>
     </div>
 
 {% endmacro %}
@@ -24,7 +24,7 @@
     <div class="form-row">
         <div class="label">Post to:</div>
         <div class="field">
-            <select class="post-to">
+            <select class="post-to" name="post_to">
             {% for group in groups %}
                 <option value="{{ group.id }}">{{ group.title }}</option>
             {% endfor %}
@@ -39,6 +39,7 @@
     <div class="form-row">
         <div class="label">Post as:</div>
         <div class="field">
+            <input type="hidden" name="post_as" value="user">
             <span class="post-as selected" data-poster="user">
                 {% include 'site/pieces/avatar.html' with user=viewer width='40' height='40' hoveroff="True" %}
                 <span class="post-as-label">{{ viewer.get_name }}</span>
@@ -63,7 +64,7 @@
     <div class="form-row">
         <div class="label">Add image:</div>
         <div class="field">
-            <input type="file" value="Choose a file" class="content-image">
+            <input type="file" value="Choose a file" class="content-image" name="content-image">
         </div>
     </div>
 

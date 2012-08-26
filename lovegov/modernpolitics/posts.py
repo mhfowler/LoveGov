@@ -2422,6 +2422,8 @@ def createContent(request, vals={}):
     link = request.POST.get('link')
     screenshot = request.POST.get('screenshot')
     viewer = vals['viewer']
+    questions = request.POST.get('questions')
+    if questions: questions = json.loads(questions)
     if post_as == 'user':
         privacy = 'PUB'
     elif post_as == 'anonymous':
@@ -2435,8 +2437,8 @@ def createContent(request, vals={}):
                                         posted_to=group)
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
-                if 'image' in request.FILES:
-                    file_content = ContentFile(request.FILES['image'].read())
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
                     Image.open(file_content)
                     newc.setMainImage(file_content)
             except IOError:
@@ -2453,9 +2455,27 @@ def createContent(request, vals={}):
             if ref != 'undefined':
                 newc.saveScreenShot(ref)
             newc.autoSave(creator=viewer, privacy=privacy)
+    elif section=='poll':
+        if title and full_text:
+            newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                posted_to=group)
+            newc.autoSave()
+            for q in questions:
+                newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
+                newQ.save()
+                for a in q['answers']:
+                    newA = Answer(answer_text=a, value=-1)
+                    newA.save()
+                    newQ.addAnswer(newA)
+                newQ.save()
+                newc.addQuestion(newQ)
+            newc.autoSave(creator=viewer, privacy=privacy)
+    else:
+        return HttpResponseBadRequest("The specified type of content is not valid.")
+
     redirect = newc.getUrl()
 
-    return HttpResponse(json.dumps({'redirect': redirect}))
+    return HttpResponseRedirect(redirect);
 
 #-----------------------------------------------------------------------------------------------------------------------
 # asks a politicain to join the website
@@ -2605,7 +2625,7 @@ def getModal(request,vals={}):
         if not group:
             LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Group requests requested with an invalid group ID" )
-        modal_html = getGroupRequestsModal(group,viewer,vals)
+        modal_html = getGroupRequestsModal(group,viewer,request,vals)
 
 
     ## Group Invite Modal ## Where a user invites someone to their group
@@ -2623,17 +2643,17 @@ def getModal(request,vals={}):
             LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Group invite modal requested with an invalid group ID" )
 
-        modal_html = getGroupInviteModal(group,viewer,vals)
+        modal_html = getGroupInviteModal(group,viewer,request,vals)
 
 
     ## Group Invited Modal ## Where a user see's his or her gropu invites
     elif modal_name == "group_invited_modal":
-        modal_html = getGroupInvitedModal(viewer,vals)
+        modal_html = getGroupInvitedModal(viewer,request,vals)
 
 
     ## Group Invite Modal ##
     elif modal_name == "follow_requests_modal":
-        modal_html = getFollowRequestsModal(viewer,vals)
+        modal_html = getFollowRequestsModal(viewer,request,vals)
 
 
     ## Facebook Share Modal ##
@@ -2645,16 +2665,16 @@ def getModal(request,vals={}):
             LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
 
-        modal_html = getFacebookShareModal(fb_share_id,fb_name,vals)
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,request,vals)
 
     ## create modal ##
     elif modal_name == "create_modal":
-       modal_html = getCreateModal(vals)
+       modal_html = getCreateModal(request,vals)
 
     ## message politician modal ##
     elif modal_name == "message_politician":
         politician = UserProfile.objects.get(id=request.POST['p_id'])
-        modal_html = getMessagePoliticianModal(politician, vals)
+        modal_html = getMessagePoliticianModal(politician, request,vals)
 
     ## Pin Content Modal ##
     elif modal_name == "pin_content_modal":
@@ -2670,14 +2690,14 @@ def getModal(request,vals={}):
             LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
 
-        modal_html = getPinContentModal(content,viewer,vals)
+        modal_html = getPinContentModal(content,viewer,request,vals)
 
 
     ## get full group description ##
     elif modal_name == 'group_description':
         g_id = request.POST['g_id']
         group = Group.objects.get(id=g_id)
-        modal_html = getGroupDescriptionModal(group,vals)
+        modal_html = getGroupDescriptionModal(group,request,vals)
 
 
     ## If a modal was successfully made, return it ##
