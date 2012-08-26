@@ -58,38 +58,42 @@ bind("div.create-modal div.questions span.add-source", "click", function(e) {
 // "Save" button clicked
 bind("div.create-modal div.save", "click", function(e) {
     var section = $(this).closest('div.create-section');
-    var sectionType;
-    var types = ['discussion', 'poll', 'news', 'petition'];
-    for(var i=0; i<types.length; i++) {
-        if(section.hasClass(types[i])) {
-            sectionType = types[i];
-        }
-    }
-    var title = section.find("input.title").val();
-    var full_text = section.find("textarea.description").val();
-    var post_to = section.find("select.post-to").val();
-    var post_as = section.find("span.post-as.selected").data("poster");
-    var image = section.find("input.content-image").val();
+//    var title = section.find("input.title").val();
+//    var full_text = section.find("textarea.description").val();
+//    var post_to = section.find("select.post-to").val();
+//    var post_as = section.find("span.post-as.selected").data("poster");
+//    var image = section.find("input.content-image").val();
     var link = section.find("input.link").val();
     var screenshot = $('.news_link_selected').attr("src");
-    var questions = extractQuestions();
-    console.log(questions);
-    action({
-       'data': {'action': 'createContent',
-                'sectionType': sectionType,
-                'title': title,
-                'full_text': full_text,
-                'post_to': post_to,
-                'post_as': post_as,
-                'link': link,
-                'screenshot': screenshot,
-                'questions': JSON.stringify(questions),
-                },
-       'success': function(data) {
-           var obj = eval('(' + data + ')');
-           window.location = obj.redirect;
-       }
-   })
+    var form = section.children("form");
+
+    if(section.hasClass("poll")) {
+        var questions = extractQuestions();
+        questions = JSON.stringify(questions);
+        form.append('<input type="hidden" name="questions" value=""'+questions+'">');
+    }
+
+    form.append('<input type="hidden" name="action" value="createContent">');
+    form.submit();
+
+
+
+//    action({
+//       'data': {'action': 'createContent',
+//                'sectionType': sectionType,
+//                'title': title,
+//                'full_text': full_text,
+//                'post_to': post_to,
+//                'post_as': post_as,
+//                'link': link,
+//                'screenshot': screenshot,
+//                'questions': JSON.stringify(questions),
+//                },
+//       'success': function(data) {
+//           var obj = eval('(' + data + ')');
+//           window.location = obj.redirect;
+//       }
+//   })
 });
 
 // extract questions and answers from the DOM
@@ -128,6 +132,7 @@ function getLinkInfo(link, input) {
         },
         complete: function() {
             // remove loading spinner
+            alert('complete!');
             input.parent().children('img.loading-gif').remove();
         }
     });
@@ -140,7 +145,10 @@ bind("div.create-modal div.create-section.news input.link", "blur", function(e) 
 
 bind("div.create-modal div.create-section.news input.link", "keypress", function(e) {
     var text = $(this).val();
-    if(e.keyCode==13) getLinkInfo(text, $(this));
+    if(e.keyCode==13) {
+        e.preventDefault();
+        getLinkInfo(text, $(this));
+    }
 });
 
 function selectImageToggle() {

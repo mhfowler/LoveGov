@@ -84,52 +84,8 @@ function bindOnNewElements() {
  *     ~document.ready() of initial page load
  *
  ***********************************************************************************************************************/
-function bind(selector, events, data, handler) {
-    $(document).on(events, selector, data, handler);
-}
-
-function action(dict) {
-    var data = dict['data'];
-    var success_fun = function(data) {
-        var super_success = dict['success'];
-        if (super_success) {
-            super_success(data);
-        }
-        undelegated();
-    };
-    var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status==403) {
-            //launch403Modal(jqXHR.responseText);
-            return;
-        }
-        var super_error = dict['error'];
-        if (super_error) {
-            super_error();
-        } else {
-            alert(jqXHR.responseText);
-        }
-    };
-    var complete_fun = dict['complete'];
-    data['url'] = window.location.href;
-    $.ajax({
-        url: '/action/',
-        type: 'POST',
-        data: data,
-        success: success_fun,
-        error: error_fun,
-        complete: complete_fun
-    });
-}
 
 
-function smoothTransition(element, fun, time) {
-    var old_height = element.height();
-    fun();
-    var new_height = element.height();
-    element.css("height", old_height);
-    element.css('height', old_height);
-    element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
-}
 
 
 var auto_update_page;
@@ -189,40 +145,47 @@ function bind(selector, events, data, handler) {
 
 var current_page_nonce=0;
 function action(dict) {
-    var pre_page_nonce=current_page_nonce;
     var data = dict['data'];
     var success_fun = function(data) {
         var super_success = dict['success'];
-        if (pre_page_nonce == current_page_nonce) {
-            if (super_success) {
-                super_success(data);
-            }
+        if (super_success) {
+            super_success(data);
         }
+        undelegated();
     };
     var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if (pre_page_nonce == current_page_nonce) {
-            if(jqXHR.status==403) {
-                //launch403Modal(jqXHR.responseText);
-                return;
-            }
-            var super_error = dict['error'];
-            if (super_error) {
-                super_error();
-            } else {
-                $("body").html(jqXHR.responseText);
-            }
+        if(jqXHR.status==403) {
+            //launch403Modal(jqXHR.responseText);
+            return;
+        }
+        var super_error = dict['error'];
+        if (super_error) {
+            super_error();
+        } else {
+            alert(jqXHR.responseText);
         }
     };
+    var complete_fun = dict['complete'];
     data['url'] = window.location.href;
-    data['current_page_nonce'] = current_page_nonce;
     $.ajax({
         url: '/action/',
         type: 'POST',
         data: data,
         success: success_fun,
-        error: error_fun
+        error: error_fun,
+        complete: complete_fun
     });
 }
+
+function smoothTransition(element, fun, time) {
+    var old_height = element.height();
+    fun();
+    var new_height = element.height();
+    element.css("height", old_height);
+    element.css('height', old_height);
+    element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
+}
+
 
 function updatePage() {
     action({
