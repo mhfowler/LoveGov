@@ -3325,10 +3325,9 @@ class Poll(Content):
         super(Poll, self).autoSave(creator=creator, privacy=privacy)
 
     def addQuestion(self, q):
-        if q not in self.questions.all():
-            self.questions.add(q)
-            self.num_questions += 1
-            self.save()
+        self.questions.add(q)
+        self.num_questions += 1
+        self.save()
 
 #=======================================================================================================================
 # Answer
@@ -3342,6 +3341,8 @@ class Answer(LGModel):
         pass
     def __unicode__(self):
         return self.answer_text
+    def autoSave(self):
+        self.save()
 
 #=======================================================================================================================
 # Question
@@ -3351,6 +3352,7 @@ class Question(Content):
     question_text = models.TextField(max_length=500)
     question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
+    source = models.TextField(max_length=500, blank=True, null=True)
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
     answers = models.ManyToManyField(Answer)
@@ -3384,6 +3386,10 @@ class Question(Content):
             return self.main_image.image.url
         else:
             return DEFAULT_DISCUSSION_IMAGE_URL
+
+    def addAnswer(self, a):
+        self.answers.add(a)
+        self.save()
 
 
 #=======================================================================================================================
@@ -3518,7 +3524,7 @@ class ViewComparison(LGModel):
         else: vals['user_url'] = ''
         return vals
 
-    def  toDict(self, viewB_url=''):
+    def toDict(self, viewB_url=''):
         from lovegov.modernpolitics.helpers import getMainTopics
         to_return = []
         fast_comparison = self.loadOptimized()

@@ -82,8 +82,11 @@
             <div class="questions">
                 <div class="question model">
                     <div class="question-title form-row">
-                        <span class="remove">remove</span>
-                        <div class="label">Question:</div>
+                        <span class="controls">
+                            <span class="remove">remove</span>
+                            <span class="add-source">add source</span>
+                        </span>
+                        <div class="label padded">Question:</div>
                         <div class="field"><input type="text" placeholder="Enter a question"></div>
                     </div>
                     <div class="question-answers form-row">
@@ -93,6 +96,10 @@
                     <div class="question-answers form-row">
                         <div class="label">Answer:</div>
                         <div class="field"><textarea type="input" placeholder="Enter the second answer"></textarea></div>
+                    </div>
+                    <div class="question-source form-row">
+                        <div class="label padded">Source:</div>
+                        <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation"></div>
                     </div>
                 </div>
                 <div class="add-question">+ add a question</div>

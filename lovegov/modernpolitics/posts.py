@@ -2360,6 +2360,8 @@ def createContent(request, vals={}):
     link = request.POST.get('link')
     screenshot = request.POST.get('screenshot')
     viewer = vals['viewer']
+    questions = request.POST.get('questions')
+    if questions: questions = json.loads(questions)
     if post_as == 'user':
         privacy = 'PUB'
     elif post_as == 'anonymous':
@@ -2391,6 +2393,24 @@ def createContent(request, vals={}):
             if ref != 'undefined':
                 newc.saveScreenShot(ref)
             newc.autoSave(creator=viewer, privacy=privacy)
+    elif section=='poll':
+        if title and full_text:
+            newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                posted_to=group)
+            newc.autoSave()
+            for q in questions:
+                newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
+                newQ.save()
+                for a in q['answers']:
+                    newA = Answer(answer_text=a, value=-1)
+                    newA.save()
+                    newQ.addAnswer(newA)
+                newQ.save()
+                newc.addQuestion(newQ)
+            newc.autoSave(creator=viewer, privacy=privacy)
+    else:
+        return HttpResponseBadRequest("The specified type of content is not valid.")
+
     redirect = newc.getUrl()
 
     return HttpResponse(json.dumps({'redirect': redirect}))

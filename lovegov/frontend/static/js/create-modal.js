@@ -50,6 +50,11 @@ bind("div.create-modal div.questions span.remove", "click", function(e) {
     }
 });
 
+// Show add source
+bind("div.create-modal div.questions span.add-source", "click", function(e) {
+   $(this).closest("div.question").children("div.question-source").toggle();
+});
+
 // "Save" button clicked
 bind("div.create-modal div.save", "click", function(e) {
     var section = $(this).closest('div.create-section');
@@ -67,6 +72,8 @@ bind("div.create-modal div.save", "click", function(e) {
     var image = section.find("input.content-image").val();
     var link = section.find("input.link").val();
     var screenshot = $('.news_link_selected').attr("src");
+    var questions = extractQuestions();
+    console.log(questions);
     action({
        'data': {'action': 'createContent',
                 'sectionType': sectionType,
@@ -76,6 +83,7 @@ bind("div.create-modal div.save", "click", function(e) {
                 'post_as': post_as,
                 'link': link,
                 'screenshot': screenshot,
+                'questions': JSON.stringify(questions),
                 },
        'success': function(data) {
            var obj = eval('(' + data + ')');
@@ -83,6 +91,23 @@ bind("div.create-modal div.save", "click", function(e) {
        }
    })
 });
+
+// extract questions and answers from the DOM
+function extractQuestions() {
+    var questionsList = [];
+    var questionsDiv = $('div.create-modal div.create-section.poll div.questions');""
+    questionsDiv.children("div.question:not(.model)").each(function() {
+       var q = {};
+       q['question'] = $(this).find('div.question-title input').val();
+       q['answers'] = [];
+       $(this).find('div.question-answers textarea').each(function() {
+          q['answers'].push($(this).val());
+       });
+       q['source'] = $(this).find('div.question-source input').val();
+        questionsList.push(q);
+    });
+    return questionsList;
+}
 
 
 function getLinkInfo(link, input) {
