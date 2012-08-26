@@ -42,10 +42,12 @@
                 </a>
             </span>
 
+            {% comment %}
             <span class="name">
                 <div class="first-name"> {{ user.first_name }}</div>
                 <div class="last-name"> {{ user.last_name }}</div>
             </span>
+            {% endcomment %}
 
             <div class="triangle-area">
                 {% include 'site/frame/user_menu.html' %}

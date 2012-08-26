@@ -1,6 +1,9 @@
-{% extends 'site/pages/content_detail/content_detail.html' %}
+{% extends 'site/pages/home/top_sidebar_main.html' %}
 
-{% block content_detail_sidebar %}
+{% block top %}
+{% endblock %}
+
+{% block sidebar %}
     <div class="question-detail-sidebar">
         <a href="/questions/" class="back-to"> Back To Questions </a>
         {% if group_tuples %}
@@ -26,31 +29,18 @@
     </div>
 {% endblock %}
 
-{% block sidebar_fixed %}
-{% endblock %}
 
-
-{% block content_description %}
-    <div class="content-info-header">
-        Source
-    </div>
-
-    <div class="description">
-        {{ question.source }}
-    </div>
-
-{% endblock %}
-
-
-{% block content_body %}
-
+{% block main %}
     <div class="question-detail">
         {% with question=question your_response=response show_answer=response default_display="choose"%}
             {% include 'site/pages/qa/question_stub.html' %}
         {% endwith %}
+
+        <div class="comment-thread">
+
+        </div>
+
     </div>
 
     <script> rebind="question_detail"; </script>
-
 {% endblock %}
-

@@ -1,12 +1,14 @@
-<div class="a-response">
-    <a class="response-avatar" href="{{ response.creator.get_url }}">
-        {% include 'site/pieces/avatar.html' with user=response.creator width="30" height="30" %}
-    </a>
-    <div class="response-wrapper">
+{% with your_response_id=your_response.most_chosen_answer_id %}
+    <div class="a-response">
+        <a class="response-avatar" href="{{ response.creator.get_url }}">
+            {% include 'site/pieces/avatar.html' with user=response.creator width="30" height="30" %}
+        </a>
+        <div class="response-wrapper">
                             <span class="response-text
-                            {% if your_response.most_chosen_answer_id != response.most_chosen_answer_id %} disagree {% endif %}">
+                            {% if your_response_id != response.most_chosen_answer_id  and your_response_id %} disagree {% endif %}">
                                 {% if response.most_chosen_answer %} {{ response.most_chosen_answer.answer_text }}
                                 {% else %} <b> Chose not to answer. </b> {% endif %}
                             </span>
+        </div>
     </div>
-</div>
+{% endwith %}

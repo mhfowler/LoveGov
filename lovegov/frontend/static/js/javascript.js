@@ -36,8 +36,10 @@ function bindOnReload() {
         case 'questions':
             break;
         case 'question_detail':
+            updateQuestionStubsDisplay();
             break;
         case 'poll_detail':
+            updateQuestionStubsDisplay();
             break;
         case 'browse':
             break;
@@ -67,9 +69,14 @@ function bindOnNewElements() {
     // comparison webs initialize
     comparisonWebs();
 
+    // bind select2s
+    bindSelect2s();
+
     // question stubs
-    updateQuestionStubsDisplay();
     bindImportanceSliders();
+
+    // tool tips
+    bindTooltips();
 }
 
 /***********************************************************************************************************************
@@ -114,6 +121,17 @@ function action(dict) {
     });
 }
 
+
+function smoothTransition(element, fun, time) {
+    var old_height = element.height();
+    fun();
+    var new_height = element.height();
+    element.css("height", old_height);
+    element.css('height', old_height);
+    element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
+}
+
+
 var auto_update_page;
 
 $(document).ready(function()
@@ -148,7 +166,6 @@ $(document).ready(function()
 
     // init page with js
     bindOnReload();
-    bindTooltips();
 
     // auto page update every minute (check for notifications)
     clearInterval(auto_update_page);
@@ -259,9 +276,6 @@ function ajaxReload(theurl, loadimg)
                     path = returned.url;
                     bindOnReload();
                 }
-                else {
-                    alert("skippe!");
-                }
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -343,6 +357,16 @@ function checkCompatability() {
     }
 }
 
+/* binds all select 2s */
+function bindSelect2s() {
+    $.each($('.select_2'), function(i,e) {
+        var placeholder = $(this).data("placeholder");
+        $(this).select2({
+            placeholder: placeholder
+        });
+    });
+}
+
 /***********************************************************************************************************************
  *
  *      ~Bind popovers
@@ -350,10 +374,17 @@ function checkCompatability() {
  ***********************************************************************************************************************/
 
 function bindTooltips() {
+    /*
     $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
     $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
     $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
     $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+    */
+
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
 }
 
 bind(".bind_link", "click", null, function(event) {
@@ -469,9 +500,12 @@ function closeAllNavBarSections() {
 /* reload home page, by just replacing focus */
 bind(null, 'keydown', null, function(event) {
     var change = 0;
-    switch (event.which) {
-        case 38: change=-1; break;
-        case 40: change=1; break;
+    var active = $(document.activeElement);
+    if (!active.is("textarea")) {
+        switch (event.which) {
+            case 38: change=-1; break;
+            case 40: change=1; break;
+        }
     }
     if (change) {
         event.preventDefault();
@@ -899,7 +933,7 @@ function getFeed(container) {
         $("body").css('min-height', old_height);
         container.find(".feed_content").empty();
         container.find(".load_more").show();
-        container.find(".everything_loaded_wrapper").find();
+        container.find(".everything_loaded_wrapper").hide();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
@@ -922,6 +956,11 @@ function getFeed(container) {
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
             'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
             'only_unanswered':only_unanswered , 'default_display':default_display};
+        // if this feed appears on a poll
+        var p_id = container.data('p_id');
+        if (typeof(p_id) != 'undefined') {
+            data['p_id'] = p_id;
+        }
     }
     else if (feed == 'getUserActivity')
     {
@@ -961,8 +1000,9 @@ function getFeed(container) {
                         everything_loaded.find(".reached_the_end").show();
                     }
                 }
-                bindImportanceSliders();
+                updateQuestionStubsDisplay();
                 bindOnNewElements();
+                //container.css("min-height", container.height());
             }}
     );
 }
@@ -1375,7 +1415,7 @@ bind('div.load-more-comments', 'click', function(e) {
  *      ~InlineEdits
  *
  ***********************************************************************************************************************/
-function editUserProfile(info,edit_div)
+function editUserProfile(info,being_edited, not_editing_display)
 {
     var prof_data = info;
     prof_data.action = 'editProfile';
@@ -1385,14 +1425,14 @@ function editUserProfile(info,edit_div)
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            edit_div.text(obj.value);
-            edit_div.show();
+            being_edited.text(obj.value);
+            not_editing_display.show();
         }
     });
 }
 
 
-function editContent( c_id , info , edit_div )
+function editContent( c_id , info , being_edited, not_editing_display )
 {
     var content_data = info;
     content_data.action = 'editContent';
@@ -1404,27 +1444,52 @@ function editContent( c_id , info , edit_div )
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            edit_div.html(obj.value);
-            edit_div.show();
+            being_edited.html(obj.value);
+            not_editing_display.show();
         }
     });
 }
 
+function editExplanation(r_id, q_id, explanation, being_edited, not_editing_display) {
+    if (explanation == 'I think..') {
+        explanation = "";
+    }
+    action({
+        'data': {'action':'editExplanation', 'q_id':q_id, 'r_id':r_id, 'explanation':explanation},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html('"' + obj.explanation + '"');
+            not_editing_display.show();
+        }
+    });
+}
 
 bind( ".edit_button" , 'click', null , function(event)
 {
-    event.preventDefault();
-    $(this).siblings('.inline_hide').hide();
-    $(this).hide();
+    var wrapper = $(this).parents(".inline_editable");
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    not_editing_display.hide();
+    doing_editing_display.show();
+});
 
-    $(this).siblings('.inline_edit').show();
+bind( ".cancel_inline_edit" , 'click' , null , function(event)
+{
+    var wrapper = $(this).parents(".inline_editable");
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    doing_editing_display.hide();
+    not_editing_display.show();
 });
 
 bind( ".submit_inline_edit" , 'click' , null , function(event)
 {
-    event.preventDefault();
-    var input = $(this).siblings('.edit_input');
-    var wrapper = $(this).parent();
+    /* fucking wrapper */
+    var wrapper = $(this).parents(".inline_editable");
+
+    /* values of what is being edited */
+    var input = wrapper.find('.edit_input');
     var name = input.attr('name');
     var value = input.val();
     var model = wrapper.data('model');
@@ -1432,16 +1497,29 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
         'key':name,
         'val':value
     };
-    var edit_div = $(this).parent().siblings('.inline_hide');
 
+    /* what visually should be shown while editing or not editing */
+    var being_edited = wrapper.find('.being_edited');
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    doing_editing_display.hide();
+
+    /* which edit are we calling */
     if( model == "Content" )
     {
         var c_id = wrapper.data('id');
-        editContent(c_id,info,edit_div);
+        editContent(c_id,info,being_edited, not_editing_display);
     }
     else if( model == "UserProfile")
     {
-        editUserProfile(info,edit_div);
+        editUserProfile(info,being_edited, not_editing_display);
+    }
+    else if( model == "Explanation")
+    {
+        var r_id = wrapper.data("r_id");
+        var q_id = wrapper.data('q_id');
+        var explanation = value;
+        editExplanation(r_id, q_id, explanation, being_edited, not_editing_display);
     }
 
     $(this).parent().siblings('.edit_button').show();
@@ -2057,10 +2135,21 @@ function getModal(modal_name,data)
             modal_general.data('last-loaded',modal_name);
 
             showModal();
-
+            bindOnNewElements();
         }
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *      ~Random modals that get things you need
+ *
+ ***********************************************************************************************************************/
+bind('.group_description_modal' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal('group_description' , { 'g_id': g_id });
+});
 
 
 /***********************************************************************************************************************
@@ -2513,17 +2602,10 @@ function loadHoverComparison()
 
 /***********************************************************************************************************************
  *
- *     ~QA
+ *     ~ q&a interface
  *
  **********************************************************************************************************************/
-
 bind('.answer_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    expandChooseInterface(stub);
-});
-
-bind('.goback_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     expandChooseInterface(stub);
@@ -2533,13 +2615,6 @@ bind('.hide_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     hideStub(stub);
-});
-
-bind('.change_explanation' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
 });
 
 function hideStub(stub) {
@@ -2555,63 +2630,78 @@ function expandChooseInterface(stub) {
     stub.find(".hide_button").show();
 }
 
-function expandExplainInterface(stub) {
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
-    stub.find(".answer_button").hide();
-    stub.find(".hide_button").show();
-}
-
-function expandResponses(stub) {
+function expandResponses(stub, animate) {
+    var old_height = stub.height();
     stub.find(".question_expanded").hide();
     stub.find(".question_expanded_responses").show();
+    var new_height = stub.height();
+    if (animate) {
+        stub.css('height', old_height);
+        stub.animate({"height":new_height}, {"duration":500, "complete":function(){stub.css("height", "auto");}});
+    }
 }
 
 /* sets question stubs to display appropriately */
 function updateQuestionStubsDisplay() {
     $.each($(".question_stub"), function(i,e) {
-        updateQuestionStubDisplay($(this));
+        updateQuestionStubDisplay($(this), false);
     });
 }
 
-function updateQuestionStubDisplay(stub) {
-    var default_display = stub.data("default_display");
-    if (default_display == 'none') {
+/* set initial display for all stubs */
+function updateQuestionStubDisplay(stub, animate, display) {
+    if (typeof(display) == 'undefined') {
+        display = stub.data("default_display");
+    }
+    if (display == 'none') {
         hideStub(stub);
     }
-    if (default_display == 'choose') {
+    if (display == 'choose') {
         expandChooseInterface(stub);
     }
-    if (default_display == 'explain') {
-        expandExplainInterface(stub);
-    }
-    if (default_display == 'responses') {
-        expandResponses(stub);
+    if (display == 'responses') {
+        var your_response = stub.data("your_response");
+        if (your_response == 1) {
+            expandResponses(stub, animate);
+        }
+        else {
+            hideStub(stub);
+        }
     }
 }
 
-bind('.answer_checkbox' , 'click' , null , function(event)
+bind('.answer_choice' , 'click' , null , function(event)
 {
+    var stub = $(this).parents(".question_stub");
     if ($(this).hasClass("clicked")) {
         $(this).removeClass("clicked");
     }
     else {
-        var stub = $(this).parents(".question_stub");
-        stub.find(".answer_checkbox").removeClass("clicked");
+        stub.find(".answer_choice").removeClass("clicked");
         $(this).addClass("clicked");
     }
     saveAnswer(stub);
 });
 
-bind('.save_button' , 'click' , null , function(event)
+bind('.change_answer_privacy' , 'click' , null , function(event)
 {
+    var wrapper = $(this).parents(".answer_privacy_wrapper");
     var stub = $(this).parents(".question_stub");
-    saveQuestion(stub);
+    var r_id = $(this).data("r_id");
+    var q_id = $(this).data("q_id");
+    action({
+        data: {'action':'changeAnswerPrivacy', 'r_id':r_id, 'q_id':q_id},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            wrapper.replaceWith(returned.html);
+            stub.data("privacy", returned.privacy);
+        }
+    });
 });
 
 // stage 1, save answer
 function saveAnswer(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
+    var box = stub.find(".answer_choice.clicked");
     var a_id;
     if (box.length!=0) {
         a_id = box.data('a_id');
@@ -2620,82 +2710,52 @@ function saveAnswer(stub) {
         a_id = -1;
     }
     var q_id = stub.data('q_id');
+    var default_display = stub.data("default_display");
+    var your_response = stub.data("your_response");
+    var privacy = stub.data("privacy");
+    var container = stub.parents(".feed_main");
+    if (container.length!=0) {
+        var only_unanswered = container.data('only_unanswered');
+        if (only_unanswered) {
+            stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
+            expandChooseInterface(stub.next('.question_stub'));
+        }
+    }
     action({
-        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':'explain'},
+        data: {'action':'saveAnswer', 'q_id':q_id,
+            'a_id':a_id, 'default_display':default_display,
+            'to_compare_id':to_compare_id, 'privacy':privacy},
         success: function(data) {
             var returned = eval('(' + data + ')');
-            var new_element = $(returned.html);
-            stub.replaceWith(new_element);
-            var saved_message = new_element.find(".saved_message");
+            if (default_display=='responses') {
+                var new_element = $(returned.html);
+                var old_height = stub.height();
+                stub.replaceWith(new_element);
+                stub = new_element;
+                new_element.find(".question_expanded_responses").show();
+                var new_height = new_element.height();
+                new_element.css('height', old_height);
+                new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
+                bindOnNewElements();
+            }
+            var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
-            updateQuestionStubDisplay(new_element);
-            bindImportanceSlider(new_element.find(".importance_bar"));
             updateMatches();
             updateStats();
         }
     });
 }
 
-// old way, answer and explanation (stage 2)
-function saveQuestion(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
-    var a_id;
-    if (box.length!=0) {
-        a_id = box.data('a_id');
-    }
-    else {
-        a_id = -1;
-    }
-    var explanation = stub.find('.explanation').val();
-    var privacy_bool = stub.find(".privacy_checkbox").hasClass("clicked");
-    var privacy;
-    if (privacy_bool) {
-        privacy = 'PRI';
-    } else {
-        privacy = 'PUB';
-    }
-    var q_id = stub.data('q_id');
-    var weight = stub.find(".importance_bar").slider("value");
-    var container = stub.parents(".feed_main");
-    var default_display = "choose";
-    if (container.length!=0) {
-        default_display = container.data("default_display");
-    }
-    action({
-        data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
-            'explanation':explanation,'a_id':a_id, 'weight':weight,
-            'to_compare_id':to_compare_id, 'default_display':default_display},
-        success: function(data) {
-            var returned = eval('(' + data + ')');
-            var only_unanswered = false;
-            if (container.length!=0) {
-                only_unanswered = container.data('only_unanswered');
-            }
-            if (only_unanswered) {
-                stub.hide();
-                expandChooseInterface(stub.next('.question_stub'));
-            }
-            else {
-                var new_element = $(returned.html);
-                stub.replaceWith(new_element);
-                var saved_message = new_element.find(".saved_message");
-                saved_message.show();
-                saved_message.fadeOut(5000);
-                bindImportanceSlider(new_element.find(".importance_bar"));
-                updateQuestionStubDisplay(new_element);
-            }
-            updateMatches();
-            updateStats();
-        }
-    });
-}
 
-bind('.privacy_checkbox' , 'click' , null , function(event)
+bind('.see_their_response' , 'click' , null , function(event)
 {
-    $(this).toggleClass("clicked");
+    expandResponses($(this).parents(".question_stub"));
 });
 
+
+
+/* importance sliders */
 function bindImportanceSliders() {
     var importance_bars = $(".importance_bar");
     $.each(importance_bars, function(i, e) {
@@ -2716,6 +2776,12 @@ function bindImportanceSlider(div) {
     });
 }
 
+
+/***********************************************************************************************************************
+ *
+ *     ~ q&a feed
+ *
+ **********************************************************************************************************************/
 bind('.only_unanswered' , 'click' , null , function(event)
 {
     $(this).toggleClass("clicked");
@@ -2723,9 +2789,6 @@ bind('.only_unanswered' , 'click' , null , function(event)
     container.data("only_unanswered", $(this).hasClass("clicked"));
     refreshFeed(container);
 });
-
-
-
 
 /***********************************************************************************************************************
  *
@@ -3052,9 +3115,6 @@ function updateHistogram(histogram_wrapper, recursive) {
                     if (histogram_metadata.maximum == -1 || histogram_metadata.total < histogram_metadata.maximum) {
                         updateHistogram(histogram_wrapper, true);
                     }
-                    else {
-                        alert(histogram_metadata.total);
-                    }
                 }
             }
         }
@@ -3375,6 +3435,42 @@ bind( '.pin_to_group' , 'click' , null , function(e)
     });
 });
 
+bind('.pin_it' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(".pin_to_select").val();
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':1
+        },
+        success: function(data)
+        {
+            $(".was_pinned").fadeIn(500, function() { setTimeout(hideModal(), 2000)});
+        }
+    });
+});
+
+bind('.unpin_content' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(this).data("g_id");
+    var to_remove = $(this).parents(".pinned_wrapper");
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':-1
+        },
+        success: function(data)
+        {
+            to_remove.remove();
+        }
+    });
+});
 
 /***********************************************************************************************************************
  *

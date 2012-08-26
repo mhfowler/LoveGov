@@ -316,10 +316,9 @@ def valsGroup(viewer, group, vals):
     # vals for group buttons
     valsGroupButtons(viewer, group, vals)
 
-    ## TEST ##
-    items = Content.objects.filter(type='N')
-    vals['item1'] = items[0]
-    vals['item2'] = items[1]
+    # pinned
+    pinned = group.pinned_content.all()
+    vals['pinned'] = pinned
 
     # histogram
     loadHistogram(5, group.id, 'mini', vals=vals)

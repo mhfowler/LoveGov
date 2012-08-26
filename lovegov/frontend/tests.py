@@ -21,21 +21,14 @@ def test3(request, vals={}):
 
     frame(request, vals)
 
-    group = Group.objects.all()[0]
-    vals['g'] = group
-
-    histogram = group.getComparisonHistogram(vals['viewer'])
-    vals['histogram_json'] = json.dumps(histogram)
-
-    buckets = []
-    for bucket in histogram['buckets']:
-        buckets.append(bucket)
-    buckets.sort()
-    vals['buckets'] = buckets
-
-    html = ajaxRender('test/petition.html', vals, request)
+    html = ajaxRender('test/tooltip.html', vals, request)
     url = '/test3/'
     return framedResponse(request, html, url, vals)
+
+
+def test4(request, vals={}):
+
+    return renderToResponseCSRF(template='test/tooltip2.html', vals=vals, request=request)
 
 
 def css(request, vals={}):

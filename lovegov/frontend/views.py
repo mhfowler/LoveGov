@@ -83,6 +83,9 @@ def viewWrapper(view, requires_login=False):
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
 
+            # privacy
+            vals['anonymous_mode'] = getPrivacy(request) == "PRI"
+
             # helper for key stroke sequences
             vals['sequence'] = [0]
 
@@ -736,6 +739,7 @@ def questionDetail(request, q_id=None, vals={}):
             friends_answered.append(f)
     vals['friends_answered'] = friends_answered
 
+    contentDetail(request, question, vals)
     html = ajaxRender('site/pages/content_detail/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
@@ -749,9 +753,6 @@ def pollDetail(request, p_id=-1, vals={}):
     poll = Poll.objects.get(id=p_id)
     vals['poll'] = poll
     contentDetail(request, poll, vals)
-
-    q_items = getQuestionItems(viewer, 'B', p_id=poll.id, num=None)
-    vals['q_items'] = q_items
 
     poll_progress = getPollProgress(viewer, poll)
     vals['poll_progress'] = poll_progress

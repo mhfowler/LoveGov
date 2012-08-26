@@ -320,7 +320,8 @@ ACTION_CHOICES = (
     ('SU', 'supported'),
     ('ME', 'messaged'),
     ('AS', 'asked'),
-    ('GF', 'group_follow')
+    ('GF', 'group_follow'),
+    ('PI', 'pinned')
 )
 
 # default, request, invite, deny, reject
@@ -636,7 +637,10 @@ ACTIONS = [
     'submitTempAddress',
     'getFBInviteFriends',
     'findLikeMinded',
-    'clearLikeMinded'
+    'clearLikeMinded',
+    'pinContent',
+    'changeAnswerPrivacy',
+    'editExplanation'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

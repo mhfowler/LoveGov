@@ -423,14 +423,15 @@ def fastCompare(viewA,viewB,topics=None):
         rB = responsesB[b_index]
         # If the question IDs match, compare their answers and save it!
         if rA.question_id == rB.question_id:
-            similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
-            weight = rA.weight
-            comparison.getTotalBucket().update(similar, weight)
-            # And also do something with topic buckets...
-            if topics:
-                topic = rA.question.getMainTopic()
-                if topic in topics:
-                    comparison.getTopicBucket(topic).update(similar, weight)
+            if rA.most_chosen_answer_id and rB.most_chosen_answer_id:
+                similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
+                weight = rA.weight
+                comparison.getTotalBucket().update(similar, weight)
+                # And also do something with topic buckets...
+                if topics:
+                    topic = rA.question.getMainTopic()
+                    if topic in topics:
+                        comparison.getTopicBucket(topic).update(similar, weight)
             # Then increment both counters
             a_index += 1
             b_index += 1

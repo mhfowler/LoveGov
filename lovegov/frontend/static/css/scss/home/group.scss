@@ -12,6 +12,9 @@ span.group-title
   font-size: 16px;
   margin-right: 10px;
   @include inline-block();
+  a {
+    color:$black;
+  }
 }
 
 span.group-scale
@@ -53,6 +56,7 @@ div.group-expanded
 
     div.group-actions
     {
+      margin-top: 6px;
       float:right;
       @include clearfix();
 
@@ -81,6 +85,11 @@ div.group-expanded
       }
       div.group-membership {
         background-color:$black;
+        color:white;
+        &:hover { background-color: $dark-gray; }
+      }
+      div.group-admin {
+        background-color:$purple;
         color:white;
         &:hover { background-color: $dark-gray; }
       }
@@ -129,15 +138,15 @@ div.group-expanded
     div.group-histogram
     {
       width:230px;
-      height:180px;
+      height: 199px;
       position:relative;
-      top:-13px;
+      top:-29px;
     }
 
     a.see-more {
       background-color:$light-gray;
       padding:5px;
-      margin-top:20px;
+      margin-top:0px;
       color:$black;
       width:100%;
       float:left;
@@ -154,6 +163,18 @@ div.group-expanded
       overflow:hidden;
       margin-right: 30px;
 
+      div.group-info-title-wrapper {
+        width:100%;
+        display:block;
+        div.group-info-title {
+          float:left;
+        }
+        div.pencil-button {
+          float:left;
+          margin-left:5px;
+        }
+      }
+
       textarea.group-description-edit
       {
         width:300px;
@@ -161,7 +182,9 @@ div.group-expanded
       }
 
       div.group-full-text {
-        height:254px;
+        height: 263px;
+        margin-bottom: 10px;
+        overflow: hidden;
       }
     }
 
@@ -177,7 +200,7 @@ div.group-expanded
       div.group-members
       {
         width: 160px;
-        height: 170px;
+        height: 190px;
 
         div.group-member-avatar
         {
@@ -186,15 +209,22 @@ div.group-expanded
           float: left;
         }
       }
-      a.see-more {
-        margin-top: 4px;
-      }
     }
   }
 
   div.group-pinned-content
   {
     padding: 10px;
+    div.pinned-wrapper {
+      position:relative;
+      a.unpin-content {
+        color:$gray;
+        margin-left: 8px;
+        &:hover {
+          color:$dark-gray;
+        }
+      }
+    }
   }
 }
 
@@ -294,5 +324,20 @@ div.group-histogram {
       @include h5;
       color:white;
     }
+  }
+}
+
+
+
+/* group description modal */
+div.group-description-modal {
+  width:500px;
+  div.group-title {
+    @include fontSize(24px);
+    width:100%;
+    text-align:Center;
+  }
+  div.group-description {
+    margin-top:15px;
   }
 }

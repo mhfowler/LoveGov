@@ -403,3 +403,34 @@ def followGroupAction(viewer, group, follow, privacy):
         if change:
             action = GroupFollowAction(user=viewer,privacy=privacy,group=group,modifier=modifier)
             action.autoSave()
+
+
+## content gets pinned to group, if viewer is admin of group and content not already pinned ##
+def pinContentAction(viewer, content, group, privacy):
+    if group.hasAdmin(viewer):
+        if not content in group.pinned_content.all():
+            group.pinned_content.add(content)
+            pinned_action = PinnedAction(user=viewer, privacy=privacy, to_group=group, content=content, confirmed=True)
+            pinned_action.autoSave()
+            return True
+        else:
+            LGException("user " + str(viewer.id) + " tried to pin content to group which content was already pinned to. g_id:" + str(group.id) )
+            return False
+    else:
+        LGException("user " + str(viewer.id) + " tried to pin content to group they were not admin of. g_id:" + str(group.id) )
+        return False
+
+## content gets unpinned from group, if viewer is admin of group and content was previously pinned ##
+def unpinContentAction(viewer, content, group, privacy):
+    if group.hasAdmin(viewer):
+        if content in group.pinned_content.all():
+            group.pinned_content.remove(content)
+            pinned_action = PinnedAction(user=viewer, privacy=privacy, to_group=group, content=content, confirmed=False)
+            pinned_action.autoSave()
+            return True
+        else:
+            LGException("user " + str(viewer.id) + " tried to unpin content from group which content was not pinned to. g_id:" + str(group.id) )
+            return False
+    else:
+        LGException("user " + str(viewer.id) + " tried to unpin content from group they were not admin of. g_id:" + str(group.id) )
+        return False

@@ -442,7 +442,7 @@ def initializeDB():
     initializeSomeTestContent()
     initializePresidentialElection2012()
     initializePresidentialCandidates2012()
-    randomWhales()
+    #randomWhales()
     # valid emails
     initializeValidEmails()
     initializeValidRegisterCodes()
@@ -749,6 +749,7 @@ def initializeSomeUserGroups():
                 "euismod aliquet eu ac velit. Duis eu lobortis")
     ug1.autoSave()
     ug1.joinMember(getUser("Randy Johnson"))
+    ug1.addAdmin(getUser("Randy Johnson"))
     ug2 = UserGroup(title="I made a group, no I didn't")
     ug2.autoSave()
     ug3 = UserGroup(title="Woop woop Group")

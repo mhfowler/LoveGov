@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <!-- title -->
+    <title>lovegov beta</title>
+
+    <link rel="icon" type="image/icon" href="/static/images/favicon.ico"/>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="Lovegov, lovegov, lovegov.com, Government, Politics, Simplified, One Stop Shop, Participate, Informed, Connected, Involved, Social, Social Network, Political Network, Legislation, Democracy, Democracy 2.0, Vote, Advocacy Groups, Coalitions, Change" />
+    <meta name="description" content="LoveGov is a political social network and one-stop shop for politics. We make it easy to stay informed and get involved." />
+
+    <!-- css -->
+
+        {% comment %}
+        <!-- HTML5 Boilerplate -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/boilerplate.css">
+        {% endcomment %}
+
+        {% comment %}
+        <!-- 1140 grid -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/1140.css" />
+        {% endcomment %}
+
+        <!-- Frame -->
+        {% comment %}
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/master.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/fonts.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/header.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/notification-dropdown.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/notification.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/action.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/sidetabs.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/autocomplete.css" />
+        {% endcomment %}
+
+        {% comment %}
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/tooltips.css" />
+    {% endcomment %}
+
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/libraries/tooltips/tooltip.css" />
+
+
+        {% comment %}
+        <!-- pages -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/home/home.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/home/group.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/home/groups.css" />
+
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/feed/feed.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/feed/base-item.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/feed/base-item-thin.css" />
+
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/friends/facebook-friend-card.css" />
+
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/login.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/blog.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/pieces.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/about.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/profile.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/user_menu.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/match_breakdown.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/account.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/qa.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/account.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/content_detail/content_detail.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/content_detail/detail.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/histogram.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/browse.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/thread.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/friends/friends.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/elections/election.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/politicians/reps.css" />
+
+        <!-- pieces -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/pieces/avatar_strip.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/pieces/hover_comparison.css" />
+
+        <!-- modals -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/group-invite-modal.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/group-invites-modal.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/group-requests-modal.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/follow-requests-modal.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/facebook-share-modal.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/pin-content-modal.css" />
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/css/compiled/modals/create-modal.css" />
+
+        <!-- jquery -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/libraries/jquery/css/smoothness/jquery-ui-1.8.18.custom.css">
+        <!-- select2 -->
+        <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}/libraries/select2/select2.css" />
+
+        {% endcomment %}
+
+    <!-- javascript -->
+    <!-- jquery -->
+    {% comment %} <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/jquery-1.7.1.js"></script> {% endcomment %}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+    <!-- google maps -->
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+    <!-- jquery stuff -->
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery-ui-1.8.18.custom.min.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.hoverIntent.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.bindWithDelay.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.ba-outside-events.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.cookie.js"></script>
+
+    {% comment %}
+    <script type='text/javascript' src="{{ STATIC_URL }}/libraries/jquery/js/jquery.jsPlumb-1.3.7-all-min.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.dragscrollable.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.livequery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.scrollsync.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/js/jquery.scrollview.js"></script>
+    <script type='text/javascript' src="{{ STATIC_URL }}/libraries/jquery/js/jquery.ba-outside-events.js"></script>
+
+
+    <script type='text/javascript' src="{{ STATIC_URL }}/libraries/jquery/js/jquery.mousewheel.js"></script>
+            {% endcomment %}
+
+    {% comment %}
+<script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/bootstrap-tooltips.js"></script>
+{% endcomment %}
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/tooltips/bootstrap-tooltip.js"></script>
+
+    <!-- kinetic -->
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/kinetic/QueryData.compressed.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/kinetic/kinetic-v3.8.2.min.js"></script>
+
+    <!-- modernizer -->
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/modernizer/modernizr.first.js"></script>
+
+    <!-- js history -->
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/jquery/history/scripts/bundled/html5/jquery.history.js"></script>
+
+    <!-- select 2 -->
+    <script type="text/javascript" src="{{ STATIC_URL }}/libraries/select2/select2.js"></script>
+
+    <!-- our jquery plugins -->
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/custom-jquery/bindOnce.js"></script>
+
+    <!-- Our JavaScript -->
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/inheritance.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/visualcomparison.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/search.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/create-modal.js"></script>
+
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/javascript.js"></script>
+
+    <!-- For script variables -->
+    <script>
+        var pageTitle = '{{ page_title }}';
+        var csrf = '{{ csrf_token|escapejs }}';
+        var path = '{{ request.path }}';
+        var STATIC_URL = '{{ STATIC_URL }}';
+    </script>
+
+</head>
+
+<body>
+
+<div class="body">
+
+    <div class="tooltip-top" title="check it" style="margin-top:200px;margin-left:400px;"> hover </div>
+
+</div>
+
+
+</body>
+
+</html>
