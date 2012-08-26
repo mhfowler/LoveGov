@@ -81,13 +81,12 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     return question_items[feed_start:feed_start+num]
 
 
-def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, p_id=None, feed_start=0, num=10):
+def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, poll=None, feed_start=0, num=10):
 
     # questions & check for p_id (filter by poll)
-    if not p_id:
+    if not poll:
         questions = Question.objects.all()
     else:
-        poll = Poll.objects.get(id=p_id)
         questions = poll.questions.all()
     question_items=[]
 
@@ -146,11 +145,11 @@ def responsesSortHelper(question_items, ranking):
         question_items.sort(key=lambda x:x['question'].created_when, reverse=True)
     elif ranking == 'R':
         def recentComparison(item):
-            you = item['you']
-            if not you:
+            them = item['them']
+            if not them:
                 to_return=datetime.datetime.min
             else:
-                to_return=you.created_when
+                to_return=them.created_when
             return to_return
         question_items.sort(key=lambda x:recentComparison(x), reverse=True)
     elif ranking == 'I':
@@ -182,10 +181,13 @@ def compareQuestionItem(q_item):
     your_response = q_item['you']
     their_response = q_item['them']
     if your_response and their_response:
-        if your_response.most_chosen_answer_id == their_response.most_chosen_answer_id:
-            agree = 1
+        if your_response.most_chosen_answer_id and their_response.most_chosen_answer_id:
+            if your_response.most_chosen_answer_id == their_response.most_chosen_answer_id:
+                agree = 1
+            else:
+                agree = -1
         else:
-            agree = -1
+            agree = 0
     else:
         agree = 0
     q_item['agree'] = agree

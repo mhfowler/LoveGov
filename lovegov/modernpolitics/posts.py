@@ -985,15 +985,74 @@ def stubAnswer(request, vals={}):
 
 def saveAnswer(request, vals={}):
     question = Question.objects.get(id=request.POST['q_id'])
-    privacy = getPrivacy(request)
+    privacy = request.POST.get("privacy")
+    if not privacy:
+        privacy = getPrivacy(request)
     a_id = request.POST['a_id']
     user = vals['viewer']
-    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
+    your_response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
     vals['question'] = question
-    vals['your_response'] = response
+    vals['your_response'] = your_response
     vals['default_display'] = request.POST.get('default_display')
-    html = ajaxRender('site/pages/qa/question_stub_helper.html', vals, request)
+    responses = []
+
+    # get responses if they are there
+    to_compare_id = request.POST.get('to_compare_id')
+    if to_compare_id and to_compare_id != 'null':
+        to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
+        their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
+        if their_response:
+            responses.append(their_response)
+    responses.append(your_response)
+    vals['compare_responses'] = responses
+
+    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
+
+def changeAnswerPrivacy(request, vals):
+
+    viewer = vals['viewer']
+    q_id = request.POST['q_id']
+    r_id = request.POST.get("r_id")
+    if r_id:
+        response = Response.objects.get(id=r_id)
+    else:
+        question = Question.objects.get(id=q_id)
+        response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
+    if viewer == response.creator:
+        if response.getPublic():
+            response.setPrivate()
+            privacy = "PRI"
+        else:
+            response.setPublic()
+            privacy = "PUB"
+        vals['your_response'] = response
+        vals['anonymous'] = response.getPrivate()
+        vals['q_id'] = q_id
+        html = ajaxRender('site/pages/qa/answer_privacy.html', vals, request)
+        return HttpResponse(json.dumps({'html':html, 'privacy':privacy}))
+    else:
+        LGException("trying to change privacy of response that was not their own. u_id:" + str(viewer.id))
+        return HttpResponse("didn't work")
+
+def editExplanation(request, vals):
+
+    viewer = vals['viewer']
+    explanation = request.POST['explanation']
+    q_id = request.POST['q_id']
+    r_id = request.POST.get("r_id")
+    if r_id:
+        response = Response.objects.get(id=r_id)
+    else:
+        question = Question.objects.get(id=q_id)
+        response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
+    if viewer == response.creator:
+        response.explanation = explanation
+        response.save()
+        return HttpResponse(json.dumps({'explanation':explanation}))
+    else:
+        LGException("trying to edit explanation of response that was not their own. u_id:" + str(viewer.id))
+        return HttpResponse("didn't work")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # recalculates comparison between viewer and to_compare, and returns match html in the desired display form
@@ -1695,6 +1754,11 @@ def getQuestions(request, vals):
     feed_start = int(request.POST['feed_start'])
     feed_topic_alias = request.POST.get('feed_topic')
     to_compare_id = request.POST.get('to_compare_id')
+    p_id = request.POST.get('p_id')
+    if p_id:
+        poll = Poll.objects.get(id=p_id)
+    else:
+        poll = None
     only_unanswered_string = request.POST['only_unanswered']
     only_unanswered = only_unanswered_string == 'true'
     if to_compare_id and to_compare_id != 'null':
@@ -1710,7 +1774,7 @@ def getQuestions(request, vals):
             question_ranking=question_ranking, feed_topic=feed_topic, feed_start=feed_start, num=10)
     else:
         question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
-            feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
+            feed_topic=feed_topic,  poll=poll, only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
@@ -2590,6 +2654,13 @@ def getModal(request,vals={}):
             return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
 
         modal_html = getPinContentModal(content,viewer,vals)
+
+
+    ## get full group description ##
+    elif modal_name == 'group_description':
+        g_id = request.POST['g_id']
+        group = Group.objects.get(id=g_id)
+        modal_html = getGroupDescriptionModal(group,vals)
 
 
     ## If a modal was successfully made, return it ##

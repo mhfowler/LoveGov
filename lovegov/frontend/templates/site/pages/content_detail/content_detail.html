@@ -64,7 +64,7 @@
                     Metrics
                 </div>
 
-                <a class="comments-wrapper" href="#comments-wrapper">
+                <a class="comments-wrapper" href="{{ content.getCommentsURL }}">
                     <div class="comments-bubble">
                         <div class="num-comments">
                             {{ content.num_comments }}
@@ -123,7 +123,7 @@
             {% endblock %}
         </div>
 
-        <div id="comments-wrapper" class="content-discussion">
+        <div id="comments" class="content-discussion">
             {% include 'site/pieces/thread.html' with content=content%}
         </div>
 

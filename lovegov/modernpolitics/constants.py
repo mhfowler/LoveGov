@@ -638,7 +638,9 @@ ACTIONS = [
     'getFBInviteFriends',
     'findLikeMinded',
     'clearLikeMinded',
-    'pinContent'
+    'pinContent',
+    'changeAnswerPrivacy',
+    'editExplanation'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

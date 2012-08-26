@@ -114,6 +114,14 @@ class Privacy(LGModel):
     def getPublic(self):
         return self.privacy == 'PUB'
 
+    def setPublic(self):
+        self.privacy = 'PUB'
+        self.save()
+
+    def setPrivate(self):
+        self.privacy = 'PRI'
+        self.save()
+
 #=======================================================================================================================
 # physical address
 #=======================================================================================================================
@@ -317,7 +325,7 @@ class Content(Privacy, LocationLevel):
         return self.get_url() + 'breakdown/'
 
     def getCommentsURL(self):
-        return self.get_url() + "#comments-wrapper"
+        return self.get_url() + "#comments"
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets name of content for display.
@@ -4270,9 +4278,6 @@ class Party(Group):
         self.system = False
         self.group_privacy = 'O'
         super(Party, self).autoSave()
-
-    def get_url(self):
-        return '/group/' + str( self.id ) + '/'
 
     def joinMember(self, user, privacy='PUB'):
         user.parties.add(self)

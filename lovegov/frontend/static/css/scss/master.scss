@@ -85,13 +85,21 @@ div.main-top {
   }
 }
 
+/* Prevent padding from altering defined sizes */
+* {
+  @include box-sizing(border-box);
+}
+
 /***********************************************************************************************************************
 /   old stuff
 /**********************************************************************************************************************/
-* {
-  /* Prevent padding from altering defined sizes */
-  @include box-sizing(border-box);
+.main-div
+{
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
+
 
 @font-face {
   font-family: 'Raleway';
@@ -105,32 +113,8 @@ td
  padding: 0px;
 }
 
-.main-div
-{
-  width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
-.text-blue
-{
-  color: $text-blue;
-}
-
-.text-gray
-{
-  color: $deep-gray;
-}
-
-a.text-red
-{
-  color: $red;
-  &:hover
-  {
-    color:$red-light;
-  }
-}
-
+/* the most general */
 *
 {
   margin:0;
@@ -140,6 +124,17 @@ a.text-red
 body
 {
   font-size:13px;
+}
+
+
+/* links */
+a.text-red
+{
+  color: $red;
+  &:hover
+  {
+    color:$red-light;
+  }
 }
 
 a, a:visited, a:active, a:link
@@ -197,6 +192,9 @@ a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:h
   @include fontSize(20px);
 }
 
+
+
+/* paragraphing ? */
 p
 {
   margin-bottom: 13px;
@@ -229,6 +227,10 @@ p.big
   margin-bottom:18px;
 }
 
+
+
+
+/* super general wtf */
 ol, ul
 {
   padding-left:30px;
@@ -358,6 +360,19 @@ textarea:focus
   outline:none;
 }
 
+
+
+/* random stuff */
+.text-blue
+{
+  color: $text-blue;
+}
+
+.text-gray
+{
+  color: $deep-gray;
+}
+
 .button
 {
   -moz-border-radius: 9px;
@@ -484,7 +499,6 @@ img.rounded
 
 .big-num
 {
-/*tribute to cs17 project bignum. rest in peace. */
   font-weight:bold;
   font-size: 52px;
   color:$red;
@@ -521,12 +535,6 @@ div.round-container
   @include rounded(20px);
 }
 
-.tool-tip
-{
-  background-color:#f0503b;
-  color:white;
-}
-
 span.small
 {
   font-size:12px;
@@ -539,12 +547,10 @@ span.big
 }
 
 
-
 .bold
 {
   font-weight:bold;
 }
-
 
 .preload-images
 {
@@ -626,7 +632,10 @@ span#email-label
   color:$text-blue;
 }
 
-.inline-edit-input
+
+
+/* editing in line */
+.doing_editing_display
 {
   display: none;
 }
@@ -639,6 +648,7 @@ div.edit-link
   height: 16px;
   cursor: pointer;
   display: inline-block;
+  margin-left:2px;
 
   &:hover
   {
@@ -658,6 +668,8 @@ a.edit-link
   display: inline;
 }
 
+
+/* modals */
 div.modal-wrapper {
   width: 100%;
   position: absolute;
@@ -744,6 +756,8 @@ div.agg-notifications-modal
   }
 }
 
+
+/* qaweb */
 div.qaweb {
   text-align:center;
   div.see-answers {

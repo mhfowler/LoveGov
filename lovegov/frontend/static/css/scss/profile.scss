@@ -251,9 +251,14 @@ div.profile-page {
               div.inline-div {
                 width:100%;
               }
+              a.edit-link {
+                float:right;
+                margin-left:8px;
+              }
               textarea.bio-inline
               {
-                height: 60px;
+                height: 130px;
+                padding:5px;
                 width: 100%;
               }
             }
@@ -276,7 +281,7 @@ div.profile-page {
               img.party-label
               {
                 margin-right: 5px;
-                margin-bttom: 10px;
+                margin-bottom: 10px;
               }
             }
           }

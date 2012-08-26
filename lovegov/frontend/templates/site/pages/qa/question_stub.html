@@ -1,6 +1,6 @@
 <div class="question-stub question_stub" data-q_id="{{ question.id }}"
         {% if default_display %} data-default_display="{{ default_display }}" {% else  %} data-default_display="none" {% endif %}
-        >
+        {% if your_response %} data-your_response="1" data-privacy="{{ your_response.privacy }}" {% else %} data-your_response="0" {% endif %}>
     <!-- question text -->
     <div class="question-header">
         <table class="valign">
@@ -8,11 +8,12 @@
                 <td>
                     <span class="question-topic"> {% include 'site/pieces/topic_icon.html' with topic=question.main_topic width="30" height="30"%}</span>
                 </td>
-                <td>
+                <td class="question-title-wrapper">
                     <a href="{{ question.get_url }}" class="question-title"> {{ question.get_name }}</a>
                 </td>
-                <td>
+                <td class="saved-message-wrapper">
                     <span class="saved-message saved_message"> saved </span>
+                    <span class="saving-gif saving_gif"></span>
                 </td>
                 <td>
                     {% if your_response %}
@@ -31,45 +32,41 @@
     <!-- inline expansion for choosing answer, stage1 -->
     <div class="question_expanded_choose question_expanded">
         <div class="answers-wrapper">
+            <a class="see-their-response see_their_response"> see their response </a>
             {% with your_response_id=your_response.most_chosen_answer.id %}
                 {% for a in question.answers.all %}
                     <div class="answer-choice answer_choice {% if forloop.first %} first {% endif %}
                         {% if your_response_id == a.id %} clicked{% endif %}" data-a_id="{{ a.id }}">
                         <span class="answer-text"> {{ a.answer_text }}</span>
                     </div>
-                    {% if your_response_id == a.id %}
-                        {% if your_response.explanation %}
-                            <div class="answer-explanation">
-                                "{{ your_response.explanation }}"
-                            </div>
-                        {% else %}
-                            <div class="add-explanation">
-                                add an explanation
-                            </div>
-                        {% endif %}
-                    {% endif %}
                 {% endfor %}
             {% endwith %}
-        </div>
-        <div class="answer-actions answer_actions" {% if not your_response %} style="display:none;" {% endif %}>
-            <div class="answer-privacy a-action first">
-                <span class="action-icon public-icon"></span>
-                <span class="action-text">
-                    <a class="action-text-upper your-answer"> Your answer is public </a>
-                    <span class="action-text-lower"> (click to change) </span>
-                </span>
-                <span style="clear:both;"></span>
+
+            <!-- editable explanation -->
+            <div class="explanation-wrapper">
+                {% include 'site/pages/qa/answer_explanation_editable.html' %}
             </div>
+
+        </div>
+        <div class="answer-actions answer_actions" {% if not your_response %} style="display:block;" {% endif %}>
+
+            {% if your_response %}
+                {% include 'site/pages/qa/answer_privacy.html' with q_id=question.id anonymous=your_response.getPrivate %}
+            {% else %}
+                {% include 'site/pages/qa/answer_privacy.html' with q_id=question.id anonymous=anonymous_mode %}
+            {% endif %}
+
             <div class="discuss-question a-action">
-                <span class="action-icon public-icon"></span>
+                <span class="action-icon"></span>
                 <span class="action-text">
                     <a href="{{ question.get_url }}" class="action-text-upper "> Discuss Question </a>
                     <span class="action-text-lower"> {{ question.num_comments }} comment{{ question.num_comments|pluralize }}</span>
                 </span>
                 <span style="clear:both;"></span>
             </div>
+
             <div class="answer-importance a-action importance_wrapper">
-                <span class="action-icon answer-importance-num importance_percent"> {{ your_response.weight }}%</span>
+                <span class="action-icon answer-importance-num importance_percent"> {% if your_response %}{{ your_response.weight }}{% else %}50{% endif %}%</span>
                 <span class="action-text">
                     <a class='action-text-upper '> How important is this question to you? </a>
                     <div class="importance-bar-wrapper">

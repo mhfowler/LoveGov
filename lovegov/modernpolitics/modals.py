@@ -91,3 +91,8 @@ def getPinContentModal(content,user,vals):
     vals['groups'] = pinnable_groups
 
     return render_to_string('site/pages/content_detail/pin_content_modal.html',vals)
+
+
+def getGroupDescriptionModal(group,vals):
+    vals['group'] = group
+    return render_to_string('site/pages/group/description_modal.html', vals)

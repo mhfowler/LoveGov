@@ -119,6 +119,24 @@ div.feed-main
             background-color:$light-gray;
           }
         }
+
+        span.only-unanswered {
+          border: 1px solid $light-gray;
+          padding:8px;
+          float: left;
+          margin-right: 23px;
+          margin-top: -3px;
+          margin-left:0px;
+          &.clicked {
+            background-color:$dark-green;
+            color:white;
+          }
+          &:hover {
+            background-color:$dark-green;
+            color:white;
+            cursor:pointer;
+          }
+        }
       }
 
     }
