@@ -1,0 +1,50 @@
+{% extends 'site/pages/content_detail/content_detail.html' %}
+
+{% block content_detail_sidebar %}
+{% endblock %}
+
+{% block content_description %}
+    <div class="content-info-header">
+        Description
+    </div>
+
+    <div class="scorecard-description">
+        {{ content.summary}}
+    </div>
+{% endblock %}
+
+
+{% block content_body %}
+
+    <div class="reps-compare">
+        <div class="scorecard-section-header">
+            How your representatives compare
+        </div>
+
+        <div class="scorecard-avatar-strips-wrapper">
+            {% for user in representatives %}
+                <div class="scorecard-avatar-strip-wrapper">
+                    {% include 'site/pieces/avatar_strip.html' with user=user %}
+                </div>
+            {% endfor %}
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+
+    <div class="politicians-compare">
+        <div class="scorecard-section-header">
+            Other politicians
+        </div>
+
+        <div class="scorecard-avatar-strips-wrapper">
+            {% for user in politicians %}
+                <div class="scorecard-avatar-strip-wrapper">
+                    {% include 'site/pieces/avatar_strip.html' with user=user %}
+                </div>
+            {% endfor %}
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+
+{% endblock %}
+

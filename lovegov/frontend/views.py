@@ -1087,8 +1087,15 @@ def scorecardDetail(request, s_id, vals={}):
     scorecard = Scorecard.objects.get(id=s_id)
     vals['scorecard'] = scorecard
 
-    vals['representatives'] = UserProfile.objects.all()
-    vals['politicians'] = UserProfile.objects.all()
+    reps = UserProfile.objects.all()
+    politicians = UserProfile.objects.all()
+    for r in reps:
+        r.comparison = r.getComparison(viewer)
+    for p in politicians:
+        p.comparison = p.getComparison(viewer)
+
+    vals['representatives'] = reps
+    vals['politicians'] = politicians
 
     contentDetail(request=request, content=scorecard, vals=vals)
     html = ajaxRender('site/pages/content_detail/scorecards/scorecard_detail.html', vals, request)

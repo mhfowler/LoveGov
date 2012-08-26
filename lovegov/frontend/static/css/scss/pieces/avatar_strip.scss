@@ -4,23 +4,44 @@
 @import "compass";
 
 div.avatar-strip {
-  padding-top:15px;
-  padding-left:25px;
+  padding-top:10px;
+  padding-left:10px;
+  padding-bottom:5px;
+  padding-right:10px;
   width:100%;
-  height:100px;
+  max-width:700px;
   border:1px solid $gray;
 
   div.avatar-image {
     float:left;
   }
 
-  div.avatar-main {
+  div.avatar-strip-main {
     float:left;
+    width:500px;
 
     div.avatar-strip-top {
+      float:left;
+      width:100%;
       span.user-name {
-        @include fontSize(20px);
+        @include fontSize(24px);
         float:left;
+        margin-left: 10px;
+        color:$black;
+        &:hover {
+          color:black;
+        }
+      }
+    }
+
+    div.avatar-strip-bottom {
+      float:left;
+      width:100%;
+      span.user-title {
+        @include fontSize(16px);
+        color:$gray;
+        float:left;
+        margin-left:10px;
       }
       span.heart-icon {
         @include staticImage("/images/icons/red_heart.png");
@@ -29,38 +50,27 @@ div.avatar-strip {
         height:12px;
         background-size:15px 12px;
         margin-left:10px;
-        margin-top:5px;
+        margin-top:2px;
         float:left;
       }
       span.heart-score {
         margin-left:10px;
-        margin-top:3px;
         float:left;
-      }
-    }
-    div.avatar-strip-bottom {
-      span.user-title {
-        color:$gray;
-        margin-top:3px;
-        float:left;
-        margin-left:10px;
       }
     }
   }
 
   div.avatar-match {
-    margin-right:50px;
+    height: 50px;
     float:right;
+    line-height: 36px;
+    padding-top: 13px;
     color:$red;
-    position:relative;
-    top:-10px;
     div.match-number {
-      @include fontSize(48px);
-    }
-    div.match-text {
-      @include fontSize(24px);
-      line-height:20px;
-      top:-10px;
+      @include fontSize(66px);
+      span.match-percent {
+        margin-left:2px;
+      }
     }
   }
 }
