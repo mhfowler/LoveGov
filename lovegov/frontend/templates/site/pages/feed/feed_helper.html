@@ -1,3 +1,4 @@
+{% comment %}
 {% for x in feed_items %}
     {% with item=x.0.downcast my_vote=x.1 %}
         {% if item.type == "N" %}
@@ -9,5 +10,12 @@
         {% elif item.type == "D" %}
             {% include "site/pages/feed/discussion-item.html" %}
         {% endif %}
+    {% endwith %}
+{% endfor %}
+{% endcomment %}
+
+{% for x in feed_items %}
+    {% with content=x.0.downcast my_vote=x.1 %}
+       {% include 'site/pages/feed/feed_items/base_item.html' %}
     {% endwith %}
 {% endfor %}

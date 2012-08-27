@@ -341,6 +341,8 @@ class Content(Privacy, LocationLevel):
         return self.title
     def getTitleDisplay(self):
         return self.downcast().getTitleDisplay()
+    def getFeedTitle(self):
+        return self.downcast().getFeedTitle()
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns group that this content was orginally posted to
@@ -2752,6 +2754,8 @@ class Petition(Content):
 
     def getTitleDisplay(self):
         return "Petition: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     def getFilledPercent(self):
         return int(100*(self.current / float(self.goal)))
@@ -2847,6 +2851,8 @@ class News(Content):
 
     def getTitleDisplay(self):
         return "News: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
@@ -2888,6 +2894,9 @@ class Discussion(Content):
 
     def getTitleDisplay(self):
         return "Discussion: " + self.title
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
 #=======================================================================================================================
 # Comment (the building block of forums)
@@ -3362,6 +3371,8 @@ class Poll(Content):
 
     def getTitleDisplay(self):
         return "Poll: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
 
     def get_url(self):
         return '/poll/' + str(self.id) + '/'
@@ -3458,6 +3469,8 @@ class Question(Content):
 
     def getTitleDisplay(self):
         return "Question: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = "Q"
@@ -3755,6 +3768,8 @@ class Group(Content):
 
     def getTitleDisplay(self):
         return "Group: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
