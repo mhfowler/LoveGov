@@ -1207,6 +1207,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def clearResponses(self):
         return self.getView().clearResponses()
 
+    def getResponseToQuestion(self, question):
+        response = self.view.responses.filter(question=question)
+        if response:
+            response = response[0]
+            return response
+        else:
+            return None
+
     #-------------------------------------------------------------------------------------------------------------------
     # special user checks
     #-------------------------------------------------------------------------------------------------------------------
@@ -2852,7 +2860,7 @@ class News(Content):
     def getTitleDisplay(self):
         return "News: " + self.title
     def getFeedTitle(self):
-        return self.getTitleDisplay()
+        return self.title
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'

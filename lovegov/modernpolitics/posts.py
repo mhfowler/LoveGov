@@ -1038,6 +1038,16 @@ def saveScorecardAnswer(request, vals):
         LGException("user " + str(user.id) + " trying to edit scorecard which they are not allowed to." + str(scorecard.id))
         return HttpResponse("didnt' work")
 
+def saveAnswerInFeed(request, vals):
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = request.POST.get("privacy")
+    if not privacy:
+        privacy = getPrivacy(request)
+    a_id = request.POST['a_id']
+    viewer = vals['viewer']
+    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id)
+    return HttpResponse("saved")
+
 def changeAnswerPrivacy(request, vals):
 
     viewer = vals['viewer']
@@ -1163,6 +1173,7 @@ def updateStats(request, vals={}):
 # gets html for next poll question
 #-----------------------------------------------------------------------------------------------------------------------
 def getNextPollQuestion(request, vals={}):
+    viewer = vals['viewer']
     p_id = int(request.POST['p_id'])
     which = int(request.POST['which'])
     direction = request.POST['direction']
@@ -1179,6 +1190,8 @@ def getNextPollQuestion(request, vals={}):
     vals['question'] = question
     vals['poll'] = poll
     vals['which'] = next
+    response = viewer.getResponseToQuestion(question)
+    vals['your_response'] = response
     html = ajaxRender('site/pages/content_detail/poll_sample.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 

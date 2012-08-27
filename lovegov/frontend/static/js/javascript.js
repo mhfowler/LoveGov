@@ -2682,6 +2682,7 @@ bind('.answer_choice' , 'click' , null , function(event)
     saveAnswer(stub);
 });
 
+
 bind('.change_answer_privacy' , 'click' , null , function(event)
 {
     var wrapper = $(this).parents(".answer_privacy_wrapper");
@@ -2762,6 +2763,44 @@ function saveAnswer(stub) {
         }
     });
 }
+
+// answer in feed
+bind('.poll_answer' , 'click' , null , function(event)
+{
+    var item = $(this).parents(".sample_question");
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+    }
+    else {
+        item.find(".poll_answer").removeClass("clicked");
+        $(this).addClass("clicked");
+    }
+    saveAnswerInFeed(item);
+});
+
+
+function saveAnswerInFeed(item) {
+    var choice = item.find(".poll_answer.clicked");
+    var a_id;
+    if (choice.length!=0) {
+        a_id = choice.data('a_id');
+    }
+    else {
+        a_id = -1;
+    }
+    var q_id = item.data('q_id');
+    var data = {'action':'saveAnswerInFeed', 'q_id':q_id,
+        'a_id':a_id};
+    action({
+        data: data,
+        success: function(data) {
+            var saved_message = item.find(".saved_message");
+            saved_message.show();
+            //setTimeout(function(){saved_message.fadeOut()},1000);
+        }
+    });
+}
+
 
 
 bind('.see_their_response' , 'click' , null , function(event)
