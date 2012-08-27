@@ -3678,6 +3678,7 @@ function findNewLikeMinded() {
                 var total_num = $(".total_members").data('num');
                 total_num += num_new;
                 $(".total_members").html(total_num);
+                $(".total_members").data('num', total_num);
                 // if there were members adjust shit appropriately
                 if (num_new != 0) {
                     $(".no_members").hide();
@@ -3702,6 +3703,7 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                     $(".like_minded_members").empty();
                     $(".clear_result").show();
                     $(".total_members").html(0);
+                    $(".total_members").data('num',0);
                 }}
         );
     }
