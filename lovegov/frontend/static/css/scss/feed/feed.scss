@@ -403,6 +403,9 @@ div.feed-item-wrapper {
       div.petition-bar-wrapper {
         div.petition-bar {
           border-color:$gray;
+          div.red-bar {
+            background-color:$gray;
+          }
         }
       }
     }

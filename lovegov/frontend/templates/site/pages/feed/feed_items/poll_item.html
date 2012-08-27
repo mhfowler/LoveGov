@@ -5,7 +5,7 @@
 
     <div class="poll-sample-wrapper">
         {% with which=0 question=content.questions.all.0 poll=content %}
-            {% include 'site/pages/content_detail/poll_sample.html' with which=0 question=item.questions.all.0 poll=item %}
+            {% include 'site/pages/content_detail/poll_sample.html' with which=0 question=content.questions.all.0 poll=content %}
         {% endwith %}
     </div>
 

@@ -1,9 +1,18 @@
 {% load customtags %}
 
-<div class="sample-question sample_question" data-p_id="{{ poll.id }}" data-which="{{ which }}">
+<div class="poll-sample-question sample_question" data-p_id="{{ poll.id }}" data-which="{{ which }}">
     <div class="arrow left-arrow poll_arrow" data-direction="L"> < </div>
-    <a href="{{ poll.get_url }}">
-        <div class="current-question"> {{ question.title|truncate_chars:50 }} </div>
-    </a>
+    <div class="poll-question-wrapper poll_question_wrapper">
+        <a href="{{ poll.get_url }}">
+            <div class="current-question"> {{ question.title }} </div>
+        </a>
+        <div class="poll-answers-wrapper">
+            {% for a in question.answers.all %}
+                <div class="poll-answer poll_answer" data-a_id="{{ a.id }}">
+                        {{ a.answer_text }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
     <div class="arrow right-arrow poll_arrow" data-direction="R"> > </div>
 </div>
