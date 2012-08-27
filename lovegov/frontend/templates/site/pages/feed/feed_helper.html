@@ -16,6 +16,16 @@
 
 {% for x in feed_items %}
     {% with content=x.0.downcast my_vote=x.1 %}
-       {% include 'site/pages/feed/feed_items/base_item.html' %}
+        {% if content.type == "N" %}
+            {% include "site/pages/feed/feed_items/news_item.html" %}
+        {% elif content.type == "P" %}
+            {% include "site/pages/feed/feed_items/petition_item.html" %}
+        {% elif content.type == "O" %}
+            {% include "site/pages/feed/feed_items/poll_item.html" %}
+        {% elif content.type == "D" %}
+            {% include "site/pages/feed/feed_items/discussion_item.html" %}
+        {% elif content.type == "Q" %}
+            {% include "site/pages/feed/feed_items/question_item.html" %}
+        {% endif %}
     {% endwith %}
 {% endfor %}

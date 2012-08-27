@@ -291,7 +291,7 @@ div.feed-item-wrapper {
         margin-top:18px;
         color:$gray;
         &:hover {
-          color:$dark-gray;
+          color:red;
         }
       }
 
@@ -371,6 +371,39 @@ div.feed-item-wrapper {
       div.the-comment {
         margin-top:10px;
         color:$gray;
+      }
+    }
+  }
+}
+
+
+
+/*  news item */
+div.feed-item-wrapper {
+
+  div.news-wrapper {
+    a.feed-news-link {
+      position: relative;
+      top: -10px;
+      color:$gray;
+      &:hover {
+        color:$dark-gray;
+      }
+    }
+  }
+
+  div.feed-item-summary {
+    position: relative;
+    top: -5px;
+  }
+
+  div.feed-petition-wrapper {
+    div.feed-petition-bar-wrapper {
+      margin-top:10px;
+      div.petition-bar-wrapper {
+        div.petition-bar {
+          border-color:$gray;
+        }
       }
     }
   }
