@@ -99,7 +99,10 @@ div.group-expanded
     {
       @include clearfix();
       float:left;
-      margin-right: 20px;
+      margin-right: 30px;
+    }
+    div.group-left-column {
+      width:245px;
     }
 
     div.group-image
@@ -108,7 +111,7 @@ div.group-expanded
       height: 100px;
       width: 140px;
       background-color: $gray; //Temporary
-      margin-right: 20px;
+      margin-right: 30px;
     }
 
     div.group-match
@@ -132,15 +135,57 @@ div.group-expanded
         height: 20px;
         text-align: center;
       }
-
     }
 
     div.group-histogram
     {
-      width:230px;
+      width:250px;
       height: 199px;
       position:relative;
       top:-29px;
+    }
+
+    div.group-topic-comparison {
+      width:100%;
+      margin-top: 30px;
+      height: 170px;
+      float:left;
+      position:relative;
+
+      div.hundred {
+          position:absolute;
+          top:-19px;
+          left:0px;
+          border-bottom:1px solid $gray;
+          width:40px;
+          //width:100%;
+      }
+
+      div.group-header-topic-bar {
+        float:left;
+        width:25px;
+        margin-left:11px;
+        &.first {
+          margin-left:0px;
+        }
+        height:100%;
+        position:relative;
+        div.topic-icon {
+          position:absolute;
+          top:86%;
+          z-index:1;
+        }
+        div.topic-bar {
+          display:block;
+          width:100%;
+          height:100%;
+          div.colored_area {
+            position:relative;
+            width:100%;
+          }
+        }
+      }
+
     }
 
     a.see-more {

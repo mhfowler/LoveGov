@@ -474,7 +474,6 @@ class Content(Privacy, LocationLevel):
         else:
             return None
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
@@ -484,7 +483,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
-        self.like(user=creator, privacy=privacy)
+        self.like(user=creator, privacy="PRI")
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------

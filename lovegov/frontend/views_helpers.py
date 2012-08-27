@@ -290,7 +290,9 @@ def getPollProgress(viewer, poll):
 def valsGroup(viewer, group, vals):
     # Set group and group comparison
     vals['group'] = group
-    vals['group_comparison'] = group.getComparison(viewer)
+    comparison = group.getComparison(viewer)
+    vals['group_comparison'] = comparison
+    vals['comparison_breakdown'] = comparison.toBreakdown()
 
     # Figure out if this user is an admin
     vals['is_user_admin'] = False
