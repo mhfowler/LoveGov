@@ -989,8 +989,9 @@ def saveAnswer(request, vals={}):
     if not privacy:
         privacy = getPrivacy(request)
     a_id = request.POST['a_id']
+    weight = int(request.POST['weight'])
     viewer = vals['viewer']
-    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id)
+    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id, weight=weight)
     vals['question'] = question
     vals['your_response'] = your_response
     vals['default_display'] = request.POST.get('default_display')

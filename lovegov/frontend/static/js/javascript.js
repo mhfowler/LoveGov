@@ -2713,10 +2713,11 @@ function saveAnswer(stub) {
     var default_display = stub.data("default_display");
     var your_response = stub.data("your_response");
     var privacy = stub.data("privacy");
+    var importance = stub.find('.importance_bar').data('weight');
 
     var data = {'action':'saveAnswer', 'q_id':q_id,
         'a_id':a_id, 'default_display':default_display,
-        'privacy':privacy};
+        'weight':importance, 'privacy':privacy};
 
     var container = stub.parents(".feed_main");
     if (container.length!=0) {
@@ -2802,12 +2803,10 @@ function saveAnswerInFeed(item) {
 }
 
 
-
 bind('.see_their_response' , 'click' , null , function(event)
 {
     expandResponses($(this).parents(".question_stub"));
 });
-
 
 
 /* importance sliders */
@@ -2819,17 +2818,24 @@ function bindImportanceSliders() {
 }
 
 function bindImportanceSlider(div) {
+    var stub = div.parents(".question_stub");
     var weight = div.data('weight');
     div.slider({'min':0,
         'max':100,
         'step':1,
         'value':weight,
         slide: function(event, ui) {
+            div.data('weight', ui.value);
             var text = ui.value + "%";
             $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        },
+        stop: function(event, ui) {
+            saveAnswer(stub);
         }
     });
 }
+
+
 
 
 /***********************************************************************************************************************
