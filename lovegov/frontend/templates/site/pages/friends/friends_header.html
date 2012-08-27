@@ -16,20 +16,30 @@
 {% block header_info %}
 
     <div class="friends-header">
-        {% for friend in friends %}
-            {% include 'site/pages/friends/friend_card.html' %}
-        {% empty %}
-            <div class="no-friends">
-                <div class="no-friends-message">
-                    You're not following anyone on lovegov :(
+
+        <div class="friends-explanation">
+            These are all the people you're following on LoveGov.
+        </div>
+
+        <div class="friends-wrapper">
+            {% for user in friends %}
+                <div class="friend-wrapper">
+                    {% include 'site/pages/friends/match_card.html' %}
                 </div>
-                <div class="import-friends">
-                    {% if viewer.facebook_id %}
-                        import friends from facebook?
-                    {% endif %}
+            {% empty %}
+                <div class="no-friends">
+                    <div class="no-friends-message">
+                        You're not following anyone on lovegov :(
+                    </div>
+                    <div class="import-friends">
+                        {% if viewer.facebook_id %}
+                            import friends from facebook?
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+
     </div>
 
 {% endblock %}
