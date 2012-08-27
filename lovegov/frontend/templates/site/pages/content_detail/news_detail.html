@@ -1,9 +1,6 @@
 {% extends 'site/pages/content_detail/content_detail.html' %}
 
-{% block content_description %}
-    <div class="content-info-header">
-        Link
-    </div>
+{% block content_body %}
 
     <a class="news-link" href="{{ news.link }}"> {{ news.link }}</a>
 
@@ -14,22 +11,6 @@
     <div class="description">
         {{ news.link_summary}}
     </div>
-
-{% endblock %}
-
-
-{% block content_body %}
-
-    {% if content.summary %}
-        <div class="news-wrapper">
-            <div class="content-info-header">
-                Author's Opinion
-            </div>
-            <div class="text-wrapper">
-                {{ content.summary }}
-            </div>
-        </div>
-    {% endif %}
 
     <script> rebind="news_detail"; </script>
 

@@ -4,7 +4,6 @@
     {% include 'site/pages/content_detail/signers_sidebar.html' %}
 {% endblock %}
 
-
 {% block content_description %}
     <div class="content-info-header">
         Description
@@ -20,22 +19,29 @@
 
 {% endblock %}
 
-
 {% block content_body %}
 
     <div class="petition-wrapper">
+
+        <div class="detail-petition-bar-wrapper">
+            <div class="feed-petition-bar-wrapper">
+                {% include 'site/pages/content_detail/petition_bar.html' with petition=content %}
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+
         <div class="inline_editable" data-model="Petition" data-p_id="{{ content.id }}">
             <div class="header-wrapper">
-                <div class="content-info-header">
-                    Full Text
-                </div>
                 {% if iown and not petition.finalized %}
+                    <div class="content-info-header not_editing_display">
+                        edit
+                    </div>
                     <div class="edit-link pencil-button edit_button not_editing_display"></div>
                 {% endif %}
                 <div style="clear:both;"></div>
             </div>
             <div class="text-wrapper being_edited not_editing_display">
-                {{ content.full_text }}
+                {{ content.full_text|linebreaksbr }}
             </div>
             {% if iown and not petition.finalized %}
                 <div class="inline-edit-input inline_edit doing_editing_display">

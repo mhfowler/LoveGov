@@ -187,7 +187,6 @@ div.feed-main
 
 
 
-
 /* feed items */
 div.feed-item-wrapper {
   width:100%;
@@ -196,42 +195,7 @@ div.feed-item-wrapper {
   div.left-part {
     float:left;
     width:50px;
-
-    div.item-ranking
-    {
-      text-align: center;
-
-      div.heart-plus
-      {
-        @include staticImage('/images/icons/hearts/plusheart-gray.png');
-        background-repeat: no-repeat;
-        height: 18px;
-        width: 18px;
-        margin: 8px auto 4px auto;
-        cursor: pointer;
-
-        &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
-        &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
-      }
-      div.heart-number {
-        @include fontSize(20px);
-        font-weight:bold;
-      }
-      div.heart-minus
-      {
-        @include staticImage('/images/icons/hearts/minusheart-gray.png');
-        background-repeat: no-repeat;
-        height: 18px;
-        width: 18px;
-        margin: 4px auto 0px auto;
-        cursor: pointer;
-
-        &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
-        &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
-      }
-    }
   }
-
 
   div.main-part {
     float:left;
@@ -312,7 +276,6 @@ div.feed-item-wrapper {
           color:$gray;
         }
       }
-
     }
 
   }
@@ -378,6 +341,69 @@ div.feed-item-wrapper {
 
 
 
+/* feed item bottom */
+div.item-bottom {
+  margin-top:10px;
+  width:100%;
+  display:block;
+
+  // float right
+  a.num-comments {
+    margin-right:20px;
+    float:right;
+    //color:$red;
+    color:$gray;
+    margin-top:18px;
+    &:hover {
+      color:red;
+    }
+  }
+  a.share-button {
+    margin-right:20px;
+    float:right;
+    margin-top:18px;
+    color:$gray;
+    &:hover {
+      color:red;
+    }
+  }
+
+  // float left
+  a.created-avatar {
+    float:left;
+  }
+  div.name-and-submitted {
+    margin-left:8px;
+    float:left;
+    a.name {
+      color:$black;
+      &:hover {
+        color:black;
+      }
+    }
+    div.submitted {
+      color:$gray;
+    }
+  }
+}
+
+
+
+
+
+/* petition bar */
+div.feed-petition-bar-wrapper {
+  margin-top:10px;
+  div.petition-bar-wrapper {
+    div.petition-bar {
+      border-color:$gray;
+      div.red-bar {
+        background-color:$light-gray;
+      }
+    }
+  }
+}
+
 /*  news item */
 div.feed-item-wrapper {
 
@@ -398,17 +424,6 @@ div.feed-item-wrapper {
   }
 
   div.feed-petition-wrapper {
-    div.feed-petition-bar-wrapper {
-      margin-top:10px;
-      div.petition-bar-wrapper {
-        div.petition-bar {
-          border-color:$gray;
-          div.red-bar {
-            background-color:$light-gray;
-          }
-        }
-      }
-    }
   }
 
   div.feed-poll-wrapper {
@@ -492,3 +507,39 @@ div.feed-item-wrapper {
 
 
 
+
+
+/* feed item hearts */
+div.item-ranking
+{
+  text-align: center;
+
+  div.heart-plus
+  {
+    @include staticImage('/images/icons/hearts/plusheart-gray.png');
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 18px;
+    margin: 8px auto 4px auto;
+    cursor: pointer;
+
+    &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+    &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+  }
+  div.heart-number {
+    @include fontSize(20px);
+    font-weight:bold;
+  }
+  div.heart-minus
+  {
+    @include staticImage('/images/icons/hearts/minusheart-gray.png');
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 18px;
+    margin: 4px auto 0px auto;
+    cursor: pointer;
+
+    &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+    &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+  }
+}

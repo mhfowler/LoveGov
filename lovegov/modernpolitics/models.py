@@ -3424,6 +3424,8 @@ class Scorecard(Content):
 
     def getTitleDisplay(self):
         return "Scorecard: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     def getEditURL(self):
         return self.get_url() + 'edit/'
