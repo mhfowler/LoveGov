@@ -1,0 +1,19 @@
+{% extends 'site/pages/feed/feed_items/base_item.html' %}
+
+
+{% block item_main %}
+
+   <div class="feed-petition-wrapper">
+
+       <div class="petition-summary feed-item-summary">
+           {{ content.summary }}
+       </div>
+
+       <div class="feed-petition-bar-wrapper">
+           {% include 'site/pages/content_detail/petition_bar.html' with petition=content %}
+           <div style="clear:both;"></div>
+       </div>
+
+   </div>
+
+{% endblock %}

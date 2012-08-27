@@ -1,0 +1,17 @@
+{% extends 'site/pages/feed/feed_items/base_item.html' %}
+
+
+
+{% block item_main %}
+
+    <div class="news-wrapper">
+
+        <a href="{{ content.link }}" class="feed-news-link"> {{ content.link }} </a>
+
+        <div class="news-summary feed-item-summary">
+            {{ content.summary }}
+        </div>
+
+    </div>
+
+{% endblock %}
