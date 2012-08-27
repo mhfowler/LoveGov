@@ -1,30 +1,31 @@
 <div class="election-card">
 
     <div class="card-top">
-    <div class="politician-image">
-        <a href="{{ politician.get_url }}">
-            {% include 'site/pieces/avatar.html' with user=politician width="150" height="150" hoveroff=1 %}
-        </a>
+        <div class="politician-image">
+            <a href="{{ user.get_url }}">
+                {% include 'site/pieces/avatar.html' with user=user width="150" height="150" hoveroff=1 %}
+            </a>
+        </div>
+        <div class="right-side">
+            <div class="match">
+                <a href="{{ user.getQuestionsURL }}" class="match-num has_hover_comparison" data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}">
+                    {{ user.comparison.result }}
+                </a>
+                <div class="match-text">
+                    match
+                </div>
+            </div>
+
+            {% include 'site/pages/profile/support_button.html' with politician=user %}
+
+            <a href="{{ user.get_url }}" class="profile-button action-button">
+                view profile
+            </a>
+        </div>
     </div>
 
-    <div class="right-side">
-        <div class="match">
-            <div class="match-num">
-                {{ politician.comparison.result }}
-            </div>
-            <div class="match-text">
-                match
-            </div>
-        </div>
-        <a href="#" class="support-button action-button">
-            support
-        </a>
-        <a class="profile-button action-button">
-            view profile
-        </a>
-    </div>
-    </div>
     <div class="card-bottom">
-        <a href="{{ politician.get_url }}" class="politician-name"> {{ politician.get_name }}</a>
+        <a href="{{ user.get_url }}" class="politician-name"> {{ user.get_name }}</a>
     </div>
+
 </div>

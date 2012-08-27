@@ -22,7 +22,7 @@
         </div>
 
         <div class="questions-wrapper">
-            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" %}
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" only_unanswered=1 default_display="choose" %}
         </div>
 
     </div>

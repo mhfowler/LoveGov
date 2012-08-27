@@ -1,0 +1,99 @@
+{% load macros %}
+
+
+{% macro textbox label class name %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field"><input type="text" class="{{ class }}" name="{{ name }}"></div>
+    </div>
+
+{% endmacro %}
+
+{% macro textarea label class name %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field"><textarea class="{{ class }}" name="{{ name }}"></textarea></div>
+    </div>
+
+{% endmacro %}
+
+{% macro post-to groups %}
+
+    <div class="form-row">
+        <div class="label">Post to:</div>
+        <div class="field">
+            <select class="post-to" name="post_to">
+            {% for group in groups %}
+                <option value="{{ group.id }}">{{ group.title }}</option>
+            {% endfor %}
+            </select>
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro post-as %}
+
+    <div class="form-row">
+        <div class="label">Post as:</div>
+        <div class="field">
+            <input type="hidden" name="post_as" value="user">
+            <span class="post-as selected" data-poster="user">
+                {% include 'site/pieces/avatar.html' with user=viewer width='40' height='40' hoveroff="True" %}
+                <span class="post-as-label">{{ viewer.get_name }}</span>
+            </span>
+            <span class="post-as" data-poster="anonymous">
+                {% include 'site/pieces/avatar.html' with private="True" width='40' height='40' hoveroff="True" %}
+                <span class="post-as-label">Anonymous</span>
+            </span>
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro optional-label %}
+
+    <span class="optional-label">Optional</span>
+
+{% endmacro %}
+
+{% macro image %}
+
+    <div class="form-row">
+        <div class="label">Add image:</div>
+        <div class="field">
+            <input type="file" value="Choose a file" class="content-image" name="content-image">
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro topic %}
+
+    <div class="form-row">
+        <div class="label">Topic:</div>
+        <div class="field">
+            energy, america, poopstains, terrorism, education
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro save %}
+
+    <div class="save">Save</div>
+
+{% endmacro %}
+
+{% macro link-image %}
+
+    <div class="form-row link-image">
+        <div class="label">Link image: </div>
+        <div class="field">
+            link image appears here
+        </div>
+    </div>
+
+{% endmacro %}

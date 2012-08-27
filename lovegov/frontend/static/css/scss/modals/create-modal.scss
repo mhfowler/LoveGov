@@ -1,0 +1,205 @@
+@import "master-variables";
+@import "compass";
+
+div.create-modal {
+  $create-section-width: 900px;
+
+  div.type-select {
+    div.selection {
+      display: inline-block;
+      text-align: center;
+      margin: 15px 20px;
+      cursor: pointer;
+      img {
+        padding: 15px;
+        height: 95px;
+        width: 95px;
+        @include border-radius(50px);
+      }
+      span.label {
+        display: block;
+        font-size: 20px;
+        color: $text-blue;
+      }
+      &:hover img {
+        background-color: $light-gray;
+      }
+      &:active img {
+        background-color: $white-gray;
+      }
+    }
+  }
+
+  div.create-section {
+    width: $create-section-width;
+    padding: 0 50px;
+    display: none;
+    font-size: 20px;
+    span.back {
+      cursor: pointer;
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      color: $gray;
+      &:hover {
+        color: $deep-gray;
+      }
+    }
+    header {
+      text-align: center;
+      font-size: 28px;
+      color: $text-blue;
+      margin-bottom: 10px;
+    }
+    div.form {
+      @include clearfix;
+      div.form-row {
+        @include clearfix;
+        padding: 10px 0;
+        div.label {
+          float: left;
+          width: 20%;
+          text-align: right;
+          margin-right: 25px;
+          &.padded {
+            margin: 10px;
+          }
+        }
+      }
+    }
+    div.avatar-box {
+      display: inline-block;
+    }
+    div.optional {
+      width: 100%;
+      background-color: $white-gray;
+      border: 1px solid $gray;
+      position: relative;
+      span.optional-label {
+        font-size: 12px;
+        color: $deep-gray;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+      div.label {
+        color: $deep-gray;
+      }
+    }
+    div.save {
+      cursor: pointer;
+      float: right;
+      background-color: $red;
+      color: white;
+      padding: 8px;
+      @include border-radius(5px);
+      margin: 20px 0;
+      &:hover {
+        background-color: $red-light;
+      }
+      &:active {
+        background-color: $orange;
+      }
+    }
+  }
+  span.post-as {
+    vertical-align: middle;
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px;
+    @include border-radius(5px);
+    margin-right: 5px;
+    &.selected {
+      background-color: $white-gray;
+      border: 1px solid $gray;
+      padding: 4px;
+    }
+    &:hover{
+      background-color: $light-gray;
+    }
+    span.post-as-label {
+     width: 50px;
+    }
+  }
+  div.questions {
+    padding: 20px;
+    background-color: $white-gray;
+    div.question {
+      margin-bottom: 15px;
+      &.model {
+        display: none;
+        @include transition(0.2s);
+      }
+      border: 2px solid $deep-gray;
+      input {
+        margin: 10px;
+        font-size: 14px;
+        width: 460px;
+      }
+      textarea {
+        height: 30px;
+        width: 500px;
+        &:focus {
+          height: 60px;
+        }
+      }
+      div.question-title {
+        padding: 5px;
+        background-color: $orange-light;
+      }
+      div.question-answers {
+        padding: 5px;
+        background-color: white;
+
+      }
+      div.question-source {
+        padding: 5px;
+        background-color: $green-light;
+        color: $dark-green;
+        display: none;
+      }
+      span.controls {
+        float: right;
+        margin: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        span.remove {
+          display: block;
+          color: $orange;
+          &:hover { color: $red; }
+        }
+        span.add-source {
+          display: block;
+          color: $yellow-highlight;
+          &:hover { color: white; }
+       }
+      }
+    }
+    div.add-question {
+      margin-top: 10px;
+      background-color: $white-gray;
+      border: 1px solid $gray;
+      padding: 5px;
+      font-size: 14px;
+      text-align: center;
+      cursor: pointer;
+      &:hover {
+        background-color: $light-gray;
+      }
+      &:active {
+        background-color: $red;
+      }
+    }
+  }
+  textarea, input, select {
+    width: 550px;
+    font-size: 16px;
+    padding: 5px;
+  }
+  textarea {
+    height: 80px;
+    &:focus {
+      height: 120px;
+    }
+  }
+}

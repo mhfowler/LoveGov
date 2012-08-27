@@ -1,6 +1,6 @@
 <div class="question-stub question_stub" data-q_id="{{ question.id }}"
         {% if default_display %} data-default_display="{{ default_display }}" {% else  %} data-default_display="none" {% endif %}
-        >
+        {% if your_response %} data-your_response="1" data-privacy="{{ your_response.privacy }}" {% else %} data-your_response="0" {% endif %}>
     <!-- question text -->
     <div class="question-header">
         <table class="valign">
@@ -8,11 +8,12 @@
                 <td>
                     <span class="question-topic"> {% include 'site/pieces/topic_icon.html' with topic=question.main_topic width="30" height="30"%}</span>
                 </td>
-                <td>
+                <td class="question-title-wrapper">
                     <a href="{{ question.get_url }}" class="question-title"> {{ question.get_name }}</a>
                 </td>
-                <td>
+                <td class="saved-message-wrapper">
                     <span class="saved-message saved_message"> saved </span>
+                    <span class="saving-gif saving_gif"></span>
                 </td>
                 <td>
                     {% if your_response %}
@@ -21,7 +22,9 @@
                     {% else %}
                         <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
                     {% endif %}
-                    <a href="#" class="hide-button hide_button dummy_link"> hide </a>
+                    {% if default_display != "choose" %}
+                        <a href="#" class="stub-button button-cancel hide_button dummy_link"> cancel </a>
+                    {% endif %}
                 </td>
             </tr>
         </table>
@@ -29,66 +32,63 @@
     <!-- inline expansion for choosing answer, stage1 -->
     <div class="question_expanded_choose question_expanded">
         <div class="answers-wrapper">
-            {% for a in question.answers.all %}
-                <div class="answer-wrapper">
-                    <span class="question-checkbox
-                    answer_checkbox{% if your_response.most_chosen_answer.id == a.id %} clicked{% endif %}" data-a_id="{{ a.id }}"></span>
-                    <span class="answer-text"> {{ a.answer_text }}</span>
-                    <div style="clear:both"></div>
-                </div>
-            {% endfor %}
-            {% if your_response %}
-                <a href="#" class="change-explanation change_explanation dummy_link">
-                    change explanation
-                </a>
-            {% endif %}
-        </div>
-        {% comment %}
-        <div class="choose-answer-bottom">
-            <span class="question-checkbox privacy_checkbox {% if your_response.getPrivate %} clicked {% endif %}"></span>
-            <span class="privacy-text"> Answer this question Privately </span>
-        </div>
-        {% endcomment %}
-    </div>
-    <!-- inline expansion for importance and explanation, stage2 -->
-    <div class="question_expanded_explain question_expanded">
-        <!--<a href="#" class="go-back goback_button dummy_link"> go back </a> -->
-        <div class="your-response">
-            {% include 'site/pages/qa/avatar_and_response_text.html' with response=your_response%}
-        </div>
-        <div class="details-headers">
-            <div class="explanation-header answer-header"> explanation </div>
-            <div class="importance-header answer-header""> importance </div>
-            <div style="clear:both;"></div>
-        </div>
-        <div class="answer-details">
-            <textarea class="explanation">{% if your_response.explanation %}{{ your_response.explanation }}{% else %}explain your answer{% endif %}</textarea>
-            <div class="importance importance_wrapper">
-                <div class="how-important">
-                    how important is this question to you?
-                </div>
-                <div class="importance-bar importance_bar" {% if your_response %} data-weight="{{ your_response.weight }}"
-                {% else %} data-weight="50" {% endif %}></div>
-                <div class="importance-axis">
-                    <span class="low"> low </span> <span class="importance_percent importance-percent">
-                    {% if your_response %}{{ your_response.weight }}%{% else %}50%{% endif %}</span><span class="high"> high </span>
-                </div>
+            <a class="see-their-response see_their_response"> see their response </a>
+            {% with your_response_id=your_response.most_chosen_answer.id %}
+                {% for a in question.answers.all %}
+                    <div class="answer-choice answer_choice {% if forloop.first %} first {% endif %}
+                        {% if your_response_id == a.id %} clicked{% endif %}" data-a_id="{{ a.id }}">
+                        <span class="answer-text"> {{ a.answer_text }}</span>
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+            <!-- editable explanation -->
+            <div class="explanation-wrapper">
+                {% include 'site/pages/qa/answer_explanation_editable.html' %}
             </div>
-            <div style="clear:both;"></div>
+
         </div>
-        <div class="answer-bottom">
-            <span class="answer-button save-button save_button"> save </span>
-            <span class="answer-button cancel-button hide_button"> skip </span>
-            <span class="privacy-text"> Answer this question Privately </span>
-            <span class="question-checkbox privacy_checkbox {% if your_response.getPrivate %} clicked {% endif %}"></span>
-            <div style="clear:both"></div>
+        <div class="answer-actions answer_actions">
+
+            {% if your_response %}
+                {% include 'site/pages/qa/answer_privacy.html' with q_id=question.id anonymous=your_response.getPrivate %}
+            {% else %}
+                {% include 'site/pages/qa/answer_privacy.html' with q_id=question.id anonymous=anonymous_mode %}
+            {% endif %}
+
+            <div class="discuss-question a-action">
+                <span class="action-icon"></span>
+                <span class="action-text">
+                    <a href="{{ question.get_url }}" class="action-text-upper "> Discuss Question </a>
+                    <span class="action-text-lower"> {{ question.num_comments }} comment{{ question.num_comments|pluralize }}</span>
+                </span>
+                <span style="clear:both;"></span>
+            </div>
+
+            <div class="answer-importance a-action importance_wrapper">
+                <span class="action-icon answer-importance-num importance_percent"> {% if your_response %}{{ your_response.weight }}{% else %}50{% endif %}%</span>
+                <span class="action-text">
+                    <a class='action-text-upper '> How important is this question to you? </a>
+                    <div class="importance-bar-wrapper">
+                        <div class="importance-bar importance_bar" {% if your_response %} data-weight="{{ your_response.weight }}"
+                        {% else %} data-weight="50" {% endif %}></div>
+                        <div class="importance-axis">
+                            <span class="low"> low </span>
+                            <span class="high"> high </span>
+                        </div>
+                    </div>
+                </span>
+                <span style="clear:both;"></span>
+            </div>
         </div>
-        <div style="clear:both"></div>
+        <div style="clear:both;"></div>
     </div>
+
     <!-- display inputted responses to this question -->
     <div class="question-responses question_expanded_responses question_expanded">
-        {% for response in compare_responses %}
+        {% for x in compare_responses %}
             {% include 'site/pages/qa/response_stub.html' %}
         {% endfor %}
     </div>
+
 </div>

@@ -73,6 +73,12 @@ div.question-detail-sidebar {
 /**********************************************************************************************************************/
 /*  ~ browse questions                                                                                                */
 /**********************************************************************************************************************/
+div.questions-main {
+  div.red-line {
+    width:832px;
+  }
+}
+
 div.questions-sidebar {
   margin-top: 10px;
   width:150px;
@@ -120,32 +126,45 @@ div.questions-sidebar {
   }
 }
 
-div.questions-main {
-  margin-top: 0px;
 
-  div.questions-wrapper {
-    margin-top:0px;
-
-    span.answered-filter {
-      border: 1px solid $light-gray;
-      padding:8px;
-      margin-left:55px;
-      &.clicked {
-        background-color:$dark-green;
-        color:white;
-      }
-      &:hover {
-        background-color:$dark-green;
-        color:white;
-        cursor:pointer;
-      }
-    }
-  }
+div.questions-wrapper {
+  margin-top:0px;
 }
+
 
 /**********************************************************************************************************************/
 /*  ~Questions Stub                                                                                                   */
 /**********************************************************************************************************************/
+div.explanation-wrapper {
+  color:$gray;
+  float: left;
+  margin-top: 10px;
+  margin-left: 30px;
+  width:600px;
+
+  div.pencil-button {
+    margin-left:8px;
+  }
+
+  textarea.explanation-inline {
+    float:left;
+    width: 100%;
+    height: 200px;
+    padding:5px;
+  }
+
+  div.edit-links {
+    width:100%;
+    float:left;
+    a.edit-link {
+      float:right;
+      margin-top:20px;
+      margin-left:15px;
+    }
+  }
+}
+
+
 div.question_stub {
   border:1px solid $light-gray;
   margin-top:10px;
@@ -156,7 +175,7 @@ div.question_stub {
   div.question_expanded_explain {
     display:none;
   }
-  div.question_expanded_compare {
+  div.question_expanded_responses {
     display:none;
   }
 
@@ -176,13 +195,27 @@ div.question_stub {
         color:black;
       }
     }
-    span.saved-message {
-      width:60px;
-      margin-right:5px;
-      color:$blue;
-      @include fontSize(22px);
-      display:none;
-      float:right;
+    td.saved-message-wrapper {
+      width:100px;
+      position:relative;
+      span.saved-message {
+        width:60px;
+        margin-right:5px;
+        color:$blue;
+        @include fontSize(22px);
+        display:none;
+        float:right;
+      }
+      span.saving-gif {
+        @include staticImage("/images/gifs/ajax-loader.gif");
+        width: 15px;
+        height: 15px;
+        background-size: 15px 13px;
+        background-repeat: no-repeat;
+        position:absolute;
+        top:10px;
+        display:none;
+      }
     }
     a.stub-button {
       float:right;
@@ -206,12 +239,13 @@ div.question_stub {
         background-color:$dark-green;
       }
     }
-    a.hide-button {
+    a.button-cancel {
+      background-color:$gray;
+      color:white;
       display:none;
-      width:130px;
-      text-align:center;
-      margin-right:10px;
-      float:right;
+      &:hover {
+        background-color:$dark-gray;
+      }
     }
     div.change-privacy {
       float:right;
@@ -271,82 +305,129 @@ div.question_stub {
 
 /* choose interface */
   div.question_expanded_choose {
-    padding:10px;
-    padding-left:20px;
-    padding-right:20px;
+    padding:20px;
 
     div.answers-wrapper {
-      padding-bottom:20px;
-      div.answer-wrapper {
-        margin-top:15px;
+      float:left;
+      width: 660px;
+      position:relative;
+      min-height:182px;
+      div.answer-choice {
+        float:left;
+        width:100%;
+        padding:10px;
+        min-height:70px;
+        @include border-radius(8px);
+        &:hover {
+          background-color:$awesome-blue;
+          cursor:pointer;
+        }
+        &.clicked {
+          background-color:$awesome-blue;
+          //border:1px solid $green;
+          &:hover {
+            background-color:$awesome-blue;
+          }
+        }
+        span.answer-text {
+          @include fontSize(18px);
+        }
       }
-      span.answer-text {
-        width:830px;
-        margin-left:15px;
-        margin-top:2px;
-        @include fontSize(16px);
+      div.answer-choice.first {
+        margin-top:0px;
+      }
+      a.see-their-response {
+        width:100%;
+        text-align:center;
+        position:absolute;
+        top:-4px;
+        display:none;
+        //display:none;
       }
     }
-    a.change-explanation {
+
+    div.answer-actions {
+      width:190px;
       float:right;
-      text-decoration:italic;
-      color:$black;
-      &:hover {
-        color:$gray;
-      }
-    }
-  }
+      @include fontSize(16px);
+      padding: 10px 0px;
+      div.a-action {
+        margin-top:20px;
+        height:30px;
+        display:block;
+        span.action-icon {
+          float:left;
+          width:25px;
+          height:25px;
+        }
+        span.action-text {
+          float:left;
+          margin-left:15px;
+          width:150px;
+          span.action-text-upper {
+            color:$black;
+          }
+          a.action-text-upper {
+            color:$black;
+            &:hover {
+              color:black;
+            }
+          }
+          span.action-text-lower {
+            float:left;
+            color:$gray;
+            @include fontSize(14px);
+            margin-left:20px;
+          }
+        }
 
-/* explain inteface */
-  div.question_expanded_explain {
-    padding: 20px 40px 0 30px;
-
-    a.go-back {
-      display:block;
-    }
-
-    div.details-headers {
-      margin-top:10px;
-      display:block;
-      width:100%;
-      div.explanation-header {
-        margin-left:150px;
+        span.public-icon {
+          @include staticImage("/images/icons/privacy/public_red.png");
+          background-repeat:no-repeat;
+          background-size:15px 15px;
+        }
+        span.private-icon {
+          @include staticImage("/images/icons/privacy/anon_red.png");
+          background-repeat:no-repeat;
+          background-size:15px 15px;
+        }
+        span.answer-importance-num {
+          color:$dark-gray;
+          position: relative;
+          left: -6px;
+          @include fontSize(16px);
+        }
       }
-      div.importance-header {
-        margin-left:380px;
+      div.a-action.answer-privacy {
+        margin-top:0px;
       }
-      div.answer-header {
-        float:left;
-        @include fontSize(16px);
-        font-weight:bold;
+      div.a-action.discuss-question {
+        margin-top:21px;
       }
-    }
+      div.a-action.answer-importance {
+        margin-top:21px;
 
-    div.answer-details {
-      margin-top:0px;
-
-      textarea.explanation {
-        float:left;
-        width:400px;
-        height:100px;
-        padding:5px;
-        color:$black;
-      }
-      div.importance {
-        padding-top:20px;
-        float:right;
-        border-left:1px solid $light-gray;
-        padding-left:30px;
-        width:400px;
-        height:100px;
         div.importance-bar {
-          margin-top:10px;
-          width:100%;
-          height:10px;
-          border:1px solid $black;
+          margin-top: 9px;
+          width: 90%;
+          height:8px;
+          border:1px solid $gray;
+          @include border-radius(0px);
+          a.ui-slider-handle {
+            background:none;
+            background-color:white;
+            border-color:$black;
+            width: 10px;
+            position: absolute;
+            top: -9px;
+            margin-left: -2.3px;
+            height: 23px;
+            @include border-radius(0px);
+          }
         }
         div.importance-axis {
-          margin-top:10px;
+          margin-top:2px;
+          display:none;
           span.importance-percent {
             margin-left:150px;
           }
@@ -354,49 +435,6 @@ div.question_stub {
             float:right;
           }
         }
-      }
-    }
-    div.answer-bottom {
-      margin-top:15px;
-      float:right;
-      text-align:center;
-      width:100%;
-      @include fontSize(18px);
-      margin-bottom:10px;
-      span.cancel-button {
-        float:right;
-        margin-right:20px;
-        padding:8px;
-        background-color:$dark-gray;
-        color:white;
-        width:150px;
-        &:hover {
-          background-color:$gray;
-          cursor:pointer;
-        }
-      }
-      span.save-button {
-        float:right;
-        margin-right:20px;
-        padding:8px;
-        background-color:$green;
-        color:white;
-        width:150px;
-        &:hover {
-          background-color:$gray;
-          cursor:pointer;
-        }
-      }
-      span.privacy-text {
-        float:right;
-        @include fontSize(16px);
-        margin-right:20px;
-        margin-top:10px;
-      }
-      span.question-checkbox {
-        float:right;
-        margin-right:10px;
-        margin-top:10px;
       }
     }
   }
@@ -440,7 +478,7 @@ div.question_stub {
   -khtml-border-radius:20px;
   border-radius:20px;
 /*box-shadow: 8px 8px 20px #888888;*/
-  border: 1px solid #F0503B;
+  border: 1px solid $gray;
   z-index:9000;
 }
 

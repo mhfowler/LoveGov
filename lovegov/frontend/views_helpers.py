@@ -71,6 +71,10 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
     bucket_uids = {}
     for x in bucket_list:
         bucket_uids[x] = []
+    if which=='mini':
+        maximum = MINI_HISTOGRAM_MAXIMUM
+    else:
+        maximum = -1
     histogram_metadata = {'total':0,
                           'identical':0,
                           'identical_uids':[],
@@ -80,7 +84,8 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
                           'increment':increment,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
+                          'current_bucket': -1 ,
+                          'maximum': maximum}
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
 
@@ -98,7 +103,7 @@ def contentDetail(request, content, vals):
         vals['my_vote'] = my_vote[0].value
     else:
         vals['my_vote'] = 0
-    vals['iown'] = (creator_display.you)
+    vals['iown'] = creator_display.you
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get share button values
@@ -285,7 +290,9 @@ def getPollProgress(viewer, poll):
 def valsGroup(viewer, group, vals):
     # Set group and group comparison
     vals['group'] = group
-    vals['group_comparison'] = group.getComparison(viewer)
+    comparison = group.getComparison(viewer)
+    vals['group_comparison'] = comparison
+    vals['comparison_breakdown'] = comparison.toBreakdown()
 
     # Figure out if this user is an admin
     vals['is_user_admin'] = False
@@ -296,10 +303,11 @@ def valsGroup(viewer, group, vals):
             break
 
     # Get list of all Admins
-    vals['group_admins'] = group.admins.all()
+    vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
-    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
+    group_members = group.getMembers()
+    vals['group_members'] = group_members[:16]
 
     # Get the number of group Follow Requests
     vals['num_group_requests'] = group.getNumFollowRequests()
@@ -307,6 +315,19 @@ def valsGroup(viewer, group, vals):
     # Get the total number of members
     vals['num_members'] = group.num_members
 
+    # vals for group buttons
+    valsGroupButtons(viewer, group, vals)
+
+    # pinned
+    pinned = group.pinned_content.all()
+    vals['pinned'] = pinned
+
+    # histogram
+    loadHistogram(5, group.id, 'mini', vals=vals)
+
+    return vals
+
+def valsGroupButtons(viewer, group, vals):
     # Is the current viewer already (requesting to) following this group?
     vals['is_user_requested'] = False
     vals['is_user_confirmed'] = False
@@ -319,15 +340,7 @@ def valsGroup(viewer, group, vals):
             vals['is_user_requested'] = True
         if group_joined.rejected:
             vals['is_user_rejected'] = True
-
-    ## TEST ##
-    items = Content.objects.filter(type='N')
-    vals['item1'] = items[0]
-    vals['item2'] = items[1]
-
-    # histogram
-    loadHistogram(5, group.id, 'mini', vals=vals)
-
+    vals['is_user_following'] = group in viewer.group_subscriptions.all()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -340,3 +353,39 @@ def valsElection(viewer, election, vals):
     vals['running'] = running
     vals['election'] = election
     return vals
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for a petition
+#-----------------------------------------------------------------------------------------------------------------------
+def valsPetition(viewer, petition, vals):
+    signers_limit = 8
+    vals['petition'] = petition
+    signers = petition.getSigners()
+    vals['signers'] = signers[:signers_limit]
+    vals['i_signed'] = (viewer in signers)
+    vals['num_signers'] = len(signers)
+    vals['i_created'] = (petition.creator == viewer)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for fb friends invite sidebar
+#-----------------------------------------------------------------------------------------------------------------------
+def valsFBFriends(request, vals):
+    class FBFriend:
+        pass
+    viewer = vals['viewer']
+    fb_friends = []
+    if viewer.facebook_id:
+        fb_return = fbGet(request,'me/friends/')
+        if fb_return:
+            friends_list = fb_return['data']
+            vals['facebook_authorized'] = False
+            if friends_list:
+                vals['facebook_authorized'] = True
+                for friend in random.sample(friends_list, 4):
+                    fb_friend = FBFriend()
+                    fb_friend.name = friend['name']
+                    fb_friend.id = friend['id']
+                    fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                    fb_friends.append(fb_friend)
+                    vals['facebook_friends'] = fb_friends
+    return fb_friends

@@ -9,7 +9,8 @@ div.feed-item-thin
   height: 52px;
   border: 1px solid $light-gray;
   @include clearfix();
-  background-color: $yellow-highlight;
+  //background-color: $highlight-yellow;
+  background-color: $special-blue;
   margin-bottom: 10px;
 
   div.feed-item-thin-right-info

@@ -25,7 +25,8 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
     user.last_answered = datetime.datetime.now()
     user.save()
 
-    my_response = user.view.responses.filter(question=question)
+    view = user.view
+    my_response = view.responses.filter(question=question)
 
     if not my_response:
         if not weight:
@@ -40,6 +41,7 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
             response.most_chosen_num = 1
             response.total_num = 1
         response.autoSave(creator=user, privacy=privacy)
+        view.responses.add(response)
         user.num_answers += 1
         user.save()
     # else update old response
@@ -52,17 +54,58 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         response.most_chosen_answer = chosen_answer
         response.weight = weight
         response.explanation = explanation
-        # update creation relationship
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
+        response.created_when = datetime.datetime.now()
         response.saveEdited(privacy)
 
-    action = CreatedAction(user=user,privacy=privacy,content=response)
-    action.autoSave()
+    #action = CreatedAction(user=user,privacy=privacy,content=response)
+    #action.autoSave()
 
     return response
 
+
+def scorecardAnswerAction(user, scorecard, question, answer_id):
+
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    if not chosen_answer:
+        chosen_answer = None
+    scorecard.last_answered = datetime.datetime.now()
+    scorecard.save()
+
+    scorecard_view = scorecard.scorecard_view
+    my_response = scorecard_view.responses.filter(question=question)
+
+    weight = 50
+    explanation = ""
+
+    if not my_response:
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.autoSave(creator=user, privacy="PRI")
+        scorecard_view.responses.add(response)
+    # else update old response
+    else:
+        response = my_response[0]
+        if not weight:
+            weight = response.weight
+        if not explanation:
+            explanation = response.explanation
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.saveEdited("PRI")
+
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
@@ -346,4 +389,91 @@ def userFollowResponseAction(from_user,to_user,response,privacy):
 
     else:
         LGException( "User ID #" + str(to_user.id) + " has responded to a UserFollow that was not requested from " + str(from_user.id) )
+        return False
+
+
+## Action causes user to support or unsupport inputted politician, support is true or false, depending on whether to start or stop ##
+def supportAction(viewer, politician, support, privacy):
+    if politician.politician:
+        # relationship
+        support_relationship = Supported.lg.get_or_none(user=viewer, to_user=politician)
+        change = False
+        if not support_relationship:
+            support_relationship = Supported(user=viewer, to_user=politician)
+            support_relationship.autoSave()
+            if support:
+                politician.num_supporters += 1
+                politician.save()
+                change = True
+        else:
+            if support and not support_relationship.confirmed:
+                politician.num_supporters += 1
+                politician.save()
+                change = True
+            if not support and support_relationship.confirmed:
+                politician.num_supporters -= 1
+                politician.save()
+                change = True
+            support_relationship.confirmed = support
+            support_relationship.privacy = privacy
+            support_relationship.save()
+        # action
+        if support:
+            modifier = "A"
+        else:
+            modifier = "S"
+        if change:
+            action = SupportedAction(user=viewer,privacy=privacy,support=support_relationship,modifier=modifier)
+            action.autoSave()
+            # notification
+            politician.notify(action)
+
+## Action causes user to follow or unfollow inputted group, follow is true or false, depending on whether to start or stop ##
+def followGroupAction(viewer, group, follow, privacy):
+    if group.subscribable:
+        # action and add or remove from many to many
+        change = False
+        if follow:
+            modifier = "A"
+            if not group in viewer.group_subscriptions.all():
+                viewer.group_subscriptions.add(group)
+                change = True
+        else:
+            modifier = "S"
+            if group in viewer.group_subscriptions.all():
+                viewer.group_subscriptions.remove(group)
+                change = True
+        if change:
+            action = GroupFollowAction(user=viewer,privacy=privacy,group=group,modifier=modifier)
+            action.autoSave()
+
+
+## content gets pinned to group, if viewer is admin of group and content not already pinned ##
+def pinContentAction(viewer, content, group, privacy):
+    if group.hasAdmin(viewer):
+        if not content in group.pinned_content.all():
+            group.pinned_content.add(content)
+            pinned_action = PinnedAction(user=viewer, privacy=privacy, to_group=group, content=content, confirmed=True)
+            pinned_action.autoSave()
+            return True
+        else:
+            LGException("user " + str(viewer.id) + " tried to pin content to group which content was already pinned to. g_id:" + str(group.id) )
+            return False
+    else:
+        LGException("user " + str(viewer.id) + " tried to pin content to group they were not admin of. g_id:" + str(group.id) )
+        return False
+
+## content gets unpinned from group, if viewer is admin of group and content was previously pinned ##
+def unpinContentAction(viewer, content, group, privacy):
+    if group.hasAdmin(viewer):
+        if content in group.pinned_content.all():
+            group.pinned_content.remove(content)
+            pinned_action = PinnedAction(user=viewer, privacy=privacy, to_group=group, content=content, confirmed=False)
+            pinned_action.autoSave()
+            return True
+        else:
+            LGException("user " + str(viewer.id) + " tried to unpin content from group which content was not pinned to. g_id:" + str(group.id) )
+            return False
+    else:
+        LGException("user " + str(viewer.id) + " tried to unpin content from group they were not admin of. g_id:" + str(group.id) )
         return False

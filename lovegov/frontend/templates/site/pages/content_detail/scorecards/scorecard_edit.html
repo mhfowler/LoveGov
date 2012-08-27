@@ -1,0 +1,27 @@
+{% extends 'site/pages/content_detail/scorecards/scorecard_detail.html' %}
+
+
+{% block scorecard_body %}
+
+    <div class="edit-scorecard-header">
+
+        <div class="edit-scorecard-title">
+            Edit Your Scorecard Responses
+        </div>
+
+        <div class="edit-scorecard-description">
+            Choose answers below for your scorecard. These answers will be saved for the scorecard rather than for
+            you personally, and will be used to assign scores to the politicians who are matched against this scorecard.
+        </div>
+
+    </div>
+
+
+    <div class="edit-scorecard-wrapper">
+
+        {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" poll_id=scorecard.poll.id scorecard_id=scorecard.id save_scorecard_answer=1%}
+
+    </div>
+
+
+{% endblock %}

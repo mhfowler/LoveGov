@@ -4,8 +4,101 @@
 
 @import "compass";
 
+div.friends-title {
+  float:left;
+}
+span.num-people {
+  float:left;
+  margin-top: 4px;
+  margin-left: 18px;
+}
+a.view-all-friends {
+  float:left;
+  margin-left:20px;
+  @include fontSize(14px);
+  color:$black;
+  margin-top:3px;
+  &:hover {
+    color:$dark-gray;
+  }
+}
+
 div.friends-header {
 
+  div.friends-explanation {
+    padding-top:20px;
+    width:200px;
+    float:left;
+  }
+  div.friends-wrapper {
+    float:left;
+    margin-left:50px;
+    width:700px;
+    div.friend-wrapper {
+      float:left;
+      margin-bottom:25px;
+    }
+
+    div.no-friends {
+
+      div.import-friends {
+        margin-top:15px;
+      }
+    }
+  }
+}
 
 
+/* match card */
+div.match-card {
+  width:215px;
+
+  div.card-top {
+    width:100%;
+    height: 70px;
+    overflow: hidden;
+    div.politician-image {
+      float:left;
+    }
+    div.right-side {
+      float:left;
+      width:80px;
+      padding-left:7px;
+      line-height:64px;
+      div.match {
+        a.match-num {
+          display:block;
+          font-family: $body-fonts;
+          color:$red;
+          text-align:center;
+          width:100%;
+          @include fontSize(48px);
+          line-height:48px;
+          font-weight:bold;
+          padding-top: 2px;
+        }
+        div.match-text {
+          display:block;
+          color:$red;
+          text-align:center;
+          width:100%;
+          @include fontSize(20px);
+          font-weight:bold;
+          line-height:18px;
+          margin-bottom:6px;
+        }
+      }
+    }
+  }
+  div.card-bottom {
+    float:left;
+    width:100%;
+    a.politician-name {
+      @include fontSize(20px);
+      color:$black;
+      &:hover {
+        color:black;
+      }
+    }
+  }
 }

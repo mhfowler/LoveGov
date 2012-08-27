@@ -1,0 +1,12 @@
+{% if not group.system %}
+    {% if info.is_user_rejected or not info.is_user_confirmed and not info.is_user_requested %}
+        <div class="group-action group_join" data-g_id="{{ group.id }}"> join group </div>
+    {% elif info.is_user_confirmed %}
+        <div class="group-action group-membership
+     group_membership group_leave hover_text" data-g_id="{{ group.id }}"
+             data-hover_text="leave group" data-original_text="you're a member"> you're a member </div>
+    {% elif info.is_user_requested %}
+        <div class="group-action group-requested group_requested
+    group_leave hover_text" data-g_id="{{ group.id }}" data-hover_text="un-request" data-original_text="requested"> requested </div>
+    {% endif %}
+{% endif %}

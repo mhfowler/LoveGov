@@ -35,19 +35,16 @@
 
     <div class="group-expanded">
 
-        <div class="running">
-            {% for politician in info.running %}
-                <div class="election-card-wrapper {% if forloop.last %} last {% endif %}">
-                    {% include 'site/pages/elections/election_card.html'  %}
-                </div>
-            {% endfor %}
-        </div>
-
         <div class="election-info">
             <div class="election-date">
                 {{ info.election.election_date|date:"jS F" }}
             </div>
+            {% comment %}
             <div class="election-info-lower">
+                <div class="leaderboard-wrapper">
+                    <div class="leaderboard-header"> LEADERBOARD </div>
+                    {% include 'site/pages/elections/election_leaderboard.html' %}
+                </div>
                 <div class="election-description">
                         a description
                 </div>
@@ -55,6 +52,17 @@
                         <a href="{{ info.election.getCandidatesURL }}" class="election-action"> see all candidates </a>
                 </div>
             </div>
+            {% endcomment %}
+            <div style="clear:both;"></div>
+        </div>
+
+        <div class="running">
+            {% for user in info.running %}
+                <div class="election-card-wrapper {% if forloop.last %} last {% endif %}">
+                    {% include 'site/pages/elections/election_card.html'  %}
+                </div>
+            {% endfor %}
+            <div style="clear:both;"></div>
         </div>
 
     </div>

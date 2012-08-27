@@ -1,9 +1,3 @@
-<div class="page-top">
-    {% block top %}
-        top
-    {% endblock %}
-</div>
-
 <div class="left-sidebar">
     {% block sidebar %}
     {% endblock %}
@@ -15,6 +9,11 @@
 </div>
 
 <div class="main-focus">
+    <div class="page-top">
+        {% block top %}
+            top
+        {% endblock %}
+    </div>
     {% block main %}
         main focus
     {% endblock %}

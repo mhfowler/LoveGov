@@ -1,0 +1,30 @@
+{% extends 'site/pieces/actions/action_verbose.html' %}
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block action_content %}
+
+    <td class="action-thumbnail">
+        {% thumbnail user.getImage "25x25" crop="center" as im %}
+            <img src="{{ im.url }}" class="icon-small"/>
+        {% empty %}
+            {% thumbnail defaultProfileImage geometry crop="center" as img %}
+                <img class="avatar-image" src="{{ img.url }}"/>
+            {% endthumbnail %}
+        {% endthumbnail %}
+    </td>
+    <td class="action-text">
+        {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
+        {% if modifier == 'A' %}
+            supported
+            {% include "site/pieces/actions/action_name_snippet.html" with object=to_user you=to_you %}
+
+        {% elif modifier == 'S' %}
+            stopped supporting
+            {% include "site/pieces/actions/action_name_snippet.html" with object=to_user you=to_you %}
+
+        {% endif %}
+    </td>
+
+{% endblock %}

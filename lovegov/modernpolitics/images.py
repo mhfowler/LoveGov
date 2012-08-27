@@ -68,18 +68,3 @@ def downloadImage(img_url,url,min_size=40000):
     else:
         imageObj = saveImage(img_url=str(url + img_url),min_size=min_size)
     return imageObj
-
-#-----------------------------------------------------------------------------------------------------------------------
-# resize an image.
-#-----------------------------------------------------------------------------------------------------------------------
-def resizeImage(img_path,basewidth=230,maxheight=230):
-    try:
-        img = Image.open(img_path)
-        wpercent = (basewidth/float(img.size[0]))
-        hsize = int((float(img.size[1])*float(wpercent)))
-        img = img.resize((basewidth,hsize),Image.ANTIALIAS)
-        if img.size[1] > maxheight: img = img.crop((0,0,img.size[0],maxheight))
-        img.save(img_path)
-        return str(img_path).replace(settings.MEDIA_ROOT,settings.MEDIA_URL)
-    except:
-        pass

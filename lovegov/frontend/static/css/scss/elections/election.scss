@@ -7,59 +7,83 @@
 div.election-card-wrapper {
   float:left;
   margin-right:20px;
+  margin-bottom:25px;
 }
 div.election-card-wrapper.last {
   margin-right:0px;
 }
 
+
 div.election-card {
-  width:300px;
+  margin-right:30px;
+  margin-bottom:50px;
 
   div.card-top {
-    width:100%;
+
     div.politician-image {
       float:left;
     }
     div.right-side {
       float:left;
       width:120px;
+      padding-left:15px;
       line-height:64px;
-      div.match-num {
-        color:$red;
-        text-align:center;
-        width:100%;
-        @include fontSize(64px);
-        font-weight:bold;
-      }
-      div.match-text {
-        color:$red;
-        text-align:center;
-        width:100%;
-        @include fontSize(32px);
-        font-weight:bold;
-        line-height:14px;
-      }
-      a.action-button {
-        text-align:center;
-        line-height:14px;
-        float:left;
-        margin-top:10px;
-        padding:5px;
-        color:$black;
-        margin-left:10%;
-        width:90%;
-        background-color:$light-gray;
-        &:hover {
-          background-color:$dark-gray;
+
+      div.match {
+        padding-top:5px;
+        a.match-num {
+          display:block;
+          font-family: $body-fonts;
+          color:$red;
+          text-align:center;
+          width:100%;
+          @include fontSize(72px);
+          line-height:48px;
+          font-weight:bold;
+          padding-top: 2px;
+        }
+        div.match-text {
+          display:block;
+          color:$red;
+          text-align:center;
+          width:100%;
+          @include fontSize(28px);
+          font-weight:bold;
+          line-height:38px;
         }
       }
     }
   }
-  div.card-bottom {
+  .action-button {
+    text-align:center;
+    line-height:14px;
     float:left;
+    margin-bottom:10px;
+    padding:5px;
+    color:$black;
     width:100%;
+    background-color:$light-gray;
+    &:hover {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
+  }
+  div.support-politician {
+    @extend .action-button;
+  }
+  div.unsupport-politician {
+    @extend .action-button;
+    background-color:$blue;
+    color:white;
+    &:hover {
+      background-color:$red;
+      cursor:pointer;
+    }
+  }
+  div.card-bottom {
     a.politician-name {
-      @include fontSize(24px);
+      float:left;
+      @include fontSize(20px);
       color:$black;
       &:hover {
         color:black;
@@ -69,12 +93,11 @@ div.election-card {
 }
 
 
-div.running {
-  float:left;
-}
+
 div.election-info {
-  width:310px;
-  float:left;
+  width:100%;
+  display:block;
+  margin-bottom:20px;
   div.election-date {
     width:100%;
     text-align:center;
@@ -95,4 +118,8 @@ div.election-info {
       float:right;
     }
   }
+}
+div.running {
+  width:100%;
+  display:block;
 }

@@ -151,7 +151,7 @@ STATUS_SHARE = 0
 STATUS_FOLLOW = 0
 
 NOTIFICATION_INCREMENT = 5
-MEMBER_INCREMENT = 24
+MEMBER_INCREMENT = 16
 GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
@@ -168,6 +168,7 @@ DEFAULT_USER_NOTIFICATIONS = ['SI', 'CR', 'JO', 'DM', 'AE']
 DEFAULT_EMAIL_NOTIFICATIONS = ['VO', 'DM', 'CO', 'FO', 'JO']
 
 HISTOGRAM_RESOLUTION = 10
+MINI_HISTOGRAM_MAXIMUM = 20
 
 FIRST_LOGIN_LAST_STAGE = 7
 
@@ -266,18 +267,20 @@ PRIVACY_CHOICES = (
 
 # content types
 TYPE_CHOICES = (
-    ('E','event'),
     ('P','petition'),
     ('N','news'),
     ('L','legislation'),
     ('Q','question'),
     ('O','poll'),
+    ('S','scorecard'),
     ('R','response'),
     ('G','group'),
     ('C','comment'),
     ('A','amendment'),
     ('D','discussion'),
+    # coming soon
     ('M', 'motion'),
+    ('E','event'),
     )
 
 # types of notifications
@@ -293,7 +296,7 @@ NOTIFICATION_CHOICES = (
 # types of user action (for display)
 RELATIONSHIP_CHOICES = (
     ('SI', 'signed'),
-#    ('SU', 'supported'),
+    ('SU', 'supported'),
 #    ('ME', 'messaged'),
     ('FO', 'user_follow'),
     ('VO', 'voted'),                        # divided into like and dislike
@@ -316,6 +319,11 @@ ACTION_CHOICES = (
     ('ED', 'edited'),
     ('SH', 'shared'),
     ('XX', 'deleted'),
+    ('SU', 'supported'),
+    ('ME', 'messaged'),
+    ('AS', 'asked'),
+    ('GF', 'group_follow'),
+    ('PI', 'pinned')
 )
 
 # default, request, invite, deny, reject
@@ -329,14 +337,15 @@ ACTION_MODIFIERS = (
     ('S', 'stopped_following'),
 )
 
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU']
 
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 
 NOTIFY_MODIFIERS = {
     'VO': ['L'],
     'JO': ['A','F','R','I'],
-    'FO': ['A','F','R']
+    'FO': ['A','F','R'],
+    'SU': ['A']
 }
 
 NOTIFY_CREATOR_TYPES = ['VO','CO','SI']
@@ -372,6 +381,7 @@ GROUP_TYPE_CHOICES = (
     ('C','committee'),
     ('U','user'),
     ('E', 'election'),
+    ('X', 'calculated'),
     ('S','system')
     )
 
@@ -527,6 +537,12 @@ PETITION_LEVELS = [0, 10, 50, 100, 500, 1000, 5000, 10000, 50000,
                    50000000, 100000000, 500000000, 1000000000,
                    5000000000, 10000000000]
 
+###################################### LIKE MINDED GROUP ###############################################################
+
+LIKE_MINDED_RESULT_THRESHOLD = 80
+LIKE_MINDED_NUMQ_THRESHOLD = 5
+LIKE_MINDED_FIND_INCREMENT = 100
+
 ###################################### ACTIONS #########################################################################
 
 ACTIONS = [
@@ -614,7 +630,25 @@ ACTIONS = [
     'getElections',
     'hoverWebComparison',
     'newRegister',
-    'saveAnswer'
+    'saveAnswer',
+    'signPetition',
+    'finalizePetition',
+    'supportPolitician',
+    'createContent',
+    'askToJoin',
+    'claimProfile',
+    'messagePolitician',
+    'followGroup',
+    'submitTempAddress',
+    'getFBInviteFriends',
+    'findLikeMinded',
+    'clearLikeMinded',
+    'pinContent',
+    'changeAnswerPrivacy',
+    'editExplanation',
+    'editPetitionFullText',
+    'saveScorecardAnswer',
+    'saveAnswerInFeed'
 
 ]
 
@@ -693,6 +727,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'createMotion'
     #checkCompatability,
     'appendComment',
+    'createContent',
 ]
 
 ###################################### DATA #########################################################################
@@ -716,3 +751,5 @@ CANADIAN_PROVINCES = [ ('AB', 'Alberta'), ('BC', 'British Columbia'), ('MB', 'Ma
 STATES_DICT = {}
 for x in STATES:
     STATES_DICT[x[0]]=x[1]
+
+CURRENT_CONGRESS_SESSION = 112

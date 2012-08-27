@@ -23,82 +23,89 @@
                 <a href="{{ profile.getQuestionsURL }}" class="see-breakdown"> see comparison breakdown </a>
             </div>
 
-            <div class="profile-info">
+            {% if not profile.ghost %}
 
-                <div class="bio-statement">
-                    <div class="profile-header">
-                        About Me
-                    </div>
-                    <div class="bio-text inline-editable">
-                        <div class="inline-div inline_hide">
-                            {{ profile.bio }}
+                <div class="profile-info">
+
+                    <div class="bio-statement">
+                        <div class="profile-header">
+                            About Me
                         </div>
-                        {% if viewer.id == profile.id %}
-                            <div class="edit-link edit_button"></div>
-                            <div class="inline-edit-input inline_edit" data-model="UserProfile" data-id="{{ profile.id }}">
-                                <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
-                                <a href="" class="edit-link submit_inline_edit">submit</a>
-                                <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                        <div class="bio-text inline-editable inline_editable" data-model="UserProfile" data-id="{{ profile.id }}">
+                            <div class="inline-div being_edited not_editing_display">
+                                {{ profile.bio }}
                             </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="profile-about">
-                    <div class="profile-header">
-                        Info
-                    </div>
-                    <div class="about-item">
-                        <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
-                    </div>
-                    <div class="about-item">
-                        <span class="label"> age: </span>
-
-                        <div class="value">
-                            {% if profile.age %}{{ profile.age }}{% endif %}
+                            {% if viewer.id == profile.id %}
+                                <div class="edit-link edit_button not_editing_display"></div>
+                                <div class="doing_editing_display">
+                                    <div class="inline-edit-input inline_edit">
+                                        <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
+                                        <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
+                                        <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="about-item">
-                        <span class="label"> town: </span>
+
+                    <div class="profile-about">
+                        <div class="profile-header">
+                            Info
+                        </div>
+                        <div class="about-item">
+                            <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
+                        </div>
+                        <div class="about-item">
+                            <span class="label"> age: </span>
+
+                            <div class="value">
+                                {% if profile.age %}{{ profile.age }}{% endif %}
+                            </div>
+                        </div>
+                        <div class="about-item">
+                            <span class="label"> town: </span>
                     <span class="value">
                         {% with loc=profile.location %}
                             {% if loc.city %}
-                                {{ loc.city }},
+                                {{ loc.city }}
                             {% endif %}
                             {{ loc.state }}
                         {% endwith %}
                     </span>
-                    </div>
+                        </div>
 
-                    <div class="about-item">
-                        <span class="label"> parties: </span> <span class="value">
+                        <div class="about-item">
+                            <span class="label"> parties: </span> <span class="value">
                         {% for p in profile.parties.all %}
                             {% with full_url=p.party_label %}
-                                {% thumbnail full_url "x20" format="PNG" as im %}
-                                    <img src="{{ im.url }}" class="party-label"/>
-                                {% endthumbnail %}
+                                <a href="{{ p.get_url }}">
+                                    {% thumbnail full_url "x20" format="PNG" as im %}
+                                        <img src="{{ im.url }}" class="party-label"/>
+                                    {% endthumbnail %}
+                                </a>
                             {% endwith %}
                         {% endfor %}
                     </span>
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
-
-            <div class="profile-stuff">
+                <div class="profile-stuff">
 
                 <span class="profile-groups breakdown-box">
                     <div class="breakdown-top">
                         <div class="profile-header">
-                            Groups
+                            Groups They're In
                         </div>
-                        <a class="link-all dumm_link"> view all </a>
+                        <a class="link-all dummy_link"> view all </a>
                         <div style="clear:both;"></div>
                     </div>
                     <div class="stuff">
                         {% for g in profile_groups %}
                             <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
+                        {% empty %}
                         {% endfor %}
                     </div>
                 </span>
@@ -106,7 +113,7 @@
                 <span class="profile-politicians breakdown-box">
                     <div class="breakdown-top">
                         <div class="profile-header">
-                            Politicians
+                            Politicians They Support
                         </div>
                         <a class="link-all dummy_link"> view all </a>
                         <div style="clear:both;"></div>
@@ -116,11 +123,49 @@
                             <a class="profile-avatar" href="{{ p.get_url }}">
                                 {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
                             </a>
+                        {% empty %}
+                            <div class="empty-profile">
+                                {{ profile.first_name }} hasn't supported any politicians yet.
+                            </div>
                         {% endfor %}
                     </div>
                 </span>
 
-            </div>
+                </div>
+
+            {% else %}
+
+                <div class="profile-ghost">
+                    <div class="ghost-header">
+                        This politician hasn't realized that they need to use LoveGov to communicate with their
+                        constituents. Until they do, we have filled in their
+                        responses based on how they voted on legislation related to the questions
+                        in our official LoveGov poll.
+                    </div>
+
+                    <div class="are-you-a-politician">
+                        Are you {{ profile.get_name }}? If so, enter your email address here and we will get
+                        in contact with you to verify you and let you claim your profile.
+                        <a class="claim-profile-button claim_profile_button dummy_link" data-p_id="{{ profile.id }}"> claim </a>
+                        <input type="text" class="claim-profile claim_profile_email" placeholder="email"/>
+                        <p class="claimed-message claimed_message"> Thankyou! We'll email you and hope to see you on
+                            LoveGov very soon.
+                        </p>
+                    </div>
+
+                    <div class="are-you-concerned">
+                        Are you a concerned citizen that would like to see {{ profile.get_name }} on LoveGov?
+                        Click this button
+                        to send {{ profile.political_title }} {{ profile.first_name }} a message asking him
+                        to join.
+                        <p class="asked-message asked_message"> We sent {{ profile.get_name }} an email, hopefully he'll
+                            take notice. Thankyou!
+                        </p>
+                        <a class="ask-to-join ask_to_join" data-p_id="{{ profile.id }}"> ask to join </a>
+                    </div>
+                </div>
+
+            {% endif %}
 
             <div style="clear:both"></div>
         </div>
@@ -138,7 +183,7 @@
 
             <div class="profile-focus">
                 <div class="questions_focus profile_focus">
-                    {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" default_display="your_response"%}
+                    {% include 'site/pages/qa/feed_browse_comparisons.html' with to_compare=profile special_feed="getQuestions" default_display="responses"%}
                 </div>
                 <div class="posts_focus profile_focus">
                     {% include 'site/pages/feed/feed.html' %}

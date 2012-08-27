@@ -1,0 +1,23 @@
+<div class="match-card">
+    <div class="card-top">
+        <div class="politician-image">
+            <a href="{{ user.get_url }}">
+                {% include 'site/pieces/avatar.html' with user=user width="70" height="70" hoveroff=1 %}
+            </a>
+        </div>
+
+        <div class="right-side">
+            <div class="match">
+                <a href="{{ user.getQuestionsURL }}" class="match-num has_hover_comparison" data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}">
+                    {{ user.comparison.result }}
+                </a>
+                <div class="match-text">
+                    match
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-bottom">
+        <a href="{{ user.get_url }}" class="politician-name"> {{ user.get_name }}</a>
+    </div>
+</div>

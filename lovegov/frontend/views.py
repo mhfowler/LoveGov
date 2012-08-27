@@ -85,6 +85,9 @@ def viewWrapper(view, requires_login=False):
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
 
+            # privacy
+            vals['anonymous_mode'] = getPrivacy(request) == "PRI"
+
             # helper for key stroke sequences
             vals['sequence'] = [0]
 
@@ -468,31 +471,32 @@ def presidential(request, vals):
 def representatives(request, vals):
 
     viewer = vals['viewer']
-    location = viewer.location
-    vals['location'] = None
+    location = viewer.temp_location or viewer.location
+    vals['location'] = location
 
-#    congressmen = []
-#    if viewer.location:
-#        vals['state'] = location.state
-#        vals['district'] = location.district
-#        vals['latitude'] = location.latitude
-#        vals['longitude'] = location.longitude
-#        senator_tag = OfficeTag.objects.get(name="senator")
-#        senator_office = senator_tag.tag_offices.filter(location=location.state)[0]
-#        senators = OfficeHeld.objects.filter(content=senator_office, confirmed=True).values_list("user", flat=True)
-#
-#        representative = UserProfile.lg.get_or_none(elected_official=True, location__state=location.state,location__district=location.district)
-#        if representative:
-#            congressmen.append(representative)
-#        senators = UserProfile.objects.filter(elected_offical=True,location__state=location.state)
-#        for senator in senators:
-#            congressmen.append(senator)
-#        vals['congressmen'] = congressmen
-#    for x in congressmen:
-#        x.prepComparison(viewer)
-#    congressmen.sort(key=lambda x:x.result,reverse=True)
-#    if not congressmen:
-#        vals['invalid_address'] = True
+    congressmen = []
+    if location:
+        vals['state'] = location.state
+        vals['district'] = location.district
+        vals['latitude'] = location.latitude
+        vals['longitude'] = location.longitude
+        if location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+    if LOCAL and location:
+        bush = getUser("George Bush")
+        congressmen = [bush, bush, bush]
+    vals['congressmen'] = congressmen
+    for x in congressmen:
+        x.comparison = x.getComparison(viewer)
+    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
+    if len(congressmen) < 3:
+        vals['few_congressmen'] = True
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
@@ -508,29 +512,20 @@ def congress(request, vals):
 # friends focus (home page)
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
-    class FBFriend:
-        pass
-
     viewer = vals['viewer']
-
-    if viewer.facebook_id:
-        friends_list = fbGet(request,'me/friends/')['data']
-        vals['facebook_authorized'] = False
-        if friends_list:
-            vals['facebook_authorized'] = True
-            fb_friends = []
-            for friend in friends_list[:4]:
-                fb_friend = FBFriend()
-                fb_friend.name = friend['name']
-                fb_friend.id = friend['id']
-                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                fb_friends.append(fb_friend)
-
-                vals['facebook_friends'] = fb_friends
+    friends = viewer.getIFollow()
+    vals['i_follow'] = viewer.i_follow
+    friends = random.sample(friends, min(8, len(friends)))
+    vals['friends'] = friends
+    for f in friends:
+        f.comparison = f.getComparison(viewer)
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# question answering center
+#-----------------------------------------------------------------------------------------------------------------------
 def questions(request, vals={}):
 
     getMainTopics(vals)
@@ -545,9 +540,10 @@ def questions(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def browseGroups(request, vals={}):
 
-    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    # Render and return HTML
+    focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="browse")
+    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -582,6 +578,26 @@ def electionPage(request, election, vals={}):
     return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
+# like-minded group page
+#-----------------------------------------------------------------------------------------------------------------------
+def likeMinded(request, vals={}):
+
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    if not like_minded:
+        getMainTopics(vals)     # for question answering
+    else:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+    vals['like_minded'] = like_minded
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # profile page
 #-----------------------------------------------------------------------------------------------------------------------
 def profile(request, alias=None, vals={}):
@@ -607,8 +623,8 @@ def profile(request, alias=None, vals={}):
         if user_follow.rejected:
             vals['is_user_rejected'] = True
     
-    vals['profile_groups'] = user_profile.getGroupSubscriptions()[:4]
-    vals['profile_politicians'] = UserProfile.objects.all()[:6]
+    vals['profile_groups'] = user_profile.getRealGroups()[:4]
+    vals['profile_politicians'] = user_profile.getPoliticians()
 
     comparison, web_json = user_profile.getComparisonJSON(viewer)
     vals['web_comparison'] = comparison
@@ -618,6 +634,9 @@ def profile(request, alias=None, vals={}):
     if viewer.id == user_profile.id:
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()
         vals['num_group_invites'] = user_profile.getNumGroupInvites()
+
+    if user_profile.politician:
+        vals['is_user_supporting'] = Supported.lg.get_or_none(confirmed=True, user=viewer, to_user=user_profile)
 
     html = ajaxRender('site/pages/profile/profile.html', vals, request)
     url = user_profile.get_url()
@@ -647,7 +666,7 @@ def thread(request, c_id, vals={}):
         return HttpResponse("The indicated content item does not exist.")
     vals['content'] = content
     vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
-    html = ajaxRender('site/pages/thread.html', vals, request)
+    html = ajaxRender('site/pieces/thread.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals)
 
@@ -659,11 +678,9 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
-    vals['petition'] = petition
-    signers = petition.getSigners()
-    vals['signers'] = signers[:signerLimit]
-    vals['i_signed'] = (vals['viewer'] in signers)
-    vals['num_signers'] = len(signers)
+
+    viewer = vals['viewer']
+    valsPetition(viewer, petition, vals)
 
     contentDetail(request=request, content=petition, vals=vals)
     html = ajaxRender('site/pages/content_detail/petition_detail.html', vals, request)
@@ -690,8 +707,9 @@ def motionDetail(request, m_id, vals={}):
 def newsDetail(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
     vals['news'] = news
+    liked = news.getSupporters()
+    vals['liked'] = liked
     contentDetail(request=request, content=news, vals=vals)
-
     html = ajaxRender('site/pages/content_detail/news_detail.html', vals, request)
     url =  news.get_url()
     return framedResponse(request, html, url, vals)
@@ -723,6 +741,7 @@ def questionDetail(request, q_id=None, vals={}):
             friends_answered.append(f)
     vals['friends_answered'] = friends_answered
 
+    contentDetail(request, question, vals)
     html = ajaxRender('site/pages/content_detail/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
@@ -736,9 +755,6 @@ def pollDetail(request, p_id=-1, vals={}):
     poll = Poll.objects.get(id=p_id)
     vals['poll'] = poll
     contentDetail(request, poll, vals)
-
-    q_items = getQuestionItems(viewer, 'B', p_id=poll.id, num=None)
-    vals['q_items'] = q_items
 
     poll_progress = getPollProgress(viewer, poll)
     vals['poll_progress'] = poll_progress
@@ -755,8 +771,8 @@ def discussionDetail(request, d_id=-1, vals={}):
     viewer = vals['viewer']
     discussion = Discussion.objects.get(id=d_id)
     vals['discussion'] = discussion
+    vals['liked'] = discussion.getSupporters()
     contentDetail(request, discussion, vals)
-
     html = ajaxRender('site/pages/content_detail/discussion_detail.html', vals, request)
     url = discussion.get_url()
     return framedResponse(request, html, url, vals, rebind="discussion_detail")
@@ -963,6 +979,19 @@ def legislation_helper (request, vals={}):
     return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
 """
 #-----------------------------------------------------------------------------------------------------------------------
+# legislation detail
+#-----------------------------------------------------------------------------------------------------------------------
+def legislationDetail(request, l_id, vals={}):
+
+    legislation = Legislation.objects.get(id=l_id)
+    vals['legislation'] = legislation
+
+    contentDetail(request=request, content=legislation, vals=vals)
+    html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
+    url = legislation.get_url()
+    return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # facebook accept
 #-----------------------------------------------------------------------------------------------------------------------
 def facebookHandle(request, to_page="/login/home/", vals={}):
@@ -1082,3 +1111,70 @@ def search(request, term='', vals={}):
     html = ajaxRender('site/pages/search/search.html', vals, request)
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Scorecards
+#-----------------------------------------------------------------------------------------------------------------------
+def scorecardDetail(request, s_id, vals={}):
+
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+
+    reps = list(UserProfile.objects.all())
+    politicians = list(UserProfile.objects.all())
+    for r in reps:
+        r.comparison = scorecard.getComparison(r)
+        r.scorecard_comparison_url = scorecard.getScorecardComparisonURL(r)
+    for p in politicians:
+        p.comparison = scorecard.getComparison(p)
+        p.scorecard_comparison_url = scorecard.getScorecardComparisonURL(p)
+    reps.sort(key=lambda x:x.comparison.result,reverse=True)
+    politicians.sort(key=lambda x:x.comparison.result,reverse=True)
+
+    vals['representatives'] = reps
+    vals['politicians'] = politicians
+
+    vals['i_can_edit'] = scorecard.getPermissionToEdit(viewer)
+
+    contentDetail(request=request, content=scorecard, vals=vals)
+    html = ajaxRender('site/pages/content_detail/scorecards/scorecard_detail.html', vals, request)
+    url = scorecard.get_url()
+    return framedResponse(request, html, url, vals)
+
+def scorecardEdit(request, s_id, vals={}):
+
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+    permission = scorecard.getPermissionToEdit(viewer)
+    if permission:
+        getMainTopics(vals)
+        vals['editing_scorecard'] = True
+        vals['i_can_edit'] = permission
+        contentDetail(request=request, content=scorecard, vals=vals)
+        html = ajaxRender('site/pages/content_detail/scorecards/scorecard_edit.html', vals, request)
+        url = scorecard.get_url()
+        return framedResponse(request, html, url, vals)
+    else:
+        LGException(str(viewer.id) + " is trying to edit scorecard without permission." + str(scorecard.id))
+        return HttpResponse("you dont have permissinon to edit this scorecard")
+
+
+def scorecardCompare(request, s_id, p_alias, vals={}):
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+
+    to_compare = UserProfile.objects.get(alias=p_alias)
+    vals['to_compare'] = to_compare
+    to_compare.comparison = scorecard.getComparison(to_compare)
+    getMainTopics(vals)
+
+    html = ajaxRender('site/pages/content_detail/scorecards/scorecard_compare.html', vals, request)
+    url = scorecard.get_url()
+    return framedResponse(request, html, url, vals)
+
+def scorecardMe(request, s_id, vals={}):
+    viewer = vals['viewer']
+    return scorecardCompare(request, s_id, viewer.alias, vals)

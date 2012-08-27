@@ -5,7 +5,26 @@
  ***********************************************************************************************************************/
 var rebind;
 function bindOnReload() {
+
+    // things that get bound on items loaded by feeds and such (everything)
     bindOnNewElements();
+
+    // ajax get fb friends for sidebar after page load
+    getFBInviteFriends();
+
+    // any feeds on the page, go get themselves
+    refreshFeeds();
+
+    // for all home pages
+    navSectionOpenAll();
+    initHomePage();
+
+    // for reps page
+    loadGoogleMap();
+
+    // misc
+    bindNotificationsDropdownClickOutside();
+
     switch (rebind) {
 
         case "home": initHomePage(); break;
@@ -19,107 +38,70 @@ function bindOnReload() {
         case "legislation-view":
             shortenLongText(); break;
         case "home":
-            initFeed();
             break;
         case "profile":
-            initFeed();
             break;
         case "groupedit":
             loadGroupEdit();
             break;
         case 'questions':
-            initFeed();
             break;
         case 'question_detail':
-            bindImportanceSliders();
+            updateQuestionStubsDisplay();
             break;
         case 'poll_detail':
-            bindImportanceSliders();
+            updateQuestionStubsDisplay();
             break;
         case 'browse':
-            initFeed();
             break;
     }
-
 }
 
-function undelegated() {
-    var undelegated = $('.dummy_link');
-    undelegated.bindOnce('click.undelegate', function(event) {
-        event.preventDefault();
-    });
-}
-
+/* gets called on all new elements appended to dom */
 function bindOnNewElements() {
+
+    // dummy_links are prevent defaulted
     undelegated();
+
+    // hover comparison popup
     loadHoverComparison();
-    initHomePage();
+
+    // all histogram go get themselves  (because there is a feed of groups, this must be here)
     loadHistograms();
+
+    // all expandable headers set themselves to correct starting height
     $.each($(".expandable_wrapper"), function(i,e) {
         setInfoHeight($(this));
     });
-    bindNotificationsDropdownClickOutside();
+
+    // poll feed items autoswitch
     pollAutoSwitch();
+
+    // comparison webs initialize
     comparisonWebs();
-    updateQuestionStubsDisplay();
-}
 
-var poll_autoswitch;
-function pollAutoSwitch() {
-    clearInterval(poll_autoswitch);
-    poll_autoswitch= setInterval(function()
-    {
-        cyclePollQuestions();
-    }, 5000);
-}
+    // bind select2s
+    bindSelect2s();
 
-function comparisonWebs() {
-    $.each($(".web_comparison"), function(i,e) {
-        $(this).visualComparison();
-    });
+    // question stubs
+    bindImportanceSliders();
+
+    // tool tips
+    bindTooltips();
 }
 
 
 /***********************************************************************************************************************
  *
- *     ~Delegated binding function, similar to jquery's deprecated ".live()"
+ *     ~document.ready() of initial page load
  *
  ***********************************************************************************************************************/
-function bind(selector, events, data, handler) {
-    $(document).on(events, selector, data, handler);
-}
 
-function action(dict) {
-    var data = dict['data'];
-    var success_fun = function(data) {
-        var super_success = dict['success'];
-        if (super_success) {
-            super_success(data);
-        }
-        undelegated();
-    };
-    var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status==403) {
-            //launch403Modal(jqXHR.responseText);
-            return;
-        }
-        var super_error = dict['error'];
-        if (super_error) {
-            super_error();
-        } else {
-            $("body").html(jqXHR.responseText);
-        }
-    };
-    data['url'] = window.location.href;
-    $.ajax({
-        url: '/action/',
-        type: 'POST',
-        data: data,
-        success: success_fun,
-        error: error_fun
 
-    });
-}
+
+
+var auto_update_page;
+
 
 $(document).ready(function()
 {
@@ -153,32 +135,189 @@ $(document).ready(function()
     // init page with js
     bindOnReload();
 
+    // auto page update every minute (check for notifications)
+    clearInterval(auto_update_page);
+    auto_update_page= setInterval(function()
+    {
+        updatePage();
+    }, 60000);
 });
 
-/* does some javascript manipulation of home page */
-function initHomePage() {
-    var navlink = getNavLink(path);
-    selectNavLink(navlink);
+var auto_update_page;
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Delegated binding function, similar to jquery's deprecated ".live()"
+ *
+ ***********************************************************************************************************************/
+function bind(selector, events, data, handler) {
+    $(document).on(events, selector, data, handler);
 }
 
-/* does a get request for all feeds on page */
-function initFeed() {
-    selectRank(feed_rank);
-    selectQuestionRank(question_rank);
-    $.each(feed_types, function(i, e) {
-        selectType(e);
+var current_page_nonce=0;
+function action(dict) {
+    var data = dict['data'];
+    var pre_page_nonce = current_page_nonce;
+    var success_fun = function(data) {
+        if (pre_page_nonce == current_page_nonce) {
+            var super_success = dict['success'];
+            if (super_success) {
+                super_success(data);
+            }
+            undelegated();
+        }
+    };
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if (pre_page_nonce == current_page_nonce) {
+            if(jqXHR.status==403) {
+                //launch403Modal(jqXHR.responseText);
+                return;
+            }
+            var super_error = dict['error'];
+            if (super_error) {
+                super_error();
+            } else {
+                $("body").html(jqXHR.responseText);
+            }
+        }
+    };
+    var complete_fun = dict['complete'];
+    data['url'] = window.location.href;
+    $.ajax({
+        url: '/action/',
+        type: 'POST',
+        data: data,
+        success: success_fun,
+        error: error_fun,
+        complete: complete_fun
     });
-    $.each($(".feed_main"), function(i,e) {
-        refreshFeed($(this));
+}
+
+function smoothTransition(element, fun, time) {
+    var old_height = element.height();
+    fun();
+    var new_height = element.height();
+    element.css("height", old_height);
+    element.css('height', old_height);
+    element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
+}
+
+
+function updatePage() {
+    action({
+        'data': {'action':'updatePage', 'log-ignore':true},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+
+            // update notifications num
+            $(".notifications_dropdown_button").text(obj.notifications_num);
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            $('body').html(jqXHR.responseText);
+        }
     });
 }
 
 /***********************************************************************************************************************
  *
- *      ~Check browser compatibility using Modernizr
+ *      ~Ajax links
  *
  ***********************************************************************************************************************/
+bind(".do_ajax_link", 'click', null, function(event) {
+    ajaxReload($(this).attr("href"), true);
+});
 
+function ajaxReload(theurl, loadimg)
+{
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
+    $('#search-dropdown').hide();
+    $('.main_content').hide();
+    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
+    $.ajax
+        ({
+            url:theurl,
+            type: 'GET',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                    $('body').css("overflow","scroll");
+                    $('.main_content').css("top","0px");
+                    $(".main_content").html(returned.html);
+                    $('.main_content').show();
+                    rebind = returned.rebind;
+                    path = returned.url;
+                    bindOnReload();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        });
+}
+
+/***********************************************************************************************************************
+ *
+ *     ~random helpers/bindings
+ *
+ ***********************************************************************************************************************/
+function undelegated() {
+    var undelegated = $('.dummy_link');
+    undelegated.bindOnce('click.undelegate', function(event) {
+        event.preventDefault();
+    });
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    /*
+     poll_autoswitch= setInterval(function()
+     {
+     cyclePollQuestions();
+     }, 5000); */
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
+    });
+}
+
+/* does some javascript manipulation of home page */
+function initHomePage() {
+    var navlink = getNavLink(path);
+    selectNavLink(navlink);
+    initFeedParameters();
+}
+
+/* sets feed parameters pased on js variables */
+function initFeedParameters() {
+    selectRank(feed_rank);
+    selectQuestionRank(question_rank);
+    $.each(feed_types, function(i, e) {
+        selectType(e);
+    });
+}
+
+/* does a get request for all feeds on page */
+function refreshFeeds() {
+    $.each($(".feed_main"), function(i,e) {
+        refreshFeed($(this));
+    });
+}
+
+/* check browser compatability using modernizer */
 function checkCompatability() {
     var compatability_cookie =  $.cookie('compatability');
     if (compatability_cookie == null) {
@@ -198,16 +337,35 @@ function checkCompatability() {
     }
 }
 
+/* binds all select 2s */
+function bindSelect2s() {
+    $.each($('.select_2'), function(i,e) {
+        var placeholder = $(this).data("placeholder");
+        $(this).select2({
+            placeholder: placeholder
+        });
+    });
+}
+
 /***********************************************************************************************************************
  *
  *      ~Bind popovers
  *
  ***********************************************************************************************************************/
 
-bind(".tooltip-top", "tooltip", {'placement': 'top', 'animation': 'true'});
-bind(".tooltip-bottom", "tooltip", {'placement': 'bottom', 'animation': 'true'});
-bind(".tooltip-right", "tooltip", {'placement': 'right', 'animation': 'true'});
-bind(".tooltip-left", "tooltip", {'placement': 'left', 'animation': 'true'});
+function bindTooltips() {
+    /*
+     $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
+     $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
+     $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
+     $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+     */
+
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+}
 
 bind(".bind_link", "click", null, function(event) {
     event.preventDefault();
@@ -215,11 +373,72 @@ bind(".bind_link", "click", null, function(event) {
     window.location.href = url;
 });
 
+
 /***********************************************************************************************************************
  *
  *      ~Home
  *
  ***********************************************************************************************************************/
+/* ajax load home sections */
+function homeReload(theurl) {
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
+    $('#search-dropdown').hide();
+    $(".home_reloading").show();
+    $.ajax
+        ({
+            url:theurl,
+            type: 'POST',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $(".home_reloading").hide();
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    path = returned.url;
+                    $(".home_focus").html(returned.focus_html);
+                    bindOnReload();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        });
+}
+
+/* move asterisk, when section is selected */
+function moveAsterisk(to_where) {
+    if (to_where.length!=0) {
+        if (to_where.hasClass("navbar_link")) {
+            var offset = -4;
+        } else {
+            offset = to_where.height()/2;
+        }
+        var position = to_where.offset();
+        var top = position.top - offset;
+        var left = position.left - 40;
+        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
+    }
+}
+
+/* fill fb invite sidebar after page load */
+function getFBInviteFriends() {
+    var invite_wrapper = $(".fb_friends_wrapper");
+    if (invite_wrapper.length!=0) {
+        action({
+            data: {'action':'getFBInviteFriends' },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                invite_wrapper.html(returned.html)
+            }
+        });
+    }
+}
 
 /* red triangle toggles navsection options */
 bind(".red_triangle", 'click', null, function(event) {
@@ -239,14 +458,15 @@ bind(".home_link", 'click', null, function(event) {
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
         //closeAllNavBarSections();
-        navSectionToggle(navbar_section, true, true);
+        //navSectionToggle(navbar_section, true, true);
         homeReload($(this).attr("href"));
     } else {
-        if (navbar_section.hasClass("section_shown")) {
-            navSectionToggle(navbar_section, false, true);
-        } else {
-            navSectionToggle(navbar_section, true, true);
-        }
+        /*
+         if (navbar_section.hasClass("section_shown")) {
+         navSectionToggle(navbar_section, false, true);
+         } else {
+         navSectionToggle(navbar_section, true, true);
+         } */
     }
 });
 
@@ -260,9 +480,12 @@ function closeAllNavBarSections() {
 /* reload home page, by just replacing focus */
 bind(null, 'keydown', null, function(event) {
     var change = 0;
-    switch (event.which) {
-        case 38: change=-1; break;
-        case 40: change=1; break;
+    var active = $(document.activeElement);
+    if (!active.is("textarea")) {
+        switch (event.which) {
+            case 38: change=-1; break;
+            case 40: change=1; break;
+        }
     }
     if (change) {
         event.preventDefault();
@@ -278,6 +501,15 @@ bind(null, 'keydown', null, function(event) {
         }
     }
 });
+
+
+// opens all navbar sections
+function navSectionOpenAll() {
+    $.each($(".navbar_section"), function(i,e) {
+        navSectionToggle($(this), true, true);
+    });
+}
+
 
 function navSectionToggle(navbar_section, show, animate) {
     if (animate) {
@@ -300,7 +532,7 @@ function selectNavLink(navlink) {
             var navbar_section = navlink.parents(".navbar_section");
             navSectionToggle(navbar_section, true, false);
         }
-        moveAsterisk(navlink);
+        //moveAsterisk(navlink);
     }
 }
 
@@ -342,7 +574,7 @@ function navSectionShow(navbar_section, animation_time) {
         navbarlinks.css('height', 'auto');
         var autoHeight = navbarlinks.height();
         navbarlinks.css('height', '0px');
-        navbarlinks.animate({"height":autoHeight}, animation_time);
+        navbarlinks.animate({"height":autoHeight}, {"duration":animation_time, "complete":function(){navbarlinks.css("height", "auto");}});
         redtriangle.addClass("clicked");
         // check if currently selected link is in section being hidden
         var current_link = getNavLink(path);
@@ -464,7 +696,6 @@ function setInfoHeight(wrapper)
     }
 }
 
-
 /* expands a div from it's current height to the "auto" height */
 function expandAnimation( div , animation_time)
 {
@@ -473,83 +704,6 @@ function expandAnimation( div , animation_time)
     var autoHeight = div.height();
     div.css('height', beforeHeight + 'px');
     div.animate( { "height" : autoHeight } , animation_time);
-}
-
-function homeReload(theurl) {
-    $('#search-dropdown').hide();
-    $.ajax
-        ({
-            url:theurl,
-            type: 'POST',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                path = returned.url;
-                $(".home_focus").html(returned.focus_html);
-                bindOnNewElements();
-                initFeed();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
-}
-
-/* move asterisk, when section is selected */
-function moveAsterisk(to_where) {
-    if (to_where.length!=0) {
-        if (to_where.hasClass("navbar_link")) {
-            var offset = -4;
-        } else {
-            offset = to_where.height()/2;
-        }
-        var position = to_where.offset();
-        var top = position.top - offset;
-        var left = position.left - 40;
-        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
-    }
-}
-
-/***********************************************************************************************************************
- *
- *      ~Ajax links
- *
- ***********************************************************************************************************************/
-bind(".do_ajax_link", 'click', null, function(event) {
-    ajaxReload($(this).attr("href"), true);
-});
-
-function ajaxReload(theurl, loadimg)
-{
-    $('#search-dropdown').hide();
-    $('.main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
-    $.ajax
-        ({
-            url:theurl,
-            type: 'GET',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
-                $('body').css("overflow","scroll");
-                $('.main_content').css("top","0px");
-                $(".main_content").html(returned.html);
-                $('.main_content').show();
-                rebind = returned.rebind;
-                path = returned.url;
-                bindOnReload();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
 }
 
 /***********************************************************************************************************************
@@ -583,6 +737,7 @@ bind(".sign_in_button", 'click', null, function(event) {
 bind(".sign_in_dialogue", 'click', null, function(event) {
     event.stopPropagation();
 });
+
 
 /***********************************************************************************************************************
  *
@@ -749,7 +904,6 @@ var feed_types = [];
 var feed_rank = 'H';
 var feed_topic = null;
 var question_rank = "R";
-var to_compare_id=null;
 function getFeed(container) {
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
@@ -757,6 +911,8 @@ function getFeed(container) {
         var old_height = $("body").height();
         $("body").css('min-height', old_height);
         container.find(".feed_content").empty();
+        container.find(".load_more").show();
+        container.find(".everything_loaded_wrapper").hide();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
@@ -771,14 +927,30 @@ function getFeed(container) {
     }
     else if (feed == 'getQuestions')
     {
-        var only_unanswered = container.data('only_unanswered');
         var default_display = container.data("default_display");
+        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display};
+        // if feed is comparing responses with other user
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        // only unanswered
+        var only_unanswered = container.data('only_unanswered');
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
         }
-        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
-            'only_unanswered':only_unanswered , 'default_display':default_display};
+        data['only_unanswered'] = only_unanswered;
+        // if this feed appears on a poll
+        var p_id = container.data('p_id');
+        if (typeof(p_id) != 'undefined') {
+            data['p_id'] = p_id;
+        }
+        // if this feed appears on a scorecard
+        var scorecard_id = container.data("scorecard_id");
+        if (typeof(scorecard_id) != 'undefined') {
+            data['scorecard_id'] = scorecard_id;
+        }
     }
     else if (feed == 'getUserActivity')
     {
@@ -831,10 +1003,21 @@ function getFeed(container) {
                 clearTimeout(feed_timeout);
                 container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    container.find(".load_more").text('you loaded all that there is to load')
+                    container.find(".load_more").hide();
+                    var everything_loaded = container.find(".everything_loaded_wrapper");
+                    everything_loaded.find(".everything_loaded_image_wrapper").html(returned.everything_loaded);
+                    everything_loaded.show();
+                    everything_loaded.find(".everything_loaded_header").hide();
+                    if (feed_start==0) {
+                        everything_loaded.find(".nothing_there").show();
+                    }
+                    else {
+                        everything_loaded.find(".reached_the_end").show();
+                    }
                 }
-                bindImportanceSliders();
+                updateQuestionStubsDisplay();
                 bindOnNewElements();
+                //container.css("min-height", container.height());
             }}
     );
 }
@@ -851,7 +1034,6 @@ bind(".load_more" , "click" , null , function(event) {
  *      ~About page
  *
  **********************************************************************************************************************/
-
 bind("div.about-div-button", "click",
     function(e) {
         $('div.about-div-button').removeClass("active");
@@ -1018,7 +1200,6 @@ function leftSideToggle(wrapper)
  *      ~User menu
  *
  ***********************************************************************************************************************/
-
 bind(".user_menu_toggle", "click", function(event) {
     $('div.user-menu').fadeToggle(50);
     event.stopPropagation();
@@ -1244,13 +1425,12 @@ bind('div.load-more-comments', 'click', function(e) {
 });
 
 
-
 /***********************************************************************************************************************
  *
  *      ~InlineEdits
  *
  ***********************************************************************************************************************/
-function editUserProfile(info,edit_div)
+function editUserProfile(info,being_edited, not_editing_display)
 {
     var prof_data = info;
     prof_data.action = 'editProfile';
@@ -1260,14 +1440,14 @@ function editUserProfile(info,edit_div)
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            edit_div.text(obj.value);
-            edit_div.show();
+            being_edited.text(obj.value);
+            not_editing_display.show();
         }
     });
 }
 
 
-function editContent( c_id , info , edit_div )
+function editContent( c_id , info , being_edited, not_editing_display )
 {
     var content_data = info;
     content_data.action = 'editContent';
@@ -1279,28 +1459,67 @@ function editContent( c_id , info , edit_div )
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            edit_div.html(obj.value);
-            edit_div.show();
+            being_edited.html(obj.value);
+            not_editing_display.show();
+        }
+    });
+}
+
+function editExplanation(r_id, q_id, explanation, being_edited, not_editing_display) {
+    if (explanation == 'I think..') {
+        explanation = "";
+    }
+    action({
+        'data': {'action':'editExplanation', 'q_id':q_id, 'r_id':r_id, 'explanation':explanation},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html('"' + obj.explanation + '"');
+            not_editing_display.show();
         }
     });
 }
 
 
+function editPetitionFullText(p_id, full_text, being_edited, not_editing_display )
+{
+    action({
+        'data': {'action':'editPetitionFullText', 'p_id':p_id, 'full_text':full_text},
+
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html(obj.value);
+            not_editing_display.show();
+        }
+    });
+}
 
 bind( ".edit_button" , 'click', null , function(event)
 {
-    event.preventDefault();
-    $(this).siblings('.inline_hide').hide();
-    $(this).hide();
+    var wrapper = $(this).parents(".inline_editable");
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    not_editing_display.hide();
+    doing_editing_display.show();
+});
 
-    $(this).siblings('.inline_edit').show();
+bind( ".cancel_inline_edit" , 'click' , null , function(event)
+{
+    var wrapper = $(this).parents(".inline_editable");
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    doing_editing_display.hide();
+    not_editing_display.show();
 });
 
 bind( ".submit_inline_edit" , 'click' , null , function(event)
 {
-    event.preventDefault();
-    var input = $(this).siblings('.edit_input');
-    var wrapper = $(this).parent();
+    /* fucking wrapper */
+    var wrapper = $(this).parents(".inline_editable");
+
+    /* values of what is being edited */
+    var input = wrapper.find('.edit_input');
     var name = input.attr('name');
     var value = input.val();
     var model = wrapper.data('model');
@@ -1308,16 +1527,35 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
         'key':name,
         'val':value
     };
-    var edit_div = $(this).parent().siblings('.inline_hide');
 
+    /* what visually should be shown while editing or not editing */
+    var being_edited = wrapper.find('.being_edited');
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    doing_editing_display.hide();
+
+    /* which edit are we calling */
     if( model == "Content" )
     {
         var c_id = wrapper.data('id');
-        editContent(c_id,info,edit_div);
+        editContent(c_id,info,being_edited, not_editing_display);
     }
     else if( model == "UserProfile")
     {
-        editUserProfile(info,edit_div);
+        editUserProfile(info,being_edited, not_editing_display);
+    }
+    else if( model == "Explanation")
+    {
+        var r_id = wrapper.data("r_id");
+        var q_id = wrapper.data('q_id');
+        var explanation = value;
+        editExplanation(r_id, q_id, explanation, being_edited, not_editing_display);
+    }
+    else if (model == "Petition")
+    {
+        var p_id = wrapper.data("p_id");
+        var full_text = value;
+        editPetitionFullText(p_id, full_text, being_edited, not_editing_display);
     }
 
     $(this).parent().siblings('.edit_button').show();
@@ -1326,7 +1564,7 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~loagin
+ *      ~login
  *
  **********************************************************************************************************************/
 var login_state;
@@ -1456,20 +1694,45 @@ bind(".r_register", 'click', null, function(event) {
  *
  **********************************************************************************************************************/
 
-bind(".user_unfollow", 'mouseenter', null, function(event) {
-    $(this).text('stop');
-});
-bind(".user_unfollow", 'mouseout', null, function(event) {
-    $(this).text('following');
+bind(".message_politician", 'click', null, function(event) {
+    var p_id = $(this).data("p_id");
+    getModal("message_politician", {'p_id':p_id});
 });
 
-bind(".user_unrequest", 'mouseenter', null, function(event) {
-    $(this).text('un-request');
-});
-bind(".user_unrequest", 'mouseout', null, function(event) {
-    $(this).text('requested');
+bind(".send_message", 'click', null, function(event) {
+    var wrapper = $(this).parents(".message_politician_wrapper");
+    var p_id = wrapper.data("p_id");
+    var message = wrapper.find(".message_textarea").val();
+    action({
+            data: {
+                'action': 'messagePolitician',
+                'p_id': p_id,
+                'message': message
+            },
+            success: function(data)
+            {
+                var old_height = wrapper.height();
+                var old_width = wrapper.width();
+                wrapper.css({"height":old_height,"width":old_width});
+                wrapper.find(".send_a_message").hide();
+                wrapper.find(".message_success").fadeIn(100);
+                //setTimeout(hideModal(null),1000);
+            }
+        }
+    );
 });
 
+/* mouse over text change for some buttons */
+bind(".hover_text", 'mouseenter', null, function(event) {
+    var hover_text = $(this).data("hover_text");
+    $(this).text(hover_text);
+});
+bind(".hover_text", 'mouseout', null, function(event) {
+    var original_text = $(this).data("original_text");
+    $(this).text(original_text);
+});
+
+/* profile tabs */
 bind(".profile_tab", 'click', null, function(event) {
     $(".profile_tab").removeClass("clicked");
     $(this).addClass("clicked");
@@ -1505,7 +1768,7 @@ bind(".group_invited_modal" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Following
+ *      ~Following, Supporting and other Actions
  *
  ***********************************************************************************************************************/
 bind('div.user_follow' , 'click' , null , function(event)
@@ -1572,24 +1835,59 @@ function userFollow(event,div,follow,p_id)
                     div.removeClass('user-unfollow');
                     div.addClass('user-follow');
                 }
+                updateStats();
             }
         }
     );
 }
 
+bind('div.support_politician' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    supportPolitician($(this),true,p_id);
+});
+
+bind('div.unsupport_politician' , 'click' , null , function(event)
+{
+    var p_id = $(this).data("p_id");
+    supportPolitician($(this),false,p_id);
+});
+
+/* user follower */
+function supportPolitician(div,support,p_id)
+{
+    // If support is true, start supporting
+    // If support is false, stop supporting
+    action({
+            data: {
+                'action': 'supportPolitician',
+                'support': support,
+                'p_id': p_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                div.replaceWith(returned.html);
+                updateStats();
+            }
+        }
+    );
+}
+
+
 bind( 'div.group_join' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
-    groupFollow(event,$(this),true,g_id);
+    groupJoin(event,$(this),true,g_id);
 });
 
 bind( 'div.group_leave' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
-    groupFollow(event,$(this),false,g_id);
+    groupJoin(event,$(this),false,g_id);
 });
 
-function groupFollow(event,div,follow,g_id)
+function groupJoin(event,div,follow,g_id)
 {
     event.preventDefault();
     // If follow is true, this is a join request
@@ -1609,26 +1907,11 @@ function groupFollow(event,div,follow,g_id)
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
-                var response = returned.response;
-
-                if( response == "joined")
-                {
-                    div.html("leave group");
-                    div.removeClass("group_join");
-                    div.addClass("group_leave");
+                if (follow) {
+                    var follow_button = div.siblings(".group_follow_button");
+                    followGroup(follow_button, follow, g_id);
                 }
-                else if( response == "requested")
-                {
-                    div.html("un-request group");
-                    div.removeClass("group_join");
-                    div.addClass("group_leave")
-                }
-                else if( response == "removed")
-                {
-                    div.html("join group");
-                    div.removeClass("group_leave");
-                    div.addClass("group_join")
-                }
+                div.replaceWith(returned.html);
             }
         });
 }
@@ -1710,7 +1993,7 @@ bind( ".group_response_y" , 'click' , null , function(event)
 {
     var wrapper = $(this).parent(".group_request_buttons");
     wrapper.fadeOut(600);
-    groupFollowResponse(event,"Y",wrapper);
+    groupJoinResponse(event,"Y",wrapper);
     wrapper.siblings(".group_request_text").children('.group_request_append_y').fadeIn(600);
 });
 
@@ -1718,11 +2001,11 @@ bind( ".group_response_n" , 'click' , null , function(event)
 {
     var wrapper = $(this).parent(".group_request_buttons");
     wrapper.fadeOut(600);
-    groupFollowResponse(event,"N",wrapper);
+    groupJoinResponse(event,"N",wrapper);
     wrapper.siblings(".group_request_text").children('.group_request_append_n').fadeIn(600);
 });
 
-function groupFollowResponse(event,response,div)
+function groupJoinResponse(event,response,div)
 {
     event.preventDefault();
     var follow_id = div.data("follow_id");
@@ -1737,6 +2020,53 @@ function groupFollowResponse(event,response,div)
             success: function(data)
             {
 
+            }
+        }
+    );
+}
+
+
+/* follow group */
+bind('.group_follow' , 'click' , null , function(event)
+{
+    var g_id = $(this).data("g_id");
+    followGroup($(this),true,g_id);
+});
+
+bind('.group_unfollow' , 'click' , null , function(event)
+{
+    var g_id = $(this).data("g_id");
+    followGroup($(this),false,g_id);
+});
+
+
+/* follow group */
+function followGroup(div,follow,g_id)
+{
+    // If follow is true, start following
+    // If follow is false, stop following
+    action({
+            data: {
+                'action': 'followGroup',
+                'follow': follow,
+                'g_id': g_id
+            },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                if (div.length!=0) {
+                    div.replaceWith(returned.html);
+                }
+                if (!follow) {
+                    var navlink = getNavLink(returned.href);
+                    if (navlink) {
+                        navlink.remove();
+                    }
+                }
+                else {
+                    var navlink_html = returned.navlink_html;
+                    $(".groups_wrapper").prepend(navlink_html);
+                }
             }
         }
     );
@@ -1802,26 +2132,35 @@ function groupInviteResponse(event,response,div)
  *     ~Modal General
  *
  **********************************************************************************************************************/
-
-bind( 'div.modal_overdiv' , 'click' , null , function(event)
-{
-    event.preventDefault();
-    $(this).hide();
-    $('div.modal_wrapper').hide();
-});
-
-bind( 'div.modal_close' , 'click' , null , function(event)
-{
-    event.preventDefault();
-    $('div.modal_wrapper').hide();
+function hideModal(event) {
+    $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
-});
+}
+
+function showModal() {
+    $('div.modal_general').fadeIn(500).css('display', 'inline-block');
+    $('div.modal_overdiv').fadeIn(500);
+}
+
+// Bind clicks outside modal to closing the modal
+bind( 'div.modal-wrapper', 'click', hideModal);
+bind( 'div.modal_overdiv', 'click', hideModal);
+bind( '.modal_close', 'click', hideModal);
+// Don't propogate modal clicks to modal-wrapper (which would close modal)
+bind( 'div.modal-general', 'click', function(e) {e.stopPropagation();});
 
 function getModal(modal_name,data)
 {
     if( typeof(data)=='undefined'){ data = { 'modal_name':modal_name }; }
     else{ data['modal_name'] = modal_name; }
     data['action'] = 'getModal';
+    var modal_general = $('div.modal_general');
+
+    // If create modal has recently been opened, use version in memory to avoid data loss
+    if(modal_name=="create_modal" && modal_name==modal_general.data('last-loaded')) {
+        showModal();
+        return;
+    }
 
     action({
         data: data,
@@ -1829,20 +2168,24 @@ function getModal(modal_name,data)
         {
             var returned = eval('(' + response_data + ')');
             $('div.modal_content').html( returned.modal_html );
+            modal_general.data('last-loaded',modal_name);
 
-            var modal_wrapper = $('div.modal_wrapper');
-
-            //Get New Modal Position
-            var body_middle = $('body').width()/2;
-            var left_offset = modal_wrapper.outerWidth()/2;
-            var left_position = body_middle - left_offset;
-            modal_wrapper.css('left',left_position);
-
-            modal_wrapper.fadeIn(500);
-            $('div.modal_overdiv').fadeIn(500);
+            showModal();
+            bindOnNewElements();
         }
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *      ~Random modals that get things you need
+ *
+ ***********************************************************************************************************************/
+bind('.group_description_modal' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal('group_description' , { 'g_id': g_id });
+});
 
 
 /***********************************************************************************************************************
@@ -1850,7 +2193,6 @@ function getModal(modal_name,data)
  *     ~Group Header
  *
  **********************************************************************************************************************/
-
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
@@ -2229,95 +2571,6 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverBreakdown()
-{
-
-    var hoverTimer;
-    var hoverClearOK = true;
-
-    function clearHover()
-    {
-        if( hoverClearOK )
-        {
-            $('#comparison-hover-div p').empty();
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(300);
-        }
-    }
-
-    $('#comparison-hover-div').hover
-        (
-            function() { hoverClearOK = false; },
-            function()
-            {
-                hoverClearOK = true;
-                hoverTimer = setTimeout
-                    (
-                        function() { clearHover(); },
-                        300
-                    );
-            }
-        );
-
-    function findHoverPosition(selector)
-    {
-        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
-        if (top <= $(document).scrollTop())
-        {
-            // show below
-            top = selector.offset().top + selector.height() + 30;
-            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-        }
-        else
-        {
-            // show above
-            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-        }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
-        return {top:top,left:left};
-    }
-
-    var to_hover = $('.has_hover_comparison').not('.already_hover');
-    to_hover.addClass('already_hover');
-    to_hover.hoverIntent
-        (
-            function(event)
-            {
-                var self = $(this);
-                var href = $(this).data('href');
-                var displayName = $(this).data("display_name");
-                if (href != "")
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').text('You & ' + displayName);
-                    var offset = findHoverPosition(self);
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    action({
-                        'data': {'action':'hoverComparison','href':href},
-                        'success': function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            $('#comparison-hover').html(obj.html);
-                        },
-                        'error': null
-                    });
-                }
-            },
-            function(event)
-            {
-                hoverTimer = setTimeout
-                    (
-                        function(){ clearHover(); },
-                        1000
-                    );
-            }
-        );
-}
-
 function loadHoverComparison()
 {
 
@@ -2408,19 +2661,103 @@ function loadHoverComparison()
         );
 }
 
+/* deprecated
+ function loadHoverBreakdown()
+ {
+
+ var hoverTimer;
+ var hoverClearOK = true;
+
+ function clearHover()
+ {
+ if( hoverClearOK )
+ {
+ $('#comparison-hover-div p').empty();
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div').fadeOut(300);
+ }
+ }
+
+ $('#comparison-hover-div').hover
+ (
+ function() { hoverClearOK = false; },
+ function()
+ {
+ hoverClearOK = true;
+ hoverTimer = setTimeout
+ (
+ function() { clearHover(); },
+ 300
+ );
+ }
+ );
+
+ function findHoverPosition(selector)
+ {
+ var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+ if (top <= $(document).scrollTop())
+ {
+ // show below
+ top = selector.offset().top + selector.height() + 30;
+ $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+ }
+ else
+ {
+ // show above
+ $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+ }
+ var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+ return {top:top,left:left};
+ }
+
+ var to_hover = $('.has_hover_comparison').not('.already_hover');
+ to_hover.addClass('already_hover');
+ to_hover.hoverIntent
+ (
+ function(event)
+ {
+ var self = $(this);
+ var href = $(this).data('href');
+ var displayName = $(this).data("display_name");
+ if (href != "")
+ {
+ clearTimeout(hoverTimer);
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div p').text('You & ' + displayName);
+ var offset = findHoverPosition(self);
+ $('#comparison-hover-loading-img').show();
+ $('#comparison-hover-div').fadeIn(100);
+ $('#comparison-hover-div').offset(offset);
+ action({
+ 'data': {'action':'hoverComparison','href':href},
+ 'success': function(data)
+ {
+ var obj = eval('(' + data + ')');
+ $('#comparison-hover-loading-img').hide();
+ $('#comparison-hover').html(obj.html);
+ },
+ 'error': null
+ });
+ }
+ },
+ function(event)
+ {
+ hoverTimer = setTimeout
+ (
+ function(){ clearHover(); },
+ 1000
+ );
+ }
+ );
+ }
+ */
+
 /***********************************************************************************************************************
  *
- *     ~QA
+ *     ~ q&a interface
  *
  **********************************************************************************************************************/
-
 bind('.answer_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    expandChooseInterface(stub);
-});
-
-bind('.goback_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     expandChooseInterface(stub);
@@ -2430,13 +2767,6 @@ bind('.hide_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     hideStub(stub);
-});
-
-bind('.change_explanation' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
 });
 
 function hideStub(stub) {
@@ -2452,63 +2782,79 @@ function expandChooseInterface(stub) {
     stub.find(".hide_button").show();
 }
 
-function expandExplainInterface(stub) {
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
-    stub.find(".answer_button").hide();
-    stub.find(".hide_button").show();
-}
-
-function expandResponses(stub) {
+function expandResponses(stub, animate) {
+    var old_height = stub.height();
     stub.find(".question_expanded").hide();
     stub.find(".question_expanded_responses").show();
+    var new_height = stub.height();
+    if (animate) {
+        stub.css('height', old_height);
+        stub.animate({"height":new_height}, {"duration":500, "complete":function(){stub.css("height", "auto");}});
+    }
 }
 
 /* sets question stubs to display appropriately */
 function updateQuestionStubsDisplay() {
     $.each($(".question_stub"), function(i,e) {
-        updateQuestionStubDisplay($(this));
+        updateQuestionStubDisplay($(this), false);
     });
 }
 
-function updateQuestionStubDisplay(stub) {
-    var default_display = stub.data("default_display");
-    if (default_display == 'none') {
+/* set initial display for all stubs */
+function updateQuestionStubDisplay(stub, animate, display) {
+    if (typeof(display) == 'undefined') {
+        display = stub.data("default_display");
+    }
+    if (display == 'none') {
         hideStub(stub);
     }
-    if (default_display == 'choose') {
+    if (display == 'choose') {
         expandChooseInterface(stub);
     }
-    if (default_display == 'explain') {
-        expandExplainInterface(stub);
-    }
-    if (default_display == 'responses') {
-        expandResponses(stub);
+    if (display == 'responses') {
+        var your_response = stub.data("your_response");
+        if (your_response == 1) {
+            expandResponses(stub, animate);
+        }
+        else {
+            hideStub(stub);
+        }
     }
 }
 
-bind('.answer_checkbox' , 'click' , null , function(event)
+bind('.answer_choice' , 'click' , null , function(event)
 {
+    var stub = $(this).parents(".question_stub");
     if ($(this).hasClass("clicked")) {
         $(this).removeClass("clicked");
     }
     else {
-        var stub = $(this).parents(".question_stub");
-        stub.find(".answer_checkbox").removeClass("clicked");
+        stub.find(".answer_choice").removeClass("clicked");
         $(this).addClass("clicked");
     }
     saveAnswer(stub);
 });
 
-bind('.save_button' , 'click' , null , function(event)
+
+bind('.change_answer_privacy' , 'click' , null , function(event)
 {
+    var wrapper = $(this).parents(".answer_privacy_wrapper");
     var stub = $(this).parents(".question_stub");
-    saveQuestion(stub);
+    var r_id = $(this).data("r_id");
+    var q_id = $(this).data("q_id");
+    action({
+        data: {'action':'changeAnswerPrivacy', 'r_id':r_id, 'q_id':q_id},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            wrapper.replaceWith(returned.html);
+            stub.data("privacy", returned.privacy);
+        }
+    });
 });
 
 // stage 1, save answer
 function saveAnswer(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
+    var box = stub.find(".answer_choice.clicked");
     var a_id;
     if (box.length!=0) {
         a_id = box.data('a_id');
@@ -2517,82 +2863,106 @@ function saveAnswer(stub) {
         a_id = -1;
     }
     var q_id = stub.data('q_id');
+    var default_display = stub.data("default_display");
+    var your_response = stub.data("your_response");
+    var privacy = stub.data("privacy");
+    var importance = stub.find('.importance_bar').data('weight');
+
+    var data = {'action':'saveAnswer', 'q_id':q_id,
+        'a_id':a_id, 'default_display':default_display,
+        'weight':importance, 'privacy':privacy};
+
+    var container = stub.parents(".feed_main");
+    if (container.length!=0) {
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        var scorecard_id = container.data("scorecard_id");
+        if (scorecard_id) {
+            data['scorecard_id'] = scorecard_id;
+        }
+        // check if should be scorecard edit answer
+        var save_scorecard_answer = container.data("save_scorecard_answer");
+        if (save_scorecard_answer == 1) {
+            data['action'] = 'saveScorecardAnswer'
+        }
+        // if only unanswered animate hide question
+        var only_unanswered = container.data('only_unanswered');
+        if (only_unanswered) {
+            stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
+            expandChooseInterface(stub.next('.question_stub'));
+        }
+    }
     action({
-        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':'explain'},
+        data: data,
         success: function(data) {
             var returned = eval('(' + data + ')');
-            var new_element = $(returned.html);
-            stub.replaceWith(new_element);
-            var saved_message = new_element.find(".saved_message");
+            if (default_display=='responses') {
+                var new_element = $(returned.html);
+                var old_height = stub.height();
+                stub.replaceWith(new_element);
+                stub = new_element;
+                new_element.find(".question_expanded_responses").show();
+                var new_height = new_element.height();
+                new_element.css('height', old_height);
+                new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
+                bindOnNewElements();
+            }
+            var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
-            updateQuestionStubDisplay(new_element);
-            bindImportanceSlider(new_element.find(".importance_bar"));
             updateMatches();
             updateStats();
         }
     });
 }
 
-// old way, answer and explanation (stage 2)
-function saveQuestion(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
+// answer in feed
+bind('.poll_answer' , 'click' , null , function(event)
+{
+    var item = $(this).parents(".sample_question");
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+    }
+    else {
+        item.find(".poll_answer").removeClass("clicked");
+        $(this).addClass("clicked");
+    }
+    saveAnswerInFeed(item);
+});
+
+
+function saveAnswerInFeed(item) {
+    var choice = item.find(".poll_answer.clicked");
     var a_id;
-    if (box.length!=0) {
-        a_id = box.data('a_id');
+    if (choice.length!=0) {
+        a_id = choice.data('a_id');
     }
     else {
         a_id = -1;
     }
-    var explanation = stub.find('.explanation').val();
-    var privacy_bool = stub.find(".privacy_checkbox").hasClass("clicked");
-    var privacy;
-    if (privacy_bool) {
-        privacy = 'PRI';
-    } else {
-        privacy = 'PUB';
-    }
-    var q_id = stub.data('q_id');
-    var weight = stub.find(".importance_bar").slider("value");
-    var container = stub.parents(".feed_main");
-    var default_display = "choose";
-    if (container.length!=0) {
-        default_display = container.data("default_display");
-    }
+    var q_id = item.data('q_id');
+    var data = {'action':'saveAnswerInFeed', 'q_id':q_id,
+        'a_id':a_id};
     action({
-        data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
-            'explanation':explanation,'a_id':a_id, 'weight':weight,
-            'to_compare_id':to_compare_id, 'default_display':default_display},
+        data: data,
         success: function(data) {
-            var returned = eval('(' + data + ')');
-            var only_unanswered = false;
-            if (container.length!=0) {
-                only_unanswered = container.data('only_unanswered');
-            }
-            if (only_unanswered) {
-                stub.hide();
-                expandChooseInterface(stub.next('.question_stub'));
-            }
-            else {
-                var new_element = $(returned.html);
-                stub.replaceWith(new_element);
-                var saved_message = new_element.find(".saved_message");
-                saved_message.show();
-                saved_message.fadeOut(5000);
-                bindImportanceSlider(new_element.find(".importance_bar"));
-                updateQuestionStubDisplay(new_element);
-            }
-            updateMatches();
-            updateStats();
+            var saved_message = item.find(".saved_message");
+            saved_message.show();
+            //setTimeout(function(){saved_message.fadeOut()},1000);
         }
     });
 }
 
-bind('.privacy_checkbox' , 'click' , null , function(event)
+
+bind('.see_their_response' , 'click' , null , function(event)
 {
-    $(this).toggleClass("clicked");
+    expandResponses($(this).parents(".question_stub"));
 });
 
+
+/* importance sliders */
 function bindImportanceSliders() {
     var importance_bars = $(".importance_bar");
     $.each(importance_bars, function(i, e) {
@@ -2601,18 +2971,44 @@ function bindImportanceSliders() {
 }
 
 function bindImportanceSlider(div) {
+    var stub = div.parents(".question_stub");
     var weight = div.data('weight');
     div.slider({'min':0,
         'max':100,
         'step':1,
         'value':weight,
         slide: function(event, ui) {
+            div.data('weight', ui.value);
             var text = ui.value + "%";
             $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        },
+        stop: function(event, ui) {
+            saveAnswer(stub);
         }
     });
 }
 
+
+
+
+/***********************************************************************************************************************
+ *
+ *     ~ q&a feed
+ *
+ **********************************************************************************************************************/
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
+
+/***********************************************************************************************************************
+ *
+ *     ~ homemade backbone.... dom elements which update themselves
+ *
+ **********************************************************************************************************************/
 function updateMatches() {
     $.each($(".match_object"), function(i, e) {
         updateMatch($(this));
@@ -2653,6 +3049,12 @@ function updateStatsObject(stats) {
     if (object == 'petition_bar') {
         data['p_id'] = stats.data('p_id');
     }
+    if (object == 'profile_stats') {
+        data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'election_leaderboard') {
+        data['e_id'] = stats.data('e_id');
+    }
     action({
         data: data,
         success: function(data) {
@@ -2662,14 +3064,6 @@ function updateStatsObject(stats) {
         }
     });
 }
-
-bind('.only_unanswered' , 'click' , null , function(event)
-{
-    $(this).toggleClass("clicked");
-    var container = $(this).parents(".feed_main");
-    container.data("only_unanswered", $(this).hasClass("clicked"));
-    refreshFeed(container);
-});
 
 /***********************************************************************************************************************
  *
@@ -2930,9 +3324,11 @@ function updateHistogram(histogram_wrapper, recursive) {
                 renderHistogram(histogram_wrapper);
                 getHistogramMembers(histogram_wrapper);
                 getIdenticalMembers(histogram_wrapper);
-
                 if (returned.total != 0 && recursive) {
-                    updateHistogram(histogram_wrapper, true);
+                    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+                    if (histogram_metadata.maximum == -1 || histogram_metadata.total < histogram_metadata.maximum) {
+                        updateHistogram(histogram_wrapper, true);
+                    }
                 }
             }
         }
@@ -3116,7 +3512,6 @@ function getHistogramGroupMembers(histogram_wrapper) {
     });
 }
 
-
 /***********************************************************************************************************************
  *
  *     ~Topics
@@ -3187,7 +3582,7 @@ function showTopicIcon(wrapper) {
 
 /***********************************************************************************************************************
  *
- *      ~Friends
+ *      ~Friends and facebook share
  *
  ***********************************************************************************************************************/
 
@@ -3201,13 +3596,6 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
     getModal('facebook_share_modal' , data);
 });
 
-
-
-/***********************************************************************************************************************
- *
- *      ~Facebook Share Modal
- *
- ***********************************************************************************************************************/
 
 bind( '.facebook_share_submit' , 'click' , null , function(e)
 {
@@ -3261,6 +3649,75 @@ bind( '.pin_to_group' , 'click' , null , function(e)
     });
 });
 
+bind('.pin_it' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(".pin_to_select").val();
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':1
+        },
+        success: function(data)
+        {
+            $(".was_pinned").fadeIn(500, function() { setTimeout(hideModal(), 2000)});
+        }
+    });
+});
+
+bind('.unpin_content' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(this).data("g_id");
+    var to_remove = $(this).parents(".pinned_wrapper");
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':-1
+        },
+        success: function(data)
+        {
+            to_remove.remove();
+        }
+    });
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~Petition sign
+ *
+ ***********************************************************************************************************************/
+bind('.sign_button' , 'click' , null , function(e)
+{
+    var p_id = $(this).data('p_id');
+    var signers_sidebar = $(this).parents(".signers_sidebar");
+    action({
+            data: {'action': 'signPetition', 'p_id':p_id},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                signers_sidebar.replaceWith(returned.html);
+                updateStats();
+            }}
+    );
+});
+
+bind('.finalize_button' , 'click' , null , function(e)
+{
+    var p_id = $(this).data('p_id');
+    var signers_sidebar = $(this).parents(".signers_sidebar");
+    action({
+            data: {'action': 'finalizePetition', 'p_id':p_id},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                signers_sidebar.replaceWith(returned.html);
+            }}
+    );
+});
+
 
 /***********************************************************************************************************************
  *
@@ -3273,8 +3730,13 @@ bind('.dismissible_x' , 'click' , null , function(e)
 });
 
 
+var reps_longitude;
+var reps_latitude;
+var reps_state;
+var reps_district;
 function loadGoogleMap()
 {
+
     function createDistrictsOverlay(outlines_only, opacity, state, district)
     {
         return {
@@ -3303,7 +3765,7 @@ function loadGoogleMap()
         var myOptions =
         {
             zoom: 10,
-            center: new google.maps.LatLng(match_latitude, match_longtitude),
+            center: new google.maps.LatLng(reps_latitude, reps_longitude),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             panControl: false,
             zoomControl: true,
@@ -3313,14 +3775,16 @@ function loadGoogleMap()
         };
         map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, match_state, match_district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(false, .2, reps_state, reps_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
 
-        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, match_state, match_district));
+        overlayWMS = new google.maps.ImageMapType(createDistrictsOverlay(true, .7, reps_state, reps_district));
         map.overlayMapTypes.insertAt(0, overlayWMS);
     }
 
-    initialize();
+    if (rebind=="representatives" && reps_latitude && reps_longitude && reps_state && reps_district) {
+        initialize();
+    }
 }
 
 
@@ -3332,11 +3796,126 @@ bind('.find_address_button' , 'click' , null , function(e)
     var state = form.find(".state_input").val();
     var zip = form.find(".zip_input").val();
     var city = form.find(".city_input").val();
+    var error_message = $(this).parents(".find_your_reps").find(".error_message");
+    error_message.hide();
     action({
-            data: {'action': 'submitAddress', 'address': address, 'city':city, 'state':state,
+            data: {'action': 'submitTempAddress', 'address': address, 'city':city, 'state':state,
                 'zip':zip},
             success: function(data) {
-                alert(data);
+                var returned = eval('(' + data + ')');
+                if (returned.success == -1) {
+                    error_message.fadeIn();
+                }
+                else {
+                    location.reload();
+                }
             }}
     );
 });
+
+bind('.enter_new_address' , 'click' , null , function(e) {
+    $(".dismissible_header").show();
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~claim your profile
+ *
+ ***********************************************************************************************************************/
+bind('.claim_profile_button' , 'click' , null , function(e)
+{
+    var p_id = $(this).data('p_id');
+    var email = $(".claim_profile_email").val();
+    action({
+            data: {'action': 'claimProfile', 'p_id':p_id, 'email':email},
+            success: function(data) {
+                $(".claimed_message").fadeIn();
+            }}
+    );
+});
+
+
+bind('.ask_to_join' , 'click' , null , function(e)
+{
+    var p_id = $(this).data('p_id');
+    action({
+            data: {'action': 'askToJoin', 'p_id':p_id},
+            success: function(data) {
+                $(".asked_message").fadeIn();
+            }}
+    );
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~like minded group
+ *
+ ***********************************************************************************************************************/
+bind('.find_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    findNewLikeMinded();
+});
+
+// recursive ajax function for finding new like minded members
+function findNewLikeMinded() {
+    $(".find_loading").show();
+    action({
+            data: {'action': 'findLikeMinded'},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                $(".find_loading").hide();
+                var num_new = returned.num_new_members;
+                // display num new members
+                $('.num_new_found').html(num_new);
+                $('.num_processed').html(returned.num_processed);
+                $(".find_result").show();
+                // change total members number
+                var total_num = $(".total_members").data('num');
+                total_num += num_new;
+                $(".total_members").html(total_num);
+                $(".total_members").data('num', total_num);
+                // if there were members adjust shit appropriately
+                if (num_new != 0) {
+                    $(".no_members").hide();
+                    $(".some_members").show();
+                    $(".like_minded_members").prepend(returned.html);
+                    bindOnNewElements();
+                }
+                if (returned.num_processed != 0) {
+                    findNewLikeMinded();
+                }
+            }}
+    );
+}
+
+bind('.clear_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    if (confirm("are you sure you want to do this? After clearing you will have to recalculate the members of your like-minded group.")) {
+        action({
+                data: {'action': 'clearLikeMinded'},
+                success: function(data) {
+                    $(".like_minded_members").empty();
+                    $(".clear_result").show();
+                    $(".total_members").html(0);
+                    $(".total_members").data('num',0);
+                }}
+        );
+    }
+});
+
+bind('.like_minded_explanation' , 'click' , null , function(e)
+{
+    $(".button_explanations").show();
+    $(".home_header_info").css("overflow", "visible");
+});
+
+bind('.like_minded_close' , 'click' , null , function(e)
+{
+    $(".home_header_info").css("overflow", "hidden");
+    $(".button_explanations").hide();
+});
+

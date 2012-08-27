@@ -1,0 +1,72 @@
+<div class="stats stats_object" data-object="profile_stats" data-p_id="{{ profile.id }}">
+
+    <div class="stats-row first">
+        {% if not profile.politician %}
+            <div class="stats-box white-box left-box">
+                <div class="num">
+                    {{ profile.num_followme}}
+                </div>
+                <div class="label">
+                    follower{{ profile.num_followme|pluralize }}
+                </div>
+            </div>
+            <div class="stats-box gray-box right-box">
+                <div class="num">
+                    {{ profile.num_ifollow }}
+                </div>
+                <div class="label">
+                    following
+                </div>
+            </div>
+        {% else %}
+            <div class="stats-box supporter-box white-box left-box">
+                <div class="num">
+                    {{ profile.num_supporters}}
+                </div>
+                <div class="label">
+                    supporter{{ profile.num_supporters|pluralize }}
+                </div>
+            </div>
+        {% endif %}
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stats-box gray-box left-box">
+            <div class="num">
+                {{ profile.num_groups}}
+            </div>
+            <div class="label">
+                group{{ profile.num_groups|pluralize }}
+            </div>
+        </div>
+        <div class="stats-box gray-box  right-box">
+            <div class="num">
+                {{ profile.num_posts}}
+            </div>
+            <div class="label">
+                post{{ profile.num_posts|pluralize }}
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    <div class="stats-row">
+        <div class="stats-box gray-box left-box">
+            <div class="num">
+                {{ profile.num_answers }}
+            </div>
+            <div class="label">
+                answer{{ profile.num_answers|pluralize }}
+            </div>
+        </div>
+        <div class="stats-box gray-box right-box">
+            <div class="num">
+                {{ profile.num_signatures }}
+            </div>
+            <div class="label">
+                signature{{ profile.num_signatures|pluralize }}
+            </div>
+        </div>
+    </div>
+
+</div>

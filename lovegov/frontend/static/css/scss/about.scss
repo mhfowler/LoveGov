@@ -79,6 +79,21 @@ div#about-content
   margin-top:25px;
   display:inline-block;
 
+  div#video-div {
+    width:1000px;
+    text-align:center;
+  }
+
+  div.about-section.starting-section {
+    display:block;
+    width: 1400px;
+    text-align: center;
+    @include fontSize(82px);
+    padding-top: 80px;
+    position: relative;
+    left: -196px;
+  }
+
   li
   {
     border:0;

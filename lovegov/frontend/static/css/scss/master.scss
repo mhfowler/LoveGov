@@ -85,13 +85,21 @@ div.main-top {
   }
 }
 
+/* Prevent padding from altering defined sizes */
+* {
+  @include box-sizing(border-box);
+}
+
 /***********************************************************************************************************************
 /   old stuff
 /**********************************************************************************************************************/
-* {
-  /* Prevent padding from altering defined sizes */
-  @include box-sizing(border-box);
+.main-div
+{
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
+
 
 @font-face {
   font-family: 'Raleway';
@@ -105,33 +113,8 @@ td
  padding: 0px;
 }
 
-.main-div
-{
-  width: 1000px;
-  margin-top: 50px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
-.text-blue
-{
-  color: $text-blue;
-}
-
-.text-gray
-{
-  color: $deep-gray;
-}
-
-a.text-red
-{
-  color: $red;
-  &:hover
-  {
-    color:$red-light;
-  }
-}
-
+/* the most general */
 *
 {
   margin:0;
@@ -141,6 +124,17 @@ a.text-red
 body
 {
   font-size:13px;
+}
+
+
+/* links */
+a.text-red
+{
+  color: $red;
+  &:hover
+  {
+    color:$red-light;
+  }
 }
 
 a, a:visited, a:active, a:link
@@ -198,6 +192,9 @@ a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:h
   @include fontSize(20px);
 }
 
+
+
+/* paragraphing ? */
 p
 {
   margin-bottom: 13px;
@@ -230,6 +227,10 @@ p.big
   margin-bottom:18px;
 }
 
+
+
+
+/* super general wtf */
 ol, ul
 {
   padding-left:30px;
@@ -320,6 +321,10 @@ h6
   font-size: 13px;
 }
 
+input, textarea {
+  font-family: "Sonus-ExtraLight";
+}
+
 input[type="text"], input[type="password"]
 {
   border:1px solid $gray;
@@ -330,7 +335,7 @@ input[type="text"], input[type="password"]
 
 input[type="text"]:focus, input[type="password"]:focus
 {
-  border:1px solid $red;
+  border:1px solid $dark-gray;
   outline:none;
 }
 
@@ -351,8 +356,21 @@ textarea
 
 textarea:focus
 {
-  border:1px solid $red;
+  border:1px solid $dark-gray;
   outline:none;
+}
+
+
+
+/* random stuff */
+.text-blue
+{
+  color: $text-blue;
+}
+
+.text-gray
+{
+  color: $deep-gray;
 }
 
 .button
@@ -481,7 +499,6 @@ img.rounded
 
 .big-num
 {
-/*tribute to cs17 project bignum. rest in peace. */
   font-weight:bold;
   font-size: 52px;
   color:$red;
@@ -518,12 +535,6 @@ div.round-container
   @include rounded(20px);
 }
 
-.tool-tip
-{
-  background-color:#f0503b;
-  color:white;
-}
-
 span.small
 {
   font-size:12px;
@@ -536,12 +547,10 @@ span.big
 }
 
 
-
 .bold
 {
   font-weight:bold;
 }
-
 
 .preload-images
 {
@@ -556,15 +565,6 @@ span.big
   -o-user-select: none;
   user-select: none;
 }
-
-input[type="text"].input_default { color:$dark-gray; }
-input[type="text"].input_focus
-{
-  @extend .select-none;
-  border-color:$red;
-  color:$light-gray;
-}
-input[type="text"].input_typing { color:$black }
 
 
 div.heart {
@@ -598,9 +598,7 @@ div.heart_plus:hover {
 }
 
 div.overdiv {
-  filter: alpha(opacity=35);
-  -moz-opacity: .35;
-  opacity: .35;
+  @include opacity(0.15);
   background-color: #000;
   position: fixed;
   top: 0px;
@@ -616,105 +614,6 @@ span.content_header {
   @include gillLight;
   margin-bottom: 20px;
   display: block;
-}
-
-.tooltip {
-  position: absolute;
-  z-index: 1020;
-  display: block;
-  padding: 5px;
-  font-size: 11px;
-  opacity: 0;
-  filter: alpha(opacity=0);
-  visibility: visible;
-}
-
-.tooltip.in {
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-}
-
-.tooltip.top {
-  margin-top: -2px;
-}
-
-.tooltip.right {
-  margin-left: 2px;
-}
-
-.tooltip.bottom {
-  margin-top: 2px;
-}
-
-.tooltip.left {
-  margin-left: -2px;
-}
-
-.tooltip.top .tooltip-arrow {
-  bottom: 0;
-  left: 50%;
-  margin-left: -5px;
-  border-top: 5px solid #000000;
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
-}
-
-.tooltip.left .tooltip-arrow {
-  top: 50%;
-  right: 0;
-  margin-top: -5px;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 5px solid #000000;
-}
-
-.tooltip.bottom .tooltip-arrow {
-  top: 0;
-  left: 50%;
-  margin-left: -5px;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #000000;
-  border-left: 5px solid transparent;
-}
-
-.tooltip.right .tooltip-arrow {
-  top: 50%;
-  left: 0;
-  margin-top: -5px;
-  border-top: 5px solid transparent;
-  border-right: 5px solid #000000;
-  border-bottom: 5px solid transparent;
-}
-
-.tooltip-inner {
-  max-width: 200px;
-  padding: 3px 8px;
-  color: #ffffff;
-  text-align: center;
-  text-decoration: none;
-  background-color: #000000;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-}
-
-.tooltip-arrow {
-  position: absolute;
-  width: 0;
-  height: 0;
-}
-
-.fade {
-  opacity: 0;
-  -webkit-transition: opacity 0.15s linear;
-  -moz-transition: opacity 0.15s linear;
-  -ms-transition: opacity 0.15s linear;
-  -o-transition: opacity 0.15s linear;
-  transition: opacity 0.15s linear;
-}
-
-.fade.in {
-  opacity: 1;
 }
 
 .sub-title
@@ -733,7 +632,10 @@ span#email-label
   color:$text-blue;
 }
 
-.inline-edit-input
+
+
+/* editing in line */
+.doing_editing_display
 {
   display: none;
 }
@@ -746,6 +648,7 @@ div.edit-link
   height: 16px;
   cursor: pointer;
   display: inline-block;
+  margin-left:2px;
 
   &:hover
   {
@@ -766,117 +669,41 @@ a.edit-link
 }
 
 
-div.modal-general {
-  z-index: 3;
+/* modals */
+div.modal-wrapper {
+  width: 100%;
   position: absolute;
-  padding: 30px;
   top: 100px;
-  background-color: white;
-  -moz-box-shadow: 10px 10px 5px $deep-gray;
-  -webkit-box-shadow: 10px 10px 5px $deep-gray;
-  box-shadow: 10px 10px 5px $deep-gray;
-  @include rounded(5px);
-  display: none;
-  border:1px solid $red;
-
-  div.modal-content
-  {
-    float:left;
-    padding: 20px;
-  }
-}
-
-div.first-login-modal {
   z-index: 3;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  padding: 30px;
-  background-color: white;
-  -moz-box-shadow: 10px 10px 5px $deep-gray;
-  -webkit-box-shadow: 10px 10px 5px $deep-gray;
-  box-shadow: 10px 10px 5px $deep-gray;
-  @include rounded(5px);
-  display: none;
-  border:1px solid $red;
-  @include opacity(0.92);
-  max-width: 750px;
+  text-align: center;
+  div.modal-general {
+    background-color: white;
+    @include box-shadow(20px 20px 200px #616161);
+    @include border-radius(5px);
+    @include clearfix;
+    display: none;
+    position: relative;
+    text-align: left;
 
-  a.first-login-restart {
-    float:right;
-    margin-top:150px;
-    display:none;
-  }
-
-  h2 {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  .modal-close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-  }
-  color: $red;
-  @include titleFont;
-  font-size: 20px;
-  button.tutorial-button {
-    display: block;
-    background-color: $red;
-    @include rounded(5px);
-    padding: 10px 30px;
-    color: white;
-    border: 0px;
-    margin: 25px;
-    margin-left: auto;
-    margin-right: auto;
-    &:hover {
-      background-color: $text-blue-light;
-
+    div.modal-content
+    {
+      padding: 20px;
     }
-  }
-  div.zip-code-form {
-    text-align: center;
-    input {
-      height: 40px;
-      width: 150px;
-      margin-right: 20px;
-      text-align: center;
-      float: none;
-    }
-    button.tutorial-button {
-      display: inline;
-    }
-  }
-  div.skip-tutorial {
-    text-align: center;
-    color: $black;
-    font-size: 14px;
-  }
-  img.privacy-img {
-    float: left;
-    margin-right: 10px;
-  }
-  &.slim-modal {
-    max-width: 500px;
-  }
-  div.zip-code-error-msg {
-    color: $deep-gray;
-    font-size: 16px;
-  }
-}
 
-div.modal-close
-{
-  float: right;
-  height: 10px;
-  width: 10px;
-  @include staticImage('/images/icons/x.png');
-  cursor: pointer;
-  &:hover
-  {
-    @include staticImage('/images/icons/x_hover.png');
-  }
+    div.modal-close
+    {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      width: 10px;
+      height: 10px;
+      @include staticImage('/images/icons/x.png');
+      cursor: pointer;
+      &:hover
+      {
+        @include staticImage('/images/icons/x_hover.png');
+      }
+    }}
 }
 
 div.agg-notifications-modal
@@ -929,6 +756,8 @@ div.agg-notifications-modal
   }
 }
 
+
+/* qaweb */
 div.qaweb {
   text-align:center;
   div.see-answers {

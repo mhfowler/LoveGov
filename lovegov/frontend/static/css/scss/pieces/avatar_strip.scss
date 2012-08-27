@@ -4,77 +4,92 @@
 @import "compass";
 
 div.avatar-strip {
-  padding-top:15px;
-  padding-left:25px;
+  padding-top:10px;
+  padding-left:10px;
+  padding-bottom:5px;
+  padding-right:10px;
   width:100%;
-  float:left;
-  height:150px;
   border:1px solid $gray;
 
-  div.avatar-strip-top {
-    @include clearfix;
-
-    width:100%;
-    span.user-name {
-      @include fontSize(20px);
-      float:left;
-    }
-    span.user-title {
-      color:$gray;
-      margin-top:3px;
-      float:left;
-      margin-left:10px;
-    }
-    span.heart-icon {
-      @include staticImage("/images/icons/red_heart.png");
-      background-repeat: no-repeat;
-      width:15px;
-      height:12px;
-      background-size:15px 12px;
-      margin-left:10px;
-      margin-top:5px;
-      float:left;
-    }
-    span.heart-score {
-      margin-left:10px;
-      margin-top:3px;
-      float:left;
-    }
+  div.avatar-image {
+    float:left;
   }
 
   div.avatar-strip-main {
-    width:100%;
-    @include clearfix;
+    float:left;
+    width:300px;
 
-    div.avatar-image {
-      margin-top:5px;
+    div.avatar-strip-top {
       float:left;
-    }
-
-    div.avatar-stats {
-      float:left;
-      margin-left:10px;
-    }
-
-    div.avatar-description {
-      foat:left;
-
-    }
-
-    div.avatar-match {
-      margin-right:50px;
-      float:right;
-      color:$red;
-      position:relative;
-      top:-10px;
-      div.match-number {
-        @include fontSize(48px);
-      }
-      div.match-text {
+      width:100%;
+      span.user-name {
         @include fontSize(24px);
-        line-height:20px;
-        top:-10px;
+        float:left;
+        margin-left: 10px;
+        color:$black;
+        &:hover {
+          color:black;
+        }
       }
     }
+
+    div.avatar-strip-bottom {
+      float:left;
+      width:100%;
+      span.user-title {
+        @include fontSize(16px);
+        color:$gray;
+        float:left;
+        margin-left:10px;
+      }
+      span.heart-icon {
+        @include staticImage("/images/icons/red_heart.png");
+        background-repeat: no-repeat;
+        width:15px;
+        height:12px;
+        background-size:15px 12px;
+        margin-left:10px;
+        margin-top:2px;
+        float:left;
+      }
+      span.heart-score {
+        margin-left:10px;
+        float:left;
+      }
+    }
+  }
+
+
+  div.before-match {
+    float:left;
+    width: 100px;
+    margin-left: 160px;
+    margin-top: 7px;
+    a.view-all-answers {
+      float:left;
+      width:100%;
+      text-decoration:underline;
+    }
+    span.match-from {
+      margin-top: 5px;
+      margin-left: 0px;
+      float: left;
+    }
+  }
+  div.avatar-match {
+    height: 50px;
+    float:right;
+    line-height: 36px;
+    padding-top: 13px;
+    color:$red;
+    div.match-number {
+      @include fontSize(66px);
+      span.match-percent {
+        margin-left:2px;
+      }
+    }
+  }
+  div.avatar-match.scorecard-match {
+      color:$text-blue;
   }
 }

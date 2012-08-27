@@ -1,0 +1,8 @@
+{% if not group.hidden %}
+    {% if not is_user_following %}
+        <div class="group-action group_follow group_follow_button" data-g_id="{{ group.id }}"> follow </div>
+    {% else %}
+        <div class="group-action on-button group_unfollow
+    group_follow_button hover_text" data-g_id="{{ group.id }}" data-hover_text="stop" data-original_text="you're following"> you're following </div>
+    {% endif %}
+{% endif %}
