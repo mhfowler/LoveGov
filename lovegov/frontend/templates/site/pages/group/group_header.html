@@ -57,7 +57,7 @@
 
                 {% if info.is_user_admin %}
                     {% if group.scorecard %}
-                        <div class="group-action group_edit_scorecard" data-g_id="{{ group.id }}"> edit scorecard </div>
+                        <a class="group-action group_edit_scorecard" href="{{ group.scorecard.getEditURL }}">edit scorecard</a>
                     {% else %}
                         <div class="group-action create_scorecard" data-g_id="{{ group.id }}"> create scorecard </div>
                     {% endif %}

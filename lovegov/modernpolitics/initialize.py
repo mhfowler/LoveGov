@@ -473,6 +473,7 @@ def initializeTestScorecard():
     poll = getLoveGovPoll()
     group = Group.objects.get(title="Save The Whales")
     scorecard = Scorecard(title="Test Scorecard", full_text="This is a scorecard about blah blah and blah", poll=poll, group=group)
+    scorecard.posted_to = group
     randy = getUser("Randy Johnson")
     scorecard.autoSave(creator=randy)
 

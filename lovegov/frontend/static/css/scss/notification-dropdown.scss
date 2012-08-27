@@ -73,6 +73,9 @@ div.notifications-dropdown
     padding-top: 50px;
     padding-bottom: 50px;
     @include grayText();
+    width: 100%;
+    text-align: center;
+
   }
 
   div.see-more-notifications

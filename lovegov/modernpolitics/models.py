@@ -272,6 +272,7 @@ class Content(Privacy, LocationLevel):
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
+    last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
@@ -3381,7 +3382,7 @@ class Poll(Content):
 #
 #=======================================================================================================================
 class Scorecard(Content):
-    group = models.ForeignKey("Group", null=True)
+    group = models.ForeignKey("Group", null=True, related_name="scorecards")
     poll = models.ForeignKey(Poll)
     scorecard_view = models.ForeignKey("WorldView")
     politicians = models.ManyToManyField(UserProfile)
@@ -3396,11 +3397,30 @@ class Scorecard(Content):
         if not self.summary:
             self.summary = self.full_text[:200]
         self.save()
+        if self.group:
+            self.group.scorecard = self
+            self.group.save()
         super(Scorecard, self).autoSave(creator=creator, privacy=privacy)
 
 
     def getTitleDisplay(self):
         return "Scorecard: " + self.title
+
+    def getEditURL(self):
+        return self.get_url() + 'edit/'
+
+    def getPermissionToEdit(self, viewer):
+        if self.group:
+            return self.group.hasAdmin(viewer)
+        else:
+            return viewer == self.creator
+
+    def getScorecardComparisonURL(self, user):
+        return self.get_url() + user.alias + '/'
+
+    def getComparison(self, user):
+        from lovegov.modernpolitics.compare import getUserScorecardComparison
+        return getUserScorecardComparison(user=user, scorecard=self)
 
 #=======================================================================================================================
 # Answer
@@ -3501,9 +3521,6 @@ class Response(Content):
         self.in_feed = False
         self.save()
         self.type = 'R'
-        if creator:
-            view = creator.getView()
-            view.responses.add(self)
         super(Response, self).autoSave(creator=creator, privacy=privacy)
         self.setMainTopic(self.question.getMainTopic())
 
@@ -3714,6 +3731,8 @@ class Group(Content):
     admins = models.ManyToManyField(UserProfile, related_name='admin_of')
     members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
+    # content
+    scorecard = models.ForeignKey(Scorecard, null=True, related_name="group_origins")
     # info
     full_text = models.TextField(max_length=1000)
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')

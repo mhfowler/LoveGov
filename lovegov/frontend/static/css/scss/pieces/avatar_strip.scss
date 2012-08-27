@@ -9,7 +9,6 @@ div.avatar-strip {
   padding-bottom:5px;
   padding-right:10px;
   width:100%;
-  max-width:700px;
   border:1px solid $gray;
 
   div.avatar-image {
@@ -18,7 +17,7 @@ div.avatar-strip {
 
   div.avatar-strip-main {
     float:left;
-    width:500px;
+    width:300px;
 
     div.avatar-strip-top {
       float:left;
@@ -60,6 +59,23 @@ div.avatar-strip {
     }
   }
 
+
+  div.before-match {
+    float:left;
+    width: 100px;
+    margin-left: 160px;
+    margin-top: 7px;
+    a.view-all-answers {
+      float:left;
+      width:100%;
+      text-decoration:underline;
+    }
+    span.match-from {
+      margin-top: 5px;
+      margin-left: 0px;
+      float: left;
+    }
+  }
   div.avatar-match {
     height: 50px;
     float:right;
@@ -72,5 +88,8 @@ div.avatar-strip {
         margin-left:2px;
       }
     }
+  }
+  div.avatar-match.scorecard-match {
+      color:$text-blue;
   }
 }

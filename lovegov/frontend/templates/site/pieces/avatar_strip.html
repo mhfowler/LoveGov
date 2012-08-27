@@ -28,20 +28,25 @@
         </div>
     </div>
 
-    {% if scorecard_strip %}
-        <div class="scorecard-match">
-            <div class="scorecard-match-number">
-                {{ user.comparison.result}}<span class="match-percent">%</span>
-            </div>
-        </div>
-        <a class="view-all-answers"> view all answers </a>
+
+    {% if scorecard_strip  %}
+        <div class="before-match before-scorecard-match">
+            {% if not scorecard_compare %}
+                <a class="view-all-answers" href="{{ user.scorecard_comparison_url }}"> view all answers </a>
+                <span class="match-from"> {{ user.comparison.num_q }} questions </span>
+            {% endif %}
+       </div>
     {% else %}
-        <div class='avatar-match'>
+        <div class="before-match">
+            <span class="match-from"> from {{ user.comparison.num_q }} questions </span>
+        </div>
+    {% endif %}
+
+        <div class='avatar-match {% if scorecard_strip %} scorecard-match {% endif %}'>
             <div class="match-number">
                 {{ user.comparison.result}}<span class="match-percent">%</span>
             </div>
         </div>
-    {% endif %}
 
     <div style="clear:both;"></div>
 </div>

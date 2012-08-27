@@ -20,6 +20,20 @@ div.main-focus {
   width:950px;
 }
 
+/*  used in content_detail_title macro */
+span.content-title {
+  @include fontSize(24px);
+}
+span.posted-in {
+  color:$light-gray;
+  @include fontSize(16px);
+  margin-left:10px;
+}
+span.posted-group {
+  margin-left:10px;
+  @include fontSize(16px);
+}
+
 /* content detail */
 div.content-detail {
 
@@ -27,19 +41,6 @@ div.content-detail {
     @include inline-block;
     width:100%;
     @include clearfix;
-
-    span.content-title {
-      @include fontSize(24px);
-    }
-    span.posted-in {
-      color:$light-gray;
-      @include fontSize(16px);
-      margin-left:10px;
-    }
-    span.posted-group {
-      margin-left:10px;
-      @include fontSize(16px);
-    }
 
     span.hearts
     {
@@ -103,10 +104,10 @@ div.content-detail {
 
     div.info-left {
       float:left;
-      width:200px;
+      width:80px;
       div.content-image {
         display:block;
-        background-color:$light-gray;
+        //background-color:$light-gray;
         height:200px;
         width:100%;
       }
@@ -120,6 +121,9 @@ div.content-detail {
     }
 
     div.info-middle-right {
+      float: left;
+      margin-left: 55px;
+
       div.created-by {
         margin-top:20px;
         @include clearfix();
@@ -133,6 +137,21 @@ div.content-detail {
           padding-left:15px;
           width:150px;
         }
+      }
+
+
+      .content-action-button{
+        margin-top:10px;
+        padding: 5px 10px;
+        color: white;
+        @include fontSize(14px);
+        background-color: $gray;
+        text-align:center;
+        cursor: pointer;
+        width:100%;
+        display:block;
+
+        &:hover { background-color: $dark-gray; }
       }
     }
 
@@ -172,17 +191,6 @@ div.content-detail {
           @include fontSize(26px);
           margin:auto;
         }
-      }
-
-      div.content-pin-button{
-        margin-top:10px;
-        padding: 5px 10px;
-        color: white;
-        @include fontSize(14px);
-        background-color: $red;
-        cursor: pointer;
-
-        &:hover { background-color: $red-light; }
       }
     }
   }
@@ -274,13 +282,13 @@ div.content-detail-sidebar {
     margin-bottom:5px;
     @include fontSize(22px);
   }
-    div.liked-wrapper {
-      padding:10px 10px 10px 0;
-      a.liked-avatar {
-        float:left;
-        margin-right:15px;
-      }
+  div.liked-wrapper {
+    padding:10px 10px 10px 0;
+    a.liked-avatar {
+      float:left;
+      margin-right:15px;
     }
+  }
 }
 
 /* news detail */
@@ -374,14 +382,17 @@ div.petition-wrapper {
 div.scorecard-section-header {
   @include fontSize(20px);
   color:$dark-gray;
-  margin-bottom:10px;
+  margin-top:20px;
+  margin-bottom:20px;
 }
 
 div.scorecard-avatar-strips-wrapper {
   width:100%;
+  margin-left:60px;
   div.scorecard-avatar-strip-wrapper {
     width:100%;
     margin-bottom:10px;
+    max-width:800px;
   }
 }
 
@@ -393,4 +404,65 @@ div.reps-compare {
 div.politicians-compare {
   width:100%;
   margin-top:10px;
+}
+
+div.scorecard-description {
+  div.scorecard-summary {
+    height:100px;
+    overflow:hidden;
+  }
+  div.based-off-of {
+    margin-top:10px;
+  }
+}
+
+$scorecard-red:#FFCFC8;
+div.edit-scorecard-wrapper {
+  div.question_expanded_choose {
+    div.answers-wrapper {
+      div.answer-choice {
+        &:hover {
+          background-color:$scorecard-red;
+          cursor:pointer;
+        }
+        &.clicked {
+          background-color:$scorecard-red;
+          &:hover {
+            background-color:$scorecard-red;
+          }
+        }
+      }
+    }
+  }
+
+  div.question_stub  {
+
+    div.question_expanded_choose {
+      div.answer-actions {
+        display:none;
+      }
+    }
+    div.explanation-wrapper {
+      display:none;
+    }
+  }
+}
+
+div.edit-scorecard-header {
+  margin-top:15px;
+  margin-bottom:15px;
+  div.edit-scorecard-title {
+    @include fontSize(20px);
+  }
+  div.edit-scorecard-explanation {
+    margin-top:10px;
+  }
+}
+
+
+/* scorecard comapre */
+div.scorecard-compare-wrapper {
+  div.scorecard-title-wrapper {
+    margin-top:15px;
+  }
 }

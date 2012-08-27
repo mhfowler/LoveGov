@@ -4,47 +4,77 @@
 {% endblock %}
 
 {% block content_description %}
-    <div class="content-info-header">
-        Description
-    </div>
-
     <div class="scorecard-description">
-        {{ content.summary}}
+        <div class="scorecard-summary">
+            <div class="content-info-header">
+                Description
+            </div>
+
+            <div class="scorecard-description">
+                {{ content.summary}}
+            </div>
+        </div>
+
+        <div class="based-off-of">
+            <div class="content-info-header">
+                Based off of Poll
+            </div>
+
+            {% with poll=scorecard.poll %}
+                <div class="scorecard-description">
+                    <a href="{{ poll.get_url }}"> {{ poll.title }}</a>
+                </div>
+            {% endwith %}
+        </div>
     </div>
 {% endblock %}
 
 
 {% block content_body %}
 
-    <div class="reps-compare">
-        <div class="scorecard-section-header">
-            How your representatives compare
+    {% block scorecard_body %}
+
+        <div class="reps-compare">
+            <div class="scorecard-section-header">
+                How your representatives compare
+            </div>
+
+            <div class="scorecard-avatar-strips-wrapper">
+                {% for user in representatives %}
+                    <div class="scorecard-avatar-strip-wrapper">
+                        {% include 'site/pieces/avatar_strip.html' with user=user scorecard_strip=1 %}
+                    </div>
+                {% endfor %}
+                <div style="clear:both;"></div>
+            </div>
         </div>
 
-        <div class="scorecard-avatar-strips-wrapper">
-            {% for user in representatives %}
-                <div class="scorecard-avatar-strip-wrapper">
-                    {% include 'site/pieces/avatar_strip.html' with user=user %}
-                </div>
-            {% endfor %}
-            <div style="clear:both;"></div>
-        </div>
-    </div>
+        <div class="politicians-compare">
+            <div class="scorecard-section-header">
+                Other politicians
+            </div>
 
-    <div class="politicians-compare">
-        <div class="scorecard-section-header">
-            Other politicians
+            <div class="scorecard-avatar-strips-wrapper">
+                {% for user in politicians %}
+                    <div class="scorecard-avatar-strip-wrapper">
+                        {% include 'site/pieces/avatar_strip.html' with user=user scorecard_strip=1 %}
+                    </div>
+                {% endfor %}
+                <div style="clear:both;"></div>
+            </div>
         </div>
 
-        <div class="scorecard-avatar-strips-wrapper">
-            {% for user in politicians %}
-                <div class="scorecard-avatar-strip-wrapper">
-                    {% include 'site/pieces/avatar_strip.html' with user=user %}
-                </div>
-            {% endfor %}
-            <div style="clear:both;"></div>
-        </div>
-    </div>
+    {% endblock %}
 
 {% endblock %}
 
+{% block content_buttons %}
+    <div class="content-action-button pin_content" data-c_id="{{ content.id }}">pin content</div>
+    {% if i_can_edit %}
+        {% if editing_scorecard %}
+            <a class="content-action-button" href="{{ scorecard.get_url }}">view scorecard</a>
+        {% else %}
+            <a class="content-action-button group_edit_scorecard" href="{{ scorecard.getEditURL }}">edit scorecard</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}

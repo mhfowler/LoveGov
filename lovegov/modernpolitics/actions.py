@@ -25,7 +25,8 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
     user.last_answered = datetime.datetime.now()
     user.save()
 
-    my_response = user.view.responses.filter(question=question)
+    view = user.view
+    my_response = view.responses.filter(question=question)
 
     if not my_response:
         if not weight:
@@ -40,6 +41,7 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
             response.most_chosen_num = 1
             response.total_num = 1
         response.autoSave(creator=user, privacy=privacy)
+        view.responses.add(response)
         user.num_answers += 1
         user.save()
     # else update old response
@@ -52,17 +54,58 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         response.most_chosen_answer = chosen_answer
         response.weight = weight
         response.explanation = explanation
-        # update creation relationship
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
+        response.created_when = datetime.datetime.now()
         response.saveEdited(privacy)
 
-    action = CreatedAction(user=user,privacy=privacy,content=response)
-    action.autoSave()
+    #action = CreatedAction(user=user,privacy=privacy,content=response)
+    #action.autoSave()
 
     return response
 
+
+def scorecardAnswerAction(user, scorecard, question, answer_id):
+
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    if not chosen_answer:
+        chosen_answer = None
+    scorecard.last_answered = datetime.datetime.now()
+    scorecard.save()
+
+    scorecard_view = scorecard.scorecard_view
+    my_response = scorecard_view.responses.filter(question=question)
+
+    weight = 50
+    explanation = ""
+
+    if not my_response:
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.autoSave(creator=user, privacy="PRI")
+        scorecard_view.responses.add(response)
+    # else update old response
+    else:
+        response = my_response[0]
+        if not weight:
+            weight = response.weight
+        if not explanation:
+            explanation = response.explanation
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.saveEdited("PRI")
+
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.

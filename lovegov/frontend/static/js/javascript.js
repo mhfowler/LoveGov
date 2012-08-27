@@ -146,23 +146,28 @@ function bind(selector, events, data, handler) {
 var current_page_nonce=0;
 function action(dict) {
     var data = dict['data'];
+    var pre_page_nonce = current_page_nonce;
     var success_fun = function(data) {
-        var super_success = dict['success'];
-        if (super_success) {
-            super_success(data);
+        if (pre_page_nonce == current_page_nonce) {
+            var super_success = dict['success'];
+            if (super_success) {
+                super_success(data);
+            }
+            undelegated();
         }
-        undelegated();
     };
     var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status==403) {
-            //launch403Modal(jqXHR.responseText);
-            return;
-        }
-        var super_error = dict['error'];
-        if (super_error) {
-            super_error();
-        } else {
-            alert(jqXHR.responseText);
+        if (pre_page_nonce == current_page_nonce) {
+            if(jqXHR.status==403) {
+                //launch403Modal(jqXHR.responseText);
+                return;
+            }
+            var super_error = dict['error'];
+            if (super_error) {
+                super_error();
+            } else {
+                $("body").html(jqXHR.responseText);
+            }
         }
     };
     var complete_fun = dict['complete'];
@@ -338,11 +343,11 @@ function bindSelect2s() {
 
 function bindTooltips() {
     /*
-    $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
-    $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
-    $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
-    $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
-    */
+     $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
+     $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
+     $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
+     $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+     */
 
     $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
     $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
@@ -887,7 +892,6 @@ var feed_types = [];
 var feed_rank = 'H';
 var feed_topic = null;
 var question_rank = "R";
-var to_compare_id=null;
 function getFeed(container) {
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
@@ -911,18 +915,29 @@ function getFeed(container) {
     }
     else if (feed == 'getQuestions')
     {
-        var only_unanswered = container.data('only_unanswered');
         var default_display = container.data("default_display");
+        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display};
+        // if feed is comparing responses with other user
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        // only unanswered
+        var only_unanswered = container.data('only_unanswered');
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
         }
-        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
-            'only_unanswered':only_unanswered , 'default_display':default_display};
+        data['only_unanswered'] = only_unanswered;
         // if this feed appears on a poll
         var p_id = container.data('p_id');
         if (typeof(p_id) != 'undefined') {
             data['p_id'] = p_id;
+        }
+        // if this feed appears on a scorecard
+        var scorecard_id = container.data("scorecard_id");
+        if (typeof(scorecard_id) != 'undefined') {
+            data['scorecard_id'] = scorecard_id;
         }
     }
     else if (feed == 'getUserActivity')
@@ -2697,8 +2712,27 @@ function saveAnswer(stub) {
     var default_display = stub.data("default_display");
     var your_response = stub.data("your_response");
     var privacy = stub.data("privacy");
+
+    var data = {'action':'saveAnswer', 'q_id':q_id,
+        'a_id':a_id, 'default_display':default_display,
+        'privacy':privacy};
+
     var container = stub.parents(".feed_main");
     if (container.length!=0) {
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        var scorecard_id = container.data("scorecard_id");
+        if (scorecard_id) {
+            data['scorecard_id'] = scorecard_id;
+        }
+        // check if should be scorecard edit answer
+        var save_scorecard_answer = container.data("save_scorecard_answer");
+        if (save_scorecard_answer == 1) {
+            data['action'] = 'saveScorecardAnswer'
+        }
+        // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
         if (only_unanswered) {
             stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
@@ -2706,9 +2740,7 @@ function saveAnswer(stub) {
         }
     }
     action({
-        data: {'action':'saveAnswer', 'q_id':q_id,
-            'a_id':a_id, 'default_display':default_display,
-            'to_compare_id':to_compare_id, 'privacy':privacy},
+        data: data,
         success: function(data) {
             var returned = eval('(' + data + ')');
             if (default_display=='responses') {
@@ -3626,6 +3658,11 @@ bind('.ask_to_join' , 'click' , null , function(e)
 bind('.find_like_minded' , 'click' , null , function(e)
 {
     $(".button_result").hide();
+    findNewLikeMinded();
+});
+
+// recursive ajax function for finding new like minded members
+function findNewLikeMinded() {
     $(".find_loading").show();
     action({
             data: {'action': 'findLikeMinded'},
@@ -3648,9 +3685,12 @@ bind('.find_like_minded' , 'click' , null , function(e)
                     $(".like_minded_members").prepend(returned.html);
                     bindOnNewElements();
                 }
+                if (returned.num_processed != 0) {
+                    findNewLikeMinded();
+                }
             }}
     );
-});
+}
 
 bind('.clear_like_minded' , 'click' , null , function(e)
 {

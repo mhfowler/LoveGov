@@ -55,22 +55,45 @@ def getContentFromAlias(alias, viewer):
 
 
 def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
-                           feed_topic, feed_start=0, num=10):
+                           feed_topic, scorecard=None, feed_start=0, num=10):
     question_items = []
     them_responses = to_compare.view.responses.filter(privacy="PUB")
     you_responses = viewer.view.responses.all()
 
-    # filter
-    if feed_topic:
-        them_responses = them_responses.filter(main_topic=feed_topic)
 
-    # append
-    for r in them_responses:
-        q = r.question
-        your_response = getResponseHelper(you_responses, q)
-        their_response = r
-        q_item = getQuestionItem(question=q, your_response=your_response, their_response=their_response)
-        question_items.append(q_item)
+    if scorecard:
+        scorecard_responses = scorecard.scorecard_view.responses.all()
+
+        # filter
+        if feed_topic:
+            scorecard_responses = scorecard_responses.filter(main_topic=feed_topic)
+
+        # append
+        for scorecard_response in scorecard_responses:
+            q = scorecard_response.question
+            their_response = getResponseHelper(them_responses, q)
+            if their_response:
+                your_response = getResponseHelper(you_responses, q)
+                q_item = getQuestionItem(question=q,
+                    you=viewer, your_response=your_response,
+                    them=to_compare, their_response=their_response,
+                    scorecard=scorecard, scorecard_response=scorecard_response)
+                question_items.append(q_item)
+
+    else:
+        # filter
+        if feed_topic:
+            them_responses = them_responses.filter(main_topic=feed_topic)
+
+        # append
+        for r in them_responses:
+            q = r.question
+            your_response = getResponseHelper(you_responses, q)
+            their_response = r
+            q_item = getQuestionItem(question=q,
+                you=viewer, your_response=your_response,
+                them=to_compare, their_response=their_response)
+            question_items.append(q_item)
 
     # sort
     if question_ranking:
@@ -81,7 +104,7 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     return question_items[feed_start:feed_start+num]
 
 
-def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, poll=None, feed_start=0, num=10):
+def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, poll=None, scorecard=None, feed_start=0, num=10):
 
     # questions & check for p_id (filter by poll)
     if not poll:
@@ -91,7 +114,10 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
     question_items=[]
 
     # viewer responses
-    you_responses = viewer.view.responses.all()
+    if not scorecard:
+        you_responses = viewer.view.responses.all()
+    else:
+        you_responses = scorecard.scorecard_view.responses.all()
 
     # filter
     if feed_topic:
@@ -108,7 +134,9 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
             responses = [your_response]
         else:
             responses= []
-        q_item = getQuestionItem(question=q, your_response=your_response, their_response=None)
+        q_item = getQuestionItem(question=q,
+            you=viewer, your_response=your_response,
+            them=None, their_response=None)
         question_items.append(q_item)
 
     # paginate
@@ -151,7 +179,7 @@ def responsesSortHelper(question_items, ranking):
             else:
                 to_return=them.created_when
             return to_return
-        question_items.sort(key=lambda x:recentComparison(x), reverse=True)
+        question_items.sort(key=lambda x:recentComparison(x))
     elif ranking == 'I':
         def importanceComparison(item):
             you = item['you']
@@ -167,20 +195,31 @@ def responsesSortHelper(question_items, ranking):
         question_items = filter(lambda x:x['agree']==-1, question_items)
     return question_items
 
-def getQuestionItem(question, your_response, their_response):
+def getQuestionItem(question, you, your_response, them, their_response, scorecard=None, scorecard_response=None):
     responses = []
+    if scorecard_response:
+        responses.append({'response':scorecard_response,'responder':scorecard})
     if their_response:
-        responses.append(their_response)
+        responses.append({'response':their_response,'responder':them})
     if your_response:
-        responses.append(your_response)
-    q_item = {'question':question, 'you':your_response, 'them':their_response, 'compare_responses':responses}
+        responses.append({'response':your_response,'responder':you})
+    q_item = {'question':question, 'you':your_response, 'them':their_response, 'scorecard':scorecard_response, 'compare_responses':responses}
     compareQuestionItem(q_item)
     return q_item
 
 def compareQuestionItem(q_item):
     your_response = q_item['you']
     their_response = q_item['them']
-    if your_response and their_response:
+    scorecard_response = q_item['scorecard']
+    if your_response and their_response and scorecard_response:
+        if their_response.most_chosen_answer_id and scorecard_response.most_chosen_answer_id:
+            if their_response.most_chosen_answer_id == scorecard_response.most_chosen_answer_id:
+                agree = 1
+            else:
+                agree = -1
+        else:
+            agree = 0
+    elif your_response and their_response:
         if your_response.most_chosen_answer_id and their_response.most_chosen_answer_id:
             if your_response.most_chosen_answer_id == their_response.most_chosen_answer_id:
                 agree = 1

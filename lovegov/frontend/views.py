@@ -1087,15 +1087,21 @@ def scorecardDetail(request, s_id, vals={}):
     scorecard = Scorecard.objects.get(id=s_id)
     vals['scorecard'] = scorecard
 
-    reps = UserProfile.objects.all()
-    politicians = UserProfile.objects.all()
+    reps = list(UserProfile.objects.all())
+    politicians = list(UserProfile.objects.all())
     for r in reps:
-        r.comparison = r.getComparison(viewer)
+        r.comparison = scorecard.getComparison(r)
+        r.scorecard_comparison_url = scorecard.getScorecardComparisonURL(r)
     for p in politicians:
-        p.comparison = p.getComparison(viewer)
+        p.comparison = scorecard.getComparison(p)
+        p.scorecard_comparison_url = scorecard.getScorecardComparisonURL(p)
+    reps.sort(key=lambda x:x.comparison.result,reverse=True)
+    politicians.sort(key=lambda x:x.comparison.result,reverse=True)
 
     vals['representatives'] = reps
     vals['politicians'] = politicians
+
+    vals['i_can_edit'] = scorecard.getPermissionToEdit(viewer)
 
     contentDetail(request=request, content=scorecard, vals=vals)
     html = ajaxRender('site/pages/content_detail/scorecards/scorecard_detail.html', vals, request)
@@ -1103,10 +1109,37 @@ def scorecardDetail(request, s_id, vals={}):
     return framedResponse(request, html, url, vals)
 
 def scorecardEdit(request, s_id, vals={}):
-    return HttpResponse('scorecard edit!')
+
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+    permission = scorecard.getPermissionToEdit(viewer)
+    if permission:
+        getMainTopics(vals)
+        vals['editing_scorecard'] = True
+        vals['i_can_edit'] = permission
+        contentDetail(request=request, content=scorecard, vals=vals)
+        html = ajaxRender('site/pages/content_detail/scorecards/scorecard_edit.html', vals, request)
+        url = scorecard.get_url()
+        return framedResponse(request, html, url, vals)
+    else:
+        LGException(str(viewer.id) + " is trying to edit scorecard without permission." + str(scorecard.id))
+        return HttpResponse("you dont have permissinon to edit this scorecard")
+
 
 def scorecardCompare(request, s_id, p_alias, vals={}):
-        return HttpResponse('scorecard compare!')
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+
+    to_compare = UserProfile.objects.get(alias=p_alias)
+    vals['to_compare'] = to_compare
+    to_compare.comparison = scorecard.getComparison(to_compare)
+    getMainTopics(vals)
+
+    html = ajaxRender('site/pages/content_detail/scorecards/scorecard_compare.html', vals, request)
+    url = scorecard.get_url()
+    return framedResponse(request, html, url, vals)
 
 def scorecardMe(request, s_id, vals={}):
     viewer = vals['viewer']

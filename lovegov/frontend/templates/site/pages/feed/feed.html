@@ -4,6 +4,9 @@
         {% if not default_display %} data-default_display="none" {% else %} data-default_display="{{ default_display}}" {% endif %}
         {% if only_unanswered %} data-only_unanswered="true" {% else %} data-only_unanswered="false" {% endif %}
         {% if poll_id %} data-p_id="{{ poll_id }}" {% endif %}
+        {% if scorecard_id %} data-scorecard_id="{{ scorecard_id }}" {% endif %}
+        {% if save_scorecard_answer %} data-save_scorecard_answer="1" {% endif %}
+        {% if to_compare %} data-to_compare_id="{{ to_compare.id }}" {% endif %}
         >
 
     <table class="feed-top-bar">

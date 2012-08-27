@@ -1,6 +1,7 @@
 {% extends 'site/pages/home/top_sidebar_main.html' %}
 
 {% load humanize %}
+{% load macros %}
 
 {% block top %}
 {% endblock %}
@@ -35,19 +36,27 @@
     <div class="content-detail">
 
         <div class="content-detail-top">
-            <span class="content-title">
-                {{ content.getTitleDisplay }}
-            </span>
 
-            <span class="posted-in">
-                Posted in
-            </span>
+            {% load macros %}
 
-            <span class="posted-group">
-                {% with group=content.getPostedTo %}
-                    <a href="{{ group.get_url }}"> {{ group.title }}</a>
-                {% endwith %}
-            </span>
+
+            {% macro content_detail_title content  %}
+                <span class="content-title">
+                    {{ content.getTitleDisplay }}
+                </span>
+
+                <span class="posted-in">
+                    Posted in
+                </span>
+
+                <span class="posted-group">
+                    {% with group=content.getPostedTo %}
+                        <a href="{{ group.get_url }}"> {{ group.title }}</a>
+                    {% endwith %}
+                </span>
+            {% endmacro %}
+
+            {% usemacro content_detail_title content %}
 
             <span class="hearts" data-c_id="{{ content.id }}">
                 <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
@@ -60,10 +69,6 @@
 
             <div class="info-right">
 
-                <div class="content-info-header">
-                    Metrics
-                </div>
-
                 <a class="comments-wrapper" href="{{ content.getCommentsURL }}">
                     <div class="comments-bubble">
                         <div class="num-comments">
@@ -74,13 +79,11 @@
                         comments
                     </div>
                 </a>
-
-                <div class="content-pin-button pin_content" data-c_id="{{ content.id }}">pin content</div>
             </div>
 
             <div class="info-left">
                 <div class="content-image">
-                    {% include 'site/pieces/avatar.html' with user=content width="200" height="200" hoveroff=1 %}
+                    {% include 'site/pieces/avatar.html' with user=content width="80" height="80" hoveroff=1 %}
                 </div>
             </div>
 
@@ -114,6 +117,9 @@
                         </div>
                     </div>
                 </div>
+                {% block content_buttons %}
+                    <div class="content-pin-button pin_content" data-c_id="{{ content.id }}">pin content</div>
+                {% endblock %}
             </div>
 
         </div>

@@ -1,7 +1,7 @@
 {% with your_response_id=your_response.most_chosen_answer_id %}
     <div class="a-response">
-        <a class="response-avatar" href="{{ response.creator.get_url }}">
-            {% include 'site/pieces/avatar.html' with user=response.creator width="30" height="30" %}
+        <a class="response-avatar" href="{{ responder.get_url }}">
+            {% include 'site/pieces/avatar.html' with user=responder width="30" height="30" %}
         </a>
         <div class="response-wrapper">
                             <span class="response-text
