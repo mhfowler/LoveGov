@@ -37,6 +37,8 @@ function bindOnReload() {
             break;
         case "legislation-view":
             shortenLongText(); break;
+        case "legislation-detail":
+            shortenLongText(); break;
         case "home":
             break;
         case "profile":
