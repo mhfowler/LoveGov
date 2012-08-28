@@ -70,6 +70,7 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
 
 
 def getCreateModal(request,vals={}):
+    getMainTopics(vals)
     return ajaxRender('site/pages/create_modal.html',vals,request)
 
 

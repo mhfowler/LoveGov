@@ -124,6 +124,7 @@ div.create-modal {
   div.questions {
     padding: 20px;
     background-color: $white-gray;
+    margin-bottom: 20px;
     div.question {
       margin-bottom: 15px;
       &.model {
@@ -200,6 +201,18 @@ div.create-modal {
     height: 80px;
     &:focus {
       height: 120px;
+    }
+  }
+  span.topic_button {
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 10px;
+    &:hover {
+      background-color: $yellow-highlight;
+    }
+    &.selected {
+      border: 1px solid $gray;
+      margin: 0 9px;
     }
   }
 }
