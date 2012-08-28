@@ -2459,7 +2459,7 @@ def logCompatability(request, vals={}):
 # saves a link click on some news
 #-----------------------------------------------------------------------------------------------------------------------
 def logLinkClick(request, vals):
-    news = News.objects.get(id=request.POST['id'])
+    news = News.objects.get(id=request.POST['n_id'])
     news.link_clicks += 1
     news.save()
     return HttpResponse("saved")

@@ -1118,10 +1118,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
-    # deprecated
-    my_feed = models.ManyToManyField(FeedItem, related_name="newfeed")  # for storing feed based on my custom setting below
-    filter_setting = models.ForeignKey(FilterSetting, null=True)
-    evolve = models.BooleanField(default=False)     # boolean as to whether their filter setting should learn from them and evolve
 
     def __unicode__(self):
         return self.first_name
@@ -3756,6 +3752,8 @@ class Group(Content):
     num_members = models.IntegerField(default=0)
     # content
     scorecard = models.ForeignKey(Scorecard, null=True, related_name="group_origins")
+    group_content = models.ManyToManyField(Content, related_name="in_groups")
+    hot_feed = models.ManyToManyField(FeedItem, related_name="in_feeds")
     # info
     full_text = models.TextField(max_length=1000)
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
@@ -3785,7 +3783,21 @@ class Group(Content):
     # gets content posted to group, for feed
     #-------------------------------------------------------------------------------------------------------------------
     def getContent(self):
-        return Content.objects.filter(posted_to=self, in_feed=True)
+        if self.content_by_posting:
+            return Content.objects.filter(posted_to=self, in_feed=True)
+        else:
+            return None
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # recalcs feeds and content
+    #-------------------------------------------------------------------------------------------------------------------
+    def recalculateHotFeed(self):
+        self.hot_feed.all().delete()
+
+    def recalculateGroupContent(self):
+        self.group_content.clear()
+        for x in self.getContent():
+            self.group_content.add(x)
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets url for content

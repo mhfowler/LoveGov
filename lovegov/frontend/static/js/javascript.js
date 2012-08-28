@@ -2101,11 +2101,13 @@ function groupInviteResponse(event,response,div)
  *
  **********************************************************************************************************************/
 function hideModal(event) {
+    $("div.modal-wrapper").hide();
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
 }
 
 function showModal() {
+    $("div.modal-wrapper").show();
     var modal_general = $('div.modal_general');
     var height = modal_general.height();
     modal_general.css("margin-top", (-1/2*height)-50);
