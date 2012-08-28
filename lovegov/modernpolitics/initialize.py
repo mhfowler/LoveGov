@@ -22,18 +22,6 @@ def get_or_none(model, **kwargs):
 def getDefaultImage():
     return UserImage.lg.get_or_none(alias="Default_Image") or initializeDefaultImage()
 
-def getHotFilter():
-    return FilterSetting.lg.get_or_none(alias="Hot_Filter") or initializeHotFilter()
-
-def getNewFilter():
-    return FilterSetting.lg.get_or_none(alias="New_Filter") or initializeNewFilter()
-
-def getBestFilter():
-    return FilterSetting.lg.get_or_none(alias="Best_Filter") or initializeBestFilter()
-
-def getDefaultFilter():
-    return getHotFilter()
-
 def getLoveGovGroup():
     return Group.lg.get_or_none(alias="LoveGov_Group") or \
            Group.lg.get_or_none(alias="lovegov-group") or \
@@ -48,24 +36,12 @@ def getLoveGovUser():
 def getAnonUser():
     return UserProfile.lg.get_or_none(alias="anonymous") or initializeAnonymous()
 
-def getNewFeed():
-    return Feed.lg.get_or_none(alias='New_Feed') or initializeFeed('New_feed')
-
-def getHotFeed():
-    return Feed.lg.get_or_none(alias='Hot_Feed') or initializeFeed('Hot_Feed')
-
-def getBestFeed():
-    return Feed.lg.get_or_none(alias='Best_Feed') or initializeFeed('Best_Feed')
-
 def getTopicImage(topic):
     alias = "topicimage:" + topic.alias
     return UserImage.lg.get_or_none(alias=alias) or initializeTopicImage(topic)
 
 def getGeneralTopic():
     return Topic.lg.get_or_none(alias='general') or initializeGeneralTopic()
-
-def getOtherNetwork():
-    return Network.lg.get_or_none(name="other") or initializeOtherNetwork()
 
 def getCongressNetwork():
     return getCongressGroup()
@@ -98,12 +74,6 @@ def initializeLoveGov():
     initializeTopicImages()
     initializeParties()
     initializeLoveGovPoll()
-    # filters
-    initializeBestFilter()
-    initializeNewFilter()
-    initializeHotFilter()
-    # feeds
-    initializeFeeds()
     # init pass codes
     initializePassCodes()
     resetTopics()
@@ -197,63 +167,6 @@ def initializeDefaultImage():
         default.autoSave()
         print("initialized: default image")
         return default
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initializes best filter... for now same as default filter. Bayesian.
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeBestFilter():
-    if FilterSetting.objects.filter(alias="Best_Filter"):
-        print("...best filter already initialized.")
-    else:
-        filter = FilterSetting(alias="Best_Filter")
-        filter.save()
-        print("initialized: best filter")
-        return filter
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initializes new filter... only looks at content made in the last 2 weeks, and values recency.
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeNewFilter():
-    if FilterSetting.objects.filter(alias="New_Filter"):
-        print("...new filter already initialized.")
-    else:
-        days = NEWFILTER_DAYS
-        algo = 'R'  # reddit
-        filter = FilterSetting(days=days, algo=algo, alias="New_Filter")
-        filter.save()
-        print("initialized: new filter")
-        return filter
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initializes hot filter... only looks at votes within time period of hot window (most recent week)
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeHotFilter():
-    if FilterSetting.objects.filter(alias="Hot_Filter"):
-        print("...hot filter already initialized.")
-    else:
-        hot_window = HOT_WINDOW
-        algo = 'H'  # hot
-        filter = FilterSetting(hot_window=hot_window, algo=algo, alias="Hot_Filter")
-        filter.save()
-        print("initialized: hot filter")
-        return filter
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initializes 3 default site-wide feeds.
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeFeeds():
-    initializeFeed("New_Feed")
-    initializeFeed("Hot_Feed")
-    initializeFeed("Best_Feed")
-
-def initializeFeed(alias):
-    if Feed.objects.filter(alias=alias):
-        print("..." + alias + " already initialized.")
-    else:
-        feed = Feed(alias=alias)
-        feed.save()
-        print("initialized: " + alias + " feed")
-        return feed
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initialize images for every topic.
@@ -378,20 +291,6 @@ def initializeTopicColors():
             topic.color_light = '#A3C6C4'
         topic.save()
         print("initialized: " + title)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Initialize network for people with non .edu email extension.
-#-----------------------------------------------------------------------------------------------------------------------
-def initializeOtherNetwork():
-    if Network.objects.filter(name="other"):
-        print ("...other network already initialized")
-    else:
-        network = Network(name="other")
-        network.title = "Other Network"
-        network.summary = "Network of all people with non recognized emails."
-        network.autoSave()
-        print ("initialized: Other Network")
-        return network
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initialize passcodes.

@@ -7,9 +7,9 @@
     <div class="left-part">
         {% macro hearts_rank content my_vote %}
         <div class="item-ranking" data-c_id="{{ content.id }}">
-            <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
+            <div class="heart-plus heart_plus heart_button{% if my_vote == 1 %} clicked{% endif %}"></div>
             <div class="heart-number heart_number">{{ content.status }}</div>
-            <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
+            <div class="heart-minus heart_minus heart_button{% if my_vote == -1 %} clicked{% endif %}"></div>
         </div>
         {% endmacro %}
         {% usemacro hearts_rank content my_vote %}

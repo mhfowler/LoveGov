@@ -743,14 +743,38 @@ bind( "div.heart_plus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , 1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status += 1
+        heart_number.text(status);
+        vote( wrapper , c_id , 1 );
+    }
 });
 
 bind( "div.heart_minus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , -1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status -= 1
+        heart_number.text(status);
+        vote( wrapper , c_id , -1 );
+    }
 });
 
 // Vote for the feed AJAX request

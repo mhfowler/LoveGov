@@ -158,7 +158,7 @@ def sortHelper(content, feed_ranking):
     if feed_ranking == 'N':
         content = content.order_by("-created_when")
     elif feed_ranking == 'H':
-        content = content.order_by("-status")
+        content = content.order_by("-hot_score")
     elif feed_ranking == 'B':
         content = content.order_by("-status")
     return content
@@ -168,7 +168,7 @@ def responsesSortHelper(question_items, ranking):
     if ranking == 'B':
         question_items.sort(key=lambda x:x['question'].status, reverse=True)
     elif ranking == 'H':
-        question_items.sort(key=lambda x:x['question'].status, reverse=True)
+        question_items.sort(key=lambda x:x['question'].hot_score, reverse=True)
     elif ranking == 'N':
         question_items.sort(key=lambda x:x['question'].created_when, reverse=True)
     elif ranking == 'R':
@@ -231,15 +231,8 @@ def compareQuestionItem(q_item):
         agree = 0
     q_item['agree'] = agree
 
-def getFeedHelper(content, ranking, start, stop):
-    if ranking == 'N':
-        return content.order_by("-created_when")[start:stop]
-    elif ranking == 'B':
-        return content.order_by("-status")[start:stop]
-    elif ranking == 'H':
-        c_ids = content.values_list("id", flat=True)
-        items = getHotFeed().items.filter(content_id__in=c_ids).order_by("-rank")[start:stop]
-        to_return = []
-        for x in items:
-            to_return.append(x.content)
-        return to_return
+
+### update hot scores for all content ###
+def updateHotScores():
+    for c in Content.objects.filter(in_feed=True):
+        c.recalculateHotScore()
