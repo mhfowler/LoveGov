@@ -631,12 +631,12 @@ div.main {
 div.secondary {
   display: block;
   clear: both;
-  height: 350px;
+  height: auto;
   width: 1000px;
 
   div.secondary-top {
     height:auto;
-    width: 1250px;
+    width: 1000px;
 
     div.bill-text {
       float: left;
@@ -677,112 +677,6 @@ div.secondary {
         }
       }
     }
-
-    div.bill-recent-actions {
-      display: inline-block;
-      margin-left: 10px;
-      height: auto;
-      width: 320px;
-
-      div.level2-recent-actions {
-        height: 25px;
-        width: 320px;
-
-        div.recent-actions-title {
-          height: 25px;
-          width: 320px;
-
-          h4 {
-            font-size:18px;
-            text-align: left;
-            background-color: #E0E0E0;
-            color: black;
-            padding-top: 5px;
-            padding-left: 5px;
-
-          }
-        }
-      }
-
-      div.level2-recent-actions-div {
-        margin-left: 0px;
-        margin-top: 0px;
-        height: auto;
-        width: 320px;
-
-        div.recent-actions {
-          display: inline-block;
-          margin-top: 0px;
-          height: auto;
-          width: 150px;
-          padding-left: -5px;
-
-          span{
-
-            ul {
-
-              li {
-                margin-left: -20px;
-                list-style-type: none;
-                font-size: 14px;
-              }
-            }
-          }
-        }
-
-        div.recent-action-dates {
-          display: inline-block;
-          margin-top: 0px;
-          margin-left: 0px;
-          height: auto;
-          width: 90px;
-          padding-left: 0px;
-
-          span{
-
-            ul {
-
-              li {
-                margin-left: -20px;
-                list-style-type: none;
-                font-size: 14px;
-
-                a {
-                  text-decoration: none;
-                  font-color: black;
-                }
-              }
-            }
-          }
-        }
-
-        div.recent-action-results {
-          display: inline-block;
-          margin-top: 0px;
-          margin-left: 0px;
-          height: auto;
-          width: 70px;
-          padding-left: 0px;
-
-          span{
-
-            ul {
-
-              li {
-                margin-left: -20px;
-                list-style-type: none;
-                font-size: 14px;
-
-                a {
-                  text-decoration: none;
-                  font-color: black;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   }
 
   div.secondary-bottom {
@@ -790,6 +684,7 @@ div.secondary {
     width: 1000px;
 
     div.bill-amendments {
+      display: inline-block;
       height: auto;
       margin-top: 20px;
       width: 460px;
