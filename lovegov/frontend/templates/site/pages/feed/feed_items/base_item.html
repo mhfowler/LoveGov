@@ -37,11 +37,14 @@
         <div class="item-bottom">
 
             <!-- float right -->
+            <a href="{{ content.getCommentsURL }}" class="num-comments">
+                {{ content.num_comments }} comment {{ content.num_comments|pluralize }}
+            </a>
             <a class="share-button">
                 share +
             </a>
-            <a href="{{ content.getCommentsURL }}" class="num-comments">
-                {{ content.num_comments }} comments
+            <a class="pin-button pin_content" data-c_id="{{ content.id }}">
+                pin
             </a>
 
             <!-- float left -->

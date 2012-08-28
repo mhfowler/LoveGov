@@ -9,28 +9,20 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% comment %}
-    <div class="content-detail-sidebar">
-        <a href="/home/" class='back-to-feed'> Back To Feed </a>
-        {% block content_detail_sidebar %}
-            <div class="sidebar-header"> who liked this </div>
-            <div class="liked-wrapper">
-                {% for x in liked %}
-                    <a href="{{ x.get_url }}" class="liked-avatar">
-                        {% include 'site/pieces/avatar.html' with user=x width="50" height="50" %}
-                    </a>
-                {% empty %}
-                    <p>
-                        no one has liked this news yet :(
-                    </p>
-                {% endfor %}
-            </div>
-            {% if viewer.facebook_id %}
-                {% include 'site/pages/friends/fb_invite_sidebar.html' %}
-            {% endif %}
-        {% endblock %}
+    <div class='content-detail-sidebar'>
+
+        <div class="back-buttons">
+            <a href="/home/" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to feed </div>
+            </a>
+            <a href="{{ content.posted_to.get_url }}" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to group </div>
+            </a>
+        </div>
+
     </div>
-    {% endcomment %}
 {% endblock %}
 
 {% block sidebar_fixed %}

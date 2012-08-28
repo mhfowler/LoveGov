@@ -214,6 +214,11 @@ function updatePage() {
  *      ~Ajax links
  *
  ***********************************************************************************************************************/
+bind(".header_link", 'click', null, function(event) {
+    $(".header_link").removeClass("clicked");
+    $(this).addClass("clicked");
+});
+
 bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
@@ -2101,7 +2106,10 @@ function hideModal(event) {
 }
 
 function showModal() {
-    $('div.modal_general').fadeIn(500).css('display', 'inline-block');
+    var modal_general = $('div.modal_general');
+    var height = modal_general.height();
+    modal_general.css("margin-top", (-1/2*height)-50);
+    modal_general.fadeIn(500).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -3491,7 +3499,6 @@ bind( '.pin_to_group' , 'click' , null , function(e)
         success: function(data)
         {
             var returned =  eval('(' + data + ')');
-
         }
     });
 });
@@ -3509,7 +3516,9 @@ bind('.pin_it' , 'click' , null , function(e)
         },
         success: function(data)
         {
-            $(".was_pinned").fadeIn(500, function() { setTimeout(hideModal(), 2000)});
+            var returned =  eval('(' + data + ')');
+            $(".was_pinned").html(returned.html);
+            $(".was_pinned").fadeIn(500);
         }
     });
 });

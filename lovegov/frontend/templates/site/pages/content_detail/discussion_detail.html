@@ -4,10 +4,8 @@
 {% block content_body %}
 
     {% if discussion.user_post %}
-        <div class="user-post-wrapper">
-            <div class="text-wrapper">
-                {{ discussion.user_post }}
-            </div>
+        <div class="content-detail-description">
+            {{ discussion.user_post }}
         </div>
     {% endif %}
 

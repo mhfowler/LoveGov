@@ -672,8 +672,9 @@ a.edit-link
 /* modals */
 div.modal-wrapper {
   width: 100%;
+  height:100%;
   position: absolute;
-  top: 100px;
+  top: 50%;
   z-index: 3;
   text-align: center;
   div.modal-general {
@@ -682,7 +683,7 @@ div.modal-wrapper {
     @include border-radius(5px);
     @include clearfix;
     display: none;
-    position: relative;
+    position: fixed;
     text-align: left;
 
     div.modal-content

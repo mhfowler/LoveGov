@@ -2609,7 +2609,10 @@ def pinContent(request, vals={}):
         pinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
     else:
         unpinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
-    return HttpResponse("pinned")
+    vals['content'] = content
+    vals['group'] = group
+    success_link = ajaxRender('site/pages/content_detail/pin_content_success.html', vals, request)
+    return HttpResponse(json.dumps({'html':success_link}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # edit a petitions full text

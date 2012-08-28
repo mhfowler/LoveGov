@@ -217,12 +217,12 @@ div.feed-item-wrapper {
       @include fontSize(24px);
       color:$text-blue;
       &:hover {
-        color:blue;
+        color:black;
       }
       &:visited {
         color:purple;
         &:hover {
-          color:blue;
+          color:black;
         }
       }
     }
@@ -232,52 +232,6 @@ div.feed-item-wrapper {
       margin-top:5px;
       display:block;
     }
-
-    div.item-bottom {
-      margin-top:10px;
-      width:100%;
-      display:block;
-
-      // float right
-      a.num-comments {
-        margin-right:20px;
-        float:right;
-        //color:$red;
-        color:$gray;
-        margin-top:18px;
-        &:hover {
-          color:red;
-        }
-      }
-      a.share-button {
-        margin-right:20px;
-        float:right;
-        margin-top:18px;
-        color:$gray;
-        &:hover {
-          color:red;
-        }
-      }
-
-      // float left
-      a.created-avatar {
-        float:left;
-      }
-      div.name-and-submitted {
-        margin-left:8px;
-        float:left;
-        a.name {
-          color:$black;
-          &:hover {
-            color:black;
-          }
-        }
-        div.submitted {
-          color:$gray;
-        }
-      }
-    }
-
   }
 
   div.right-part {
@@ -348,6 +302,15 @@ div.item-bottom {
   display:block;
 
   // float right
+  a.pin-button {
+    margin-right:25px;
+    float:right;
+    margin-top:18px;
+    color:$gray;
+    &:hover {
+      color:red;
+    }
+  }
   a.num-comments {
     margin-right:20px;
     float:right;
@@ -390,19 +353,26 @@ div.item-bottom {
 
 
 
-
 /* petition bar */
 div.feed-petition-bar-wrapper {
   margin-top:10px;
   div.petition-bar-wrapper {
     div.petition-bar {
-      border-color:$gray;
+      border: 1px solid $gray;
+      height:15px;
       div.red-bar {
+        height:100%;
         background-color:$light-gray;
       }
     }
+    div.petition-bar-text {
+      float:right;
+      margin-top:5px;
+      color:$dark-gray;
+    }
   }
 }
+
 
 /*  news item */
 div.feed-item-wrapper {
@@ -504,8 +474,6 @@ div.feed-item-wrapper {
     }
   }
 }
-
-
 
 
 

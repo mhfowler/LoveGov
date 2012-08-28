@@ -40,6 +40,7 @@ def framedResponse(request, html, url, vals={}, rebind="home"):
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
 def homeResponse(request, focus_html, url, vals):
+    vals['home_link'] = True
     if request.is_ajax() and request.method == 'POST':
             to_return = {'focus_html':focus_html, 'url':url, 'title':vals['page_title']}
             return HttpResponse(json.dumps(to_return))
@@ -511,12 +512,13 @@ def congress(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
     viewer = vals['viewer']
-    friends = viewer.getIFollow()
+    friends = list(viewer.getIFollow())
     vals['i_follow'] = viewer.i_follow
-    friends = random.sample(friends, min(8, len(friends)))
+    friends = random.sample(friends, min(9, len(friends)))
     vals['friends'] = friends
     for f in friends:
         f.comparison = f.getComparison(viewer)
+    friends.sort(key=lambda x:x.comparison.result,reverse=True)
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -756,6 +758,7 @@ def pollDetail(request, p_id=-1, vals={}):
 
     poll_progress = getPollProgress(viewer, poll)
     vals['poll_progress'] = poll_progress
+    getMainTopics(vals)
 
     html = ajaxRender('site/pages/content_detail/poll_detail.html', vals, request)
     url = poll.get_url()
