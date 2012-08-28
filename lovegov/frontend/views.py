@@ -590,6 +590,7 @@ def likeMinded(request, vals={}):
         members = like_minded.members.all()
         vals['num_members'] = len(members)
         vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
     vals['like_minded'] = like_minded
 
     # render and return html
