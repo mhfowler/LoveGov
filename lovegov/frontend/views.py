@@ -988,7 +988,7 @@ def legislation_helper (request, vals={}):
 def legislationDetail(request, l_id, vals={}):
 
     legislation = Legislation.objects.get(id=l_id)
-    vals['legislation'] = legislation
+    vals['l'] = legislation
 
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)

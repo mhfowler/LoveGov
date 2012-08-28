@@ -2011,6 +2011,7 @@ class GroupFollowAction(Action):
 class MessagedAction(Action):
     politician = models.ForeignKey(UserProfile)
     message = models.TextField()
+    phone_number = models.CharField(max_length=50, null=True)
 
     def autoSave(self):
         self.action_type = 'ME'
@@ -2983,7 +2984,10 @@ class Legislation(Content):
             return 'No Legislation Title Available'
 
     def getTitleDisplay(self):
-        return "LEGISLATION: " + self.getTitle()
+        return "Legislation: " + self.getTitle()
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"

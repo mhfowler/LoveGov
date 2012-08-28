@@ -45,15 +45,15 @@ div.content-detail-wrapper {
   min-height:500px;
 
   div.content-detail-top {
-    width:700px;
+    width:600px;
 
     div.the-hearts {
       float:left;
     }
 
     div.detail-item-header {
-      margin-top: 28px;
-      width: 600px;
+      margin-top: 10px;
+      width: 550px;
       margin-left: 16px;
       float:left;
       div.item-feed-bottom-wrapper {
@@ -66,7 +66,8 @@ div.content-detail-wrapper {
 div.content-main-wrapper {
 
   div.petition-detail-wrapper {
-    width:600px;
+    padding-left:30px;
+    width:550px;
 
     div.detail-petition-bar-wrapper {
       width: 500px;
@@ -85,12 +86,39 @@ div.content-main-wrapper {
         height:500px;
       }
     }
+
+    div.petition-detail-sign-area {
+      div.sign-area {
+        width:100%;
+        a.action-button {
+          width: 100%;
+          text-align: center;
+          background-color: $gray;
+          padding: 5px;
+          color: white;
+          display:block;
+          margin-top:10px;
+          font-size:16px;
+          &:hover {
+            background-color:$dark-gray;
+          }
+        }
+        div.not-finalized {
+          margin-top:20px;
+          width:100%;
+          display:block;
+          font-style:italic;
+        }
+      }
+    }
   }
 
   div.content-detail-description {
-    @include fontSize(15px);
     margin-top:15px;
     max-width:600px;
+    font-size: 15px;
+    line-height: 20px;
+    color: #4c4c4c;
   }
 
 
@@ -108,6 +136,11 @@ div.content-main-wrapper {
   }
 
   div.poll-detail-wrapper {
+    margin-top:25px;
+  }
+
+  div.content-discussion {
+    width:600px;
     margin-top:25px;
   }
 }

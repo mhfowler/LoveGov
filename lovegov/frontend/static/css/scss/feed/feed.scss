@@ -201,32 +201,6 @@ div.feed-item-wrapper {
     float:left;
     width:500px;
 
-    div.group-posted-to {
-      width:100%;
-      display:block;
-      a.posted-to-link {
-        color:$dark-green;
-        @include fontSize(12px);
-        &:hover {
-          color:$green;
-        }
-      }
-    }
-
-    a.content-title {
-      @include fontSize(24px);
-      color:$text-blue;
-      &:hover {
-        color:black;
-      }
-      &:visited {
-        color:purple;
-        &:hover {
-          color:black;
-        }
-      }
-    }
-
     div.item-main-wrapper {
       width:100%;
       margin-top:5px;
@@ -351,6 +325,33 @@ div.item-bottom {
   }
 }
 
+
+/* feed item title and group posted to */
+div.group-posted-to {
+  width:100%;
+  display:block;
+  a.posted-to-link {
+    color:$dark-green;
+    @include fontSize(12px);
+    &:hover {
+      color:$green;
+    }
+  }
+}
+
+a.content-title {
+  @include fontSize(24px);
+  color:$text-blue;
+  &:hover {
+    color:black;
+  }
+  &:visited {
+    color:purple;
+    &:hover {
+      color:black;
+    }
+  }
+}
 
 
 

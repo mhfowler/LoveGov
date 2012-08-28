@@ -357,8 +357,10 @@ div.profile-page {
             float:right;
             margin-right:70px;
             margin-top:8px;
-            //background-color:$light-gray;
-            padding:5px;
+            padding:8px;
+            background-color:$gray;
+            color:white;
+            @include border-radius(7px);
             &:hover {
               background-color:$light-gray;
             }
@@ -395,7 +397,11 @@ div.profile-page {
             @include fontSize(14px);
             a.ask-to-join {
               @extend .claim-button;
+              background-color:$red;
               margin-right: 245px;
+              &:hover {
+                background-color:red;
+              }
             }
             p.asked-message {
               @include fontSize(12px);
@@ -551,5 +557,24 @@ div.message-politician-wrapper {
       top: 80px;
       left: -300px;
     }
+  }
+  div.enter-your-phonenumber {
+    margin-top:30px;
+    span.please-enter {
+      float:left;
+    }
+    input.phonenumber-input {
+      float:left;
+      margin-left: 20px;
+      margin-top: -4px;
+      height: 25px;
+      width: 180px;
+      padding-left:8px;
+    }
+  }
+  div.why-phonenumber {
+    @include fontSize(12px);
+    width:400px;
+    color:$dark-gray;
   }
 }
