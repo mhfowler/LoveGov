@@ -2155,18 +2155,23 @@ bind( '.modal_close', 'click', hideModal);
 // Don't propogate modal clicks to modal-wrapper (which would close modal)
 bind( 'div.modal-general', 'click', function(e) {e.stopPropagation();});
 
-function getModal(modal_name,data)
+function getModal(modal_name,data,callback)
 {
     if( typeof(data)=='undefined'){ data = { 'modal_name':modal_name }; }
     else{ data['modal_name'] = modal_name; }
+
     data['action'] = 'getModal';
     var modal_general = $('div.modal_general');
 
     // If create modal has recently been opened, use version in memory to avoid data loss
-    if(modal_name=="create_modal" && modal_name==modal_general.data('last-loaded')) {
-        showModal();
-        return;
+    if(modal_name==modal_general.data('last-loaded')) {
+        if(modal_name=="create_modal" ) {
+            showModal();
+            if(callback) callback();
+            return;
+        }
     }
+
 
     action({
         data: data,
@@ -2178,6 +2183,7 @@ function getModal(modal_name,data)
 
             showModal();
             bindOnNewElements();
+            if(callback) callback();
         }
     });
 }
