@@ -3774,3 +3774,21 @@ bind('.like_minded_close' , 'click' , null , function(e)
     $(".home_header_info").css("overflow", "hidden");
     $(".button_explanations").hide();
 });
+
+
+/***********************************************************************************************************************
+ *
+ *      ~log news link clicks
+ *
+ ***********************************************************************************************************************/
+bind('.news_link' , 'click' , null , function(e)
+{
+    var n_id = $(this).data('n_id');
+    action({
+            data: {'action': 'logLinkClick', 'n_id':n_id},
+            success: function(data) {
+            }
+        });
+    var url = $(this).attr('href');
+    window.open(url);
+});

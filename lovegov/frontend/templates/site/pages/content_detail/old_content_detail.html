@@ -1,0 +1,137 @@
+{% extends 'site/pages/home/top_sidebar_main.html' %}
+
+{% load humanize %}
+{% load macros %}
+
+{% block top %}
+{% endblock %}
+
+{% block sidebar %}
+    <div class="content-detail-sidebar">
+        <a href="/home/" class='back-to-feed'> Back To Feed </a>
+        {% block content_detail_sidebar %}
+            <div class="sidebar-header"> who liked this </div>
+            <div class="liked-wrapper">
+                {% for x in liked %}
+                    <a href="{{ x.get_url }}" class="liked-avatar">
+                        {% include 'site/pieces/avatar.html' with user=x width="50" height="50" %}
+                    </a>
+                {% empty %}
+                    <p>
+                        no one has liked this news yet :(
+                    </p>
+                {% endfor %}
+            </div>
+            {% if viewer.facebook_id %}
+                {% include 'site/pages/friends/fb_invite_sidebar.html' %}
+            {% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block sidebar_fixed %}
+{% endblock %}
+
+{% block main %}
+    <div class="content-detail">
+
+        <div class="content-detail-top">
+
+            {% load macros %}
+
+
+            {% macro content_detail_title content  %}
+                <span class="content-title">
+                    {{ content.getTitleDisplay }}
+                </span>
+
+                <span class="posted-in">
+                    Posted in
+                </span>
+
+                <span class="posted-group">
+                    {% with group=content.getPostedTo %}
+                        <a href="{{ group.get_url }}"> {{ group.title }}</a>
+                    {% endwith %}
+                </span>
+            {% endmacro %}
+
+            {% usemacro content_detail_title content %}
+
+            <span class="hearts" data-c_id="{{ content.id }}">
+                <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
+                <div class="heart-number heart_number">{{ content.status }}</div>
+                <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
+            </span>
+        </div>
+
+        <div class="content-info">
+
+            <div class="info-right">
+
+                <a class="comments-wrapper" href="{{ content.getCommentsURL }}">
+                    <div class="comments-bubble">
+                        <div class="num-comments">
+                            {{ content.num_comments }}
+                        </div>
+                    </div>
+                    <div class="comments-text">
+                        comments
+                    </div>
+                </a>
+            </div>
+
+            <div class="info-left">
+                <div class="content-image">
+                    {% include 'site/pieces/avatar.html' with user=content width="80" height="80" hoveroff=1 %}
+                </div>
+            </div>
+
+            <div class="info-middle-left">
+                {% block content_description %}
+                    <div class="content-info-header">
+                        Description
+                    </div>
+                    <div class="description">
+                        {{ content.summary}}
+                    </div>
+                {% endblock %}
+            </div>
+
+            <div class="info-middle-right">
+                <div class="content-info-header">
+                    Created By
+                </div>
+                <div class="created-by">
+                    <div class="avatar">
+                        {% include 'site/pieces/avatar.html' with user=creator width="50" height="50" %}
+                    </div>
+                    <div class="name-and-submitted">
+                        <a href="{{ creator.get_url }}">
+                            <div class="name">
+                                {{ creator.get_name }}
+                            </div>
+                        </a>
+                        <div class="submitted">
+                            posted {{ content.created_when|naturaltime }}
+                        </div>
+                    </div>
+                </div>
+                {% block content_buttons %}
+                    <div class="content-pin-button pin_content" data-c_id="{{ content.id }}">pin content</div>
+                {% endblock %}
+            </div>
+
+        </div>
+
+        <div class="content-body">
+            {% block content_body %}
+            {% endblock %}
+        </div>
+
+        <div id="comments" class="content-discussion">
+            {% include 'site/pieces/thread.html' with content=content%}
+        </div>
+
+    </div>
+{% endblock %}

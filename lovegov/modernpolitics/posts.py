@@ -2455,6 +2455,14 @@ def logCompatability(request, vals={}):
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
 
+#-----------------------------------------------------------------------------------------------------------------------
+# saves a link click on some news
+#-----------------------------------------------------------------------------------------------------------------------
+def logLinkClick(request, vals):
+    news = News.objects.get(id=request.POST['id'])
+    news.link_clicks += 1
+    news.save()
+    return HttpResponse("saved")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a piece of content, e.g. from the create modal

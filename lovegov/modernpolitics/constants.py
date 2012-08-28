@@ -645,7 +645,8 @@ ACTIONS = [
     'editExplanation',
     'editPetitionFullText',
     'saveScorecardAnswer',
-    'saveAnswerInFeed'
+    'saveAnswerInFeed',
+    'logLinkClick'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

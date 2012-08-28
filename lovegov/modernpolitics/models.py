@@ -2855,6 +2855,7 @@ class News(Content):
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
+    link_clicks = models.IntegerField(default=0)
 
     def getTitleDisplay(self):
         return "News: " + self.title
