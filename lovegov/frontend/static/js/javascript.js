@@ -3752,8 +3752,8 @@ function findNewLikeMinded() {
                 var num_new = returned.num_new_members;
                 // display num new members
                 $('.num_new_found').html(num_new);
-                $('.num_new_found').toggleClass("toggle");
                 $('.num_processed').html(returned.num_processed);
+                $('.find_result').toggleClass("toggle");
                 $(".find_result").show();
                 // change total members number
                 var total_num = $(".total_members").data('num');
@@ -3773,6 +3773,10 @@ function findNewLikeMinded() {
                 }
                 if (returned.num_processed != 0) {
                     findNewLikeMinded();
+                }
+                else {
+                    var message = String(total_num) + " like-minded people were found on LoveGov";
+                    $(".find_result").html(message);
                 }
             }}
     );

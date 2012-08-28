@@ -200,7 +200,7 @@ div.like-minded-header {
             div.num-found {
               @include inline-block;
             }
-            div.num-found.toggle {
+            &.toggle {
               color:blue;
             }
           }
