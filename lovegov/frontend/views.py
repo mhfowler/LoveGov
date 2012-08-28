@@ -941,7 +941,7 @@ def legislation (request, vals={}):
     vals['introduced_dates'] = [now - timedelta(days=x) for x in range_time]
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', request=request, vals=vals)
+    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
 
 def legislation_helper (request, vals={}):
     vals['legislation_items'] = Legislation.objects.all()
@@ -990,7 +990,7 @@ def legislationDetail(request, l_id, vals={}):
     legislation = Legislation.objects.get(id=l_id)
     vals['legislation'] = legislation
 
-    contentDetail(request=request, content=legislation, vals=vals)
+    contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
     url = legislation.get_url()
     return framedResponse(request, html, url, vals)

@@ -13,7 +13,7 @@ function bindOnReload() {
     getFBInviteFriends();
 
     // any feeds on the page, go get themselves
-    refreshFeeds();
+    // refreshFeeds();
 
     // for all home pages
     navSectionOpenAll();
@@ -37,7 +37,7 @@ function bindOnReload() {
             break;
         case "legislation-view":
             shortenLongText(); break;
-        case "legislation-detail":
+        case "legislation_detail":
             shortenLongText(); break;
         case "home":
             break;
@@ -2328,6 +2328,11 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
+function billExpandLink() {
+
+}
+
+
 bind( '.filter_box' , 'click' , null , function(event) {
     event.preventDefault();
     if ($(this).hasClass('clicked')) {
@@ -2337,7 +2342,6 @@ bind( '.filter_box' , 'click' , null , function(event) {
         $(this).addClass('clicked');
     }
 });
-
 
 function loadBillSelect2() {
     $('.session_select').select2({
@@ -2398,7 +2402,7 @@ function shortenLongText() {
     var moretext = "read more";
     var lesstext = "less";
     if ($('.long_text').hasClass("bill_detail")) {
-        var showChar = 300;q
+        var showChar = 300;
     }
     else {
         var showChar = 150;

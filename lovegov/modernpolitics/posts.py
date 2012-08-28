@@ -1832,7 +1832,6 @@ def getQuestions(request, vals):
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
 
-
 def getLegislation(request, vals={}):
     feed_start = int(request.POST['feed_start'])
     session_set = json.loads(request.POST['session_set'])

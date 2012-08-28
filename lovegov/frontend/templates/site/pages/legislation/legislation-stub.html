@@ -40,9 +40,11 @@
             <h6><span><span class="summary-intro">Summary: </span>{{l.bill_summary}}</span></h6>
         </div>
     </div>
-    <div class="bill-expand-link">
-        <h6><span><a href="/site/pages/legislation/legislation-view.html"></a>Detail</span></h6>
-    </div>
+    <a href="/legislation/{{ l.id }}/">
+        <div class="bill-expand-link">
+            <span class="detail-link">Detail</span>
+        </div>
+    </a>
 </div>
 
 <!--
