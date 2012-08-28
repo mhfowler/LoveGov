@@ -35,6 +35,7 @@ div.content-left {
 div#content-wrapper {
     width:100%;
     float: left;
+
     div.social-bar{
       height:50px;
       border: 1px solid $light-gray;
@@ -524,11 +525,6 @@ div.change-privacy {
 #petition-text
 {
     width:500px;
-}
-
-.signed:hover
-{
-    color: #f0503b;
 }
 
 .red-button

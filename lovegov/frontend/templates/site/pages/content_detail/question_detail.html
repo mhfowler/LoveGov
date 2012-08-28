@@ -44,7 +44,7 @@
 
 {% block content_body %}
 
-    <div class="question-detail">
+    <div class="question-detail mini-feed-wrapper">
         {% with question=question your_response=response show_answer=response default_display="choose"%}
             {% include 'site/pages/qa/question_stub.html' %}
         {% endwith %}

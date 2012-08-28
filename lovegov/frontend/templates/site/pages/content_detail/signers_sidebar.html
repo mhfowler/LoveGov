@@ -1,24 +1,11 @@
 <div class="signers-sidebar signers_sidebar">
 
-    <div class="sign-area sign_area">
-        {% if petition.finalized %}
-            <a class="action-button sign_button dummy_link" data-p_id="{{ petition.id }}"
-                    {% if i_signed %} style="display:none" {% endif %}> sign </a>
-            <div class="signed signed_text" {% if not i_signed %} style="display:none" {% endif %}> you signed this petition </div>
-        {% else %}
-            {% if i_created %}
-                <a class="action-button finalize_button dummy_link" data-p_id="{{ petition.id }}"> finalize </a>
-            {% endif %}
-            <div class="not-finalized">
-                This petition has not been finalized by its author. Before it's finalized a petition can be discussed and edited by
-                its author, but no one can sign it.
-            </div>
-        {% endif %}
-        <div style="clear:both;"></div>
+    <div class="sidebar-sign-area">
+        {% include 'site/pages/content_detail/petition_sign_area.html' %}
     </div>
 
     {% if petition.finalized %}
-        <h4 class="signers-title"> Signers </h4>
+        <div class="signers-header"> People who've signed this petition </div>
         <div class="petition_signers">
             {% if i_signed %}
                 {% include 'site/pages/content_detail/signer_avatar.html' with signer=viewer %}

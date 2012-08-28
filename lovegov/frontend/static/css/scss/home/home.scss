@@ -255,6 +255,19 @@ div.left-navbar {
     }
   }
 
+  div.left-toggles {
+    margin-top:100px;
+    a.left-toggle {
+      width:100%;
+      display:block;
+      margin-top:10px;
+      color:$gray;
+      &:hover {
+        color:$dark-gray;
+      }
+    }
+  }
+
 }
 
 
@@ -278,6 +291,8 @@ div.dismissible-header {
     }
   }
 }
+
+
 
 
 

@@ -14,10 +14,10 @@
     <div class="navbar-section navbar_section groups_section">
         <a class="home_link section_title" href="/groups/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Groups </div> </a>  <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper groups_wrapper">
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="like-minded" %}
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="like-minded" %}
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="friends" %}
             <a href="#" class="create-link"> + Create a Group </a>
         </div>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-{% comment %}
+    {% comment %}
     <div class="navbar-section navbar_section">
         <a class="home_link section_title" href="/congress/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Politicians </div> </a> <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper politicians_wrapper">
@@ -43,7 +43,7 @@
 
     <p class="asterisk_pointer asterisk-pointer">*</p>
 
-{% comment %}
+    {% comment %}
     <div class="navbar-section navbar_section">
         <a class="home_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
     </div>
@@ -52,5 +52,21 @@
     {% if viewer.facebook_id %}
         {% include 'site/pages/friends/fb_invite_sidebar.html' %}
     {% endif %}
+
+
+
+    <div class="left-toggles">
+        <a class="left-toggle sidebar-feedback feedback_toggle leftside_tab_toggle">
+            send us feedback!
+        </a>
+
+        <a class="left-toggle sidebar-invite-email invite_toggle leftside_tab_toggle">
+            invite by email!
+        </a>
+
+        <a class="left-toggle random_politician">
+            random!
+        </a>
+    </div>
 
 </div>

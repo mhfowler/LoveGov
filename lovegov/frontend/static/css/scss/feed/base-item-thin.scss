@@ -60,7 +60,11 @@ div.feed-item-thin
       height: 50px;
       width: 50px;
       margin-left: 15px;
-      float: left;
+      float: right;
+      &:hover {
+        @include staticImage('/images/icons/lightred_comment.png');
+        cursor:pointer;
+      }
 
       div.feed-thin-num-comments
       {

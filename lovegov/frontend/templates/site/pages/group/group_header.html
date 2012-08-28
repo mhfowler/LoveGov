@@ -43,7 +43,7 @@
             <div class="group-actions group_actions">
 
                 {% if info.is_user_admin %}
-                    <div class="group-action group-admin groupo_unadmin hover_text" data-g_id="{{ group.id }}"
+                    <div class="group-action group-admin group_unadmin hover_text" data-g_id="{{ group.id }}"
                          data-hover_text="step down" data-original_text="you're a moderator"> you're a moderator </div>
                 {% endif %}
 
@@ -169,7 +169,7 @@
                             {% if info.is_user_admin %}
                                 <a class="unpin-content unpin_content" data-c_id="{{ item.id }}" data-g_id="{{ group.id }}"> unpin </a>
                             {% endif %}
-                            {% include 'site/pages/feed/base-item-thin.html' with item=item %}
+                            {% include 'site/pages/feed/base-item-thin.html' with item=item.downcast %}
                         </div>
                     {% endfor %}
                 </div>

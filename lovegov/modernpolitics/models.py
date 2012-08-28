@@ -2010,6 +2010,7 @@ class GroupFollowAction(Action):
 class MessagedAction(Action):
     politician = models.ForeignKey(UserProfile)
     message = models.TextField()
+    phone_number = models.CharField(max_length=50, null=True)
 
     def autoSave(self):
         self.action_type = 'ME'
@@ -2480,8 +2481,7 @@ class Notification(Privacy):
             'timestamp' : action.when,
             'user' : action_user,
             'you_acted' : you_acted,
-            'to_object' : action.content,
-            'tally' : action.agg_actions.count()
+            'to_object' : action.petition,
         })
 
         return render_to_string('site/pieces/notifications/signed_verbose.html',vals)
@@ -2701,6 +2701,9 @@ class Petition(Content):
     def getFeedTitle(self):
         return self.getTitleDisplay()
 
+    def getTypeIconClass(self):
+        return "petition-image"
+
     def getFilledPercent(self):
         return int(100*(self.current / float(self.goal)))
 
@@ -2802,6 +2805,9 @@ class News(Content):
     def getFeedTitle(self):
         return self.title
 
+    def getTypeIconClass(self):
+        return "news-image"
+
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
         self.in_feed = True
@@ -2845,6 +2851,9 @@ class Discussion(Content):
 
     def getFeedTitle(self):
         return self.getTitleDisplay()
+
+    def getTypeIconClass(self):
+        return "discussion-image"
 
 #=======================================================================================================================
 # Comment (the building block of forums)
@@ -2982,7 +2991,10 @@ class Legislation(Content):
             return 'No Legislation Title Available'
 
     def getTitleDisplay(self):
-        return "LEGISLATION: " + self.getTitle()
+        return "Legislation: " + self.getTitle()
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
@@ -3322,6 +3334,9 @@ class Poll(Content):
     def getFeedTitle(self):
         return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
 
+    def getTypeIconClass(self):
+        return "poll-image"
+
     def get_url(self):
         return '/poll/' + str(self.id) + '/'
 
@@ -3420,7 +3435,10 @@ class Question(Content):
     def getTitleDisplay(self):
         return "Question: " + self.title
     def getFeedTitle(self):
-        return self.getTitleDisplay()
+        return ""
+
+    def getTypeIconClass(self):
+        return "question-image"
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = "Q"

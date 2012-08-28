@@ -1,9 +1,5 @@
 {% extends 'site/pages/content_detail/content_detail.html' %}
 
-{% block content_detail_sidebar %}
-    {% include 'site/pages/content_detail/signers_sidebar.html' %}
-{% endblock %}
-
 {% block content_body %}
 
     <div class="petition-detail-wrapper">
@@ -26,21 +22,37 @@
                     {% endif %}
                     <div style="clear:both;"></div>
                 </div>
-                <div class="text-wrapper being_edited not_editing_display">
+                <div class="content-detail-description being_edited not_editing_display">
                     {{ content.full_text|linebreaksbr }}
                 </div>
                 {% if iown and not petition.finalized %}
                     <div class="inline-edit-input inline_edit doing_editing_display">
-                        <textarea type="text" maxlength="10000" class="edit_input edit-petition" name="full_text" >{{ petition.full_text|linebreaksbr }}</textarea>
+                        <textarea type="text" maxlength="10000" class="edit_input edit-petition" name="full_text" >{{ petition.full_text }}</textarea>
                         <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
                         <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
                     </div>
                 {% endif %}
             </div>
         </div>
+
+        <div class="petition-detail-sign-area">
+            {% include 'site/pages/content_detail/petition_sign_area.html' %}
+        </div>
+
+    </div>
+
+    <div class="petition-detail">
+
     </div>
 
     <script> rebind="petition_detail"; </script>
+
+{% endblock %}
+
+
+{% block content_right_sidebar %}
+
+    {% include 'site/pages/content_detail/signers_sidebar.html' %}
 
 {% endblock %}
 

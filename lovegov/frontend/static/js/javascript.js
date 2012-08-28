@@ -1080,12 +1080,14 @@ function teamSection()
  *      ~Left sidebar
  *
  **********************************************************************************************************************/
-
-
-bind('.left-side-img', 'click', function()
+bind('.feedback_toggle', 'click', function()
 {
-    var parent = $(this).parent();
-    leftSideToggle(parent);
+    leftSideToggle($(".feedback_wrapper"));
+});
+
+bind('.invite_toggle', 'click', function()
+{
+    leftSideToggle($(".invite_tab_wrapper"));
 });
 
 bind('#feedback-submit', 'click', function(event)
@@ -1152,7 +1154,7 @@ function closeLeftSideWrapper(wrapper)
 {
 
     if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
-    else { wrapper.animate({left:'-493px'},500); }
+    else { wrapper.animate({left:'-528px'},500); }
     setTimeout(function()
     {
         wrapper.css({'z-index':'100'});
@@ -1160,30 +1162,29 @@ function closeLeftSideWrapper(wrapper)
             'e-img').css({'z-index':'101'});
     },500);
 
-    wrapper.removeClass('clicked');
+    wrapper.removeClass('open');
 }
 
 function leftSideToggle(wrapper)
 {
-    if (wrapper.hasClass('clicked'))
+    if (wrapper.hasClass('open'))
     {
         closeLeftSideWrapper(wrapper);
     }
     else
     {
-        wrapper.addClass('clicked');
+        wrapper.addClass('open');
         wrapper.css({'z-index':'101'});
         wrapper.children('.create-img').css({'z-index':'102'});
         wrapper.animate({left:'-1px'},500);
 
         wrapper.bindOnce('clickoutside',function(event)
         {
-            if (event.target.className != "footer_button") {
+            if (event.target.className.indexOf("leftside_tab_toggle") == -1) {
                 closeLeftSideWrapper(wrapper);
             }
         });
     }
-
 }
 
 
@@ -1695,23 +1696,32 @@ bind(".send_message", 'click', null, function(event) {
     var wrapper = $(this).parents(".message_politician_wrapper");
     var p_id = wrapper.data("p_id");
     var message = wrapper.find(".message_textarea").val();
-    action({
-            data: {
-                'action': 'messagePolitician',
-                'p_id': p_id,
-                'message': message
-            },
-            success: function(data)
-            {
-                var old_height = wrapper.height();
-                var old_width = wrapper.width();
-                wrapper.css({"height":old_height,"width":old_width});
-                wrapper.find(".send_a_message").hide();
-                wrapper.find(".message_success").fadeIn(100);
-                //setTimeout(hideModal(null),1000);
+    var phone_number = wrapper.find(".phonenumber_input").val();
+    if (phone_number = "") {
+        alert("You need to enter your phone number to send a politician a message. " +
+            "Currently the only way to reach a politician by email is via a webform which " +
+            "requires a phonenumber. The current system sucks, LoveGov will replace it soon.")
+    }
+    else {
+        action({
+                data: {
+                    'action': 'messagePolitician',
+                    'p_id': p_id,
+                    'phone_number':phone_number,
+                    'message': message
+                },
+                success: function(data)
+                {
+                    var old_height = wrapper.height();
+                    var old_width = wrapper.width();
+                    wrapper.css({"height":old_height,"width":old_width});
+                    wrapper.find(".send_a_message").hide();
+                    wrapper.find(".message_success").fadeIn(100);
+                    //setTimeout(hideModal(null),1000);
+                }
             }
-        }
-    );
+        );
+    }
 });
 
 /* mouse over text change for some buttons */
