@@ -55,12 +55,12 @@ a.view-all {
 div.feed-main
 {
   width: 100%;
-  padding: 10px;
   min-height:600px;
 
   table.feed-top-bar
   {
     width: 100%;
+    margin-top:15px;
     margin-bottom: 15px;
 
     td.feed-left-buttons
@@ -184,3 +184,331 @@ div.feed-main
   }
 }
 
+
+
+
+/* feed items */
+div.feed-item-wrapper {
+  width:100%;
+  margin-bottom:40px;
+
+  div.left-part {
+    float:left;
+    width:50px;
+  }
+
+  div.main-part {
+    float:left;
+    width:500px;
+
+    div.group-posted-to {
+      width:100%;
+      display:block;
+      a.posted-to-link {
+        color:$dark-green;
+        @include fontSize(12px);
+        &:hover {
+          color:$green;
+        }
+      }
+    }
+
+    a.content-title {
+      @include fontSize(24px);
+      color:$text-blue;
+      &:hover {
+        color:black;
+      }
+      &:visited {
+        color:purple;
+        &:hover {
+          color:black;
+        }
+      }
+    }
+
+    div.item-main-wrapper {
+      width:100%;
+      margin-top:5px;
+      display:block;
+    }
+  }
+
+  div.right-part {
+    float:left;
+    margin-left:20px;
+
+    div.top-comment {
+      margin-top: 35px;
+      margin-left: 45px;
+      width:300px;
+      border:1px solid $gray;
+      padding:20px;
+      @include border-radius(10px);
+      &:hover {
+        border-color:$black;
+        cursor:pointer;
+        span.triangle-wrapper {
+          span.triangle-border {
+            border-right-color:$black;
+          }
+        }
+      }
+
+      $triangle-size: 32px;
+      span.triangle-wrapper {
+        position:relative;
+        left: 1px;
+        top: 27px;
+        span.triangle {
+          @include triangle('left', $white, $triangle-size + -1px);
+          position: absolute;
+          top:-$triangle-size + 1px;
+          right:20px;
+        }
+        span.triangle-border {
+          @extend span.triangle;
+          @include triangle('left', $deep-gray, $triangle-size);
+          top: -32px;
+          right: 20px;
+        }
+      }
+
+
+      div.commenter {
+        @include fontSize(14px);
+        font-weight:bold;
+        a.commenter-name {
+          color:$black;
+          &:hover {
+            color:black;
+          }
+        }
+      }
+      div.the-comment {
+        margin-top:10px;
+        color:$gray;
+        overflow:hidden;
+      }
+    }
+  }
+}
+
+
+
+/* feed item bottom */
+div.item-bottom {
+  margin-top:10px;
+  width:100%;
+  display:block;
+
+  // float right
+  a.pin-button {
+    margin-right:25px;
+    float:right;
+    margin-top:18px;
+    color:$gray;
+    &:hover {
+      color:red;
+    }
+  }
+  a.num-comments {
+    margin-right:20px;
+    float:right;
+    //color:$red;
+    color:$gray;
+    margin-top:18px;
+    &:hover {
+      color:red;
+    }
+  }
+  a.share-button {
+    margin-right:20px;
+    float:right;
+    margin-top:18px;
+    color:$gray;
+    &:hover {
+      color:red;
+    }
+  }
+
+  // float left
+  a.created-avatar {
+    float:left;
+  }
+  div.name-and-submitted {
+    margin-left:8px;
+    float:left;
+    a.name {
+      color:$black;
+      &:hover {
+        color:black;
+      }
+    }
+    div.submitted {
+      color:$gray;
+    }
+  }
+}
+
+
+
+
+/* petition bar */
+div.feed-petition-bar-wrapper {
+  margin-top:10px;
+  div.petition-bar-wrapper {
+    div.petition-bar {
+      border: 1px solid $gray;
+      height:15px;
+      div.red-bar {
+        height:100%;
+        background-color:$light-gray;
+      }
+    }
+    div.petition-bar-text {
+      float:right;
+      margin-top:5px;
+      color:$dark-gray;
+    }
+  }
+}
+
+
+/*  news item */
+div.feed-item-wrapper {
+
+  div.news-wrapper {
+    a.feed-news-link {
+      position: relative;
+      top: -10px;
+      color:$gray;
+      &:hover {
+        color:$dark-gray;
+      }
+    }
+  }
+
+  div.feed-item-summary {
+    position: relative;
+    top: -5px;
+  }
+
+  div.feed-petition-wrapper {
+  }
+
+  div.feed-poll-wrapper {
+
+
+    div.poll-sample-question {
+      width:100%;
+      display:block;
+      $triangle-size:16px;
+      div.poll-arrow-left {
+        float:left;
+        @include triangle('left', $gray, $triangle-size + -1px);
+        top:-$triangle-size + 1px;
+        &:hover {
+          border-right-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+      div.poll-arrow-right {
+        float:right;
+        @include triangle('right', $gray, $triangle-size + -1px);
+        top:-$triangle-size + 1px;
+        &:hover {
+          border-left-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+      div.poll-question-wrapper {
+        float:left;
+        margin-left:20px;
+        width:450px;
+        div.current-question {
+          margin-top:5px;
+          @include fontSize(18px);
+          a {
+            color:$dark-gray;
+            &:hover {
+              color:$black;
+            }
+          }
+          padding-right:10px;
+        }
+        div.poll-answers-wrapper {
+          margin-top:5px;
+
+          div.poll-answer {
+            padding:10px;
+            @include border-radius(8px);
+            &:hover {
+              background-color:$awesome-blue;
+              cursor:pointer;
+            }
+            &.clicked {
+              background-color:$awesome-blue;
+            }
+          }
+
+          div.poll-sample-bottom {
+            margin-top:5px;
+            width:100%;
+            display:block;
+            div.saved-message {
+              float:left;
+              color:$blue;
+              display:none;
+            }
+            a.bottom-link {
+              float:right;
+              margin-left:10px;
+              color:$dark-gray;
+              &:hover {
+                color:$black;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+/* feed item hearts */
+div.item-ranking
+{
+  text-align: center;
+
+  div.heart-plus
+  {
+    @include staticImage('/images/icons/hearts/plusheart-gray.png');
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 18px;
+    margin: 8px auto 4px auto;
+    cursor: pointer;
+
+    &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+    &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+  }
+  div.heart-number {
+    @include fontSize(20px);
+    font-weight:bold;
+  }
+  div.heart-minus
+  {
+    @include staticImage('/images/icons/hearts/minusheart-gray.png');
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 18px;
+    margin: 4px auto 0px auto;
+    cursor: pointer;
+
+    &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+    &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+  }
+}

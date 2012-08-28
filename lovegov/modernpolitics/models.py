@@ -272,9 +272,11 @@ class Content(Privacy, LocationLevel):
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
+    last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
+    hot_score = models.IntegerField(default=0)                                  # for hot feed
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
@@ -307,6 +309,8 @@ class Content(Privacy, LocationLevel):
             return '/news/' + str(self.id) + '/'
         elif self.type=='O':
             return '/poll/' + str(self.id) + '/'
+        elif self.type =='S':
+            return '/scorecard/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
         elif self.type=='D':
@@ -338,6 +342,19 @@ class Content(Privacy, LocationLevel):
         return self.title
     def getTitleDisplay(self):
         return self.downcast().getTitleDisplay()
+    def getFeedTitle(self):
+        return self.downcast().getFeedTitle()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # calculates contents hot_score and saves it
+    #-------------------------------------------------------------------------------------------------------------------
+    def recalculateHotScore(self):
+        votes = Voted.objects.filter(content=self, value=1)
+        score = 0
+        for v in votes:
+            score += v.getHotValue()
+        self.hot_score = score
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns group that this content was orginally posted to
@@ -469,7 +486,6 @@ class Content(Privacy, LocationLevel):
         else:
             return None
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
@@ -479,8 +495,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
-        self.like(user=creator, privacy=privacy)
-
+        self.like(user=creator, privacy="PRI")
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -530,7 +545,6 @@ class Content(Privacy, LocationLevel):
         self.num_comments += 1
         if commenter and (not commenter in self.commenters.all()):
             self.commenters.add(commenter)
-            self.status += STATUS_COMMENT
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -554,6 +568,8 @@ class Content(Privacy, LocationLevel):
             object = self.userimage
         elif type == 'O':
             object = self.poll
+        elif type == 'S':
+            object = self.scorecard
         elif type == 'G':
             object = self.group
         elif type == 'Z':
@@ -654,7 +670,7 @@ class Content(Privacy, LocationLevel):
         self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Add like vote to content from inputted user (or adjust his vote appropriately)
+    # voting like/dislike
     #-------------------------------------------------------------------------------------------------------------------
     def like(self, user, privacy):
         my_vote = Voted.lg.get_or_none(user=user, content=self)
@@ -662,81 +678,91 @@ class Content(Privacy, LocationLevel):
         if my_vote:
             # if already liked, do nothing
             if my_vote.value == 1:
-                pass
-
-            # if disliked or neutral, increase vote by 1
+                return my_vote.value
+            # if disliked before, one less downvote
             else:
-                my_vote.value += 1
-
-                # adjust content values about status and vote
-                if my_vote.value == 1:
-                    self.upvotes += 1
-                else:
+                if my_vote.value == -1:
                     self.downvotes -= 1
-
-                self.status += STATUS_VOTE
-                self.save()
-                my_vote.save()
-
-        else:
-            # create new vote
+                    self.status += STATUS_VOTE
+        else:  # create new vote
             my_vote = Voted(value=1, content=self, user=user, privacy=privacy)
             my_vote.autoSave()
-            # adjust content values about status and vote
-            self.upvotes += 1
-            self.status += STATUS_VOTE
-            self.save()
-            creator = self.getCreator()
-            creator.upvotes += 1
-            creator.save()
+
+        my_vote.value = 1
+        my_vote.save()
+        self.upvotes += 1
+        self.status += STATUS_VOTE
+        self.save()
+        creator = self.getCreator()
+        creator.upvotes += 1
+        creator.save()
 
         # make the action and notify
         action = VotedAction(user=user,content=self,value=my_vote.value)
         action.autoSave()
-        self.creator.notify(action)
-
-        if self.type == 'M':
-            self.downcast().motionVote(my_vote)
+        creator.notify(action)
 
         return my_vote.value
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Add dislike vote to content from inputted user (or adjust his vote appropriately)
-    #-------------------------------------------------------------------------------------------------------------------
     def dislike(self, user, privacy):
         my_vote = Voted.lg.get_or_none(user=user, content=self)
+
         if my_vote:
             # if already disliked, do nothing
             if my_vote.value == -1:
-                pass
+                return my_vote.value
+            # if liked before, one less upvote
             else:
-                my_vote.value -= 1
-                # adjust content values about status and vote
-                if my_vote.value == -1:
-                    self.downvotes += 1
-                else:
+                if my_vote.value == 1:
                     self.upvotes -= 1
-                self.status -= STATUS_VOTE
-                self.save()
-                my_vote.save()
-        else:
-            # create new vote
+                    self.status -= STATUS_VOTE
+                    self.creator.upvotes -= 1
+                    self.creator.save()
+        else:  # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
             my_vote.autoSave()
-            # adjust content values about status and vote
-            self.downvotes += 1
-            self.status -= STATUS_VOTE
-            self.save()
-            creator = self.getCreator()
-            creator.downvotes += 1
-            creator.save()
 
+        my_vote.value = -1
+        my_vote.save()
+        self.downvotes += 1
+        self.status -= STATUS_VOTE
+        self.save()
+
+        # make the action and notify
         action = VotedAction(user=user,content=self,value=my_vote.value)
         action.autoSave()
-        self.creator.notify(action)
+        self.getCreator().notify(action)
 
-        if self.type == 'M':
-            self.downcast().motionVote(my_vote)
+        return my_vote.value
+
+    def unvote(self, user, privacy):
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
+
+        if my_vote:
+            # if already disliked, one less downvote
+            if my_vote.value == -1:
+                self.downvotes -= 1
+                self.status += STATUS_VOTE
+                self.save()
+            # if already liked, one less upvote
+            elif my_vote.value == 1:
+                self.upvotes -= 1
+                self.status -= STATUS_VOTE
+                self.save()
+                self.creator.upvotes -= 1
+                self.creator.save()
+        else:  # create new vote
+            my_vote = Voted(value=0, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
+
+        my_vote.value = 0
+        my_vote.save()
+
+        # make the action and notify
+        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action.autoSave()
+        self.getCreator().notify(action)
+
         return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -892,12 +918,6 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
-class Feed(LGModel):
-    alias = models.CharField(max_length=30)
-    items = models.ManyToManyField(FeedItem)
-    def smartClear(self):
-        self.items.all().delete()
-
 #=======================================================================================================================
 # For storing a user's settings for sending them email alerts about notifications for particular user or content..
 # user_id and content... but only use one field
@@ -914,80 +934,6 @@ class CustomNotificationSetting(LGModel):
             return True
         else:
             return False
-
-#=======================================================================================================================
-# Topic weight, indicates how much to weigh a particular topic.
-#=======================================================================================================================
-class TopicWeight(LGModel):
-    topic = models.ForeignKey(Topic)
-    weight = models.IntegerField(default=100)       # percentage to weight topic
-
-#=======================================================================================================================
-# Type weight, indicates how much to weigh a particular type
-#=======================================================================================================================
-class TypeWeight(LGModel):
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    weight = models.IntegerField(default=100)       # percentage to weight type
-
-#=======================================================================================================================
-# For storing a ranking system's settings.
-# default =-1 --> no filter
-#=======================================================================================================================
-class FilterSetting(LGModel):
-    alias = models.CharField(max_length=30, default="default")  # unique identifier
-    similarity = models.IntegerField(default=-1)    # filter by similarity percent users are to you
-    days = models.IntegerField(default=-1)          # filter by how many days old max
-    by_topic = models.BooleanField(default=False)   # boolean whether to use topic weights or not
-    by_type = models.BooleanField(default=False)    # boolean whether to use type weights
-    topic_weights = models.ManyToManyField(TopicWeight) # sum of all topic weights should be 100!
-    type_weights = models.ManyToManyField(TypeWeight)   # sum of all type weights should be 100!
-    algo = models.CharField(max_length=1, default='D', choices=ALGO_CHOICES)
-    hot_window = models.IntegerField(default=HOT_WINDOW)
-    def getTopicWeight(self, topic):
-        to_return = self.topic_weights.filter(topic=topic)
-        if to_return:
-            return to_return[0].weight
-        else:
-            return 0
-    def getTypeWeight(self, type):
-        to_return = self.type_weights.filter(type=type)
-        if to_return:
-            return to_return[0].weight
-        else:
-            return 0
-
-class SimpleFilter(LGModel):
-    name = models.CharField(max_length=200, default="default")
-    created_when = models.DateTimeField(auto_now_add=True, null=True)
-    creator = models.ForeignKey("UserProfile", null=True)
-    ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
-    topics = models.ManyToManyField(Topic)
-    types = custom_fields.ListField()                  # list of char of included types
-    levels = custom_fields.ListField(default=[])                 # list of char of included levels
-    groups = models.ManyToManyField("Group")
-    submissions_only = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
-    display = models.CharField(max_length=1, default="P")
-    # which location
-    location = models.ForeignKey("PhysicalAddress", null=True)
-
-    def getDict(self):
-        if self.submissions_only:
-            submissions_only = 1
-        else:
-            submissions_only = 0
-        topics = list(self.topics.all().values_list("id", flat=True))
-        groups = list(self.groups.all().values_list("id", flat=True))
-        to_return = {
-            'name': self.name,
-            'ranking': self.ranking,
-            'types': json.dumps(self.types),
-            'levels': json.dumps(self.levels),
-            'topics': json.dumps(topics),
-            'groups': json.dumps(groups),
-            'submissions_only': submissions_only,
-            'display': self.display
-        }
-        return to_return
 
 #=======================================================================================================================
 # To track promotional codes we advertise to users.
@@ -1113,10 +1059,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
-    # deprecated
-    my_feed = models.ManyToManyField(FeedItem, related_name="newfeed")  # for storing feed based on my custom setting below
-    filter_setting = models.ForeignKey(FilterSetting, null=True)
-    evolve = models.BooleanField(default=False)     # boolean as to whether their filter setting should learn from them and evolve
 
     def __unicode__(self):
         return self.first_name
@@ -1200,6 +1142,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def clearResponses(self):
         return self.getView().clearResponses()
+
+    def getResponseToQuestion(self, question):
+        response = self.view.responses.filter(question=question)
+        if response:
+            response = response[0]
+            return response
+        else:
+            return None
 
     #-------------------------------------------------------------------------------------------------------------------
     # special user checks
@@ -2748,6 +2698,8 @@ class Petition(Content):
 
     def getTitleDisplay(self):
         return "Petition: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     def getFilledPercent(self):
         return int(100*(self.current / float(self.goal)))
@@ -2784,6 +2736,9 @@ class Petition(Content):
 
                 user.num_signatures += 1
                 user.save()
+
+                # if you signed then you liked it
+                self.like(user, "PRI")
 
                 return True
         else:
@@ -2840,9 +2795,12 @@ class News(Content):
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
+    link_clicks = models.IntegerField(default=0)
 
     def getTitleDisplay(self):
         return "News: " + self.title
+    def getFeedTitle(self):
+        return self.title
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
@@ -2884,6 +2842,9 @@ class Discussion(Content):
 
     def getTitleDisplay(self):
         return "Discussion: " + self.title
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
 #=======================================================================================================================
 # Comment (the building block of forums)
@@ -3358,6 +3319,8 @@ class Poll(Content):
 
     def getTitleDisplay(self):
         return "Poll: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
 
     def get_url(self):
         return '/poll/' + str(self.id) + '/'
@@ -3372,6 +3335,53 @@ class Poll(Content):
         self.questions.add(q)
         self.num_questions += 1
         self.save()
+
+#=======================================================================================================================
+# Scorecard, a group response to a poll
+#
+#=======================================================================================================================
+class Scorecard(Content):
+    group = models.ForeignKey("Group", null=True, related_name="scorecards")
+    poll = models.ForeignKey(Poll)
+    scorecard_view = models.ForeignKey("WorldView")
+    politicians = models.ManyToManyField(UserProfile)
+    full_text = models.TextField()
+
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.type = "S"
+        scorecard_view = WorldView()
+        scorecard_view.save()
+        self.scorecard_view = scorecard_view
+        self.in_feed = False
+        if not self.summary:
+            self.summary = self.full_text[:200]
+        self.save()
+        if self.group:
+            self.group.scorecard = self
+            self.group.save()
+        super(Scorecard, self).autoSave(creator=creator, privacy=privacy)
+
+
+    def getTitleDisplay(self):
+        return "Scorecard: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
+
+    def getEditURL(self):
+        return self.get_url() + 'edit/'
+
+    def getPermissionToEdit(self, viewer):
+        if self.group:
+            return self.group.hasAdmin(viewer)
+        else:
+            return viewer == self.creator
+
+    def getScorecardComparisonURL(self, user):
+        return self.get_url() + user.alias + '/'
+
+    def getComparison(self, user):
+        from lovegov.modernpolitics.compare import getUserScorecardComparison
+        return getUserScorecardComparison(user=user, scorecard=self)
 
 #=======================================================================================================================
 # Answer
@@ -3409,6 +3419,8 @@ class Question(Content):
 
     def getTitleDisplay(self):
         return "Question: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = "Q"
@@ -3472,9 +3484,6 @@ class Response(Content):
         self.in_feed = False
         self.save()
         self.type = 'R'
-        if creator:
-            view = creator.getView()
-            view.responses.add(self)
         super(Response, self).autoSave(creator=creator, privacy=privacy)
         self.setMainTopic(self.question.getMainTopic())
 
@@ -3685,6 +3694,9 @@ class Group(Content):
     admins = models.ManyToManyField(UserProfile, related_name='admin_of')
     members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
+    # content
+    scorecard = models.ForeignKey(Scorecard, null=True, related_name="group_origins")
+    group_content = models.ManyToManyField(Content, related_name="in_groups")
     # info
     full_text = models.TextField(max_length=1000)
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
@@ -3707,12 +3719,24 @@ class Group(Content):
 
     def getTitleDisplay(self):
         return "Group: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
     #-------------------------------------------------------------------------------------------------------------------
     def getContent(self):
-        return Content.objects.filter(posted_to=self, in_feed=True)
+        if self.content_by_posting:
+            return Content.objects.filter(posted_to=self, in_feed=True)
+        else:
+            members_ids = self.members.all().values_list("id", flat=True)
+            content = Content.objects.filter(in_feed=True, creator_id__in=members_ids)
+            return content
+
+    def recalculateGroupContent(self):
+        self.group_content.clear()
+        for x in self.getContent():
+            self.group_content.add(x)
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets url for content
@@ -4704,6 +4728,18 @@ class Voted(UCRelationship):
         else: value = 0
         return value
 
+    def getHotValue(self):
+
+        age = datetime.datetime.now() - self.created_when
+        days_old = age.days
+        if days_old < HOT_VOTE_MAX_DAYS:
+            seconds = age.seconds
+            max_seconds = 10*24*60*60           # days * hours * minutes * seconds
+            value = max_seconds - seconds
+            return value
+        else:
+            return 0
+
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
@@ -4817,7 +4853,6 @@ class US_ConDistr(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 
-
 class LGNumber(LGModel):
     alias = models.CharField(max_length=50)
     number = models.IntegerField()
@@ -4865,78 +4900,5 @@ class BlogEntry(LGModel):
 
     def getURL(self):
         return '/blog/' + self.creator.alias + '/' + str(self.id)
-
-
-
-
-
-
-########################################################################################################################
-########################################################################################################################
-#  Deprecated
-#
-########################################################################################################################
-#####################################################################################################################
-class LoveGov(LGModel):
-    default = models.BooleanField()             # for getting THEONE
-    average_votes = models.IntegerField(default=1)       # the average number of votes on a piece of in_search content
-    average_rating = models.IntegerField(default=50)      # the average rating of a piece of content in in_search
-    lovegov_user = models.ForeignKey(UserProfile, null=True, related_name="lovegovuser")
-    lovegov_group = models.ForeignKey(Group, null=True, related_name="anonuser")
-    anon_user = models.ForeignKey(UserProfile, null=True) # user who represents anonymous users
-    default_image = models.ForeignKey(UserImage, null=True)
-    default_filter = models.ForeignKey(FilterSetting, null=True, related_name="defaultfilter")
-    best_filter = models.ForeignKey(FilterSetting, null=True, related_name="bestfilter")
-    new_filter = models.ForeignKey(FilterSetting, null=True, related_name="newfilter")
-    hot_filter = models.ForeignKey(FilterSetting, null=True, related_name="hotfilter")
-    worldview = models.ForeignKey(WorldView, null=True)
-
-    def update(self):
-        self.calcAverageVotes()
-        self.calcAverageRating()
-
-    def calcAverageVotes(self):
-        total_content = Content.objects.filter(in_search=True).count()
-        total_votes = Voted.objects.all().count()
-        self.average_votes = max(int(total_votes / total_content), 1)
-        self.save()
-
-    def calcAverageRating(self):
-        all_content = Content.objects.filter(in_search=True)
-        count = 0
-        sum = 0
-        for c in all_content:
-            rating = c.getRating()
-            sum += rating
-            count += 1
-        self.average_rating = int((sum/count)*10)
-        self.save()
-
-#=======================================================================================================================
-# Each setting has a name and value, for any given setting, there should be only one default=True
-# this model is in addition to LoveGov, to make it easy to add settings after launch.. without
-# necessarily having to migrate
-#=======================================================================================================================
-class LoveGovSetting(LGModel):
-    default = models.BooleanField()
-    setting = models.CharField(max_length=30)           # unique identifier
-    value = models.CharField(max_length=50)
-
-#=======================================================================================================================
-# Temp models and models for optimization.
-#=======================================================================================================================
-class QuestionDiscussed(LGModel):
-    question = models.ForeignKey(Question)
-    num_comments = models.IntegerField()        # number of comments, including replies
-
-# for ordering questions
-class qOrdered(LGModel):
-    question = models.ForeignKey(Question)
-    rank = models.IntegerField()
-
-# model for creating ordered lists of questions
-class QuestionOrdering(LGModel):
-    alias = models.CharField(max_length=30)
-    questions = models.ManyToManyField(qOrdered)
 
 

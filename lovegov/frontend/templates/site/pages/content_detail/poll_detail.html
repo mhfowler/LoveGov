@@ -5,6 +5,8 @@
     <a href="/questions/" class="back-to"> Back To Questions </a>
 {% endblock %}
 
+
+
 {% block sidebar_fixed %}
 
     <div class="poll-detail-sidebar">
@@ -19,37 +21,14 @@
 {% endblock %}
 
 
-{% block content_description %}
-    <div class="content-info-header">
-        Description
-    </div>
-
-    <div class="description">
-        {{ content.summary}}
-    </div>
-
-    <div class="content-info-header view-scorecards">
-        View Scorecards
-    </div>
-
-    <div class="scorecards-wrapper">
-
-    </div>
-
-{% endblock %}
-
 
 {% block content_body %}
 
-    {% comment %}
-    <div class="questions-wrapper">
-        {% for x in q_items %}
-            {% with question=x.question your_response=x.you show_answer=x.you default_display="choose"%}
-                {% include 'site/pages/qa/question_stub.html' %}
-            {% endwith %}
-        {% endfor %}
+    <div class="poll-detail-wrapper">
+        <div class="content-detail-description">
+            {{ content.summary}}
+        </div>
     </div>
-    {% endcomment %}
 
     <div class="poll-feed-wrapper">
         {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" only_unanswered=1 default_display="choose" poll_id=poll.id %}

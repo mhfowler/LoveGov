@@ -989,25 +989,65 @@ def saveAnswer(request, vals={}):
     if not privacy:
         privacy = getPrivacy(request)
     a_id = request.POST['a_id']
-    user = vals['viewer']
-    your_response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
+    weight = int(request.POST['weight'])
+    viewer = vals['viewer']
+    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id, weight=weight)
     vals['question'] = question
     vals['your_response'] = your_response
     vals['default_display'] = request.POST.get('default_display')
-    responses = []
 
-    # get responses if they are there
+    responses = []
+    # get scorecard response if it is there
+    scorecard_id = request.POST.get('scorecard_id')
+    if scorecard_id:
+        scorecard = Scorecard.objects.get(id=scorecard_id)
+        scorecard_response = getResponseHelper(responses=scorecard.scorecard_view.responses.all(), question=question)
+        if scorecard_response:
+            responses.append({'response':scorecard_response,'responder':scorecard})
+    # get to_compare response if it is there
     to_compare_id = request.POST.get('to_compare_id')
     if to_compare_id and to_compare_id != 'null':
         to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
         their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
         if their_response:
-            responses.append(their_response)
-    responses.append(your_response)
+            responses.append({'response':their_response,'responder':to_compare})
+    responses.append({'response':your_response,'responder':viewer})
     vals['compare_responses'] = responses
 
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
+
+def saveScorecardAnswer(request, vals):
+    question = Question.objects.get(id=request.POST['q_id'])
+    a_id = request.POST['a_id']
+    user = vals['viewer']
+    scorecard = Scorecard.objects.get(id=request.POST['scorecard_id'])
+    if scorecard.getPermissionToEdit(user):
+        if question in scorecard.poll.questions.all():
+            scorecard_response = scorecardAnswerAction(user=user, scorecard=scorecard, question=question,answer_id=a_id)
+            vals['question'] = question
+            vals['your_response'] = scorecard_response
+            vals['default_display'] = request.POST.get('default_display')
+            responses = []
+            vals['compare_responses'] = responses
+            html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+            return HttpResponse(json.dumps({'html':html}))
+        else:
+            LGException("user " + str(user.id) + " trying to answer question for scorecard which isn't on scorecard poll")
+            return HttpResponse("didn't work")
+    else:
+        LGException("user " + str(user.id) + " trying to edit scorecard which they are not allowed to." + str(scorecard.id))
+        return HttpResponse("didnt' work")
+
+def saveAnswerInFeed(request, vals):
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = request.POST.get("privacy")
+    if not privacy:
+        privacy = getPrivacy(request)
+    a_id = request.POST['a_id']
+    viewer = vals['viewer']
+    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id)
+    return HttpResponse("saved")
 
 def changeAnswerPrivacy(request, vals):
 
@@ -1134,6 +1174,7 @@ def updateStats(request, vals={}):
 # gets html for next poll question
 #-----------------------------------------------------------------------------------------------------------------------
 def getNextPollQuestion(request, vals={}):
+    viewer = vals['viewer']
     p_id = int(request.POST['p_id'])
     which = int(request.POST['which'])
     direction = request.POST['direction']
@@ -1150,6 +1191,8 @@ def getNextPollQuestion(request, vals={}):
     vals['question'] = question
     vals['poll'] = poll
     vals['which'] = next
+    response = viewer.getResponseToQuestion(question)
+    vals['your_response'] = response
     html = ajaxRender('site/pages/content_detail/poll_sample.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1755,10 +1798,15 @@ def getQuestions(request, vals):
     feed_topic_alias = request.POST.get('feed_topic')
     to_compare_id = request.POST.get('to_compare_id')
     p_id = request.POST.get('p_id')
+    scorecard_id = request.POST.get('scorecard_id')
     if p_id:
         poll = Poll.objects.get(id=p_id)
     else:
         poll = None
+    if scorecard_id:
+        scorecard = Scorecard.objects.get(id=scorecard_id)
+    else:
+        scorecard = None
     only_unanswered_string = request.POST['only_unanswered']
     only_unanswered = only_unanswered_string == 'true'
     if to_compare_id and to_compare_id != 'null':
@@ -1771,10 +1819,11 @@ def getQuestions(request, vals):
         feed_topic = None
     if to_compare:
         question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
-            question_ranking=question_ranking, feed_topic=feed_topic, feed_start=feed_start, num=10)
+            question_ranking=question_ranking, feed_topic=feed_topic, scorecard=scorecard, feed_start=feed_start, num=10)
     else:
         question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
-            feed_topic=feed_topic,  poll=poll, only_unanswered=only_unanswered, feed_start=feed_start, num=10)
+            feed_topic=feed_topic,  poll=poll, scorecard=scorecard,
+            only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
@@ -2406,6 +2455,14 @@ def logCompatability(request, vals={}):
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
 
+#-----------------------------------------------------------------------------------------------------------------------
+# saves a link click on some news
+#-----------------------------------------------------------------------------------------------------------------------
+def logLinkClick(request, vals):
+    news = News.objects.get(id=request.POST['n_id'])
+    news.link_clicks += 1
+    news.save()
+    return HttpResponse("saved")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a piece of content, e.g. from the create modal
@@ -2599,7 +2656,27 @@ def pinContent(request, vals={}):
         pinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
     else:
         unpinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
-    return HttpResponse("pinned")
+    vals['content'] = content
+    vals['group'] = group
+    success_link = ajaxRender('site/pages/content_detail/pin_content_success.html', vals, request)
+    return HttpResponse(json.dumps({'html':success_link}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# edit a petitions full text
+#-----------------------------------------------------------------------------------------------------------------------
+def editPetitionFullText(request, vals={}):
+    petition = Petition.objects.get(id=request.POST['p_id'])
+    viewer = vals['viewer']
+    if viewer == petition.creator and not petition.finalized:
+        full_text = request.POST['full_text']
+        petition.full_text = full_text
+        petition.save()
+        action = EditedAction(user=viewer, content=petition, privacy = getPrivacy(request))
+        action.autoSave()
+        return HttpResponse(json.dumps({'value':full_text}))
+    else:
+        LGException( "User editing petition and is finalized or is not owner #" + str(viewer.id) )
+        return HttpResponse("didnt work")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]

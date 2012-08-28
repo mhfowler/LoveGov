@@ -1,20 +1,18 @@
-<div class="page-top">
-    {% block top %}
-        top
-    {% endblock %}
-</div>
-
 <div class="left-sidebar">
     {% block sidebar %}
     {% endblock %}
     <div class="sidebar-fixed">
         {% block sidebar_fixed %}
-
         {% endblock %}
     </div>
 </div>
 
 <div class="main-focus">
+    <div class="page-top">
+        {% block top %}
+            top
+        {% endblock %}
+    </div>
     {% block main %}
         main focus
     {% endblock %}

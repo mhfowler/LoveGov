@@ -2,12 +2,13 @@
 <div class="left-navbar">
     <div class="home_reloading home-reloading"></div>
     <div class="navbar-section navbar_section home_section">
-        <a class="home_link section_title" href="/home/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Home </div> </a> <span class="red_triangle red-triangle"></span>
+        <a class="home_link section_title" href="/home/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Home </div> </a>
+        {% comment %}<span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper home_wrapper">
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/questions/" section_title="questions" %}
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="my representatives" %}
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="like-minded" %}
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="friends" %}
         </div>
+        {% endcomment %}
     </div>
 
     <div class="navbar-section navbar_section groups_section">
@@ -16,6 +17,8 @@
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="like-minded" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="friends" %}
             <a href="#" class="create-link"> + Create a Group </a>
         </div>
     </div>

@@ -1,19 +1,21 @@
-<div class="response-stub">
-    <!-- avatar plus answer text -->
-    {% include 'site/pages/qa/avatar_and_response_text.html' %}
-    <!-- explanation plus importance -->
-    <div class="below-response">
-        <div class="explanation-wrapper">
-            {% if your_response.id == response.id %}
-                {% include 'site/pages/qa/answer_explanation_editable.html'%}
-            {% else %}
-                {% if response.explanation %}
-                    <div class="response-explanation">"{{ response.explanation}}"
-                    </div>
+{% with response=x.response responder=x.responder %}
+    <div class="response-stub">
+        <!-- avatar plus answer text -->
+        {% include 'site/pages/qa/avatar_and_response_text.html' %}
+        <!-- explanation plus importance -->
+        <div class="below-response">
+            <div class="explanation-wrapper">
+                {% if your_response.id == response.id %}
+                    {% include 'site/pages/qa/answer_explanation_editable.html'%}
+                {% else %}
+                    {% if response.explanation %}
+                        <div class="response-explanation">"{{ response.explanation}}"
+                        </div>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
+            <div style="clear:both;"></div>
         </div>
         <div style="clear:both;"></div>
     </div>
-    <div style="clear:both;"></div>
-</div>
+{% endwith %}

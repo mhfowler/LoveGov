@@ -105,7 +105,7 @@ def getUserUserComparison(userA, userB, force=False):
 def getUserContentComparison(user, content, force=False):
     viewA = user.getView()
     viewB = content.getCalculatedView()
-    return getViewComparison(viewA, viewB, force)
+    return getViewComparison(viewA, viewB, force=force, dateA=user.last_answered, dateB=content.last_answered)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for getViewComparison, which takes in user and group
@@ -113,7 +113,15 @@ def getUserContentComparison(user, content, force=False):
 def getUserGroupComparison(user, group, force=False):
     userView = user.getView()
     groupView = group.getGroupView()
-    return getViewComparison(userView, groupView, force)
+    return getViewComparison(userView, groupView, force=force, dateA=user.last_answered, dateB=group.last_answered)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Wrapper for getViewComparison, which takes in user and scorecard
+#-----------------------------------------------------------------------------------------------------------------------
+def getUserScorecardComparison(user, scorecard, force=False):
+    user_view = user.getView()
+    scorecard_view = scorecard.scorecard_view
+    return getViewComparison(user_view, scorecard_view, force=force, dateA=user.last_answered, dateB=scorecard.last_answered)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for findUserComparison which does comparison if one doesn't already exist.

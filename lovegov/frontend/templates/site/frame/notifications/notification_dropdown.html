@@ -1,3 +1,8 @@
+<span class="triangle-wrapper">
+<span class="triangle-border"></span>
+<span class="triangle"></span>
+</span>
+
 <div class="notifications-header">
     Notifications
 </div>
@@ -10,8 +15,8 @@
             <div class="no-notifications">You have no notifications.</div>
         {% endfor %}
     {% else %}
-        <div class="no-notifications">
-            <img src="/static/images/icons/ajax-loader.gif">
+        <div class="notifications-loading">
+
         </div>
     {% endif %}
 </div>

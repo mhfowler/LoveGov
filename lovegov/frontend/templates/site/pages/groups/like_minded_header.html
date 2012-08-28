@@ -79,6 +79,9 @@
                             </div>
                             <div class="find_loading find-loading"></div>
                         </div>
+                        <div class="total-processed-count">
+                            <span class="total_found"> {{ num_members }} </span> / <span class="total_processed"> {{ num_processed }} </span>
+                        </div>
                     </div>
                     <div class="like_minded_members like-minded-members">
                         {% for user in members %}

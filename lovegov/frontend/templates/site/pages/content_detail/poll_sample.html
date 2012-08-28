@@ -1,9 +1,28 @@
 {% load customtags %}
 
-<div class="sample-question sample_question" data-p_id="{{ poll.id }}" data-which="{{ which }}">
-    <div class="arrow left-arrow poll_arrow" data-direction="L"> < </div>
-    <a href="{{ poll.get_url }}">
-        <div class="current-question"> {{ question.title|truncate_chars:50 }} </div>
-    </a>
-    <div class="arrow right-arrow poll_arrow" data-direction="R"> > </div>
+<div class="poll-sample-question sample_question" data-p_id="{{ poll.id }}" data-which="{{ which }}" data-q_id="{{ question.id }}">
+
+    <div class="triangle-wrapper poll-arrow-right poll_arrow" data-direction="R"></div>
+
+    <div class="triangle-wrapper poll-arrow-left poll_arrow" data-direction="L"></div>
+
+    <div class="poll-question-wrapper poll_question_wrapper">
+        <div class="current-question"> <a href="{{ poll.get_url }}">{{ question.title }} </a></div>
+        <div class="poll-answers-wrapper">
+            {% for a in question.answers.all %}
+                <div class="poll-answer poll_answer {% if your_response.most_chosen_answer_id == a.id %} clicked {% endif %}" data-a_id="{{ a.id }}">
+                    {{ a.answer_text }}
+                </div>
+            {% endfor %}
+            <div class="poll-sample-bottom">
+                <div class="saved-message saved_message"> saved </div>
+                <a class="poll_arrow dummy_link bottom-link" data-direction="R"> answer next question </a>
+                <!--<a href="{{ question.get_url }}" class="bottom-link"> explanation </a> -->
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="clear:both;"></div>
+
 </div>

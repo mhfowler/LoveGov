@@ -195,13 +195,20 @@ div.like-minded-header {
           div.find-result {
             display:none;
             color:green;
+            position: absolute;
+            left: 235px;
             div.num-found {
               @include inline-block;
+            }
+            &.toggle {
+              color:blue;
             }
           }
           div.clear-result {
             display:none;
             color:$red;
+            position: absolute;
+            left: 235px;
           }
           div.find-loading {
             @include staticImage("/images/gifs/ajax-loader.gif");
@@ -210,7 +217,12 @@ div.like-minded-header {
             background-size: 15px 13px;
             background-repeat: no-repeat;
             display:none;
+            float:left;
           }
+        }
+        div.total-processed-count {
+          float:right;
+          margin-top:6px;
         }
       }
       div.like-minded-members {

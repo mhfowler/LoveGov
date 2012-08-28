@@ -146,23 +146,28 @@ function bind(selector, events, data, handler) {
 var current_page_nonce=0;
 function action(dict) {
     var data = dict['data'];
+    var pre_page_nonce = current_page_nonce;
     var success_fun = function(data) {
-        var super_success = dict['success'];
-        if (super_success) {
-            super_success(data);
+        if (pre_page_nonce == current_page_nonce) {
+            var super_success = dict['success'];
+            if (super_success) {
+                super_success(data);
+            }
+            undelegated();
         }
-        undelegated();
     };
     var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status==403) {
-            //launch403Modal(jqXHR.responseText);
-            return;
-        }
-        var super_error = dict['error'];
-        if (super_error) {
-            super_error();
-        } else {
-            alert(jqXHR.responseText);
+        if (pre_page_nonce == current_page_nonce) {
+            if(jqXHR.status==403) {
+                //launch403Modal(jqXHR.responseText);
+                return;
+            }
+            var super_error = dict['error'];
+            if (super_error) {
+                super_error();
+            } else {
+                $("body").html(jqXHR.responseText);
+            }
         }
     };
     var complete_fun = dict['complete'];
@@ -209,6 +214,11 @@ function updatePage() {
  *      ~Ajax links
  *
  ***********************************************************************************************************************/
+bind(".header_link", 'click', null, function(event) {
+    $(".header_link").removeClass("clicked");
+    $(this).addClass("clicked");
+});
+
 bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
@@ -338,11 +348,11 @@ function bindSelect2s() {
 
 function bindTooltips() {
     /*
-    $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
-    $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
-    $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
-    $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
-    */
+     $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
+     $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
+     $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
+     $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+     */
 
     $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
     $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
@@ -733,14 +743,38 @@ bind( "div.heart_plus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , 1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status += 1
+        heart_number.text(status);
+        vote( wrapper , c_id , 1 );
+    }
 });
 
 bind( "div.heart_minus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , -1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status -= 1
+        heart_number.text(status);
+        vote( wrapper , c_id , -1 );
+    }
 });
 
 // Vote for the feed AJAX request
@@ -887,7 +921,6 @@ var feed_types = [];
 var feed_rank = 'H';
 var feed_topic = null;
 var question_rank = "R";
-var to_compare_id=null;
 function getFeed(container) {
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
@@ -911,18 +944,29 @@ function getFeed(container) {
     }
     else if (feed == 'getQuestions')
     {
-        var only_unanswered = container.data('only_unanswered');
         var default_display = container.data("default_display");
+        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display};
+        // if feed is comparing responses with other user
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        // only unanswered
+        var only_unanswered = container.data('only_unanswered');
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
         }
-        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
-            'only_unanswered':only_unanswered , 'default_display':default_display};
+        data['only_unanswered'] = only_unanswered;
         // if this feed appears on a poll
         var p_id = container.data('p_id');
         if (typeof(p_id) != 'undefined') {
             data['p_id'] = p_id;
+        }
+        // if this feed appears on a scorecard
+        var scorecard_id = container.data("scorecard_id");
+        if (typeof(scorecard_id) != 'undefined') {
+            data['scorecard_id'] = scorecard_id;
         }
     }
     else if (feed == 'getUserActivity')
@@ -1428,6 +1472,21 @@ function editExplanation(r_id, q_id, explanation, being_edited, not_editing_disp
     });
 }
 
+
+function editPetitionFullText(p_id, full_text, being_edited, not_editing_display )
+{
+    action({
+        'data': {'action':'editPetitionFullText', 'p_id':p_id, 'full_text':full_text},
+
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html(obj.value);
+            not_editing_display.show();
+        }
+    });
+}
+
 bind( ".edit_button" , 'click', null , function(event)
 {
     var wrapper = $(this).parents(".inline_editable");
@@ -1483,6 +1542,12 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
         var q_id = wrapper.data('q_id');
         var explanation = value;
         editExplanation(r_id, q_id, explanation, being_edited, not_editing_display);
+    }
+    else if (model == "Petition")
+    {
+        var p_id = wrapper.data("p_id");
+        var full_text = value;
+        editPetitionFullText(p_id, full_text, being_edited, not_editing_display);
     }
 
     $(this).parent().siblings('.edit_button').show();
@@ -2060,12 +2125,17 @@ function groupInviteResponse(event,response,div)
  *
  **********************************************************************************************************************/
 function hideModal(event) {
+    $("div.modal-wrapper").hide();
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
 }
 
 function showModal() {
-    $('div.modal_general').fadeIn(500).css('display', 'inline-block');
+    $("div.modal-wrapper").show();
+    var modal_general = $('div.modal_general');
+    var height = modal_general.height();
+    modal_general.css("margin-top", (-1/2*height)-50);
+    modal_general.fadeIn(500).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -2652,6 +2722,7 @@ bind('.answer_choice' , 'click' , null , function(event)
     saveAnswer(stub);
 });
 
+
 bind('.change_answer_privacy' , 'click' , null , function(event)
 {
     var wrapper = $(this).parents(".answer_privacy_wrapper");
@@ -2682,8 +2753,28 @@ function saveAnswer(stub) {
     var default_display = stub.data("default_display");
     var your_response = stub.data("your_response");
     var privacy = stub.data("privacy");
+    var importance = stub.find('.importance_bar').data('weight');
+
+    var data = {'action':'saveAnswer', 'q_id':q_id,
+        'a_id':a_id, 'default_display':default_display,
+        'weight':importance, 'privacy':privacy};
+
     var container = stub.parents(".feed_main");
     if (container.length!=0) {
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        var scorecard_id = container.data("scorecard_id");
+        if (scorecard_id) {
+            data['scorecard_id'] = scorecard_id;
+        }
+        // check if should be scorecard edit answer
+        var save_scorecard_answer = container.data("save_scorecard_answer");
+        if (save_scorecard_answer == 1) {
+            data['action'] = 'saveScorecardAnswer'
+        }
+        // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
         if (only_unanswered) {
             stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
@@ -2691,9 +2782,7 @@ function saveAnswer(stub) {
         }
     }
     action({
-        data: {'action':'saveAnswer', 'q_id':q_id,
-            'a_id':a_id, 'default_display':default_display,
-            'to_compare_id':to_compare_id, 'privacy':privacy},
+        data: data,
         success: function(data) {
             var returned = eval('(' + data + ')');
             if (default_display=='responses') {
@@ -2716,12 +2805,48 @@ function saveAnswer(stub) {
     });
 }
 
+// answer in feed
+bind('.poll_answer' , 'click' , null , function(event)
+{
+    var item = $(this).parents(".sample_question");
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+    }
+    else {
+        item.find(".poll_answer").removeClass("clicked");
+        $(this).addClass("clicked");
+    }
+    saveAnswerInFeed(item);
+});
+
+
+function saveAnswerInFeed(item) {
+    var choice = item.find(".poll_answer.clicked");
+    var a_id;
+    if (choice.length!=0) {
+        a_id = choice.data('a_id');
+    }
+    else {
+        a_id = -1;
+    }
+    var q_id = item.data('q_id');
+    var data = {'action':'saveAnswerInFeed', 'q_id':q_id,
+        'a_id':a_id};
+    action({
+        data: data,
+        success: function(data) {
+            var saved_message = item.find(".saved_message");
+            saved_message.show();
+            //setTimeout(function(){saved_message.fadeOut()},1000);
+        }
+    });
+}
+
 
 bind('.see_their_response' , 'click' , null , function(event)
 {
     expandResponses($(this).parents(".question_stub"));
 });
-
 
 
 /* importance sliders */
@@ -2733,17 +2858,24 @@ function bindImportanceSliders() {
 }
 
 function bindImportanceSlider(div) {
+    var stub = div.parents(".question_stub");
     var weight = div.data('weight');
     div.slider({'min':0,
         'max':100,
         'step':1,
         'value':weight,
         slide: function(event, ui) {
+            div.data('weight', ui.value);
             var text = ui.value + "%";
             $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        },
+        stop: function(event, ui) {
+            saveAnswer(stub);
         }
     });
 }
+
+
 
 
 /***********************************************************************************************************************
@@ -3399,7 +3531,6 @@ bind( '.pin_to_group' , 'click' , null , function(e)
         success: function(data)
         {
             var returned =  eval('(' + data + ')');
-
         }
     });
 });
@@ -3417,7 +3548,9 @@ bind('.pin_it' , 'click' , null , function(e)
         },
         success: function(data)
         {
-            $(".was_pinned").fadeIn(500, function() { setTimeout(hideModal(), 2000)});
+            var returned =  eval('(' + data + ')');
+            $(".was_pinned").html(returned.html);
+            $(".was_pinned").fadeIn(500);
         }
     });
 });
@@ -3611,6 +3744,11 @@ bind('.ask_to_join' , 'click' , null , function(e)
 bind('.find_like_minded' , 'click' , null , function(e)
 {
     $(".button_result").hide();
+    findNewLikeMinded();
+});
+
+// recursive ajax function for finding new like minded members
+function findNewLikeMinded() {
     $(".find_loading").show();
     action({
             data: {'action': 'findLikeMinded'},
@@ -3621,11 +3759,17 @@ bind('.find_like_minded' , 'click' , null , function(e)
                 // display num new members
                 $('.num_new_found').html(num_new);
                 $('.num_processed').html(returned.num_processed);
+                $('.find_result').toggleClass("toggle");
                 $(".find_result").show();
                 // change total members number
                 var total_num = $(".total_members").data('num');
                 total_num += num_new;
                 $(".total_members").html(total_num);
+                $(".total_members").data('num', total_num);
+                // change members/display section
+                $(".total_found").html(total_num);
+                var total_processed = parseInt($(".total_processed").text());
+                $(".total_processed").html(total_processed + returned.num_processed);
                 // if there were members adjust shit appropriately
                 if (num_new != 0) {
                     $(".no_members").hide();
@@ -3633,9 +3777,16 @@ bind('.find_like_minded' , 'click' , null , function(e)
                     $(".like_minded_members").prepend(returned.html);
                     bindOnNewElements();
                 }
+                if (returned.num_processed != 0) {
+                    findNewLikeMinded();
+                }
+                else {
+                    var message = String(total_num) + " like-minded people were found on LoveGov";
+                    $(".find_result").html(message);
+                }
             }}
     );
-});
+}
 
 bind('.clear_like_minded' , 'click' , null , function(e)
 {
@@ -3647,6 +3798,9 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                     $(".like_minded_members").empty();
                     $(".clear_result").show();
                     $(".total_members").html(0);
+                    $(".total_members").data('num',0);
+                    $(".total_found").html(0);
+                    $(".total_processed").html(0);
                 }}
         );
     }
@@ -3662,4 +3816,22 @@ bind('.like_minded_close' , 'click' , null , function(e)
 {
     $(".home_header_info").css("overflow", "hidden");
     $(".button_explanations").hide();
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~log news link clicks
+ *
+ ***********************************************************************************************************************/
+bind('.news_link' , 'click' , null , function(e)
+{
+    var n_id = $(this).data('n_id');
+    action({
+            data: {'action': 'logLinkClick', 'n_id':n_id},
+            success: function(data) {
+            }
+        });
+    var url = $(this).attr('href');
+    window.open(url);
 });

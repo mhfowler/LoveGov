@@ -48,7 +48,7 @@
             </div>
 
         </div>
-        <div class="answer-actions answer_actions" {% if not your_response %} style="display:block;" {% endif %}>
+        <div class="answer-actions answer_actions">
 
             {% if your_response %}
                 {% include 'site/pages/qa/answer_privacy.html' with q_id=question.id anonymous=your_response.getPrivate %}
@@ -86,7 +86,7 @@
 
     <!-- display inputted responses to this question -->
     <div class="question-responses question_expanded_responses question_expanded">
-        {% for response in compare_responses %}
+        {% for x in compare_responses %}
             {% include 'site/pages/qa/response_stub.html' %}
         {% endfor %}
     </div>

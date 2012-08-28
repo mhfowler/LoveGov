@@ -1,0 +1,42 @@
+{% extends 'site/pages/home/top_sidebar_main.html' %}
+
+{% load humanize %}
+{% load macros %}
+{% loadmacros "site/pages/content_detail/content_detail.html" %}
+
+{% block top %}
+    <div class="main-top">
+        <div class="header-title"> Scorecard Comparison </div>
+        <div class="red-line"></div>
+        <div style="clear:both;"></div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <a href="{{ scorecard.get_url }}"> Back to Scorecard </a>
+{% endblock %}
+
+{% block sidebar_fixed %}
+{% endblock %}
+
+{% block main %}
+    <div class="scorecard-compare-wrapper">
+
+        <div class="scorecard-avatar-strip-wrapper">
+            {% include 'site/pieces/avatar_strip.html' with user=to_compare scorecard_compare=1 scorecard_strip=1 %}
+        </div>
+
+        <div class="scorecard-title-wrapper">
+            {% usemacro content_detail_title scorecard %}
+        </div>
+
+        <div class="scorecard-compare-feed-wrapper">
+
+            <div class="poll-feed-wrapper">
+                {% include 'site/pages/qa/feed_browse_comparisons.html' with special_feed="getQuestions" default_display="responses" poll_id=poll.id scorecard_id=scorecard.id %}
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}

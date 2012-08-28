@@ -1,30 +1,27 @@
 {% extends 'site/pages/home/top_sidebar_main.html' %}
 
 {% load humanize %}
+{% load macros %}
+{% loadmacros "site/pages/feed/feed_items/base_item.html" %}
+
 
 {% block top %}
 {% endblock %}
 
 {% block sidebar %}
-    <div class="content-detail-sidebar">
-        <a href="/home/" class='back-to-feed'> Back To Feed </a>
-        {% block content_detail_sidebar %}
-            <div class="sidebar-header"> who liked this </div>
-            <div class="liked-wrapper">
-                {% for x in liked %}
-                    <a href="{{ x.get_url }}" class="liked-avatar">
-                        {% include 'site/pieces/avatar.html' with user=x width="50" height="50" %}
-                    </a>
-                {% empty %}
-                    <p>
-                        no one has liked this news yet :(
-                    </p>
-                {% endfor %}
-            </div>
-            {% if viewer.facebook_id %}
-                {% include 'site/pages/friends/fb_invite_sidebar.html' %}
-            {% endif %}
-        {% endblock %}
+    <div class='content-detail-sidebar'>
+
+        <div class="back-buttons">
+            <a href="/home/" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to feed </div>
+            </a>
+            <a href="{{ content.posted_to.get_url }}" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to group </div>
+            </a>
+        </div>
+
     </div>
 {% endblock %}
 
@@ -32,100 +29,42 @@
 {% endblock %}
 
 {% block main %}
-    <div class="content-detail">
 
+    <div class="content-detail-wrapper">
         <div class="content-detail-top">
-            <span class="content-title">
-                {{ content.getTitleDisplay }}
-            </span>
-
-            <span class="posted-in">
-                Posted in
-            </span>
-
-            <span class="posted-group">
-                {% with group=content.getPostedTo %}
-                    <a href="{{ group.get_url }}"> {{ group.title }}</a>
-                {% endwith %}
-            </span>
-
-            <span class="hearts" data-c_id="{{ content.id }}">
-                <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
-                <div class="heart-number heart_number">{{ content.status }}</div>
-                <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
-            </span>
+            <div class="the-hearts">
+                {% usemacro hearts_rank content my_vote %}
+            </div>
+            <div class="detail-item-header">
+                {% macro content_detail_title content %}
+                    <div class="item-title-wrapper">
+                        <a href="{{ content.get_url }}" class="item-title"> {{ content.getFeedTitle }} </a>
+                        <div class="posted-in"> posted in </div>
+                        {% with group=content.posted_to %}
+                            <a href="{{ group.get_url }}" class="posted-in-group"> {{ group.get_name }} </a>
+                        {% endwith %}
+                        <div style="clear:both;"></div>
+                    </div>
+                {% endmacro %}
+                {% usemacro content_detail_title content %}
+                <div class="feed-item-bottom-wrapper">
+                    {% usemacro feed_bottom content %}
+                </div>
+            </div>
+            <div style="clear:both;"></div>
         </div>
 
-        <div class="content-info">
-
-            <div class="info-right">
-
-                <div class="content-info-header">
-                    Metrics
-                </div>
-
-                <a class="comments-wrapper" href="{{ content.getCommentsURL }}">
-                    <div class="comments-bubble">
-                        <div class="num-comments">
-                            {{ content.num_comments }}
-                        </div>
-                    </div>
-                    <div class="comments-text">
-                        comments
-                    </div>
-                </a>
-
-                <div class="content-pin-button pin_content" data-c_id="{{ content.id }}">pin content</div>
-            </div>
-
-            <div class="info-left">
-                <div class="content-image">
-                    {% include 'site/pieces/avatar.html' with user=content width="200" height="200" hoveroff=1 %}
-                </div>
-            </div>
-
-            <div class="info-middle-left">
-                {% block content_description %}
-                    <div class="content-info-header">
-                        Description
-                    </div>
-                    <div class="description">
-                        {{ content.summary}}
-                    </div>
-                {% endblock %}
-            </div>
-
-            <div class="info-middle-right">
-                <div class="content-info-header">
-                    Created By
-                </div>
-                <div class="created-by">
-                    <div class="avatar">
-                        {% include 'site/pieces/avatar.html' with user=creator width="50" height="50" %}
-                    </div>
-                    <div class="name-and-submitted">
-                        <a href="{{ creator.get_url }}">
-                            <div class="name">
-                                {{ creator.get_name }}
-                            </div>
-                        </a>
-                        <div class="submitted">
-                            posted {{ content.created_when|naturaltime }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="content-body">
+        <div class="content-main-wrapper">
             {% block content_body %}
             {% endblock %}
+
+            <div id="comments" class="content-discussion">
+                {% include 'site/pieces/thread.html' with content=content%}
+            </div>
+
         </div>
 
-        <div id="comments" class="content-discussion">
-            {% include 'site/pieces/thread.html' with content=content%}
-        </div>
-
+        <div style="clear:both;"></div>
     </div>
+
 {% endblock %}

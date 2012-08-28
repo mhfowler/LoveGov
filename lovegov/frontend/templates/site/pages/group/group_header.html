@@ -51,8 +51,16 @@
 
                 {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
 
-                {% if info.is_user_admin %}
+                {% if group.scorecard %}
+                    <a href="{{ group.scorecard.get_url }}" class="group-action"> view scorecard </a>
+                {% endif %}
 
+                {% if info.is_user_admin %}
+                    {% if group.scorecard %}
+                        <a class="group-action group_edit_scorecard" href="{{ group.scorecard.getEditURL }}">edit scorecard</a>
+                    {% else %}
+                        <div class="group-action create_scorecard" data-g_id="{{ group.id }}"> create scorecard </div>
+                    {% endif %}
                     <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
                     <a href="edit/" class="group-action"> edit group settings </a>
                     {% if num_group_requests > 0 %}
@@ -63,7 +71,7 @@
             </div>
 
             <!-- float left -->
-            <div class="group-column">
+            <div class="group-column group-left-column">
 
                 <div class="group-image">
                     {% thumbnail group.getImageURL "140x100" crop="center" as im %}
@@ -81,8 +89,15 @@
 
                 </div>
 
-                <div class="group-histogram">
-                    {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
+                {% comment %}
+                    <div class="group-histogram">
+                        {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
+                    </div>
+                {% endcomment %}
+
+                <div class="group-topic-comparison">
+                    <div class="hundred"> 100% </div>
+                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with match_display="group_header_match" comparison=info.comparison_breakdown %}
                 </div>
 
                 <a href="{{ group.getHistogramURL }}" class="see-more">
