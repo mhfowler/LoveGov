@@ -1,9 +1,5 @@
 {% extends 'site/pages/content_detail/content_detail.html' %}
 
-{% block content_detail_sidebar %}
-    {% include 'site/pages/content_detail/signers_sidebar.html' %}
-{% endblock %}
-
 {% block content_body %}
 
     <div class="petition-detail-wrapper">
@@ -50,6 +46,13 @@
     </div>
 
     <script> rebind="petition_detail"; </script>
+
+{% endblock %}
+
+
+{% block content_right_sidebar %}
+
+    {% include 'site/pages/content_detail/signers_sidebar.html' %}
 
 {% endblock %}
 
