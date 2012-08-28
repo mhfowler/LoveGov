@@ -2473,7 +2473,9 @@ def createContent(request, vals={}):
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
     post_to = request.POST.get('post_to')
-    group = Group.lg.get_or_none(id=post_to)
+    group = None
+    if post_to:
+        group = Group.lg.get_or_none(id=post_to)
     post_as = request.POST.get('post_as')
     image = request.POST.get('content-image')
     link = request.POST.get('link')
@@ -2482,6 +2484,9 @@ def createContent(request, vals={}):
     questions = request.POST.get('questions')
     topic_alias = request.POST.get('topic')
     topic = Topic.lg.get_or_none(alias=topic_alias)
+    poll_id = request.POST.get('poll')
+    if poll_id:
+        poll = Poll.lg.get_or_none(id=poll_id)
     if questions: questions = json.loads(questions)
     if post_as == 'user':
         privacy = 'PUB'
@@ -2553,7 +2558,7 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='group':
         if title and full_text:
-            newc = Group(title=title, summary=full_text, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc = Group(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
@@ -2564,12 +2569,23 @@ def createContent(request, vals={}):
                 return HttpResponseBadRequest("Image Upload Error")
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
+    elif section=='scorecard':
+        if title and full_text:
+            newc = Scorecard(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+                group=group, poll=poll)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            redirect = newc.getEditURL()
+    elif section=='election':
+        if title and full_text:
+            newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc.autoSave(creator=viewer, privacy=privacy)
     else:
         return HttpResponseBadRequest("The specified type of content is not valid.")
 
 
     newc.setMainTopic(topic)
-    redirect = newc.getUrl()
+    if not redirect:
+        redirect = newc.getUrl()
 
     return HttpResponseRedirect(redirect);
 

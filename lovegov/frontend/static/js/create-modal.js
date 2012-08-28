@@ -13,6 +13,27 @@ bind('div.navbar_links_wrapper.groups_wrapper a.create-link', 'click', function(
    });
 });
 
+bind('div.group-action.create_scorecard', 'click', function(e) {
+   var gid = $(this).data('g_id');
+   getModal('create_modal', {'gid': gid}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.create-section.scorecard').show();
+        $('div.create-modal div.create-section.scorecard select.group-select').select2({
+          "placeholder": "Select a group you moderate to post this scorecard to."
+        });
+        $('div.create-modal div.create-section.scorecard select.poll-select').select2({
+           "placeholder": "Select a poll for this scorecard."
+        });
+   });
+});
+
+bind('div.navbar_links_wrapper.elections_wrapper a.create-link', 'click', function(e) {
+    getModal('create_modal', {}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.create-section.election').show();
+    });
+});
+
 // Selection of type of content to create
 bind("div.create-modal div.selection", "click", function(e) {
     var selection = $(this).data('selection');
@@ -109,6 +130,8 @@ function validField(field, name, form) {
     return true;
 }
 
+
+
 // extract questions and answers from the DOM
 function extractQuestions() {
     var questionsList = [];
@@ -188,4 +211,14 @@ bind('#cycle-img-right','click',function(e) {
     if (currentLink+1 > image_count) { currentLink = 1; }
     else { currentLink++; }
     selectImageToggle();
+});
+
+bind("div.create-modal input.date_autofill", "blur", function(e) {
+    var dobj = Date.parse($(this).val());
+   var dt = dobj.toString('dddd, MMMM d, yyyy');
+   $(this).val(dt);
+    $(this).data("date", dobj.getDate());
+    $(this).data("month", dobj.getMonth());
+    $(this).data("year", dobj.getYear());
+
 });

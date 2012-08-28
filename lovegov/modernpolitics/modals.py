@@ -71,6 +71,10 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
 
 def getCreateModal(request,vals={}):
     getMainTopics(vals)
+    viewer = vals['viewer']
+    vals['all_polls'] = Poll.objects.all()
+    gid = request.POST.get('gid')
+    vals['group'] = Group.lg.get_or_none(id=gid)
     return ajaxRender('site/pages/create_modal.html',vals,request)
 
 

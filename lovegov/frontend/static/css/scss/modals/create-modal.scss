@@ -198,10 +198,7 @@ div.create-modal {
     padding: 5px;
   }
   textarea {
-    height: 80px;
-    &:focus {
-      height: 120px;
-    }
+    height: 100px;
   }
   span.topic_button {
     cursor: pointer;

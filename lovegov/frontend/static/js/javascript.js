@@ -2134,8 +2134,9 @@ function showModal() {
     $("div.modal-wrapper").show();
     var modal_general = $('div.modal_general');
     var height = modal_general.height();
-    modal_general.css("margin-top", (-1/2*height)-50);
-    modal_general.fadeIn(500).css('display', 'inline-block');
+    var yoffset = window.pageYOffset;
+    modal_general.css("margin-top", (-1/2*height)-50).show();
+    modal_general.fadeIn(250).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -2157,9 +2158,12 @@ function getModal(modal_name,data,callback)
     // If create modal has recently been opened, use version in memory to avoid data loss
     if(modal_name==modal_general.data('last-loaded')) {
         if(modal_name=="create_modal" ) {
-            showModal();
-            if(callback) callback();
-            return;
+            // Don't cache different groups
+            if(!data.hasOwnProperty('gid') || modal_general.data('last-group')==data['gid']) {
+                showModal();
+                if(callback) callback();
+                return;
+            }
         }
     }
 
@@ -2171,6 +2175,7 @@ function getModal(modal_name,data,callback)
             var returned = eval('(' + response_data + ')');
             $('div.modal_content').html( returned.modal_html );
             modal_general.data('last-loaded',modal_name);
+            modal_general.data('last-group',data['gid']);
 
             showModal();
             bindOnNewElements();
