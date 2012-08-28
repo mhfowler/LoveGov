@@ -36,7 +36,7 @@
                 <div class="optional">
                     {% usemacro optional-label %}
                     {% usemacro image %}
-                    {% usemacro topic %}
+                    {% usemacro topic main_topics %}
                 </div>
             </div>
             {% usemacro save %}
@@ -56,7 +56,7 @@
                 <div class="optional">
                     {% usemacro optional-label %}
                     {% usemacro image %}
-                    {% usemacro topic %}
+                    {% usemacro topic main_topics %}
                 </div>
             </div>
             {% usemacro save %}
@@ -76,7 +76,7 @@
                 <div class="optional">
                     {% usemacro optional-label %}
                     {% usemacro textarea "Your opinion:" "description" "full_text" %}
-                    {% usemacro topic %}
+                    {% usemacro topic main_topics %}
                 </div>
             </div>
             {% usemacro save %}
@@ -117,6 +117,26 @@
                         </div>
                     </div>
                     <div class="add-question">+ add a question</div>
+                </div>
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
+                </div>
+                {% usemacro save %}
+            </div>
+        </form>
+    </div>
+    <div class="create-section group">
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="group">
+            <header><img src="{{ STATIC_URL }}/images/create/group_blue.png"> Create a Group</header>
+            <div class="form">
+                {% usemacro textbox "Group name:" "title" "title" %}
+                {% usemacro textarea "Description:" "description" "full_text" %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
                 </div>
                 {% usemacro save %}
             </div>

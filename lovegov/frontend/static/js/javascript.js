@@ -228,6 +228,11 @@ function updatePage() {
  *      ~Ajax links
  *
  ***********************************************************************************************************************/
+bind(".header_link", 'click', null, function(event) {
+    $(".header_link").removeClass("clicked");
+    $(this).addClass("clicked");
+});
+
 bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
@@ -752,14 +757,38 @@ bind( "div.heart_plus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , 1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status += 1
+        heart_number.text(status);
+        vote( wrapper , c_id , 1 );
+    }
 });
 
 bind( "div.heart_minus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , -1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status -= 1
+        heart_number.text(status);
+        vote( wrapper , c_id , -1 );
+    }
 });
 
 // Vote for the feed AJAX request
@@ -2135,12 +2164,17 @@ function groupInviteResponse(event,response,div)
  *
  **********************************************************************************************************************/
 function hideModal(event) {
+    $("div.modal-wrapper").hide();
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
 }
 
 function showModal() {
-    $('div.modal_general').fadeIn(500).css('display', 'inline-block');
+    $("div.modal-wrapper").show();
+    var modal_general = $('div.modal_general');
+    var height = modal_general.height();
+    modal_general.css("margin-top", (-1/2*height)-50);
+    modal_general.fadeIn(500).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -2151,18 +2185,23 @@ bind( '.modal_close', 'click', hideModal);
 // Don't propogate modal clicks to modal-wrapper (which would close modal)
 bind( 'div.modal-general', 'click', function(e) {e.stopPropagation();});
 
-function getModal(modal_name,data)
+function getModal(modal_name,data,callback)
 {
     if( typeof(data)=='undefined'){ data = { 'modal_name':modal_name }; }
     else{ data['modal_name'] = modal_name; }
+
     data['action'] = 'getModal';
     var modal_general = $('div.modal_general');
 
     // If create modal has recently been opened, use version in memory to avoid data loss
-    if(modal_name=="create_modal" && modal_name==modal_general.data('last-loaded')) {
-        showModal();
-        return;
+    if(modal_name==modal_general.data('last-loaded')) {
+        if(modal_name=="create_modal" ) {
+            showModal();
+            if(callback) callback();
+            return;
+        }
     }
+
 
     action({
         data: data,
@@ -2174,6 +2213,7 @@ function getModal(modal_name,data)
 
             showModal();
             bindOnNewElements();
+            if(callback) callback();
         }
     });
 }
@@ -3646,7 +3686,6 @@ bind( '.pin_to_group' , 'click' , null , function(e)
         success: function(data)
         {
             var returned =  eval('(' + data + ')');
-
         }
     });
 });
@@ -3664,7 +3703,9 @@ bind('.pin_it' , 'click' , null , function(e)
         },
         success: function(data)
         {
-            $(".was_pinned").fadeIn(500, function() { setTimeout(hideModal(), 2000)});
+            var returned =  eval('(' + data + ')');
+            $(".was_pinned").html(returned.html);
+            $(".was_pinned").fadeIn(500);
         }
     });
 });
@@ -3873,12 +3914,17 @@ function findNewLikeMinded() {
                 // display num new members
                 $('.num_new_found').html(num_new);
                 $('.num_processed').html(returned.num_processed);
+                $('.find_result').toggleClass("toggle");
                 $(".find_result").show();
                 // change total members number
                 var total_num = $(".total_members").data('num');
                 total_num += num_new;
                 $(".total_members").html(total_num);
                 $(".total_members").data('num', total_num);
+                // change members/display section
+                $(".total_found").html(total_num);
+                var total_processed = parseInt($(".total_processed").text());
+                $(".total_processed").html(total_processed + returned.num_processed);
                 // if there were members adjust shit appropriately
                 if (num_new != 0) {
                     $(".no_members").hide();
@@ -3888,6 +3934,10 @@ function findNewLikeMinded() {
                 }
                 if (returned.num_processed != 0) {
                     findNewLikeMinded();
+                }
+                else {
+                    var message = String(total_num) + " like-minded people were found on LoveGov";
+                    $(".find_result").html(message);
                 }
             }}
     );
@@ -3904,6 +3954,8 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                     $(".clear_result").show();
                     $(".total_members").html(0);
                     $(".total_members").data('num',0);
+                    $(".total_found").html(0);
+                    $(".total_processed").html(0);
                 }}
         );
     }
@@ -3919,5 +3971,23 @@ bind('.like_minded_close' , 'click' , null , function(e)
 {
     $(".home_header_info").css("overflow", "hidden");
     $(".button_explanations").hide();
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~log news link clicks
+ *
+ ***********************************************************************************************************************/
+bind('.news_link' , 'click' , null , function(e)
+{
+    var n_id = $(this).data('n_id');
+    action({
+            data: {'action': 'logLinkClick', 'n_id':n_id},
+            success: function(data) {
+            }
+        });
+    var url = $(this).attr('href');
+    window.open(url);
 });
 

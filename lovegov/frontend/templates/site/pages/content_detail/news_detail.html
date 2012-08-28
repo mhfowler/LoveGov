@@ -2,14 +2,16 @@
 
 {% block content_body %}
 
-    <a class="news-link" href="{{ news.link }}"> {{ news.link }}</a>
+    <div class="news-detail-wrapper">
 
-    <div class="content-info-header">
-        Summary
-    </div>
+        <div class="news-link-wrapper">
+            <span class="link-label"> Link: </span> <a class="news-link" href="{{ news.link }}"> {{ news.link }}</a>
+        </div>
 
-    <div class="description">
-        {{ news.link_summary}}
+        <div class="content-detail-description">
+            {{ news.link_summary}}
+        </div>
+
     </div>
 
     <script> rebind="news_detail"; </script>

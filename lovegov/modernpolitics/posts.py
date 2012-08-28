@@ -2479,6 +2479,14 @@ def logCompatability(request, vals={}):
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
 
+#-----------------------------------------------------------------------------------------------------------------------
+# saves a link click on some news
+#-----------------------------------------------------------------------------------------------------------------------
+def logLinkClick(request, vals):
+    news = News.objects.get(id=request.POST['n_id'])
+    news.link_clicks += 1
+    news.save()
+    return HttpResponse("saved")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a piece of content, e.g. from the create modal
@@ -2496,6 +2504,8 @@ def createContent(request, vals={}):
     screenshot = request.POST.get('screenshot')
     viewer = vals['viewer']
     questions = request.POST.get('questions')
+    topic_alias = request.POST.get('topic')
+    topic = Topic.lg.get_or_none(alias=topic_alias)
     if questions: questions = json.loads(questions)
     if post_as == 'user':
         privacy = 'PUB'
@@ -2516,11 +2526,22 @@ def createContent(request, vals={}):
                     newc.setMainImage(file_content)
             except IOError:
                 return HttpResponseBadRequest("Image Upload Error")
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     elif section=='petition':
         if title and full_text:
             newc = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
                                         posted_to=group)
             newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     elif section=='news':
         if link:
             newc = News(link=link)
@@ -2528,6 +2549,8 @@ def createContent(request, vals={}):
             if ref != 'undefined':
                 newc.saveScreenShot(ref)
             newc.autoSave(creator=viewer, privacy=privacy)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     elif section=='poll':
         if title and full_text:
             newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
@@ -2543,9 +2566,33 @@ def createContent(request, vals={}):
                 newQ.save()
                 newc.addQuestion(newQ)
             newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='group':
+        if title and full_text:
+            newc = Group(title=title, summary=full_text, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+            newc.joinMember(viewer)
+            newc.addAdmin(viewer)
     else:
         return HttpResponseBadRequest("The specified type of content is not valid.")
 
+
+    newc.setMainTopic(topic)
     redirect = newc.getUrl()
 
     return HttpResponseRedirect(redirect);
@@ -2633,7 +2680,10 @@ def pinContent(request, vals={}):
         pinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
     else:
         unpinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
-    return HttpResponse("pinned")
+    vals['content'] = content
+    vals['group'] = group
+    success_link = ajaxRender('site/pages/content_detail/pin_content_success.html', vals, request)
+    return HttpResponse(json.dumps({'html':success_link}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # edit a petitions full text

@@ -132,10 +132,9 @@ FEED_MAX = 100              # feed max (for sitewide feeds)
 
 # constants for new filter
 NEWFILTER_DAYS = 14
-TIME_BONUS = 5          # this should be how many upvotes a day we think a good piece of content should get
 
 # constants for hot filter
-HOT_WINDOW = 3 # number of days to count votes within when using hot algo
+HOT_VOTE_MAX_DAYS = 10
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
@@ -648,7 +647,8 @@ ACTIONS = [
     'editExplanation',
     'editPetitionFullText',
     'saveScorecardAnswer',
-    'saveAnswerInFeed'
+    'saveAnswerInFeed',
+    'logLinkClick'
 
 ]
 

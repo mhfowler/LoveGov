@@ -60,8 +60,9 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         response.created_when = datetime.datetime.now()
         response.saveEdited(privacy)
 
-    #action = CreatedAction(user=user,privacy=privacy,content=response)
-    #action.autoSave()
+    # if you answered, then you liked the question
+    if chosen_answer:
+        response.question.like(user, "PRI")
 
     return response
 
@@ -128,6 +129,8 @@ def voteAction(vote,user,content,privacy):
         value = content.like(user=user, privacy=privacy)
     elif vote == -1:
         value = content.dislike(user=user, privacy=privacy)
+    else:
+        value = content.unvote(user=user, privacy=privacy)
 
     return value
 

@@ -30,6 +30,7 @@ alias lgindex="python $LG/lovegov/local_manage.py rebuild_index"
 alias lgcharm="lgdir && charm ."
 alias lgpython="bpython -i $LG/autopython.py"
 alias remotedb="mysql --host=lgdbinstance.cssrhulnfuuk.us-east-1.rds.amazonaws.com --user=root --password=lglglg12 --database=lgdb -A"
+alias copyremotedb="$LG/copy_remote_db.sh"
 alias remoteserver="$LG/remote_server.sh"
 alias lgrun="source $LG/local_env.sh &&"
 alias remoterun="source $LG/remote_env.sh &&"
@@ -37,6 +38,7 @@ alias remotepython="source $LG/remote_env.sh && bpython -i $LG/autopython.py"
 alias localpython="source $LG/local_env.sh && bpython -i $LG/autopython.py"
 alias lgtest="python $LG/lovegov/local_manage.py test tests"
 alias mostrecent="ls -ctr1 | tail -1"
+
 
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"

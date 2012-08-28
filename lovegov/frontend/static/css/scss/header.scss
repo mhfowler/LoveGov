@@ -55,6 +55,10 @@ header
         background-color: $orange;
         color: white;
       }
+      &.clicked {
+        background-color: $red;
+        color:white;
+      }
     }
   }
 

@@ -158,7 +158,7 @@ def sortHelper(content, feed_ranking):
     if feed_ranking == 'N':
         content = content.order_by("-created_when")
     elif feed_ranking == 'H':
-        content = content.order_by("-status")
+        content = content.order_by("-hot_score")
     elif feed_ranking == 'B':
         content = content.order_by("-status")
     return content
@@ -168,7 +168,7 @@ def responsesSortHelper(question_items, ranking):
     if ranking == 'B':
         question_items.sort(key=lambda x:x['question'].status, reverse=True)
     elif ranking == 'H':
-        question_items.sort(key=lambda x:x['question'].status, reverse=True)
+        question_items.sort(key=lambda x:x['question'].hot_score, reverse=True)
     elif ranking == 'N':
         question_items.sort(key=lambda x:x['question'].created_when, reverse=True)
     elif ranking == 'R':
@@ -231,58 +231,9 @@ def compareQuestionItem(q_item):
         agree = 0
     q_item['agree'] = agree
 
-def getFeedHelper(content, ranking, start, stop):
-    if ranking == 'N':
-        return content.order_by("-created_when")[start:stop]
-    elif ranking == 'B':
-        return content.order_by("-status")[start:stop]
-    elif ranking == 'H':
-        c_ids = content.values_list("id", flat=True)
-        items = getHotFeed().items.filter(content_id__in=c_ids).order_by("-rank")[start:stop]
-        to_return = []
-        for x in items:
-            to_return.append(x.content)
-        return to_return
 
-
-### gets legislation based on filter parametrs ###
-def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party_set, sponsor_district_set, feed_start):
-
-    # all legislation
-    legislation_items = Legislation.objects.all()
-
-    # filter
-    if session_set:
-        legislation_items = legislation_items.filter(
-            congress_session__in=session_set)
-    if type_set:
-        legislation_items = legislation_items.filter(
-            bill_type__in=type_set)
-    if subject_set:
-        legislation_items = legislation_items.filter(
-            bill_subjects__in=subject_set)
-    if committee_set:
-        legislation_items = legislation_items.filter(
-            committees__in=committee_set)
-    if introduced_set:
-        legislation_items = legislation_items.filter(
-            bill_introduced__gte=introduced_set)
-    if sponsor_body_set:
-        legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_body_set)
-    if sponsor_name_set:
-        legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_name_set)
-    if sponsor_party_set:
-        legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_party_set)
-    if sponsor_district_set:
-        legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_district_set)
-
-    # paginate
-    legislation_items = legislation_items[feed_start:feed_start+10]
-
-    return legislation_items
-
+### update hot scores for all content ###
+def updateHotScores():
+    for c in Content.objects.filter(in_feed=True):
+        c.recalculateHotScore()
 

@@ -48,10 +48,10 @@
     <a href="/home/"><div class="header-logo"></div></a>
     <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
     <ul>
-        <a href="/home/" class="do_ajax_link dummy_link"><li>home</li></a>
-        <a href="/questions/" class=""><li>questions</li></a>
+        <a href="/home/" class="do_ajax_link dummy_link"><li class="header_link {% if home_link %} clicked {% endif %}">home</li></a>
+        <a href="/questions/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/questions/' %} clicked {% endif %}">questions</li></a>
         {% comment %} <a href="/match/" class="do_ajax_link dummy_link"><li>match</li></a> {% endcomment %}
-        <a href="/about/" class=""><li>about</li></a>
+        <a href="/about/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/about/' %} clicked {% endif %}">about </li></a>
     </ul>
 
 </header>
