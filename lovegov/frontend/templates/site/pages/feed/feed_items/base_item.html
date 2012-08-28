@@ -16,12 +16,15 @@
     </div>
 
     <div class="main-part">
+        {% macro feed_title content %}
         <div class="group-posted-to">
-            {% with posted_to=group.posted_to %}
-                <a href="{{ group.get_url }}" class="posted-to-link"> {{ content.posted_to.get_name }} </a>
+            {% with posted_to=content.posted_to %}
+                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
             {% endwith %}
         </div>
         <a href="{{ content.get_url }}" class="content-title"> {{ content.getFeedTitle }}</a>
+        {% endmacro %}
+        {% usemacro feed_title content %}
         <div class="item-main-wrapper">
             {% block item_main %}
                 This is a group of all the people on LoveGov who answered questions similarly to you.

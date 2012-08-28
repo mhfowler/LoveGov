@@ -2571,8 +2571,9 @@ def messagePolitician(request, vals={}):
     viewer = vals['viewer']
     message = request.POST['message']
     politician = UserProfile.objects.get(politician=True, id=request.POST['p_id'])
+    phone_number = request.POST['phone_number']
 
-    messaged = MessagedAction(user=viewer, message=message, politician=politician)
+    messaged = MessagedAction(user=viewer, message=message, politician=politician, phone_number=phone_number)
     messaged.autoSave()
 
     return HttpResponse("success")

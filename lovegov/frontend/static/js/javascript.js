@@ -1695,23 +1695,32 @@ bind(".send_message", 'click', null, function(event) {
     var wrapper = $(this).parents(".message_politician_wrapper");
     var p_id = wrapper.data("p_id");
     var message = wrapper.find(".message_textarea").val();
-    action({
-            data: {
-                'action': 'messagePolitician',
-                'p_id': p_id,
-                'message': message
-            },
-            success: function(data)
-            {
-                var old_height = wrapper.height();
-                var old_width = wrapper.width();
-                wrapper.css({"height":old_height,"width":old_width});
-                wrapper.find(".send_a_message").hide();
-                wrapper.find(".message_success").fadeIn(100);
-                //setTimeout(hideModal(null),1000);
+    var phone_number = wrapper.find(".phonenumber_input").val();
+    if (phone_number = "") {
+        alert("You need to enter your phone number to send a politician a message. " +
+            "Currently the only way to reach a politician by email is via a webform which " +
+            "requires a phonenumber. The current system sucks, LoveGov will replace it soon.")
+    }
+    else {
+        action({
+                data: {
+                    'action': 'messagePolitician',
+                    'p_id': p_id,
+                    'phone_number':phone_number,
+                    'message': message
+                },
+                success: function(data)
+                {
+                    var old_height = wrapper.height();
+                    var old_width = wrapper.width();
+                    wrapper.css({"height":old_height,"width":old_width});
+                    wrapper.find(".send_a_message").hide();
+                    wrapper.find(".message_success").fadeIn(100);
+                    //setTimeout(hideModal(null),1000);
+                }
             }
-        }
-    );
+        );
+    }
 });
 
 /* mouse over text change for some buttons */

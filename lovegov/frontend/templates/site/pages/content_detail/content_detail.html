@@ -6,6 +6,18 @@
 
 
 {% block top %}
+
+    {% macro content_detail_title content %}
+        <div class="item-title-wrapper">
+            <a href="{{ content.get_url }}" class="item-title"> {{ content.getFeedTitle }} </a>
+            <div class="posted-in"> posted in </div>
+            {% with group=content.posted_to %}
+                <a href="{{ group.get_url }}" class="posted-in-group"> {{ group.get_name }} </a>
+            {% endwith %}
+            <div style="clear:both;"></div>
+        </div>
+    {% endmacro %}
+
 {% endblock %}
 
 {% block sidebar %}
@@ -36,17 +48,7 @@
                 {% usemacro hearts_rank content my_vote %}
             </div>
             <div class="detail-item-header">
-                {% macro content_detail_title content %}
-                    <div class="item-title-wrapper">
-                        <a href="{{ content.get_url }}" class="item-title"> {{ content.getFeedTitle }} </a>
-                        <div class="posted-in"> posted in </div>
-                        {% with group=content.posted_to %}
-                            <a href="{{ group.get_url }}" class="posted-in-group"> {{ group.get_name }} </a>
-                        {% endwith %}
-                        <div style="clear:both;"></div>
-                    </div>
-                {% endmacro %}
-                {% usemacro content_detail_title content %}
+                {% usemacro feed_title content %}
                 <div class="feed-item-bottom-wrapper">
                     {% usemacro feed_bottom content %}
                 </div>
