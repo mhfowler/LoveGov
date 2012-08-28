@@ -5,7 +5,7 @@
     </div>
 
     {% if petition.finalized %}
-        <h4 class="signers-title"> Signers </h4>
+        <div class="signers-header"> People who've signed this petition </div>
         <div class="petition_signers">
             {% if i_signed %}
                 {% include 'site/pages/content_detail/signer_avatar.html' with signer=viewer %}

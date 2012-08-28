@@ -1119,12 +1119,14 @@ function teamSection()
  *      ~Left sidebar
  *
  **********************************************************************************************************************/
-
-
-bind('.left-side-img', 'click', function()
+bind('.feedback_toggle', 'click', function()
 {
-    var parent = $(this).parent();
-    leftSideToggle(parent);
+    leftSideToggle($(".feedback_wrapper"));
+});
+
+bind('.invite_toggle', 'click', function()
+{
+    leftSideToggle($(".invite_tab_wrapper"));
 });
 
 bind('#feedback-submit', 'click', function(event)
@@ -1191,7 +1193,7 @@ function closeLeftSideWrapper(wrapper)
 {
 
     if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
-    else { wrapper.animate({left:'-493px'},500); }
+    else { wrapper.animate({left:'-528px'},500); }
     setTimeout(function()
     {
         wrapper.css({'z-index':'100'});
@@ -1199,30 +1201,29 @@ function closeLeftSideWrapper(wrapper)
             'e-img').css({'z-index':'101'});
     },500);
 
-    wrapper.removeClass('clicked');
+    wrapper.removeClass('open');
 }
 
 function leftSideToggle(wrapper)
 {
-    if (wrapper.hasClass('clicked'))
+    if (wrapper.hasClass('open'))
     {
         closeLeftSideWrapper(wrapper);
     }
     else
     {
-        wrapper.addClass('clicked');
+        wrapper.addClass('open');
         wrapper.css({'z-index':'101'});
         wrapper.children('.create-img').css({'z-index':'102'});
         wrapper.animate({left:'-1px'},500);
 
         wrapper.bindOnce('clickoutside',function(event)
         {
-            if (event.target.className != "footer_button") {
+            if (event.target.className.indexOf("leftside_tab_toggle") == -1) {
                 closeLeftSideWrapper(wrapper);
             }
         });
     }
-
 }
 
 
