@@ -500,31 +500,6 @@ def invite(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Signs a petition.
 #-----------------------------------------------------------------------------------------------------------------------
-def sign(request, vals={}):
-    user = vals['viewer']
-    privacy = getPrivacy(request)
-    if privacy == 'PUB':
-        petition = Petition.lg.get_or_none(id=request.POST['c_id'])
-        if not petition:
-            return HttpResponse("This petition does not exist")
-        if petition.finalized:
-            if petition.sign(user):
-                vals['signer'] = user
-                context = RequestContext(request,vals)
-                context['p'] = petition
-                template = loader.get_template('deployment/snippets/signer.html')
-                signer_string = template.render(context)  # render html snippet
-                template = loader.get_template('deployment/snippets/petition_bar.html')
-                bar_string = template.render(context)  # render html snippet
-                vals = {"success":True, "signer":signer_string, "bar":bar_string}
-            else:
-                vals = {"success":False, "error": "You have already signed this petition."}
-        else:
-            vals = {"success":False, "error": "This petition has not been finalized."}
-    else:
-        vals = {"success":False, "error": "You must be in public mode to sign a petition."}
-    return HttpResponse(json.dumps(vals))
-
 def signPetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
     viewer = vals['viewer']
@@ -546,10 +521,11 @@ def signPetition(request, vals={}):
         error = "You must be in public mode to sign a petition."
     if not error:
         valsPetition(viewer, petition, vals)
-        html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
     else:
-        html = error
-    return HttpResponse(json.dumps({'html':html}))
+        signers_sidebar = sign_area = error
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
 
 def finalizePetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
@@ -560,7 +536,22 @@ def finalizePetition(request, vals={}):
     if viewer==creator:
         petition.finalize()
     valsPetition(viewer, petition, vals)
-    html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# run for or stop running for an election
+#-----------------------------------------------------------------------------------------------------------------------
+def runForElection(request, vals={}):
+    from lovegov.frontend.views_helpers import valsElection
+    e_id = request.POST['e_id']
+    election = Election.objects.get(id=e_id)
+    run = int(request.POST['run'])
+    viewer = vals['viewer']
+    election = runForElectionAction(viewer, election, run)
+    vals['info'] = valsElection(viewer, election, {})
+    html = ajaxRender('site/pages/elections/run_for_button.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1861,6 +1852,15 @@ def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
     groups = Group.objects.filter(hidden=False).order_by("-num_members")
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        groups = groups.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        groups = groups.filter(location__state=state)
+
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
 
@@ -1883,6 +1883,18 @@ def getElections(request, vals={}):
     viewer = vals['viewer']
     elections = Election.objects.order_by("-num_members")
     feed_start = int(request.POST['feed_start'])
+    elections = elections
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        elections = elections.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        elections = elections.filter(location__state=state)
+
+
+    # paginate
     elections = elections[feed_start:feed_start+5]
 
     vals['elections'] = elections
@@ -2496,7 +2508,9 @@ def createContent(request, vals={}):
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
     post_to = request.POST.get('post_to')
-    group = Group.lg.get_or_none(id=post_to)
+    group = None
+    if post_to:
+        group = Group.lg.get_or_none(id=post_to)
     post_as = request.POST.get('post_as')
     image = request.POST.get('content-image')
     link = request.POST.get('link')
@@ -2505,6 +2519,10 @@ def createContent(request, vals={}):
     questions = request.POST.get('questions')
     topic_alias = request.POST.get('topic')
     topic = Topic.lg.get_or_none(alias=topic_alias)
+    poll_id = request.POST.get('poll')
+    gendate = request.POST.get('gendate')
+    if poll_id:
+        poll = Poll.lg.get_or_none(id=poll_id)
     if questions: questions = json.loads(questions)
     if post_as == 'user':
         privacy = 'PUB'
@@ -2576,7 +2594,7 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='group':
         if title and full_text:
-            newc = Group(title=title, summary=full_text, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc = Group(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
@@ -2587,12 +2605,41 @@ def createContent(request, vals={}):
                 return HttpResponseBadRequest("Image Upload Error")
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='scorecard':
+        if title and full_text:
+            newc = Scorecard(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+                group=group, poll=poll)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            redirect = newc.getEditURL()
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='election':
+        if title and full_text and gendate:
+            try:
+                from dateutil import parser
+                valid_datetime = parser.parse(gendate)
+            except ValueError:
+                return HttpResponseBadRequest("Could not parse election date.")
+            from datetime import datetime
+            newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+                    election_date=valid_datetime)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            newc.joinMember(viewer)
+            newc.addAdmin(viewer)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     else:
         return HttpResponseBadRequest("The specified type of content is not valid.")
 
 
     newc.setMainTopic(topic)
-    redirect = newc.getUrl()
+
+    action = CreatedAction(content=newc,user=viewer,)
+
+    if not redirect:
+        redirect = newc.getUrl()
 
     return HttpResponseRedirect(redirect);
 
@@ -2821,6 +2868,12 @@ def getModal(request,vals={}):
         g_id = request.POST['g_id']
         group = Group.objects.get(id=g_id)
         modal_html = getGroupDescriptionModal(group,request,vals)
+
+    ## see all signers ##
+    elif modal_name == 'see_all_signers_modal':
+        p_id = request.POST['p_id']
+        petition = Petition.objects.get(id=p_id)
+        modal_html = getPetitionSignersModal(petition, request, vals)
 
 
     ## If a modal was successfully made, return it ##

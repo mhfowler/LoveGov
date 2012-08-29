@@ -157,6 +157,14 @@ function bind(selector, events, data, handler) {
     $(document).on(events, selector, data, handler);
 }
 
+function getValueFromKey(element, key) {
+    var value = element.data(key);
+    if (typeof(value) == 'undefined') {
+        value = "";
+    }
+    return value;
+}
+
 var current_page_nonce=0;
 function action(dict) {
     var data = dict['data'];
@@ -348,9 +356,13 @@ function checkCompatability() {
 function bindSelect2s() {
     $.each($('.select_2'), function(i,e) {
         var placeholder = $(this).data("placeholder");
-        $(this).select2({
-            placeholder: placeholder
-        });
+        if (typeof(placeholder)!='undefined') {
+            $(this).select2({
+                placeholder: placeholder
+            });
+        } else {
+            $(this).select2();
+        }
     });
 }
 
@@ -461,6 +473,10 @@ bind(".red_triangle", 'click', null, function(event) {
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
     var navbar_section = $(this).parents(".navbar_section");
+    if ($(this).hasClass("navbar_link")) {
+        var num_new_content = $(this).parents(".home_link_wrapper").find(".num_new_content");
+        num_new_content.empty();
+    }
     event.preventDefault();
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
@@ -991,9 +1007,17 @@ function getFeed(container) {
     else if (feed == 'getElections')
     {
         data = {'action': 'getElections','feed_rank':feed_rank, 'feed_start':feed_start};
+        var state = getValueFromKey(container, 'state');
+        var city = getValueFromKey(container, 'city');
+        data['state'] = state;
+        data['city'] = city;
     }
     else if (feed == 'getGroups') {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
+        var state = getValueFromKey(container, 'state');
+        var city = getValueFromKey(container, 'city');
+        data['state'] = state;
+        data['city'] = city;
     }
     else if (feed == 'getLegislation') {
         var session = $('select.session_select').val();
@@ -1126,7 +1150,11 @@ bind('.feedback_toggle', 'click', function()
 
 bind('.invite_toggle', 'click', function()
 {
-    leftSideToggle($(".invite_tab_wrapper"));
+    var wrapper = $(".invite_tab_wrapper");
+    if (!wrapper.hasClass("open")) {
+        $("#email-input").focus();
+    }
+    leftSideToggle(wrapper);
 });
 
 bind('#feedback-submit', 'click', function(event)
@@ -2183,8 +2211,9 @@ function showModal() {
     $("div.modal-wrapper").show();
     var modal_general = $('div.modal_general');
     var height = modal_general.height();
-    modal_general.css("margin-top", (-1/2*height)-50);
-    modal_general.fadeIn(500).css('display', 'inline-block');
+    var yoffset = window.pageYOffset;
+    modal_general.css("top", yoffset-100);
+    modal_general.fadeIn(100).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -2206,9 +2235,12 @@ function getModal(modal_name,data,callback)
     // If create modal has recently been opened, use version in memory to avoid data loss
     if(modal_name==modal_general.data('last-loaded')) {
         if(modal_name=="create_modal" ) {
-            showModal();
-            if(callback) callback();
-            return;
+            // Don't cache different groups
+            if(!data.hasOwnProperty('gid') || modal_general.data('last-group')==data['gid']) {
+                showModal();
+                if(callback) callback();
+                return;
+            }
         }
     }
 
@@ -2220,6 +2252,7 @@ function getModal(modal_name,data,callback)
             var returned = eval('(' + response_data + ')');
             $('div.modal_content').html( returned.modal_html );
             modal_general.data('last-loaded',modal_name);
+            modal_general.data('last-group',data['gid']);
 
             showModal();
             bindOnNewElements();
@@ -2348,21 +2381,21 @@ bind( '.filter_box' , 'click' , null , function(event) {
     }
 });
 
-//bind( '.expand_link' , 'click' , null , function(event) {
-//    event.preventDefault();
-//    if ($(this).hasClass('clicked')) {
-//        $(this).removeClass('clicked');
-//        $('.level2-recent-actions-div').setStyle({
-//            overflow: hidden
-//        });
-//    }
-//    else {
-//        $(this).addClass('clicked');
-//        $('.level2-recent-actions-div').setStyle({
-//            overflow: auto
-//        });
-//    }
-//});
+bind( '.expand_link' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: hidden
+        });
+    }
+    else {
+        $(this).addClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: auto
+        });
+    }
+});
 
 function billPassageOrder() {
 
@@ -3768,11 +3801,13 @@ bind('.sign_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
+    var sign_areas = $(".sign_area");
     action({
             data: {'action': 'signPetition', 'p_id':p_id},
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                signers_sidebar.replaceWith(returned.html);
+                sign_areas.replaceWith(returned.sign_area);
+                signers_sidebar.replaceWith(returned.signers_sidebar);
                 updateStats();
             }}
     );
@@ -3782,15 +3817,23 @@ bind('.finalize_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
+    var sign_areas = $(".sign_area");
     action({
             data: {'action': 'finalizePetition', 'p_id':p_id},
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                signers_sidebar.replaceWith(returned.html);
+                sign_areas.replaceWith(returned.sign_area);
+                signers_sidebar.replaceWith(returned.signers_sidebar);
             }}
     );
 });
 
+
+bind('.see_all_signers' , 'click' , null , function(e)
+{
+    var data = { 'p_id' : $(this).data("p_id") };
+    getModal('see_all_signers_modal',data);
+});
 
 /***********************************************************************************************************************
  *
@@ -4019,5 +4062,67 @@ bind('.news_link' , 'click' , null , function(e)
         });
     var url = $(this).attr('href');
     window.open(url);
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~running for elections
+ *
+ ***********************************************************************************************************************/
+bind('.run_for' , 'click' , null , function(e)
+{
+    var button = $(this);
+    var e_id = $(this).data('e_id');
+    action({
+        data: {'action': 'runForElection', 'e_id':e_id, 'run':1},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            button.replaceWith(returned.html);
+        }
+    });
+});
+
+bind('.stop_running_for' , 'click' , null , function(e)
+{
+    var button = $(this);
+    var e_id = $(this).data('e_id');
+    action({
+        data: {'action': 'runForElection', 'e_id':e_id, 'run':0},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            button.replaceWith(returned.html);
+        }
+    });
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~filter feed by location
+ *
+ ***********************************************************************************************************************/
+bind('.filter_by_state_select', 'change', null, function(e) {
+        var value = $(this).val();
+        if (value != "") {
+            $(".filter_by_city").show();
+            $("#filter_by_city").focus();
+        }
+        else {
+            $(".filter_by_city").hide();
+        }
+        var feed = $(this).parents(".feed_main");
+        feed.data('state', value);
+        refreshFeed(feed);
+});
+
+bind(".filter_by_city_input", "keypress", function(e) {
+    if(e.keyCode==13) {
+        e.preventDefault();
+        var value = $(this).val();
+        var feed = $(this).parents(".feed_main");
+        feed.data('city', value);
+        refreshFeed(feed);
+    }
 });
 

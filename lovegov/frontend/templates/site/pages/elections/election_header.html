@@ -23,7 +23,7 @@
         </span>
 
 
-        <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+        <span class="group-scale"> {{ group.getLocationVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
 
     </div>
@@ -39,20 +39,9 @@
             <div class="election-date">
                 {{ info.election.election_date|date:"jS F" }}
             </div>
-            {% comment %}
-            <div class="election-info-lower">
-                <div class="leaderboard-wrapper">
-                    <div class="leaderboard-header"> LEADERBOARD </div>
-                    {% include 'site/pages/elections/election_leaderboard.html' %}
-                </div>
-                <div class="election-description">
-                        a description
-                </div>
-                <div class="election-actions">
-                        <a href="{{ info.election.getCandidatesURL }}" class="election-action"> see all candidates </a>
-                </div>
-            </div>
-            {% endcomment %}
+
+            {% include 'site/pages/elections/run_for_button.html' %}
+
             <div style="clear:both;"></div>
         </div>
 

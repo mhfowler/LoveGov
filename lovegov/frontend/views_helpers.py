@@ -25,8 +25,10 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
-
+    group_subscriptions = viewer.getGroupSubscriptions()
+    for g in group_subscriptions:
+        g.num_new = g.getNumNewContent(viewer)
+    vals['group_subscriptions'] = group_subscriptions
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
 #-----------------------------------------------------------------------------------------------------------------------
@@ -347,23 +349,24 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.running.all().order_by("-num_supporters")[:2]
+    running = election.running.all().order_by("-num_supporters")
     for r in running:
         r.comparison = r.getComparison(viewer)
     vals['running'] = running
     vals['election'] = election
+    vals['i_am_running'] = viewer in running
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
 # fill dictionary for a petition
 #-----------------------------------------------------------------------------------------------------------------------
 def valsPetition(viewer, petition, vals):
-    signers_limit = 8
+    signers_limit = 1
     vals['petition'] = petition
     signers = petition.getSigners()
+    vals['num_signers'] = len(signers)
     vals['signers'] = signers[:signers_limit]
     vals['i_signed'] = (viewer in signers)
-    vals['num_signers'] = len(signers)
     vals['i_created'] = (petition.creator == viewer)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -389,3 +392,10 @@ def valsFBFriends(request, vals):
                     fb_friends.append(fb_friend)
                     vals['facebook_friends'] = fb_friends
     return fb_friends
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# put all state tuples in dictionary
+#-----------------------------------------------------------------------------------------------------------------------
+def getStateTuples(vals):
+    vals['states'] = STATES

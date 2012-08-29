@@ -322,7 +322,8 @@ ACTION_CHOICES = (
     ('ME', 'messaged'),
     ('AS', 'asked'),
     ('GF', 'group_follow'),
-    ('PI', 'pinned')
+    ('PI', 'pinned'),
+    ('RU', 'running_for')
 )
 
 # default, request, invite, deny, reject
@@ -648,7 +649,8 @@ ACTIONS = [
     'editPetitionFullText',
     'saveScorecardAnswer',
     'saveAnswerInFeed',
-    'logLinkClick'
+    'logLinkClick',
+    'runForElection'
 
 ]
 

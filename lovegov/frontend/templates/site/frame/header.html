@@ -48,9 +48,11 @@
     <a href="/home/"><div class="header-logo"></div></a>
     <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
     <ul>
-        <a href="/home/" class="do_ajax_link dummy_link"><li class="header_link {% if home_link %} clicked {% endif %}">home</li></a>
+        <a href="/home/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/home/' %} clicked {% endif %}">home</li></a>
         <a href="/questions/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/questions/' %} clicked {% endif %}">questions</li></a>
-        {% comment %} <a href="/match/" class="do_ajax_link dummy_link"><li>match</li></a> {% endcomment %}
+        <a href="/groups/" class="do_ajax_link dummy_link"><li class="header_link{% if request.path == '/groups/' %} clicked{% endif %}" > groups </li></a>
+        <a href="/elections/" class="do_ajax_link dummy_link"><li class="header_link{% if request.path == '/elections/' %} clicked{% endif %}" > elections </li></a>
+        <a href="/legislation/" class="do_ajax_link dummy_link"><li class="header_link{% if request.path == '/legislation/' %} clicked{% endif %}" > legislation </li></a>
         <a href="/about/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/about/' %} clicked {% endif %}">about </li></a>
     </ul>
 

@@ -197,11 +197,19 @@ div.create-modal {
     font-size: 16px;
     padding: 5px;
   }
-  textarea {
-    height: 80px;
-    &:focus {
-      height: 120px;
+  input.date_autofill {
+    width: 225px;
+    margin-right: 5px;
+  }
+  span.date_autofill_label {
+    margin-left: 5px;
+    color: $pink;
+    &.goodinput {
+      color: $green;
     }
+  }
+  textarea {
+    height: 100px;
   }
   span.topic_button {
     cursor: pointer;

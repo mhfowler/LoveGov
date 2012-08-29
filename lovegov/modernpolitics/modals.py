@@ -71,6 +71,10 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
 
 def getCreateModal(request,vals={}):
     getMainTopics(vals)
+    viewer = vals['viewer']
+    vals['all_polls'] = Poll.objects.all()
+    gid = request.POST.get('gid')
+    vals['group'] = Group.lg.get_or_none(id=gid)
     return ajaxRender('site/pages/create_modal.html',vals,request)
 
 
@@ -97,3 +101,8 @@ def getPinContentModal(content,user,request,vals):
 def getGroupDescriptionModal(group,request,vals):
     vals['group'] = group
     return ajaxRender('site/pages/group/description_modal.html', vals,request)
+
+
+def getPetitionSignersModal(petition, request, vals):
+    vals['petition'] = petition
+    return ajaxRender('site/pages/content_detail/petition_signers_modal.html', vals,request)

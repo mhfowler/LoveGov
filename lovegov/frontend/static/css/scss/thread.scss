@@ -40,7 +40,6 @@ div.reply {
 div.comment
 {
     position:relative;
-    margin-left:30px;
     padding: 30px;
     padding-bottom:20+30px;
     &.level1 {
@@ -239,5 +238,14 @@ span.flag {
 }
 
 div.threaddiv {
-    min-height: 50px;
+  min-height: 50px;
+  margin-left: 30px;
+  &:before {
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 1px;
+    background-color: green;
+    top: 50px;
+  }
 }

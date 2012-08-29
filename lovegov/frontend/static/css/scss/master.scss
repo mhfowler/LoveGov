@@ -674,7 +674,7 @@ div.modal-wrapper {
   width: 100%;
   height:100%;
   position: absolute;
-  top: 50%;
+  top: 200px;
   z-index: 3;
   display:none;
   text-align: center;
@@ -684,9 +684,8 @@ div.modal-wrapper {
     @include border-radius(5px);
     @include clearfix;
     display: none;
-    position: fixed;
+    position: relative;
     text-align: left;
-
     div.modal-content
     {
       padding: 20px;

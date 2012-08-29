@@ -1,11 +1,11 @@
 {% load macros %}
 
 
-{% macro textbox label class name %}
+{% macro textbox label class name placeholder %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><input type="text" class="{{ class }}" name="{{ name }}"></div>
+        <div class="field"><input type="text" class="{{ class }}" name="{{ name }}" placeholder="{{ placeholder }}"></div>
     </div>
 
 {% endmacro %}
@@ -98,6 +98,53 @@
         <div class="label">Link image: </div>
         <div class="field">
             link image appears here
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro modgroup label name group %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            <input type="hidden" name="{{ name }}" value="{{ group.id }}">
+          {{ group.title }}
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro polls label name all_polls %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            {% if all_polls|length > 0 %}
+                <select class="poll-select" name="poll">
+                    <optgroup label="Polls">
+                        <option></option>
+                        {% for poll in all_polls %}
+                            <option value='{{ poll.id }}'>{{ poll.title }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            {% else %}
+                There are no polls to select.
+            {% endif %}
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro date label class name placeholder  %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            <input type="text" class="{{ class }}" name="{{ name }}" placeholder="{{ placeholder }}" value="11/6/2012">
+            <span class="date_autofill_label"></span>
+            <input type="hidden" name="gendate" value="">
         </div>
     </div>
 

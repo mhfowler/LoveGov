@@ -6,11 +6,36 @@ bind('td.create-button', 'click', function(e) {
     });
 });
 
+// Create group link click
 bind('div.navbar_links_wrapper.groups_wrapper a.create-link', 'click', function(e) {
    getModal('create_modal', {}, function() {
        $('div.create-modal > div').hide();
        $('div.create-modal div.create-section.group').show();
    });
+});
+
+// Create scorecard link click
+bind('div.group-action.create_scorecard', 'click', function(e) {
+   var gid = $(this).data('g_id');
+   getModal('create_modal', {'gid': gid}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.create-section.scorecard').show();
+        $('div.create-modal div.create-section.scorecard select.group-select').select2({
+          "placeholder": "Select a group you moderate to post this scorecard to."
+        });
+        $('div.create-modal div.create-section.scorecard select.poll-select').select2({
+           "placeholder": "Select a poll for this scorecard."
+        });
+   });
+});
+
+// Create election link click
+bind('div.navbar_links_wrapper.elections_wrapper a.create-link', 'click', function(e) {
+    getModal('create_modal', {}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.create-section.election').show();
+        evalDate.call($('div.create-modal input.date_autofill'));
+    });
 });
 
 // Selection of type of content to create
@@ -109,6 +134,8 @@ function validField(field, name, form) {
     return true;
 }
 
+
+
 // extract questions and answers from the DOM
 function extractQuestions() {
     var questionsList = [];
@@ -189,3 +216,32 @@ bind('#cycle-img-right','click',function(e) {
     else { currentLink++; }
     selectImageToggle();
 });
+
+bind("div.create-modal input.date_autofill", "keyup", evalDate);
+
+function evalDate() {
+    var messages = ["Nope", "Keep trying", "Nada", "Sorry", "Bummer", "Whoops",
+        "Snafu", "Blunder", "Almost there", "Invalid date", "Whoopsie daisy", "Try again",
+        "I don't understand", "No comprendo", "That doesn't work", "Your input is bad and you should feel bad"];
+    var val = $(this).val();
+    var datelabel = $(this).siblings("span.date_autofill_label");
+    var gendate = $(this).siblings('input[name="gendate"]');
+    if(val=='') {
+        datelabel.text('');
+        return;
+    }
+    var dobj = Date.parse(val);
+    if(dobj==null) {
+        var randMsg = messages[Math.round(messages.length * Math.random())] + "...";
+        datelabel.text(randMsg);
+        datelabel.removeClass("goodinput");
+        gendate.val('');
+    } else {
+        var dt = dobj.toString('dddd, MMMM d, yyyy');
+        datelabel.text('✓ '+dt);
+        datelabel.addClass("goodinput");
+        var dategenval = dobj.toString('yyyy-MM-dd')
+        gendate.val(dategenval);
+
+    }
+}
