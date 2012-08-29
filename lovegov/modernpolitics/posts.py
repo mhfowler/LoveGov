@@ -499,31 +499,6 @@ def invite(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Signs a petition.
 #-----------------------------------------------------------------------------------------------------------------------
-def sign(request, vals={}):
-    user = vals['viewer']
-    privacy = getPrivacy(request)
-    if privacy == 'PUB':
-        petition = Petition.lg.get_or_none(id=request.POST['c_id'])
-        if not petition:
-            return HttpResponse("This petition does not exist")
-        if petition.finalized:
-            if petition.sign(user):
-                vals['signer'] = user
-                context = RequestContext(request,vals)
-                context['p'] = petition
-                template = loader.get_template('deployment/snippets/signer.html')
-                signer_string = template.render(context)  # render html snippet
-                template = loader.get_template('deployment/snippets/petition_bar.html')
-                bar_string = template.render(context)  # render html snippet
-                vals = {"success":True, "signer":signer_string, "bar":bar_string}
-            else:
-                vals = {"success":False, "error": "You have already signed this petition."}
-        else:
-            vals = {"success":False, "error": "This petition has not been finalized."}
-    else:
-        vals = {"success":False, "error": "You must be in public mode to sign a petition."}
-    return HttpResponse(json.dumps(vals))
-
 def signPetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
     viewer = vals['viewer']
@@ -545,10 +520,11 @@ def signPetition(request, vals={}):
         error = "You must be in public mode to sign a petition."
     if not error:
         valsPetition(viewer, petition, vals)
-        html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
     else:
-        html = error
-    return HttpResponse(json.dumps({'html':html}))
+        signers_sidebar = sign_area = error
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
 
 def finalizePetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
@@ -559,7 +535,22 @@ def finalizePetition(request, vals={}):
     if viewer==creator:
         petition.finalize()
     valsPetition(viewer, petition, vals)
-    html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# run for or stop running for an election
+#-----------------------------------------------------------------------------------------------------------------------
+def runForElection(request, vals={}):
+    from lovegov.frontend.views_helpers import valsElection
+    e_id = request.POST['e_id']
+    election = Election.objects.get(id=e_id)
+    run = int(request.POST['run'])
+    viewer = vals['viewer']
+    election = runForElectionAction(viewer, election, run)
+    vals['info'] = valsElection(viewer, election, {})
+    html = ajaxRender('site/pages/elections/run_for_button.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1838,6 +1829,15 @@ def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
     groups = Group.objects.filter(hidden=False).order_by("-num_members")
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        groups = groups.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        groups = groups.filter(location__state=state)
+
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
 
@@ -1860,6 +1860,18 @@ def getElections(request, vals={}):
     viewer = vals['viewer']
     elections = Election.objects.order_by("-num_members")
     feed_start = int(request.POST['feed_start'])
+    elections = elections
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        elections = elections.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        elections = elections.filter(location__state=state)
+
+
+    # paginate
     elections = elections[feed_start:feed_start+5]
 
     vals['elections'] = elections
@@ -2833,6 +2845,12 @@ def getModal(request,vals={}):
         g_id = request.POST['g_id']
         group = Group.objects.get(id=g_id)
         modal_html = getGroupDescriptionModal(group,request,vals)
+
+    ## see all signers ##
+    elif modal_name == 'see_all_signers_modal':
+        p_id = request.POST['p_id']
+        petition = Petition.objects.get(id=p_id)
+        modal_html = getPetitionSignersModal(petition, request, vals)
 
 
     ## If a modal was successfully made, return it ##

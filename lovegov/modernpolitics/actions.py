@@ -480,3 +480,15 @@ def unpinContentAction(viewer, content, group, privacy):
     else:
         LGException("user " + str(viewer.id) + " tried to unpin content from group they were not admin of. g_id:" + str(group.id) )
         return False
+
+
+
+## run for or stop running for an election ##
+def runForElectionAction(viewer, election, run):
+    if run:
+        if not election.invite_only:
+            election.joinRace(viewer)
+            LGException("user " + str(viewer.id) + " tried to run for an invited only election. e_id:" + str(election.id) )
+    else:
+        election.leaveRace(viewer)
+    return election

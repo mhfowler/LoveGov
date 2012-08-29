@@ -66,7 +66,7 @@ urlpatterns += patterns('',
     # home pages
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
     (r'^groups/$', viewWrapper(views.browseGroups, requires_login=True)),
-    (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
+    (r'^elections/$', viewWrapper(views.browseElections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),

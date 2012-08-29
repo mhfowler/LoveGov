@@ -19,7 +19,7 @@
 {% block header_info %}
 
     <div class="reps-wrapper">
-    {% for politician in congressmen %}
+    {% for user in congressmen %}
         <div class="congressman-wrapper {% if forloop.first %} first {% endif %}">
             {% include 'site/pages/elections/election_card.html' %}
         </div>

@@ -452,11 +452,6 @@ def groups(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 def politicians(request, vals):
     focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
     url = request.path
@@ -541,7 +536,16 @@ def questions(request, vals={}):
 def browseGroups(request, vals={}):
 
     # Render and return HTML
+    getStateTuples(vals)
     focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def browseElections(request, vals):
+
+    # Render and return HTML
+    getStateTuples(vals)
+    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -552,6 +556,7 @@ def groupPage(request, g_alias, vals={}):
     # Get the group and current viewer
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
+    group.setNewContentSeen(viewer)
     vals['group'] = group
     if group.group_type=="E":
         return electionPage(request, group.downcast(), vals)
@@ -564,9 +569,7 @@ def groupPage(request, g_alias, vals={}):
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# election detail
-#-----------------------------------------------------------------------------------------------------------------------
+
 def electionPage(request, election, vals={}):
 
     viewer = vals['viewer']
