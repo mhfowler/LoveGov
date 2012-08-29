@@ -818,6 +818,10 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
         from lovegov.modernpolitics.initialize import getGeneralTopic
+        if self.posted_to:
+            group = self.posted_to
+            group.num_group_content += 1
+            group.save()
         if not self.main_topic:
             self.main_topic = getGeneralTopic()
             self.save()
@@ -1052,6 +1056,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
+    group_views = models.ManyToManyField("GroupView")
     # SETTINGS
     private_follow = models.BooleanField(default=False)
     user_notification_setting = custom_fields.ListField()               # list of allowed types
@@ -1162,6 +1167,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return response
         else:
             return None
+
+    def getGroupView(self, group):
+        group_view = self.group_views.filter(group=group)
+        if not group_view:
+            group_view = GroupView(group=group)
+            group_view.save()
+            self.group_views.add(group_view)
+        else:
+            group_view = group_view[0]
+        return group_view
 
     #-------------------------------------------------------------------------------------------------------------------
     # special user checks
@@ -3758,6 +3773,7 @@ class Group(Content):
     # content
     scorecard = models.ForeignKey(Scorecard, null=True, related_name="group_origins")
     group_content = models.ManyToManyField(Content, related_name="in_groups")
+    num_group_content = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
@@ -3798,6 +3814,20 @@ class Group(Content):
         self.group_content.clear()
         for x in self.getContent():
             self.group_content.add(x)
+        self.recalculateNumContent()
+
+    def recalculateNumContent(self):
+        self.num_group_content = self.group_content.count()
+        self.save()
+
+    def getNumNewContent(self, viewer):
+        group_view = viewer.getGroupView(self)
+        return self.num_group_content - group_view.seen
+
+    def setNewContentSeen(self, viewer):
+        group_view = viewer.getGroupView(self)
+        group_view.seen = self.num_group_content
+        group_view.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets url for content
@@ -4123,6 +4153,13 @@ class Group(Content):
             self.democratic = True
         self.save()
 
+
+# for keeping track of how much a groups content a user has seen
+class GroupView(LGModel):
+    group = models.ForeignKey(Group)
+    seen = models.IntegerField(default=0)
+
+
 #=======================================================================================================================
 # Motion, for democratic groups.
 #
@@ -4219,6 +4256,7 @@ class Motion(Content):
 
     def isActionable(self):
         return not (self.passed or self.expired)
+
 
 #=======================================================================================================================
 # Network Group, created by parsing facebook networks

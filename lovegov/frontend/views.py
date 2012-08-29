@@ -553,6 +553,7 @@ def groupPage(request, g_alias, vals={}):
     # Get the group and current viewer
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
+    group.setNewContentSeen(viewer)
     vals['group'] = group
     if group.group_type=="E":
         return electionPage(request, group.downcast(), vals)

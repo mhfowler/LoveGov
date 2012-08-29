@@ -455,6 +455,10 @@ bind(".red_triangle", 'click', null, function(event) {
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
     var navbar_section = $(this).parents(".navbar_section");
+    if ($(this).hasClass("navbar_link")) {
+        var num_new_content = $(this).parents(".home_link_wrapper").find(".num_new_content");
+        num_new_content.empty();
+    }
     event.preventDefault();
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
@@ -2165,7 +2169,7 @@ function showModal() {
     var modal_general = $('div.modal_general');
     var height = modal_general.height();
     var yoffset = window.pageYOffset;
-    modal_general.css("margin-top", (-1/2*height)-50).show();
+    modal_general.css("top", yoffset);
     modal_general.fadeIn(250).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
