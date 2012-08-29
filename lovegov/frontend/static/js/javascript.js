@@ -625,17 +625,17 @@ function expandInfoToggle(wrapper, animate)
     if( info_hidden )
     {   // Set info hidden to false
         wrapper.data('info_hidden', false);
-        wrapper.find(".hide_info").text('- minimize info');
+        wrapper.find(".hide_info").html('&#8211 minimize info');
         // If the info was un-expanded, show it at un-expanded form
         if( !info_expanded )
         {
             info_div.animate({"height":reduced_height}, animation_time);
-            wrapper.find(".expand_info").text('+ expand info');
+            wrapper.find(".expand_info").html('+ expand info');
         } // If the info was expanded, show the full expanded form
         else
         {
             expandAnimation(info_div,animation_time);
-            wrapper.find(".expand_info").text('- reduce info');
+            wrapper.find(".expand_info").html('&#8211 reduce info');
         }
     }
     // Otherwise, toggle the info expanded property
@@ -643,13 +643,13 @@ function expandInfoToggle(wrapper, animate)
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
         info_div.animate({"height":reduced_height}, animation_time);
-        wrapper.find(".expand_info").text('+ expand info');
+        wrapper.find(".expand_info").html('+ expand info');
     }
     else
     {   // Otherwise set expanded to true and expand the info
         wrapper.data('info_expanded', true);
         expandAnimation(info_div,animation_time);
-        wrapper.find(".expand_info").text('- reduce info');
+        wrapper.find(".expand_info").html('&#8211 reduce info');
     }
 }
 
@@ -674,8 +674,8 @@ function hideInfoToggle(wrapper, animate)
     {
         wrapper.data('info_hidden', true);
         info_div.animate({"height":'0px'}, animation_time);
-        wrapper.find(".expand_info").text('+ show info');
-        wrapper.find(".hide_info").text('+ show info');
+        wrapper.find(".expand_info").html('+ show info');
+        wrapper.find(".hide_info").html('+ show info');
     }
 
 }
@@ -2095,7 +2095,12 @@ function followGroup(div,follow,g_id)
                 }
                 else {
                     var navlink_html = returned.navlink_html;
-                    $(".groups_wrapper").prepend(navlink_html);
+                    if (returned.group_type != "E") {
+                        $(".groups_wrapper").prepend(navlink_html);
+                    }
+                    else {
+                        $(".elections_wrapper").prepend(navlink_html);
+                    }
                 }
             }
         }

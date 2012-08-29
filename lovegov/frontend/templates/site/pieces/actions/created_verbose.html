@@ -10,7 +10,7 @@
         <td class="action-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             answered
-            {{ to_object.get_name }}
+            {{ to_object.downcast.question.get_name }}
         </td>
 
     {% elif to_object.type == 'P' %}

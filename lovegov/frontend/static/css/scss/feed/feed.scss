@@ -297,8 +297,9 @@ div.feed-item-wrapper {
       }
       div.the-comment {
         margin-top:10px;
-        color:$gray;
+        color:$dark-gray;
         overflow:hidden;
+        font-size:$body-fonts;
       }
     }
   }
@@ -379,12 +380,12 @@ a.content-title {
   @include fontSize(24px);
   color:$text-blue;
   &:hover {
-    color:black;
+    color:$black;
   }
   &:visited {
     color:purple;
     &:hover {
-      color:black;
+      color:$black;
     }
   }
 }

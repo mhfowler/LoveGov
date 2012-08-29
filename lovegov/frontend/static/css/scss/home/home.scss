@@ -312,5 +312,44 @@ div.dismissible-header {
 
 
 
+/* new footer */
+div.new-footer {
+  border-top:1px solid $gray;
+  margin-top:30px;
+  padding-top:20px;
+  padding-bottom:20px;
+
+  a.facebook-link-button {
+    float:left;
+    margin-left:5px;
+    @include staticImage('/images/icons/social_media/facebook.png');
+    width:30px;
+    height:30px;
+    background-size:30px;
+  }
+  a.twitter-link-button {
+    float:left;
+    margin-left:15px;
+    @include staticImage('/images/icons/social_media/twitter.png');
+    width:30px;
+    height:30px;
+    background-size:30px;
+  }
+  a.footer-link {
+    float:left;
+    margin-left:40px;
+    color:$dark-gray;
+    &:hover {
+      color:$light-gray;
+    }
+  }
+  div.mission-sentence {
+    width:400px;
+    float:right;
+    color:$gray;
+  }
+}
+
+
 
 

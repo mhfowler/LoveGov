@@ -98,25 +98,38 @@ div.election-info {
   width:100%;
   display:block;
   margin-bottom:20px;
-  div.election-date {
-    width:100%;
-    text-align:center;
-    background-color:$black;
-    color:white;
-    padding:15px;
-    @include fontSize(32px);
+  div.election-info-left {
     float:left;
+    div.election-date {
+      width:200px;
+      color:gray;
+      @include fontSize(32px);
+      display:block;
+    }
+    div.election-created-by {
+
+    }
   }
-  div.election-info-lower {
-    margin-top:20px;
+  div.election-description-wrapper {
     float:left;
-    width:100%;
+    margin-left:10px;
+    div.election-leader {
+      color:$gray;
+      span.leader-name {
+        color:$black;
+        font-weight:bold;
+      }
+      span.leader-num {
+        color:$red;
+      }
+    }
     div.election-description {
-      float:left;
+      margin-top:5px;
     }
-    div.election-actions {
-      float:right;
-    }
+  }
+  div.election-buttons {
+    float:right;
+    width:165px;
   }
 }
 div.running {

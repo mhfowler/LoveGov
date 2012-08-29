@@ -433,17 +433,24 @@ def supportAction(viewer, politician, support, privacy):
 
 ## Action causes user to follow or unfollow inputted group, follow is true or false, depending on whether to start or stop ##
 def followGroupAction(viewer, group, follow, privacy):
+    group = group.downcast()
     if group.subscribable:
         # action and add or remove from many to many
         change = False
         if follow:
             modifier = "A"
-            if not group in viewer.group_subscriptions.all():
+            if group.group_type == "E" and group not in viewer.election_subscriptions.all():
+                viewer.election_subscriptions.add(group)
+                change = True
+            elif not group in viewer.group_subscriptions.all():
                 viewer.group_subscriptions.add(group)
                 change = True
         else:
             modifier = "S"
-            if group in viewer.group_subscriptions.all():
+            if group.group_type == "E" and group in viewer.election_subscriptions.all():
+                viewer.election_subscriptions.remove(group)
+                change = True
+            elif group in viewer.group_subscriptions.all():
                 viewer.group_subscriptions.remove(group)
                 change = True
         if change:
