@@ -520,10 +520,11 @@ def signPetition(request, vals={}):
         error = "You must be in public mode to sign a petition."
     if not error:
         valsPetition(viewer, petition, vals)
-        html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
     else:
-        html = error
-    return HttpResponse(json.dumps({'html':html}))
+        signers_sidebar = sign_area = error
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
 
 def finalizePetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
@@ -534,8 +535,9 @@ def finalizePetition(request, vals={}):
     if viewer==creator:
         petition.finalize()
     valsPetition(viewer, petition, vals)
-    html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
-    return HttpResponse(json.dumps({'html':html}))
+    signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # run for or stop running for an election
@@ -1831,9 +1833,9 @@ def getGroups(request, vals={}):
     # filter by location
     state = request.POST['state']
     city = request.POST['city']
-    if city and state:
+    if city and state and state != 'all':
         groups = groups.filter(location__state=state, location__city=city)
-    elif state:
+    elif state and state != 'all':
         groups = groups.filter(location__state=state)
 
     feed_start = int(request.POST['feed_start'])
@@ -1858,6 +1860,18 @@ def getElections(request, vals={}):
     viewer = vals['viewer']
     elections = Election.objects.order_by("-num_members")
     feed_start = int(request.POST['feed_start'])
+    elections = elections
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        elections = elections.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        elections = elections.filter(location__state=state)
+
+
+    # paginate
     elections = elections[feed_start:feed_start+5]
 
     vals['elections'] = elections
@@ -2812,6 +2826,12 @@ def getModal(request,vals={}):
         g_id = request.POST['g_id']
         group = Group.objects.get(id=g_id)
         modal_html = getGroupDescriptionModal(group,request,vals)
+
+    ## see all signers ##
+    elif modal_name == 'see_all_signers_modal':
+        p_id = request.POST['p_id']
+        petition = Petition.objects.get(id=p_id)
+        modal_html = getPetitionSignersModal(petition, request, vals)
 
 
     ## If a modal was successfully made, return it ##

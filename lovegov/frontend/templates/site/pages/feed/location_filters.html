@@ -1,12 +1,12 @@
 <div class="feed-location-filters">
 
     <div class="filter-by-location">
-        Look for {{ something }} in,
+        Look for {{ something }} in
     </div>
 
     <div class="filter-by-state">
-        <select class="filter-by-state-select filter_by_state_select select_2" data-placeholder="All States">
-            <option value=""> All States </option>
+        <select class="filter-by-state-select filter_by_state_select select_2">
+            <option value="all"> All States </option>
             {% for state in states %}
                 <option value="{{ state.0 }}">{{ state.0 }}</option>
             {% endfor %}
@@ -19,5 +19,5 @@
         <span class="input-explanation"> press enter to filter by city </span>
     </div>
 
-
+    <div style="clear:both;"></div>
 </div>

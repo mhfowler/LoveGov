@@ -452,11 +452,6 @@ def groups(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 def politicians(request, vals):
     focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
     url = request.path
@@ -546,6 +541,14 @@ def browseGroups(request, vals={}):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+def browseElections(request, vals):
+
+    # Render and return HTML
+    getStateTuples(vals)
+    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
 #-----------------------------------------------------------------------------------------------------------------------
@@ -566,9 +569,7 @@ def groupPage(request, g_alias, vals={}):
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# election detail
-#-----------------------------------------------------------------------------------------------------------------------
+
 def electionPage(request, election, vals={}):
 
     viewer = vals['viewer']

@@ -342,9 +342,13 @@ function checkCompatability() {
 function bindSelect2s() {
     $.each($('.select_2'), function(i,e) {
         var placeholder = $(this).data("placeholder");
-        $(this).select2({
-            placeholder: placeholder
-        });
+        if (typeof(placeholder)!='undefined') {
+            $(this).select2({
+                placeholder: placeholder
+            });
+        } else {
+            $(this).select2();
+        }
     });
 }
 
@@ -2169,8 +2173,8 @@ function showModal() {
     var modal_general = $('div.modal_general');
     var height = modal_general.height();
     var yoffset = window.pageYOffset;
-    modal_general.css("top", yoffset);
-    modal_general.fadeIn(250).css('display', 'inline-block');
+    modal_general.css("top", yoffset-100);
+    modal_general.fadeIn(100).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -3622,11 +3626,13 @@ bind('.sign_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
+    var sign_areas = $(".sign_area");
     action({
             data: {'action': 'signPetition', 'p_id':p_id},
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                signers_sidebar.replaceWith(returned.html);
+                sign_areas.replaceWith(returned.sign_area);
+                signers_sidebar.replaceWith(returned.signers_sidebar);
                 updateStats();
             }}
     );
@@ -3636,15 +3642,23 @@ bind('.finalize_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
+    var sign_areas = $(".sign_area");
     action({
             data: {'action': 'finalizePetition', 'p_id':p_id},
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                signers_sidebar.replaceWith(returned.html);
+                sign_areas.replaceWith(returned.sign_area);
+                signers_sidebar.replaceWith(returned.signers_sidebar);
             }}
     );
 });
 
+
+bind('.see_all_signers' , 'click' , null , function(e)
+{
+    var data = { 'p_id' : $(this).data("p_id") };
+    getModal('see_all_signers_modal',data);
+});
 
 /***********************************************************************************************************************
  *

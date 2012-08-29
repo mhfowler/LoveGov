@@ -5,7 +5,7 @@
     </div>
 
     {% if petition.finalized %}
-        <div class="signers-header"> People who've signed this petition </div>
+        <div class="signers-header"> People who've signed this petition ({{ num_signers }}) </div>
         <div class="petition_signers">
             {% if i_signed %}
                 {% include 'site/pages/content_detail/signer_avatar.html' with signer=viewer %}
@@ -17,6 +17,7 @@
             {% empty %}
                 <div class="no-one"> no one has signed this petition yet </div>
             {% endfor %}
+            <a class="see-all-signers see_all_signers" data-p_id="{{ petition.id }}"> see all </a>
             <div style="clear:both;"></div>
         </div>
     {% endif %}
