@@ -4442,6 +4442,7 @@ class Election(Group):
     running = models.ManyToManyField(UserProfile, related_name="running_for")
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     office = models.ForeignKey(Office, null=True)
+    election_date = models.DateTimeField()
     invite_only = models.BooleanField(default=False)                # you have to be invited to run
     election_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField(auto_now_add=True)

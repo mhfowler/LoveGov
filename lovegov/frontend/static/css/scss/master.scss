@@ -684,8 +684,8 @@ div.modal-wrapper {
     @include border-radius(5px);
     @include clearfix;
     display: none;
-    position:relative;
-    text-align: center;
+    position: relative;
+    text-align: left;
     div.modal-content
     {
       padding: 20px;

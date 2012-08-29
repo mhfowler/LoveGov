@@ -71,6 +71,8 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
 
 def getCreateModal(request,vals={}):
     getMainTopics(vals)
+    from lovegov.frontend.views_helpers import getStateTuples
+    getStateTuples(vals)
     viewer = vals['viewer']
     vals['all_polls'] = Poll.objects.all()
     gid = request.POST.get('gid')
