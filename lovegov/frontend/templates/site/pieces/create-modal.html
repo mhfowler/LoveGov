@@ -137,6 +137,28 @@
 
 {% endmacro %}
 
+{% macro select_states label name states %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            {% if states|length > 0 %}
+                <select class="state-select" name="{{ name }}">
+                    <optgroup label="States">
+                        <option></option>
+                        {% for state in states %}
+                            <option value='{{ state.0 }}'>{{ state.1 }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            {% else %}
+                There are no states to select.
+            {% endif %}
+        </div>
+    </div>
+
+{% endmacro %}
+
 {% macro date label class name placeholder  %}
 
     <div class="form-row">

@@ -2498,6 +2498,8 @@ def createContent(request, vals={}):
     topic = Topic.lg.get_or_none(alias=topic_alias)
     poll_id = request.POST.get('poll')
     gendate = request.POST.get('gendate')
+    state = request.POST.get('state')
+    city = request.POST.get('city')
     if poll_id:
         poll = Poll.lg.get_or_none(id=poll_id)
     if questions: questions = json.loads(questions)
@@ -2580,6 +2582,11 @@ def createContent(request, vals={}):
                     newc.setMainImage(file_content)
             except IOError:
                 return HttpResponseBadRequest("Image Upload Error")
+            if state:
+                newPhyAddr = PhysicalAddress(state=state,city=city)
+                newPhyAddr.save()
+            newc.location = newPhyAddr
+            newc.save()
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
         else:
@@ -2603,6 +2610,9 @@ def createContent(request, vals={}):
             newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
                     election_date=valid_datetime)
             newc.autoSave(creator=viewer, privacy=privacy)
+            if state:
+                newPhyAddr = PhysicalAddress(state=state,city=city)
+                newPhyAddr.save()
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
         else:

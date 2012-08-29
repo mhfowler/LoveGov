@@ -11,6 +11,9 @@ bind('div.navbar_links_wrapper.groups_wrapper a.create-link', 'click', function(
    getModal('create_modal', {}, function() {
        $('div.create-modal > div').hide();
        $('div.create-modal div.create-section.group').show();
+       $('div.create-modal div.create-section.group select.state-select').select2({
+           placeholder: 'Select a state to associate with this group.'
+       })
    });
 });
 
@@ -35,6 +38,9 @@ bind('div.navbar_links_wrapper.elections_wrapper a.create-link', 'click', functi
         $('div.create-modal > div').hide();
         $('div.create-modal div.create-section.election').show();
         evalDate.call($('div.create-modal input.date_autofill'));
+        $('div.create-modal div.create-section.election select.state-select').select2({
+            placeholder: 'Select a state to associate with this election.'
+        })
     });
 });
 
