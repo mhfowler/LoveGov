@@ -2338,8 +2338,6 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
-
-
 bind( '.filter_box' , 'click' , null , function(event) {
     event.preventDefault();
     if ($(this).hasClass('clicked')) {
@@ -2349,6 +2347,22 @@ bind( '.filter_box' , 'click' , null , function(event) {
         $(this).addClass('clicked');
     }
 });
+
+//bind( '.expand_link' , 'click' , null , function(event) {
+//    event.preventDefault();
+//    if ($(this).hasClass('clicked')) {
+//        $(this).removeClass('clicked');
+//        $('.level2-recent-actions-div').setStyle({
+//            overflow: hidden
+//        });
+//    }
+//    else {
+//        $(this).addClass('clicked');
+//        $('.level2-recent-actions-div').setStyle({
+//            overflow: auto
+//        });
+//    }
+//});
 
 function billPassageOrder() {
 
@@ -2419,6 +2433,7 @@ function shortenLongText() {
         var showChar = 150;
     }
     $('.long_text').each(function() {
+
         var content = $(this).html();
 
         if(content.length > showChar) {
@@ -2426,7 +2441,7 @@ function shortenLongText() {
             var c = content.substr(0, showChar);
             var h = content.substr(showChar, content.length - showChar);
 
-            if($('.long_text').hasClass("bill_detail")) {
+            if($(this).hasClass("bill_detail")) {
                 var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
             }
             else {

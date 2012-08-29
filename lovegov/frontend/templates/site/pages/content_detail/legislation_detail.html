@@ -24,7 +24,7 @@
 
             {% if l.bill_type == "s" %}
                 <h3><span>Session {{l.congress_session_id}}, Bill S {{l.bill_number}}</span></h3>
-            {% elif l.bill_type = "h" %}
+            {% elif l.bill_type == "h" %}
                 <h3><span>Session {{l.congress_session_id}}, Bill H.R. {{l.bill_number}}</span></h3>
             {% elif l.bill_type == "hr" %}
                 <h3><span>Session {{l.congress_session_id}}, Bill H.Res. {{l.bill_number}}</span></h3>
@@ -89,8 +89,8 @@
                 </span>
                 </div>
                 <div class="sponsor-caption">
-                    <h6><span><a href='{{l.sponsor.get_url}}'><h6 class="sponsor-name"> Sponsor<br>{{l.sponsor.get_name}}</h6></a>
-                    <br>{{ l.sponsor.getPartiesString }}<br>{{ l.sponsor.state }}<br></a><a href="">Co-Sponsors (2)</a></span></h6>
+                    <h6><span><a href='{{l.sponsor.get_url}}'><h6 class="sponsor-name">{{l.sponsor.get_name}}</h6></a>
+                    {{ l.sponsor.getPartiesString }}<br>{{ l.sponsor.political_title }}<br></span></h6>
                 </div>
             </div>
             <div class="subjects-committees">
@@ -105,8 +105,8 @@
                     <div class="subjects">
                         <span>
                             <ul>
-                                {% for subject in l.bill_subjects.all %}
-                                    <li><a href="">{{ subject.name }}</a></li>
+                                {% for subject in l.bill_subjects.all.reverse %}
+                                    <li><span class="leg-list"><a href="">{{ subject.name }}</a></span></li>
                                 {% endfor %}
                             </ul>
                         </span>
@@ -124,7 +124,7 @@
                         <span>
                             <ul>
                                 {% for committee in l.committees.all %}
-                                    <li><a href="">{{ committee.title }}</a></li>
+                                    <li><span class="leg-list"><a href="">{{ committee.title }}</a></span></li>
                                 {% endfor %}
                             </ul>
                         </span>
@@ -153,7 +153,7 @@
                     </div>
                 </div>
             </div>
-    <!--
+    {%comment%}
             <div class="bill-stats">
                 <div class="bill-stats-div">
                     <div class="support-stats">
@@ -198,9 +198,10 @@
                 </div>
             </div>
         </div>
-    -->
+    {% endcomment%}
+        </div>
         <div class="secondary">
-            <div class="secondary-top">
+{%comment%}
                 <div class="bill-text">
                     <div class="level2-bill-text">
                         <div class="bill-text-title">
@@ -225,8 +226,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+{% endcomment%}
+
             <div class="secondary-bottom">
+{% comment %}
                 <div class="bill-amendments">
                     <div class="level2-bill-amendments">
                         <div class="bill-amendments-title">
@@ -265,47 +268,50 @@
                         </div>
                     </div>
                 </div>
+{% endcomment %}
                 <div class="bill-recent-actions">
                     <div class="level2-recent-actions">
                         <div class="recent-actions-title">
                             <h4>
-                                <span>Recent Actions</span>
+                                <span>Actions</span>
                             </h4>
                         </div>
                     </div>
+                    {% for action in actions %}
                     <div class="level2-recent-actions-div">
                         <div class="recent-actions">
-                            <span>
-                                <ul>
-                                    <li><a href="">Senate Vote</a></li>
-                                    <li><a href="">Vote in Committee</a></li>
-                                    <li><a href="">Vote in House</a></li>
-                                </ul>
-                            </span>
+
+                                <span>
+                                    <ul>
+                                        <li><span class="leg-list"><a>{{ action.text }}</a></span></li>
+                                    </ul>
+                                </span>
+
                         </div>
                         <div class="recent-action-dates">
-                            <span>
-                                <ul>
-                                    <li><a>8/12/12</a></li>
-                                    <li><a>8/10/12</a></li>
-                                    <li><a>8/09/12</a></li>
-                                </ul>
-                            </span>
+
+                                <span>
+                                    <ul>
+                                        <li><span class="leg-list"><a>{{ action.datetime.date }}</a></span></li>
+                                    </ul>
+                                </span>
+
                         </div>
                         <div class="recent-action-results">
-                            <span>
-                                <ul>
-                                    <li><a>Passed</a></li>
-                                    <li><a>Passed</a></li>
-                                    <li><a>Passed</a></li>
-                                </ul>
-                            </span>
+
+                                <span>
+                                    <ul>
+                                        <li><span class="leg-list"><a>{{ action.state }}</a></span></li>
+                                    </ul>
+                                </span>
+
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-    </div>
+        <div style="clear:both;"></div>
 </div>
 <script> rebind="legislation_detail"; </script>
 
