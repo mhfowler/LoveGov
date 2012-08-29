@@ -136,6 +136,8 @@
                 {% usemacro textarea "Description:" "description" "full_text" %}
                 <div class="optional">
                     {% usemacro optional-label %}
+                    {% usemacro select_states "State:" "state" states %}
+                    {% usemacro textbox "City:" "city" "city" "Enter a city corresponding to the selected state." %}
                     {% usemacro image %}
                 </div>
                 {% usemacro save %}
@@ -165,6 +167,12 @@
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Description:" "description" "full_text" %}
                 {% usemacro date "Election date:" "date_autofill" "election_start" "Enter a date in any format" %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro select_states "State:" "state" states %}
+                    {% usemacro textbox "City:" "city" "city" "Enter a city corresponding to the selected state." %}
+                    {% usemacro image %}
+                </div>
             </div>
             {% usemacro save %}
         </form>
