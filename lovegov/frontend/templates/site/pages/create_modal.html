@@ -164,8 +164,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Description:" "description" "full_text" %}
-                {% usemacro textbox "When does the election start?" "date_autofill" "election_start" "Enter a date in any format" %}
-                {% usemacro textbox "When does the election end?" "date_autofill" "election_end" "Enter a date in any format" %}
+                {% usemacro date "Election date:" "date_autofill" "election_start" "Enter a date in any format" %}
             </div>
             {% usemacro save %}
         </form>

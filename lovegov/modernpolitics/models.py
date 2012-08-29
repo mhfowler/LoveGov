@@ -4353,7 +4353,7 @@ class Election(Group):
     running = models.ManyToManyField(UserProfile, related_name="running_for")
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     office = models.ForeignKey(Office, null=True)
-    election_date = models.DateTimeField(auto_now_add=True)
+    election_date = models.DateTimeField()
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
     def autoSave(self, creator=None, privacy="PUB"):

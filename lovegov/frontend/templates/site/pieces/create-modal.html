@@ -136,3 +136,16 @@
     </div>
 
 {% endmacro %}
+
+{% macro date label class name placeholder  %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            <input type="text" class="{{ class }}" name="{{ name }}" placeholder="{{ placeholder }}" value="11/6/2012">
+            <span class="date_autofill_label"></span>
+            <input type="hidden" name="gendate" value="">
+        </div>
+    </div>
+
+{% endmacro %}

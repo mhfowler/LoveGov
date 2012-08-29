@@ -2485,6 +2485,7 @@ def createContent(request, vals={}):
     topic_alias = request.POST.get('topic')
     topic = Topic.lg.get_or_none(alias=topic_alias)
     poll_id = request.POST.get('poll')
+    gendate = request.POST.get('gendate')
     if poll_id:
         poll = Poll.lg.get_or_none(id=poll_id)
     if questions: questions = json.loads(questions)
@@ -2569,21 +2570,39 @@ def createContent(request, vals={}):
                 return HttpResponseBadRequest("Image Upload Error")
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     elif section=='scorecard':
         if title and full_text:
             newc = Scorecard(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
                 group=group, poll=poll)
             newc.autoSave(creator=viewer, privacy=privacy)
             redirect = newc.getEditURL()
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     elif section=='election':
-        if title and full_text:
-            newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+        if title and full_text and gendate:
+            try:
+                from dateutil import parser
+                valid_datetime = parser.parse(gendate)
+            except ValueError:
+                return HttpResponseBadRequest("Could not parse election date.")
+            from datetime import datetime
+            newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+                    election_date=valid_datetime)
             newc.autoSave(creator=viewer, privacy=privacy)
+            newc.joinMember(viewer)
+            newc.addAdmin(viewer)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     else:
         return HttpResponseBadRequest("The specified type of content is not valid.")
 
 
     newc.setMainTopic(topic)
+
+    action = CreatedAction(content=newc,user=viewer,)
+
     if not redirect:
         redirect = newc.getUrl()
 
