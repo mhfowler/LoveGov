@@ -347,11 +347,12 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.running.all().order_by("-num_supporters")[:2]
+    running = election.running.all().order_by("-num_supporters")
     for r in running:
         r.comparison = r.getComparison(viewer)
     vals['running'] = running
     vals['election'] = election
+    vals['i_am_running'] = viewer in running
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -389,3 +390,10 @@ def valsFBFriends(request, vals):
                     fb_friends.append(fb_friend)
                     vals['facebook_friends'] = fb_friends
     return fb_friends
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# put all state tuples in dictionary
+#-----------------------------------------------------------------------------------------------------------------------
+def getStateTuples(vals):
+    vals['states'] = STATES

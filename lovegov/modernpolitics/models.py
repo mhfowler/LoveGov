@@ -346,6 +346,18 @@ class Content(Privacy, LocationLevel):
         return self.downcast().getFeedTitle()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # gets location string, if content has location
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocationVerbose(self):
+        to_return = ''
+        if self.location:
+            if self.location.state:
+                to_return = self.location.state
+                if self.location.city:
+                    to_return += ', ' + self.location.city
+        return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
     # calculates contents hot_score and saves it
     #-------------------------------------------------------------------------------------------------------------------
     def recalculateHotScore(self):
@@ -1938,6 +1950,8 @@ class Action(Privacy):
             object = self.groupfollowaction
         elif action_type == 'PI':
             object = self.pinnedaction
+        elif action_type == 'RU':
+            object = self.runningforaction
         else:
             object = None
         return object
@@ -1978,6 +1992,35 @@ class SignedAction(Action):
         })
 
         return render_to_string('site/pieces/actions/signed_verbose.html',vals)
+
+#=======================================================================================================================
+# Running for an election
+#=======================================================================================================================
+class RunningForAction(Action):
+    election = models.ForeignKey('Election')
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def autoSave(self):
+        self.action_type = 'RU'
+        super(RunningForAction,self).autoSave()
+
+    def getTo(self):
+        return self.election
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.election,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/runningfor_verbose.html',vals)
 
 #=======================================================================================================================
 # Following or unfollowing a group, aka adding or removing from group subscriptions
@@ -4353,6 +4396,7 @@ class Election(Group):
     running = models.ManyToManyField(UserProfile, related_name="running_for")
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     office = models.ForeignKey(Office, null=True)
+    invite_only = models.BooleanField(default=False)                # you have to be invited to run
     election_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
@@ -4363,6 +4407,14 @@ class Election(Group):
     def joinRace(self, user):
         if not user in self.running.all():
             self.running.add(user)
+            action = RunningForAction(user=user, election=self, modifier="A")
+            action.autoSave()
+
+    def leaveRace(self, user):
+        if user in self.running.all():
+            self.running.remove(user)
+            action = RunningForAction(user=user, election=self, modifier="S")
+            action.autoSave()
 
     def getCandidatesURL(self):
         return self.get_url() + '/candidates/'

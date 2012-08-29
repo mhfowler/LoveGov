@@ -137,6 +137,33 @@ div.feed-main
             cursor:pointer;
           }
         }
+
+        div.feed-location-filters {
+          div.filter-by-location {
+            float:left;
+          }
+          div.filter-by-state {
+            float:left;
+            margin-left:25px;
+          }
+          div.filter-by-city {
+            float:left;
+            margin-left:25px;
+            display:none;
+            input.filter-by-city-input {
+              height: 30px;
+              padding-left: 5px;
+              float:left;
+            }
+            span.input-explanation {
+              float:left;
+              margin-left: 15px;
+              margin-top: 6px;
+            }
+          }
+        }
+
+
       }
 
     }

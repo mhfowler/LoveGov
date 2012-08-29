@@ -342,6 +342,7 @@ def initializeDB():
     initializeTestScorecard()
     initializePresidentialElection2012()
     initializePresidentialCandidates2012()
+    initializeSomeTestElections()
     #randomWhales()
     # valid emails
     initializeValidEmails()
@@ -646,6 +647,10 @@ def initializePersistentDebate():
     debate.topics.add(topic)
 
 def initializeSomeUserGroups():
+
+    location = PhysicalAddress(state="MA", city="Boston")
+    location.save()
+
     ug1 = UserGroup(title="Save The Whales",
         summary="This is a group about saving the whales. " \
                 "We feel very strongly about saving whales. " \
@@ -653,8 +658,10 @@ def initializeSomeUserGroups():
                 "Lorem ipsum dolor sit amet, consectetur " \
                 "adipiscing elit. Duis tempor nisl non magna" \
                 "viverra pulvinar. Sed eu risus quis dolor" \
-                "euismod aliquet eu ac velit. Duis eu lobortis")
+                "euismod aliquet eu ac velit. Duis eu lobortis",
+        location=location)
     ug1.autoSave()
+
     ug1.joinMember(getUser("Randy Johnson"))
     ug1.addAdmin(getUser("Randy Johnson"))
     ug2 = UserGroup(title="I made a group, no I didn't")
@@ -710,6 +717,20 @@ def initializeSomeTestContent():
                   "Aliquam id massa tellus, eu malesuada diam. Donec quis ipsum eu est pellentesque ultrices. Curabitur nisi nisl",
         posted_to=save_the)
     d.autoSave(creator=katy)
+
+
+
+def initializeSomeTestElections():
+
+    print "initializing test elections!"
+    election = Election(title="Home Room Line Leader Election", summary="who will lead the line?",
+    election_date=datetime.date(year=2012, month=9, day=20))
+    election.autoSave()
+
+    election = Election(title="Iowa District Political Champion Election", summary="who will lead iowa?",
+        election_date=datetime.date(year=2012, month=9, day=20))
+    election.autoSave()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Counts the number of files in a path
@@ -1689,7 +1710,7 @@ def getPresidentialElection2012():
 def initializePresidentialElection2012():
     print "initializing presidential election!"
     election = Election(title="Presidential Election", summary="who will be America's next president?",
-    election_date=datetime.date(year=2012, month=11, day=6))
+    election_date=datetime.date(year=2012, month=11, day=6), invite_only=True)
     election.autoSave()
     return election
 

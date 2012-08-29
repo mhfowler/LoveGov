@@ -541,6 +541,7 @@ def questions(request, vals={}):
 def browseGroups(request, vals={}):
 
     # Render and return HTML
+    getStateTuples(vals)
     focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
