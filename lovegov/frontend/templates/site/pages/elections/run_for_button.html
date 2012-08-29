@@ -1,0 +1,7 @@
+{% if not info.election.invite_only %}
+    {% if not info.i_am_running %}
+        <a class="run_for run-for" data-e_id="{{ info.election.id }}"> run for </a>
+    {% else %}
+        <a class="stop_running_for stop-running-for" data-e_id="{{ info.election.id }}"> you are running for </a>
+    {% endif %}
+{% endif %}
