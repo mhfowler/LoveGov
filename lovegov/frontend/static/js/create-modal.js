@@ -7,7 +7,7 @@ bind('td.create-button', 'click', function(e) {
 });
 
 // Create group link click
-bind('div.navbar_links_wrapper.groups_wrapper a.create-link', 'click', function(e) {
+bind('.create_group_link', 'click', function(e) {
    getModal('create_modal', {}, function() {
        $('div.create-modal > div').hide();
        $('div.create-modal div.create-section.group').show();
@@ -33,7 +33,7 @@ bind('div.group-action.create_scorecard', 'click', function(e) {
 });
 
 // Create election link click
-bind('div.navbar_links_wrapper.elections_wrapper a.create-link', 'click', function(e) {
+bind('.create_election_link', 'click', function(e) {
     getModal('create_modal', {}, function() {
         $('div.create-modal > div').hide();
         $('div.create-modal div.create-section.election').show();

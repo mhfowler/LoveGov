@@ -39,6 +39,22 @@ div.groups-header {
   }
 }
 
+/* create a group button */
+a.create-a-group {
+  float:right;
+  padding:6px;
+  background-color:$red;
+  color:white;
+  width:150px;
+  text-align:center;
+  margin-right: 70px;
+  margin-top: 40px;
+  &:hover {
+    background-color:$red-light;
+  }
+}
+
+
 
 /* like minded page */
 div.like-minded-title {

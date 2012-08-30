@@ -4,26 +4,26 @@
     {% comment %}<div class="navbar-divider-line"></div> {% endcomment %}
 
     <div class="navbar-section navbar_section groups_section">
-        <a class="home_link section_title" href="/groups/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
+        <a class="home_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper groups_wrapper">
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="like-minded" %}
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="friends" %}
-            <a href="#" class="create-link"> + Create a Group </a>
+            <a href="#" class="create-link create_group_link"> + Create a Group </a>
         </div>
     </div>
 
     <div class="navbar-section navbar_section elections_section">
-        <a class="home_link section_title" href="/elections/" data-sequence="{{ sequence|increment }}">
+        <a class="home_link section_title" href="/my_elections/" data-sequence="{{ sequence|increment }}">
             <div class="navbar_title navbar-title"> My Elections </div> </a>
         <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper elections_wrapper">
             {% for x in election_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-            <a href="#" class="create-link"> + Create an Election </a>
+            <a href="#" class="create-link create_election_link"> + Create an Election </a>
         </div>
     </div>
 
