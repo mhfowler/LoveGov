@@ -46,8 +46,10 @@ header
       @include inline-block;
       font-size: 15px;
       float:left;
-      margin: 9px 5px;
-      padding: 5px 5px 1px 5px;
+      margin-top: -11px;
+      padding: 12px;
+      padding-bottom: 10px;
+      padding-top: 23px;
       &:hover {
         background-color: $red;
         color: white;

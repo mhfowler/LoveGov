@@ -14,7 +14,7 @@
         {% elif tally > 2 %}
             and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
         {% endif %}
-        signed {{ object.get_name }}
+        signed {{ to_object.get_name }}
     </td>
 
 {% endblock %}

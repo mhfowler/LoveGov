@@ -29,6 +29,11 @@ def homeSidebar(request, vals):
     for g in group_subscriptions:
         g.num_new = g.getNumNewContent(viewer)
     vals['group_subscriptions'] = group_subscriptions
+    election_subscriptions = viewer.getElectionSubscriptions()
+    for e in election_subscriptions:
+        e.num_new = e.getNumNewContent(viewer)
+    vals['election_subscriptions'] = election_subscriptions
+
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
 #-----------------------------------------------------------------------------------------------------------------------
@@ -355,6 +360,7 @@ def valsElection(viewer, election, vals):
     vals['running'] = running
     vals['election'] = election
     vals['i_am_running'] = viewer in running
+    vals['is_user_following'] = election in viewer.election_subscriptions.all()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -393,9 +399,41 @@ def valsFBFriends(request, vals):
                     vals['facebook_friends'] = fb_friends
     return fb_friends
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # put all state tuples in dictionary
 #-----------------------------------------------------------------------------------------------------------------------
 def getStateTuples(vals):
     vals['states'] = STATES
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fills vals for reps header
+#-----------------------------------------------------------------------------------------------------------------------
+def valsRepsHeader(vals):
+    viewer = vals['viewer']
+    location = viewer.temp_location or viewer.location
+    vals['location'] = location
+
+    congressmen = []
+    if location:
+        vals['state'] = location.state
+        vals['district'] = location.district
+        vals['latitude'] = location.latitude
+        vals['longitude'] = location.longitude
+        if location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+    if LOCAL and location:
+        bush = getUser("George Bush")
+        congressmen = [bush, bush, bush]
+    vals['congressmen'] = congressmen
+    for x in congressmen:
+        x.comparison = x.getComparison(viewer)
+    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
+    if len(congressmen) < 3:
+        vals['few_congressmen'] = True
