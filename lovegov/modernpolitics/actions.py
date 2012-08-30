@@ -445,6 +445,9 @@ def followGroupAction(viewer, group, follow, privacy):
             elif not group in viewer.group_subscriptions.all():
                 viewer.group_subscriptions.add(group)
                 change = True
+            if change:
+                group.num_followers += 1
+                group.save()
         else:
             modifier = "S"
             if group.group_type == "E" and group in viewer.election_subscriptions.all():
@@ -453,6 +456,9 @@ def followGroupAction(viewer, group, follow, privacy):
             elif group in viewer.group_subscriptions.all():
                 viewer.group_subscriptions.remove(group)
                 change = True
+            if change:
+                group.num_followers -= 1
+                group.save()
         if change:
             action = GroupFollowAction(user=viewer,privacy=privacy,group=group,modifier=modifier)
             action.autoSave()

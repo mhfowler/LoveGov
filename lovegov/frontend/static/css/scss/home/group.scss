@@ -44,6 +44,11 @@ div.group-actions
     color:white;
     &:hover { background-color: $dark-gray; }
   }
+  a.running-for {
+    background-color:$purple;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
 }
 
 

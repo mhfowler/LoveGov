@@ -485,7 +485,9 @@ def friends(request, vals):
 def questions(request, vals={}):
 
     getMainTopics(vals)
-    getQuestionStats(vals)
+    getQuestionStats(vals, None)
+    lgpoll = getLoveGovPoll()
+    vals['lgpoll'] = lgpoll
 
     html =  ajaxRender('site/pages/qa/questions.html', vals, request)
     url = request.path

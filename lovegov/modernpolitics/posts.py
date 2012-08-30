@@ -1122,7 +1122,9 @@ def updateStats(request, vals={}):
     object = request.POST['object']
     if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
-        getQuestionStats(vals)
+        p_id = request.POST['p_id']
+        poll = Poll.lg.get_or_none(id=p_id)
+        getQuestionStats(vals, poll)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
     elif object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples

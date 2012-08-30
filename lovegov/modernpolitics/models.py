@@ -3778,6 +3778,7 @@ class Group(Content):
     admins = models.ManyToManyField(UserProfile, related_name='admin_of')
     members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
+    num_followers = models.IntegerField(default=0)
     # content
     scorecard = models.ForeignKey(Scorecard, null=True, related_name="group_origins")
     group_content = models.ManyToManyField(Content, related_name="in_groups")
@@ -4456,6 +4457,9 @@ class Election(Group):
             self.running.add(user)
             action = RunningForAction(user=user, election=self, modifier="A")
             action.autoSave()
+            if not user.politician:
+                user.politician = True
+                user.save()
 
     def leaveRace(self, user):
         if user in self.running.all():

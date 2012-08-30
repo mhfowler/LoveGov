@@ -16,7 +16,9 @@
     </div>
 
     <div class="navbar-section navbar_section elections_section">
-        <a class="home_link section_title" href="/elections/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> My Elections </div> </a> <span class="red_triangle red-triangle"></span>
+        <a class="home_link section_title" href="/elections/" data-sequence="{{ sequence|increment }}">
+            <div class="navbar_title navbar-title"> My Elections </div> </a>
+        <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper elections_wrapper">
             {% for x in election_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}

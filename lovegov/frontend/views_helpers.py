@@ -240,14 +240,17 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
-def getQuestionStats(vals):
+def getQuestionStats(vals, poll):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
-    lgpoll = getLoveGovPoll()
-    vals['lgpoll'] = lgpoll
-    questions = lgpoll.questions.all()
+    if poll:
+        poll = getLoveGovPoll()
+        vals['poll'] = poll
+        questions = poll.questions.all()
+    else:
+        questions = Question.objects.all()
     for t in getMainTopics():
         stat = {'topic':t}
         q_ids = questions.filter(main_topic=t).values_list('id', flat=True)
@@ -355,8 +358,10 @@ def valsGroupButtons(viewer, group, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
     running = election.running.all().order_by("-num_supporters")
+    supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
+        r.is_supporting = r in supporting
     vals['running'] = running
     vals['election'] = election
     vals['i_am_running'] = viewer in running

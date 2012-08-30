@@ -459,10 +459,6 @@ bind(".red_triangle", 'click', null, function(event) {
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
     var navbar_section = $(this).parents(".navbar_section");
-    if ($(this).hasClass("navbar_link")) {
-        var num_new_content = $(this).parents(".home_link_wrapper").find(".num_new_content");
-        num_new_content.empty();
-    }
     event.preventDefault();
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
@@ -537,10 +533,15 @@ function selectNavLink(navlink) {
     if (navlink.length!=0) {
         $(".home_link").removeClass("clicked");
         navlink.addClass("clicked");
+
+        // toggle section and remove new items num
         if (navlink.hasClass("navbar_link")) {
+            var num_new_content = navlink.parents(".home_link_wrapper").find(".num_new_content");
+            num_new_content.empty();
             var navbar_section = navlink.parents(".navbar_section");
             navSectionToggle(navbar_section, true, false);
         }
+
         //moveAsterisk(navlink);
     }
 }
@@ -2824,7 +2825,7 @@ function saveAnswer(stub) {
         }
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
-        if (only_unanswered) {
+        if (only_unanswered && a_id!=-1) {
             stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
             expandChooseInterface(stub.next('.question_stub'));
         }
@@ -2989,6 +2990,9 @@ function updateStatsObject(stats) {
     }
     if (object == 'election_leaderboard') {
         data['e_id'] = stats.data('e_id');
+    }
+    if (object == 'poll_stats') {
+        data['p_id'] = stats.data('p_id');
     }
     action({
         data: data,
