@@ -1,4 +1,4 @@
-<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" style="width:{{width}}px">
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}">
     <div class="comment-username feed-username">
         {% load thumbnail %}
         {% if comment.active %}
@@ -49,7 +49,15 @@
     </div>
     <div class="comment-footer">
 
-        {% include "site/pieces/hearts.html" with content=comment %}
+       <span class="collapse" title="Collapse comment and replies">[-]</span>
+
+        <div class="item-ranking" data-c_id="{{ comment.id }}">
+
+            <div class="heart-plus heart_plus{% if my_vote == 1 %} clicked{% endif %}"></div>
+            <div class="heart-number heart_number">{{ comment.status }}</div>
+            <div class="heart-minus heart_minus{% if my_vote == -1 %} clicked{% endif %}"></div>
+
+        </div>
 
     </div>
 

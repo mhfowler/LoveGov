@@ -2585,7 +2585,7 @@ def createContent(request, vals={}):
             if state:
                 newPhyAddr = PhysicalAddress(state=state,city=city)
                 newPhyAddr.save()
-            newc.location = newPhyAddr
+                newc.location = newPhyAddr
             newc.save()
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
@@ -2613,6 +2613,7 @@ def createContent(request, vals={}):
             if state:
                 newPhyAddr = PhysicalAddress(state=state,city=city)
                 newPhyAddr.save()
+                newc.location = newPhyAddr
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
         else:
@@ -2628,7 +2629,7 @@ def createContent(request, vals={}):
     if not redirect:
         redirect = newc.getUrl()
 
-    return HttpResponseRedirect(redirect);
+    return HttpResponseRedirect(redirect)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # asks a politicain to join the website
