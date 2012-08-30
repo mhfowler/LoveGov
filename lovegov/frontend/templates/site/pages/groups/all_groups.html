@@ -1,9 +1,33 @@
 <div class="browse-all">
-    <div class="main-top">
-        <div class="header-title"> Browse All Groups </div>
-        <div class="red-line"></div>
+
+    <div class="questions-header">
+
+        <div class="questions-left">
+            <div class="header-title">
+                Groups
+            </div>
+            <div class="questions-explanation">
+                Follow groups that are relevant to you so you can keep up to date with politics relevant to you.
+                Join groups that support your causes so that you can support them.
+            </div>
+        </div>
+
+        <a class="create-a-group create_group_link">
+             create a group
+        </a>
+
+        {% comment %}
+        <div class="questions-links">
+            <a href="/presidential_election/" class="question-link"> match with presidential candidates </a>
+            <a href="/representatives/" class="question-link"> match with your representatives </a>
+            <a href="/congress/" class="question-link"> match with congress </a>
+        </div>
+        {% endcomment %}
+
         <div style="clear:both;"></div>
+
     </div>
+
 
     <div class="browse-all-wrapper">
         {% include 'site/pages/browse/feed_browse_groups.html' with special_feed="getGroups" %}

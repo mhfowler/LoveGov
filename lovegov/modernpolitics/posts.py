@@ -1123,7 +1123,9 @@ def updateStats(request, vals={}):
     object = request.POST['object']
     if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
-        getQuestionStats(vals)
+        p_id = request.POST['p_id']
+        poll = Poll.lg.get_or_none(id=p_id)
+        getQuestionStats(vals, poll)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
     elif object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
@@ -2596,7 +2598,7 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='group':
         if title and full_text:
-            newc = Group(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc = UserGroup(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
@@ -2608,7 +2610,7 @@ def createContent(request, vals={}):
             if state:
                 newPhyAddr = PhysicalAddress(state=state,city=city)
                 newPhyAddr.save()
-            newc.location = newPhyAddr
+                newc.location = newPhyAddr
             newc.save()
             newc.joinMember(viewer)
             newc.addAdmin(viewer)
@@ -2636,8 +2638,9 @@ def createContent(request, vals={}):
             if state:
                 newPhyAddr = PhysicalAddress(state=state,city=city)
                 newPhyAddr.save()
-            newc.joinMember(viewer)
+                newc.location = newPhyAddr
             newc.addAdmin(viewer)
+            followGroupAction(viewer, newc, True, privacy)
         else:
             return HttpResponseBadRequest("A required field was not included.")
     else:
@@ -2651,7 +2654,7 @@ def createContent(request, vals={}):
     if not redirect:
         redirect = newc.getUrl()
 
-    return HttpResponseRedirect(redirect);
+    return HttpResponseRedirect(redirect)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # asks a politicain to join the website
@@ -2757,6 +2760,91 @@ def editPetitionFullText(request, vals={}):
         return HttpResponse(json.dumps({'value':full_text}))
     else:
         LGException( "User editing petition and is finalized or is not owner #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# add people to a scorecard
+#-----------------------------------------------------------------------------------------------------------------------
+def addToScorecard(request, vals={}):
+
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        add_ids = json.loads(request.POST['add_ids'])
+        politicians = UserProfile.objects.filter(id__in=add_ids, politician=True)
+        for p in politicians:
+            if not p in scorecard.politicians.all():
+                scorecard.politicians.add(p)
+                action = AddToScorecardAction(user=viewer, politician=p, scorecard=scorecard, confirmed=True, privacy=getPrivacy(request))
+                action.autoSave()
+                p.notify(action)
+
+        return HttpResponse("added")
+    else:
+        LGException( "User adding to scorecard that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+
+def removeFromScorecard(request, vals):
+
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        p_id = request.POST['p_id']
+        politician = scorecard.politicians.filter(id=p_id)
+        if politician:
+            politician = politician[0]
+            scorecard.politicians.remove(politician)
+            action = AddToScorecardAction(user=viewer, politician=politician, scorecard=scorecard, confirmed=False, privacy=getPrivacy(request))
+            action.autoSave()
+            return HttpResponse("removed")
+        else:
+            LGException( "User tried to remove person from scorecard who  wasn't on it #" + str(viewer.id) )
+            return HttpResponse("didnt work")
+    else:
+        LGException( "User tried to remove person from scorecard that wasn't theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+## invite user from off lovegov to join lovegov and auto get added to your scorecard
+def inviteToScorecard(request, vals):
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        invite_email = request.POST['invite_email']
+        already = UserProfile.objects.filter(email=invite_email)
+        if not already:
+            action = AddToScorecardAction(user=viewer, invite_email=invite_email, scorecard=scorecard, confirmed=True, privacy="PRI")
+            action.autoSave()
+            notification = Notification(action=action, notify_email=invite_email)
+            notification.save()
+            return HttpResponse(json.dumps({'success':True}))
+        else:
+            return HttpResponse(json.dumps({'success':False}))
+    else:
+        LGException( "User inviting to scorecard that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Splitter between all actions. [checks is post]
+# post: actionPOST - which actionPOST to call
+#-----------------------------------------------------------------------------------------------------------------------
+def inviteToRunForElection(request, vals):
+    viewer = vals['viewer']
+    e_id = request.POST['e_id']
+    election = Election.objects.get(id=e_id)
+    if election.creator == viewer:
+        invite_email = request.POST['invite_email']
+        already = UserProfile.objects.filter(email=invite_email)
+        if not already:
+            #TODO: will do something cool
+            pass
+        else:
+            return HttpResponse(json.dumps({'success':False}))
+    else:
+        LGException( "User inviting to election that is not theirs #" + str(viewer.id) )
         return HttpResponse("didnt work")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2885,6 +2973,17 @@ def getModal(request,vals={}):
         petition = Petition.objects.get(id=p_id)
         modal_html = getPetitionSignersModal(petition, request, vals)
 
+    ## add people to your scorecard ##
+    elif modal_name == 'add_to_scorecard_modal':
+        s_id = request.POST['s_id']
+        scorecard = Scorecard.objects.get(id=s_id)
+        modal_html = getAddToScorecardModal(scorecard, request, vals)
+
+    ## invite people off lovegov to join lovegov and run for your election ##
+    elif modal_name == "invite_to_run_for_modal":
+        e_id = request.POST['e_id']
+        election = Election.objects.get(id=e_id)
+        modal_html = getInviteToRunForModal(election, request, vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

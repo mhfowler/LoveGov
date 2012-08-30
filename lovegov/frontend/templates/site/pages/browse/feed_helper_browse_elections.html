@@ -1,5 +1,7 @@
 {% for x in elections_info %}
     {% with info=x.info group=x.group  %}
-        {% include 'site/pages/elections/election_header.html' with info_height="185px" %}
+        <div class="election-feed-item-wrapper">
+            {% include 'site/pages/elections/election_header.html' with info_height="285px" %}
+        </div>
     {% endwith %}
 {% endfor %}

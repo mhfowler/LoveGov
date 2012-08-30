@@ -80,12 +80,13 @@ div.questions-main {
 }
 
 div.questions-sidebar {
-  margin-top: 10px;
+  margin-top: 20px;
   width:150px;
 
   div.sidebar-header {
     @include fontSize(14px);
     font-weight:bold;
+    padding-left:8px;
   }
 
   div.question-stats {
@@ -561,5 +562,43 @@ div#comparison-hover {
     margin:auto;
     height:150px;
     margin-top:15px;
+  }
+}
+
+
+
+
+
+/* questions header */
+div.questions-header {
+  margin-bottom:10px;
+  div.questions-left {
+    float:left;
+    div.header-title {
+      @include fontSize(20px);
+      margin-bottom:5px;
+    }
+    div.questions-explanation {
+      width:550px;
+      @include fontSize(14px);
+    }
+  }
+  div.questions-links {
+    float:right;
+    width:300px;
+      a.question-link {
+          display:block;
+          padding:8px;
+          //text-transform:uppercase;
+          background-color:$light-gray;
+          color:black;
+          margin-top: 10px;
+          width: 250px;
+          float:right;
+          @include fontSize(12px);
+          &:hover {
+            background-color:$dark-gray;
+          }
+      }
   }
 }

@@ -9,9 +9,11 @@
     <div class="group-top">
 
         <span class="group-title">
-            <div class="inline-div inline_hide">
-                {{ group.title }}
-            </div>
+            <a href="{{ group.get_url }}">
+                <div class="inline-div inline_hide">
+                    {{ group.title }}
+                </div>
+            </a>
             {% if info.is_user_admin %}
                 <div class="edit-link edit_button"></div>
                 <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
@@ -24,7 +26,7 @@
 
 
         <span class="group-scale"> {{ group.getLocationVerbose }} </span>
-        <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+        <span class="group-num-members"> {{ group.num_followers }} follower{{ group.num_followers|pluralize }} </span>
 
     </div>
 
@@ -63,8 +65,12 @@
 
             <div class="election-buttons group-actions">
                 {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
-                {% include 'site/pages/elections/invite_to_run_for_button.html' %}
-                {% include 'site/pages/elections/run_for_button.html' %}
+                {% if not group.system %}
+                    {% include 'site/pages/elections/run_for_button.html' %}
+                {% endif %}
+                {% if viewer == info.election.creator %}
+                    {% include 'site/pages/elections/invite_to_run_for_button.html' %}
+                {% endif %}
             </div>
 
             <div style="clear:both;"></div>

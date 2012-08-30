@@ -136,3 +136,44 @@ div.running {
   width:100%;
   display:block;
 }
+
+
+/* election feed */
+div.election-feed-item-wrapper {
+  margin-top:25px;
+}
+
+
+/* invite to run for modal */
+div.invite-to-election-wrapper {
+  padding:40px;
+  div.invite-to-election-header {
+    @include fontSize(28px);
+    margin-bottom:25px;
+    width:400px;
+  }
+
+  div.invite-to-election {
+    input.invite-to-election {
+      height:30px;
+      padding:5px;
+      width:200px;
+      float:left;
+    }
+    a.invite-to-button {
+      float:left;
+      margin-left:20px;
+      padding:7px;
+      background-color:$red;
+      color:white;
+      &:hover {
+        background-color:$red-light;
+      }
+    }
+    div.invite-success-message {
+      float:left;
+      margin-left:20px;
+      width:150px;
+    }
+  }
+}

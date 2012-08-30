@@ -108,3 +108,17 @@ def getGroupDescriptionModal(group,request,vals):
 def getPetitionSignersModal(petition, request, vals):
     vals['petition'] = petition
     return ajaxRender('site/pages/content_detail/petition_signers_modal.html', vals,request)
+
+
+## add to scorecard ##
+def getAddToScorecardModal(scorecard, request, vals):
+    vals['scorecard'] = scorecard
+    already_ids = scorecard.politicians.all().values_list("id", flat=True)
+    vals['politicians'] = UserProfile.objects.filter(politician=True).exclude(id__in=already_ids)
+    return ajaxRender('site/pages/content_detail/scorecards/add_to_scorecard_modal.html', vals,request)
+
+
+## invite someone off lovegov to run for your election ##
+def getInviteToRunForModal(election, request, vals):
+    vals['election'] = election
+    return ajaxRender('site/pages/elections/invite_to_run_for_modal.html', vals,request)

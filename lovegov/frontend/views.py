@@ -600,7 +600,7 @@ def profile(request, alias=None, vals={}):
             vals['is_user_confirmed'] = True
         if user_follow.rejected:
             vals['is_user_rejected'] = True
-    
+
     vals['profile_groups'] = user_profile.getRealGroups()[:4]
     vals['profile_politicians'] = user_profile.getPoliticians()
 
@@ -953,7 +953,7 @@ def legislationDetail(request, l_id, vals={}):
     # vals['first_body'] =
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
-    url = legislation.get_url(
+    url = legislation.get_url
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

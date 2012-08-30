@@ -4,11 +4,12 @@
 {% block top %}
 {% endblock %}
 
-{% block sidebar_fixed %}
+{% block sidebar %}
     <div class="questions-sidebar">
-        <div class="sidebar-header"> Your LoveGov <a href="{{ lgpoll.get_url }}"> Official Poll </a> Progress </div>
+        <div class="sidebar-header"> Complete the <a href="{{ lgpoll.get_url }}"> LoveGov Poll </a>
+        to improve your matches with politicians </div>
         <!-- topic stat box -->
-        {% include 'site/pages/qa/poll_progress_by_topic.html' %}
+        {% include 'site/pages/qa/poll_progress_by_topic.html' with poll=lgpoll %}
     </div>
 {% endblock %}
 
@@ -16,15 +17,39 @@
 
     <div class="questions-main">
 
+        <div class="questions-header">
+
+            <div class="questions-left">
+                <div class="header-title">
+                    Questions
+                </div>
+                <div class="questions-explanation">
+                    Answer questions to define your political views. Expressing your views it the first step towards
+                    political engagement. Take the <a href="{{ lgpoll.get_url }}"> LoveGov Poll </a> to answer
+                    questions associated with legislation and match yourself with politicians.
+                </div>
+            </div>
+
+            <div class="questions-links">
+                <a href="/presidential_election/" class="question-link"> match with presidential candidates </a>
+                <a href="/representatives/" class="question-link"> match with your representatives </a>
+                <a href="/congress/" class="question-link"> match with congress </a>
+            </div>
+
+            <div style="clear:both;"></div>
+
+        </div>
+
+        {% comment %}
         <div class="main-top">
             <div class="header-title"> Questions </div>
             <div class="red-line"></div>
         </div>
+        {% endcomment %}
 
         <div class="questions-wrapper">
-            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" only_unanswered=1 default_display="choose" %}
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" %}
         </div>
-
     </div>
 
     <script> rebind="questions"; </script>

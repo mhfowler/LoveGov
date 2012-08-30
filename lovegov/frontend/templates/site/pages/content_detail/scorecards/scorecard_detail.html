@@ -3,66 +3,61 @@
 {% block content_detail_sidebar %}
 {% endblock %}
 
-{% block content_description %}
-    <div class="scorecard-description">
-        <div class="scorecard-summary">
-            <div class="content-info-header">
-                Description
-            </div>
-
-            <div class="scorecard-description">
-                {{ content.summary}}
-            </div>
-        </div>
-
-        <div class="based-off-of">
-            <div class="content-info-header">
-                Based off of Poll
-            </div>
-
-            {% with poll=scorecard.poll %}
-                <div class="scorecard-description">
-                    <a href="{{ poll.get_url }}"> {{ poll.title }}</a>
-                </div>
-            {% endwith %}
-        </div>
-    </div>
-{% endblock %}
-
-
 {% block content_body %}
+
+    <div class="based-off-of">
+        {% with poll=scorecard.poll %}
+            <span class="based-off-text"> This scorecard is based of the poll
+                <a href="{{ poll.get_url }}" class="poll-link"> {{ poll.get_name }}</a>.
+            </span>
+            <a href="{{ poll.get_url }}" class="take-poll-button"> take the poll </a>
+        {% endwith %}
+        <div style="clear:both;"></div>
+    </div>
 
     {% block scorecard_body %}
 
-        <div class="reps-compare">
-            <div class="scorecard-section-header">
-                How your representatives compare
-            </div>
-
-            <div class="scorecard-avatar-strips-wrapper">
-                {% for user in representatives %}
-                    <div class="scorecard-avatar-strip-wrapper">
-                        {% include 'site/pieces/avatar_strip.html' with user=user scorecard_strip=1 %}
-                    </div>
-                {% endfor %}
-                <div style="clear:both;"></div>
-            </div>
-        </div>
-
         <div class="politicians-compare">
             <div class="scorecard-section-header">
-                Other politicians
+                <span class="header-text"> On This Scorecard </span>
+                {% if i_can_edit %}   <a class="add-to-scorecard add_to_scorecard" data-s_id="{{ scorecard.id }}"> add people to scorecard </a> {% endif %}
+                <div style="clear:both;"></div>
             </div>
 
             <div class="scorecard-avatar-strips-wrapper">
                 {% for user in politicians %}
-                    <div class="scorecard-avatar-strip-wrapper">
+                    <div class="scorecard-avatar-strip-wrapper scorecard_avatar_strip_wrapper">
                         {% include 'site/pieces/avatar_strip.html' with user=user scorecard_strip=1 %}
+                        {% if i_can_edit %}
+                            <a class="remove_from_scorecard remove-from-scorecard tooltip-top"
+                               data-s_id="{{ scorecard.id }}" data-p_id="{{ user.id }}" title="remove"> X </a>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <div class="no-one-on-scorecard">
+                        The creator of this scorecard hasn't added anyone to be compared.
                     </div>
                 {% endfor %}
                 <div style="clear:both;"></div>
             </div>
         </div>
+
+        {% if representatives %}
+            <div class="reps-compare">
+                <div class="scorecard-section-header">
+                    How your representatives compare
+                </div>
+
+                <div class="scorecard-avatar-strips-wrapper">
+                    {% for user in representatives %}
+                        <div class="scorecard-avatar-strip-wrapper">
+                            {% include 'site/pieces/avatar_strip.html' with user=user scorecard_strip=1 %}
+                        </div>
+                    {% endfor %}
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+        {% endif %}
 
     {% endblock %}
 

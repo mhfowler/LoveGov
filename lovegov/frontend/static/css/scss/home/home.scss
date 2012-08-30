@@ -105,7 +105,6 @@ div.expand-info
 
 div.left-navbar {
   position:relative;
-  top:30px;
   margin-top:5px;
   @include titleFont();
   width:150px;
@@ -123,16 +122,16 @@ div.left-navbar {
     margin-bottom:10px;
     width:200px;
 
-    /* old way of navbar link
-    a.navbar-link {
-      padding:5px 0 5px 5px;
-      display:block;
-      margin: 0px 0 0 10px;
-      color:$black;
-      width:139px;
-      @extend .gray-hover;
-    }
-    */
+  /* old way of navbar link
+  a.navbar-link {
+    padding:5px 0 5px 5px;
+    display:block;
+    margin: 0px 0 0 10px;
+    color:$black;
+    width:139px;
+    @extend .gray-hover;
+  }
+  */
     a.navbar-link {
       padding:5px 0 5px 5px;
       display:block;
@@ -140,10 +139,12 @@ div.left-navbar {
       color:$black;
       width:139px;
       &:hover {
-        font-style:italic;
+        //font-style:italic;
+        background-color:$light-gray;
       }
       &.clicked {
-        font-style:italic;
+        background-color:$light-gray;
+        //font-style:italic;
       }
     }
   }
@@ -158,7 +159,7 @@ div.left-navbar {
     margin-bottom:2px;
   }
 
-  /* navbar - simple */
+/* navbar - simple */
   div.navbar-divider {
     width:85%;
     border-bottom:1px solid $gray;
@@ -186,49 +187,53 @@ div.left-navbar {
     width:139px;
     text-transform:lowercase;
     &:hover {
-      font-style:italic;
+      background-color:$light-gray;
+      //font-style:italic;
     }
     &.clicked {
-      font-style:italic;
+      background-color:$light-gray;
+      //font-style:italic;
     }
   }
 
-  /* old way  of doing navbars
+/* old way  of doing navbars
+div.navbar-title {
+  @extend .gray-hover;
+  @include inline-block;
+  @include grayText();
+  @include fontSize(24px);
+  padding: 5px;
+}
+a.section_title.clicked {
   div.navbar-title {
-    @extend .gray-hover;
-    @include inline-block;
-    @include grayText();
-    @include fontSize(24px);
-    padding: 5px;
+    background-color:$light-gray;
+    color:white;
   }
-  a.section_title.clicked {
-    div.navbar-title {
-      background-color:$light-gray;
-      color:white;
-    }
-  }
-  */
+}
+*/
   div.navbar-title {
     @include inline-block;
     @include fontSize(12px);
-    //padding: 5px;
+    padding: 5px;
     color:$black;
     &:hover {
-      font-style:italic;
+      background-color:$light-gray;
+      //font-style:italic;
     }
   }
   a.section_title.clicked {
     div.navbar-title {
-      font-style:italic;
+      //font-style:italic;
+      background-color:$light-gray;
     }
   }
 
   span.red-triangle {
     @include inline-block;
-    /*
-    width:9px;
-    height:18px;
-    */
+  /*
+  width:9px;
+  height:18px;
+  */
     @include staticImage('/images/icons/arrow_right_red.png');
     @include transition(.25s);
     margin-left: 6px;

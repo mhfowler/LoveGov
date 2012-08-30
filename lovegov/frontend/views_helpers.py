@@ -25,14 +25,11 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    group_subscriptions = viewer.getGroupSubscriptions()
+    group_subscriptions = viewer.getSubscriptions()
     for g in group_subscriptions:
         g.num_new = g.getNumNewContent(viewer)
-    vals['group_subscriptions'] = group_subscriptions
-    election_subscriptions = viewer.getElectionSubscriptions()
-    for e in election_subscriptions:
-        e.num_new = e.getNumNewContent(viewer)
-    vals['election_subscriptions'] = election_subscriptions
+    vals['group_subscriptions'] = group_subscriptions.filter(is_election=False)
+    vals['election_subscriptions'] = group_subscriptions.filter(is_election=True)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -240,14 +237,17 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
-def getQuestionStats(vals):
+def getQuestionStats(vals, poll):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
-    lgpoll = getLoveGovPoll()
-    vals['lgpoll'] = lgpoll
-    questions = lgpoll.questions.all()
+    if poll:
+        poll = getLoveGovPoll()
+        vals['poll'] = poll
+        questions = poll.questions.all()
+    else:
+        questions = Question.objects.all()
     for t in getMainTopics():
         stat = {'topic':t}
         q_ids = questions.filter(main_topic=t).values_list('id', flat=True)
@@ -354,13 +354,15 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.running.all().order_by("-num_supporters")
+    running = election.members.all().order_by("-num_supporters")
+    supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
+        r.is_supporting = r in supporting
     vals['running'] = running
     vals['election'] = election
     vals['i_am_running'] = viewer in running
-    vals['is_user_following'] = election in viewer.election_subscriptions.all()
+    vals['is_user_following'] = election in viewer.getElectionSubscriptions()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -405,7 +407,6 @@ def valsFBFriends(request, vals):
 def getStateTuples(vals):
     vals['states'] = STATES
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals for reps header
 #-----------------------------------------------------------------------------------------------------------------------
@@ -414,20 +415,14 @@ def valsRepsHeader(vals):
     location = viewer.temp_location or viewer.location
     vals['location'] = location
 
-    congressmen = []
     if location:
         vals['state'] = location.state
         vals['district'] = location.district
         vals['latitude'] = location.latitude
         vals['longitude'] = location.longitude
-        if location.state:
-            senators = getSensFromState(location.state)
-            for s in senators:
-                congressmen.append(s)
-            if location.district:
-                reps = getRepsFromLocation(location.state, location.district)
-                for r in reps:
-                    congressmen.append(r)
+
+    congressmen = viewer.getRepresentatives(location)
+
     if LOCAL and location:
         bush = getUser("George Bush")
         congressmen = [bush, bush, bush]

@@ -1710,7 +1710,7 @@ def getPresidentialElection2012():
 def initializePresidentialElection2012():
     print "initializing presidential election!"
     election = Election(title="Presidential Election", summary="who will be America's next president?",
-    election_date=datetime.date(year=2012, month=11, day=6), invite_only=True)
+    election_date=datetime.date(year=2012, month=11, day=6), system=True)
     election.autoSave()
     return election
 

@@ -74,7 +74,7 @@ urlpatterns += patterns('',
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
 
     # browse-all
-    (r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
+    #(r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
     #(r'^browse_people/$', viewWrapper(views.browsePeople, requires_login=True)),
     #(r'^browse_friends/$', viewWrapper(views.browseFriends, requires_login=True)),
     #(r'^browse_politicians/$', viewWrapper(views.browsePoliticians, requires_login=True)),
