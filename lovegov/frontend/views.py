@@ -905,7 +905,7 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def legislation (request, vals={}):
     vals['legislation_items'] = Legislation.objects.all()
-    vals['sessions'] = CongressSession.objects.all()
+    vals['sessions'] = CongressSession.objects.all().order_by("-session")
     type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
     vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
     vals['subjects'] = LegislationSubject.objects.all()
@@ -917,22 +917,6 @@ def legislation (request, vals={}):
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
-
-def legislation_helper (request, vals={}):
-    vals['legislation_items'] = Legislation.objects.all()
-    vals['sessions'] = CongressSession.objects.all()
-    type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
-    vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
-    vals['subjects'] = LegislationSubject.objects.all()
-    vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
-    vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
-    now = datetime.now()
-    range_time = [183,366,732,1464]
-    vals['introduced_dates'] = [now - timedelta(days=x) for x in range_time]
-    vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
-    vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
-    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
-
 
 
     """(request, session=110, type='sj', number=2999, vals={}):
@@ -964,7 +948,8 @@ def legislationDetail(request, l_id, vals={}):
 
     legislation = Legislation.objects.get(id=l_id)
     vals['l'] = legislation
-
+    vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
+    vals['related'] = legislation.bill_relation.all()
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
     url = legislation.get_url()

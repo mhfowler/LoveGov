@@ -20,27 +20,28 @@
 
 <div class="legislation-wrapper">
 
-        <div class="leg-title">
+    <div class="leg-title">
 
-            {% if l.bill_type == "s" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill S {{l.bill_number}}</span></h3>
-            {% elif l.bill_type == "h" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill H.R. {{l.bill_number}}</span></h3>
-            {% elif l.bill_type == "hr" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill H.Res. {{l.bill_number}}</span></h3>
-            {% elif l.bill_type == "sr" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill S.Res. {{l.bill_number}}</span></h3>
-            {% elif l.bill_type == "hc" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill H.Con.Res. {{l.bill_number}}</span></h3>
-            {% elif l.bill_type == "sc" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill S.Con.Res. {{l.bill_number}}</span></h3>
-            {% elif l.bill_type == "hj" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill H.J.Res. {{l.bill_number}}</span></h3>
-            {% elif .bill_type == "sj" %}
-                <h3><span>Session {{l.congress_session_id}}, Bill S.J.Res. {{l.bill_number}}</span></h3>
-            {% endif %}
+        {% if l.bill_type == "s" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill S {{l.bill_number}}</span></h3>
+        {% elif l.bill_type == "h" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill H.R. {{l.bill_number}}</span></h3>
+        {% elif l.bill_type == "hr" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill H.Res. {{l.bill_number}}</span></h3>
+        {% elif l.bill_type == "sr" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill S.Res. {{l.bill_number}}</span></h3>
+        {% elif l.bill_type == "hc" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill H.Con.Res. {{l.bill_number}}</span></h3>
+        {% elif l.bill_type == "sc" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill S.Con.Res. {{l.bill_number}}</span></h3>
+        {% elif l.bill_type == "hj" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill H.J.Res. {{l.bill_number}}</span></h3>
+        {% elif .bill_type == "sj" %}
+            <h3><span>Session {{l.congress_session_id}}, Bill S.J.Res. {{l.bill_number}}</span></h3>
+        {% endif %}
 
-        </div>
+    </div>
+    <div class="legislation-template">
         <div class="main">
             <div class="summary-outlook">
                 <div class="level1-summary">
@@ -104,55 +105,18 @@
                 <div class="level1-progress-div">
                     {{ l.state_text }}
                     {{ l.state_date }}
-                    <div class="progress-graphic">
-                        <h3 class="progress-label1">Initiated</h3>
-                        <img src="/static/images/legislation/status-arrow3.png">
-                        <h3 class="progress-label2">Passed in House</h3>
-                        <img src="/static/images/legislation/status-arrow3.png">
-                        <h3 class="progress-label3">Passed in Senate</h3>
-                        <img src="/static/images/legislation/status-arrow4.png">
-                        <h3 class="progress-label4">Signed into Law</h3>
+                    <div class="progress-graphic1">
+                        <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                        <h3 class="progress-label1">Passed in House</h3>
+                        <img class="progress-img2" src="/static/images/legislation/status-arrow3.png"/>
+                        <h3 class="progress-label2">Passed in Senate</h3>
+                        <img class="progress-img3" src="/static/images/legislation/status-arrow3.png"/>
+                        <h3 class="progress-label3">Signed into Law</h3>
+                        <img class="progress-img4" src="/static/images/legislation/status-arrow3.png"/>
                     </div>
                 </div>
             </div>
-            <div class="subjects-committees">
-                <div class="level1-subjects">
-                    <div class="bill-subjects-title">
-                        <h4>
-                            <span>Related Subjects</span>
-                        </h4>
-                    </div>
-                </div>
-                <div class="level1-subjects-div">
-                    <div class="subjects">
-                        <span>
-                            <ul>
-                                {% for subject in l.bill_subjects.all.reverse %}
-                                    <li><span class="leg-list"><a href="">{{ subject.name }}</a></span></li>
-                                {% endfor %}
-                            </ul>
-                        </span>
-                    </div>
-                </div>
-                <div class="level1-committees">
-                    <div class="bill-committees-title">
-                        <h4>
-                            <span>Committees</span>
-                        </h4>
-                    </div>
-                </div>
-                <div class="level1-committees-div">
-                    <div class="committees">
-                        <span>
-                            <ul>
-                                {% for committee in l.committees.all %}
-                                    <li><span class="leg-list"><a href="">{{ committee.title }}</a></span></li>
-                                {% endfor %}
-                            </ul>
-                        </span>
-                    </div>
-                </div>
-            </div>
+        </div>
     {%comment%}
             <div class="bill-stats">
                 <div class="bill-stats-div">
@@ -199,7 +163,7 @@
             </div>
         </div>
     {% endcomment%}
-        </div>
+
         <div class="secondary">
 {%comment%}
                 <div class="bill-text">
@@ -312,6 +276,63 @@
             </div>
         </div>
         <div style="clear:both;"></div>
+    </div>
+    <div class="subjects-committees-related">
+        <div class="level1-subjects">
+            <div class="bill-subjects-title">
+                <h4>
+                    <span>Related Subjects</span>
+                </h4>
+            </div>
+        </div>
+        <div class="level1-subjects-div">
+            <div class="subjects">
+                <span>
+                    <ul>
+                        {% for subject in l.bill_subjects.all.reverse %}
+                            <li><span class="leg-list"><a href="">{{ subject.name }}</a></span></li>
+                        {% endfor %}
+                    </ul>
+                </span>
+            </div>
+        </div>
+        <div class="level1-committees">
+            <div class="bill-committees-title">
+                <h4>
+                    <span>Committees</span>
+                </h4>
+            </div>
+        </div>
+        <div class="level1-committees-div">
+            <div class="committees">
+                <span>
+                    <ul>
+                        {% for committee in l.committees.all %}
+                            <li><span class="leg-list"><a href="">{{ committee.title }}</a></span></li>
+                        {% endfor %}
+                    </ul>
+                </span>
+            </div>
+        </div>
+        <div class="level1-related">
+            <div class="related-bill-title">
+                <h4>
+                    <span>Related Bills</span>
+                </h4>
+            </div>
+        </div>
+        <div class="level1-related-div">
+            <div class="related">
+                <span>
+                    <ul>
+                        {% for related_bill in related %}
+                            <li><span class="leg-list"><a href="">{{ related_bill.congress_session }} {{ related_bill.bill_number }} {{ related_bill.full_title }}</a></span></li>
+                        {% endfor %}
+                    </ul>
+                </span>
+            </div>
+        </div>
+    </div>
 </div>
 <script> rebind="legislation_detail"; </script>
 
