@@ -148,7 +148,7 @@
         <form method="post" action="/action/" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="sectionType" value="scorecard">
-            <header>Create a Scorecard</header>
+            <header><img src="{{ STATIC_URL }}/images/create/scorecard_blue.png"> Create a Scorecard</header>
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Description:" "description" "full_text" %}
@@ -162,7 +162,7 @@
         <form method="post" action="/action/" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="sectionType" value="election">
-            <header>Create an Election</header>
+            <header><img src="{{ STATIC_URL }}/images/create/election_blue.png"> Create an Election</header>
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Description:" "description" "full_text" %}
