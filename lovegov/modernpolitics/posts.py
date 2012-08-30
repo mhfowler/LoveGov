@@ -2575,7 +2575,7 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='group':
         if title and full_text:
-            newc = Group(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc = UserGroup(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
