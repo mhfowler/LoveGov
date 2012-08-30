@@ -3788,7 +3788,7 @@ class Group(Content):
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
     # group type
-    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
+    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')   # for non-system groups, is it open or invite-only?
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
