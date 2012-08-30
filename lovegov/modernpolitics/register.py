@@ -143,5 +143,10 @@ def createUserHelper(control,name,active=True):
     user_profile.user = control
     user_profile.save()
 
+    # get notifications that were associated with this user's email prior to registration
+    notifications = Notification.objects.filter(notify_email=user_profile.email)
+    for n in notifications:
+        n.claimedByProfile(user_profile)
+
     # return user prof
     return user_profile

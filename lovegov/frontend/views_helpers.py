@@ -410,7 +410,6 @@ def valsFBFriends(request, vals):
 def getStateTuples(vals):
     vals['states'] = STATES
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals for reps header
 #-----------------------------------------------------------------------------------------------------------------------
@@ -419,20 +418,14 @@ def valsRepsHeader(vals):
     location = viewer.temp_location or viewer.location
     vals['location'] = location
 
-    congressmen = []
     if location:
         vals['state'] = location.state
         vals['district'] = location.district
         vals['latitude'] = location.latitude
         vals['longitude'] = location.longitude
-        if location.state:
-            senators = getSensFromState(location.state)
-            for s in senators:
-                congressmen.append(s)
-            if location.district:
-                reps = getRepsFromLocation(location.state, location.district)
-                for r in reps:
-                    congressmen.append(r)
+
+    congressmen = viewer.getRepresentatives(location)
+
     if LOCAL and location:
         bush = getUser("George Bush")
         congressmen = [bush, bush, bush]

@@ -1068,8 +1068,8 @@ def scorecardDetail(request, s_id, vals={}):
     scorecard = Scorecard.objects.get(id=s_id)
     vals['scorecard'] = scorecard
 
-    reps = list(UserProfile.objects.all())
-    politicians = list(UserProfile.objects.all())
+    reps = list(viewer.getRepresentatives())
+    politicians = list(scorecard.politicians.all())
     for r in reps:
         r.comparison = scorecard.getComparison(r)
         r.scorecard_comparison_url = scorecard.getScorecardComparisonURL(r)

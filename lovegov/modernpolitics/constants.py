@@ -647,7 +647,9 @@ ACTIONS = [
     'saveScorecardAnswer',
     'saveAnswerInFeed',
     'logLinkClick',
-    'runForElection'
+    'runForElection',
+    'addToScorecard',
+    'removeFromScorecard'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

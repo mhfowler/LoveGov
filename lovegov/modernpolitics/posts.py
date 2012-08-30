@@ -2740,6 +2740,50 @@ def editPetitionFullText(request, vals={}):
         return HttpResponse("didnt work")
 
 #-----------------------------------------------------------------------------------------------------------------------
+# add people to a scorecard
+#-----------------------------------------------------------------------------------------------------------------------
+def addToScorecard(request, vals={}):
+
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        add_ids = json.loads(request.POST['add_ids'])
+        politicians = UserProfile.objects.filter(id__in=add_ids, politician=True)
+        for p in politicians:
+            if not p in scorecard.politicians.all():
+                scorecard.politicians.add(p)
+                action = AddToScorecardAction(user=viewer, politician=p, scorecard=scorecard, confirmed=True, privacy=getPrivacy(request))
+                action.autoSave()
+
+        return HttpResponse("added")
+    else:
+        LGException( "User adding to scorecard that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+
+def removeFromScorecard(request, vals):
+
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        p_id = request.POST['p_id']
+        politician = scorecard.politicians.filter(id=p_id)
+        if politician:
+            politician = politician[0]
+            scorecard.politicians.remove(politician)
+            action = AddToScorecardAction(user=viewer, politician=politician, scorecard=scorecard, confirmed=False, privacy=getPrivacy(request))
+            action.autoSave()
+            return HttpResponse("removed")
+        else:
+            LGException( "User tried to remove person from scorecard who  wasn't on it #" + str(viewer.id) )
+            return HttpResponse("didnt work")
+    else:
+        LGException( "User tried to remove person from scorecard that wasn't theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2865,6 +2909,10 @@ def getModal(request,vals={}):
         petition = Petition.objects.get(id=p_id)
         modal_html = getPetitionSignersModal(petition, request, vals)
 
+    elif modal_name == 'add_to_scorecard_modal':
+        s_id = request.POST['s_id']
+        scorecard = Scorecard.objects.get(id=s_id)
+        modal_html = getAddToScorecardModal(scorecard, request, vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

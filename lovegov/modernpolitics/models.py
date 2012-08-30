@@ -1066,6 +1066,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
 
+
     def __unicode__(self):
         return self.first_name
 
@@ -1203,6 +1204,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location:
             self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
+
+
+    def getRepresentatives(self, location=None):
+        from lovegov.modernpolitics.initialize import getSensFromState, getRepsFromLocation
+        congressmen = []
+        if not location:
+            location = self.location or self.temp_location
+        if location and location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+        return congressmen
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
@@ -2268,6 +2285,38 @@ class PinnedAction(Action):
 
         return render_to_string('site/pieces/actions/pinned_verbose.html',vals)
 
+#=======================================================================================================================
+# Add a person to a scorecard
+#=======================================================================================================================
+class AddToScorecardAction(Action):
+    politician = models.ForeignKey(UserProfile)
+    scorecard = models.ForeignKey("Scorecard", related_name="added_actions")
+    confirmed = models.BooleanField(default=True)
+
+    def getTo(self):
+        return self.scorecard
+
+    def autoSave(self):
+        self.action_type = 'AD'
+        super(AddToScorecardAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = self.scorecard
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'added' : self.politician,
+            'to_object' : to_object,
+            'confirmed': self.confirmed
+        })
+
+        return render_to_string('site/pieces/actions/add_to_scorecard_verbose.html',vals)
 
 #=======================================================================================================================
 # Deleting some content action
@@ -2476,20 +2525,28 @@ class VotedAction(Action):
 # Notifying a user of something important to them. privacy is in case they ought not be able to see who
 #=======================================================================================================================
 class Notification(Privacy):
-    notify_user = models.ForeignKey(UserProfile, related_name="notifications")
+    notify_user = models.ForeignKey(UserProfile, related_name="notifications", null=True)
     action = models.ForeignKey(Action , related_name="notifications") ## For Aggregate Notifications :: most recent action
     viewed = models.BooleanField(default=False)
     when = models.DateTimeField(auto_now_add=True)
     # for aggregating notifications like facebook
     agg_actions = models.ManyToManyField(Action , related_name="agg_notifications")
+    # for inviting people who are off of LoveGov
+    notify_email = models.EmailField(null=True)
 
+    ## when someone registers and notification gets associated with them ##
+    def claimedByProfile(self, user):
+        self.notify_user = user
+        self.save()
+        # based on action type could actually do some stuff
+
+    ## aggregate actions ##
     def addAggAction(self,action):
         self.agg_actions.add(action)
         if action.privacy == "PUB":
             self.action = action
         self.viewed = False
         self.save()
-
 
     ## Notificaitons Verbose Switch ##
     def getVerbose(self,viewer,vals={}):
@@ -3450,6 +3507,7 @@ class Scorecard(Content):
 
     def getEditURL(self):
         return self.get_url() + 'edit/'
+
 
     def getPermissionToEdit(self, viewer):
         if self.group:
@@ -4680,6 +4738,15 @@ class ValidEmail(LGModel):
 class ValidEmailExtension(LGModel):
     extension = models.CharField(max_length=100)
     date_added = models.DateTimeField(auto_now_add=True)
+
+#=======================================================================================================================
+# Save when someone invites someone from off lovegov to do something
+#
+#=======================================================================================================================
+class InvitedToRegister(LGModel):
+    invite_email = models.EmailField()
+    inviter = models.ForeignKey("UserProfile")
+    notification = models.ForeignKey(Notification)
 
 ########################################################################################################################
 ########################################################################################################################

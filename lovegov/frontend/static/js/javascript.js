@@ -209,10 +209,6 @@ function updatePage() {
 
             // update notifications num
             $(".notifications_dropdown_button").text(obj.notifications_num);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
         }
     });
 }
@@ -3768,4 +3764,46 @@ bind(".filter_by_city_input", "keypress", function(e) {
         feed.data('city', value);
         refreshFeed(feed);
     }
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ add to / invite to scorecard
+ *
+ ***********************************************************************************************************************/
+bind(".add_to_scorecard", "click", function(e) {
+    var s_id = $(this).data('s_id');
+    getModal('add_to_scorecard_modal' , { 's_id': s_id }, function() {
+        $(".add_to_select").select2({
+            placeholder: 'Find politicians on LoveGov to add to your scorecard.'
+        });
+    });
+});
+
+
+bind(".add_to_button", "click", function(e) {
+    $(".success_message").hide();
+    var s_id = $(this).data('s_id');
+    var add_ids = $(".add_to_select").val();
+    action({
+        'data': {'action':'addToScorecard', 's_id':s_id, 'add_ids':JSON.stringify(add_ids)},
+        success: function(data)
+        {
+            $(".add_success_message").show();
+        }
+    });
+});
+
+bind(".remove_from_scorecard", "click", function(e) {
+    var s_id = $(this).data('s_id');
+    var p_id = $(this).data('p_id');
+    var wrapper = $(this).parents(".scorecard_avatar_strip_wrapper");
+    action({
+        'data': {'action':'removeFromScorecard', 's_id':s_id, 'p_id':p_id},
+        success: function(data)
+        {
+            wrapper.remove();
+        }
+    });
 });
