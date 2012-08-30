@@ -3,34 +3,17 @@
 {% block content_detail_sidebar %}
 {% endblock %}
 
-{% block content_description %}
-    <div class="scorecard-description">
-        <div class="scorecard-summary">
-            <div class="content-info-header">
-                Description
-            </div>
-
-            <div class="scorecard-description">
-                {{ content.summary}}
-            </div>
-        </div>
-
-        <div class="based-off-of">
-            <div class="content-info-header">
-                Based off of Poll
-            </div>
-
-            {% with poll=scorecard.poll %}
-                <div class="scorecard-description">
-                    <a href="{{ poll.get_url }}"> {{ poll.title }}</a>
-                </div>
-            {% endwith %}
-        </div>
-    </div>
-{% endblock %}
-
-
 {% block content_body %}
+
+    <div class="based-off-of">
+        {% with poll=scorecard.poll %}
+            <span class="based-off-text"> This scorecard is based of the poll
+                <a href="{{ poll.get_url }}" class="poll-link"> {{ poll.get_name }}</a>.
+            </span>
+            <a href="{{ poll.get_url }}" class="take-poll-button"> take the poll </a>
+        {% endwith %}
+        <div style="clear:both;"></div>
+    </div>
 
     {% block scorecard_body %}
 

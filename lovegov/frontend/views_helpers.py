@@ -25,14 +25,11 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    group_subscriptions = viewer.getGroupSubscriptions()
+    group_subscriptions = viewer.getSubscriptions()
     for g in group_subscriptions:
         g.num_new = g.getNumNewContent(viewer)
-    vals['group_subscriptions'] = group_subscriptions
-    election_subscriptions = viewer.getElectionSubscriptions()
-    for e in election_subscriptions:
-        e.num_new = e.getNumNewContent(viewer)
-    vals['election_subscriptions'] = election_subscriptions
+    vals['group_subscriptions'] = group_subscriptions.filter(is_election=False)
+    vals['election_subscriptions'] = group_subscriptions.filter(is_election=True)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -357,7 +354,7 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.running.all().order_by("-num_supporters")
+    running = election.members.all().order_by("-num_supporters")
     supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
@@ -365,7 +362,7 @@ def valsElection(viewer, election, vals):
     vals['running'] = running
     vals['election'] = election
     vals['i_am_running'] = viewer in running
-    vals['is_user_following'] = election in viewer.election_subscriptions.all()
+    vals['is_user_following'] = election in viewer.getElectionSubscriptions()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -651,7 +651,8 @@ ACTIONS = [
     'runForElection',
     'addToScorecard',
     'removeFromScorecard',
-    'inviteToScorecard'
+    'inviteToScorecard',
+    'inviteToRunForElection'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

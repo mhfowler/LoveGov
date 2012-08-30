@@ -427,6 +427,26 @@ a.add-to-scorecard {
   }
 }
 
+div.based-off-of {
+  width:500px;
+  margin-top:25px;
+  span.based-off-text {
+      float:left;
+    margin-top:8px;
+  }
+  a.take-poll-button {
+    float:left;
+    margin-left:20px;
+    padding:6px;
+    color:$black;
+    background-color:$light-gray;
+    @include border-radius(6px);
+    &:hover {
+      background-color:$dark-gray;
+    }
+  }
+}
+
 div.scorecard-avatar-strips-wrapper {
   width:100%;
   margin-left:60px;

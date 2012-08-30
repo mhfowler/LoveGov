@@ -2616,8 +2616,8 @@ def createContent(request, vals={}):
                 newPhyAddr = PhysicalAddress(state=state,city=city)
                 newPhyAddr.save()
                 newc.location = newPhyAddr
-            newc.joinMember(viewer)
             newc.addAdmin(viewer)
+            followGroupAction(viewer, newc, True, privacy)
         else:
             return HttpResponseBadRequest("A required field was not included.")
     else:
@@ -2808,6 +2808,26 @@ def inviteToScorecard(request, vals):
 # Splitter between all actions. [checks is post]
 # post: actionPOST - which actionPOST to call
 #-----------------------------------------------------------------------------------------------------------------------
+def inviteToRunForElection(request, vals):
+    viewer = vals['viewer']
+    e_id = request.POST['e_id']
+    election = Election.objects.get(id=e_id)
+    if election.creator == viewer:
+        invite_email = request.POST['invite_email']
+        already = UserProfile.objects.filter(email=invite_email)
+        if not already:
+            #TODO: will do something cool
+            pass
+        else:
+            return HttpResponse(json.dumps({'success':False}))
+    else:
+        LGException( "User inviting to election that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Splitter between all actions. [checks is post]
+# post: actionPOST - which actionPOST to call
+#-----------------------------------------------------------------------------------------------------------------------
 def actionPOST(request, vals={}):
     """Splitter between all actions."""
     if request.user:
@@ -2930,10 +2950,17 @@ def getModal(request,vals={}):
         petition = Petition.objects.get(id=p_id)
         modal_html = getPetitionSignersModal(petition, request, vals)
 
+    ## add people to your scorecard ##
     elif modal_name == 'add_to_scorecard_modal':
         s_id = request.POST['s_id']
         scorecard = Scorecard.objects.get(id=s_id)
         modal_html = getAddToScorecardModal(scorecard, request, vals)
+
+    ## invite people off lovegov to join lovegov and run for your election ##
+    elif modal_name == "invite_to_run_for_modal":
+        e_id = request.POST['e_id']
+        election = Election.objects.get(id=e_id)
+        modal_html = getInviteToRunForModal(election, request, vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

@@ -3737,6 +3737,26 @@ bind('.stop_running_for' , 'click' , null , function(e)
     });
 });
 
+bind('.invite_to_run_for' , 'click' , null , function(e)
+{
+    var e_id = $(this).data('e_id');
+    getModal('invite_to_run_for_modal' , { 'e_id': e_id });
+});
+
+
+bind('.invite_to_run_for_button' , 'click' , null , function(e)
+{
+    $(".success_message").hide();
+    var e_id = $(this).data('e_id');
+    var invite_email = $(".invite_to_election_email").val();
+    action({
+        data: {'action': 'inviteToRunForElection', 'e_id':e_id, 'invite_email':invite_email},
+        success: function(data) {
+            $(".success_message").show();
+        }
+    });
+});
+
 
 /***********************************************************************************************************************
  *
