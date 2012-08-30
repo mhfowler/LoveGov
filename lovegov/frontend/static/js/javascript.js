@@ -3807,3 +3807,17 @@ bind(".remove_from_scorecard", "click", function(e) {
         }
     });
 });
+
+bind(".invite_to_scorecard_button", "click", function(e) {
+    $(".success_message").hide();
+    var s_id = $(this).data('s_id');
+    var invite_email = $(".invite_to_email").val();
+    action({
+        'data': {'action':'inviteToScorecard', 's_id':s_id, 'invite_email':invite_email},
+        success: function(data)
+        {
+            $(".add_success_message").show();
+            alert(data);
+        }
+    });
+});

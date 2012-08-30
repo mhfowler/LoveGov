@@ -1976,6 +1976,8 @@ class Action(Privacy):
             object = self.pinnedaction
         elif action_type == 'RU':
             object = self.runningforaction
+        elif action_type == 'AD':
+            object = self.addtoscorecardaction
         else:
             object = None
         return object
@@ -2289,7 +2291,8 @@ class PinnedAction(Action):
 # Add a person to a scorecard
 #=======================================================================================================================
 class AddToScorecardAction(Action):
-    politician = models.ForeignKey(UserProfile)
+    politician = models.ForeignKey(UserProfile, null=True)                          # if null, then it was an invite
+    invite_email = models.EmailField(null=True)
     scorecard = models.ForeignKey("Scorecard", related_name="added_actions")
     confirmed = models.BooleanField(default=True)
 
@@ -2539,6 +2542,11 @@ class Notification(Privacy):
         self.notify_user = user
         self.save()
         # based on action type could actually do some stuff
+        action = self.action.downcast()
+        if action.action_type == 'AD':
+            action.politician = user
+            action.save()
+            action.scorecard.politicians.add(user)
 
     ## aggregate actions ##
     def addAggAction(self,action):
@@ -2567,6 +2575,8 @@ class Notification(Privacy):
             return self.getSharedVerbose(viewer,vals)
         elif type == 'SU':
             return self.getSupportedVerbose(viewer, vals)
+        elif type == 'AD':
+            return self.getAddedToScorecardVerbose(viewer, vals)
         else:
             return ''
 
@@ -2769,6 +2779,26 @@ class Notification(Privacy):
         })
 
         return render_to_string('site/pieces/notifications/support_verbose.html',vals)
+
+
+        ## Added to scorecard Verbose ##
+    def getAddedToScorecardVerbose(self,viewer=None,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'from_user' : action_user,
+            'you_acted' : you_acted,
+            'scorecard' : action.scorecard,
+            'confirmed': action.confirmed
+        })
+
+        return render_to_string('site/pieces/notifications/added_to_scorecard_verbose.html',vals)
 
 
 ########################################################################################################################

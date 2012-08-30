@@ -323,7 +323,8 @@ ACTION_CHOICES = (
     ('AS', 'asked'),
     ('GF', 'group_follow'),
     ('PI', 'pinned'),
-    ('RU', 'running_for')
+    ('RU', 'running_for'),
+    ('AD', 'added_to'),
 )
 
 # default, request, invite, deny, reject
@@ -337,7 +338,7 @@ ACTION_MODIFIERS = (
     ('S', 'stopped_following'),
 )
 
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU', 'AD']
 
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 
@@ -649,7 +650,8 @@ ACTIONS = [
     'logLinkClick',
     'runForElection',
     'addToScorecard',
-    'removeFromScorecard'
+    'removeFromScorecard',
+    'inviteToScorecard'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

@@ -2755,6 +2755,7 @@ def addToScorecard(request, vals={}):
                 scorecard.politicians.add(p)
                 action = AddToScorecardAction(user=viewer, politician=p, scorecard=scorecard, confirmed=True, privacy=getPrivacy(request))
                 action.autoSave()
+                p.notify(action)
 
         return HttpResponse("added")
     else:
@@ -2781,6 +2782,26 @@ def removeFromScorecard(request, vals):
             return HttpResponse("didnt work")
     else:
         LGException( "User tried to remove person from scorecard that wasn't theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+## invite user from off lovegov to join lovegov and auto get added to your scorecard
+def inviteToScorecard(request, vals):
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        invite_email = request.POST['invite_email']
+        already = UserProfile.objects.filter(email=invite_email)
+        if not already:
+            action = AddToScorecardAction(user=viewer, invite_email=invite_email, scorecard=scorecard, confirmed=True, privacy="PRI")
+            action.autoSave()
+            notification = Notification(action=action, notify_email=invite_email)
+            notification.save()
+            return HttpResponse(json.dumps({'success':True}))
+        else:
+            return HttpResponse(json.dumps({'success':False}))
+    else:
+        LGException( "User inviting to scorecard that is not theirs #" + str(viewer.id) )
         return HttpResponse("didnt work")
 
 #-----------------------------------------------------------------------------------------------------------------------
