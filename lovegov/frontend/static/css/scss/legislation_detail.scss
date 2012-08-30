@@ -42,7 +42,7 @@ div.legislation-wrapper {
   div.main {
     margin-left: 0px;
     margin-top: 0px;
-    height: 280px;
+    height: auto;
     width: 900px;
 
     div.summary-outlook {
@@ -257,7 +257,7 @@ div.legislation-wrapper {
       display: inline-block;
       margin-left: 10px;
       vertical-align: top;
-      height: 100%;
+      height: auto;
       width: 150px;
 
       div.level1-subjects {
@@ -283,7 +283,7 @@ div.legislation-wrapper {
 
       div.subjects {
         margin-top: 0px;
-        height: 90px;
+        height: auto;
         width: 150px;
         overflow: hidden;
 
@@ -323,12 +323,12 @@ div.legislation-wrapper {
       div.level1-committees-div {
         margin-left: 0px;
         margin-top: 0px;
-        height: 100px;
+        height: auto;
         width: 150px;
 
         div.committees {
           margin-top: 0px;
-          height: 100%;
+          height: auto;
           width: 150px;
           padding-left: -10px;
           overflow: hidden;
@@ -636,21 +636,21 @@ div.legislation-wrapper {
     display: block;
     clear: both;
     height: auto;
-    width: 900px;
+    width: 630px;
 
 
       div.bill-text {
         float: left;
         height: auto;
-        width: 790px;
+        width: 630px;
 
         div.level2-bill-text {
           height: 25px;
-          width: 790px;
+          width: 630px;
 
           div.bill-text-title {
             height: 25px;
-            width: 790px;
+            width: 630px;
 
             h4 {
               font-size:18px;
@@ -667,12 +667,12 @@ div.legislation-wrapper {
           margin-left: 0px;
           margin-top: 10px;
           height: auto;
-          width: 790px;
+          width: 630px;
 
           div.bill-text.long_text.more {
             margin-top: 0px;
             height: auto;
-            width: 790px;
+            width: 630px;
             padding-left: 5px;
             text-align: justify;
           }
@@ -682,7 +682,7 @@ div.legislation-wrapper {
 
     div.secondary-bottom {
       height:auto;
-      width: 900px;
+      width: 630px;
 
       div.bill-amendments {
         float: left;
@@ -796,15 +796,15 @@ div.legislation-wrapper {
         margin-left: 0px;
         margin-top: 20px;
         height: auto;
-        width: 790px;
+        width: 630px;
 
         div.level2-recent-actions {
           height: 25px;
-          width: 790px;
+          width: 630px;
 
           div.recent-actions-title {
             height: 25px;
-            width: 790px;
+            width: 630px;
 
             h4 {
               font-size:18px;
@@ -821,14 +821,14 @@ div.legislation-wrapper {
           margin-left: 0px;
           margin-top: 0px;
           height: auto;
-          width: 790px;
+          width: 630px;
           @include clearfix;
 
           div.recent-actions {
             float: left;
             margin-top: 0px;
             height: auto;
-            width: 500px;
+            width: 350px;
             padding-left: -5px;
             text-align: top;
             @include clearfix;
@@ -878,7 +878,7 @@ div.legislation-wrapper {
             margin-top: 0px;
             margin-left: 10px;
             height: auto;
-            width: 70px;
+            width: 80px;
             padding-left: 0px;
             text-align: top;
 

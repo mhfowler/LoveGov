@@ -440,7 +440,7 @@ def compareWeb(request,alias=None,vals={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# MAIN HOME PAGES
+# MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, vals):
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
@@ -459,50 +459,11 @@ def politicians(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def presidential(request, vals):
-    focus_html =  ajaxRender('site/pages/politicians/presidential.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 def representatives(request, vals):
-
-    viewer = vals['viewer']
-    location = viewer.temp_location or viewer.location
-    vals['location'] = location
-
-    congressmen = []
-    if location:
-        vals['state'] = location.state
-        vals['district'] = location.district
-        vals['latitude'] = location.latitude
-        vals['longitude'] = location.longitude
-        if location.state:
-            senators = getSensFromState(location.state)
-            for s in senators:
-                congressmen.append(s)
-            if location.district:
-                reps = getRepsFromLocation(location.state, location.district)
-                for r in reps:
-                    congressmen.append(r)
-    if LOCAL and location:
-        bush = getUser("George Bush")
-        congressmen = [bush, bush, bush]
-    vals['congressmen'] = congressmen
-    for x in congressmen:
-        x.comparison = x.getComparison(viewer)
-    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
-    if len(congressmen) < 3:
-        vals['few_congressmen'] = True
-
+    valsRepsHeader(vals)
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
-
-def congress(request, vals):
-    focus_html =  ajaxRender('site/pages/politicians/congress.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # friends focus (home page)
@@ -543,13 +504,24 @@ def browseGroups(request, vals={}):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def browseElections(request, vals):
 
+def browseElections(request, vals):
     # Render and return HTML
     getStateTuples(vals)
     focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
+
+def politicians(request, vals):
+    viewer = vals['viewer']
+    getStateTuples(vals)
+    valsRepsHeader(vals)
+    valsGroup(viewer, getCongressGroup(), vals)
+    focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail

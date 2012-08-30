@@ -652,21 +652,6 @@ class Content(Privacy, LocationLevel):
             return None
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns true if the inputted user should be able to see this content, false otherwise.
-    #-------------------------------------------------------------------------------------------------------------------
-    def GetPrivilege(self, user):
-        if self.privacy == 'PUB':
-            return True
-        elif self.privacy == 'PRI':
-            return False    # or we could check if creator
-        else:
-            privilege = user.privileges.filter(content=self)
-            if privilege:
-                return True
-            else:
-                return False
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this content.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparison(self, viewer):
@@ -702,6 +687,7 @@ class Content(Privacy, LocationLevel):
             my_vote.autoSave()
 
         my_vote.value = 1
+        my_vote.privacy = privacy
         my_vote.save()
         self.upvotes += 1
         self.status += STATUS_VOTE
@@ -711,7 +697,7 @@ class Content(Privacy, LocationLevel):
         creator.save()
 
         # make the action and notify
-        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action = VotedAction(user=user,content=self,value=my_vote.value, privacy=privacy)
         action.autoSave()
         creator.notify(action)
 
@@ -736,13 +722,14 @@ class Content(Privacy, LocationLevel):
             my_vote.autoSave()
 
         my_vote.value = -1
+        my_vote.privacy = privacy
         my_vote.save()
         self.downvotes += 1
         self.status -= STATUS_VOTE
         self.save()
 
         # make the action and notify
-        action = VotedAction(user=user,content=self,value=my_vote.value)
+        action = VotedAction(user=user,content=self,value=my_vote.value, privacy=privacy)
         action.autoSave()
         self.getCreator().notify(action)
 
@@ -769,6 +756,7 @@ class Content(Privacy, LocationLevel):
             my_vote.autoSave()
 
         my_vote.value = 0
+        my_vote.privacy = privacy
         my_vote.save()
 
         # make the action and notify
@@ -1057,6 +1045,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
+    election_subscriptions = models.ManyToManyField("Election", related_name="users_tracking")
     group_views = models.ManyToManyField("GroupView")
     # SETTINGS
     private_follow = models.BooleanField(default=False)
@@ -1745,7 +1734,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = self.actions.all().order_by('-when')
+        actions = self.actions.filter(privacy="PUB").order_by('-when')
         if num != -1:
             actions = actions[start:start+num]
         return actions
@@ -1797,6 +1786,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getGroupSubscriptions(self):
         return self.group_subscriptions.all()
+
+    def getElectionSubscriptions(self):
+        return self.election_subscriptions.all()
 
     def getPoliticians(self):
         supported = Supported.objects.filter(confirmed=True, user=self)
@@ -2053,14 +2045,28 @@ class GroupFollowAction(Action):
 
     def autoSave(self):
         self.action_type = 'GF'
-        self.privacy = "PRI"
+        if self.group.group_type != "E":
+            self.privacy = "PRI"
         super(GroupFollowAction,self).autoSave()
 
     def getTo(self):
         return self.group
 
     def getVerbose(self,viewer=None,vals={}):
-        return None
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.group,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/group_follow_verbose.html',vals)
+
 
 
 #=======================================================================================================================
@@ -2181,7 +2187,7 @@ class EditedAction(Action):
             'timestamp' : self.when,
             'user' : self.user,
             'you_acted' : you_acted,
-            'to_object' : self.content
+            'to_object' : self.content.downcast()
         })
 
         return render_to_string('site/pieces/actions/edited_verbose.html',vals)
@@ -2454,12 +2460,13 @@ class VotedAction(Action):
         you_acted = False
         if viewer.id == self.user.id:
             you_acted = True
+        content = self.content
 
         vals.update({
             'timestamp' : self.when,
             'user' : self.user,
             'you_acted' : you_acted,
-            'to_object' : self.content,
+            'to_object' : content,
             'value' : self.value
         })
 
@@ -2706,6 +2713,7 @@ class Notification(Privacy):
         })
 
         return render_to_string('site/pieces/notifications/support_verbose.html',vals)
+
 
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################

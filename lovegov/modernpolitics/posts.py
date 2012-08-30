@@ -1381,7 +1381,7 @@ def followGroup(request, vals={}):
     followGroupAction(viewer, group, follow_bool, getPrivacy(request))
     vals['is_user_following'] = follow_bool
     html = ajaxRender('site/pages/group/group_follow_button.html',vals,request)
-    to_return = {'html':html, 'href':group.get_url()}
+    to_return = {'html':html, 'href':group.get_url(), 'group_type':group.group_type}
     if follow_bool:
         vals['x'] = group
         navlink = ajaxRender('site/pages/home/navbar_snippet.html', vals, request)

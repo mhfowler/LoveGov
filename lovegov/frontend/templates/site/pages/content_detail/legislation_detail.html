@@ -93,6 +93,28 @@
                     {{ l.sponsor.getPartiesString }}<br>{{ l.sponsor.political_title }}<br></span></h6>
                 </div>
             </div>
+            <div class="progress">
+                <div class="level1-progress">
+                    <div class="bill-progress-title">
+                        <h4>
+                            <span>Status</span>
+                        </h4>
+                    </div>
+                </div>
+                <div class="level1-progress-div">
+                    {{ l.state_text }}
+                    {{ l.state_date }}
+                    <div class="progress-graphic">
+                        <h3 class="progress-label1">Initiated</h3>
+                        <img src="/static/images/legislation/status-arrow3.png">
+                        <h3 class="progress-label2">Passed in House</h3>
+                        <img src="/static/images/legislation/status-arrow3.png">
+                        <h3 class="progress-label3">Passed in Senate</h3>
+                        <img src="/static/images/legislation/status-arrow4.png">
+                        <h3 class="progress-label4">Signed into Law</h3>
+                    </div>
+                </div>
+            </div>
             <div class="subjects-committees">
                 <div class="level1-subjects">
                     <div class="bill-subjects-title">
@@ -128,28 +150,6 @@
                                 {% endfor %}
                             </ul>
                         </span>
-                    </div>
-                </div>
-            </div>
-            <div class="progress">
-                <div class="level1-progress">
-                    <div class="bill-progress-title">
-                        <h4>
-                            <span>Status</span>
-                        </h4>
-                    </div>
-                </div>
-                <div class="level1-progress-div">
-                    {{ l.state_text }}
-                    {{ l.state_date }}
-                    <div class="progress-graphic">
-                        <h3 class="progress-label1">Initiated</h3>
-                        <img src="/static/images/legislation/status-arrow3.png">
-                        <h3 class="progress-label2">Passed in House</h3>
-                        <img src="/static/images/legislation/status-arrow3.png">
-                        <h3 class="progress-label3">Passed in Senate</h3>
-                        <img src="/static/images/legislation/status-arrow4.png">
-                        <h3 class="progress-label4">Signed into Law</h3>
                     </div>
                 </div>
             </div>

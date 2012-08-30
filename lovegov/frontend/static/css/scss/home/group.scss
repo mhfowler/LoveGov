@@ -4,6 +4,48 @@
 
 @import "compass";
 
+/* group action buttons */
+div.group-actions
+{
+  margin-top: 6px;
+  float:right;
+  @include clearfix();
+
+  .group-action
+  {
+    padding:5px;
+    background-color:$light-gray;
+    width:160px;
+    text-align:center;
+    margin-bottom:7px;
+    display: block;
+    color: $black;
+    @include border-radius(8px);
+
+    &:hover
+    {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
+  }
+
+  div.on-button {
+    background-color:$green;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+  div.group-membership {
+    background-color:$black;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+  div.group-admin {
+    background-color:$purple;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+}
+
 
 span.group-title
 {
@@ -52,47 +94,6 @@ div.group-expanded
       @include grayText();
       @include fontSize(18px);
       margin-bottom: 2px;
-    }
-
-    div.group-actions
-    {
-      margin-top: 6px;
-      float:right;
-      @include clearfix();
-
-      .group-action
-      {
-        padding:5px;
-        background-color:$light-gray;
-        width:160px;
-        text-align:center;
-        margin-bottom:7px;
-        display: block;
-        color: $black;
-        @include border-radius(8px);
-
-        &:hover
-        {
-          background-color:$dark-gray;
-          cursor:pointer;
-        }
-      }
-
-      div.on-button {
-        background-color:$green;
-        color:white;
-        &:hover { background-color: $dark-gray; }
-      }
-      div.group-membership {
-        background-color:$black;
-        color:white;
-        &:hover { background-color: $dark-gray; }
-      }
-      div.group-admin {
-        background-color:$purple;
-        color:white;
-        &:hover { background-color: $dark-gray; }
-      }
     }
 
     div.group-column
