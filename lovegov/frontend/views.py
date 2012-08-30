@@ -945,14 +945,15 @@ def legislation (request, vals={}):
 # legislation detail
 #-----------------------------------------------------------------------------------------------------------------------
 def legislationDetail(request, l_id, vals={}):
-
     legislation = Legislation.objects.get(id=l_id)
     vals['l'] = legislation
     vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
     vals['related'] = legislation.bill_relation.all()
+    # vals['second_body'] = legislation.filter(state_text__icontains='PASSED', bill_relation_state_text_isnull=False)
+    # vals['first_body'] =
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
-    url = legislation.get_url()
+    url = legislation.get_url(
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------

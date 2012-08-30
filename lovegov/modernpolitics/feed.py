@@ -268,10 +268,9 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
             sponsor__in=sponsor_district_set)
 
     # paginate
-    legislation_items = legislation_items[feed_start:10]
+    legislation_items = legislation_items[feed_start:feed_start+10]
 
     return legislation_items
-
 
 ### update hot scores for all content ###
 def updateHotScores():

@@ -1040,7 +1040,8 @@ function getFeed(container) {
         var sponsor_district_json = JSON.stringify(sponsor_district);
 
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
-            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json, 'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
+            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
+            'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
             'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
             'sponsor_district_set':sponsor_district_json};
     }
