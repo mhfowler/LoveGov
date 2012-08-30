@@ -1,0 +1,46 @@
+<!-- CSS for this file is in detail.scss , in scorecard section -->
+
+<div class="add-to-scorecard-wrapper">
+
+    <div class="scorecard-modal-header"> Add politicians to {{ scorecard.getTitleDisplay }} </div>
+
+    <div class="add-header">
+        Find politicians on LoveGov to add to your scorecard.
+    </div>
+    <div class="add-to-scorecard">
+        <div class="add-to-select-container">
+            <select multiple class="add_to_select add-to-select">
+                <optgroup label="Politicians">
+                    {% for politician in politicians %}
+                        <option value='{{ politician.id }}'>{{ politician.get_name }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+
+        <a class="add-to-button add_to_button" data-s_id="{{ scorecard.id }}"> Add </a>
+
+        <div class="add-success-message add_success_message success_message">
+            Successfully added politicians to your scorecard. Close modal and refresh page to see them.
+        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+
+
+    <div class="add-header">
+        Invite politicians from off LoveGov to join the site by email. They will automatically get added to
+        your scorecard after they register.
+    </div>
+    <div class="invite-to-scorecard">
+        <input type="text" class="invite-to-scorecard invite_to_email"/>
+        <a class="add-to-button invite_to_scorecard_button" data-s_id="{{ scorecard.id }}"> Invite </a>
+
+        <div class="invite-success-message invite_success_message success_message">
+            Sent an invite email. Hopefully they sign up!
+        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+
+</div>
