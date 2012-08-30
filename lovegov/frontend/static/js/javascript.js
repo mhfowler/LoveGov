@@ -340,7 +340,7 @@ function checkCompatability() {
 
 /* binds all select 2s */
 function bindSelect2s() {
-    $.each($('.select_2'), function(i,e) {
+    $('select.select_2').each(function(i,e) {
         var placeholder = $(this).data("placeholder");
         if (typeof(placeholder)!='undefined') {
             $(this).select2({
@@ -2030,6 +2030,7 @@ function getModal(modal_name,data,callback)
             modal_content.html( returned.modal_html );
             modal_general.data('last-loaded',modal_name);
             modal_general.data('last-group',data['gid']);
+
 
             showModal();
             bindOnNewElements();

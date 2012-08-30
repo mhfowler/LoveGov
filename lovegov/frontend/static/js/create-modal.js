@@ -13,7 +13,7 @@ bind('.create_group_link', 'click', function(e) {
        $('div.create-modal div.create-section.group').show();
        $('div.create-modal div.create-section.group select.state-select').select2({
            placeholder: 'Select a state to associate with this group.'
-       })
+       });
    });
 });
 
