@@ -37,7 +37,7 @@ div.congress-header {
   div.congress-teaser {
     float:left;
     margin-left:40px;
-    width:400px;
+    width:390px;
     div.congress-pic-wrapper {
       float:left;
       margin-right:10px;
@@ -47,7 +47,7 @@ div.congress-header {
   div.congress-explanation {
     float:left;
     margin-left:25px;
-    margin-top:12px;
+    margin-top:20px;
     width:420px;
     a.congress-explanation-header {
       @include fontSize(24px);
