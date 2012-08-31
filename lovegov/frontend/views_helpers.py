@@ -287,15 +287,6 @@ def getGroupTuples(viewer, question, response):
     return group_tuples
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets poll progress
-#-----------------------------------------------------------------------------------------------------------------------
-def getPollProgress(viewer, poll):
-    q_ids = poll.questions.all().values_list('id', flat=True)
-    responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
-    poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
-    return poll_progress
-
-#-----------------------------------------------------------------------------------------------------------------------
 # fill dictionary for a particular group
 #-----------------------------------------------------------------------------------------------------------------------
 def valsGroup(viewer, group, vals):

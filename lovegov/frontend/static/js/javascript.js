@@ -3868,3 +3868,20 @@ bind(".invite_to_scorecard_button", "click", function(e) {
         }
     });
 });
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ Dismissible header stuff
+ *
+ ***********************************************************************************************************************/
+bind(".congress_header_link", "click", function(e) {
+    var url = $(this).data('url');
+    var warning = $(this).data('warning');
+    if (warning == 1) {
+        getModal("answer_questions_warning_modal", {"which":"congress_header"});
+    }
+    else {
+        window.location.href = url;
+    }
+});

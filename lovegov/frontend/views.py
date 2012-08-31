@@ -735,7 +735,7 @@ def pollDetail(request, p_id=-1, vals={}):
     vals['poll'] = poll
     contentDetail(request, poll, vals)
 
-    poll_progress = getPollProgress(viewer, poll)
+    poll_progress = poll.getPollProgress(viewer)
     vals['poll_progress'] = poll_progress
     getMainTopics(vals)
 

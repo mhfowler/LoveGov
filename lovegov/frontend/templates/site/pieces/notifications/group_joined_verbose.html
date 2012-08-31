@@ -13,7 +13,7 @@
     {% if modifier == 'I' %}
         <td class="notification-text invite_response_text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-            invited you to join {{ group.get_name }}
+            invited you to {% if election %} run for {% else %} join {% endif %}{{ group.get_name }}
             <div class='notification-append invite_response_append_y'>You accepted {{ user.get_name }}'s invite</div>
             <div class='notification-append invite_response_append_n'>You declined {{ user.get_name }}'s invite</div>
         </td>
@@ -27,7 +27,7 @@
     {% elif modifier == 'R' %}
         <td class="notification-text group_request_text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-            requested to join {{ group.get_name }}
+            requested to {% if election %} run for {% else %} join {% endif %} {{ group.get_name }}
             <div class='notification-append group_request_append_y'>You accepted {{ user.get_name }}'s request</div>
             <div class='notification-append group_request_append_n'>You declined {{ user.get_name }}'s request</div>
         </td>
@@ -43,13 +43,13 @@
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             accepted
             {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you possesive=true %}
-            request to join {{ group.get_name }}
+            request to {% if election %} run for {% else %} join {% endif %} {{ group.get_name }}
         </td>
 
     {% elif modifier == 'F' %}
         <td class="notification-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-            joined {{ group.get_name }}
+            {% if election %} is running for {% else %} joined {% endif %}{{ group.get_name }}
         </td>
 
     {% elif modifier == 'N' %}
@@ -57,7 +57,7 @@
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             declined
             {% include "site/pieces/actions/action_name_snippet.html" with object=inviter you=you_invited possesive=true %}
-            request to join {{ group.get_name }}
+            request to {% if election %} run for {% else %} join {% endif %}{{ group.get_name }}
         </td>
 
     {% elif modifier == 'X' %}
@@ -65,12 +65,12 @@
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             rejected
             {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you possesive=true %}
-            request to join {{ group.get_name }}
+            request to {% if election %} run for {% else %} join {% endif %} {{ group.get_name }}
         </td>
     {% elif modifier == 'S' %}
         <td class="notification-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-            left {{ group.get_name }}
+            {% if election %} dropped out of {% else %} left {% endif %} {{ group.get_name }}
         </td>
     {% endif %}
 

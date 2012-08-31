@@ -1,5 +1,5 @@
-<div class="congress-header bind_link dummy_link" data-url="{{ congress.getHistogramURL }}">
-
+<div class="congress-header congress_header_link dummy_link"
+     data-url="{{ congress.getHistogramURL }}" {% if lgpoll_progress < 20 %} data-warning="1" {% else %} data-warning="0" {% endif %}>
         <div class="mouse-over">
             mouse over
         </div>

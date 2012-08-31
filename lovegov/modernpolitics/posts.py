@@ -1140,9 +1140,8 @@ def updateStats(request, vals={}):
         else:
             html = "<p> answer to see how many people agree with you. </p>"
     elif object == 'poll_progress':
-        from lovegov.frontend.views_helpers import getPollProgress
         poll = Poll.objects.get(id=request.POST['p_id'])
-        poll_progress = getPollProgress(viewer, poll)
+        poll_progress = poll.getPollProgress(viewer)
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
@@ -2816,8 +2815,17 @@ def inviteToRunForElection(request, vals):
         invite_email = request.POST['invite_email']
         already = UserProfile.objects.filter(email=invite_email)
         if not already:
-            #TODO: will do something cool
-            pass
+            privacy = getPrivacy(request)
+            join = GroupJoined(invite_email=invite_email, group=election, privacy=privacy)
+            join.autoSave()
+            join.invite_email = invite_email
+            join.save()
+            join.invite(viewer)
+            action = GroupJoinedAction(user=viewer,privacy=privacy,group_joined=join,modifier="I")
+            action.autoSave()
+            notification = Notification(action=action, notify_email=invite_email)
+            notification.save()
+            return HttpResponse(json.dumps({'success':True}))
         else:
             return HttpResponse(json.dumps({'success':False}))
     else:
@@ -2961,6 +2969,10 @@ def getModal(request,vals={}):
         e_id = request.POST['e_id']
         election = Election.objects.get(id=e_id)
         modal_html = getInviteToRunForModal(election, request, vals)
+
+    ## answer more questions warning ##
+    elif modal_name == "answer_questions_warning_modal":
+        modal_html = getAnswerQuestionsWarningModal(request, vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

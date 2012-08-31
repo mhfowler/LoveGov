@@ -122,3 +122,13 @@ def getAddToScorecardModal(scorecard, request, vals):
 def getInviteToRunForModal(election, request, vals):
     vals['election'] = election
     return ajaxRender('site/pages/elections/invite_to_run_for_modal.html', vals,request)
+
+
+def getAnswerQuestionsWarningModal(request, vals):
+    viewer = vals['viewer']
+    vals['which'] = request.POST['which']
+    lgpoll = getLoveGovPoll()
+    poll_progress = lgpoll.getPollProgress(viewer)
+    vals['lgpoll'] = lgpoll
+    vals['lgpoll_progress'] = poll_progress['completed']
+    return ajaxRender('site/pages/home/answer_warning_modal.html', vals,request)

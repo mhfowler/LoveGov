@@ -7,7 +7,6 @@
 /* dismissible header */
 div.random-dismissible-header {
   width:100%;
-  overflow:hidden;
   position:relative;
   div.dismissible-x {
     position:absolute;
@@ -60,4 +59,11 @@ div.congress-header {
       @include fontSize(16px);
     }
   }
+}
+
+/* answer questions warning modal */
+div.warning-popup {
+  padding:15px;
+  width:300px;
+  @include fontSize(18px);
 }
