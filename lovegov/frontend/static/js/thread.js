@@ -5,6 +5,7 @@ bind("div.reply .tab-button.cancel", "click", function(event) {
 });
 
 
+// Save click - append, reply, or new comment
 bind("div.reply .tab-button.save", "click", function(event) {
     var reply = $(this).parent("div.reply");
     var textarea = $(this).siblings("textarea.comment-textarea");
@@ -12,19 +13,25 @@ bind("div.reply .tab-button.save", "click", function(event) {
     var content_id = reply.data("reply-to");
     var depth = reply.data("depth") + 1;
     if(goodLength(text)) {
+        // New comment or reply
         if(reply.hasClass("reply-reply") || reply.hasClass("reply-new")) {
             action({
                 'data': {'action':'comment', 'c_id': content_id, 'comment':text, 'depth': depth},
                 'success': function(data) {
+                    var returned = eval('(' + data + ')');
+                    var html = returned['html'];
+                    var cid = returned['cid'];
                     if(depth > 0) {
                         reply.hide();
-                        $(data).hide().appendTo(reply.closest('div.threaddiv')).fadeIn(500);
+                        $(html).hide().appendTo(reply.closest('div.threaddiv')).fadeIn(500);
                     } else {
                         textarea.val('');
-                        $(data).hide().prependTo('div.thread').fadeIn(500);
+                        $(html).hide().prependTo('div.thread').fadeIn(500);
+                        new_comments.push(cid);
                     }
                 }
             });
+        // Append to comment
         } else if(reply.hasClass("reply-append")) {
             action({
                 'data': {'action':'appendComment', 'c_id': content_id, 'comment':text, 'depth': depth},
@@ -51,41 +58,19 @@ function goodLength(text) {
 }
 
 
-function incNumComments() {
-    var ncspan = $('span.num_comments');
-    var num_comments = parseInt(ncspan.text());
-    ncspan.text(num_comments + 1);
-}
+//function incNumComments() {
+//    var ncspan = $('span.num_comments');
+//    var num_comments = parseInt(ncspan.text());
+//    ncspan.text(num_comments + 1);
+//}
 
-// bind("#commentform","submit",function(event)
-//      {
-//          event.preventDefault();
-//          var comment_text = $(this).children(".comment-textarea").val();
-//          var comment_text_length = comment_text.length;
-//          if (comment_text_length <= 10000)
-//          {
-//              $(this).children(".comment-textarea").val("");
-//              var content_id = $("#content_id").val();
-//              action({
-//                  'data': {'action':'comment','c_id': content_id,'comment':comment_text},
-//                  'success': function(data) {
-//                      ajaxThread();
-//                      incNumComments();
-//                  },
-//                  'error': null
-//              });
-//          }
-//          else
-//          {
-//              alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
-//          }
-//      });
-
+// Reply button click toggles nearest reply form
 bind("div.comment-actions div.reply-action", "click",function()
 {
     $(this).parent().siblings('div.reply.reply-reply').toggle();
 });
 
+// Delete comment click
 bind("div.comment-actions div.delete-action", "click",function()
 {
     var comment = $(this).closest("div.comment");
@@ -98,60 +83,32 @@ bind("div.comment-actions div.delete-action", "click",function()
     });
 });
 
+// Append comment click
 bind("div.comment-actions div.append-action", "click",function()
 {
     $(this).parent().siblings('div.reply.reply-append').toggle();
 });
 
 
-// bind("input.tab-button.alt","click",function()
-//      {
-//          $(this).parent().hide();
-//      });
-
-
-// bind(".commentlike","click",function(event)
-//      {
-//          event.preventDefault();
-//          var content_id = $(this).parent().parent().next().children(".hidden_id").val();
-//          $.post('/action/', {'action':'vote','c_id':content_id,'vote':'L'},
-//              function(data)
-//              {
-//                  ajaxThread();
-//              });
-//      });
-
-// bind('commentdislike', 'click', function(event)
-//      {
-//          event.preventDefault();
-//          var content_id = $(this).parent().parent().next().children(".hidden_id").val();
-//          $.post('/action/', {'action':'vote','c_id':content_id,'vote':'D'},
-//              function(data)
-//              {
-//                  ajaxThread();
-//              });
-//      });
-
-
-
 // Collapse a thread (a comment and all its children)
 bind('span.collapse','click',function(e) {
-          var close = '[-]';
-          var open = '[+]';
-          if($(this).text()==close) {
-              $(this).text(open);
-              $(this).parent().parent().siblings('div.threaddiv').children().hide();
-              $(this).siblings("div.item-ranking").hide();
-              $(this).parent().parent().find('div.comment-text').hide();
-              $(this).parent().parent().find('div.comment-actions').hide();
-          } else if($(this).text()==open) {
-              $(this).text(close);
-              $(this).parent().parent().siblings('div.threaddiv').children().show();
-              $(this).siblings("div.item-ranking").show();
-              $(this).parent().parent().find('div.comment-text').show();
-              $(this).parent().parent().find('div.comment-actions').show();
-          }
-      });
+    var grandparent = $(this).parent().parent();
+    var close = '[-]';
+    var open = '[+]';
+    if($(this).text()==close) {
+        $(this).text(open);
+        grandparent.siblings('div.threaddiv').children().hide();
+        $(this).siblings("div.item-ranking").hide();
+        grandparent.find('div.comment-text').hide();
+        grandparent.find('div.comment-actions').hide();
+    } else if($(this).text()==open) {
+        $(this).text(close);
+        grandparent.siblings('div.threaddiv').children().show();
+        $(this).siblings("div.item-ranking").show();
+        grandparent.find('div.comment-text').show();
+        grandparent.find('div.comment-actions').show();
+    }
+});
 
 //Flag a comment
 bind('span.flag',"click", function(e) {
@@ -172,20 +129,32 @@ bind('span.flag',"click", function(e) {
           }
       });
 
+// Load more comments click
 bind('div.load-more-comments', 'click', function(e) {
-    var num_to_load = 10;
-    var thread = $(this).siblings('div.thread');
-    if(thread.length) {
-        var cid = thread.data('cid');
-        var next_start = thread.data('num-showing');
-        action({
-            data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                $(returned.html).hide().appendTo('div.thread').fadeIn(500);
-                $('div.thread').data('num-showing', next_start + returned.top_count);
-            }
-        });
+    if(!$(this).hasClass('disabled')) {
+        var num_to_load = 10;
+        var thread = $(this).siblings('div.thread');
+        if(thread.length) {
+            var cid = thread.data('cid');
+            var next_start = thread.data('num-showing');
+            var div_load_more = $(this);
+            action({
+                data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
+                success: function(data)
+                {
+                    var returned = eval('(' + data + ')');
+                    var top_count = returned.top_count;
+                    if(top_count==0) {
+                        div_load_more.addClass('disabled');
+                        div_load_more.text("there are no more comments to load");
+                    } else {
+                        $(returned.html).hide().appendTo('div.thread').fadeIn(500);
+                        $('div.thread').data('num-showing', next_start + top_count);
+                    }
+                }
+            });
+        }
     }
 });
+
+

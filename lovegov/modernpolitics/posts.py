@@ -850,7 +850,7 @@ def comment(request, vals={}):
         html = '<div class="threaddiv">'
         html += renderComment(request, vals, comment, depth)
         html += '</div>'
-        return HttpResponse(html)
+        return HttpResponse(json.dumps({'html':html, 'cid': comment.id}))
     else:
         if request.is_ajax():
             to_return = {'errors':[]}
@@ -1691,10 +1691,14 @@ def matchComparison(request,vals={}):
 def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
+    excluded = request.POST.get('new_comments')
+    if excluded:
+        excluded = json.loads(excluded)
     user = vals['viewer']
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
-    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit)
+
+    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded)
     to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
@@ -2502,6 +2506,7 @@ def createContent(request, vals={}):
     gendate = request.POST.get('gendate')
     state = request.POST.get('state')
     city = request.POST.get('city')
+    polltype = request.POST.get('polltype')
     if poll_id:
         poll = Poll.lg.get_or_none(id=poll_id)
     if questions: questions = json.loads(questions)
@@ -2550,10 +2555,12 @@ def createContent(request, vals={}):
         else:
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='poll':
-        if title and full_text:
-            newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
-                posted_to=group)
-            newc.autoSave()
+        # Make sure polltype exists, and if its a poll, then title and fulltext must exist
+        if polltype and (polltype=='q' or (title and full_text)) and len(questions) > 0:
+            if polltype=='p':
+                newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                    posted_to=group)
+                newc.autoSave()
             for q in questions:
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 newQ.save()
@@ -2562,7 +2569,10 @@ def createContent(request, vals={}):
                     newA.save()
                     newQ.addAnswer(newA)
                 newQ.save()
-                newc.addQuestion(newQ)
+                if polltype=='p':
+                    newc.addQuestion(newQ)
+            if polltype=='q':
+                newc = newQ
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:

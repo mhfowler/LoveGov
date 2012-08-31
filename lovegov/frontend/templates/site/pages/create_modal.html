@@ -3,23 +3,24 @@
 
 <div class="create-modal">
     <div class="type-select">
-        <div class="selection" data-selection="petition">
-            <img src="{{ STATIC_URL }}/images/create/petition_plus.png">
-            <span class="label">Petition</span>
-        </div>
         <div class="selection" data-selection="news">
             <img src="{{ STATIC_URL }}/images/create/news_plus.png">
             <span class="label">News</span>
         </div>
-        <br>
         <div class="selection" data-selection="poll">
             <img src="{{ STATIC_URL }}/images/create/poll_plus.png">
-            <span class="label">Poll</span>
+            <span class="label">Questions</span>
         </div>
+        <br>
         <div class="selection" data-selection="discussion">
             <img src="{{ STATIC_URL }}/images/create/discussion_plus.png">
             <span class="label">Discussion</span>
         </div>
+        <div class="selection" data-selection="petition">
+            <img src="{{ STATIC_URL }}/images/create/petition_plus.png">
+            <span class="label">Petition</span>
+        </div>
+        </br>
     </div>
 
     <div class="create-section discussion">
@@ -31,7 +32,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
-                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-to viewer.getGroupSubscriptions %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -51,7 +52,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
-                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-to viewer.getGroupSubscriptions %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -86,12 +87,21 @@
         <form method="post" action="/action/" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="sectionType" value="poll">
-            <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Poll</header>
+            <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Question</header>
             <span class="back">< back</span>
             <div class="form">
-                {% usemacro textbox "Title:" "title" "title" "" %}
-                {% usemacro textarea "Poll description:" "description" "full_text" %}
-                {% usemacro post-to viewer.getRealGroups %}
+                <div class="form-row polltype">
+                    <div class="label">Create as a poll?<br> </br></div>
+                    <div class="field">
+                        <input type="radio" name="polltype" value="p">Yes, I want to create a <strong>themed collection</strong> of questions.<br>
+                        <input type="radio" name="polltype" value="q" checked>No, I want to create a <strong>single</strong> or <strong>random assortment</strong> of questions.
+                    </div>
+                </div>
+                <div class="poll-form">
+                    {% usemacro textbox "Title:" "title" "title" "" %}
+                    {% usemacro textarea "Poll description:" "description" "full_text" %}
+                </div>
+                {% usemacro post-to viewer.getGroupSubscriptions %}
                 {% usemacro post-as %}
                 <div class="questions">
                     <div class="question model">
@@ -116,8 +126,9 @@
                             <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation"></div>
                         </div>
                     </div>
-                    <div class="add-question">+ add a question</div>
+                    <div class="add-question" data-num-questions="0">+ add a question</div>
                 </div>
+
                 <div class="optional">
                     {% usemacro optional-label %}
                     {% usemacro image %}

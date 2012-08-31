@@ -159,7 +159,7 @@ class AnswerClass:
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Recursively generates the html for a comment thread.
+# Recursively generates the html for a comment thread (depth-first search).
 # Paramater usage:
 #   request: the request object
 #   object: the content object (News, Petition, etc. or a parent comment)
@@ -169,12 +169,13 @@ class AnswerClass:
 #   user_commetns: list of all comments made by the user
 #   start: the comment to start rendering at
 #   limit: the max number of comments to render
-#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable
+#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable (I know)
+#   excluded: a list of comments to exclude from the results, e.g. because they were added by the user and already rendered
 # Returns:
 #   a string containing the content thread html
 #   the number of actual top-level comments (and their children) actually returned
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
@@ -182,8 +183,10 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         user_comments = Comment.objects.filter(creator=user)
     if not rendered_so_far:
         rendered_so_far = [0]
+    if not excluded:
+        excluded = []
     # Get all comments that are children of the object
-    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status')[start:]
+    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
