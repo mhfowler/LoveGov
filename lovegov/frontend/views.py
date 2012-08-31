@@ -908,8 +908,13 @@ def legislation (request, vals={}):
 
     vals['legislation_items'] = Legislation.objects.all()
     vals['sessions'] = CongressSession.objects.all().order_by("-session")
-    type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
-    vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
+
+
+    type_list = []
+    for k,v in BILL_TYPES.items():
+        type_list.append({'abbreviation':k,'verbose':v})
+
+    vals['types'] = type_list
     vals['subjects'] = LegislationSubject.objects.all()
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
@@ -924,6 +929,9 @@ def legislation (request, vals={}):
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
 
+    date_comments = ["Introduced in the last 6 months", "Introduced in the last year",
+                     "Introduced in the last 2 years", "Introduced in the last 4 years"]
+    vals['date_comments'] = date_comments
 
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
