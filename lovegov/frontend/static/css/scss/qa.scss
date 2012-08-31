@@ -432,6 +432,13 @@ div.question_stub {
       }
       div.a-action.discuss-question {
         margin-top:21px;
+        span.discuss-icon {
+          @include staticImage("/images/icons/gray_comment.png");
+          background-size: 25px 25px;
+          background-position: -1px -2px;
+          width: 25px;
+          height: 22px;
+        }
       }
       div.a-action.answer-importance {
         margin-top:21px;

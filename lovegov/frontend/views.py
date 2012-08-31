@@ -451,10 +451,17 @@ def home(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def groups(request, vals):
+def myGroups(request, vals):
     viewer = vals['viewer']
     vals['group_subscriptions'] = viewer.getGroupSubscriptions()
-    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/my_groups.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def myElections(request, vals):
+    viewer = vals['viewer']
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
+    focus_html =  ajaxRender('site/pages/elections/my_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -468,6 +475,16 @@ def representatives(request, vals):
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
+def discover(request, vals):
+    u_ids = UserProfile.objects.all().values_list("id", flat=True)
+    u_id = random.choice(u_ids)
+    u = UserProfile.objects.get(id=u_id)
+    vals['rando'] = u
+    focus_html =  ajaxRender('site/pages/discover/discover.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # friends focus (home page)

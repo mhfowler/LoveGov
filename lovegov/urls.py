@@ -73,6 +73,10 @@ urlpatterns += patterns('',
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^like_minded/$', viewWrapper(views.likeMinded, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
+    (r'^discover/$', viewWrapper(views.discover, requires_login=True)),
+
+    (r'^my_groups/$', viewWrapper(views.myGroups, requires_login=True)),
+    (r'^my_elections/$', viewWrapper(views.myElections, requires_login=True)),
 
     # browse-all
     #(r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),

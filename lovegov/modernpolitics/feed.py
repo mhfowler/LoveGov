@@ -47,6 +47,14 @@ def getContentFromAlias(alias, viewer):
         content = Content.objects.filter(in_feed=True, creator_id__in=friends_ids)
     elif alias == 'like_minded':
         content = viewer.getLikeMindedGroup().getContent()
+    elif alias == 'my_elections':
+        elections = viewer.getElectionSubscriptions()
+        elections_ids = elections.values_list("id", flat=True)
+        content = Content.objects.filter(posted_to_id__in=elections_ids)
+    elif alias ==  'my_groups':
+        groups = viewer.getGroupSubscriptions()
+        groups_ids = groups.values_list("id", flat=True)
+        content = Content.objects.filter(posted_to_id__in=groups_ids)
     elif alias == 'me':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         friends_ids = viewer.getIFollow().values_list("id", flat=True)

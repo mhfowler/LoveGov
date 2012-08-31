@@ -1393,6 +1393,7 @@ bind( ".edit_button" , 'click', null , function(event)
     var doing_editing_display = wrapper.find(".doing_editing_display");
     not_editing_display.hide();
     doing_editing_display.show();
+    doing_editing_display.find(".edit_links").show();
 });
 
 bind( ".cancel_inline_edit" , 'click' , null , function(event)

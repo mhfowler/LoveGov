@@ -240,7 +240,7 @@ div.profile-page {
           width:300px;
           margin-right:30px;
           div.bio-statement {
-            height:180px;
+            height:280px;
             display:block;
             width:100%;
             div.bio-text {
@@ -347,6 +347,12 @@ div.profile-page {
               margin-top:15px;
             }
           }
+
+          div.profile-is-running-for {
+            margin-top:50px;
+            padding-left:15px;
+          }
+
         }
         div.profile-ghost {
           padding-top:20px;
