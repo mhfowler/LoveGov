@@ -1,0 +1,63 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+/* dismissible header */
+div.random-dismissible-header {
+  width:100%;
+  overflow:hidden;
+  position:relative;
+  div.dismissible-x {
+    position:absolute;
+    left:98%;
+    top:5px;
+    @include fontSize(20px);
+    &:hover {
+      color:$red;
+      cursor:pointer;
+    }
+  }
+}
+
+
+/* congress dismissible header */
+div.congress-header {
+  padding:10px;
+  &:hover {
+    background-color:$light-gray;
+    cursor:pointer;
+  }
+  div.mouse-over {
+    float:left;
+    margin-left:10px;
+    margin-top:40px;
+  }
+  div.congress-teaser {
+    float:left;
+    margin-left:40px;
+    width:390px;
+    div.congress-pic-wrapper {
+      float:left;
+      margin-right:10px;
+      margin-top:15px;
+    }
+  }
+  div.congress-explanation {
+    float:left;
+    margin-left:0px;
+    margin-top:20px;
+    width:420px;
+    a.congress-explanation-header {
+      @include fontSize(24px);
+      color:$text-blue;
+      &:hover {
+        color:$blue;
+      }
+    }
+    div.congress-explanation-text {
+      @include fontSize(16px);
+    }
+  }
+}

@@ -16,6 +16,11 @@ div.load-more {
   text-align:center;
   padding:6px;
   margin-top:20px;
+
+  //position: relative;
+  //left: -20px;
+
+  //top: 6px;
 }
 div.load-more:hover {
   background-color: $dark-gray;
@@ -142,10 +147,11 @@ div.feed-main
           div.filter-by-location {
             float:left;
             display:inline;
-            margin-top:8px;
+            margin-top:5px;
           }
           div.filter-by-state {
             float:left;
+            //padding-top:4px;
             margin-left:25px;
             display:inline;
             width:100px;

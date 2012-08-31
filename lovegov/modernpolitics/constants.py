@@ -19,6 +19,10 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## Content we cycle through ####################################################
+
+DISMISSIBLE_HEADERS = ['congress_teaser']
+
 ########################################## SPECIAL ALIASES #############################################################
 
 SUPER_HEROES = ['lovegov', 'anonymous']

@@ -25,11 +25,15 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    group_subscriptions = viewer.getSubscriptions()
+    subscriptions = viewer.getSubscriptions()
+    group_subscriptions = subscriptions.filter(is_election=False)
+    election_subscriptions =  subscriptions.filter(is_election=True)
     for g in group_subscriptions:
         g.num_new = g.getNumNewContent(viewer)
-    vals['group_subscriptions'] = group_subscriptions.filter(is_election=False)
-    vals['election_subscriptions'] = group_subscriptions.filter(is_election=True)
+    for g in election_subscriptions:
+        g.num_new = g.getNumNewContent(viewer)
+    vals['group_subscriptions'] = group_subscriptions
+    vals['election_subscriptions'] = election_subscriptions
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -432,3 +436,18 @@ def valsRepsHeader(vals):
     congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
     if len(congressmen) < 3:
         vals['few_congressmen'] = True
+
+#-----------------------------------------------------------------------------------------------------------------------
+# randomly (or by user info), chooses a teaser header
+#-----------------------------------------------------------------------------------------------------------------------
+def valsDismissibleHeader(request, vals):
+
+    header = random.choice(DISMISSIBLE_HEADERS)
+    vals['dismissible_header'] = header
+
+    if header == 'congress_teaser':
+        congress = Group.lg.get_or_none(alias="congress")
+        congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
+        congress_members = random.sample(congress_members, min(16, len(congress_members)))
+        vals['congress'] = congress
+        vals['congress_members'] = congress_members

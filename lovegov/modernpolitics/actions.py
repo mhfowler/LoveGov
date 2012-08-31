@@ -438,14 +438,14 @@ def followGroupAction(viewer, group, follow, privacy):
         change = False
         if follow:
             modifier = "A"
-            if group not in viewer.group_subscriptions.all():
+            if group.id not in viewer.group_subscriptions.all().values_list("id", flat=True):
                 viewer.group_subscriptions.add(group)
                 group.num_followers += 1
                 group.save()
                 change = True
         else:
             modifier = "S"
-            if group in viewer.group_subscriptions.all():
+            if group.id in viewer.group_subscriptions.all().values_list("id", flat=True):
                 viewer.group_subscriptions.remove(group)
                 group.num_followers -= 1
                 group.save()

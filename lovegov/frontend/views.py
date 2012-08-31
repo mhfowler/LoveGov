@@ -443,6 +443,7 @@ def compareWeb(request,alias=None,vals={}):
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, vals):
+    valsDismissibleHeader(request, vals)
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -489,9 +490,9 @@ def questions(request, vals={}):
     getMainTopics(vals)
     getQuestionStats(vals)
 
-    html =  ajaxRender('site/pages/qa/questions.html', vals, request)
+    html =  ajaxRender('site/pages/qa/qa.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="questions")
+    return homeResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # browse all

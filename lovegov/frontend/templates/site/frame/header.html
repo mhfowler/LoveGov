@@ -46,14 +46,13 @@
 
     <!-- float left -->
     <a href="/home/"><div class="header-logo"></div></a>
-    <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
     <ul>
-        <a href="/home/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/home/' %} clicked {% endif %}">home</li></a>
-        <a href="/questions/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/questions/' %} clicked {% endif %}">questions</li></a>
-        <a href="/groups/" class="do_ajax_link dummy_link"><li class="header_link{% if request.path == '/groups/' %} clicked{% endif %}" > groups </li></a>
-        <a href="/elections/" class="do_ajax_link dummy_link"><li class="header_link{% if request.path == '/elections/' %} clicked{% endif %}" > elections </li></a>
-        <a href="/legislation/" class="do_ajax_link dummy_link"><li class="header_link{% if request.path == '/legislation/' %} clicked{% endif %}" > legislation </li></a>
-        <a href="/about/" class="do_ajax_link dummy_link"><li class="header_link {% if request.path == '/about/' %} clicked {% endif %}">about </li></a>
+        <a href="/home/" class=" dummy_link header_link home_link home_header_link {% if request.path == '/home/' %} clicked {% endif %}"><li>home</li></a>
+        <a href="/questions/" class=" dummy_link header_link home_link {% if request.path == '/questions/' %} clicked {% endif %}"><li>questions</li></a>
+        <a href="/groups/" class=" dummy_link header_link home_link {% if request.path == '/groups/' %} clicked {% endif %}"><li> groups </li></a>
+        <a href="/elections/" class=" dummy_link  header_link home_link {% if request.path == '/elections/' %} clicked{% endif %}"><li> elections </li></a>
+        <a href="/legislation/" class=" dummy_link header_link home_link  {% if request.path == '/legislation/' %} clicked{% endif %}"><li > legislation </li></a>
+        <a href="/about/" class=" dummy_link header_link do_ajax_link {% if request.path == '/about/' %} clicked {% endif %}" ><li>about </li></a>
     </ul>
 
 </header>
