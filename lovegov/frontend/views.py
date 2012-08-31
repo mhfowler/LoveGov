@@ -908,6 +908,7 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
 def legislation (request, vals={}):
+
     vals['legislation_items'] = Legislation.objects.all()
     vals['sessions'] = CongressSession.objects.all().order_by("-session")
     type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
@@ -915,9 +916,9 @@ def legislation (request, vals={}):
     vals['subjects'] = LegislationSubject.objects.all()
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+
     now = datetime.now()
     time_range = [183,366,732,1464]
-
     introduced_dates = []
     for x in time_range:
         date = now - timedelta(days=x)
@@ -926,10 +927,11 @@ def legislation (request, vals={}):
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
 
-
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
+
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # legislation detail
