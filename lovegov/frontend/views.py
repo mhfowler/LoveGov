@@ -173,6 +173,9 @@ def tryLoveGov(request, to_page="home/", vals={}):
     response.set_cookie('lovegov_try', 1)
     return response
 
+def unsubscribe(request, vals={}):
+    return HttpResponse("You have unsubscribed from LoveGov emails.")
+
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
 #-----------------------------------------------------------------------------------------------------------------------

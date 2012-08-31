@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+<body>
+
+<div class="email-wrapper" style="
+		position:relative;
+		margin-top:40px;
+		margin-left:40px;
+		margin-right:40px;
+		margin-bottom:40px;
+		font-family:Helvetica, Verdana, sans-serif;
+		font-size:12pt;
+        width:600px;
+        color:black;"
+        >
+
+
+    <div class="email-main-wrapper" style="
+    width:540px;
+    background-color:#F0F0F0;
+    padding:30px;
+    color:black;" >
+        <div class="email-main-header" style="width:100%;">
+            <div class="email-title" style="
+            float:left;
+            font-size:28px;
+            margin-bottom:20px;
+            color:black;"
+                    >
+                {{ email_header }}
+            </div>
+            <img src="http://lovegov.com/static/images/top-logo-default.png" style="float:right;">
+            <div style="clear:both;"></div>
+        </div>
+        <div class="email-main-content-wrapper">
+            {% block email_main %}
+
+            {% endblock %}
+        </div>
+    </div>
+
+
+    <div class="email-footer" style="
+    width:600px;
+    margin-top:10px;
+    font-size:12px;
+    padding:5px;
+    font-size:10px;">
+        <div class="footer-left" style="float:left;margin-left:5px"">
+        Click here to <a href="{{ domain }}/unsubscribe/" style="color:red;"> unsubscribe </a>
+    </div>
+        <div class="footer-right" style="float:right;width:300px;margin-right:15px;font-size:10px;">
+            <div class="links" style="color:red; float:right; width:300px;text-align:right;">
+                <a href="{{ domain }}/about/" style="color:red;"> about </a>
+                |
+                <a href="{{ domain }}/FAQ/" style="color:red;"> FAQ </a>
+                |
+                <a href="{{ domain }}/contact/" style="color:red;"> contact </a>
+                |
+                <a href="{{ domain }}/mission/" style="color:red;"> mission </a>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div class="mission-blurb" style="width:300px;margin-top:5px;float:right;text-align:right;">
+                LoveGov is committed to non-partisanship, government transparency & the right to personal privacy.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

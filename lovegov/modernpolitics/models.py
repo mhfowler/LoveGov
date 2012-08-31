@@ -1071,6 +1071,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.first_name
 
     #-------------------------------------------------------------------------------------------------------------------
+    # on register, autosubscribe for some groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def autoSubscribe(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup
+        from lovegov.modernpolitics.actions import followGroupAction
+
+        lg = getLoveGovGroup()
+        followGroupAction(self, lg, True, "PRI")
+
+    #-------------------------------------------------------------------------------------------------------------------
     # duck typing
     #-------------------------------------------------------------------------------------------------------------------
     def get_url(self):

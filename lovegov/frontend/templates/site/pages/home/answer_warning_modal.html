@@ -1,0 +1,16 @@
+<div class="answer_questions_warning warning-popup">
+    {% if lgpoll_progress %}
+        You have only answered {{ lgpoll_progress }} questions from the LoveGov poll.
+    {% else %}
+        You you haven't answered any questions from the LoveGov poll yet.
+    {% endif %}
+    You're matches with congress won't be very good
+    until you answer more questions.
+    <br><br>
+    Would you like to
+    {% if which == 'congress_header' %}
+        <a href="{{ congress.getHistogramURL }}"> continue to congress anyway </a>
+    {% endif %}
+    or
+    <a href="{{ lgpoll.get_url }}"> go to the LoveGov poll </a>.
+</div>
