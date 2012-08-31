@@ -926,12 +926,18 @@ function selectQuestionRank(rank) {
 
 bind(".type_button" , "click" , null , function(event) {
     if (!$(this).hasClass("clicked")) {
+        clearTypes();
         selectType($(this).data('type'));
     }
     else {
         removeType($(this).data('type'));
     }
 });
+
+function clearTypes() {
+    $(".type_button").removeClass("clicked");
+    feed_types = [];
+}
 
 function selectType(type) {
     var which = $('.type_button[data-type="' + type + '"]');

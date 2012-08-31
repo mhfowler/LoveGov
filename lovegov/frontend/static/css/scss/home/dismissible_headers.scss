@@ -53,7 +53,7 @@ div.congress-header {
       @include fontSize(24px);
       color:$text-blue;
       &:hover {
-        color:$blue;
+        color:$text-blue;
       }
     }
     div.congress-explanation-text {
