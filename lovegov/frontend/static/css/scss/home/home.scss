@@ -59,7 +59,19 @@ table.home
 
   td.home-main
   {
-    padding-left:30px;
+    //padding-left:30px;
+    //padding-top: 6px;
+    //float: left;
+    margin-left: 30px;
+    //padding: 6px;
+    //padding-left: 25px;
+    //border-left: 1px solid $light-gray;
+    position: relative;
+    top: 10px;
+
+    padding-left: 20px;
+    margin-left: 19px;
+    //border-left: 1px solid $light-gray;
 
     div.home-header
     {
@@ -105,6 +117,8 @@ div.expand-info
 
 div.left-navbar {
   position:relative;
+  top:5px;
+  //padding-left:5px;
   margin-top:5px;
   @include titleFont();
   width:150px;
@@ -135,9 +149,10 @@ div.left-navbar {
     a.navbar-link {
       padding:5px 0 5px 5px;
       display:block;
-      margin: 0px 0 0 10px;
+      margin: 0px 0 0 8px;
       color:$black;
-      width:139px;
+      width: 142px;
+      @include border-radius(6px);
       &:hover {
         //font-style:italic;
         background-color:$light-gray;
@@ -145,6 +160,15 @@ div.left-navbar {
       &.clicked {
         background-color:$light-gray;
         //font-style:italic;
+      }
+      span.item-title {
+        float:left;
+        width:115px;
+      }
+      span.item-new {
+        float:right;
+        margin-right:10px;
+        color:$red;
       }
     }
   }
@@ -211,25 +235,45 @@ a.section_title.clicked {
   }
 }
 */
+  span.lil-goob {
+    margin-top: 0px;
+    height: 31px;
+    width: 6px;
+    float: left;
+    background-color: $light-gray;
+    display:none;
+  }
+  span.lil-goob.clicked {
+    background-color:$red;
+  }
   div.navbar-title {
     @include inline-block;
-    @include fontSize(12px);
+    @include fontSize(15px);
     padding: 5px;
+    //width:150px;
     color:$black;
+    //font-weight:bold;
     &:hover {
-      background-color:$light-gray;
+      //background-color:$light-gray;
+      color:$red;
       //font-style:italic;
     }
   }
   a.section_title.clicked {
     div.navbar-title {
       //font-style:italic;
-      background-color:$light-gray;
+      //background-color:$light-gray;
+      color:$red;
+    }
+    span.lil-goob {
+        //background-color:$black;
+      background-color:$red;
     }
   }
 
   span.red-triangle {
     @include inline-block;
+    //display:none;
   /*
   width:9px;
   height:18px;
@@ -272,11 +316,13 @@ a.section_title.clicked {
   }
 
   div.invite-friends-sidebar {
+    margin-top:20px;
     margin-bottom:25px;
   }
 
   div.left-toggles {
-    margin-top:100px;
+    float:left;
+    margin-top:5px;
     a.left-toggle {
       width:100%;
       display:block;

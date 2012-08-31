@@ -219,8 +219,8 @@ function updatePage() {
  *
  ***********************************************************************************************************************/
 bind(".header_link", 'click', null, function(event) {
-    $(".header_link").removeClass("clicked");
-    $(this).addClass("clicked");
+        $(".header_link").removeClass("clicked");
+        $(this).addClass("clicked");
 });
 
 bind(".do_ajax_link", 'click', null, function(event) {
@@ -233,7 +233,7 @@ function ajaxReload(theurl, loadimg)
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $('.main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
+    if (theurl == "/about/") { var timeout = setTimeout(function(){$(".page_loading").show();},0); }
     $.ajax
         ({
             url:theurl,
@@ -244,7 +244,10 @@ function ajaxReload(theurl, loadimg)
                 if (pre_page_nonce == current_page_nonce) {
                     var returned = eval('(' + data + ')');
                     History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                    if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                    if (theurl=="/about/") {
+                        clearTimeout(timeout);
+                        setTimeout(function() {$(".page_loading").fadeOut();}, 600);
+                    }
                     $('body').css("overflow","scroll");
                     $('.main_content').css("top","0px");
                     $(".main_content").html(returned.html);
@@ -386,29 +389,36 @@ function homeReload(theurl) {
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $(".home_reloading").show();
-    $.ajax
-        ({
-            url:theurl,
-            type: 'POST',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                if (pre_page_nonce == current_page_nonce) {
-                    $(".home_reloading").hide();
-                    var returned = eval('(' + data + ')');
-                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                    path = returned.url;
-                    $(".home_focus").html(returned.focus_html);
-                    bindOnReload();
+
+    // if coming from a home page
+    if ($(".home_sidebar").length!=0) {
+        $.ajax
+            ({
+                url:theurl,
+                type: 'POST',
+                data: {'url':window.location.href},
+                success: function(data)
+                {
+                    if (pre_page_nonce == current_page_nonce) {
+                        $(".home_reloading").hide();
+                        var returned = eval('(' + data + ')');
+                        History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                        path = returned.url;
+                        $(".home_focus").html(returned.focus_html);
+                        bindOnReload();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    if (pre_page_nonce == current_page_nonce) {
+                        $('body').html(jqXHR.responseText);
+                    }
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                if (pre_page_nonce == current_page_nonce) {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        });
+            });
+    }
+    else {
+        ajaxReload(theurl, "crazy");
+    }
 }
 
 /* move asterisk, when section is selected */
@@ -454,20 +464,27 @@ bind(".red_triangle", 'click', null, function(event) {
 
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
-    var navbar_section = $(this).parents(".navbar_section");
-    event.preventDefault();
+    homeReload($(this).attr("href"));
+
+    /*
+     //var navbar_section = $(this).parents(".navbar_section");
+     if (!$(this).hasClass("clicked")) {
+     //selectNavLink($(this));
+     //closeAllNavBarSections();
+     homeReload($(this).attr("href"));
+     } else {
+     /*
+     if (navbar_section.hasClass("section_shown")) {
+     navSectionToggle(navbar_section, false, true);
+     } else {
+     navSectionToggle(navbar_section, true, true);
+     } */
+    //}
+});
+
+bind(".left_link", 'click', null, function(event) {
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
-        //closeAllNavBarSections();
-        //navSectionToggle(navbar_section, true, true);
-        homeReload($(this).attr("href"));
-    } else {
-        /*
-         if (navbar_section.hasClass("section_shown")) {
-         navSectionToggle(navbar_section, false, true);
-         } else {
-         navSectionToggle(navbar_section, true, true);
-         } */
     }
 });
 
@@ -525,11 +542,14 @@ function navSectionToggle(navbar_section, show, animate) {
     }
 }
 
+
 function selectNavLink(navlink) {
     if (navlink.length!=0) {
         $(".home_link").removeClass("clicked");
         navlink.addClass("clicked");
-
+        // add/remove header link stuff
+        $(".header_link").removeClass("clicked");
+        $(".home_header_link").addClass("clicked");
         // toggle section and remove new items num
         if (navlink.hasClass("navbar_link")) {
             var num_new_content = navlink.parents(".home_link_wrapper").find(".num_new_content");
@@ -544,7 +564,7 @@ function selectNavLink(navlink) {
 
 /* helper to get navlink element from url */
 function getNavLink(url) {
-    return $('.home_link[href="' + url + '"]');
+    return $('.left_link[href="' + url + '"]');
 }
 
 function navSectionHide(navbar_section, animation_time) {
@@ -939,7 +959,7 @@ function getFeed(container) {
     var replace = (feed_start==0);
     if (replace) {
         var old_height = $("body").height();
-        $("body").css('min-height', old_height);
+        //container.css('min-height', old_height);
         container.find(".feed_content").empty();
         container.find(".load_more").show();
         container.find(".everything_loaded_wrapper").hide();

@@ -16,13 +16,13 @@ header
   padding-top:5px;
   div.header-logo
   {
-    @include staticImage('/images/header/logo.png');
+    @include staticImage('/images/icons/logo/beta-subtle.png');
     float:left;
     @include clearfix;
-    background-size: 100%;
+    background-size: 144px;
     background-repeat: no-repeat;
-    width: 155px;
-    height: 50px;
+    width: 144px;
+    height: 54px;
     cursor: pointer;
     @include transition(0.15s);
     &:hover {
@@ -31,34 +31,38 @@ header
   }
 
   img.beta {
-    margin-top:19px;
+    margin-top:10px;
     float:left;
   }
 
   ul {
+    //padding-left:10px;
     list-decoration: none;
     @include inline-block;
     cursor: pointer;
     margin: 3px;
     margin-top:6px;
-    li {
-      color: $red;
-      @include inline-block;
-      font-size: 15px;
-      float:left;
-      margin-top: -11px;
-      padding: 12px;
-      padding-bottom: 10px;
-      padding-top: 23px;
-      &:hover {
+    margin-left:11px;
+    a {
+      li {
+        color: $red;
+        @include inline-block;
+        font-size: 15px;
+        float:left;
+        margin-top: -11px;
+        padding: 12px;
+        padding-bottom: 10px;
+        padding-top: 27px;
+      }
+      &:hover li {
         background-color: $red;
         color: white;
       }
-      &:active {
+      &:active li {
         background-color: $orange;
         color: white;
       }
-      &.clicked {
+      &.clicked li {
         background-color: $red;
         color:white;
       }

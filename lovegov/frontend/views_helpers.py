@@ -25,11 +25,15 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    group_subscriptions = viewer.getSubscriptions()
+    subscriptions = viewer.getSubscriptions()
+    group_subscriptions = subscriptions.filter(is_election=False)
+    election_subscriptions =  subscriptions.filter(is_election=True)
     for g in group_subscriptions:
         g.num_new = g.getNumNewContent(viewer)
-    vals['group_subscriptions'] = group_subscriptions.filter(is_election=False)
-    vals['election_subscriptions'] = group_subscriptions.filter(is_election=True)
+    for g in election_subscriptions:
+        g.num_new = g.getNumNewContent(viewer)
+    vals['group_subscriptions'] = group_subscriptions
+    vals['election_subscriptions'] = election_subscriptions
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions

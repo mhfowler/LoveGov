@@ -74,6 +74,7 @@ div.question-detail-sidebar {
 /*  ~ browse questions                                                                                                */
 /**********************************************************************************************************************/
 div.questions-main {
+  margin-top:15px;
   div.red-line {
     width:832px;
   }
@@ -122,6 +123,44 @@ div.questions-sidebar {
         div.questions {
           margin-top:-3px;
         }
+      }
+    }
+  }
+}
+
+
+div.question-stats {
+  margin-left:8px;
+  div.topic-stat-box {
+    margin-top: 15px;
+    float:left;
+    margin-right:15px;
+
+    div.box {
+      position:relative;
+      width:50px;
+      height:50px;
+      border:1px solid;
+      div.colored-area {
+        width:100%;
+        @include opacity(0.4);
+        position:relative;
+      }
+      div.topic-image {
+        position:absolute;
+        top:9px;
+        left:7px;
+      }
+    }
+    div.writing {
+      margin-top:3px;
+      div.numbers {
+        width:100%;
+        text-align:center;
+        font-weight:bold;
+      }
+      div.questions {
+        margin-top:-3px;
       }
     }
   }

@@ -489,9 +489,9 @@ def questions(request, vals={}):
     lgpoll = getLoveGovPoll()
     vals['lgpoll'] = lgpoll
 
-    html =  ajaxRender('site/pages/qa/questions.html', vals, request)
+    html =  ajaxRender('site/pages/qa/qa.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="questions")
+    return homeResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # browse all

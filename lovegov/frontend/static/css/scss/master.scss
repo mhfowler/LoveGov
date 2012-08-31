@@ -62,8 +62,13 @@ div.global-wrapper
 {
   max-width: 1140px;
   min-width: 1024px;
+  position:relative;
   width: 100%;
   margin: auto;
+
+  div.clear-wrapper {
+    min-height:700px;
+  }
 }
 
 div.main-content {
@@ -83,6 +88,17 @@ div.main-top {
     width:710px;
     margin-left:20px;
   }
+}
+
+
+div.page-loading {
+  position:absolute;
+  @include staticImage("/images/gifs/ajax-loader.gif");
+  top: 70px;
+  margin:auto;
+  width: 100%;
+  height:800px;
+  display:none;
 }
 
 /* Prevent padding from altering defined sizes */
