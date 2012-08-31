@@ -7,7 +7,9 @@
         <div class="congress-teaser">
             {% for user in congress_members %}
                 <div class="congress-pic-wrapper">
-                    {% include 'site/pieces/avatar_href.html' with height="35" width="35" %}
+                    <div class="bind_link" data-url="{{ user.get_url }}">
+                        {% include 'site/pieces/avatar.html' with height="35" width="35" %}
+                    </div>
                 </div>
             {% endfor %}
         </div>
