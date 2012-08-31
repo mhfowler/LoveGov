@@ -123,7 +123,7 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
     if feed_topic:
         questions = questions.filter(main_topic=feed_topic)
     if only_unanswered:
-        q_ids = you_responses.values_list("question_id", flat=True)
+        q_ids = you_responses.exclude(most_chosen_answer=None).values_list("question_id", flat=True)
         questions = questions.exclude(id__in=q_ids)
 
     # sort
