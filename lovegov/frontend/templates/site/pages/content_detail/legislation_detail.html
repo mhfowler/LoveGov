@@ -102,20 +102,112 @@
                         </h4>
                     </div>
                 </div>
-                <div class="level1-progress-div">
-                    {{ l.state_text }}
-                    {{ l.state_date }}
-                    <br>
-                    <div class="progress-graphic1">
-                        <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
-                        <h3 class="progress-label1">Passed in House</h3>
-                        <img class="progress-img2" src="/static/images/legislation/status-arrow3.png"/>
-                        <h3 class="progress-label2">Passed in Senate</h3>
-                        <img class="progress-img3" src="/static/images/legislation/status-arrow3.png"/>
-                        <h3 class="progress-label3">Signed into Law</h3>
-                        <img class="progress-img4" src="/static/images/legislation/status-arrow3.png"/>
+
+                    {% ifequal bill_progress "Passed House and Senate" %}
+                    <div class="level1-progress-div">
+                        <br>
+                        <div class="progress-graphic1">
+                            <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                            <h3 class="progress-label1">Passed in House</h3>
+                            <img class="progress-img2" src="/static/images/legislation/status-arrow3.png"/>
+                            <h3 class="progress-label2">Passed in Senate</h3>
+                            <img class="progress-img3" src="/static/images/legislation/status-arrow3.png"/>
+                            <h3 class="progress-label3">Signed into Law</h3>
+                        </div>
                     </div>
-                </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Passed House" %}
+                    <div class="level1-progress-div">
+                        <br>
+                        <div class="progress-graphic1">
+                            <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                            <h3 class="progress-label1">Passed in House</h3>
+                            <img class="progress-img2" src="/static/images/legislation/status-arrow4.png"/>
+                            <h3 class="progress-label2">Passed in Senate</h3>
+                            <img class="progress-img3" src="/static/images/legislation/status-arrow4.png"/>
+                            <h3 class="progress-label3">Signed into Law</h3>
+                        </div>
+                    </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Resolution Passed House" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                                <h3 class="progress-label1">Passed in House</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Resolution Not Passed House" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label1">Passed in House</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Not Passed House" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label1">Passed in House</h3>
+                                <img class="progress-img2" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label2">Passed in Senate</h3>
+                                <img class="progress-img3" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label3">Signed into Law</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Passed Senate and House" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                                <h3 class="progress-label1">Passed in Senate</h3>
+                                <img class="progress-img2" src="/static/images/legislation/status-arrow3.png"/>
+                                <h3 class="progress-label2">Passed in House</h3>
+                                <img class="progress-img3" src="/static/images/legislation/status-arrow3.png"/>
+                                <h3 class="progress-label3">Signed into Law</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Passed Senate" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                                <h3 class="progress-label1">Passed in Senate</h3>
+                                <img class="progress-img2" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label2">Passed in House</h3>
+                                <img class="progress-img3" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label3">Signed into Law</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Resolution Passed Senate" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow3.png"/>
+                                <h3 class="progress-label1">Passed in Senate</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
+                    {% ifequal bill_progress "Not Passed Senate" %}
+                        <div class="level1-progress-div">
+                            <br>
+                            <div class="progress-graphic1">
+                                <img class="progress-img1" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label1">Passed in Senate</h3>
+                                <img class="progress-img2" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label2">Passed in Senate</h3>
+                                <img class="progress-img3" src="/static/images/legislation/status-arrow4.png"/>
+                                <h3 class="progress-label3">Signed into Law</h3>
+                            </div>
+                        </div>
+                    {% endifequal %}
             </div>
         </div>
     {%comment%}

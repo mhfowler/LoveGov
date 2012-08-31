@@ -905,6 +905,7 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
 def legislation (request, vals={}):
+
     vals['legislation_items'] = Legislation.objects.all()
     vals['sessions'] = CongressSession.objects.all().order_by("-session")
     type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
@@ -926,7 +927,10 @@ def legislation (request, vals={}):
 
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
-    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
+
+    focus_html =  ajaxRender('site/pages/legislation/legislation.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # legislation detail
@@ -935,9 +939,36 @@ def legislationDetail(request, l_id, vals={}):
     legislation = Legislation.objects.get(id=l_id)
     vals['l'] = legislation
     vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
+    vals['action_states'] = [x.state for x in vals['actions']]
+    action_states = [x.state for x in vals['actions']]
+
+    if legislation.congress_body == "H":
+        if "PASSED_OVER:HOUSE" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Passed House and Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Passed House"
+        elif "PASSED:SIMPLERES" in action_states:
+            bill_progress = "Resolution Passed House"
+        elif "PASSED:SIMPLERES" not in action_states and legislation.bill_type != "h":
+            bill_progress = "Resolution Not Passed House"
+        else:
+            bill_progress = "Not Passed House"
+    elif legislation.congress_body == "S":
+        if "PASSED_OVER:SENATE" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Passed Senate and House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Passed Senate"
+        elif "PASSED:SIMPLERES" in action_states:
+            bill_progress = "Resolution Passed Senate"
+        elif "PASSED:SIMPLERES" not in action_states and legislation.bill_type != "s":
+            bill_progress = "Resolution Not Passed Senate"
+        else:
+            bill_progress = "Not Passed Senate"
+    vals['bill_progress'] = bill_progress
+
     vals['related'] = legislation.bill_relation.all()
-    # vals['second_body'] = legislation.filter(state_text__icontains='PASSED', bill_relation_state_text_isnull=False)
-    # vals['first_body'] =
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
     url = legislation.get_url
