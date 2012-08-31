@@ -69,10 +69,9 @@
         <div class="introduced_selector">
             <select class="introduced_select" data-selector="introduced_filter">
                 <optgroup label="Bill Introduction" id="introduced-dates">
-                    <option class="introduced" value='{{ date.0 }}'>Introduced within the past 6 months</option>
-                    <option class="introduced" value='{{ date.1 }}'>Introduced within the past 12 months</option>
-                    <option class="introduced" value='{{ date.2 }}'>Introduced within the past 2 years</option>
-                    <option class="introduced" value='{{ date.3 }}'>Introduced within the past 4 years</option>
+                    {% for date in introduced_dates %}
+                        <option class="introduced" value='{{ date }}'>{{ date }}</option>
+                    {% endfor %}
                 </optgroup>
             </select>
         </div>
@@ -81,8 +80,8 @@
                 <li>
                     <select multiple class="sponsor_select_body" data-selector="sponsor_filter">
                         <optgroup label="Sponsor body" id="bill_sponsor_body">
-                                <option class="sponsors" value='s'>US Senate</option>
-                                <option class="sponsors" value='h'>US House of Representatives</option>
+                                <option class="sponsors" value='S'>US Senate</option>
+                                <option class="sponsors" value='H'>US House of Representatives</option>
                         </optgroup>
                     </select>
                 </li>

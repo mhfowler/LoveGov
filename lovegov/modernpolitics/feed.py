@@ -256,7 +256,7 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
             bill_introduced__gte=introduced_set)
     if sponsor_body_set:
         legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_body_set)
+            congress_body__in=sponsor_body_set)
     if sponsor_name_set:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_name_set)

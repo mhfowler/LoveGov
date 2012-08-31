@@ -13,11 +13,14 @@ div.feed-button
   float: left;
   border: solid $light-gray;
   border-width: 1px 0px 1px 1px;
+  background-color: $light-gray;
+  width: 780px;
+  text-align: center;
   padding: $button-top-padding $button-side-padding;
 
   &:hover
   {
-    background-color: $light-gray;
+    background-color: $dark-gray;
     cursor:pointer;
   }
 }

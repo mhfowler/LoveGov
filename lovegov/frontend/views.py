@@ -913,8 +913,8 @@ def legislation (request, vals={}):
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
     now = datetime.now()
-    range_time = [183,366,732,1464]
-    vals['introduced_dates'] = [now - timedelta(days=x) for x in range_time]
+    time_range = [183,366,732,1464]
+    vals['introduced_dates'] = [now - timedelta(days=x) for x in time_range]
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
