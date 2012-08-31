@@ -26,6 +26,19 @@ function bindOnReload() {
     bindNotificationsDropdownClickOutside();
 
     switch (rebind) {
+
+        case "home": initHomePage(); break;
+        case "profile": initFeed(); break;
+        case "legislation":
+            shortenLongText();
+            showLegSelectors();
+            showSelectors();
+            loadBillSelect2();
+            break;
+        case "legislation-view":
+            shortenLongText(); break;
+        case "legislation_detail":
+            shortenLongText(); break;
         case "home":
             break;
         case "profile":
@@ -79,6 +92,7 @@ function bindOnNewElements() {
     bindTooltips();
 }
 
+
 /***********************************************************************************************************************
  *
  *     ~document.ready() of initial page load
@@ -89,6 +103,7 @@ function bindOnNewElements() {
 
 
 var auto_update_page;
+
 
 $(document).ready(function()
 {
@@ -101,8 +116,7 @@ $(document).ready(function()
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
     if ( !History.enabled )
-    {
-        // History.js is disabled for this browser.
+    {        // History.js is disabled for this browser.
         // This is because we can optionally choose to support HTML4 browsers or not.
         return false;
     }
@@ -1027,6 +1041,32 @@ function getFeed(container) {
         var city = getValueFromKey(container, 'city');
         data['state'] = state;
         data['city'] = city;
+    }
+    else if (feed == 'getLegislation') {
+        var session = $('select.session_select').val();
+        var session_json = JSON.stringify(session);
+        var type = $('select.type_select').val();
+        var type_json = JSON.stringify(type);
+        var subject = $('select.subject_select').val();
+        var subject_json = JSON.stringify(subject);
+        var committee = $('select.committee_select').val();
+        var committee_json = JSON.stringify(committee);
+        var introduced = $('select.introduced_select').val();
+        var introduced_json = JSON.stringify(introduced);
+        var sponsor_body = $('select.sponsor_select_body').val();
+        var sponsor_body_json = JSON.stringify(sponsor_body);
+        var sponsor_name = $('select.sponsor_select_name').val();
+        var sponsor_name_json = JSON.stringify(sponsor_name);
+        var sponsor_party = $('select.sponsor_select_party').val();
+        var sponsor_party_json = JSON.stringify(sponsor_party);
+        var sponsor_district = $('select.sponsor_select_district').val();
+        var sponsor_district_json = JSON.stringify(sponsor_district);
+
+        data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
+            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
+            'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
+            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
+            'sponsor_district_set':sponsor_district_json};
     }
     action({
             data: data,
@@ -2167,6 +2207,141 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
+ *      ~Legislation
+ *
+ **********************************************************************************************************************/
+
+bind( '.filter_box' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+    }
+    else {
+        $(this).addClass('clicked');
+    }
+});
+
+bind( '.expand_link' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: hidden
+        });
+    }
+    else {
+        $(this).addClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: auto
+        });
+    }
+});
+
+function billPassageOrder() {
+
+}
+
+function loadBillSelect2() {
+    $('.session_select').select2({
+        placeholder: "search for bill sessions"
+    });
+    $('.type_select').select2({
+        placeholder: "search for bill types"
+    });
+    $('.subject_select').select2({
+        placeholder: "search for bill subjects"
+    });
+    $('.committee_select').select2({
+        placeholder: "search for bill committees"
+    });
+    $('.introduced_select').select2({
+        placeholder: "search by date period"
+    });
+    $('.sponsor_select_body').select2({
+        placeholder: "search for bill sponsor body"
+    });
+    $('.sponsor_select_name').select2({
+        placeholder: "search for bill sponsor name"
+    });
+    $('.sponsor_select_party').select2({
+        placeholder: "search for bill sponsor party"
+    });
+    $('.sponsor_select_district').select2({
+        placeholder: "search for bill sponsor district"
+    });
+}
+
+function showSelectors() {
+    $('.legislation_selector').children().hide();
+}
+
+function showLegSelectors() {
+    $('.filter_box').click(function(event) {
+        event.preventDefault();
+        if ($(this).hasClass('unchecked')) {
+            $(this).removeClass('unchecked');
+            $(this).addClass('checked');
+            var selector = $("." + $(this).data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+        else {
+            $(this).removeClass('checked');
+            $(this).addClass('unchecked');
+            var selector = $("." + $(this).data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+    });
+}
+
+function shortenLongText() {
+    var ellipsestext = "...";
+    var moretext = "read more";
+    var lesstext = "less";
+    if ($('.long_text').hasClass("bill_detail")) {
+        var showChar = 300;
+    }
+    else {
+        var showChar = 150;
+    }
+    $('.long_text').each(function() {
+
+        var content = $(this).html();
+
+        if(content.length > showChar) {
+
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+
+            if($(this).hasClass("bill_detail")) {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+            }
+            else {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span>';
+            }
+            $(this).html(html);
+        }
+    });
+
+    if($('.long_text').hasClass("bill_detail")) {
+        $('.morelink').click(function(){
+            if($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $('.morecontent_span').toggle();
+            $('.moreellipses').toggle();
+            return false;
+        });
+    }
+}
+
+/***********************************************************************************************************************
+ *
  *      ~GroupEdit
  *
  **********************************************************************************************************************/
@@ -2209,6 +2384,7 @@ bind( "div.group_privacy_radio" , 'click' , null , function(event)
 
     $(this).children("input:radio[name=group_privacy]").attr('checked',true);
     $(this).addClass("create-radio-selected");
+
 });
 
 // Group Scale Radio
@@ -3868,7 +4044,6 @@ bind(".invite_to_scorecard_button", "click", function(e) {
         }
     });
 });
-
 
 /***********************************************************************************************************************
  *

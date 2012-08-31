@@ -24,6 +24,7 @@ import json
 import time
 from datetime import timedelta
 from datetime import datetime
+import re
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -3140,7 +3141,7 @@ class Legislation(Content):
     state_text = models.CharField(max_length=50,null=True)
     # Title
     full_title = models.CharField(max_length=5000,null=True)
-    # Sponsors
+    # Sponsorsmodels.py
     # cosponsor relationship is stored in LegislationCosponsor object.  To retrieve them you can use "self.legislation_cosponsors"
     sponsor = models.ForeignKey(UserProfile, related_name="sponsored_legislation", null=True)
     committees = models.ManyToManyField('Committee', related_name="legislation_committees", null=True)

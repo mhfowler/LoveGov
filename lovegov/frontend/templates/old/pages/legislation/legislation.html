@@ -1,0 +1,117 @@
+{% extends 'site/frame/frame.html' %}
+
+{% block content %}
+
+
+    <div class="main-block">
+        <div class="legislation_filter">
+            <div class="filter_prompt">
+                <h5 class="no-hover">
+                    filter legislation by:
+                </h5>
+            </div>
+            <div class="session_filter unchecked" data-selector="session_selector">
+                <input type="checkbox" id="session_filter"><label class="filter_label" for="session_filter"><h5><span>session</span></h5></label>
+            </div>
+            <div class="type_filter unchecked" data-selector="type_selector">
+                <input type="checkbox" id="type_filter"><label class="filter_label" for="type_filter"><h5><span>type</span></h5></label>
+            </div>
+            <div class="subject_filter unchecked" data-selector="subject_selector">
+                <input type="checkbox" id="subject_filter"><label class="filter_label" for="subject_filter"><h5><span>subjects</span></h5></label>
+            </div>
+            <div class="committee_filter unchecked" data-selector="committee_selector">
+                <input type="checkbox" id="committee_filter"><label class="filter_label" for="committee_filter"><h5><span>committees</span></h5></label>
+            </div>
+            <div class="introduced_filter unchecked" data-selector="introduced_selector">
+                <input type="checkbox" id="introduced_filter"><label class="filter_label" for="introduced_filter"><h5><span>date introduced</span></h5></label>
+            </div>
+            <div class="sponsor_filter unchecked" data-selector="sponsor_selector">
+                <input type="checkbox" id="sponsor_filter"><label class="filter_label" for="sponsor_filter"><h5><span>sponsor</span></h5></label>
+            </div>
+            <div class="myrepsvotes_filter checked">
+                <input type="checkbox" id="myrepsvotes_filter"><label class="filter_label" for="myrepsvotes_filter"><h5><span>include my representatives' votes</span></h5></label>
+            </div>
+        </div>
+        <div class="legislation_selector">
+            <div class="session_selector">
+                <ul>
+                    <li><input type="checkbox" id="session_109"><label for="session_109"><h5><span>109th Congress</span></h5></label></li>
+                    <li><input type="checkbox" id="session_110"><label for="session_110"><h5><span>110th Congress</span></h5></label></li>
+                    <li><input type="checkbox" id="session_111"><label for="session_111"><h5><span>111th Congress</span></h5></label></li>
+                    <li><input type="checkbox" id="session_112"><label for="session_112"><h5><span>112th Congress</span></h5></label></li>
+                </ul>
+            </div>
+            <div class="type_selector">
+                <ul>
+                    <li><input type="checkbox" id="bill_typeA"><label for="bill_typeA"><h5><span>Bill Type A</span></h5></label></li>
+                    <li><input type="checkbox" id="bill_typeB"><label for="bill_typeB"><h5><span>Bill Type B</span></h5></label></li>
+                    <li><input type="checkbox" id="bill_typeC"><label for="bill_typeC"><h5><span>Bill Type C</span></h5></label></li>
+                    <li><input type="checkbox" id="bill_typeD"><label for="bill_typeD"><h5><span>Bill Type D</span></h5></label></li>
+                </ul>
+            </div>
+            <div class="subject_selector">
+                <ul>
+                    <li><input type="form" id="subject_form" placeholder="Select subjects"><label for="subject_form"><h5>subjects</h5></label></li>
+                </ul>
+            </div>
+            <div class="committee_selector">
+                <ul>
+                    <li><input type="form" id="committeeA"><label for="committeeA"><h5><span>House</span></h5></label></li>
+                    <li><input type="form" id="committeeB"><label for="committeeB"><h5><span>Senate</span></h5></label></li>
+                </ul>
+            </div>
+            <div class="introduced_selector">
+                <ul>
+                    <li><input type="form" class="datepicker" id="datepicker1" placeholder="Choose a date"><label for="datepicker1"><h5>from</h5></label>
+                        <input type="form" class="datepicker" id="datepicker2" placeholder="Choose a date"><label for="datepicker2"><h5>to</h5></label></li>
+                    <li><input type="form" class="datepicker" id="datepicker3" placeholder="Choose a date"><label for="datepicker3"><h5>from</h5></label>
+                        <input type="form" class="datepicker" id="datepicker4" placeholder="Choose a date"><label for="datepicker4"><h5>to</h5></label></li>
+                    <li><input type="form" class="datepicker" id="datepicker5" placeholder="Choose a date"><label for="datepicker5"><h5>from</h5></label>
+                        <input type="form" class="datepicker" id="datepicker6" placeholder="Choose a date"><label for="datepicker6"><h5>to</h5></label></li>
+                </ul>
+            </div>
+            <div class="sponsor_selector">
+                <ul>
+                    <li><input type="form" id="sponsor_body" placeholder="Select a representative body"><label><h5>sponsor body</h5></label></li>
+                    <li><input type="form" id="sponsor_name" placeholder="Search for a sponsor"><label><h5>sponsor name</h5></label></li>
+                    <li><input type="form" id="sponsor_party" placeholder="Choose a party or movement"><label><h5>sponsor party</h5></label></li>
+                    <li><input type="form" id="sponsor_district" placeholder="Choose a district"><label><h5>sponsor district</h5></label></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="div-select-button">
+        <span>
+            Select
+        </span>
+    </div>
+    <div class="div-filter-button">
+        <span>
+            Filter !
+        </span>
+    </div>
+    <div class="filter-results">
+        <div class="results-heading-">
+            <h5 class="no-hover">
+                results:
+            </h5>
+            <p>
+                <ul>
+                    {% for l in bills %}
+
+                        <li><h5>{% include 'site/pages/legislation/legislation-stub.html' %}</h5></li>
+
+                    {% endfor %}
+                </ul>
+            </p>
+        </div>
+    </div>
+    <div class="filter-congress-feed">
+        <input type="checkbox" id="filter-congress-feed"><label for="filter-congress-feed"><h5 class="no-hover">filter feed for my regions</h5></label>
+    </div>
+    <!-- Javascript -->
+    <script> rebind='legislation'; </script>
+
+
+{% endblock %}
+

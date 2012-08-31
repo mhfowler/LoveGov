@@ -1,0 +1,125 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+a {
+  color: $red;
+
+  &:visited {
+    color: $red;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  .morelink {
+    outline: none;
+  }
+}
+
+.moreellipses {
+  font-color: $red;
+}
+
+.morecontent span {
+  display: none;
+}
+
+div.stub-container {
+  height: auto;
+  min-height: 100px;
+  width: 100%;
+  border: 2px solid $gray;
+  padding: 5px 5px;
+  margin-top: 5px;
+
+  div.sponsor {
+    float:left;
+    width: 15%;
+
+    img.sponsor-img {
+      height: 75px;
+      width: auto;
+      margin-bottom: 5px;
+      border: 2px solid $gray;
+    }
+
+    div.sponsor-info {
+      height: auto;
+      width: auto;
+      padding-bottom: 5px;
+
+      a h6.sponsor-name {
+        color: $black;
+      }
+    }
+  }
+
+  div.bill-stub-text {
+    width: 75%;
+    margin-bottom: 5px;
+    margin-left: 5px;
+
+    div.politician-action {
+      height: auto;
+      width: 100%;
+      margin-top: 0px;
+
+      h5.politician-vote {
+        color: $black;
+        width: 100%;
+        padding-top: 5px;
+      }
+    }
+
+    div.bill-title {
+      height: 40px;
+      width: 100%;
+      text-align: justify;
+    }
+
+    div.bill-summary {
+      height: 50px;
+      width: 100%;
+      margin-top: 10px;
+      text-align: justify;
+
+      span.summary-intro {
+        color: $black;
+      }
+    }
+  }
+
+  div.bill-expand-link {
+    height: 25px;
+    width: 100%;
+    margin-top: 5px;
+    text-align: center;
+    text-color: $white;
+    border: 2px solid $gray;
+    padding-top: 2px;
+    padding-bottom: 14px;
+    background-color: $green;
+
+    span.detail-link {
+      font-weight: bold;
+      color: $white;
+      font-size: 18px;
+      text-decoration: none;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

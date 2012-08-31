@@ -11,6 +11,8 @@ from lovegov.frontend.views_helpers import *
 
 from pprint import pprint
 
+from datetime import datetime, timedelta
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
 #-----------------------------------------------------------------------------------------------------------------------
@@ -486,9 +488,10 @@ def friends(request, vals):
 def questions(request, vals={}):
 
     getMainTopics(vals)
-    getQuestionStats(vals, None)
+
     lgpoll = getLoveGovPoll()
     vals['lgpoll'] = lgpoll
+    getQuestionStats(vals, lgpoll)
 
     html =  ajaxRender('site/pages/qa/qa.html', vals, request)
     url = request.path
@@ -601,7 +604,7 @@ def profile(request, alias=None, vals={}):
             vals['is_user_confirmed'] = True
         if user_follow.rejected:
             vals['is_user_rejected'] = True
-    
+
     vals['profile_groups'] = user_profile.getRealGroups()[:4]
     vals['profile_politicians'] = user_profile.getPoliticians()
 
@@ -904,39 +907,43 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
-def legislation(request, session=None, type=None, number=None, vals={}):
-    vals['session'], vals['type'], vals['number'] = session, type, number
-    if session==None:
-        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session)
-    if type==None:
-        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
-        vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
-    if number==None:
-        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
-    if len(legs)==0:
-        vals['error'] = "No legislation found with the given parameters."
-    else:
-        leg = legs[0]
-        vals['leg_titles'] = leg.legislationtitle_set.all()
-        vals['leg'] = leg
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+def legislation (request, vals={}):
+    vals['legislation_items'] = Legislation.objects.all()
+    vals['sessions'] = CongressSession.objects.all().order_by("-session")
+    type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
+    vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
+    vals['subjects'] = LegislationSubject.objects.all()
+    vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
+    vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+    now = datetime.now()
+    time_range = [183,366,732,1464]
+
+    introduced_dates = []
+    for x in time_range:
+        date = now - timedelta(days=x)
+        json_date = json.dumps({'year':date.year, 'month':date.month, 'day':date.day})
+        date_tuple = {'json':json_date, 'date':date}
+        introduced_dates.append(date_tuple)
+    vals['introduced_dates'] = introduced_dates
+
+
+    vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
+    vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
+    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # legislation detail
 #-----------------------------------------------------------------------------------------------------------------------
 def legislationDetail(request, l_id, vals={}):
-
     legislation = Legislation.objects.get(id=l_id)
-    vals['legislation'] = legislation
-
-    contentDetail(request=request, content=legislation, vals=vals)
+    vals['l'] = legislation
+    vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
+    vals['related'] = legislation.bill_relation.all()
+    # vals['second_body'] = legislation.filter(state_text__icontains='PASSED', bill_relation_state_text_isnull=False)
+    # vals['first_body'] =
+    contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
-    url = legislation.get_url()
+    url = legislation.get_url
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1069,16 +1076,14 @@ def scorecardDetail(request, s_id, vals={}):
     scorecard = Scorecard.objects.get(id=s_id)
     vals['scorecard'] = scorecard
 
-    reps = list(viewer.getRepresentatives())
-    politicians = list(scorecard.politicians.all())
+    reps = viewer.getRepresentatives()
+    politicians = scorecard.politicians.all().order_by("-num_supporters")
     for r in reps:
         r.comparison = scorecard.getComparison(r)
         r.scorecard_comparison_url = scorecard.getScorecardComparisonURL(r)
     for p in politicians:
         p.comparison = scorecard.getComparison(p)
         p.scorecard_comparison_url = scorecard.getScorecardComparisonURL(p)
-    reps.sort(key=lambda x:x.comparison.result,reverse=True)
-    politicians.sort(key=lambda x:x.comparison.result,reverse=True)
 
     vals['representatives'] = reps
     vals['politicians'] = politicians

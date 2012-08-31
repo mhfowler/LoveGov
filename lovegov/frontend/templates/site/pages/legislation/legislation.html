@@ -1,0 +1,135 @@
+{% extends 'site/frame/frame.html' %}
+
+{% block content %}
+
+
+<div class="main-block">
+    <div class="legislation_filter">
+        <div class="filter_prompt">
+            <h6 class="no-hover">
+                filter legislation by:
+            </h6>
+        </div>
+        <div class="session_filter filter_box unchecked" data-selector="session_selector">
+            <span>session</span>
+        </div>
+        <div class="type_filter filter_box unchecked" data-selector="type_selector">
+            <span>type</span>
+        </div>
+        <div class="subject_filter filter_box unchecked" data-selector="subject_selector">
+            <span>subjects</span>
+        </div>
+        <div class="committee_filter filter_box unchecked" data-selector="committee_selector">
+            <span>committees</span>
+        </div>
+        <div class="introduced_filter filter_box unchecked" data-selector="introduced_selector">
+            <span>dates</span>
+        </div>
+        <div class="sponsor_filter filter_box unchecked" data-selector="sponsor_selector">
+            <span>sponsor</span>
+        </div>
+    </div>
+    <div class="legislation_selector">
+        <div class="session_selector">
+            <select multiple class="session_select" data-selector="session_filter">
+                <optgroup label="Congress Sessions" id="bill_sessions">
+                    {% for session_number in sessions %}
+                        <option class="bill-sessions" value='{{ session_number.session }}'>{{ session_number.session }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div class="type_selector">
+            <select multiple class="type_select">
+                <optgroup label="Bill Types" id="bill_types">
+                    {% for type in types %}
+                        <option class="bill-types" value='{{ type.abbreviation }}'>{{ type.verbose }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div class="subject_selector">
+            <select multiple class="subject_select" data-selector="subject_filter">
+                <optgroup label="Bill Subjects" id="bill_subjects">
+                    {% for subject in subjects %}
+                        <option class="bill-subjects" value='{{ subject.id }}'>{{ subject.name }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div class="committee_selector">
+            <select multiple class="committee_select" data-selector="committee_filter">
+                <optgroup label="Committees" id="bill-committees">
+                    {% for committee in committees %}
+                        <option class="committees" value='{{ committee.id }}'>{{ committee.title }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div class="introduced_selector">
+            <select class="introduced_select" data-selector="introduced_filter">
+                <optgroup label="Bill Introduction" id="introduced-dates">
+                    {% for date in introduced_dates %}
+                        <option class="introduced" value='{{ date.json }}'>{{ date.date }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        <div class="sponsor_selector">
+            <ul>
+                <li>
+                    <select multiple class="sponsor_select_body" data-selector="sponsor_filter">
+                        <optgroup label="Sponsor body" id="bill_sponsor_body">
+                                <option class="sponsors" value='S'>US Senate</option>
+                                <option class="sponsors" value='H'>US House of Representatives</option>
+                        </optgroup>
+                    </select>
+                </li>
+                <li>
+                    <select multiple class="sponsor_select_name" data-selector="sponsor_filter">
+                        <optgroup label="Sponsor name" id="bill_sponsor_name">
+                            {% for sponsor in sponsors %}
+                                <option class="sponsors" value='{{ sponsor.id }}'>{{ sponsor.get_name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </li>
+                <li>
+                    <select multiple class="sponsor_select_party" data-selector="sponsor_filter">
+                        <optgroup label="Sponsor party" id="bill_sponsor_party">
+                            {% for sponsor_party in sponsor_parties %}
+                                <option class="sponsors" value='{{ sponsor_party.id }}'>{{ sponsor_party.title }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </li>
+                <li>
+                    <select multiple class="sponsor_select_district" data-selector="sponsor_filter">
+                        <optgroup label="Sponsor district" id="bill_sponsor_district">
+                            {% for sponsor in sponsors %}
+                                <option class="sponsors" value='{{ sponsor.state }}'>{{ sponsor.state }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="filter-results">
+    <div class="results-heading-">
+        <h6 class="no-hover">
+            results:
+        </h6>
+        <p>
+        <div class="legislation-feed-wrapper">
+            {% include 'site/pages/legislation/feed_legislation.html' with special_feed="getLegislation" %}
+        </div>
+        </p>
+    </div>
+</div>
+<!-- Javascript -->
+<script> rebind='legislation'; </script>
+
+
+{% endblock %}

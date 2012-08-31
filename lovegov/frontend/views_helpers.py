@@ -241,13 +241,12 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
-def getQuestionStats(vals, poll):
+def getQuestionStats(vals, poll=None):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
     if poll:
-        poll = getLoveGovPoll()
         vals['poll'] = poll
         questions = poll.questions.all()
     else:

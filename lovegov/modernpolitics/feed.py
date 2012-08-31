@@ -232,7 +232,50 @@ def compareQuestionItem(q_item):
     q_item['agree'] = agree
 
 
+### gets legislation based on filter parametrs ###
+def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party_set, sponsor_district_set, feed_start):
+
+    # all legislation
+    legislation_items = Legislation.objects.all()
+
+    # filter
+    if session_set:
+        legislation_items = legislation_items.filter(
+            congress_session__in=session_set)
+    if type_set:
+        legislation_items = legislation_items.filter(
+            bill_type__in=type_set)
+    if subject_set:
+        legislation_items = legislation_items.filter(
+            bill_subjects__in=subject_set)
+    if committee_set:
+        legislation_items = legislation_items.filter(
+            committees__in=committee_set)
+    if introduced_set:
+        date_dict = json.loads(introduced_set)
+        date = datetime.date(year=date_dict['year'], month=date_dict['month'], day=date_dict['day'])
+        legislation_items = legislation_items.filter(
+            bill_introduced__gte=date)
+    if sponsor_body_set:
+        legislation_items = legislation_items.filter(
+            congress_body__in=sponsor_body_set)
+    if sponsor_name_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_name_set)
+    if sponsor_party_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_party_set)
+    if sponsor_district_set:
+        legislation_items = legislation_items.filter(
+            sponsor__in=sponsor_district_set)
+
+    # paginate
+    legislation_items = legislation_items[feed_start:feed_start+10]
+
+    return legislation_items
+
 ### update hot scores for all content ###
 def updateHotScores():
     for c in Content.objects.filter(in_feed=True):
         c.recalculateHotScore()
+

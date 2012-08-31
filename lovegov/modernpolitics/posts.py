@@ -10,6 +10,7 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 # register from login page via form
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1123,7 +1124,10 @@ def updateStats(request, vals={}):
     if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         p_id = request.POST['p_id']
-        poll = Poll.lg.get_or_none(id=p_id)
+        if p_id:
+            poll = Poll.lg.get_or_none(id=p_id)
+        else:
+            poll = None
         getQuestionStats(vals, poll)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
     elif object == 'you_agree_with':
@@ -1822,6 +1826,28 @@ def getQuestions(request, vals):
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
+
+def getLegislation(request, vals={}):
+    feed_start = int(request.POST['feed_start'])
+    session_set = json.loads(request.POST['session_set'])
+    type_set = json.loads(request.POST['type_set'])
+    subject_set = json.loads(request.POST['subject_set'])
+    committee_set = json.loads(request.POST['committee_set'])
+    introduced_set = json.loads(request.POST['introduced_set'])
+    sponsor_body_set = json.loads(request.POST['sponsor_body_set'])
+    sponsor_name_set = json.loads(request.POST['sponsor_name_set'])
+    sponsor_party_set = json.loads(request.POST['sponsor_party_set'])
+    sponsor_district_set = json.loads(request.POST['sponsor_district_set'])
+
+    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
+        committee_set=committee_set, introduced_set=introduced_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
+        sponsor_party_set=sponsor_party_set, sponsor_district_set=sponsor_district_set,
+        feed_start=feed_start)
+
+    vals['legislation_items'] = legislation_items
+
+    html = ajaxRender('site/pages/legislation/feed_helper_legislation.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get groups
