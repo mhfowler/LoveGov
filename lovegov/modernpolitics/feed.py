@@ -252,8 +252,10 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
         legislation_items = legislation_items.filter(
             committees__in=committee_set)
     if introduced_set:
+        date_dict = json.loads(introduced_set)
+        date = datetime.date(year=date_dict['year'], month=date_dict['month'], day=date_dict['day'])
         legislation_items = legislation_items.filter(
-            bill_introduced__gte=introduced_set)
+            bill_introduced__gte=date)
     if sponsor_body_set:
         legislation_items = legislation_items.filter(
             congress_body__in=sponsor_body_set)

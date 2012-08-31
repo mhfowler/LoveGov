@@ -914,7 +914,16 @@ def legislation (request, vals={}):
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
     now = datetime.now()
     time_range = [183,366,732,1464]
-    vals['introduced_dates'] = [now - timedelta(days=x) for x in time_range]
+
+    introduced_dates = []
+    for x in time_range:
+        date = now - timedelta(days=x)
+        json_date = json.dumps({'year':date.year, 'month':date.month, 'day':date.day})
+        date_tuple = {'json':json_date, 'date':date}
+        introduced_dates.append(date_tuple)
+    vals['introduced_dates'] = introduced_dates
+
+
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
