@@ -29,13 +29,17 @@
         <div style="clear:both;"></div>
     </div>
 
+    <span class="header-privacy change_privacy_mode public_mode_button public-icon"  title="You are in public mode." data-mode="PUB"
+            {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
+
+   <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
+           {% if anonymous_mode %} style="display:none;" {% endif %}></span>
+
     <div class="search">
         <input type="text" placeholder="Search">
         <img class="mag-glass" src="{{ STATIC_URL }}/images/search.png">
         <div class="search-dropdown"></div>
     </div>
-
-    <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon privacy-icon">
 
             {% comment %}
             <span class="name">

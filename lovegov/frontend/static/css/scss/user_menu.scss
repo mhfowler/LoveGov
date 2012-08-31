@@ -37,6 +37,7 @@ div.user-menu {
     float: left;
     margin-right: 10px;
   }
+
   div.options-row {
     float: left;
     margin-top: 20px;
@@ -45,12 +46,19 @@ div.user-menu {
       cursor: pointer;
       padding: 5px;
       margin-right: 15px;
+      float:left;
       &:hover {
-        background-color: $red;
-        color: white;
+        color:$red-light;
       }
     }
   }
+
+  span.privacy-mode-button {
+    width: 15px;
+    height: 15px;
+    margin-top:7px;
+  }
+
   div.bottom-options {
     position: absolute;
     bottom: 0;

@@ -893,6 +893,19 @@ def setPrivacy(request, vals={}):
     return response
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Toggles privacy cookies and returns html for button
+#-----------------------------------------------------------------------------------------------------------------------
+def changePrivacyMode(request, vals={}):
+    old_mode = request.POST['mode']
+    if old_mode == 'PUB':
+        mode = "PRI"
+    else:
+        mode = "PUB"
+    response = HttpResponse("changed privacy modes")
+    response.set_cookie('privacy',value=mode)
+    return response
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Sets privacy cookie and redirects to inputted page.
 #
 #-----------------------------------------------------------------------------------------------------------------------

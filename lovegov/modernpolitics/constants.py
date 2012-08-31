@@ -627,9 +627,7 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
-
     'getLegislation',
-
     'getGroupMembersForDisplay',
     'getNextPollQuestion',
     'getElections',
@@ -655,12 +653,12 @@ ACTIONS = [
     'saveScorecardAnswer',
     'saveAnswerInFeed',
     'logLinkClick',
-
     'runForElection',
     'addToScorecard',
     'removeFromScorecard',
     'inviteToScorecard',
-    'inviteToRunForElection'
+    'inviteToRunForElection',
+    'changePrivacyMode'
 
 ]
 

@@ -4060,3 +4060,27 @@ bind(".congress_header_link", "click", function(e) {
         window.location.href = url;
     }
 });
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ change privacy mode
+ *
+ ***********************************************************************************************************************/
+bind(".change_privacy_mode", "click", function(e) {
+    var mode = $(this).data('mode');
+    action({
+        'data': {'action':'changePrivacyMode', 'mode':mode},
+        success: function(data)
+        {
+            if (mode=="PRI") {
+                $(".private_mode_button").hide();
+                $(".public_mode_button").show();
+            }
+            else {
+                $(".public_mode_button").hide();
+                $(".private_mode_button").show();
+            }
+        }
+    });
+});
