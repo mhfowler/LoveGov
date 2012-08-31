@@ -1,0 +1,17 @@
+{% extends 'site/pieces/actions/action_verbose.html' %}
+
+{% load humanize %}
+{% load thumbnail %}
+
+{% block action_content %}
+
+    <td class="action-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/share.png"/></td>
+
+    <td class="action-text">
+        {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=you_acted capital=true %}
+        {% if confirmed %} added {{ added.get_name }} to
+        {% else %} removed {{ added.get_name }} from {% endif %}
+        {% include "site/pieces/actions/action_name_snippet.html" with object=to_object you=to_you %}
+    </td>
+
+{% endblock %}

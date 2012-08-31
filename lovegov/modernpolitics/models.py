@@ -24,6 +24,7 @@ import json
 import time
 from datetime import timedelta
 from datetime import datetime
+import re
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -66,7 +67,7 @@ class LGModel(models.Model):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
+    creator = models.ForeignKey("UserProfile", null=True)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -1044,7 +1045,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
-    election_subscriptions = models.ManyToManyField("Election", related_name="users_tracking")
     group_views = models.ManyToManyField("GroupView")
     # SETTINGS
     private_follow = models.BooleanField(default=False)
@@ -1065,6 +1065,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
+
 
     def __unicode__(self):
         return self.first_name
@@ -1203,6 +1204,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location:
             self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
+
+
+    def getRepresentatives(self, location=None):
+        from lovegov.modernpolitics.initialize import getSensFromState, getRepsFromLocation
+        congressmen = []
+        if not location:
+            location = self.location or self.temp_location
+        if location and location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+        return congressmen
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
@@ -1784,10 +1801,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.networks.all()
 
     def getGroupSubscriptions(self):
-        return self.group_subscriptions.all()
+        return self.getSubscriptions().filter(is_election=False)
 
     def getElectionSubscriptions(self):
-        return self.election_subscriptions.all()
+        e_ids = self.getSubscriptions().filter(is_election=True).values_list("id", flat=True)
+        return Election.objects.filter(id__in=e_ids)
+
+    def getSubscriptions(self):
+        return self.group_subscriptions.all()
 
     def getPoliticians(self):
         supported = Supported.objects.filter(confirmed=True, user=self)
@@ -1959,6 +1980,8 @@ class Action(Privacy):
             object = self.pinnedaction
         elif action_type == 'RU':
             object = self.runningforaction
+        elif action_type == 'AD':
+            object = self.addtoscorecardaction
         else:
             object = None
         return object
@@ -2044,7 +2067,7 @@ class GroupFollowAction(Action):
 
     def autoSave(self):
         self.action_type = 'GF'
-        if self.group.group_type != "E":
+        if not self.group.is_election:
             self.privacy = "PRI"
         super(GroupFollowAction,self).autoSave()
 
@@ -2268,6 +2291,39 @@ class PinnedAction(Action):
 
         return render_to_string('site/pieces/actions/pinned_verbose.html',vals)
 
+#=======================================================================================================================
+# Add a person to a scorecard
+#=======================================================================================================================
+class AddToScorecardAction(Action):
+    politician = models.ForeignKey(UserProfile, null=True)                          # if null, then it was an invite
+    invite_email = models.EmailField(null=True)
+    scorecard = models.ForeignKey("Scorecard", related_name="added_actions")
+    confirmed = models.BooleanField(default=True)
+
+    def getTo(self):
+        return self.scorecard
+
+    def autoSave(self):
+        self.action_type = 'AD'
+        super(AddToScorecardAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = self.scorecard
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'added' : self.politician,
+            'to_object' : to_object,
+            'confirmed': self.confirmed
+        })
+
+        return render_to_string('site/pieces/actions/add_to_scorecard_verbose.html',vals)
 
 #=======================================================================================================================
 # Deleting some content action
@@ -2435,7 +2491,8 @@ class GroupJoinedAction(Action):
             'group' : group_joined.group,
             'inviter' : inviter,
             'from_user' : group_joined.user,
-            'modifier' : self.modifier
+            'modifier' : self.modifier,
+            'election': group_joined.group.is_election
         })
 
         return render_to_string('site/pieces/actions/group_joined_verbose.html',vals)
@@ -2476,20 +2533,42 @@ class VotedAction(Action):
 # Notifying a user of something important to them. privacy is in case they ought not be able to see who
 #=======================================================================================================================
 class Notification(Privacy):
-    notify_user = models.ForeignKey(UserProfile, related_name="notifications")
+    notify_user = models.ForeignKey(UserProfile, related_name="notifications", null=True)
     action = models.ForeignKey(Action , related_name="notifications") ## For Aggregate Notifications :: most recent action
     viewed = models.BooleanField(default=False)
     when = models.DateTimeField(auto_now_add=True)
     # for aggregating notifications like facebook
     agg_actions = models.ManyToManyField(Action , related_name="agg_notifications")
+    # for inviting people who are off of LoveGov
+    notify_email = models.EmailField(null=True)
 
+    ## when someone registers and notification gets associated with them ##
+    def claimedByProfile(self, user):
+        self.notify_user = user
+        self.save()
+        # based on action type could actually do some stuff
+        action = self.action.downcast()
+        if action.action_type == 'AD':
+            action.politician = user
+            action.save()
+            action.scorecard.politicians.add(user)
+        if action.action_type == 'JO':
+            relationship = action.group_joined
+            if relationship.invite_email == user.email:
+                logger.debug("successful claim of invite relationship by " + user.email)
+                relationship.user = user
+                relationship.save()
+            else:
+                logger.error("user was made to claim invited relationship that wasn't their email? " + str(relationship.invite_email) + " | " + user.email)
+
+
+    ## aggregate actions ##
     def addAggAction(self,action):
         self.agg_actions.add(action)
         if action.privacy == "PUB":
             self.action = action
         self.viewed = False
         self.save()
-
 
     ## Notificaitons Verbose Switch ##
     def getVerbose(self,viewer,vals={}):
@@ -2510,6 +2589,8 @@ class Notification(Privacy):
             return self.getSharedVerbose(viewer,vals)
         elif type == 'SU':
             return self.getSupportedVerbose(viewer, vals)
+        elif type == 'AD':
+            return self.getAddedToScorecardVerbose(viewer, vals)
         else:
             return ''
 
@@ -2633,7 +2714,8 @@ class Notification(Privacy):
             'inviter' : inviter,
             'from_user' : group_joined.user,
             'modifier' : action.modifier,
-            'group_join' : group_joined
+            'group_join' : group_joined,
+            'election': group_joined.group.is_election
         })
 
         return render_to_string('site/pieces/notifications/group_joined_verbose.html',vals)
@@ -2712,6 +2794,26 @@ class Notification(Privacy):
         })
 
         return render_to_string('site/pieces/notifications/support_verbose.html',vals)
+
+
+        ## Added to scorecard Verbose ##
+    def getAddedToScorecardVerbose(self,viewer=None,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'from_user' : action_user,
+            'you_acted' : you_acted,
+            'scorecard' : action.scorecard,
+            'confirmed': action.confirmed
+        })
+
+        return render_to_string('site/pieces/notifications/added_to_scorecard_verbose.html',vals)
 
 
 ########################################################################################################################
@@ -3029,6 +3131,7 @@ class Legislation(Content):
     # Bill Identifiers
     congress_session = models.ForeignKey(CongressSession)
     bill_type = models.CharField(max_length=2)
+    congress_body = models.CharField(max_length=1, default="H")             # can be h or s (house or senate)
     bill_number = models.IntegerField()
     # Bill Times
     bill_updated = models.DateTimeField(null=True)
@@ -3038,7 +3141,7 @@ class Legislation(Content):
     state_text = models.CharField(max_length=50,null=True)
     # Title
     full_title = models.CharField(max_length=5000,null=True)
-    # Sponsors
+    # Sponsorsmodels.py
     # cosponsor relationship is stored in LegislationCosponsor object.  To retrieve them you can use "self.legislation_cosponsors"
     sponsor = models.ForeignKey(UserProfile, related_name="sponsored_legislation", null=True)
     committees = models.ManyToManyField('Committee', related_name="legislation_committees", null=True)
@@ -3047,6 +3150,13 @@ class Legislation(Content):
     bill_subjects = models.ManyToManyField('LegislationSubject', null=True, related_name="subject_bills")
     bill_summary = models.TextField(null=True,max_length=400000)
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
+
+    def setCongressBody(self):
+        if self.bill_type.startswith("h"):
+            self.congress_body = "H"
+        elif self.bill_type.startswith("s"):
+            self.congress_body = "S"
+        self.save()
 
     def getTitle(self):
         if self.title and self.title != '':
@@ -3417,6 +3527,13 @@ class Poll(Content):
         self.num_questions += 1
         self.save()
 
+    def getPollProgress(self, viewer):
+        q_ids = self.questions.all().values_list('id', flat=True)
+        responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
+        poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
+        return poll_progress
+
+
 #=======================================================================================================================
 # Scorecard, a group response to a poll
 #
@@ -3450,6 +3567,7 @@ class Scorecard(Content):
 
     def getEditURL(self):
         return self.get_url() + 'edit/'
+
 
     def getPermissionToEdit(self, viewer):
         if self.group:
@@ -3794,6 +3912,7 @@ class Group(Content):
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
     subscribable = models.BooleanField(default=True)                                            # indicates whether or not you can follow or unfollow this group
+    is_election = models.BooleanField(default=False)
     content_by_posting = models.BooleanField(default=True)                                      # if true, group content is determined based on what is posted to group
                                                                                                 # else false, then group content is determined by things created by members anywhere
     # democratic groups
@@ -3858,8 +3977,6 @@ class Group(Content):
             object = self.party
         elif type == 'U':
             object = self.usergroup
-        elif type == 'E':
-            object = self.election
         elif type == 'S':
             object = self.stategroup
         elif type == 'C':
@@ -3870,6 +3987,8 @@ class Group(Content):
             object = self.politiciangroup
         elif type == 'X':
             object = self.calculatedgroup
+        elif type == 'E':
+            object = self.election
         else: object = self
         return object
 
@@ -3948,7 +4067,7 @@ class Group(Content):
     # Thin wrapper for adding admin.
     #-------------------------------------------------------------------------------------------------------------------
     def addAdmin(self, user):
-        if not self.hasMember(user):
+        if not self.is_election and not self.hasMember(user):
             self.joinMember(user)
         self.admins.add(user)
 
@@ -3960,8 +4079,9 @@ class Group(Content):
         if not group_joined:
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
+        group = group_joined.group
         group_joined.privacy = privacy
-        if not group_joined.confirmed and not group_joined.group.system:
+        if not group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups += 1
             user.save()
         group_joined.confirm()
@@ -3980,8 +4100,9 @@ class Group(Content):
         if not group_joined:
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
+        group = group_joined.group
         group_joined.privacy = privacy
-        if group_joined.confirmed and not group_joined.group.hidden:
+        if group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups -= 1
             user.save()
         group_joined.clear()
@@ -4440,21 +4561,19 @@ class UserGroup(Group):
 # an election, is a group centered around a particular office
 #=======================================================================================================================
 class Election(Group):
-    running = models.ManyToManyField(UserProfile, related_name="running_for")
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     office = models.ForeignKey(Office, null=True)
     election_date = models.DateTimeField()
-    invite_only = models.BooleanField(default=False)                # you have to be invited to run
-    election_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'E'
+        self.is_election = True
         super(Election, self).autoSave(creator=creator,privacy=privacy)
 
     def joinRace(self, user):
-        if not user in self.running.all():
-            self.running.add(user)
+        if not self.hasMember(user):
+            self.joinMember(user)
             action = RunningForAction(user=user, election=self, modifier="A")
             action.autoSave()
             if not user.politician:
@@ -4462,8 +4581,8 @@ class Election(Group):
                 user.save()
 
     def leaveRace(self, user):
-        if user in self.running.all():
-            self.running.remove(user)
+        if self.hasMember(user):
+            self.removeMember(user)
             action = RunningForAction(user=user, election=self, modifier="S")
             action.autoSave()
 
@@ -4681,6 +4800,15 @@ class ValidEmailExtension(LGModel):
     extension = models.CharField(max_length=100)
     date_added = models.DateTimeField(auto_now_add=True)
 
+#=======================================================================================================================
+# Save when someone invites someone from off lovegov to do something
+#
+#=======================================================================================================================
+class InvitedToRegister(LGModel):
+    invite_email = models.EmailField()
+    inviter = models.ForeignKey("UserProfile")
+    notification = models.ForeignKey(Notification)
+
 ########################################################################################################################
 ########################################################################################################################
 #   Relationships
@@ -4689,7 +4817,8 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 class Relationship(Privacy):
-    user = models.ForeignKey(UserProfile, related_name='relationships')
+    user = models.ForeignKey(UserProfile, related_name='relationships', null=True)
+    invite_email = models.EmailField(null=True)
     created_when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------
@@ -4730,6 +4859,8 @@ class Invite(LGModel):
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
     rejected = models.BooleanField(default=False)
     declined = models.BooleanField(default=False)
+
+    invite_email = models.EmailField(null=True)
 
     class Meta:
         abstract=True
@@ -4884,7 +5015,6 @@ class GroupJoined(UCRelationship, Invite):
         self.content = self.group
         self.creator = self.user
         self.save()
-
 
 #=======================================================================================================================
 # relationship between two users

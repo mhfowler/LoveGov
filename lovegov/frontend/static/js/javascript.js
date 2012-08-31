@@ -26,6 +26,19 @@ function bindOnReload() {
     bindNotificationsDropdownClickOutside();
 
     switch (rebind) {
+
+        case "home": initHomePage(); break;
+        case "profile": initFeed(); break;
+        case "legislation":
+            shortenLongText();
+            showLegSelectors();
+            showSelectors();
+            loadBillSelect2();
+            break;
+        case "legislation-view":
+            shortenLongText(); break;
+        case "legislation_detail":
+            shortenLongText(); break;
         case "home":
             break;
         case "profile":
@@ -79,6 +92,7 @@ function bindOnNewElements() {
     bindTooltips();
 }
 
+
 /***********************************************************************************************************************
  *
  *     ~document.ready() of initial page load
@@ -89,6 +103,7 @@ function bindOnNewElements() {
 
 
 var auto_update_page;
+
 
 $(document).ready(function()
 {
@@ -101,8 +116,7 @@ $(document).ready(function()
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
     if ( !History.enabled )
-    {
-        // History.js is disabled for this browser.
+    {        // History.js is disabled for this browser.
         // This is because we can optionally choose to support HTML4 browsers or not.
         return false;
     }
@@ -209,10 +223,6 @@ function updatePage() {
 
             // update notifications num
             $(".notifications_dropdown_button").text(obj.notifications_num);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
         }
     });
 }
@@ -223,8 +233,8 @@ function updatePage() {
  *
  ***********************************************************************************************************************/
 bind(".header_link", 'click', null, function(event) {
-    $(".header_link").removeClass("clicked");
-    $(this).addClass("clicked");
+        $(".header_link").removeClass("clicked");
+        $(this).addClass("clicked");
 });
 
 bind(".do_ajax_link", 'click', null, function(event) {
@@ -237,7 +247,7 @@ function ajaxReload(theurl, loadimg)
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $('.main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
+    if (theurl == "/about/") { var timeout = setTimeout(function(){$(".page_loading").show();},0); }
     $.ajax
         ({
             url:theurl,
@@ -248,7 +258,10 @@ function ajaxReload(theurl, loadimg)
                 if (pre_page_nonce == current_page_nonce) {
                     var returned = eval('(' + data + ')');
                     History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                    if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
+                    if (theurl=="/about/") {
+                        clearTimeout(timeout);
+                        setTimeout(function() {$(".page_loading").fadeOut();}, 600);
+                    }
                     $('body').css("overflow","scroll");
                     $('.main_content').css("top","0px");
                     $(".main_content").html(returned.html);
@@ -373,9 +386,9 @@ function bindTooltips() {
 }
 
 bind(".bind_link", "click", null, function(event) {
-    event.preventDefault();
     var url = $(this).data('url');
     window.location.href = url;
+    event.stopPropagation();
 });
 
 
@@ -390,29 +403,36 @@ function homeReload(theurl) {
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $(".home_reloading").show();
-    $.ajax
-        ({
-            url:theurl,
-            type: 'POST',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                if (pre_page_nonce == current_page_nonce) {
-                    $(".home_reloading").hide();
-                    var returned = eval('(' + data + ')');
-                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                    path = returned.url;
-                    $(".home_focus").html(returned.focus_html);
-                    bindOnReload();
+
+    // if coming from a home page
+    if ($(".home_sidebar").length!=0) {
+        $.ajax
+            ({
+                url:theurl,
+                type: 'POST',
+                data: {'url':window.location.href},
+                success: function(data)
+                {
+                    if (pre_page_nonce == current_page_nonce) {
+                        $(".home_reloading").hide();
+                        var returned = eval('(' + data + ')');
+                        History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                        path = returned.url;
+                        $(".home_focus").html(returned.focus_html);
+                        bindOnReload();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    if (pre_page_nonce == current_page_nonce) {
+                        $('body').html(jqXHR.responseText);
+                    }
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                if (pre_page_nonce == current_page_nonce) {
-                    $('body').html(jqXHR.responseText);
-                }
-            }
-        });
+            });
+    }
+    else {
+        ajaxReload(theurl, "crazy");
+    }
 }
 
 /* move asterisk, when section is selected */
@@ -458,20 +478,27 @@ bind(".red_triangle", 'click', null, function(event) {
 
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
-    var navbar_section = $(this).parents(".navbar_section");
-    event.preventDefault();
+    homeReload($(this).attr("href"));
+
+    /*
+     //var navbar_section = $(this).parents(".navbar_section");
+     if (!$(this).hasClass("clicked")) {
+     //selectNavLink($(this));
+     //closeAllNavBarSections();
+     homeReload($(this).attr("href"));
+     } else {
+     /*
+     if (navbar_section.hasClass("section_shown")) {
+     navSectionToggle(navbar_section, false, true);
+     } else {
+     navSectionToggle(navbar_section, true, true);
+     } */
+    //}
+});
+
+bind(".left_link", 'click', null, function(event) {
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
-        //closeAllNavBarSections();
-        //navSectionToggle(navbar_section, true, true);
-        homeReload($(this).attr("href"));
-    } else {
-        /*
-         if (navbar_section.hasClass("section_shown")) {
-         navSectionToggle(navbar_section, false, true);
-         } else {
-         navSectionToggle(navbar_section, true, true);
-         } */
     }
 });
 
@@ -529,11 +556,14 @@ function navSectionToggle(navbar_section, show, animate) {
     }
 }
 
+
 function selectNavLink(navlink) {
     if (navlink.length!=0) {
         $(".home_link").removeClass("clicked");
         navlink.addClass("clicked");
-
+        // add/remove header link stuff
+        $(".header_link").removeClass("clicked");
+        $(".home_header_link").addClass("clicked");
         // toggle section and remove new items num
         if (navlink.hasClass("navbar_link")) {
             var num_new_content = navlink.parents(".home_link_wrapper").find(".num_new_content");
@@ -548,7 +578,7 @@ function selectNavLink(navlink) {
 
 /* helper to get navlink element from url */
 function getNavLink(url) {
-    return $('.home_link[href="' + url + '"]');
+    return $('.left_link[href="' + url + '"]');
 }
 
 function navSectionHide(navbar_section, animation_time) {
@@ -896,12 +926,18 @@ function selectQuestionRank(rank) {
 
 bind(".type_button" , "click" , null , function(event) {
     if (!$(this).hasClass("clicked")) {
+        clearTypes();
         selectType($(this).data('type'));
     }
     else {
         removeType($(this).data('type'));
     }
 });
+
+function clearTypes() {
+    $(".type_button").removeClass("clicked");
+    feed_types = [];
+}
 
 function selectType(type) {
     var which = $('.type_button[data-type="' + type + '"]');
@@ -943,7 +979,7 @@ function getFeed(container) {
     var replace = (feed_start==0);
     if (replace) {
         var old_height = $("body").height();
-        $("body").css('min-height', old_height);
+        //container.css('min-height', old_height);
         container.find(".feed_content").empty();
         container.find(".load_more").show();
         container.find(".everything_loaded_wrapper").hide();
@@ -1005,6 +1041,32 @@ function getFeed(container) {
         var city = getValueFromKey(container, 'city');
         data['state'] = state;
         data['city'] = city;
+    }
+    else if (feed == 'getLegislation') {
+        var session = $('select.session_select').val();
+        var session_json = JSON.stringify(session);
+        var type = $('select.type_select').val();
+        var type_json = JSON.stringify(type);
+        var subject = $('select.subject_select').val();
+        var subject_json = JSON.stringify(subject);
+        var committee = $('select.committee_select').val();
+        var committee_json = JSON.stringify(committee);
+        var introduced = $('select.introduced_select').val();
+        var introduced_json = JSON.stringify(introduced);
+        var sponsor_body = $('select.sponsor_select_body').val();
+        var sponsor_body_json = JSON.stringify(sponsor_body);
+        var sponsor_name = $('select.sponsor_select_name').val();
+        var sponsor_name_json = JSON.stringify(sponsor_name);
+        var sponsor_party = $('select.sponsor_select_party').val();
+        var sponsor_party_json = JSON.stringify(sponsor_party);
+        var sponsor_district = $('select.sponsor_select_district').val();
+        var sponsor_district_json = JSON.stringify(sponsor_district);
+
+        data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
+            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
+            'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
+            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
+            'sponsor_district_set':sponsor_district_json};
     }
     action({
             data: data,
@@ -2145,6 +2207,141 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
+ *      ~Legislation
+ *
+ **********************************************************************************************************************/
+
+bind( '.filter_box' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+    }
+    else {
+        $(this).addClass('clicked');
+    }
+});
+
+bind( '.expand_link' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: hidden
+        });
+    }
+    else {
+        $(this).addClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: auto
+        });
+    }
+});
+
+function billPassageOrder() {
+
+}
+
+function loadBillSelect2() {
+    $('.session_select').select2({
+        placeholder: "search for bill sessions"
+    });
+    $('.type_select').select2({
+        placeholder: "search for bill types"
+    });
+    $('.subject_select').select2({
+        placeholder: "search for bill subjects"
+    });
+    $('.committee_select').select2({
+        placeholder: "search for bill committees"
+    });
+    $('.introduced_select').select2({
+        placeholder: "search by date period"
+    });
+    $('.sponsor_select_body').select2({
+        placeholder: "search for bill sponsor body"
+    });
+    $('.sponsor_select_name').select2({
+        placeholder: "search for bill sponsor name"
+    });
+    $('.sponsor_select_party').select2({
+        placeholder: "search for bill sponsor party"
+    });
+    $('.sponsor_select_district').select2({
+        placeholder: "search for bill sponsor district"
+    });
+}
+
+function showSelectors() {
+    $('.legislation_selector').children().hide();
+}
+
+function showLegSelectors() {
+    $('.filter_box').click(function(event) {
+        event.preventDefault();
+        if ($(this).hasClass('unchecked')) {
+            $(this).removeClass('unchecked');
+            $(this).addClass('checked');
+            var selector = $("." + $(this).data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+        else {
+            $(this).removeClass('checked');
+            $(this).addClass('unchecked');
+            var selector = $("." + $(this).data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+    });
+}
+
+function shortenLongText() {
+    var ellipsestext = "...";
+    var moretext = "read more";
+    var lesstext = "less";
+    if ($('.long_text').hasClass("bill_detail")) {
+        var showChar = 300;
+    }
+    else {
+        var showChar = 150;
+    }
+    $('.long_text').each(function() {
+
+        var content = $(this).html();
+
+        if(content.length > showChar) {
+
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+
+            if($(this).hasClass("bill_detail")) {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+            }
+            else {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span>';
+            }
+            $(this).html(html);
+        }
+    });
+
+    if($('.long_text').hasClass("bill_detail")) {
+        $('.morelink').click(function(){
+            if($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $('.morecontent_span').toggle();
+            $('.moreellipses').toggle();
+            return false;
+        });
+    }
+}
+
+/***********************************************************************************************************************
+ *
  *      ~GroupEdit
  *
  **********************************************************************************************************************/
@@ -2187,6 +2384,7 @@ bind( "div.group_privacy_radio" , 'click' , null , function(event)
 
     $(this).children("input:radio[name=group_privacy]").attr('checked',true);
     $(this).addClass("create-radio-selected");
+
 });
 
 // Group Scale Radio
@@ -3741,6 +3939,26 @@ bind('.stop_running_for' , 'click' , null , function(e)
     });
 });
 
+bind('.invite_to_run_for' , 'click' , null , function(e)
+{
+    var e_id = $(this).data('e_id');
+    getModal('invite_to_run_for_modal' , { 'e_id': e_id });
+});
+
+
+bind('.invite_to_run_for_button' , 'click' , null , function(e)
+{
+    $(".success_message").hide();
+    var e_id = $(this).data('e_id');
+    var invite_email = $(".invite_to_election_email").val();
+    action({
+        data: {'action': 'inviteToRunForElection', 'e_id':e_id, 'invite_email':invite_email},
+        success: function(data) {
+            $(".success_message").show();
+        }
+    });
+});
+
 
 /***********************************************************************************************************************
  *
@@ -3768,5 +3986,77 @@ bind(".filter_by_city_input", "keypress", function(e) {
         var feed = $(this).parents(".feed_main");
         feed.data('city', value);
         refreshFeed(feed);
+    }
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ add to / invite to scorecard
+ *
+ ***********************************************************************************************************************/
+bind(".add_to_scorecard", "click", function(e) {
+    var s_id = $(this).data('s_id');
+    getModal('add_to_scorecard_modal' , { 's_id': s_id }, function() {
+        $(".add_to_select").select2({
+            placeholder: 'Find politicians on LoveGov to add to your scorecard.'
+        });
+    });
+});
+
+
+bind(".add_to_button", "click", function(e) {
+    $(".success_message").hide();
+    var s_id = $(this).data('s_id');
+    var add_ids = $(".add_to_select").val();
+    action({
+        'data': {'action':'addToScorecard', 's_id':s_id, 'add_ids':JSON.stringify(add_ids)},
+        success: function(data)
+        {
+            $(".add_success_message").show();
+        }
+    });
+});
+
+bind(".remove_from_scorecard", "click", function(e) {
+    var s_id = $(this).data('s_id');
+    var p_id = $(this).data('p_id');
+    var wrapper = $(this).parents(".scorecard_avatar_strip_wrapper");
+    action({
+        'data': {'action':'removeFromScorecard', 's_id':s_id, 'p_id':p_id},
+        success: function(data)
+        {
+            wrapper.remove();
+        }
+    });
+});
+
+bind(".invite_to_scorecard_button", "click", function(e) {
+    $(".success_message").hide();
+    var s_id = $(this).data('s_id');
+    var invite_email = $(".invite_to_email").val();
+    action({
+        'data': {'action':'inviteToScorecard', 's_id':s_id, 'invite_email':invite_email},
+        success: function(data)
+        {
+            $(".add_success_message").show();
+            alert(data);
+        }
+    });
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ Dismissible header stuff
+ *
+ ***********************************************************************************************************************/
+bind(".congress_header_link", "click", function(e) {
+    var url = $(this).data('url');
+    var warning = $(this).data('warning');
+    if (warning == 1) {
+        getModal("answer_questions_warning_modal", {"which":"congress_header"});
+    }
+    else {
+        window.location.href = url;
     }
 });

@@ -25,13 +25,14 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    group_subscriptions = viewer.getGroupSubscriptions()
+    subscriptions = viewer.getSubscriptions()
+    group_subscriptions = subscriptions.filter(is_election=False)
+    election_subscriptions =  subscriptions.filter(is_election=True)
     for g in group_subscriptions:
         g.num_new = g.getNumNewContent(viewer)
+    for g in election_subscriptions:
+        g.num_new = g.getNumNewContent(viewer)
     vals['group_subscriptions'] = group_subscriptions
-    election_subscriptions = viewer.getElectionSubscriptions()
-    for e in election_subscriptions:
-        e.num_new = e.getNumNewContent(viewer)
     vals['election_subscriptions'] = election_subscriptions
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -243,13 +244,12 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
-def getQuestionStats(vals, poll):
+def getQuestionStats(vals, poll=None):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
     if poll:
-        poll = getLoveGovPoll()
         vals['poll'] = poll
         questions = poll.questions.all()
     else:
@@ -287,15 +287,6 @@ def getGroupTuples(viewer, question, response):
         g_tuple = {'percent':percent, 'group':g}
         group_tuples.append(g_tuple)
     return group_tuples
-
-#-----------------------------------------------------------------------------------------------------------------------
-# gets poll progress
-#-----------------------------------------------------------------------------------------------------------------------
-def getPollProgress(viewer, poll):
-    q_ids = poll.questions.all().values_list('id', flat=True)
-    responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
-    poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
-    return poll_progress
 
 #-----------------------------------------------------------------------------------------------------------------------
 # fill dictionary for a particular group
@@ -360,7 +351,7 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.running.all().order_by("-num_supporters")
+    running = election.members.all().order_by("-num_supporters")
     supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
@@ -368,7 +359,7 @@ def valsElection(viewer, election, vals):
     vals['running'] = running
     vals['election'] = election
     vals['i_am_running'] = viewer in running
-    vals['is_user_following'] = election in viewer.election_subscriptions.all()
+    vals['is_user_following'] = election in viewer.getElectionSubscriptions()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -413,7 +404,6 @@ def valsFBFriends(request, vals):
 def getStateTuples(vals):
     vals['states'] = STATES
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals for reps header
 #-----------------------------------------------------------------------------------------------------------------------
@@ -422,20 +412,14 @@ def valsRepsHeader(vals):
     location = viewer.temp_location or viewer.location
     vals['location'] = location
 
-    congressmen = []
     if location:
         vals['state'] = location.state
         vals['district'] = location.district
         vals['latitude'] = location.latitude
         vals['longitude'] = location.longitude
-        if location.state:
-            senators = getSensFromState(location.state)
-            for s in senators:
-                congressmen.append(s)
-            if location.district:
-                reps = getRepsFromLocation(location.state, location.district)
-                for r in reps:
-                    congressmen.append(r)
+
+    congressmen = viewer.getRepresentatives(location)
+
     if LOCAL and location:
         bush = getUser("George Bush")
         congressmen = [bush, bush, bush]
@@ -445,3 +429,22 @@ def valsRepsHeader(vals):
     congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
     if len(congressmen) < 3:
         vals['few_congressmen'] = True
+
+#-----------------------------------------------------------------------------------------------------------------------
+# randomly (or by user info), chooses a teaser header
+#-----------------------------------------------------------------------------------------------------------------------
+def valsDismissibleHeader(request, vals):
+
+    header = random.choice(DISMISSIBLE_HEADERS)
+    vals['dismissible_header'] = header
+
+    if header == 'congress_teaser':
+        congress = Group.lg.get_or_none(alias="congress")
+        #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
+        #congress_members = random.sample(congress_members, min(16, len(congress_members)))
+        #congress_members = UserProfile.objects.filter(primary_role__office__governmental=True)[:16]
+        congress_members = UserProfile.objects.filter(currently_in_office=True)[:16]
+        if LOCAL:
+            congress_members = UserProfile.objects.all()[:16]
+        vals['congress'] = congress
+        vals['congress_members'] = congress_members

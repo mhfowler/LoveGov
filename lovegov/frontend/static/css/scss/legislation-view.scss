@@ -1,0 +1,872 @@
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+
+a {
+  color: #0254EB;
+
+  &:visited {
+    color: #0254EB
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  .morelink {
+    text-decoration:none;
+    outline: none;
+  }
+}
+
+.morecontent span {
+  display: none;
+}
+
+div.leg-title {
+  height: 25px;
+  width: 200px;
+  clear:both;
+}
+
+div.main {
+  margin-left: 0px;
+  margin-top: 0px;
+  height: 280px;
+  width: 1250px;
+
+  div.summary-outlook {
+    float: left;
+    height: auto;
+    width: 350px;
+    margin-top: 0px;
+
+    div.level1-summary {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 25px;
+      width: 350px;
+
+      div.bill-summary {
+        height: 100%;
+        width: 350px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
+      }
+    }
+
+    div.level1-summary-div {
+      margin-left: 0px;
+      margin-top: 10px;
+      height: auto;
+      width: 350px;
+
+      div.summary.long_text.more {
+        margin-top: 0px;
+        height: auto;
+        width: 350px;
+        padding-left: 5px;
+        text-align: justify;
+      }
+    }
+
+    div.level1-bill-views {
+      margin-left: 0px;
+      margin-top: 40px;
+      height: 25px;
+      width: 350px;
+
+      div.bill-views-label {
+        height: 100%;
+        width: 350px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
+      }
+    }
+
+    div.level1-bill-view-stats {
+      margin-left: 5px;
+      margin-top: 50px;
+      height: 70px;
+      width: 90px;
+
+      div.bill-views {
+        margin-top: 0px;
+        margin-left: 0px;
+        height: 50px;
+        width: 80px;
+        text-align: center;
+        border-right-width: 2px;
+        border-right-style: solid;
+        border-right-color: $blue;
+
+        h4.views {
+          margin-top: 10px;
+          color: $text-blue;
+          font-size: 28px;
+        }
+
+        h4 {
+          color: $text-blue;
+          font-size: 20px;
+          margin-top: -10px;
+        }
+      }
+
+      div.bill-outlook {
+        display:block;
+        margin-left: 90px;
+        margin-top: -35px;
+        height:70px;
+        width: 200px;
+
+        div.spectrum {
+          margin-left: 75px;
+          margin-top: 0px;
+          margin-bottom: 5px;
+          width:80px;
+          height:20px;
+          border: 1px;
+          border-color: black;
+          background-color:blue;
+          background-image: -webkit-gradient(linear, left top, right top, color-stop(0.01, $red), color-stop(0.5, white), color-stop(0.99, $text-blue));
+          background-image: -moz-linear-gradient(left center, $red 1%, white 50%, $text-blue 99%);
+          z-index: 1;
+        }
+
+        div.spectrum-select {
+          margin-top: -25px;
+          margin-left: 85px;
+          height:20px;
+          width: 20px;
+          -webkit-border-radius: 10px;
+          -moz-border-radius: 10px;
+          border-radius: 10px;
+          border-style: solid;
+          border-width: 2px;
+          border-color: black;
+          z-index:2;
+        }
+
+        div.spectrum-labels {
+          margin-left: 5px;
+          margin-top: -20px;
+          height: 30px;
+          width: 300px;
+          z-index:3;
+
+          div.gridlock {
+            height: 40px;
+            width: 100px;
+            margin-left: 0px;
+            margin-top: 0px;
+
+            h4.gridlock {
+              font-size: 18px;
+              color: $red;
+            }
+          }
+
+          div.consensus {
+            height: 40px;
+            width: 100px;
+            margin-left: 155px;
+            margin-top: -40px;
+
+            h4.consensus {
+               font-size: 18px;
+               color: $text-blue;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  div.sponsor {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
+    width: 100px;
+
+    div.level1-sponsor {
+      margin-top: 0px;
+      height: 25px;
+      width: 100px;
+
+      div.bill-sponsor {
+        height: 100%;
+        width: 100px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
+      }
+    }
+
+    div.sponsor-pic {
+      display: center;
+      height: 135px;
+      width: 100px;
+      margin-top: 10px;
+      padding: 5px 5px 5px 5px;
+      background-color: $gray;
+    }
+
+    div.sponsor-caption {
+      margin-left: 0px;
+      margin-top: 5px;
+      height: 50px;
+      width: 100px;
+      text-align: center;
+      background-color: #E0E0E0;
+    }
+  }
+
+  div.subjects-committees {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
+    width: 150px;
+
+    div.level1-subjects {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 25px;
+      width: 150px;
+
+      div.bill-subjects-title {
+        height: 25px;
+        width: 150px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
+      }
+    }
+
+    div.subjects {
+      margin-top: 0px;
+      height: 90px;
+      width: 150px;
+      text-align: justify;
+
+      span{
+
+        ul {
+
+          li {
+            margin-left: -20px;
+            list-style-type: none;
+            font-size: 14px;
+
+          }
+        }
+      }
+    }
+
+    div.level1-committees {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 25px;
+      width: 150px;
+
+      div.bill-committees-title {
+        height: 100%;
+        width: 150px;
+
+        h4 {
+          font-size: 18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+        }
+      }
+    }
+
+    div.level1-committees-div {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 100px;
+      width: 150px;
+
+      div.committees {
+        margin-top: 0px;
+        height: 100%;
+        width: 150px;
+        padding-left: -10px;
+        text-align: justify;
+
+        span {
+          padding-left: -10px;
+
+          ul {
+            padding-left: -10px;
+
+            li {
+              margin-left: -20px;
+              list-style-type: none;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  div.progress {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
+    width: 150px;
+
+    div.level1-progress {
+      margin-left: 0px;
+      margin-top: 0px;
+      height: 25px;
+      width: 150px;
+
+      div.bill-progress-title {
+        height: 25px;
+        width: 150px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+
+        }
+      }
+    }
+
+    div.level1-progress-div {
+      margin-left: 0px;
+      margin-top: 5px;
+      height: 230px;
+      width: 150px;
+
+      div.progress-graphic {
+        display: center;
+        height: 100%;
+        width: 140px;
+        margin: 15px 5px 5px 5px;
+        text-align: center;
+
+        h3.progress-label {
+          color: black;
+          font-size: 14px;
+          margin-top: 0px;
+          margin-bottom: 4px;
+        }
+
+        img {
+          margin-top: 0px;
+        }
+      }
+    }
+  }
+
+  div.bill-stats {
+    display: inline-block;
+    margin-top: 0px;
+    margin-left: 10px;
+    vertical-align: top;
+    height: 100%;
+    width: 150px;
+    border: 1px;
+
+    div.bill-stats-div {
+      height: 260px;
+      width: 150px;
+      background-color: $light-gray;
+
+      div.support-stats {
+        text-align: center;
+        padding-top: 7px;
+
+        h3.number {
+          color: $text-blue;
+          font-size: 40px;
+          margin-top: 8px;
+        }
+
+        h3 {
+          color: $text-blue;
+          margin-top: -15px;
+        }
+      }
+
+      div.button {
+        margin-top: 3px;
+        margin-left: 0px;
+        height: 40px;
+        width: 100px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
+
+        &.support {
+          background-color: $text-blue;
+          margin-left: 25px;
+
+          span {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+          }
+        }
+      }
+
+      div.oppose-stats {
+        text-align: center;
+
+        h4.number {
+          color: $red;
+          font-size: 40px;
+          margin-top: 5px;
+        }
+
+        h4 {
+          color: $red;
+          margin-top: -15px;
+        }
+      }
+
+      div.button {
+        margin-top: 3px;
+        margin-left: 0px;
+        height: 40px;
+        width: 100px;
+        text-align: center;
+        border-style: solid;
+        border-width: 2px;
+        border-color: $gray;
+
+        &.oppose {
+          background-color: $red;
+          margin-left: 25px;
+
+          span {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+
+  div.bill-share-and-actions {
+    display: inline-block;
+    margin-left: 10px;
+    height: 100%;
+    width: 160px;
+
+    div.bill-share {
+      margin-top: 0px;
+      margin-left: 0px;
+      height: 100px;
+      width: 160px;
+      border: 1px;
+
+      div.bill-share-div {
+        height: 100%;
+        width: 160px;
+        background-color: $light-gray;
+        padding-top: 7px;
+
+        div.button {
+          margin-top: 3px;
+          margin-left: 0px;
+          height: 40px;
+          width: 130px;
+          text-align: center;
+          border-style: solid;
+          border-width: 2px;
+          border-color: $gray;
+
+          &.share {
+            background-color: $green;
+            margin-left: 15px;
+            margin-top: 5px;
+
+            span {
+              color: white;
+              font-size: 18px;
+              font-weight: bold;
+            }
+          }
+        }
+
+        div.share-icons {
+          margin-left: 15px;
+          margin-top: 5px;
+        }
+      }
+    }
+
+    div.bill-other-actions {
+      margin-top: 10px;
+      margin-left: 0px;
+      height: 150px;
+      width: 160px;
+      border: 1px;
+
+      div.bill-other-actions-div {
+        height: 100%;
+        width: 160px;
+        background-color: $light-gray;
+        padding-top: 7px;
+
+
+        div.button {
+          margin-top: 3px;
+          margin-left: 0px;
+          height: 40px;
+          width: 130px;
+          text-align: center;
+          border-style: solid;
+          border-width: 2px;
+          border-color: $gray;
+
+          &.follow {
+            background-color: $green;
+            margin-left: 15px;
+            margin-top: 5px;
+
+            span {
+              color: white;
+              font-size: 18px;
+              font-weight: bold;
+            }
+          }
+        }
+
+        div.button {
+          margin-top: 3px;
+          margin-left: 0px;
+          height: 40px;
+          width: 130px;
+          text-align: center;
+          border-style: solid;
+          border-width: 2px;
+          border-color: $gray;
+
+          &.contact {
+            background-color: $green;
+            margin-left: 15px;
+            margin-top: 5px;
+            height: 80px;
+
+            span {
+              color: white;
+              padding-right: 2px;
+              font-size: 15px;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+div.secondary {
+  display: block;
+  clear: both;
+  height: 350px;
+  width: 1250px;
+
+  div.secondary-top {
+    height:auto;
+    width: 1250px;
+
+    div.bill-text {
+      float: left;
+      height: auto;
+      width: 790px;
+
+      div.level2-bill-text {
+        height: 25px;
+        width: 790px;
+
+        div.bill-text-title {
+          height: 25px;
+          width: 790px;
+
+          h4 {
+            font-size:18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
+          }
+        }
+      }
+
+      div.level2-bill-text-div {
+        margin-left: 0px;
+        margin-top: 10px;
+        height: auto;
+        width: 790px;
+
+        div.bill-text.long_text.more {
+          margin-top: 0px;
+          height: auto;
+          width: 790px;
+          padding-left: 5px;
+          text-align: justify;
+        }
+      }
+    }
+
+    div.bill-recent-actions {
+      display: inline-block;
+      margin-left: 10px;
+      height: auto;
+      width: 320px;
+
+      div.level2-recent-actions {
+        height: 25px;
+        width: 320px;
+
+        div.recent-actions-title {
+          height: 25px;
+          width: 320px;
+
+          h4 {
+            font-size:18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
+
+          }
+        }
+      }
+
+      div.level2-recent-actions-div {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: auto;
+        width: 320px;
+
+        div.recent-actions {
+          display: inline-block;
+          margin-top: 0px;
+          height: auto;
+          width: 150px;
+          padding-left: -5px;
+
+          span{
+
+            ul {
+
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+              }
+            }
+          }
+        }
+
+        div.recent-action-dates {
+          display: inline-block;
+          margin-top: 0px;
+          margin-left: 0px;
+          height: auto;
+          width: 90px;
+          padding-left: 0px;
+
+          span{
+
+            ul {
+
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+
+                a {
+                  text-decoration: none;
+                  font-color: black;
+                }
+              }
+            }
+          }
+        }
+
+        div.recent-action-results {
+          display: inline-block;
+          margin-top: 0px;
+          margin-left: 0px;
+          height: auto;
+          width: 70px;
+          padding-left: 0px;
+
+          span{
+
+            ul {
+
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+
+                a {
+                  text-decoration: none;
+                  font-color: black;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  div.bill-amendments {
+    height: auto;
+    margin-top: 20px;
+    width: 790px;
+
+    div.level2-bill-amendments {
+      height: auto;
+      width: 790px;
+
+      div.bill-amendments-title {
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+        }
+      }
+
+
+
+      div.level2-bill-amendments-div {
+        margin-left: 0px;
+        margin-top: 10px;
+        height: auto;
+        width: 790px;
+
+        div.amendment-name {
+          margin-top: 0px;
+          height: 90px;
+          width: 140px;
+          padding-left: -10px;
+          text-align: justify;
+
+          span{
+
+            ul {
+
+              li {
+                margin-left: -20px;
+                list-style-type: none;
+                font-size: 14px;
+
+              }
+            }
+          }
+        }
+      }
+
+      div.amendment-type {
+        margin-top: -103px;
+        margin-left: 120px;
+        height: 90px;
+        width: 200px;
+        padding-left: -5px;
+
+        span{
+
+          ul {
+
+            li {
+              margin-left: -20px;
+              list-style-type: none;
+              font-size: 14px;
+
+              a {
+                text-decoration: none;
+                font-color: black;
+              }
+            }
+          }
+        }
+      }
+
+      div.amendment-result {
+        margin-top: -103px;
+        margin-left: 340px;
+        height: 190px;
+        width: 60px;
+        padding-left: -5px;
+
+        span{
+
+          ul {
+
+            li {
+              margin-left: -20px;
+              list-style-type: none;
+              font-size: 14px;
+
+              a {
+                text-decoration: none;
+                font-color: black;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

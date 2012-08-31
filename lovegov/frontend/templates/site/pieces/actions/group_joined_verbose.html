@@ -16,31 +16,31 @@
         {% if modifier == 'I' %}
             invited
             {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you %}
-            to join
+            to {% if election %} run for {% else %} join {% endif %}
 
         {% elif modifier == 'R' %}
-            requested to join
+            requested to {% if election %} run for {% else %} join {% endif %}
 
         {% elif modifier == 'F' %}
-            joined
+            {% if election %} is running for {% else %} joined {% endif %}
 
         {% elif modifier == 'N' %}
             declined
             {% include "site/pieces/actions/action_name_snippet.html" with object=inviter you=you_invited possesive=true %}
-            invite to join
+            invite to {% if election %} run for {% else %} join {% endif %}
 
         {% elif modifier == 'X' %}
             rejected
             {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you possesive=true %}
-            request to join
+            request to {% if election %} run for {% else %} join {% endif %}
 
         {% elif modifier == 'S' %}
-            left
+            {% if election %} dropped out of {% else %} left {% endif %}
 
         {% elif modifier == 'A' %}
             accepted
             {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=from_you possesive=true %}
-            request to join
+            request to {% if election %} run for {% else %} join {% endif %}
 
         {% endif %}
         {{ group.get_name }}

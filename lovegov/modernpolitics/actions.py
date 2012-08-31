@@ -433,32 +433,23 @@ def supportAction(viewer, politician, support, privacy):
 
 ## Action causes user to follow or unfollow inputted group, follow is true or false, depending on whether to start or stop ##
 def followGroupAction(viewer, group, follow, privacy):
-    group = group.downcast()
     if group.subscribable:
         # action and add or remove from many to many
         change = False
         if follow:
             modifier = "A"
-            if group.group_type == "E" and group not in viewer.election_subscriptions.all():
-                viewer.election_subscriptions.add(group)
-                change = True
-            elif not group in viewer.group_subscriptions.all():
+            if group.id not in viewer.group_subscriptions.all().values_list("id", flat=True):
                 viewer.group_subscriptions.add(group)
-                change = True
-            if change:
                 group.num_followers += 1
                 group.save()
+                change = True
         else:
             modifier = "S"
-            if group.group_type == "E" and group in viewer.election_subscriptions.all():
-                viewer.election_subscriptions.remove(group)
-                change = True
-            elif group in viewer.group_subscriptions.all():
+            if group.id in viewer.group_subscriptions.all().values_list("id", flat=True):
                 viewer.group_subscriptions.remove(group)
-                change = True
-            if change:
                 group.num_followers -= 1
                 group.save()
+                change = True
         if change:
             action = GroupFollowAction(user=viewer,privacy=privacy,group=group,modifier=modifier)
             action.autoSave()
@@ -499,7 +490,7 @@ def unpinContentAction(viewer, content, group, privacy):
 ## run for or stop running for an election ##
 def runForElectionAction(viewer, election, run):
     if run:
-        if not election.invite_only:
+        if not election.system:
             election.joinRace(viewer)
             LGException("user " + str(viewer.id) + " tried to run for an invited only election. e_id:" + str(election.id) )
     else:

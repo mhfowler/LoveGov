@@ -12,7 +12,7 @@ div.match_breakdown {
     div.topic-column {
       div.colored_area {
         p.percent {
-          display:block;
+          display:none;
         }
       }
     }
@@ -89,7 +89,7 @@ div.match_breakdown {
       &:hover {
         div.colored_area {
           p.percent {
-            display:block;
+            display:none;
           }
         }
       }

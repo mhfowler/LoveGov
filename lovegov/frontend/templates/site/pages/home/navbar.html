@@ -1,22 +1,26 @@
 {% load customtags %}
 <div class="left-navbar">
 
+    <div class="home_reloading home-reloading"></div>
+
     {% comment %}<div class="navbar-divider-line"></div> {% endcomment %}
 
     <div class="navbar-section navbar_section groups_section">
-        <a class="home_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
+        <a class="home_link dummy_link left_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}">
+            <span class="lil-goob"></span>
+            <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper groups_wrapper">
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="like-minded" %}
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="friends" %}
             <a href="#" class="create-link create_group_link"> + Create a Group </a>
         </div>
     </div>
 
     <div class="navbar-section navbar_section elections_section">
-        <a class="home_link section_title" href="/my_elections/" data-sequence="{{ sequence|increment }}">
+        <a class="home_link dummy_link left_link section_title" href="/my_elections/" data-sequence="{{ sequence|increment }}">
+            <span class="lil-goob"></span>
             <div class="navbar_title navbar-title"> My Elections </div> </a>
         <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper elections_wrapper">
@@ -27,9 +31,21 @@
         </div>
     </div>
 
+    <div class="navbar-section navbar_section discover_section">
+        <a class="home_link dummy_link left_link section_title" href="/discover/" data-sequence="{{ sequence|increment }}">
+            <span class="lil-goob"></span>
+            <div class="navbar_title navbar-title"> Discover </div> </a>
+        <span class="red_triangle red-triangle"></span>
+        <div class="navbar_links_wrapper discover_wrapper">
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="Find Representatives" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/congress/" section_title="Compare with Congress" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="Compare with Friends" %}
+        </div>
+    </div>
+
     {% comment %}
     <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/congress/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Politicians </div> </a> <span class="red_triangle red-triangle"></span>
+        <a class="home_link left_link section_title" href="/congress/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Politicians </div> </a> <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper politicians_wrapper">
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="representatives" %}
         </div>
@@ -40,7 +56,7 @@
 
     {% comment %}
     <div class="navbar-section navbar_section">
-        <a class="home_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
+        <a class="home_link left_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
     </div>
     {% endcomment %}
 
