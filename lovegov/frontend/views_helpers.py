@@ -447,7 +447,6 @@ def valsDismissibleHeader(request, vals):
 
     if header == 'congress_teaser':
         congress = getCongressGroup()
-        congress_members = list(congress.getMembers())
-        congress_members = random.sample(congress_members, min(18, len(congress_members)))
+        congress_members = congress.getMembers()[:18]
         vals['congress'] = congress
         vals['congress_members'] = congress_members
