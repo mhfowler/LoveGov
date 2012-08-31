@@ -919,29 +919,6 @@ def legislation (request, vals={}):
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
 
-
-    """(request, session=110, type='sj', number=2999, vals={}):
-    vals['session'], vals['type'], vals['number'] = session, type, number
-    if session==None:
-        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session)
-    if type==None:
-        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
-        vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
-    if number==None:
-        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
-    if len(legs)==0:
-        vals['error'] = "No legislation found with the given parameters."
-    else:
-        leg = legs[0]
-        vals['leg_titles'] = leg.legislationtitle_set.all()
-        vals['leg'] = leg
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
-"""
 #-----------------------------------------------------------------------------------------------------------------------
 # legislation detail
 #-----------------------------------------------------------------------------------------------------------------------
