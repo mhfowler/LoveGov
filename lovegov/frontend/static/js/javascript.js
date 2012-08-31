@@ -372,7 +372,6 @@ function bindTooltips() {
 }
 
 bind(".bind_link", "click", null, function(event) {
-    event.preventDefault();
     var url = $(this).data('url');
     window.location.href = url;
 });
