@@ -441,6 +441,7 @@ def compareWeb(request,alias=None,vals={}):
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, vals):
+    valsDismissibleHeader(request, vals)
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)

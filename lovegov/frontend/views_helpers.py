@@ -436,3 +436,18 @@ def valsRepsHeader(vals):
     congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
     if len(congressmen) < 3:
         vals['few_congressmen'] = True
+
+#-----------------------------------------------------------------------------------------------------------------------
+# randomly (or by user info), chooses a teaser header
+#-----------------------------------------------------------------------------------------------------------------------
+def valsDismissibleHeader(request, vals):
+
+    header = random.choice(DISMISSIBLE_HEADERS)
+    vals['dismissible_header'] = header
+
+    if header == 'congress_teaser':
+        congress = getCongressGroup()
+        congress_members = list(congress.getMembers())
+        congress_members = random.sample(congress_members, min(18, len(congress_members)))
+        vals['congress'] = congress
+        vals['congress_members'] = congress_members

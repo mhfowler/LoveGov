@@ -1,0 +1,27 @@
+<div class="congress-header bind_link" data-href="{{ congress.getHistogramURL }}" >
+
+    <div class="mouse-over">
+        mouse over
+    </div>
+
+    <div class="congress-teaser">
+        {% for user in congress_members %}
+            <div class="congress-pic-wrapper">
+                {% include 'site/pieces/avatar_href.html' with height="35" width="35" %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="congress-explanation">
+        <a href="{{ congress.getHistogramURL }}" class="congress-explanation-header">
+            Compare yourself to congress
+        </a>
+        <div class="congress-explanation-text">
+            Want to see how your compare with our policy and lawmakers?
+            Use our matchmaking tools and get a breakdown.
+        </div>
+    </div>
+
+    <div style="clear:both;"></div>
+
+</div>

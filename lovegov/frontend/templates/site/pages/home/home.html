@@ -1,3 +1,13 @@
+<div class="random-dismissible-header dismissible_header">
+
+    <div class="dismissible-x dismissible_x"> X </div>
+
+    {% if dismissible_header == 'congress_teaser' %}
+        {% include 'site/pages/home/congress_header.html' %}
+    {% endif %}
+
+</div>
+
 <div class="home-body">
     {% include 'site/pages/feed/feed.html' %}
 </div>
