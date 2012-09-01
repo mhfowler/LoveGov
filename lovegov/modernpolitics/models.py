@@ -1471,7 +1471,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         # self.gender = fb_data['gender']
         self.confirmed = True
 
-
         if 'birthday' in fb_data:
             split_bday = fb_data['birthday'].split('/')
             birthday = datetime.date.min
@@ -1489,7 +1488,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
             self.dob = birthday
             self.save()
-
 
         if 'education' in fb_data:
             education = fb_data['education']

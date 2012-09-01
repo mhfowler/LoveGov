@@ -159,4 +159,5 @@ urlpatterns += patterns('',
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
+
 )

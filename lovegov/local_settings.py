@@ -19,6 +19,8 @@ DATABASES = {
         },
 }
 
+
+
 STATIC_ROOT = base_settings.STATIC_ROOT
 
 LOG_ROOT = "/log/"

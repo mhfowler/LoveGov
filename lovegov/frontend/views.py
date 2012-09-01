@@ -241,7 +241,7 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
     if not vals.get('firstLoginStage'):
-        to_page = "match/representatives/"
+        to_page = "/home/"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
