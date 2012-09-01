@@ -1898,16 +1898,51 @@ def syncCongressGroupMembers():
 
 
 
+#-----------------------------------------------------------------------------------------------------------------------
+# scripts for migration
+#-----------------------------------------------------------------------------------------------------------------------
 
 
 
+system = models.BooleanField(default=False)
+hidden = models.BooleanField(default=False)
+autogen = models.BooleanField(default=False)
+subscribable = models.BooleanField(default=True)
+is_election = models.BooleanField(default=False)
+content_by_posting = models.BooleanField(default=True)
 
+def migrateFollowGroupBooleans():
+    print "migrate follow group booleans"
+    users = UserProfile.objects.all()
+    count = 0
+    for x in users:
+        ifollow = x.i_follow
+        followme = x.follow_me
+        setHiddenGroup(ifollow)
+        setHiddenGroup(followme)
+        count += 1
+        if not count%20:
+            print str(count)
 
+def migrateNetworkGroupBooleans():
+    print "migrate network group booleasn"
+    count = 0
+    for n in Network.objects.all():
+        n.system = False
+        n.autogen = True
+        n.save()
+        count += 1
+        if not count%20:
+            print str(count)
 
-
-
-
-
+def setHiddenGroup(group):
+    if group:
+        group.system = True
+        group.hidden = True
+        group.subscribable = False
+        group.autogen = True
+        group.content_by_posting = False
+        group.save()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
