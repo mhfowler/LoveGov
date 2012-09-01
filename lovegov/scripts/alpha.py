@@ -95,11 +95,16 @@ def scriptCreateCongressAnswers(args=None):
                 if not bill:
                     print "+WW+ Couldn't find bill " + metricName
 
-            # Get answer text and value from spreadsheet
-            answer_text = sheet.cell(row,0).value
-            answer_text = answer_text.encode('utf-8','ignore')
+#            # Get answer text and value from spreadsheet
+#            answer_text = sheet.cell(row,0).value
+#            answer_text = answer_text.encode('utf-8','ignore')
+
+
+            # Get answer ID and value from spreadsheet
+            answer_id = sheet.cell(row,0).value
             answer_value = sheet.cell(row,column+3).value
             answer_value = answer_value.encode('utf-8','ignore')
+
             # Convert answer value
             if answer_value == "Yes":
                 answer_value = "+"
@@ -133,14 +138,14 @@ def scriptCreateCongressAnswers(args=None):
                 voter = vote.voter
 
                 # Check that answer text was found
-                if not answer_text:
-                    print "+WW+ Couldn't find answer text"
+                if not answer_id:
+                    print "+WW+ Couldn't find answer ID"
                     continue
 
                 # Look for that answer in the database
-                answer = Answer.lg.get_or_none(answer_text=answer_text)
+                answer = Answer.lg.get_or_none(id=answer_id)
                 if not answer:
-                    print "+WW+ Couldn't find answer for :: " + answer_text
+                    print "+WW+ Couldn't find answer for :: " + answer_id
                     continue
 
                 # Look for that question in the database
@@ -154,27 +159,30 @@ def scriptCreateCongressAnswers(args=None):
                 # If it's found, take the first item of the query set
                 question = questions[0]
 
-                # Look for that response in the database
-                responses = voter.view.responses.filter(question=question)
-                if not responses: # If it doesn't exist, create it
-                    response = Response(question=question,most_chosen_answer=answer,explanation="")
-                    response.total_num = 1
-                    response.most_chosen_num = 1
-                    response.autoSave(creator=voter)
+                # Answer that shit!
+                answerAction(voter,question,"PUB",answer_id)
 
-                    voter.view.responses.add(response)
-
-                    metrics[metricName] += 1
-                    print metricName + " " + str(metrics[metricName])
-                # Otherwise, change the answer
-                else:
-                    if len(responses) > 1:
-                        print "+DD+ Potential duplicate response for user ID #" + str(voter.id) + " and question ID #" + str(question.id)
-                    response = responses[0]
-                    response.most_chosen_answer = answer
-                    response.total_num = 1
-                    response.most_chosen_num = 1
-                    response.save()
+#                # Look for that response in the database
+#                responses = voter.view.responses.filter(question=question)
+#                if not responses: # If it doesn't exist, create it
+#                    response = Response(question=question,most_chosen_answer=answer,explanation="")
+#                    response.total_num = 1
+#                    response.most_chosen_num = 1
+#                    response.autoSave(creator=voter)
+#
+#                    voter.view.responses.add(response)
+#
+#                    metrics[metricName] += 1
+#                    print metricName + " " + str(metrics[metricName])
+#                # Otherwise, change the answer
+#                else:
+#                    if len(responses) > 1:
+#                        print "+DD+ Potential duplicate response for user ID #" + str(voter.id) + " and question ID #" + str(question.id)
+#                    response = responses[0]
+#                    response.most_chosen_answer = answer
+#                    response.total_num = 1
+#                    response.most_chosen_num = 1
+#                    response.save()
 
     return metrics
 
@@ -227,7 +235,6 @@ def scriptCreateResponses(args=None):
 #            answer_text = answer_text.encode('utf-8','ignore')
 #            print answer_text
             answer_id = sheet.cell(row,column).value
-            print answer_id
 
             # Check for answer text
             if not answer_id:
@@ -244,23 +251,26 @@ def scriptCreateResponses(args=None):
             if questions:
                 question = questions[0]
 
-                responses = politician.view.responses.filter(question=question)
-                if not responses:
-                    response = Response(question=question,most_chosen_answer=answer,explanation="")
-                    response.most_chosen_num = 1
-                    response.total_num = 1
-                    response.autoSave(creator=politician)
-
-                    politician.view.responses.add(response)
-
-                else:
-                    if len(responses) > 1:
-                        print "+DD+ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
-                    response = responses[0]
-                    response.most_chosen_answer = answer
-                    response.explanation = ''
-                    response.total_num = 1
-                    response.most_chosen_num = 1
-                    response.save()
+                # Answer that mamma jamma
+                answerAction(politician,question,"PUB",answer_id)
+#
+#                responses = politician.view.responses.filter(question=question)
+#                if not responses:
+#                    response = Response(question=question,most_chosen_answer=answer,explanation="")
+#                    response.most_chosen_num = 1
+#                    response.total_num = 1
+#                    response.autoSave(creator=politician)
+#
+#                    politician.view.responses.add(response)
+#
+#                else:
+#                    if len(responses) > 1:
+#                        print "+DD+ Potential duplicate response for question ID #" + str(question.id) + "and user id #" + str(politician.id)
+#                    response = responses[0]
+#                    response.most_chosen_answer = answer
+#                    response.explanation = ''
+#                    response.total_num = 1
+#                    response.most_chosen_num = 1
+#                    response.save()
 
                 print "Successfully answered question for " + politician_name[0]

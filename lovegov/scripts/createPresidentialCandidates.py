@@ -37,7 +37,7 @@ def answerQuestions(sheet):
     errors = ''
     ans_not_found = 0
     question_not_found = 0
-    text_not_found = 0
+    ans_id_not_found = 0
     duplicate_responses = 0
     # For the cells in a question sheet
     for row in range(1,sheet.nrows):
@@ -48,21 +48,25 @@ def answerQuestions(sheet):
 
             # Find the politician
             politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1],politician=True)
+#
+#            # Get the answer text
+#            answer_text = sheet.cell(row,column).value
+#            answer_text = answer_text.encode('utf-8','ignore')
+#            print answer_text
 
-            # Get the answer text
-            answer_text = sheet.cell(row,column).value
-            answer_text = answer_text.encode('utf-8','ignore')
-            print answer_text
+            # Get answer ID
+            answer_id = sheet.cell(row,column).value
+
             # Check answer text
-            if not answer_text:
-                text_not_found += 1
-                errors += "+WW+ Answer text not found\n"
+            if not answer_id:
+                ans_id_not_found += 1
+                errors += "+WW+ Answer ID not found\n"
                 continue
             # Find the answer
-            answer = Answer.lg.get_or_none(answer_text=answer_text)
+            answer = Answer.lg.get_or_none(id=answer_id)
             if not answer:
                 ans_not_found += 1
-                errors += "+WW+ Answer not found for text :: " + answer_text +'\n'
+                errors += "+WW+ Answer not found for ID #" + answer_id +'\n'
                 continue
 
             # Find the question that corresponds to this answer
@@ -70,28 +74,31 @@ def answerQuestions(sheet):
             if questions:
                 question = questions[0]
 
-                # See if a response already exists
-                responses = politician.view.responses.filter(question=question)
-                if not responses:
-                    response = Response(question=question,most_chosen_answer=answer,explanation="")
-                    response.most_chosen_num = 1
-                    response.total_num = 1
-                    response.autoSave(creator=politician)
-                    politician.view.responses.add(politician)
+                # Answer that shit!
+                answerAction(politician,question,"PUB",answer_id)
 
-                else:
-                    if len(responses) > 1:
-                        duplicate_responses += 1
-                        print "+DD+ Potential duplicate response for user ID #" + str(politician.id) + " and question ID #" + str(question.id)
-                    response = responses[0]
-                    response.most_chosen_answer = answer
-                    response.explanation = ''
-                    response.most_chosen_num = 1
-                    response.total_num = 1
-                    response.save()
+#                # See if a response already exists
+#                responses = politician.view.responses.filter(question=question)
+#                if not responses:
+#                    response = Response(question=question,most_chosen_answer=answer,explanation="")
+#                    response.most_chosen_num = 1
+#                    response.total_num = 1
+#                    response.autoSave(creator=politician)
+#                    politician.view.responses.add(politician)
+#
+#                else:
+#                    if len(responses) > 1:
+#                        duplicate_responses += 1
+#                        print "+DD+ Potential duplicate response for user ID #" + str(politician.id) + " and question ID #" + str(question.id)
+#                    response = responses[0]
+#                    response.most_chosen_answer = answer
+#                    response.explanation = ''
+#                    response.most_chosen_num = 1
+#                    response.total_num = 1
+#                    response.save()
             else:
                 question_not_found += 1
-                errors += "+WW+ Question Not Found for politician " + politician.get_name() + '\n'
+                errors += "+WW+ Question Not Found for answer ID #" + answer_id + '\n'
 
 
     print "========= Errors =========="
