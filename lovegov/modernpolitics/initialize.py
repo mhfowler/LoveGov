@@ -1700,12 +1700,11 @@ def initFirstLogin():
             p.first_login = 0
         p.save()
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize elections
 #-----------------------------------------------------------------------------------------------------------------------
 def getPresidentialElection2012():
-    return Election.objects.get(alias="presidential_election") or initializePresidentialElection2012()
+    return Election.lg.get_or_none(alias="presidential_election") or initializePresidentialElection2012()
 
 def initializePresidentialElection2012():
     print "initializing presidential election!"
