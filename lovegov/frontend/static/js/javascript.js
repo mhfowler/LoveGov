@@ -4063,6 +4063,17 @@ bind(".congress_header_link", "click", function(e) {
 });
 
 
+bind(".find_reps_header_button", "click", function(e) {
+    var zip = $(".reps_zip_input").val();
+    action({
+            data: {'action': 'submitTempAddress', 'address': "", 'city':"", 'state':"",
+                'zip':zip},
+            success: function(data) {
+                window.location.href = "/representatives/";
+            }}
+    );
+});
+
 /***********************************************************************************************************************
  *
  *      ~ change privacy mode

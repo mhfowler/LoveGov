@@ -21,7 +21,7 @@ LOCAL = settings.LOCAL
 
 ########################################## Content we cycle through ####################################################
 
-DISMISSIBLE_HEADERS = ['congress_teaser']
+DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps']
 
 ########################################## SPECIAL ALIASES #############################################################
 

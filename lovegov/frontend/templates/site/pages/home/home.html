@@ -1,12 +1,22 @@
+
+{% comment %}
 <div class="random-dismissible-header dismissible_header">
 
     <div class="dismissible-x dismissible_x"> X </div>
 
     {% if dismissible_header == 'congress_teaser' %}
-        {% include 'site/pages/home/congress_header.html' %}
+        {% include 'site/pages/dismissible_headers/congress_header.html' %}
     {% endif %}
 
 </div>
+{% endcomment %}
+
+{% if dismissible_header == 'congress_teaser' %}
+    {% include 'site/pages/dismissible_headers/congress_header.html' %}
+{% elif dismissible_header == 'find_reps' %}
+    {% include 'site/pages/dismissible_headers/find_reps_header.html' %}
+{% endif %}
+
 
 <div class="home-body">
     {% include 'site/pages/feed/feed.html' %}

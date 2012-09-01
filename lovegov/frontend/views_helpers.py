@@ -448,3 +448,6 @@ def valsDismissibleHeader(request, vals):
             congress_members = UserProfile.objects.all()[:16]
         vals['congress'] = congress
         vals['congress_members'] = congress_members
+
+    elif header == 'find_reps':
+        pass
