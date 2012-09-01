@@ -3,7 +3,7 @@ import base_settings
 LOCAL = False
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-THUMBNAIL_DEBUG = True
+THUMBNAIL_DEBUG = False
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
