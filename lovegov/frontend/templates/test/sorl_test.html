@@ -27,7 +27,7 @@
 
         {% with full_url=t.getIconURL|media_url:MEDIA_PREFIX %}
             <p> full url: {{ full_url }} </p>
-            {% thumbnail full_url geometry crop="center" format="PNG" geometry="50x50" as im %}
+            {% thumbnail full_url "50x50" crop="center" format="PNG" as im %}
                 <img src="{{ im.url }}" />
             {% empty %}
                 empty!
