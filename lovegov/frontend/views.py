@@ -951,27 +951,81 @@ def legislationDetail(request, l_id, vals={}):
     action_states = [x.state for x in vals['actions']]
 
     if legislation.congress_body == "H":
+        if "ENACTED:SIGNED" in action_states:
+            bill_progress = "Passed House and Senate, Signed into Law"
         if "PASSED_OVER:HOUSE" in action_states:
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Passed House and Senate"
             elif legislation.bill_relation.count() == 0:
                 bill_progress = "Passed House"
+        elif "PASSED:JOINTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed House and Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Passed House"
+        elif "PASSED:CONCURRENTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Concurrent Resolution Passed House and Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Concurrent Resolution Passed House"
         elif "PASSED:SIMPLERES" in action_states:
             bill_progress = "Resolution Passed House"
-        elif "PASSED:SIMPLERES" not in action_states and legislation.bill_type != "h":
+        elif legislation.bill_type == 'h':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Passed Senate, Not Passed House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Not Passed House"
+        elif legislation.bill_type == 'hr':
             bill_progress = "Resolution Not Passed House"
+        elif legislation.bill_type == 'hj':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed Senate, Not Passed House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Not Passed House"
+        elif legislation.bill_type == 'hc':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Concurrent Resolution Passed Senate, Not Passed House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Concurrent Resolution Not Passed House"
         else:
             bill_progress = "Not Passed House"
     elif legislation.congress_body == "S":
+        if "ENACTED:SIGNED" in action_states:
+            bill_progress = "Passed Senate and House, Signed into Law"
         if "PASSED_OVER:SENATE" in action_states:
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Passed Senate and House"
             elif legislation.bill_relation.count() == 0:
                 bill_progress = "Passed Senate"
+        elif "PASSED:JOINTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed Senate and House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Passed Senate"
+        elif "PASSED:CONCURRENTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed Senate and House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Passed Senate"
         elif "PASSED:SIMPLERES" in action_states:
             bill_progress = "Resolution Passed Senate"
-        elif "PASSED:SIMPLERES" not in action_states and legislation.bill_type != "s":
+        elif legislation.bill_type == 'h':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Passed House, Not Passed Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Not Passed Senate"
+        elif legislation.bill_type == 'hr':
             bill_progress = "Resolution Not Passed Senate"
+        elif legislation.bill_type == 'hj':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed House, Not Passed Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Not Passed Senate"
+        elif legislation.bill_type == 'hc':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Concurrent Resolution Passed House, Not Passed Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Concurrent Resolution Not Passed Senate"
         else:
             bill_progress = "Not Passed Senate"
     vals['bill_progress'] = bill_progress
