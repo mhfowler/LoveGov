@@ -1074,11 +1074,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # on register, autosubscribe for some groups
     #-------------------------------------------------------------------------------------------------------------------
     def autoSubscribe(self):
-        from lovegov.modernpolitics.initialize import getLoveGovGroup
+        from lovegov.modernpolitics.initialize import getLoveGovGroup, getPresidentialElection2012
         from lovegov.modernpolitics.actions import followGroupAction
 
         lg = getLoveGovGroup()
         followGroupAction(self, lg, True, "PRI")
+
+        p = getPresidentialElection2012()
+        followGroupAction(self, p, True, "PRI")
 
     #-------------------------------------------------------------------------------------------------------------------
     # duck typing

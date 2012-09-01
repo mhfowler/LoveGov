@@ -478,6 +478,7 @@ bind(".red_triangle", 'click', null, function(event) {
 
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
+    $(".left_link").removeClass("clicked");
     homeReload($(this).attr("href"));
 
     /*

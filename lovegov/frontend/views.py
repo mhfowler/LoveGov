@@ -632,6 +632,12 @@ def profile(request, alias=None, vals={}):
     vals['web_comparison'] = comparison
     vals['web_json'] = web_json
 
+    # check if user is my rep
+    if user_profile.politician:
+        reps = viewer.getRepresentatives(viewer.location)
+        if reps:
+            vals['my_rep'] = user_profile in reps
+
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()

@@ -37,7 +37,9 @@
 
                         {% include 'site/pages/profile/support_button.html' with politician=profile %}
 
+                    {% if my_rep %}
                         <div class="message-politician message_politician" data-p_id="{{ profile.id }}"> message </div>
+                    {% endif %}
 
                     {% elif viewer.id != profile.id %}
 
