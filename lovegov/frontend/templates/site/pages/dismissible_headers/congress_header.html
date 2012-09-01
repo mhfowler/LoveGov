@@ -1,0 +1,34 @@
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
+
+{% block dismissible_content %}
+
+    <div class="congress-header congress_header_link dummy_link"
+         data-url="{{ congress.getHistogramURL }}" {% if lgpoll_progress < 20 %} data-warning="1" {% else %} data-warning="0" {% endif %}>
+        <div class="mouse-over">
+            mouse over
+        </div>
+
+        <div class="congress-teaser">
+            {% for user in congress_members %}
+                <div class="congress-pic-wrapper">
+                    <div class="bind_link" data-url="{{ user.get_url }}">
+                        {% include 'site/pieces/avatar.html' with height="35" width="35" %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="congress-explanation">
+            <a href="{{ congress.getHistogramURL }}" class="congress-explanation-header">
+                Compare yourself to congress
+            </a>
+            <div class="congress-explanation-text">
+                Want to see how your compare with our policy and lawmakers?
+                Use our matchmaking tools and get a breakdown.
+            </div>
+        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+
+{% endblock %}
