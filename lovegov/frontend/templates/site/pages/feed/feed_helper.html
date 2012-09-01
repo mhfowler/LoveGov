@@ -27,7 +27,7 @@
         {% elif content.type == "Q" %}
             {% include "site/pages/feed/feed_items/question_item.html" %}
         {% elif content.type == "L" %}
-            {% include "site/pages/legislation/legislation-stub.html" %}
+            {% include "site/pages/legislation/legislation-stub.html" with l=content %}
         {% endif %}
     {% endwith %}
 {% endfor %}

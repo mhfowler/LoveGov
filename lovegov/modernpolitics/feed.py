@@ -57,8 +57,7 @@ def getContentFromAlias(alias, viewer):
         content = Content.objects.filter(posted_to_id__in=groups_ids)
     elif alias == 'representatives':
         representatives = viewer.getRepresentatives(location=viewer.temp_location)
-        temp_logger.debug(str(len(representatives)))
-        getLegislationFromCongressmen(representatives)
+        content = getLegislationFromCongressmen(representatives)
     elif alias == 'me':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
