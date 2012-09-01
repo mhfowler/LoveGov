@@ -57,6 +57,7 @@ def getContentFromAlias(alias, viewer):
         content = Content.objects.filter(posted_to_id__in=groups_ids)
     elif alias == 'representatives':
         representatives = viewer.getRepresentatives(location=viewer.temp_location)
+        temp_logger.debug(str(len(representatives)))
         getLegislationFromCongressmen(representatives)
     elif alias == 'me':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
@@ -299,10 +300,7 @@ def getLegislationFromCongressmen(congressmen):
     #legislation = Legislation.objects.filter()
     #cosponsored = LegislationCosponsor.objects.filter(cosponsor_id__in=congressmen_ids)
 
-    congressmen_ids = []
-    for x in congressmen:
-        congressmen_ids.append(x.id)
-        
+    congressmen_ids = [x.id for x in congressmen]
     sponsored = Legislation.objects.filter(sponsor_id__in=congressmen_ids)
 
     return sponsored
