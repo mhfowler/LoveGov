@@ -58,6 +58,8 @@ def getContentFromAlias(alias, viewer):
     elif alias == 'representatives':
         representatives = viewer.getRepresentatives(location=viewer.temp_location)
         content = getLegislationFromCongressmen(representatives)
+    elif alias == 'congress':
+        content = Legislation.objects.all()
     elif alias == 'me':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
