@@ -1,8 +1,10 @@
 import base_settings
 
 LOCAL = False
-DEBUG = base_settings.UPDATE
-TEMPLATE_DEBUG = DEBUG
+DEBUG = True
+TEMPLATE_DEBUG = True
+UPDATE = True
+
 PROJECT_PATH = base_settings.PROJECT_PATH
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
