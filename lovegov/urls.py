@@ -37,10 +37,6 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
-    (r'^underconstruction/$', views.underConstruction),
-    (r'.*/$', views.redirect),
-    (r'^$', views.redirect),
-
     # login page
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),
     (r'^login/$', viewWrapper(views.login)),
@@ -66,6 +62,7 @@ urlpatterns += patterns('',
     (r'^try/$', viewWrapper(views.tryLoveGov)),
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
     (r'^unsubscribe/$', views.unsubscribe),
+    (r'^underconstruction/$', views.underConstruction),
 
     # home pages
     (r'^home/$', viewWrapper(views.home, requires_login=True)),

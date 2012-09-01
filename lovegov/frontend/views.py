@@ -96,44 +96,44 @@ def viewWrapper(view, requires_login=False):
 
             if requires_login:
 
-                    # who is logged in?
-                    controlling_user = getControllingUser(request)
-                    vals['controlling_user'] = controlling_user
+                # who is logged in?
+                controlling_user = getControllingUser(request)
+                vals['controlling_user'] = controlling_user
 
-                    # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
-                    if controlling_user:
-                        user = controlling_user.user_profile
-                        vals['prohibited_actions'] = controlling_user.prohibited_actions
-                    else:
-                        user = getAnonUser()
-                        vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
+                if controlling_user:
+                    user = controlling_user.user_profile
+                    vals['prohibited_actions'] = controlling_user.prohibited_actions
+                else:
+                    user = getAnonUser()
+                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
 
-                    # get user profile associated with controlling user
-                    vals['user'] = user
-                    vals['viewer'] = user
+                # get user profile associated with controlling user
+                vals['user'] = user
+                vals['viewer'] = user
 
-                    # first login
-                    first_login = user.first_login
-                    vals['firstLoginStage'] = first_login
+                # first login
+                first_login = user.first_login
+                vals['firstLoginStage'] = first_login
 
-                    # if not authenticated user, and not lovegov_try cookie, redirect to login page
-                    if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        # If this action can't be performed without being authenticated
-                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
-                            # Redirect to login page
-                            return shortcuts.redirect("/login" + request.path)
-                        else: # otherwise action can be done without authentication
-                            return view(request,vals=vals,*args,**kwargs)
+                # if not authenticated user, and not lovegov_try cookie, redirect to login page
+                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                    # If this action can't be performed without being authenticated
+                    if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                        # Redirect to login page
+                        return shortcuts.redirect("/login" + request.path)
+                    else: # otherwise action can be done without authentication
+                        return view(request,vals=vals,*args,**kwargs)
 
-                    # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
-                    if UPDATE or ("dev" in host_full):
-                        if not user.developer:
-                            normal_logger.debug('blocked: ' + user.get_name())
-                            return shortcuts.redirect('/underconstruction/')
+                # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
+                if UPDATE or ("dev" in host_full):
+                    if not user.developer:
+                        normal_logger.debug('blocked: ' + user.get_name())
+                        return shortcuts.redirect('/underconstruction/')
 
-                    # if user not confirmed redirect to login page
-                    if not user.confirmed:
-                        return shortcuts.redirect("/need_email_confirmation/")
+                # if user not confirmed redirect to login page
+                if not user.confirmed:
+                    return shortcuts.redirect("/need_email_confirmation/")
 
             # vals for not logged in pages
             else:
