@@ -2970,6 +2970,24 @@ def getModal(request,vals={}):
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,request,vals)
 
+
+    ## Facebook Share Content Modal ##
+    elif modal_name == "facebook_share_content_modal":
+        c_id = request.POST.get('c_id')
+
+        if not c_id:
+            LGException( "Facebook Share Content modal requested without content ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share Content modal requested without facebook content ID" )
+
+        share_content = Content.lg.get_or_none(id=c_id)
+
+        if not share_content:
+            LGException( "Facebook Share Content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share Content modal requested with invalid facebook content ID")
+
+        modal_html = getFacebookShareContentModal(share_content,request,vals)
+
+
     ## create modal ##
     elif modal_name == "create_modal":
        modal_html = getCreateModal(request,vals)

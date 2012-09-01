@@ -69,6 +69,14 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
     return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
 
 
+def getFacebookShareContentModal(share_content,request,vals):
+
+    vals['share_content'] = share_content
+    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+
+    return ajaxRender('site/pages/feed/feed_items/facebook_share_content_modal.html',vals,request)
+
+
 def getCreateModal(request,vals={}):
     getMainTopics(vals)
     from lovegov.frontend.views_helpers import getStateTuples

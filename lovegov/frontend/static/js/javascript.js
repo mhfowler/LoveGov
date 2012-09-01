@@ -3569,6 +3569,40 @@ bind( '.facebook_share_submit' , 'click' , null , function(e)
 
 /***********************************************************************************************************************
  *
+ *      ~Facebook Share Content
+ *
+ ***********************************************************************************************************************/
+bind( '.facebook_share_content_button' , 'click' , null , function(e)
+{
+    var data = {
+        'c_id' : $(this).data('c_id')
+    };
+
+    getModal('facebook_share_content_modal' , data);
+});
+
+
+bind( '.facebook_share_content_submit' , 'click' , null , function(e)
+{
+    e.preventDefault();
+
+    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
+    var link = $(this).data('fb_link');
+
+    var url = "/fb/action/?fb_action=share";
+    url += "&message=" + share_message;
+
+    if( link != null ) { url += "&fb_link=" + link; }
+
+    url += "&action_to_page=" + window.location.pathname;
+
+    window.location.href = url
+
+});
+
+
+/***********************************************************************************************************************
+ *
  *      ~pin content
  *
  ***********************************************************************************************************************/
