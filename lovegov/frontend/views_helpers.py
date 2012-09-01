@@ -314,7 +314,7 @@ def valsGroup(viewer, group, vals):
     if admins:
         num_members_display = 16
     else:
-        num_members_display = 28
+        num_members_display = 24
     vals['group_members'] = group_members[:num_members_display]
 
     # Get the number of group Follow Requests

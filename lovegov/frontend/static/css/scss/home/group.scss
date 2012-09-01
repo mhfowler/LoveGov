@@ -256,6 +256,9 @@ div.group-expanded
 
         &.no-admins {
           height:299px;
+          div.group-info-title {
+            margin-bottom:7px;
+          }
         }
 
         div.group-member-avatar
